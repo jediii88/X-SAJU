@@ -1,0 +1,5 @@
+ephem
+korean-lunar-calendar
+PySide6
+markdown
+jinja2

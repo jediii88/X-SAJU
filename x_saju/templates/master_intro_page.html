@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>X-SAJU [프리미엄 분석 보고서]</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;700;900&family=Noto+Serif+KR:wght@200;400;700;900&display=swap');
+        
+        body { 
+            font-family: 'Noto Sans KR', sans-serif; 
+            background-color: #000000; 
+            color: #ffffff; 
+            margin: 0; 
+            padding: 0; 
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .page-container { 
+            width: 800px; 
+            min-height: 1131px;
+            padding: 100px 70px;
+            background: #000000;
+            position: relative;
+            box-sizing: border-box;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* 중앙 정렬 추가 */
+        }
+
+        .subtitle {
+            font-size: 14px;
+            font-weight: 300;
+            color: #555;
+            letter-spacing: 0.5em;
+            margin-bottom: 30px;
+            text-align: center;
+            font-family: 'Noto Serif KR', serif;
+        }
+
+        .hero-title {
+            font-size: 54px;
+            font-weight: 200;
+            line-height: 1.2;
+            margin-bottom: 120px;
+            letter-spacing: -0.05em;
+            color: #ffffff;
+            text-align: center;
+            word-break: keep-all;
+            font-family: 'Noto Serif KR', serif;
+        }
+
+        /* 사주 원국: 칸막이(Border) 및 레이아웃 강화 */
+        .wonguk-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            width: 100%;
+            margin-bottom: 120px;
+            border: 1px solid #222;
+            background: #050505; /* 배경 약간 구분 */
+        }
+        .wonguk-column {
+            text-align: center;
+            padding: 60px 0;
+            border-right: 1px solid #111;
+            position: relative;
+        }
+        .wonguk-column:last-child {
+            border-right: none;
+        }
+        
+        /* '주(柱)' 단위의 구분을 명확히 하는 상단 라벨 */
+        .pillar-name {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px;
+            color: #333; /* 아주 은은하게 */
+            letter-spacing: 0.2em;
+            font-weight: 300;
+        }
+
+        .col-label {
+            font-size: 19px; /* 22px -> 19px (눈부심 방지 및 가시성 확보) */
+            font-weight: 300; /* 700 -> 300 (섬세하고 얇게 조정) */
+            color: #E6E6E6; /* Black 10% */
+            letter-spacing: 0.4em;
+            margin-bottom: 60px;
+            display: block;
+        }
+
+        .hanja-character {
+            font-size: 82px; 
+            font-weight: 200; /* 현대적 고딕의 담백한 두께 */
+            line-height: 1;
+            margin-bottom: 20px;
+            display: block;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        .hangeul-sub {
+            font-size: 15px; 
+            font-weight: 300;
+            color: #B3B3B3; /* Black 30% */
+            letter-spacing: 0.1em;
+            margin-bottom: 50px;
+            display: block;
+        }
+        .sipseong-label {
+            font-size: 19px; /* 20px -> 19px */
+            font-weight: 300; /* 700 -> 300 (섬세하게) */
+            color: #E6E6E6; /* Black 10% */
+            letter-spacing: 0.05em;
+            display: inline-block;
+            padding: 5px 0;
+        }
+
+        /* 분석 지표: 가독성 강화 */
+        .energy-analysis {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            width: 100%;
+            gap: 1px;
+            background: #111;
+            margin-bottom: 120px;
+        }
+        .energy-item {
+            background: #000;
+            text-align: center;
+            padding: 40px 10px;
+        }
+        .energy-label {
+            font-size: 14px; /* 크기 상향 */
+            font-weight: 400;
+            color: #B3B3B3; /* Black 30% */
+            letter-spacing: 0.1em;
+            margin-bottom: 15px;
+            display: block;
+        }
+        .energy-value {
+            font-size: 24px; /* 크기 상향 */
+            font-weight: 200;
+            color: #E6E6E6; /* Black 10% */
+            font-family: 'Noto Serif KR', serif;
+        }
+
+        /* 본문 텍스트: 리듬감 있는 타이포 */
+        .main-text {
+            font-size: 24px;
+            font-weight: 200;
+            color: #ffffff;
+            line-height: 2.0;
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+            word-break: keep-all;
+            font-family: 'Noto Serif KR', serif;
+        }
+        .highlight {
+            color: #fff;
+            font-weight: 900; /* 극단적 강조 */
+            font-family: 'Noto Sans KR', sans-serif;
+            border-bottom: 3px solid #ffffff;
+            padding-bottom: 5px;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 80px;
+            width: 100%;
+            left: 0;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 900;
+            color: #222;
+            letter-spacing: 0.6em;
+        }
+
+        /* 오행 포인트 컬러 (채도 낮게 유지) */
+        .color-wood { color: #4CAF50; opacity: 0.9; }
+        .color-fire { color: #FF5252; opacity: 0.9; }
+        .color-earth { color: #FFC107; opacity: 0.9; }
+        .color-metal { color: #ffffff; opacity: 1; }
+        .color-water { color: #2196F3; opacity: 0.9; }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <div class="subtitle">운명의 정밀한 기록 / 도끼 코어 v0.6</div>
+        <div class="hero-title">비어있는 여백 사이로<br>당신의 지도가 그려집니다.</div>
+
+        <div class="wonguk-container">
+            <div class="wonguk-column">
+                <span class="pillar-name">시주(時柱)</span>
+                <span class="col-label">시</span>
+                <span class="hanja-character color-earth">戊</span><span class="hangeul-sub">무</span>
+                <span class="hanja-character color-water">子</span><span class="hangeul-sub">자</span>
+                <span class="sipseong-label">편재 / 정관</span>
+            </div>
+            <div class="wonguk-column">
+                <span class="pillar-name">일주(日柱)</span>
+                <span class="col-label">일</span>
+                <span class="hanja-character color-fire">丙</span><span class="hangeul-sub">병</span>
+                <span class="hanja-character color-wood">寅</span><span class="hangeul-sub">인</span>
+                <span class="sipseong-label">본인 / 편인</span>
+            </div>
+            <div class="wonguk-column">
+                <span class="pillar-name">월주(月柱)</span>
+                <span class="col-label">월</span>
+                <span class="hanja-character color-wood">乙</span><span class="hangeul-sub">을</span>
+                <span class="hanja-character color-wood">卯</span><span class="hangeul-sub">묘</span>
+                <span class="sipseong-label">정인 / 겁재</span>
+            </div>
+            <div class="wonguk-column">
+                <span class="pillar-name">연주(年柱)</span>
+                <span class="col-label">연</span>
+                <span class="hanja-character color-earth">戊</span><span class="hangeul-sub">무</span>
+                <span class="hanja-character color-earth">辰</span><span class="hangeul-sub">진</span>
+                <span class="sipseong-label">식신 / 식신</span>
+            </div>
+        </div>
+
+        <div class="energy-analysis">
+            <div class="energy-item">
+                <span class="energy-label">창의와 확장</span>
+                <span class="energy-value">압도적</span>
+            </div>
+            <div class="energy-item">
+                <span class="energy-label">결단과 수확</span>
+                <span class="energy-value">부족함</span>
+            </div>
+            <div class="energy-item">
+                <span class="energy-label">중재와 기반</span>
+                <span class="energy-value">안정적</span>
+            </div>
+            <div class="energy-item">
+                <span class="energy-label">생존의 뿌리</span>
+                <span class="energy-value">강력함</span>
+            </div>
+        </div>
+
+        <div class="main-text">
+            울창하게 뻗어 나가는 <span class="highlight">봄날의 숲</span>이지만,<br>
+            나무를 다듬을 도구는 보이지 않습니다.<br><br>
+            이 정밀한 기록은 당신의 에너지를<br>
+            <span class="highlight">실질적인 가치</span>로 바꾸는 법을 제안합니다.
+        </div>
+
+        <div class="footer">
+            도끼 프리미엄 분석 보고서 / 01
+        </div>
+    </div>
+</body>
+</html>

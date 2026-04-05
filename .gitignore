@@ -1,0 +1,16 @@
+# Ignore Large Folders
+X-SAJU_FINAL/
+X-SAJU_v2.9.1_Portable_Source/
+X-SAJU_v2.9.1_RELEASE/
+X-SAJU_v2.9.1_Release.tar
+X-SAJU_배포용/
+archives/
+old_versions/
+workspace_backup_copy/
+.openclaw/
+
+# Ignore Temp/OS Files
+.DS_Store
+*.pyc
+__pycache__/
+node_modules/
