@@ -482,6 +482,11 @@
             <div class="fortune-table" id="seun-table"></div>
         </div>
 
+        <div class="section">
+            <div class="section-title"><span>월운</span><span>올해의 열두 달</span></div>
+            <div class="fortune-table" id="wolun-table"></div>
+        </div>
+
         <button class="btn subtle" onclick="go(1)">입력 정보 수정</button>
     </div>
 </div>
@@ -821,7 +826,7 @@ function runAnalysis() {
             const yEc = yLunar.getEightChar();
             const gz = yEc.getYear();
             seunRows.push([
-                year,
+                year + '년',
                 getSipseong(dayStem, gz[0]),
                 `${gz[0]}${gz[1]}`,
                 `${HAN_KOR[gz[0]]}${HAN_KOR[gz[1]]}`,
@@ -829,6 +834,21 @@ function runAnalysis() {
             ]);
         }
         buildFortuneTable('seun-table', ['연도', '십성', '간지', '한글', '12운성'], seunRows);
+
+        const wolunRows = [];
+        for (let m = 1; m <= 12; m++) {
+            const mSolar = Solar.fromYmd(currentYear, m, 15);
+            const mEc = mSolar.getLunar().getEightChar();
+            const gz = mEc.getMonth();
+            wolunRows.push([
+                m + '월',
+                getSipseong(dayStem, gz[0]),
+                `${gz[0]}${gz[1]}`,
+                `${HAN_KOR[gz[0]]}${HAN_KOR[gz[1]]}`,
+                getUnsung(dayStem, gz[1]) || '-'
+            ]);
+        }
+        buildFortuneTable('wolun-table', ['월', '십성', '간지', '한글', '12운성'], wolunRows);
 
         go(2);
     });
