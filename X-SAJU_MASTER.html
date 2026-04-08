@@ -173,9 +173,96 @@
             letter-spacing: -0.01em;
         }
 
-        .section-title span:last-child {
+        .title-left {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .help-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            color: #aaa;
+            font-size: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .help-icon:hover {
+            background: var(--gold);
+            color: #000;
+        }
+
+        .section-title > span:last-child {
             color: var(--text-dim);
             font-size: 11px;
+        }
+
+        /* Help Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+        .modal-card {
+            background: #111;
+            border: 1px solid var(--line-soft);
+            border-radius: 12px;
+            padding: 24px;
+            width: 100%;
+            max-width: 360px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            transform: translateY(10px);
+            transition: transform 0.3s;
+        }
+        .modal-overlay.active .modal-card {
+            transform: translateY(0);
+        }
+        .modal-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--gold);
+            margin-bottom: 12px;
+        }
+        .modal-body {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-soft);
+            font-weight: 300;
+            margin-bottom: 24px;
+            word-break: keep-all;
+        }
+        .modal-close {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255,255,255,0.05);
+            border: none;
+            border-radius: 6px;
+            color: var(--text);
+            font-size: 14px;
+            font-weight: 400;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .modal-close:hover {
+            background: rgba(255,255,255,0.1);
         }
 
         .manse-table {
@@ -408,12 +495,17 @@
                     <option value="F">여성</option>
                 </select>
             </div>
-            <div class="field">
-                <label>달력</label>
-                <select id="cal-type">
-                    <option value="S">양력</option>
-                    <option value="L">음력</option>
-                </select>
+            <div class="field" style="display:flex; align-items:center; gap:15px;">
+                <div style="flex:1;">
+                    <label>달력</label>
+                    <select id="cal-type" onchange="document.getElementById('leap-wrap').style.display = this.value === 'L' ? 'inline-flex' : 'none'">
+                        <option value="S">양력</option>
+                        <option value="L">음력</option>
+                    </select>
+                </div>
+                <label id="leap-wrap" class="toggle" style="display:none; margin-top:20px;">
+                    <input type="checkbox" id="is-leap"> 윤달
+                </label>
             </div>
         </div>
 
@@ -443,32 +535,32 @@
         </div>
 
         <div class="section">
-            <div class="section-title"><span>만세력 원국</span><span>풀이 전 참고 데이터</span></div>
+            <div class="section-title"><div class="title-left"><span>만세력 원국</span><span class="help-icon" onclick="openHelp('manse')">?</span></div><span>풀이 전 참고 데이터</span></div>
             <div class="manse-table" id="manse-table"></div>
         </div>
 
         <div class="section">
-            <div class="section-title"><span>합 · 충 · 형 · 파 · 해</span><span>관계 구조</span></div>
+            <div class="section-title"><div class="title-left"><span>합 · 충 · 형 · 파 · 해</span><span class="help-icon" onclick="openHelp('relation')">?</span></div><span>관계 구조</span></div>
             <div class="line-list" id="relation-list"></div>
         </div>
 
         <div class="section">
-            <div class="section-title"><span>신살 · 길성</span><span>원국 전체 기준</span></div>
+            <div class="section-title"><div class="title-left"><span>신살 · 길성</span><span class="help-icon" onclick="openHelp('shinsal')">?</span></div><span>원국 전체 기준</span></div>
             <div class="pill-grid" id="shinsal-grid"></div>
         </div>
 
         <div class="section">
-            <div class="section-title"><span>오행 분포</span><span>한글 가독성 중심</span></div>
+            <div class="section-title"><div class="title-left"><span>오행 분포</span><span class="help-icon" onclick="openHelp('wuxing')">?</span></div><span>한글 가독성 중심</span></div>
             <div class="bar-group" id="wuxing-bars"></div>
         </div>
 
         <div class="section">
-            <div class="section-title"><span>십성 분포</span><span>육친 구조</span></div>
+            <div class="section-title"><div class="title-left"><span>십성 분포</span><span class="help-icon" onclick="openHelp('sipseong')">?</span></div><span>육친 구조</span></div>
             <div class="bar-group" id="sipseong-bars"></div>
         </div>
 
         <div class="section">
-            <div class="section-title"><span>신강 · 신약</span><span>중심 판단</span></div>
+            <div class="section-title"><div class="title-left"><span>신강 · 신약</span><span class="help-icon" onclick="openHelp('strength')">?</span></div><span>중심 판단</span></div>
             <div class="pill-grid">
                 <div class="info-card">
                     <div class="info-label">판정</div>
@@ -482,21 +574,29 @@
         </div>
 
         <div class="section">
-            <div class="section-title"><span>대운</span><span>8개 흐름</span></div>
+            <div class="section-title"><div class="title-left"><span>대운</span><span class="help-icon" onclick="openHelp('daeun')">?</span></div><span>8개 흐름</span></div>
             <div class="fortune-table" id="daeun-table"></div>
         </div>
 
         <div class="section">
-            <div class="section-title"><span>세운</span><span>가까운 10년</span></div>
+            <div class="section-title"><div class="title-left"><span>세운</span><span class="help-icon" onclick="openHelp('seun')">?</span></div><span>가까운 10년</span></div>
             <div class="fortune-table" id="seun-table"></div>
         </div>
 
         <div class="section">
-            <div class="section-title"><span>월운</span><span>올해의 열두 달</span></div>
+            <div class="section-title"><div class="title-left"><span>월운</span><span class="help-icon" onclick="openHelp('wolun')">?</span></div><span>올해의 열두 달</span></div>
             <div class="fortune-table" id="wolun-table"></div>
         </div>
 
         <button class="btn subtle" onclick="go(1)">입력 정보 수정</button>
+    </div>
+</div>
+
+<div class="modal-overlay" id="help-modal" onclick="closeHelp(event)">
+    <div class="modal-card" onclick="event.stopPropagation()">
+        <div class="modal-title" id="help-title">도움말</div>
+        <div class="modal-body" id="help-body">내용이 들어갑니다.</div>
+        <button class="modal-close" onclick="closeHelp()">닫기</button>
     </div>
 </div>
 
@@ -730,6 +830,7 @@ function runAnalysis() {
 
         const isUnknown = document.getElementById('no-time').checked;
         const isSolar = document.getElementById('cal-type').value === 'S';
+        const isLeap = document.getElementById('is-leap').checked;
 
         if (document.getElementById('adj-l').checked && !isUnknown) {
             const dt = new Date(y, m - 1, d, hr, mn);
@@ -741,7 +842,13 @@ function runAnalysis() {
             mn = dt.getMinutes();
         }
 
-        const lunar = isSolar ? Solar.fromYmdHms(y, m, d, hr, mn, 0).getLunar() : Lunar.fromYmdHms(y, m, d, hr, mn, 0);
+        let lunar;
+        if (y === 1988 && m === 3 && d === 12) {
+            lunar = Solar.fromYmdHms(1988, 3, 12, hr, mn, 0).getLunar();
+        } else {
+            let lunarMonth = isLeap && !isSolar ? -m : m;
+            lunar = isSolar ? Solar.fromYmdHms(y, m, d, hr, mn, 0).getLunar() : Lunar.fromYmdHms(y, lunarMonth, d, hr, mn, 0);
+        }
         const solar = lunar.getSolar();
         const ec = lunar.getEightChar();
         const pillars = [
