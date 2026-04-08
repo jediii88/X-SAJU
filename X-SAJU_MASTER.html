@@ -720,7 +720,11 @@ function runAnalysis() {
         const allShinsal = getAllShinsal(pillars, ec, isUnknown);
 
         document.getElementById('hero-name').innerText = `${name}님의 만세력`;
-        document.getElementById('hero-meta').innerHTML = `양력 ${solar.getYear()}.${String(solar.getMonth()).padStart(2,'0')}.${String(solar.getDay()).padStart(2,'0')} (${String(solar.getHour()).padStart(2,'0')}:${String(solar.getMinute()).padStart(2,'0')})<br>음력 ${lunar.getYear()}.${String(lunar.getMonth()).padStart(2,'0')}.${String(lunar.getDay()).padStart(2,'0')} ${lunar.isLeap() ? '(윤달)' : '(평달)'}`;
+        const lunarMonth = lunar.getMonth();
+        const lunarDay = lunar.getDay();
+        const lunarMonthText = lunarMonth < 0 ? String(Math.abs(lunarMonth)).padStart(2, '0') : String(lunarMonth).padStart(2, '0');
+        const lunarLeapText = lunarMonth < 0 ? '(윤달)' : '(평달)';
+        document.getElementById('hero-meta').innerHTML = `양력 ${solar.getYear()}.${String(solar.getMonth()).padStart(2,'0')}.${String(solar.getDay()).padStart(2,'0')} (${String(solar.getHour()).padStart(2,'0')}:${String(solar.getMinute()).padStart(2,'0')})<br>음력 ${lunar.getYear()}.${lunarMonthText}.${String(lunarDay).padStart(2,'0')} ${lunarLeapText}`;
 
         const header = `
             <div class="row">
