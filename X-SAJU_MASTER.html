@@ -826,7 +826,7 @@ function runAnalysis() {
         const yunStartAge = yun.getStartAge ? yun.getStartAge() : '-';
         document.getElementById('yun-text').innerText = `${yunStartAge}세 시작 · ${yunDirection}`;
 
-        const daeunRows = yun.getDaYun().slice(0, 8).map(dy => {
+        const daeunRows = yun.getDaYun().slice(1, 9).map(dy => {
             const gz = dy.getGanZhi();
             return [
                 dy.getStartAge() + '세',
