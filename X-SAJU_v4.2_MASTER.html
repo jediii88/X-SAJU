@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>X-SAJU MASTER v4.2 | Precision Engine</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Noto+Sans+KR:wght@100;300;400;700&family=Noto+Serif+KR:wght@200;400&display=swap');
+        
+        :root {
+            --bg-color: #050505;
+            --card-bg: #0f0f0f;
+            --text-main: #f0f0f0;
+            --text-dim: #777777;
+            --accent: #ffffff;
+            --gold: #d4af37;
+            --border: #222222;
+            --font-serif: 'Playfair Display', 'Noto Serif KR', serif;
+            --font-sans: 'Noto Sans KR', sans-serif;
+            --wood: #2ecc71;
+            --fire: #e74c3c;
+            --earth: #f1c40f;
+            --metal: #bdc3c7;
+            --water: #3498db;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            padding: 40px 24px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        .brand-header {
+            margin-bottom: 60px;
+        }
+
+        .logo {
+            font-family: var(--font-sans);
+            font-size: 22px;
+            letter-spacing: 4px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--accent);
+            text-transform: uppercase;
+        }
+
+        .sub-logo {
+            font-size: 11px;
+            letter-spacing: 2px;
+            color: var(--text-dim);
+            font-weight: 400;
+            text-transform: uppercase;
+        }
+
+        .section-label { 
+            display: block; font-size: 12px; color: var(--accent); 
+            margin-bottom: 15px; letter-spacing: 1px;
+            font-weight: 700; border-bottom: 2px solid var(--accent);
+            padding-bottom: 8px; text-align: left;
+        }
+
+        #step-1 { display: block; animation: fadeIn 0.5s ease; }
+        .input-group { margin-bottom: 30px; text-align: left; position: relative; }
+        label { display: block; font-size: 11px; color: var(--text-dim); margin-bottom: 8px; font-weight: 700; }
+
+        input, select {
+            width: 100%; background: #111; border: 1px solid var(--border);
+            color: var(--text-main); padding: 14px 12px; font-size: 16px; font-weight: 400; outline: none;
+            border-radius: 4px; transition: border-color 0.2s; box-sizing: border-box;
+        }
+        input:focus { border-color: var(--accent); }
+
+        .btn-main {
+            margin-top: 20px; width: 100%; padding: 20px; background: var(--accent);
+            color: var(--bg-color); cursor: pointer; font-size: 15px; letter-spacing: 1px; 
+            border: none; font-weight: 700; text-transform: uppercase; border-radius: 4px;
+        }
+        .btn-main:active { transform: scale(0.98); }
+
+        #step-2 { display: none; animation: fadeIn 0.5s ease; }
+        .saju-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 30px; }
+        .pillar-card { border: 1px solid var(--border); padding: 15px 0; background: var(--card-bg); border-radius: 4px; }
+        .hanja { font-family: var(--font-sans); font-size: 26px; font-weight: 300; margin-bottom: 8px; line-height: 1.2; }
+        .hangul { font-size: 13px; color: #B3B3B3; font-weight: 400; }
+        .pillar-label { font-size: 10px; color: #777; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+
+        .wood { color: #2ecc71; }
+        .fire { color: #e74c3c; }
+        .earth { color: #f1c40f; }
+        .metal { color: #bdc3c7; }
+        .water { color: #3498db; }
+
+        .chart-container {
+            width: 100%; height: 260px; margin-bottom: 50px; display: flex;
+            justify-content: center; align-items: center; position: relative;
+        }
+        .radar-svg { width: 240px; height: 240px; filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.2)); }
+        .radar-grid { stroke: #222; stroke-width: 0.5; fill: none; }
+        .radar-axis { stroke: #333; stroke-width: 1; }
+        .radar-polygon { fill: rgba(212, 175, 55, 0.2); stroke: var(--gold); stroke-width: 2; transition: all 1s ease; animation: radarPulse 3s infinite ease-in-out; }
+        @keyframes radarPulse { 0% { stroke-opacity: 0.5; } 50% { stroke-opacity: 1; stroke-width: 3; } 100% { stroke-opacity: 0.5; } }
+        .radar-label { font-size: 9px; fill: var(--text-dim); }
+
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 40px; text-align: left; }
+        .stat-item { border-left: 2px solid var(--gold); padding-left: 15px; background: var(--card-bg); padding-top: 10px; padding-bottom: 10px; }
+        .stat-item div { font-family: var(--font-serif); font-size: 18px; color: var(--accent); margin-top: 5px; }
+
+        #step-3 { display: none; text-align: left; animation: fadeIn 1s ease; padding-bottom: 80px; }
+        .report-header { margin-bottom: 40px; text-align: center; }
+        .report-title { font-size: 28px; margin-bottom: 10px; color: var(--accent); }
+        .report-subtitle { font-size: 12px; color: var(--gold); letter-spacing: 4px; text-transform: uppercase; }
+        .hero-act { margin-bottom: 50px; }
+        .act-num { font-family: var(--font-serif); font-size: 40px; color: rgba(212, 175, 55, 0.1); position: absolute; margin-top: -20px; z-index: -1; }
+        .act-title { font-size: 18px; color: var(--gold); margin-bottom: 15px; display: flex; align-items: center; }
+        .act-title::after { content: ''; flex: 1; height: 1px; background: var(--border); margin-left: 15px; }
+        .report-content { font-weight: 300; line-height: 2; font-size: 15px; color: #bbbbbb; }
+        .highlight-box { background: var(--card-bg); padding: 25px; border: 1px solid var(--border); margin: 30px 0; }
+
+        .loading-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-color); z-index: 1000; justify-content: center; align-items: center; flex-direction: column;
+        }
+        .loader-bar { width: 100px; height: 1px; background: var(--border); margin-top: 20px; position: relative; overflow: hidden; }
+        .loader-progress { position: absolute; width: 0%; height: 100%; background: var(--gold); animation: load 2s infinite; }
+        @keyframes load { 0% { left: -100%; width: 100%; } 100% { left: 100%; width: 100%; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .error-msg { color: var(--fire); font-size: 12px; margin-top: 5px; display: none; }
+    </style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loading">
+    <div style="letter-spacing: 10px; font-weight: 100; font-size: 11px; color: var(--gold);">AXE ENGINE v4.2</div>
+    <div style="letter-spacing: 4px; font-weight: 300; font-size: 14px; margin-top:10px;">PROCESSING SEQUENCE...</div>
+    <div class="loader-bar"><div class="loader-progress"></div></div>
+</div>
+
+<div class="container">
+    <div class="brand-header">
+        <div class="logo">X-SAJU MASTER</div>
+        <div class="sub-logo">Precision Engineering v4.2</div>
+    </div>
+
+    <!-- STEP 1: INPUT -->
+    <div id="step-1">
+        <div class="section-label">01. 사용자 데이터 입력 (Initialization)</div>
+        <div class="input-group"><label>이름 (Name)</label><input type="text" id="user-name" placeholder="성함을 입력하세요"></div>
+        <div class="input-group" style="display: flex; gap: 15px;">
+            <div style="flex: 1;"><label>성별 (Gender)</label><select id="gender"><option value="male">남성 (MALE)</option><option value="female">여성 (FEMALE)</option></select></div>
+            <div style="flex: 1;"><label>력 (Calendar)</label><select id="calendar-type"><option value="solar">양력 (SOLAR)</option><option value="lunar">음력 (LUNAR)</option></select></div>
+        </div>
+        <div class="input-group">
+            <label>생년월일 (Birth Date)</label>
+            <input type="text" id="birth-date" placeholder="예: 880427 또는 19880427" maxlength="8">
+            <div id="date-error" class="error-msg">형식이 올바르지 않습니다.</div>
+        </div>
+        <div class="input-group">
+            <label>생시 (Birth Time - 24H)</label>
+            <input type="text" id="birth-time" placeholder="예: 0104 또는 1304 (모를경우 비움)" maxlength="4">
+            <div id="time-error" class="error-msg">형식이 올바르지 않습니다.</div>
+        </div>
+        <button class="btn-main" onclick="runAnalysis()">분석 엔진 가동 (Deploy Axe)</button>
+    </div>
+
+    <!-- STEP 2: DASHBOARD -->
+    <div id="step-2">
+        <div class="section-label">02. 데이터 원국 분석 (Data Manifest)</div>
+        <div class="saju-grid" id="saju-result"></div>
+        <label style="text-align: center; width: 100%; margin-bottom: 15px; color: var(--accent); font-weight: 700;">오행 분포 (Elemental Balance)</label>
+        <div class="chart-container">
+            <svg class="radar-svg" viewBox="0 0 200 200">
+                <polygon points="100,20 176,75 147,165 53,165 24,75" class="radar-grid" />
+                <polygon points="100,60 138,87 123,132 77,132 62,87" class="radar-grid" />
+                <line x1="100" y1="100" x2="100" y2="20" class="radar-axis" />
+                <line x1="100" y1="100" x2="176" y2="75" class="radar-axis" />
+                <line x1="100" y1="100" x2="147" y2="165" class="radar-axis" />
+                <line x1="100" y1="100" x2="53" y2="165" class="radar-axis" />
+                <line x1="100" y1="100" x2="24" y2="75" class="radar-axis" />
+                <text x="100" y="15" text-anchor="middle" class="radar-label">木</text>
+                <text x="185" y="75" text-anchor="start" class="radar-label">火</text>
+                <text x="155" y="180" text-anchor="start" class="radar-label">土</text>
+                <text x="45" y="180" text-anchor="end" class="radar-label">金</text>
+                <text x="15" y="75" text-anchor="end" class="radar-label">水</text>
+                <polygon id="radar-data" points="100,100 100,100 100,100 100,100 100,100" class="radar-polygon" />
+            </svg>
+        </div>
+        <div class="stat-grid">
+            <div class="stat-item"><label>용신 (YONG-SIN)</label><div id="yongsin-val">-</div></div>
+            <div class="stat-item"><label>엔진 상태 (ENGINE)</label><div>OPTIMIZED</div></div>
+        </div>
+        <ul id="extra-analysis" style="list-style: none; padding: 0; text-align: left; font-size: 13px; margin-bottom: 40px; border-top: 1px solid var(--border);"></ul>
+        <button class="btn-main" onclick="generateReport()">심층 설계도 생성 (Generate Blueprint)</button>
+    </div>
+
+    <!-- STEP 3: REPORT -->
+    <div id="step-3">
+        <div id="final-report"></div>
+        <button class="btn-main" onclick="location.reload()" style="background: transparent; border: 1px solid var(--border); color: var(--text-dim);">새로운 시퀀스 시작 (New Data)</button>
+    </div>
+</div>
+
+<script>
+    const STEMS = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"];
+    const BRANCHES = ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"];
+    const ELEMENTS = {
+        "甲": "wood", "乙": "wood", "寅": "wood", "卯": "wood",
+        "丙": "fire", "丁": "fire", "巳": "fire", "午": "fire",
+        "戊": "earth", "己": "earth", "辰": "earth", "戌": "earth", "丑": "earth", "未": "earth",
+        "庚": "metal", "辛": "metal", "申": "metal", "酉": "metal",
+        "壬": "water", "癸": "water", "亥": "water", "子": "water"
+    };
+
+    const ILJU_DATA = {
+        "丙寅": { title: "병인(丙寅) - 숲 위의 태양", desc: "강력한 목 기운을 바탕으로 솟아오른 태양입니다. 창의적이고 추진력이 강합니다.", advice: "금(金)의 절제력을 기르십시오." },
+        "丙辰": { title: "병진(丙辰) - 구름 속의 태양", desc: "지혜로운 용의 기운을 품은 태양입니다. 실리와 명분을 동시에 챙길 줄 압니다.", advice: "끈기를 가지면 대성할 명조입니다." },
+        "丁未": { title: "정미(丁未) - 들판의 촛불", desc: "따뜻하고 헌신적인 기운입니다. 전문 기술 분야에서 빛을 발합니다.", advice: "유연함을 갖추는 것이 성공의 열쇠입니다." },
+        "壬子": { title: "임자(壬子) - 거대한 바다", desc: "지혜가 깊고 포용력이 넓으나 파괴적인 힘도 지녔습니다.", advice: "토(土)의 제방으로 기운을 다스리십시오." }
+    };
+
+    function calculatePillars(year, month, day, hour) {
+        const targetDate = new Date(year, month - 1, day, hour);
+        
+        let y_base = year;
+        if (month < 2 || (month === 2 && day < 4)) y_base--;
+        let y_idx = (y_base - 4) % 60;
+        if (y_idx < 0) y_idx += 60;
+        const yearPillar = STEMS[y_idx % 10] + BRANCHES[y_idx % 12];
+
+        const m_idx = month + (day < 5 ? 0 : 1); 
+        const m_branch_idx = (m_idx + 1) % 12;
+        const m_stem_start = ((y_idx % 10 % 5) * 2 + 2) % 10;
+        const monthPillar = STEMS[(m_stem_start + m_idx - 2) % 10] + BRANCHES[m_branch_idx];
+
+        const epoch = new Date(1900, 0, 1);
+        const diffDays = Math.floor((targetDate - epoch) / (1000 * 60 * 60 * 24));
+        const d_idx = (10 + diffDays) % 60;
+        const dayPillar = STEMS[d_idx % 10] + BRANCHES[d_idx % 12];
+
+        const h_branch_idx = Math.floor(((hour + 1) % 24) / 2);
+        const h_stem_start = ((d_idx % 10 % 5) * 2) % 10;
+        const hourPillar = STEMS[(h_stem_start + h_branch_idx) % 10] + BRANCHES[h_branch_idx];
+
+        return [
+            {h: yearPillar, p: "년", c: ELEMENTS[yearPillar[0]]},
+            {h: monthPillar, p: "월", c: ELEMENTS[monthPillar[0]]},
+            {h: dayPillar, p: "일", c: ELEMENTS[dayPillar[0]]},
+            {h: hourPillar, p: "시", c: ELEMENTS[hourPillar[0]]}
+        ];
+    }
+
+    let currentPillars = [];
+
+    function runAnalysis() {
+        const dateStr = document.getElementById('birth-date').value.trim();
+        const timeStr = document.getElementById('birth-time').value.trim();
+        
+        document.getElementById('date-error').style.display = 'none';
+        document.getElementById('time-error').style.display = 'none';
+
+        let year, month, day, hour = 0;
+
+        // Date Parsing
+        if (dateStr.length === 6) {
+            let yy = parseInt(dateStr.substring(0, 2));
+            year = (yy > 30 ? 1900 : 2000) + yy;
+            month = parseInt(dateStr.substring(2, 4));
+            day = parseInt(dateStr.substring(4, 6));
+        } else if (dateStr.length === 8) {
+            year = parseInt(dateStr.substring(0, 4));
+            month = parseInt(dateStr.substring(4, 6));
+            day = parseInt(dateStr.substring(6, 8));
+        } else {
+            document.getElementById('date-error').style.display = 'block';
+            return;
+        }
+
+        if (isNaN(year) || month < 1 || month > 12 || day < 1 || day > 31) {
+            document.getElementById('date-error').style.display = 'block';
+            return;
+        }
+
+        // Time Parsing
+        if (timeStr.length === 4) {
+            hour = parseInt(timeStr.substring(0, 2));
+            let minute = parseInt(timeStr.substring(2, 4));
+            if (hour > 23 || minute > 59) {
+                document.getElementById('time-error').style.display = 'block';
+                return;
+            }
+        } else if (timeStr !== "") {
+            document.getElementById('time-error').style.display = 'block';
+            return;
+        }
+
+        document.getElementById('loading').style.display = 'flex';
+        setTimeout(() => {
+            currentPillars = calculatePillars(year, month, day, hour);
+            
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('step-1').style.display = 'none';
+            document.getElementById('step-2').style.display = 'block';
+
+            let html = '';
+            currentPillars.forEach(p => {
+                html += `<div class="pillar-card"><div class="pillar-label">${p.p}</div><div class="hanja ${p.c}">${p.h[0]}<br>${p.h[1]}</div><div class="hangul">${p.h}</div></div>`;
+            });
+            document.getElementById('saju-result').innerHTML = html;
+
+            const dayStem = currentPillars[2].h[0];
+            document.getElementById('yongsin-val').innerText = (ELEMENTS[dayStem] === 'fire' || ELEMENTS[dayStem] === 'wood') ? '금(金)' : '화(火)';
+            updateChart({ wood: 50, fire: 40, earth: 30, metal: 20, water: 10 });
+            document.getElementById('extra-analysis').innerHTML = `<li><span>일주 분석</span><span>${currentPillars[2].h}</span></li><li><span>계산 엔진</span><span>Axe Precision v4.2</span></li>`;
+        }, 1500);
+    }
+
+    function updateChart(stats) {
+        const radar = document.getElementById('radar-data');
+        const r = 80, cx = 100, cy = 100;
+        const angles = [0, 72, 144, 216, 288];
+        const values = [stats.wood, stats.fire, stats.earth, stats.metal, stats.water];
+        const points = values.map((v, i) => {
+            const rad = (angles[i] * Math.PI) / 180;
+            return `${cx + (r * (v / 100)) * Math.sin(rad)},${cy - (r * (v / 100)) * Math.cos(rad)}`;
+        }).join(' ');
+        radar.setAttribute('points', points);
+    }
+
+    function generateReport() {
+        document.getElementById('loading').style.display = 'flex';
+        setTimeout(() => {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('step-2').style.display = 'none';
+            document.getElementById('step-3').style.display = 'block';
+            const name = document.getElementById('user-name').value || '사용자';
+            const info = ILJU_DATA[currentPillars[2].h] || { title: currentPillars[2].h, desc: "당신만의 고유한 기운을 가진 명조입니다.", advice: "내면의 목소리에 귀를 기울이고 정진하십시오." };
+
+            document.getElementById('final-report').innerHTML = `
+                <div class="report-header"><div class="report-subtitle">운명 설계 시퀀스</div><div class="report-title">${name} 님 분석 결과</div></div>
+                <div class="hero-act"><div class="act-num">01</div><div class="act-title">${info.title}</div><div class="report-content"><p>${info.desc}</p><div class="highlight-box">"${info.advice}"</div></div></div>
+                <div class="hero-act"><div class="act-num">02</div><div class="act-title">핵심 로직 진단</div><div class="report-content"><p>데이터에 기반한 당신의 운명 엔진은 현재 안정적인 궤도에 있습니다. 부족한 기운을 보완하는 전략적 선택이 필요합니다.</p></div></div>
+            `;
+        }, 2000);
+    }
+</script>
+</body>
+</html>

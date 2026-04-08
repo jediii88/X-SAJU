@@ -22,19 +22,13 @@ class FullReportGenerator:
         
     def get_pillar_html(self, hanja):
         hangeul = HANJA_TO_HANGEUL.get(hanja, "")
-        element = HANJA_TO_ELEMENT.get(hanja, "metal")
+        element = HANJA_TO_ELEMENT.get(hanja, "metal") # Default to metal/white if unknown
         return f"""
                 <div class="grid-item">
                     <span class="hanja-character color-{element}">{hanja}</span>
                     <span class="hangeul-sub">{hangeul}</span>
                 </div>
         """
-
-    def format_term(self, hanja, hangeul):
-        """Formats terms as Hanja(Hangeul) and avoids redundancy."""
-        if not hanja: return hangeul
-        if hanja == hangeul: return hangeul
-        return f"{hanja}({hangeul})"
 
     def generate_full_report(self):
         pages = []
@@ -130,15 +124,6 @@ class FullReportGenerator:
             is_theory = i > 10
             type_label = "학술적 해설 (GENERAL THEORY)" if is_theory else "정밀 분석 (PERSONAL INSIGHT)"
             
-            # Format Title: Apply thin style to Hanja part
-            title = data['title']
-            if '(' in title and ')' in title:
-                hanja_part = title.split('(')[0]
-                hangeul_part = title.split('(')[1].replace(')', '')
-                formatted_title = f'<span class="thin-hanja">{hanja_part}</span>({hangeul_part})'
-            else:
-                formatted_title = title
-
             page = f"""
             <div class="page-container knowledge-page">
                 <div class="top-nav">
@@ -147,7 +132,7 @@ class FullReportGenerator:
                 </div>
                 
                 <div class="theory-tag">{type_label}</div>
-                <div class="term-title">{formatted_title}</div>
+                <div class="term-title">{data['title']}</div>
 
                 <div class="content-wrapper">
                     <div class="section-block theory-section">
@@ -280,9 +265,8 @@ class FullReportGenerator:
                 }}
 
                 .hanja-character {{ 
-                    font-size: 92px; font-weight: 100; line-height: 1; margin-bottom: 5px; 
+                    font-size: 92px; font-weight: 200; line-height: 1; margin-bottom: 5px; 
                     display: block; font-family: 'Noto Sans KR', sans-serif; 
-                    color: #fff;
                 }}
                 .hangeul-sub {{ 
                     font-size: 16px; font-weight: 300; color: #B3B3B3; 
@@ -343,12 +327,6 @@ class FullReportGenerator:
                     align-self: flex-start; font-size: 42px; font-weight: 900; 
                     margin-bottom: 60px; letter-spacing: -0.04em; color: #ffffff; 
                     font-family: 'Noto Serif KR', serif; line-height: 1.2;
-                }}
-                .term-title span.thin-hanja {{
-                    font-family: 'Noto Sans KR', sans-serif;
-                    font-weight: 100;
-                    margin-right: 15px;
-                    color: #888;
                 }}
                 
                 .content-wrapper {{

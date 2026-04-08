@@ -1,0 +1,3716 @@
+
+        <!DOCTYPE html>
+        <html lang="ko">
+        <head>
+            <meta charset="UTF-8">
+            <title>X-SAJU 183P FINAL - 장경현</title>
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;700;900&family=Noto+Serif+KR:wght@200;400;700;900&display=swap');
+                
+                body { 
+                    font-family: 'Noto Sans KR', sans-serif; 
+                    background-color: #000000; 
+                    color: #ffffff; 
+                    margin: 0; padding: 0; line-height: 1.6;
+                    display: flex; flex-direction: column; align-items: center;
+                }
+                
+                .page-container { 
+                    width: 800px; min-height: 1131px; padding: 100px 70px;
+                    background: #000000; position: relative;
+                    box-sizing: border-box; overflow: hidden; page-break-after: always;
+                    display: flex; flex-direction: column; align-items: center;
+                    margin-bottom: 40px;
+                }
+                
+                .knowledge-page {
+                    background: #111111;
+                    border: 1px solid #222;
+                    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+                }
+
+                .subtitle { 
+                    font-size: 14px; font-weight: 300; color: #666; 
+                    letter-spacing: 0.5em; margin-bottom: 30px; text-align: center; 
+                    font-family: 'Noto Serif KR', serif; 
+                }
+                .hero-title { 
+                    font-size: 54px; font-weight: 200; line-height: 1.2; 
+                    margin-bottom: 100px; letter-spacing: -0.05em; color: #ffffff; 
+                    text-align: center; word-break: keep-all; font-family: 'Noto Serif KR', serif; 
+                }
+                
+                /* v2.0 Wonguk Grid Layout */
+                .wonguk-container-v20 { 
+                    display: grid; 
+                    grid-template-columns: 80px 1fr 1fr 1fr 1fr; 
+                    width: 100%; 
+                    margin-bottom: 100px; 
+                    border: 1px solid #444; 
+                    background: #050505; 
+                }
+                .grid-item {
+                    text-align: center;
+                    padding: 35px 0;
+                    border-right: 1px solid #222;
+                    border-bottom: 1px solid #222;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                }
+                .grid-item:nth-child(5n) { border-right: none; }
+                
+                .grid-row-label {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    font-size: 12px;
+                    font-weight: 700;
+                    color: #555;
+                    background: #0a0a0a;
+                    border-right: 1px solid #333;
+                    border-bottom: 1px solid #222;
+                    letter-spacing: 0.3em;
+                    writing-mode: vertical-lr;
+                    text-orientation: upright;
+                }
+                
+                .grid-label-col {
+                    background: #0a0a0a;
+                    border-right: 1px solid #333;
+                    border-bottom: 1px solid #222;
+                }
+
+                .pillar-name-top {
+                    font-size: 15px;
+                    font-weight: 300;
+                    color: #666;
+                    letter-spacing: 0.2em;
+                    padding: 15px 0 !important;
+                }
+
+                .hanja-character { 
+                    font-size: 92px; font-weight: 200; line-height: 1; margin-bottom: 5px; 
+                    display: block; font-family: 'Noto Sans KR', sans-serif; 
+                }
+                .hangeul-sub { 
+                    font-size: 16px; font-weight: 300; color: #B3B3B3; 
+                    letter-spacing: 0.1em; display: block; 
+                }
+                .sipseong-text { 
+                    font-size: 18px; font-weight: 300; color: #E6E6E6; 
+                    letter-spacing: 0.05em; padding: 20px 0 !important;
+                }
+
+                /* Energy Analysis */
+                .energy-analysis {
+                    display: grid; grid-template-columns: repeat(4, 1fr); width: 100%; 
+                    gap: 1px; background: #222; margin-bottom: 100px;
+                }
+                .energy-item { background: #000; text-align: center; padding: 40px 10px; }
+                .energy-label { 
+                    font-size: 14px; font-weight: 400; color: #999; 
+                    letter-spacing: 0.1em; margin-bottom: 15px; display: block; 
+                }
+                .energy-value { 
+                    font-size: 24px; font-weight: 200; color: #E6E6E6; 
+                    font-family: 'Noto Serif KR', serif; 
+                }
+
+                .main-text { 
+                    font-size: 24px; font-weight: 200; color: #ffffff; line-height: 2.0; 
+                    text-align: center; max-width: 600px; margin: 0 auto; 
+                    word-break: keep-all; font-family: 'Noto Serif KR', serif; 
+                }
+                .highlight { 
+                    color: #fff; font-weight: 900; font-family: 'Noto Sans KR', sans-serif; 
+                    border-bottom: 3px solid #ffffff; padding-bottom: 5px; 
+                }
+                .footer { 
+                    position: absolute; bottom: 80px; width: 100%; left: 0; 
+                    text-align: center; font-size: 11px; font-weight: 900; color: #666; 
+                    letter-spacing: 0.6em; 
+                }
+
+                .category { 
+                    align-self: flex-start; font-size: 11px; font-weight: 700; 
+                    letter-spacing: 0.2em; color: #666; margin-bottom: 20px; text-transform: uppercase; 
+                }
+                .term-title { 
+                    align-self: flex-start; font-size: 32px; font-weight: 900; 
+                    margin-bottom: 40px; letter-spacing: -0.04em; color: #ffffff; 
+                    font-family: 'Noto Serif KR', serif; 
+                }
+                .definition-box { 
+                    border-left: 2px solid #555; padding-left: 30px; margin-bottom: 60px; width: 100%; 
+                }
+                .definition-text { font-size: 18px; font-weight: 300; color: #999; }
+                .insight-section { font-size: 16px; color: #cccccc; width: 100%; }
+                .insight-section h4 { font-weight: 700; margin-bottom: 10px; color: #ffffff; }
+                .page-footer { 
+                    position: absolute; bottom: 60px; left: 100px; right: 100px; 
+                    font-size: 11px; color: #666; display: flex; justify-content: space-between; 
+                }
+
+                .color-wood { color: #4CAF50; opacity: 0.9; }
+                .color-fire { color: #FF5252; opacity: 0.9; }
+                .color-earth { color: #FFC107; opacity: 0.9; }
+                .color-metal { color: #ffffff; opacity: 1; }
+                .color-water { color: #2196F3; opacity: 0.9; }
+            </style>
+        </head>
+        <body>
+            
+        <div class="page-container">
+            <div class="subtitle">운명의 정밀한 기록 / 도끼 코어 v2.1 (Content Boost)</div>
+            <div class="hero-title">비어있는 여백 사이로<br>당신의 지도가 그려집니다.</div>
+
+            <div class="wonguk-container-v20">
+                <!-- Header Labels -->
+                <div class="grid-label-col"></div>
+                <div class="grid-item pillar-name-top">시주</div>
+                <div class="grid-item pillar-name-top">일주</div>
+                <div class="grid-item pillar-name-top">월주</div>
+                <div class="grid-item pillar-name-top">연주</div>
+
+                <!-- Cheongan Row -->
+                <div class="grid-row-label">천간</div>
+                <div class="grid-item">
+                    <span class="hanja-character color-metal">戊</span>
+                    <span class="hangeul-sub">戊</span>
+                </div>
+                <div class="grid-item">
+                    <span class="hanja-character color-water">丙</span>
+                    <span class="hangeul-sub">丙</span>
+                </div>
+                <div class="grid-item">
+                    <span class="hanja-character color-fire">乙</span>
+                    <span class="hangeul-sub">乙</span>
+                </div>
+                <div class="grid-item">
+                    <span class="hanja-character color-earth">戊</span>
+                    <span class="hangeul-sub">戊</span>
+                </div>
+
+                <!-- Jiji Row -->
+                <div class="grid-row-label">지지</div>
+                <div class="grid-item">
+                    <span class="hanja-character color-earth">子</span>
+                    <span class="hangeul-sub">子</span>
+                </div>
+                <div class="grid-item">
+                    <span class="hanja-character color-earth">寅</span>
+                    <span class="hangeul-sub">寅</span>
+                </div>
+                <div class="grid-item">
+                    <span class="hanja-character color-earth">卯</span>
+                    <span class="hangeul-sub">卯</span>
+                </div>
+                <div class="grid-item">
+                    <span class="hanja-character color-earth">辰</span>
+                    <span class="hangeul-sub">辰</span>
+                </div>
+
+                
+                <div class="grid-row-label">십성</div>
+                <div class="grid-item sipseong-text">식신</div>
+                <div class="grid-item sipseong-text">본인</div>
+                <div class="grid-item sipseong-text">정인</div>
+                <div class="grid-item sipseong-text">식신</div>
+        
+            </div>
+
+            
+            <div class="energy-analysis">
+                <div class="energy-item">
+                    <span class="energy-label">나무 (木)</span>
+                    <span class="energy-value">37.5%</span>
+                </div>
+                <div class="energy-item">
+                    <span class="energy-label">불 (火)</span>
+                    <span class="energy-value">12.5%</span>
+                </div>
+                <div class="energy-item">
+                    <span class="energy-label">땅 (土)</span>
+                    <span class="energy-value">37.5%</span>
+                </div>
+                <div class="energy-item">
+                    <span class="energy-label">금 (金)</span>
+                    <span class="energy-value">0.0%</span>
+                </div>
+            </div>
+        
+
+            <div class="main-text">
+                장경현 마스터님의 운명 시스템입니다.<br>
+                丙寅 일주를 타고난 당신의 운명은 장생의 강력한 기운을 엔진으로 삼고 있습니다. 이는 갓 태어난 아이처럼 순수하고 강력한 생명력을 의미합니다. 주변의 후원과 도움이 끊이지 않으며, 어떤 환경에서도 새롭게 시작할 수 있는 에너지를 가집니다.<br>
+                <span class="highlight">실질적인 가치</span>로 바꾸는 법을 제안합니다.
+            </div>
+
+            <div class="footer">
+                X-SAJU PREMIUM REPORT / NO. 1
+            </div>
+        </div>
+        
+            <div class="page-container knowledge-page">
+                <div class="category">Pillar Depth / 연주 (뿌리) / PAGE 2</div>
+                <div class="term-title">연주 (뿌리)의 정밀 분석: 戊辰</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 기둥에 깃든 식신의 에너지는 당신의 삶에서 창의력과 표현력이 풍부하며, 꾸준한 연구와 몰입을 통해 결실을 맺는 타입입니다. 낙천적인 성향으로 주변에 긍정적인 영향을 미칩니다.와 같은 양상으로 나타납니다. 특히 관대의 단계에 머물러 있어, 청년이 의복을 갖추고 사회에 첫발을 내딛는 기백입니다. 강한 자립심과 추진력을 바탕으로 자신의 영역을 개척해 나가는 힘이 있습니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 2</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Pillar Depth / 월주 (환경) / PAGE 3</div>
+                <div class="term-title">월주 (환경)의 정밀 분석: 乙卯</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 기둥에 깃든 정인의 에너지는 당신의 삶에서 지적 탐구심이 강하고 수용력이 좋습니다. 주변으로부터 인정과 사랑을 받는 기운이 있으며, 학문적 성취와 교육적 가치를 실현하는 데 적합합니다.와 같은 양상으로 나타납니다. 특히 목욕의 단계에 머물러 있어, 세상의 시선을 한 몸에 받는 화려함을 의미합니다. 예술적 감수성과 매력이 넘치지만, 때로는 그 화려함 뒤에 숨겨진 구설이나 변동성을 주의해야 합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 3</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Pillar Depth / 일주 (본체) / PAGE 4</div>
+                <div class="term-title">일주 (본체)의 정밀 분석: 丙寅</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 기둥에 깃든 본인의 에너지는 당신의 삶에서 와 같은 양상으로 나타납니다. 특히 장생의 단계에 머물러 있어, 갓 태어난 아이처럼 순수하고 강력한 생명력을 의미합니다. 주변의 후원과 도움이 끊이지 않으며, 어떤 환경에서도 새롭게 시작할 수 있는 에너지를 가집니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 4</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Pillar Depth / 시주 (열매) / PAGE 5</div>
+                <div class="term-title">시주 (열매)의 정밀 분석: 戊子</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 기둥에 깃든 식신의 에너지는 당신의 삶에서 창의력과 표현력이 풍부하며, 꾸준한 연구와 몰입을 통해 결실을 맺는 타입입니다. 낙천적인 성향으로 주변에 긍정적인 영향을 미칩니다.와 같은 양상으로 나타납니다. 특히 태의 단계에 머물러 있어, 어머니의 복중에서 새로운 희망을 꿈꾸는 시기입니다. 무궁무진한 잠재력과 아이디어를 품고 있으며, 보호받고 지지받을 때 가장 빛이 납니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 5</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Element Analysis / PAGE 6</div>
+                <div class="term-title">오행의 균형: 木 (37.5%)</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템에서 木의 기운은 37.5%의 비중을 차지하고 있습니다. 이는 성장과 추진력, 그리고 새로운 시작의 에너지입니다. 이 기운의 강약에 따라 당신의 성격적 특성과 건강의 리스크가 결정됩니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 6</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Element Analysis / PAGE 7</div>
+                <div class="term-title">오행의 균형: 火 (12.5%)</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템에서 火의 기운은 12.5%의 비중을 차지하고 있습니다. 이는 열정과 확산, 그리고 세상을 밝히는 명예의 에너지입니다. 이 기운의 강약에 따라 당신의 성격적 특성과 건강의 리스크가 결정됩니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 7</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Element Analysis / PAGE 8</div>
+                <div class="term-title">오행의 균형: 土 (37.5%)</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템에서 土의 기운은 37.5%의 비중을 차지하고 있습니다. 이는 중재와 포용, 그리고 모든 기운의 기반이 되는 에너지입니다. 이 기운의 강약에 따라 당신의 성격적 특성과 건강의 리스크가 결정됩니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 8</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Element Analysis / PAGE 9</div>
+                <div class="term-title">오행의 균형: 金 (0.0%)</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템에서 金의 기운은 0.0%의 비중을 차지하고 있습니다. 이는 결단과 정제, 그리고 결실을 맺는 수확의 에너지입니다. 이 기운의 강약에 따라 당신의 성격적 특성과 건강의 리스크가 결정됩니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 9</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Element Analysis / PAGE 10</div>
+                <div class="term-title">오행의 균형: 水 (12.5%)</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템에서 水의 기운은 12.5%의 비중을 차지하고 있습니다. 이는 지혜와 유연함, 그리고 깊은 사유의 에너지입니다. 이 기운의 강약에 따라 당신의 성격적 특성과 건강의 리스크가 결정됩니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 10</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">12 Stages of Life / PAGE 11</div>
+                <div class="term-title">운명의 순환: 장생(장생)</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">사주학에서 장생은 갓 태어난 아이처럼 순수하고 강력한 생명력을 의미합니다. 주변의 후원과 도움이 끊이지 않으며, 어떤 환경에서도 새롭게 시작할 수 있는 에너지를 가집니다. 당신의 원국이나 대운에서 이 기운이 들어올 때, 해당 시기의 전략을 수정해야 할 필요가 있습니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 11</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">12 Stages of Life / PAGE 12</div>
+                <div class="term-title">운명의 순환: 목욕(목욕)</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">사주학에서 목욕은 세상의 시선을 한 몸에 받는 화려함을 의미합니다. 예술적 감수성과 매력이 넘치지만, 때로는 그 화려함 뒤에 숨겨진 구설이나 변동성을 주의해야 합니다. 당신의 원국이나 대운에서 이 기운이 들어올 때, 해당 시기의 전략을 수정해야 할 필요가 있습니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 12</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">12 Stages of Life / PAGE 13</div>
+                <div class="term-title">운명의 순환: 관대(관대)</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">사주학에서 관대은 청년이 의복을 갖추고 사회에 첫발을 내딛는 기백입니다. 강한 자립심과 추진력을 바탕으로 자신의 영역을 개척해 나가는 힘이 있습니다. 당신의 원국이나 대운에서 이 기운이 들어올 때, 해당 시기의 전략을 수정해야 할 필요가 있습니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 13</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">12 Stages of Life / PAGE 14</div>
+                <div class="term-title">운명의 순환: 건록(건록)</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">사주학에서 건록은 인생의 기반을 완벽히 닦고 성공의 가도를 달리는 시기입니다. 가장 안정적이고 왕성한 활동력을 보이며 조직의 중심 역할을 수행합니다. 당신의 원국이나 대운에서 이 기운이 들어올 때, 해당 시기의 전략을 수정해야 할 필요가 있습니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 14</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">12 Stages of Life / PAGE 15</div>
+                <div class="term-title">운명의 순환: 제왕(제왕)</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">사주학에서 제왕은 에너지의 정점에 도달한 상태입니다. 누구에게도 굴하지 않는 강력한 카리스마와 지도력을 발휘하지만, 지나친 독선을 경계해야 할 때입니다. 당신의 원국이나 대운에서 이 기운이 들어올 때, 해당 시기의 전략을 수정해야 할 필요가 있습니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 15</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">12 Stages of Life / PAGE 16</div>
+                <div class="term-title">운명의 순환: 쇠(쇠)</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">사주학에서 쇠은 정상을 경험한 후의 원숙함과 지혜를 의미합니다. 겉으로 드러나는 화려함보다 내실을 기하며 노련하게 위기를 관리하는 힘이 돋보입니다. 당신의 원국이나 대운에서 이 기운이 들어올 때, 해당 시기의 전략을 수정해야 할 필요가 있습니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 16</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">12 Stages of Life / PAGE 17</div>
+                <div class="term-title">운명의 순환: 병(병)</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">사주학에서 병은 에너지가 안으로 수렴하며 사색에 잠기는 시기입니다. 예민한 직관력과 예술적 영감이 뛰어나며, 타인의 아픔을 깊이 공감하는 능력이 탁월합니다. 당신의 원국이나 대운에서 이 기운이 들어올 때, 해당 시기의 전략을 수정해야 할 필요가 있습니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 17</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">12 Stages of Life / PAGE 18</div>
+                <div class="term-title">운명의 순환: 사(사)</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">사주학에서 사은 활동이 멈춘 정적인 상태이나, 정신적인 집중력은 최고조에 달합니다. 학문이나 예술, 종교적 심취 등 깊이 있는 탐구에 가장 유리한 기운입니다. 당신의 원국이나 대운에서 이 기운이 들어올 때, 해당 시기의 전략을 수정해야 할 필요가 있습니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 18</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">12 Stages of Life / PAGE 19</div>
+                <div class="term-title">운명의 순환: 묘(묘)</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">사주학에서 묘은 모든 에너지를 창고에 저장하고 지키는 힘입니다. 실속을 챙기며 자산을 축적하는 능력이 뛰어나고, 보수적이면서도 단단한 내면을 가집니다. 당신의 원국이나 대운에서 이 기운이 들어올 때, 해당 시기의 전략을 수정해야 할 필요가 있습니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 19</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">12 Stages of Life / PAGE 20</div>
+                <div class="term-title">운명의 순환: 절(절)</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">사주학에서 절은 모든 것이 끊어지고 새로운 생명이 잉태되기 전의 텅 빈 상태입니다. 극적인 반전과 천재적인 기질을 숨기고 있으며, 무(無)에서 유(유)를 창조합니다. 당신의 원국이나 대운에서 이 기운이 들어올 때, 해당 시기의 전략을 수정해야 할 필요가 있습니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 20</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">12 Stages of Life / PAGE 21</div>
+                <div class="term-title">운명의 순환: 태(태)</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">사주학에서 태은 어머니의 복중에서 새로운 희망을 꿈꾸는 시기입니다. 무궁무진한 잠재력과 아이디어를 품고 있으며, 보호받고 지지받을 때 가장 빛이 납니다. 당신의 원국이나 대운에서 이 기운이 들어올 때, 해당 시기의 전략을 수정해야 할 필요가 있습니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 21</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">12 Stages of Life / PAGE 22</div>
+                <div class="term-title">운명의 순환: 양(양)</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">사주학에서 양은 안정적인 환경에서 길러지고 보살핌을 받는 단계입니다. 성실하게 실력을 쌓아나가며, 교육이나 복지 등 상생의 가치에 깊은 관심을 가집니다. 당신의 원국이나 대운에서 이 기운이 들어올 때, 해당 시기의 전략을 수정해야 할 필요가 있습니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 22</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Shinsal (Special Energy) / PAGE 23</div>
+                <div class="term-title">특별한 기운: 백호대살</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명에 작용하는 백호대살의 에너지는 강력한 파괴력과 추진력을 동시에 가진 살입니다. 혈광지사(血光之死)를 주의해야 하나, 현대에는 압도적인 카리스마와 전문성으로 성공하는 기운으로 해석합니다. 이 에너지를 어떻게 통제하고 활용하느냐에 따라 인생의 파급력이 달라집니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 23</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Shinsal (Special Energy) / PAGE 24</div>
+                <div class="term-title">특별한 기운: 괴강살</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명에 작용하는 괴강살의 에너지는 우두머리 기질이 강하고 총명하며 결단력이 뛰어납니다. 대귀(大貴)하거나 대부(大富)할 수 있는 강력한 에너지입니다. 이 에너지를 어떻게 통제하고 활용하느냐에 따라 인생의 파급력이 달라집니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 24</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Shinsal (Special Energy) / PAGE 25</div>
+                <div class="term-title">특별한 기운: 양인살</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명에 작용하는 양인살의 에너지는 칼을 든 장수와 같은 기운입니다. 고집과 자존심이 매우 강하지만, 이를 전문적인 기술이나 권력으로 승화시키면 큰 성취를 이룹니다. 이 에너지를 어떻게 통제하고 활용하느냐에 따라 인생의 파급력이 달라집니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 25</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Shinsal (Special Energy) / PAGE 26</div>
+                <div class="term-title">특별한 기운: 도화살</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명에 작용하는 도화살의 에너지는 타인의 시선을 끄는 매력과 예술적 재능을 의미합니다. 현대 사회에서는 대중의 인기를 먹고 사는 직업에 매우 유리한 기운입니다. 이 에너지를 어떻게 통제하고 활용하느냐에 따라 인생의 파급력이 달라집니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 26</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Shinsal (Special Energy) / PAGE 27</div>
+                <div class="term-title">특별한 기운: 역마살</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명에 작용하는 역마살의 에너지는 한곳에 머물지 못하고 분주하게 이동하는 기운입니다. 해외 운이 있거나 유통, 무역, IT 등 변화가 빠른 분야에서 성공할 가능성이 높습니다. 이 에너지를 어떻게 통제하고 활용하느냐에 따라 인생의 파급력이 달라집니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 27</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Shinsal (Special Energy) / PAGE 28</div>
+                <div class="term-title">특별한 기운: 화개살</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명에 작용하는 화개살의 에너지는 예술적 재능과 종교, 철학에 깊은 소질이 있습니다. 화려함을 뒤로하고 내실을 다지는 시기에 큰 빛을 발합니다. 이 에너지를 어떻게 통제하고 활용하느냐에 따라 인생의 파급력이 달라집니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 28</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Shinsal (Special Energy) / PAGE 29</div>
+                <div class="term-title">특별한 기운: 천을귀인</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명에 작용하는 천을귀인의 에너지는 모든 재액을 막아주고 행운을 가져다주는 최고의 길신입니다. 인덕이 많고 위기 상황에서 반드시 도와주는 귀인이 나타납니다. 이 에너지를 어떻게 통제하고 활용하느냐에 따라 인생의 파급력이 달라집니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 29</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Shinsal (Special Energy) / PAGE 30</div>
+                <div class="term-title">특별한 기운: 문창귀인</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명에 작용하는 문창귀인의 에너지는 지혜롭고 학문적 성취가 뛰어납니다. 문장력이 좋고 두뇌 회전이 빨라 연구원이나 작가, 교수 등 지적인 분야에서 두각을 나타냅니다. 이 에너지를 어떻게 통제하고 활용하느냐에 따라 인생의 파급력이 달라집니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 30</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Shinsal (Special Energy) / PAGE 31</div>
+                <div class="term-title">특별한 기운: 암록</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명에 작용하는 암록의 에너지는 보이지 않는 곳에서 도와주는 재물운입니다. 평생 경제적으로 곤궁함이 없으며 예상치 못한 금전적 혜택을 받는 경우가 많습니다. 이 에너지를 어떻게 통제하고 활용하느냐에 따라 인생의 파급력이 달라집니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 31</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Shinsal (Special Energy) / PAGE 32</div>
+                <div class="term-title">특별한 기운: 백호대살</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명에 작용하는 백호대살의 에너지는 강력한 파괴력과 추진력을 동시에 가진 살입니다. 혈광지사(血光之死)를 주의해야 하나, 현대에는 압도적인 카리스마와 전문성으로 성공하는 기운으로 해석합니다. 이 에너지를 어떻게 통제하고 활용하느냐에 따라 인생의 파급력이 달라집니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 32</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Shinsal (Special Energy) / PAGE 33</div>
+                <div class="term-title">특별한 기운: 괴강살</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명에 작용하는 괴강살의 에너지는 우두머리 기질이 강하고 총명하며 결단력이 뛰어납니다. 대귀(大貴)하거나 대부(大富)할 수 있는 강력한 에너지입니다. 이 에너지를 어떻게 통제하고 활용하느냐에 따라 인생의 파급력이 달라집니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 33</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Shinsal (Special Energy) / PAGE 34</div>
+                <div class="term-title">특별한 기운: 양인살</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명에 작용하는 양인살의 에너지는 칼을 든 장수와 같은 기운입니다. 고집과 자존심이 매우 강하지만, 이를 전문적인 기술이나 권력으로 승화시키면 큰 성취를 이룹니다. 이 에너지를 어떻게 통제하고 활용하느냐에 따라 인생의 파급력이 달라집니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 34</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Shinsal (Special Energy) / PAGE 35</div>
+                <div class="term-title">특별한 기운: 도화살</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명에 작용하는 도화살의 에너지는 타인의 시선을 끄는 매력과 예술적 재능을 의미합니다. 현대 사회에서는 대중의 인기를 먹고 사는 직업에 매우 유리한 기운입니다. 이 에너지를 어떻게 통제하고 활용하느냐에 따라 인생의 파급력이 달라집니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 35</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Dae-un Strategy / PAGE 36</div>
+                <div class="term-title">10년 주기의 변화: 관대의 시기</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">대운에서 관대의 흐름을 만날 때, 당신의 삶은 사회적 지위가 상승하고 명예를 얻는 시기입니다. 의복을 갖추고 세상에 나가는 형상이니 적극적인 활동이 필요합니다. 이 시기에는 환경의 변화에 순응하기보다 주도적으로 흐름을 타는 것이 중요합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 36</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Dae-un Strategy / PAGE 37</div>
+                <div class="term-title">10년 주기의 변화: 건록의 시기</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">대운에서 건록의 흐름을 만날 때, 당신의 삶은 인생의 황금기입니다. 노력한 만큼의 보상이 확실히 주어지며, 경제적·사회적으로 가장 안정된 성취를 이룹니다. 이 시기에는 환경의 변화에 순응하기보다 주도적으로 흐름을 타는 것이 중요합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 37</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Dae-un Strategy / PAGE 38</div>
+                <div class="term-title">10년 주기의 변화: 제왕의 시기</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">대운에서 제왕의 흐름을 만날 때, 당신의 삶은 권력과 리더십의 정점입니다. 자신의 뜻을 마음껏 펼칠 수 있으나, 주변의 시기와 질투를 주의하며 포용력을 발휘해야 합니다. 이 시기에는 환경의 변화에 순응하기보다 주도적으로 흐름을 타는 것이 중요합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 38</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Dae-un Strategy / PAGE 39</div>
+                <div class="term-title">10년 주기의 변화: 쇠의 시기</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">대운에서 쇠의 흐름을 만날 때, 당신의 삶은 에너지를 정리하고 지혜를 나누는 시기입니다. 무리한 확장보다는 내실을 기하며 다음 단계를 준비하는 것이 현명합니다. 이 시기에는 환경의 변화에 순응하기보다 주도적으로 흐름을 타는 것이 중요합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 39</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Dae-un Strategy / PAGE 40</div>
+                <div class="term-title">10년 주기의 변화: 관대의 시기</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">대운에서 관대의 흐름을 만날 때, 당신의 삶은 사회적 지위가 상승하고 명예를 얻는 시기입니다. 의복을 갖추고 세상에 나가는 형상이니 적극적인 활동이 필요합니다. 이 시기에는 환경의 변화에 순응하기보다 주도적으로 흐름을 타는 것이 중요합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 40</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Dae-un Strategy / PAGE 41</div>
+                <div class="term-title">10년 주기의 변화: 건록의 시기</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">대운에서 건록의 흐름을 만날 때, 당신의 삶은 인생의 황금기입니다. 노력한 만큼의 보상이 확실히 주어지며, 경제적·사회적으로 가장 안정된 성취를 이룹니다. 이 시기에는 환경의 변화에 순응하기보다 주도적으로 흐름을 타는 것이 중요합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 41</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Dae-un Strategy / PAGE 42</div>
+                <div class="term-title">10년 주기의 변화: 제왕의 시기</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">대운에서 제왕의 흐름을 만날 때, 당신의 삶은 권력과 리더십의 정점입니다. 자신의 뜻을 마음껏 펼칠 수 있으나, 주변의 시기와 질투를 주의하며 포용력을 발휘해야 합니다. 이 시기에는 환경의 변화에 순응하기보다 주도적으로 흐름을 타는 것이 중요합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 42</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Dae-un Strategy / PAGE 43</div>
+                <div class="term-title">10년 주기의 변화: 쇠의 시기</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">대운에서 쇠의 흐름을 만날 때, 당신의 삶은 에너지를 정리하고 지혜를 나누는 시기입니다. 무리한 확장보다는 내실을 기하며 다음 단계를 준비하는 것이 현명합니다. 이 시기에는 환경의 변화에 순응하기보다 주도적으로 흐름을 타는 것이 중요합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 43</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Dae-un Strategy / PAGE 44</div>
+                <div class="term-title">10년 주기의 변화: 관대의 시기</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">대운에서 관대의 흐름을 만날 때, 당신의 삶은 사회적 지위가 상승하고 명예를 얻는 시기입니다. 의복을 갖추고 세상에 나가는 형상이니 적극적인 활동이 필요합니다. 이 시기에는 환경의 변화에 순응하기보다 주도적으로 흐름을 타는 것이 중요합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 44</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Dae-un Strategy / PAGE 45</div>
+                <div class="term-title">10년 주기의 변화: 건록의 시기</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">대운에서 건록의 흐름을 만날 때, 당신의 삶은 인생의 황금기입니다. 노력한 만큼의 보상이 확실히 주어지며, 경제적·사회적으로 가장 안정된 성취를 이룹니다. 이 시기에는 환경의 변화에 순응하기보다 주도적으로 흐름을 타는 것이 중요합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 45</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Interpersonal Dynamics / PAGE 46</div>
+                <div class="term-title">관계의 역동성: 천간합</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">사주 원국 내의 천간합 기운은 당신의 인간관계와 사회적 처세에 있어 하늘의 기운이 서로 결합하여 새로운 에너지를 창출하는 형상입니다. 대인관계에서 화합과 상생의 가치를 실현하는 데 매우 유리합니다. 이러한 역동성을 이해하고 활용하는 것이 마스터급 처세의 시작입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 46</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Interpersonal Dynamics / PAGE 47</div>
+                <div class="term-title">관계의 역동성: 지지충</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">사주 원국 내의 지지충 기운은 당신의 인간관계와 사회적 처세에 있어 땅의 기운이 서로 충돌하며 변화와 역동성을 만들어냅니다. 변화를 두려워하지 않고 위기를 기회로 바꾸는 강력한 개척 정신이 필요합니다. 이러한 역동성을 이해하고 활용하는 것이 마스터급 처세의 시작입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 47</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Interpersonal Dynamics / PAGE 48</div>
+                <div class="term-title">관계의 역동성: 육합</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">사주 원국 내의 육합 기운은 당신의 인간관계와 사회적 처세에 있어 보이지 않는 긴밀한 협력을 의미합니다. 소수의 핵심적인 인맥과 깊은 유대감을 형성하여 실질적인 성과를 내는 능력이 탁월합니다. 이러한 역동성을 이해하고 활용하는 것이 마스터급 처세의 시작입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 48</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Interpersonal Dynamics / PAGE 49</div>
+                <div class="term-title">관계의 역동성: 삼합</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">사주 원국 내의 삼합 기운은 당신의 인간관계와 사회적 처세에 있어 공통된 목표를 향해 여러 기운이 결속되는 강력한 조직력입니다. 사회적인 성공과 확장을 이끄는 가장 효율적인 팀워크의 기운입니다. 이러한 역동성을 이해하고 활용하는 것이 마스터급 처세의 시작입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 49</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Interpersonal Dynamics / PAGE 50</div>
+                <div class="term-title">관계의 역동성: 천간합</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">사주 원국 내의 천간합 기운은 당신의 인간관계와 사회적 처세에 있어 하늘의 기운이 서로 결합하여 새로운 에너지를 창출하는 형상입니다. 대인관계에서 화합과 상생의 가치를 실현하는 데 매우 유리합니다. 이러한 역동성을 이해하고 활용하는 것이 마스터급 처세의 시작입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 50</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Interpersonal Dynamics / PAGE 51</div>
+                <div class="term-title">관계의 역동성: 지지충</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">사주 원국 내의 지지충 기운은 당신의 인간관계와 사회적 처세에 있어 땅의 기운이 서로 충돌하며 변화와 역동성을 만들어냅니다. 변화를 두려워하지 않고 위기를 기회로 바꾸는 강력한 개척 정신이 필요합니다. 이러한 역동성을 이해하고 활용하는 것이 마스터급 처세의 시작입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 51</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Interpersonal Dynamics / PAGE 52</div>
+                <div class="term-title">관계의 역동성: 육합</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">사주 원국 내의 육합 기운은 당신의 인간관계와 사회적 처세에 있어 보이지 않는 긴밀한 협력을 의미합니다. 소수의 핵심적인 인맥과 깊은 유대감을 형성하여 실질적인 성과를 내는 능력이 탁월합니다. 이러한 역동성을 이해하고 활용하는 것이 마스터급 처세의 시작입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 52</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Interpersonal Dynamics / PAGE 53</div>
+                <div class="term-title">관계의 역동성: 삼합</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">사주 원국 내의 삼합 기운은 당신의 인간관계와 사회적 처세에 있어 공통된 목표를 향해 여러 기운이 결속되는 강력한 조직력입니다. 사회적인 성공과 확장을 이끄는 가장 효율적인 팀워크의 기운입니다. 이러한 역동성을 이해하고 활용하는 것이 마스터급 처세의 시작입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 53</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Interpersonal Dynamics / PAGE 54</div>
+                <div class="term-title">관계의 역동성: 천간합</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">사주 원국 내의 천간합 기운은 당신의 인간관계와 사회적 처세에 있어 하늘의 기운이 서로 결합하여 새로운 에너지를 창출하는 형상입니다. 대인관계에서 화합과 상생의 가치를 실현하는 데 매우 유리합니다. 이러한 역동성을 이해하고 활용하는 것이 마스터급 처세의 시작입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 54</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Interpersonal Dynamics / PAGE 55</div>
+                <div class="term-title">관계의 역동성: 지지충</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">사주 원국 내의 지지충 기운은 당신의 인간관계와 사회적 처세에 있어 땅의 기운이 서로 충돌하며 변화와 역동성을 만들어냅니다. 변화를 두려워하지 않고 위기를 기회로 바꾸는 강력한 개척 정신이 필요합니다. 이러한 역동성을 이해하고 활용하는 것이 마스터급 처세의 시작입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 55</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Strategic Success Factor / PAGE 56</div>
+                <div class="term-title">성공의 열쇠(Yong-sin): 木의 기운</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 삶을 성공으로 이끄는 핵심 에너지인 木은 성장과 기획의 단계입니다. 새로운 아이디어를 실행에 옮기고 인적 네트워크를 확장하는 것이 성공의 핵심입니다. 일상에서 이 기운을 어떻게 보충하고 강화하느냐에 따라 인생의 격이 달라집니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 56</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Strategic Success Factor / PAGE 57</div>
+                <div class="term-title">성공의 열쇠(Yong-sin): 火의 기운</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 삶을 성공으로 이끄는 핵심 에너지인 火은 확산과 홍보의 단계입니다. 자신의 가치를 널리 알리고 화려한 무대 위에서 리더십을 발휘할 때입니다. 일상에서 이 기운을 어떻게 보충하고 강화하느냐에 따라 인생의 격이 달라집니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 57</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Strategic Success Factor / PAGE 58</div>
+                <div class="term-title">성공의 열쇠(Yong-sin): 土의 기운</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 삶을 성공으로 이끄는 핵심 에너지인 土은 중재와 수렴의 단계입니다. 그동안의 성과를 정리하고 안정적인 기반을 구축하며 리스크를 관리해야 합니다. 일상에서 이 기운을 어떻게 보충하고 강화하느냐에 따라 인생의 격이 달라집니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 58</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Strategic Success Factor / PAGE 59</div>
+                <div class="term-title">성공의 열쇠(Yong-sin): 金의 기운</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 삶을 성공으로 이끄는 핵심 에너지인 金은 결단과 수확의 단계입니다. 불필요한 것을 쳐내고 핵심에 집중하여 실질적인 재무적 이득을 취해야 합니다. 일상에서 이 기운을 어떻게 보충하고 강화하느냐에 따라 인생의 격이 달라집니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 59</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Strategic Success Factor / PAGE 60</div>
+                <div class="term-title">성공의 열쇠(Yong-sin): 水의 기운</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 삶을 성공으로 이끄는 핵심 에너지인 水은 지혜와 비축의 단계입니다. 외부 활동을 줄이고 깊은 사유와 공부를 통해 다음 도약을 위한 에너지를 충전하십시오. 일상에서 이 기운을 어떻게 보충하고 강화하느냐에 따라 인생의 격이 달라집니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 60</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Strategic Success Factor / PAGE 61</div>
+                <div class="term-title">성공의 열쇠(Yong-sin): 木의 기운</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 삶을 성공으로 이끄는 핵심 에너지인 木은 성장과 기획의 단계입니다. 새로운 아이디어를 실행에 옮기고 인적 네트워크를 확장하는 것이 성공의 핵심입니다. 일상에서 이 기운을 어떻게 보충하고 강화하느냐에 따라 인생의 격이 달라집니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 61</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Strategic Success Factor / PAGE 62</div>
+                <div class="term-title">성공의 열쇠(Yong-sin): 火의 기운</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 삶을 성공으로 이끄는 핵심 에너지인 火은 확산과 홍보의 단계입니다. 자신의 가치를 널리 알리고 화려한 무대 위에서 리더십을 발휘할 때입니다. 일상에서 이 기운을 어떻게 보충하고 강화하느냐에 따라 인생의 격이 달라집니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 62</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Strategic Success Factor / PAGE 63</div>
+                <div class="term-title">성공의 열쇠(Yong-sin): 土의 기운</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 삶을 성공으로 이끄는 핵심 에너지인 土은 중재와 수렴의 단계입니다. 그동안의 성과를 정리하고 안정적인 기반을 구축하며 리스크를 관리해야 합니다. 일상에서 이 기운을 어떻게 보충하고 강화하느냐에 따라 인생의 격이 달라집니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 63</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Strategic Success Factor / PAGE 64</div>
+                <div class="term-title">성공의 열쇠(Yong-sin): 金의 기운</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 삶을 성공으로 이끄는 핵심 에너지인 金은 결단과 수확의 단계입니다. 불필요한 것을 쳐내고 핵심에 집중하여 실질적인 재무적 이득을 취해야 합니다. 일상에서 이 기운을 어떻게 보충하고 강화하느냐에 따라 인생의 격이 달라집니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 64</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Strategic Success Factor / PAGE 65</div>
+                <div class="term-title">성공의 열쇠(Yong-sin): 水의 기운</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 삶을 성공으로 이끄는 핵심 에너지인 水은 지혜와 비축의 단계입니다. 외부 활동을 줄이고 깊은 사유와 공부를 통해 다음 도약을 위한 에너지를 충전하십시오. 일상에서 이 기운을 어떻게 보충하고 강화하느냐에 따라 인생의 격이 달라집니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 65</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Wealth & Career Success / 직업운 / PAGE 66</div>
+                <div class="term-title">성공의 경제학: 직업운 분석</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">귀하의 사주 원국에서 나타나는 직업운의 양상은 당신의 천성적인 재능은 정교한 분석과 창의적인 표현에 있습니다. IT, 예술, 기획 등 자신의 고유한 색깔을 드러낼 수 있는 전문직에서 가장 큰 성취를 이룹니다. 마스터급 경제 활동을 위해 이 데이터를 전략적으로 활용하십시오.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 66</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Wealth & Career Success / 재물운 / PAGE 67</div>
+                <div class="term-title">성공의 경제학: 재물운 분석</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">귀하의 사주 원국에서 나타나는 재물운의 양상은 안정적인 흐름 속에 예기치 못한 횡재수가 따르는 형상입니다. 공격적인 투자보다는 철저한 분석을 바탕으로 한 가치 투자와 자산 분산이 부의 축적에 유리합니다. 마스터급 경제 활동을 위해 이 데이터를 전략적으로 활용하십시오.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 67</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Wealth & Career Success / 사업운 / PAGE 68</div>
+                <div class="term-title">성공의 경제학: 사업운 분석</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">귀하의 사주 원국에서 나타나는 사업운의 양상은 혼자보다는 실력 있는 파트너와의 협업이 성공의 지름길입니다. 시스템을 구축하고 사람을 관리하는 리더십을 발휘할 때 사업의 규모가 확장됩니다. 마스터급 경제 활동을 위해 이 데이터를 전략적으로 활용하십시오.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 68</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Wealth & Career Success / 직업운 / PAGE 69</div>
+                <div class="term-title">성공의 경제학: 직업운 분석</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">귀하의 사주 원국에서 나타나는 직업운의 양상은 당신의 천성적인 재능은 정교한 분석과 창의적인 표현에 있습니다. IT, 예술, 기획 등 자신의 고유한 색깔을 드러낼 수 있는 전문직에서 가장 큰 성취를 이룹니다. 마스터급 경제 활동을 위해 이 데이터를 전략적으로 활용하십시오.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 69</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Wealth & Career Success / 재물운 / PAGE 70</div>
+                <div class="term-title">성공의 경제학: 재물운 분석</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">귀하의 사주 원국에서 나타나는 재물운의 양상은 안정적인 흐름 속에 예기치 못한 횡재수가 따르는 형상입니다. 공격적인 투자보다는 철저한 분석을 바탕으로 한 가치 투자와 자산 분산이 부의 축적에 유리합니다. 마스터급 경제 활동을 위해 이 데이터를 전략적으로 활용하십시오.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 70</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Wealth & Career Success / 사업운 / PAGE 71</div>
+                <div class="term-title">성공의 경제학: 사업운 분석</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">귀하의 사주 원국에서 나타나는 사업운의 양상은 혼자보다는 실력 있는 파트너와의 협업이 성공의 지름길입니다. 시스템을 구축하고 사람을 관리하는 리더십을 발휘할 때 사업의 규모가 확장됩니다. 마스터급 경제 활동을 위해 이 데이터를 전략적으로 활용하십시오.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 71</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Wealth & Career Success / 직업운 / PAGE 72</div>
+                <div class="term-title">성공의 경제학: 직업운 분석</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">귀하의 사주 원국에서 나타나는 직업운의 양상은 당신의 천성적인 재능은 정교한 분석과 창의적인 표현에 있습니다. IT, 예술, 기획 등 자신의 고유한 색깔을 드러낼 수 있는 전문직에서 가장 큰 성취를 이룹니다. 마스터급 경제 활동을 위해 이 데이터를 전략적으로 활용하십시오.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 72</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Wealth & Career Success / 재물운 / PAGE 73</div>
+                <div class="term-title">성공의 경제학: 재물운 분석</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">귀하의 사주 원국에서 나타나는 재물운의 양상은 안정적인 흐름 속에 예기치 못한 횡재수가 따르는 형상입니다. 공격적인 투자보다는 철저한 분석을 바탕으로 한 가치 투자와 자산 분산이 부의 축적에 유리합니다. 마스터급 경제 활동을 위해 이 데이터를 전략적으로 활용하십시오.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 73</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Wealth & Career Success / 사업운 / PAGE 74</div>
+                <div class="term-title">성공의 경제학: 사업운 분석</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">귀하의 사주 원국에서 나타나는 사업운의 양상은 혼자보다는 실력 있는 파트너와의 협업이 성공의 지름길입니다. 시스템을 구축하고 사람을 관리하는 리더십을 발휘할 때 사업의 규모가 확장됩니다. 마스터급 경제 활동을 위해 이 데이터를 전략적으로 활용하십시오.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 74</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Wealth & Career Success / 직업운 / PAGE 75</div>
+                <div class="term-title">성공의 경제학: 직업운 분석</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">귀하의 사주 원국에서 나타나는 직업운의 양상은 당신의 천성적인 재능은 정교한 분석과 창의적인 표현에 있습니다. IT, 예술, 기획 등 자신의 고유한 색깔을 드러낼 수 있는 전문직에서 가장 큰 성취를 이룹니다. 마스터급 경제 활동을 위해 이 데이터를 전략적으로 활용하십시오.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 75</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Wealth & Career Success / 재물운 / PAGE 76</div>
+                <div class="term-title">성공의 경제학: 재물운 분석</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">귀하의 사주 원국에서 나타나는 재물운의 양상은 안정적인 흐름 속에 예기치 못한 횡재수가 따르는 형상입니다. 공격적인 투자보다는 철저한 분석을 바탕으로 한 가치 투자와 자산 분산이 부의 축적에 유리합니다. 마스터급 경제 활동을 위해 이 데이터를 전략적으로 활용하십시오.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 76</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Wealth & Career Success / 사업운 / PAGE 77</div>
+                <div class="term-title">성공의 경제학: 사업운 분석</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">귀하의 사주 원국에서 나타나는 사업운의 양상은 혼자보다는 실력 있는 파트너와의 협업이 성공의 지름길입니다. 시스템을 구축하고 사람을 관리하는 리더십을 발휘할 때 사업의 규모가 확장됩니다. 마스터급 경제 활동을 위해 이 데이터를 전략적으로 활용하십시오.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 77</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Wealth & Career Success / 직업운 / PAGE 78</div>
+                <div class="term-title">성공의 경제학: 직업운 분석</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">귀하의 사주 원국에서 나타나는 직업운의 양상은 당신의 천성적인 재능은 정교한 분석과 창의적인 표현에 있습니다. IT, 예술, 기획 등 자신의 고유한 색깔을 드러낼 수 있는 전문직에서 가장 큰 성취를 이룹니다. 마스터급 경제 활동을 위해 이 데이터를 전략적으로 활용하십시오.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 78</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Wealth & Career Success / 재물운 / PAGE 79</div>
+                <div class="term-title">성공의 경제학: 재물운 분석</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">귀하의 사주 원국에서 나타나는 재물운의 양상은 안정적인 흐름 속에 예기치 못한 횡재수가 따르는 형상입니다. 공격적인 투자보다는 철저한 분석을 바탕으로 한 가치 투자와 자산 분산이 부의 축적에 유리합니다. 마스터급 경제 활동을 위해 이 데이터를 전략적으로 활용하십시오.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 79</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Wealth & Career Success / 사업운 / PAGE 80</div>
+                <div class="term-title">성공의 경제학: 사업운 분석</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">귀하의 사주 원국에서 나타나는 사업운의 양상은 혼자보다는 실력 있는 파트너와의 협업이 성공의 지름길입니다. 시스템을 구축하고 사람을 관리하는 리더십을 발휘할 때 사업의 규모가 확장됩니다. 마스터급 경제 활동을 위해 이 데이터를 전략적으로 활용하십시오.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 80</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Wealth & Career Success / 직업운 / PAGE 81</div>
+                <div class="term-title">성공의 경제학: 직업운 분석</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">귀하의 사주 원국에서 나타나는 직업운의 양상은 당신의 천성적인 재능은 정교한 분석과 창의적인 표현에 있습니다. IT, 예술, 기획 등 자신의 고유한 색깔을 드러낼 수 있는 전문직에서 가장 큰 성취를 이룹니다. 마스터급 경제 활동을 위해 이 데이터를 전략적으로 활용하십시오.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 81</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Wealth & Career Success / 재물운 / PAGE 82</div>
+                <div class="term-title">성공의 경제학: 재물운 분석</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">귀하의 사주 원국에서 나타나는 재물운의 양상은 안정적인 흐름 속에 예기치 못한 횡재수가 따르는 형상입니다. 공격적인 투자보다는 철저한 분석을 바탕으로 한 가치 투자와 자산 분산이 부의 축적에 유리합니다. 마스터급 경제 활동을 위해 이 데이터를 전략적으로 활용하십시오.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 82</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Wealth & Career Success / 사업운 / PAGE 83</div>
+                <div class="term-title">성공의 경제학: 사업운 분석</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">귀하의 사주 원국에서 나타나는 사업운의 양상은 혼자보다는 실력 있는 파트너와의 협업이 성공의 지름길입니다. 시스템을 구축하고 사람을 관리하는 리더십을 발휘할 때 사업의 규모가 확장됩니다. 마스터급 경제 활동을 위해 이 데이터를 전략적으로 활용하십시오.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 83</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Wealth & Career Success / 직업운 / PAGE 84</div>
+                <div class="term-title">성공의 경제학: 직업운 분석</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">귀하의 사주 원국에서 나타나는 직업운의 양상은 당신의 천성적인 재능은 정교한 분석과 창의적인 표현에 있습니다. IT, 예술, 기획 등 자신의 고유한 색깔을 드러낼 수 있는 전문직에서 가장 큰 성취를 이룹니다. 마스터급 경제 활동을 위해 이 데이터를 전략적으로 활용하십시오.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 84</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Wealth & Career Success / 재물운 / PAGE 85</div>
+                <div class="term-title">성공의 경제학: 재물운 분석</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">귀하의 사주 원국에서 나타나는 재물운의 양상은 안정적인 흐름 속에 예기치 못한 횡재수가 따르는 형상입니다. 공격적인 투자보다는 철저한 분석을 바탕으로 한 가치 투자와 자산 분산이 부의 축적에 유리합니다. 마스터급 경제 활동을 위해 이 데이터를 전략적으로 활용하십시오.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 85</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Holistic Health / 건강운 / PAGE 86</div>
+                <div class="term-title">활력의 근원: 건강운 정밀 진단</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">신체와 정신의 균형을 위한 건강운의 분석 결과는 전반적으로 강건한 체력을 타고났으나, 예민한 신경계와 소화기 계통의 관리가 필요합니다. 규칙적인 명상과 자연 친화적인 식습관이 활력의 원천입니다. 지속 가능한 성취를 위해 건강의 기초를 단단히 다져야 합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 86</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Holistic Health / 정신력 / PAGE 87</div>
+                <div class="term-title">활력의 근원: 정신력 정밀 진단</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">신체와 정신의 균형을 위한 정신력의 분석 결과는 어떤 고난에도 흔들리지 않는 단단한 멘탈을 소유하고 있습니다. 다만, 지나친 책임감이 스트레스로 이어지지 않도록 적절한 휴식과 취미 생활을 병행하십시오. 지속 가능한 성취를 위해 건강의 기초를 단단히 다져야 합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 87</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Holistic Health / 건강운 / PAGE 88</div>
+                <div class="term-title">활력의 근원: 건강운 정밀 진단</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">신체와 정신의 균형을 위한 건강운의 분석 결과는 전반적으로 강건한 체력을 타고났으나, 예민한 신경계와 소화기 계통의 관리가 필요합니다. 규칙적인 명상과 자연 친화적인 식습관이 활력의 원천입니다. 지속 가능한 성취를 위해 건강의 기초를 단단히 다져야 합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 88</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Holistic Health / 정신력 / PAGE 89</div>
+                <div class="term-title">활력의 근원: 정신력 정밀 진단</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">신체와 정신의 균형을 위한 정신력의 분석 결과는 어떤 고난에도 흔들리지 않는 단단한 멘탈을 소유하고 있습니다. 다만, 지나친 책임감이 스트레스로 이어지지 않도록 적절한 휴식과 취미 생활을 병행하십시오. 지속 가능한 성취를 위해 건강의 기초를 단단히 다져야 합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 89</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Holistic Health / 건강운 / PAGE 90</div>
+                <div class="term-title">활력의 근원: 건강운 정밀 진단</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">신체와 정신의 균형을 위한 건강운의 분석 결과는 전반적으로 강건한 체력을 타고났으나, 예민한 신경계와 소화기 계통의 관리가 필요합니다. 규칙적인 명상과 자연 친화적인 식습관이 활력의 원천입니다. 지속 가능한 성취를 위해 건강의 기초를 단단히 다져야 합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 90</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Holistic Health / 정신력 / PAGE 91</div>
+                <div class="term-title">활력의 근원: 정신력 정밀 진단</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">신체와 정신의 균형을 위한 정신력의 분석 결과는 어떤 고난에도 흔들리지 않는 단단한 멘탈을 소유하고 있습니다. 다만, 지나친 책임감이 스트레스로 이어지지 않도록 적절한 휴식과 취미 생활을 병행하십시오. 지속 가능한 성취를 위해 건강의 기초를 단단히 다져야 합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 91</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Holistic Health / 건강운 / PAGE 92</div>
+                <div class="term-title">활력의 근원: 건강운 정밀 진단</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">신체와 정신의 균형을 위한 건강운의 분석 결과는 전반적으로 강건한 체력을 타고났으나, 예민한 신경계와 소화기 계통의 관리가 필요합니다. 규칙적인 명상과 자연 친화적인 식습관이 활력의 원천입니다. 지속 가능한 성취를 위해 건강의 기초를 단단히 다져야 합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 92</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Holistic Health / 정신력 / PAGE 93</div>
+                <div class="term-title">활력의 근원: 정신력 정밀 진단</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">신체와 정신의 균형을 위한 정신력의 분석 결과는 어떤 고난에도 흔들리지 않는 단단한 멘탈을 소유하고 있습니다. 다만, 지나친 책임감이 스트레스로 이어지지 않도록 적절한 휴식과 취미 생활을 병행하십시오. 지속 가능한 성취를 위해 건강의 기초를 단단히 다져야 합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 93</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Holistic Health / 건강운 / PAGE 94</div>
+                <div class="term-title">활력의 근원: 건강운 정밀 진단</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">신체와 정신의 균형을 위한 건강운의 분석 결과는 전반적으로 강건한 체력을 타고났으나, 예민한 신경계와 소화기 계통의 관리가 필요합니다. 규칙적인 명상과 자연 친화적인 식습관이 활력의 원천입니다. 지속 가능한 성취를 위해 건강의 기초를 단단히 다져야 합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 94</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Holistic Health / 정신력 / PAGE 95</div>
+                <div class="term-title">활력의 근원: 정신력 정밀 진단</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">신체와 정신의 균형을 위한 정신력의 분석 결과는 어떤 고난에도 흔들리지 않는 단단한 멘탈을 소유하고 있습니다. 다만, 지나친 책임감이 스트레스로 이어지지 않도록 적절한 휴식과 취미 생활을 병행하십시오. 지속 가능한 성취를 위해 건강의 기초를 단단히 다져야 합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 95</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Holistic Health / 건강운 / PAGE 96</div>
+                <div class="term-title">활력의 근원: 건강운 정밀 진단</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">신체와 정신의 균형을 위한 건강운의 분석 결과는 전반적으로 강건한 체력을 타고났으나, 예민한 신경계와 소화기 계통의 관리가 필요합니다. 규칙적인 명상과 자연 친화적인 식습관이 활력의 원천입니다. 지속 가능한 성취를 위해 건강의 기초를 단단히 다져야 합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 96</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Holistic Health / 정신력 / PAGE 97</div>
+                <div class="term-title">활력의 근원: 정신력 정밀 진단</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">신체와 정신의 균형을 위한 정신력의 분석 결과는 어떤 고난에도 흔들리지 않는 단단한 멘탈을 소유하고 있습니다. 다만, 지나친 책임감이 스트레스로 이어지지 않도록 적절한 휴식과 취미 생활을 병행하십시오. 지속 가능한 성취를 위해 건강의 기초를 단단히 다져야 합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 97</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Holistic Health / 건강운 / PAGE 98</div>
+                <div class="term-title">활력의 근원: 건강운 정밀 진단</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">신체와 정신의 균형을 위한 건강운의 분석 결과는 전반적으로 강건한 체력을 타고났으나, 예민한 신경계와 소화기 계통의 관리가 필요합니다. 규칙적인 명상과 자연 친화적인 식습관이 활력의 원천입니다. 지속 가능한 성취를 위해 건강의 기초를 단단히 다져야 합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 98</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Holistic Health / 정신력 / PAGE 99</div>
+                <div class="term-title">활력의 근원: 정신력 정밀 진단</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">신체와 정신의 균형을 위한 정신력의 분석 결과는 어떤 고난에도 흔들리지 않는 단단한 멘탈을 소유하고 있습니다. 다만, 지나친 책임감이 스트레스로 이어지지 않도록 적절한 휴식과 취미 생활을 병행하십시오. 지속 가능한 성취를 위해 건강의 기초를 단단히 다져야 합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 99</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Holistic Health / 건강운 / PAGE 100</div>
+                <div class="term-title">활력의 근원: 건강운 정밀 진단</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">신체와 정신의 균형을 위한 건강운의 분석 결과는 전반적으로 강건한 체력을 타고났으나, 예민한 신경계와 소화기 계통의 관리가 필요합니다. 규칙적인 명상과 자연 친화적인 식습관이 활력의 원천입니다. 지속 가능한 성취를 위해 건강의 기초를 단단히 다져야 합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 100</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Holistic Health / 정신력 / PAGE 101</div>
+                <div class="term-title">활력의 근원: 정신력 정밀 진단</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">신체와 정신의 균형을 위한 정신력의 분석 결과는 어떤 고난에도 흔들리지 않는 단단한 멘탈을 소유하고 있습니다. 다만, 지나친 책임감이 스트레스로 이어지지 않도록 적절한 휴식과 취미 생활을 병행하십시오. 지속 가능한 성취를 위해 건강의 기초를 단단히 다져야 합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 101</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Holistic Health / 건강운 / PAGE 102</div>
+                <div class="term-title">활력의 근원: 건강운 정밀 진단</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">신체와 정신의 균형을 위한 건강운의 분석 결과는 전반적으로 강건한 체력을 타고났으나, 예민한 신경계와 소화기 계통의 관리가 필요합니다. 규칙적인 명상과 자연 친화적인 식습관이 활력의 원천입니다. 지속 가능한 성취를 위해 건강의 기초를 단단히 다져야 합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 102</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Holistic Health / 정신력 / PAGE 103</div>
+                <div class="term-title">활력의 근원: 정신력 정밀 진단</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">신체와 정신의 균형을 위한 정신력의 분석 결과는 어떤 고난에도 흔들리지 않는 단단한 멘탈을 소유하고 있습니다. 다만, 지나친 책임감이 스트레스로 이어지지 않도록 적절한 휴식과 취미 생활을 병행하십시오. 지속 가능한 성취를 위해 건강의 기초를 단단히 다져야 합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 103</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Holistic Health / 건강운 / PAGE 104</div>
+                <div class="term-title">활력의 근원: 건강운 정밀 진단</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">신체와 정신의 균형을 위한 건강운의 분석 결과는 전반적으로 강건한 체력을 타고났으나, 예민한 신경계와 소화기 계통의 관리가 필요합니다. 규칙적인 명상과 자연 친화적인 식습관이 활력의 원천입니다. 지속 가능한 성취를 위해 건강의 기초를 단단히 다져야 합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 104</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Holistic Health / 정신력 / PAGE 105</div>
+                <div class="term-title">활력의 근원: 정신력 정밀 진단</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">신체와 정신의 균형을 위한 정신력의 분석 결과는 어떤 고난에도 흔들리지 않는 단단한 멘탈을 소유하고 있습니다. 다만, 지나친 책임감이 스트레스로 이어지지 않도록 적절한 휴식과 취미 생활을 병행하십시오. 지속 가능한 성취를 위해 건강의 기초를 단단히 다져야 합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 105</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Life Cycle Roadmap / 초년운 / PAGE 106</div>
+                <div class="term-title">생애 주기 분석: 초년운의 흐름</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 인생 여정에서 초년운은 학문적 성취가 높고 주변의 기대를 한 몸에 받는 시기입니다. 다양한 경험을 통해 자신의 적성을 발견하고 기초를 튼튼히 다지는 것이 중요합니다. 각 시기마다 주어지는 운명의 과제를 슬기롭게 해결해 나가는 지혜가 필요합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 106</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Life Cycle Roadmap / 청년운 / PAGE 107</div>
+                <div class="term-title">생애 주기 분석: 청년운의 흐름</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 인생 여정에서 청년운은 자신의 영역을 본격적으로 개척하고 사회적 명성을 쌓아가는 역동적인 시기입니다. 도전적인 자세로 기회를 포착하고 인맥을 넓혀야 합니다. 각 시기마다 주어지는 운명의 과제를 슬기롭게 해결해 나가는 지혜가 필요합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 107</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Life Cycle Roadmap / 장년운 / PAGE 108</div>
+                <div class="term-title">생애 주기 분석: 장년운의 흐름</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 인생 여정에서 장년운은 인생의 결실을 맺고 안정적인 기반 위에 번영을 누리는 시기입니다. 그동안 쌓아온 노하우를 바탕으로 조직의 중심에서 큰 영향력을 발휘합니다. 각 시기마다 주어지는 운명의 과제를 슬기롭게 해결해 나가는 지혜가 필요합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 108</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Life Cycle Roadmap / 말년운 / PAGE 109</div>
+                <div class="term-title">생애 주기 분석: 말년운의 흐름</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 인생 여정에서 말년운은 원숙한 지혜를 바탕으로 명예로운 삶을 향유하는 시기입니다. 후학 양성이나 사회 공헌을 통해 삶의 보람을 찾고 평온한 안식을 얻습니다. 각 시기마다 주어지는 운명의 과제를 슬기롭게 해결해 나가는 지혜가 필요합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 109</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Life Cycle Roadmap / 초년운 / PAGE 110</div>
+                <div class="term-title">생애 주기 분석: 초년운의 흐름</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 인생 여정에서 초년운은 학문적 성취가 높고 주변의 기대를 한 몸에 받는 시기입니다. 다양한 경험을 통해 자신의 적성을 발견하고 기초를 튼튼히 다지는 것이 중요합니다. 각 시기마다 주어지는 운명의 과제를 슬기롭게 해결해 나가는 지혜가 필요합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 110</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Life Cycle Roadmap / 청년운 / PAGE 111</div>
+                <div class="term-title">생애 주기 분석: 청년운의 흐름</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 인생 여정에서 청년운은 자신의 영역을 본격적으로 개척하고 사회적 명성을 쌓아가는 역동적인 시기입니다. 도전적인 자세로 기회를 포착하고 인맥을 넓혀야 합니다. 각 시기마다 주어지는 운명의 과제를 슬기롭게 해결해 나가는 지혜가 필요합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 111</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Life Cycle Roadmap / 장년운 / PAGE 112</div>
+                <div class="term-title">생애 주기 분석: 장년운의 흐름</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 인생 여정에서 장년운은 인생의 결실을 맺고 안정적인 기반 위에 번영을 누리는 시기입니다. 그동안 쌓아온 노하우를 바탕으로 조직의 중심에서 큰 영향력을 발휘합니다. 각 시기마다 주어지는 운명의 과제를 슬기롭게 해결해 나가는 지혜가 필요합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 112</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Life Cycle Roadmap / 말년운 / PAGE 113</div>
+                <div class="term-title">생애 주기 분석: 말년운의 흐름</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 인생 여정에서 말년운은 원숙한 지혜를 바탕으로 명예로운 삶을 향유하는 시기입니다. 후학 양성이나 사회 공헌을 통해 삶의 보람을 찾고 평온한 안식을 얻습니다. 각 시기마다 주어지는 운명의 과제를 슬기롭게 해결해 나가는 지혜가 필요합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 113</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Life Cycle Roadmap / 초년운 / PAGE 114</div>
+                <div class="term-title">생애 주기 분석: 초년운의 흐름</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 인생 여정에서 초년운은 학문적 성취가 높고 주변의 기대를 한 몸에 받는 시기입니다. 다양한 경험을 통해 자신의 적성을 발견하고 기초를 튼튼히 다지는 것이 중요합니다. 각 시기마다 주어지는 운명의 과제를 슬기롭게 해결해 나가는 지혜가 필요합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 114</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Life Cycle Roadmap / 청년운 / PAGE 115</div>
+                <div class="term-title">생애 주기 분석: 청년운의 흐름</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 인생 여정에서 청년운은 자신의 영역을 본격적으로 개척하고 사회적 명성을 쌓아가는 역동적인 시기입니다. 도전적인 자세로 기회를 포착하고 인맥을 넓혀야 합니다. 각 시기마다 주어지는 운명의 과제를 슬기롭게 해결해 나가는 지혜가 필요합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 115</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Life Cycle Roadmap / 장년운 / PAGE 116</div>
+                <div class="term-title">생애 주기 분석: 장년운의 흐름</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 인생 여정에서 장년운은 인생의 결실을 맺고 안정적인 기반 위에 번영을 누리는 시기입니다. 그동안 쌓아온 노하우를 바탕으로 조직의 중심에서 큰 영향력을 발휘합니다. 각 시기마다 주어지는 운명의 과제를 슬기롭게 해결해 나가는 지혜가 필요합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 116</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Life Cycle Roadmap / 말년운 / PAGE 117</div>
+                <div class="term-title">생애 주기 분석: 말년운의 흐름</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 인생 여정에서 말년운은 원숙한 지혜를 바탕으로 명예로운 삶을 향유하는 시기입니다. 후학 양성이나 사회 공헌을 통해 삶의 보람을 찾고 평온한 안식을 얻습니다. 각 시기마다 주어지는 운명의 과제를 슬기롭게 해결해 나가는 지혜가 필요합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 117</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Life Cycle Roadmap / 초년운 / PAGE 118</div>
+                <div class="term-title">생애 주기 분석: 초년운의 흐름</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 인생 여정에서 초년운은 학문적 성취가 높고 주변의 기대를 한 몸에 받는 시기입니다. 다양한 경험을 통해 자신의 적성을 발견하고 기초를 튼튼히 다지는 것이 중요합니다. 각 시기마다 주어지는 운명의 과제를 슬기롭게 해결해 나가는 지혜가 필요합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 118</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Life Cycle Roadmap / 청년운 / PAGE 119</div>
+                <div class="term-title">생애 주기 분석: 청년운의 흐름</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 인생 여정에서 청년운은 자신의 영역을 본격적으로 개척하고 사회적 명성을 쌓아가는 역동적인 시기입니다. 도전적인 자세로 기회를 포착하고 인맥을 넓혀야 합니다. 각 시기마다 주어지는 운명의 과제를 슬기롭게 해결해 나가는 지혜가 필요합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 119</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Life Cycle Roadmap / 장년운 / PAGE 120</div>
+                <div class="term-title">생애 주기 분석: 장년운의 흐름</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 인생 여정에서 장년운은 인생의 결실을 맺고 안정적인 기반 위에 번영을 누리는 시기입니다. 그동안 쌓아온 노하우를 바탕으로 조직의 중심에서 큰 영향력을 발휘합니다. 각 시기마다 주어지는 운명의 과제를 슬기롭게 해결해 나가는 지혜가 필요합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 120</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Life Cycle Roadmap / 말년운 / PAGE 121</div>
+                <div class="term-title">생애 주기 분석: 말년운의 흐름</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 인생 여정에서 말년운은 원숙한 지혜를 바탕으로 명예로운 삶을 향유하는 시기입니다. 후학 양성이나 사회 공헌을 통해 삶의 보람을 찾고 평온한 안식을 얻습니다. 각 시기마다 주어지는 운명의 과제를 슬기롭게 해결해 나가는 지혜가 필요합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 121</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Life Cycle Roadmap / 초년운 / PAGE 122</div>
+                <div class="term-title">생애 주기 분석: 초년운의 흐름</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 인생 여정에서 초년운은 학문적 성취가 높고 주변의 기대를 한 몸에 받는 시기입니다. 다양한 경험을 통해 자신의 적성을 발견하고 기초를 튼튼히 다지는 것이 중요합니다. 각 시기마다 주어지는 운명의 과제를 슬기롭게 해결해 나가는 지혜가 필요합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 122</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Life Cycle Roadmap / 청년운 / PAGE 123</div>
+                <div class="term-title">생애 주기 분석: 청년운의 흐름</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 인생 여정에서 청년운은 자신의 영역을 본격적으로 개척하고 사회적 명성을 쌓아가는 역동적인 시기입니다. 도전적인 자세로 기회를 포착하고 인맥을 넓혀야 합니다. 각 시기마다 주어지는 운명의 과제를 슬기롭게 해결해 나가는 지혜가 필요합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 123</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Life Cycle Roadmap / 장년운 / PAGE 124</div>
+                <div class="term-title">생애 주기 분석: 장년운의 흐름</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 인생 여정에서 장년운은 인생의 결실을 맺고 안정적인 기반 위에 번영을 누리는 시기입니다. 그동안 쌓아온 노하우를 바탕으로 조직의 중심에서 큰 영향력을 발휘합니다. 각 시기마다 주어지는 운명의 과제를 슬기롭게 해결해 나가는 지혜가 필요합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 124</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Life Cycle Roadmap / 말년운 / PAGE 125</div>
+                <div class="term-title">생애 주기 분석: 말년운의 흐름</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 인생 여정에서 말년운은 원숙한 지혜를 바탕으로 명예로운 삶을 향유하는 시기입니다. 후학 양성이나 사회 공헌을 통해 삶의 보람을 찾고 평온한 안식을 얻습니다. 각 시기마다 주어지는 운명의 과제를 슬기롭게 해결해 나가는 지혜가 필요합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 125</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Life Cycle Roadmap / 초년운 / PAGE 126</div>
+                <div class="term-title">생애 주기 분석: 초년운의 흐름</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 인생 여정에서 초년운은 학문적 성취가 높고 주변의 기대를 한 몸에 받는 시기입니다. 다양한 경험을 통해 자신의 적성을 발견하고 기초를 튼튼히 다지는 것이 중요합니다. 각 시기마다 주어지는 운명의 과제를 슬기롭게 해결해 나가는 지혜가 필요합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 126</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Life Cycle Roadmap / 청년운 / PAGE 127</div>
+                <div class="term-title">생애 주기 분석: 청년운의 흐름</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 인생 여정에서 청년운은 자신의 영역을 본격적으로 개척하고 사회적 명성을 쌓아가는 역동적인 시기입니다. 도전적인 자세로 기회를 포착하고 인맥을 넓혀야 합니다. 각 시기마다 주어지는 운명의 과제를 슬기롭게 해결해 나가는 지혜가 필요합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 127</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Life Cycle Roadmap / 장년운 / PAGE 128</div>
+                <div class="term-title">생애 주기 분석: 장년운의 흐름</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 인생 여정에서 장년운은 인생의 결실을 맺고 안정적인 기반 위에 번영을 누리는 시기입니다. 그동안 쌓아온 노하우를 바탕으로 조직의 중심에서 큰 영향력을 발휘합니다. 각 시기마다 주어지는 운명의 과제를 슬기롭게 해결해 나가는 지혜가 필요합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 128</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Life Cycle Roadmap / 말년운 / PAGE 129</div>
+                <div class="term-title">생애 주기 분석: 말년운의 흐름</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 인생 여정에서 말년운은 원숙한 지혜를 바탕으로 명예로운 삶을 향유하는 시기입니다. 후학 양성이나 사회 공헌을 통해 삶의 보람을 찾고 평온한 안식을 얻습니다. 각 시기마다 주어지는 운명의 과제를 슬기롭게 해결해 나가는 지혜가 필요합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 129</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Life Cycle Roadmap / 초년운 / PAGE 130</div>
+                <div class="term-title">생애 주기 분석: 초년운의 흐름</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 인생 여정에서 초년운은 학문적 성취가 높고 주변의 기대를 한 몸에 받는 시기입니다. 다양한 경험을 통해 자신의 적성을 발견하고 기초를 튼튼히 다지는 것이 중요합니다. 각 시기마다 주어지는 운명의 과제를 슬기롭게 해결해 나가는 지혜가 필요합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 130</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Life Cycle Roadmap / 청년운 / PAGE 131</div>
+                <div class="term-title">생애 주기 분석: 청년운의 흐름</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 인생 여정에서 청년운은 자신의 영역을 본격적으로 개척하고 사회적 명성을 쌓아가는 역동적인 시기입니다. 도전적인 자세로 기회를 포착하고 인맥을 넓혀야 합니다. 각 시기마다 주어지는 운명의 과제를 슬기롭게 해결해 나가는 지혜가 필요합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 131</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Life Cycle Roadmap / 장년운 / PAGE 132</div>
+                <div class="term-title">생애 주기 분석: 장년운의 흐름</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 인생 여정에서 장년운은 인생의 결실을 맺고 안정적인 기반 위에 번영을 누리는 시기입니다. 그동안 쌓아온 노하우를 바탕으로 조직의 중심에서 큰 영향력을 발휘합니다. 각 시기마다 주어지는 운명의 과제를 슬기롭게 해결해 나가는 지혜가 필요합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 132</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Life Cycle Roadmap / 말년운 / PAGE 133</div>
+                <div class="term-title">생애 주기 분석: 말년운의 흐름</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 인생 여정에서 말년운은 원숙한 지혜를 바탕으로 명예로운 삶을 향유하는 시기입니다. 후학 양성이나 사회 공헌을 통해 삶의 보람을 찾고 평온한 안식을 얻습니다. 각 시기마다 주어지는 운명의 과제를 슬기롭게 해결해 나가는 지혜가 필요합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 133</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Life Cycle Roadmap / 초년운 / PAGE 134</div>
+                <div class="term-title">생애 주기 분석: 초년운의 흐름</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 인생 여정에서 초년운은 학문적 성취가 높고 주변의 기대를 한 몸에 받는 시기입니다. 다양한 경험을 통해 자신의 적성을 발견하고 기초를 튼튼히 다지는 것이 중요합니다. 각 시기마다 주어지는 운명의 과제를 슬기롭게 해결해 나가는 지혜가 필요합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 134</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Life Cycle Roadmap / 청년운 / PAGE 135</div>
+                <div class="term-title">생애 주기 분석: 청년운의 흐름</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">당신의 인생 여정에서 청년운은 자신의 영역을 본격적으로 개척하고 사회적 명성을 쌓아가는 역동적인 시기입니다. 도전적인 자세로 기회를 포착하고 인맥을 넓혀야 합니다. 각 시기마다 주어지는 운명의 과제를 슬기롭게 해결해 나가는 지혜가 필요합니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 135</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 136 / PAGE 136</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 136장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 136</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 137 / PAGE 137</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 137장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 137</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 138 / PAGE 138</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 138장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 138</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 139 / PAGE 139</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 139장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 139</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 140 / PAGE 140</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 140장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 140</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 141 / PAGE 141</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 141장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 141</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 142 / PAGE 142</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 142장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 142</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 143 / PAGE 143</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 143장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 143</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 144 / PAGE 144</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 144장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 144</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 145 / PAGE 145</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 145장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 145</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 146 / PAGE 146</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 146장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 146</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 147 / PAGE 147</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 147장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 147</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 148 / PAGE 148</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 148장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 148</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 149 / PAGE 149</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 149장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 149</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 150 / PAGE 150</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 150장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 150</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 151 / PAGE 151</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 151장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 151</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 152 / PAGE 152</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 152장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 152</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 153 / PAGE 153</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 153장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 153</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 154 / PAGE 154</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 154장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 154</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 155 / PAGE 155</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 155장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 155</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 156 / PAGE 156</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 156장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 156</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 157 / PAGE 157</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 157장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 157</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 158 / PAGE 158</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 158장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 158</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 159 / PAGE 159</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 159장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 159</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 160 / PAGE 160</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 160장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 160</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 161 / PAGE 161</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 161장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 161</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 162 / PAGE 162</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 162장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 162</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 163 / PAGE 163</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 163장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 163</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 164 / PAGE 164</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 164장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 164</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 165 / PAGE 165</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 165장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 165</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 166 / PAGE 166</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 166장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 166</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 167 / PAGE 167</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 167장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 167</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 168 / PAGE 168</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 168장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 168</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 169 / PAGE 169</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 169장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 169</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 170 / PAGE 170</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 170장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 170</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 171 / PAGE 171</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 171장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 171</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 172 / PAGE 172</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 172장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 172</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 173 / PAGE 173</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 173장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 173</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 174 / PAGE 174</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 174장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 174</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 175 / PAGE 175</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 175장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 175</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 176 / PAGE 176</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 176장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 176</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 177 / PAGE 177</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 177장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 177</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 178 / PAGE 178</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 178장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 178</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 179 / PAGE 179</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 179장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 179</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 180 / PAGE 180</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 180장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 180</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 181 / PAGE 181</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 181장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 181</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 182 / PAGE 182</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 182장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 182</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Destiny Insights / Sector 183 / PAGE 183</div>
+                <div class="term-title">운명 알고리즘 정밀 제언 제 183장</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">이 섹션은 당신의 고유한 사주 데이터를 '사주 대가'의 통계적 지혜와 'Axe'의 정밀 엔진으로 교차 분석한 결과입니다. 당신의 일간인 丙의 특성을 고려할 때, 현재의 환경에서 정인의 에너지를 어떻게 활용하느냐가 성공의 핵심 키가 될 것입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 운명 데이터를 마스터급 분석으로 정제한 결과입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 183</span>
+                </div>
+            </div>
+            
+        </body>
+        </html>
+        

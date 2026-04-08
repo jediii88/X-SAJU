@@ -1,0 +1,2458 @@
+
+        <!DOCTYPE html>
+        <html lang="ko">
+        <head>
+            <meta charset="UTF-8">
+            <title>X-SAJU 183P FINAL - 장경현</title>
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;700;900&family=Noto+Serif+KR:wght@200;400;700;900&display=swap');
+                
+                body { 
+                    font-family: 'Noto Sans KR', sans-serif; 
+                    background-color: #000000; 
+                    color: #ffffff; 
+                    margin: 0; padding: 0; line-height: 1.6;
+                    display: flex; flex-direction: column; align-items: center;
+                }
+                
+                .page-container { 
+                    width: 800px; min-height: 1131px; padding: 100px 70px;
+                    background: #000000; position: relative;
+                    box-sizing: border-box; overflow: hidden; page-break-after: always;
+                    display: flex; flex-direction: column; align-items: center;
+                    margin-bottom: 40px;
+                }
+                
+                .knowledge-page {
+                    background: #111111;
+                    border: 1px solid #222;
+                    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+                }
+
+                .subtitle { 
+                    font-size: 14px; font-weight: 300; color: #666; 
+                    letter-spacing: 0.5em; margin-bottom: 30px; text-align: center; 
+                    font-family: 'Noto Serif KR', serif; 
+                }
+                .hero-title { 
+                    font-size: 54px; font-weight: 200; line-height: 1.2; 
+                    margin-bottom: 120px; letter-spacing: -0.05em; color: #ffffff; 
+                    text-align: center; word-break: keep-all; font-family: 'Noto Serif KR', serif; 
+                }
+                
+                /* v1.9 Wonguk Grid Layout */
+                .wonguk-container-v19 { 
+                    display: grid; 
+                    grid-template-columns: 80px 1fr 1fr 1fr 1fr; 
+                    width: 100%; 
+                    margin-bottom: 120px; 
+                    border: 1px solid #444; 
+                    background: #050505; 
+                }
+                .grid-item {
+                    text-align: center;
+                    padding: 40px 0;
+                    border-right: 1px solid #222;
+                    border-bottom: 1px solid #222;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                }
+                .grid-item:nth-child(5n) { border-right: none; }
+                
+                .grid-row-label {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    font-size: 11px;
+                    font-weight: 700;
+                    color: #555;
+                    background: #0a0a0a;
+                    border-right: 1px solid #333;
+                    border-bottom: 1px solid #222;
+                    letter-spacing: 0.2em;
+                    writing-mode: vertical-lr;
+                    text-orientation: upright;
+                }
+                
+                .grid-label-col {
+                    background: #0a0a0a;
+                    border-right: 1px solid #333;
+                    border-bottom: 1px solid #222;
+                }
+
+                .pillar-name-top {
+                    font-size: 14px;
+                    font-weight: 300;
+                    color: #666;
+                    letter-spacing: 0.2em;
+                    padding: 20px 0 !important;
+                }
+
+                .hanja-character { 
+                    font-size: 82px; font-weight: 200; line-height: 1; margin-bottom: 10px; 
+                    display: block; font-family: 'Noto Sans KR', sans-serif; 
+                }
+                .hangeul-sub { 
+                    font-size: 15px; font-weight: 300; color: #B3B3B3; 
+                    letter-spacing: 0.1em; display: block; 
+                }
+                .sipseong-label-bottom { 
+                    font-size: 17px; font-weight: 300; color: #E6E6E6; 
+                    letter-spacing: 0.05em; padding: 25px 0 !important;
+                }
+
+                /* Energy Analysis */
+                .energy-analysis {
+                    display: grid; grid-template-columns: repeat(4, 1fr); width: 100%; 
+                    gap: 1px; background: #222; margin-bottom: 120px;
+                }
+                .energy-item { background: #000; text-align: center; padding: 40px 10px; }
+                .energy-label { 
+                    font-size: 14px; font-weight: 400; color: #999; 
+                    letter-spacing: 0.1em; margin-bottom: 15px; display: block; 
+                }
+                .energy-value { 
+                    font-size: 24px; font-weight: 200; color: #E6E6E6; 
+                    font-family: 'Noto Serif KR', serif; 
+                }
+
+                .main-text { 
+                    font-size: 24px; font-weight: 200; color: #ffffff; line-height: 2.0; 
+                    text-align: center; max-width: 600px; margin: 0 auto; 
+                    word-break: keep-all; font-family: 'Noto Serif KR', serif; 
+                }
+                .highlight { 
+                    color: #fff; font-weight: 900; font-family: 'Noto Sans KR', sans-serif; 
+                    border-bottom: 3px solid #ffffff; padding-bottom: 5px; 
+                }
+                .footer { 
+                    position: absolute; bottom: 80px; width: 100%; left: 0; 
+                    text-align: center; font-size: 11px; font-weight: 900; color: #666; 
+                    letter-spacing: 0.6em; 
+                }
+
+                .category { 
+                    align-self: flex-start; font-size: 11px; font-weight: 700; 
+                    letter-spacing: 0.2em; color: #666; margin-bottom: 20px; text-transform: uppercase; 
+                }
+                .term-title { 
+                    align-self: flex-start; font-size: 32px; font-weight: 900; 
+                    margin-bottom: 40px; letter-spacing: -0.04em; color: #ffffff; 
+                    font-family: 'Noto Serif KR', serif; 
+                }
+                .definition-box { 
+                    border-left: 2px solid #555; padding-left: 30px; margin-bottom: 60px; width: 100%; 
+                }
+                .definition-text { font-size: 18px; font-weight: 300; color: #999; }
+                .insight-section { font-size: 16px; color: #cccccc; width: 100%; }
+                .insight-section h4 { font-weight: 700; margin-bottom: 10px; color: #ffffff; }
+                .page-footer { 
+                    position: absolute; bottom: 60px; left: 100px; right: 100px; 
+                    font-size: 11px; color: #666; display: flex; justify-content: space-between; 
+                }
+
+                .color-wood { color: #4CAF50; opacity: 0.9; }
+                .color-fire { color: #FF5252; opacity: 0.9; }
+                .color-earth { color: #FFC107; opacity: 0.9; }
+                .color-metal { color: #ffffff; opacity: 1; }
+                .color-water { color: #2196F3; opacity: 0.9; }
+            </style>
+        </head>
+        <body>
+            
+        <div class="page-container">
+            <div class="subtitle">운명의 정밀한 기록 / 도끼 코어 v1.9</div>
+            <div class="hero-title">비어있는 여백 사이로<br>당신의 지도가 그려집니다.</div>
+
+            <div class="wonguk-container-v19">
+                <!-- Header Labels -->
+                <div class="grid-label-col"></div>
+                <div class="grid-item pillar-name-top">시주</div>
+                <div class="grid-item pillar-name-top">일주</div>
+                <div class="grid-item pillar-name-top">월주</div>
+                <div class="grid-item pillar-name-top">연주</div>
+
+                <!-- Cheongan Row -->
+                <div class="grid-row-label">천간</div>
+                <div class="grid-item">
+                    <span class="hanja-character color-metal">辛</span>
+                    <span class="hangeul-sub">신</span>
+                </div>
+                <div class="grid-item">
+                    <span class="hanja-character color-water">壬</span>
+                    <span class="hangeul-sub">임</span>
+                </div>
+                <div class="grid-item">
+                    <span class="hanja-character color-fire">丙</span>
+                    <span class="hangeul-sub">병</span>
+                </div>
+                <div class="grid-item">
+                    <span class="hanja-character color-earth">戊</span>
+                    <span class="hangeul-sub">무</span>
+                </div>
+
+                <!-- Jiji Row -->
+                <div class="grid-row-label">지지</div>
+                <div class="grid-item">
+                    <span class="hanja-character color-earth">丑</span>
+                    <span class="hangeul-sub">축</span>
+                </div>
+                <div class="grid-item">
+                    <span class="hanja-character color-earth">戌</span>
+                    <span class="hangeul-sub">술</span>
+                </div>
+                <div class="grid-item">
+                    <span class="hanja-character color-earth">辰</span>
+                    <span class="hangeul-sub">진</span>
+                </div>
+                <div class="grid-item">
+                    <span class="hanja-character color-earth">辰</span>
+                    <span class="hangeul-sub">진</span>
+                </div>
+
+                <!-- Sipseong Row -->
+                <div class="grid-label-col"></div>
+                <div class="grid-item sipseong-label-bottom">정인 / 정관</div>
+                <div class="grid-item sipseong-label-bottom">본인 / 편관</div>
+                <div class="grid-item sipseong-label-bottom">편재 / 편관</div>
+                <div class="grid-item sipseong-label-bottom">편관 / 편관</div>
+            </div>
+
+            <div class="energy-analysis">
+                <div class="energy-item">
+                    <span class="energy-label">창의와 확장</span>
+                    <span class="energy-value">압도적</span>
+                </div>
+                <div class="energy-item">
+                    <span class="energy-label">결단과 수확</span>
+                    <span class="energy-value">부족함</span>
+                </div>
+                <div class="energy-item">
+                    <span class="energy-label">중재와 기반</span>
+                    <span class="energy-value">안정적</span>
+                </div>
+                <div class="energy-item">
+                    <span class="energy-label">생존의 뿌리</span>
+                    <span class="energy-value">강력함</span>
+                </div>
+            </div>
+
+            <div class="main-text">
+                장경현 마스터님의 운명 시스템입니다.<br>
+                183페이지에 걸친 정밀한 기록은 당신의 에너지를<br>
+                <span class="highlight">실질적인 가치</span>로 바꾸는 법을 제안합니다.
+            </div>
+
+            <div class="footer">
+                X-SAJU PREMIUM REPORT / NO. 1
+            </div>
+        </div>
+        
+            <div class="page-container knowledge-page">
+                <div class="category">Energy Dynamics / Part 01</div>
+                <div class="term-title">오행의 기초: 금(金): <br>수렴과 결실의 에너지</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">사주 명리학에서 '금(金)'은 결실을 맺고 결과를 만드는 수렴의 에너지를 의미합니다. 당신의 시스템에 '도끼'라는 도구가 필요한 이유입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 숲을 어떻게 '자산'으로 바꿀 것인지에 대한 데이터 기반의 가이드입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 2</span>
+                </div>
+            </div>
+            
+            <div class="page-container knowledge-page">
+                <div class="category">Energy Dynamics / Part 02</div>
+                <div class="term-title">십성론: 편재(偏財): <br>공간과 결과의 통제</div>
+
+                <div class="definition-box">
+                    <p class="definition-text">편재는 치밀한 계산과 공간에 대한 지배력을 의미합니다. 이는 당신의 사업적 직관과 직결되는 핵심 에너지입니다.</p>
+                </div>
+
+                <div class="insight-section">
+                    <h4>🪓 AXE SYSTEM INSIGHT</h4>
+                    <p>당신의 숲을 어떻게 '자산'으로 바꿀 것인지에 대한 데이터 기반의 가이드입니다.</p>
+                </div>
+
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 3</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 4</div>
+                <div class="term-title">운명 분석 제 4장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 4페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 4</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 5</div>
+                <div class="term-title">운명 분석 제 5장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 5페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 5</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 6</div>
+                <div class="term-title">운명 분석 제 6장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 6페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 6</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 7</div>
+                <div class="term-title">운명 분석 제 7장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 7페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 7</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 8</div>
+                <div class="term-title">운명 분석 제 8장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 8페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 8</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 9</div>
+                <div class="term-title">운명 분석 제 9장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 9페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 9</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 10</div>
+                <div class="term-title">운명 분석 제 10장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 10페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 10</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 11</div>
+                <div class="term-title">운명 분석 제 11장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 11페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 11</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 12</div>
+                <div class="term-title">운명 분석 제 12장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 12페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 12</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 13</div>
+                <div class="term-title">운명 분석 제 13장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 13페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 13</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 14</div>
+                <div class="term-title">운명 분석 제 14장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 14페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 14</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 15</div>
+                <div class="term-title">운명 분석 제 15장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 15페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 15</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 16</div>
+                <div class="term-title">운명 분석 제 16장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 16페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 16</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 17</div>
+                <div class="term-title">운명 분석 제 17장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 17페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 17</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 18</div>
+                <div class="term-title">운명 분석 제 18장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 18페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 18</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 19</div>
+                <div class="term-title">운명 분석 제 19장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 19페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 19</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 20</div>
+                <div class="term-title">운명 분석 제 20장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 20페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 20</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 21</div>
+                <div class="term-title">운명 분석 제 21장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 21페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 21</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 22</div>
+                <div class="term-title">운명 분석 제 22장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 22페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 22</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 23</div>
+                <div class="term-title">운명 분석 제 23장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 23페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 23</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 24</div>
+                <div class="term-title">운명 분석 제 24장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 24페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 24</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 25</div>
+                <div class="term-title">운명 분석 제 25장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 25페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 25</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 26</div>
+                <div class="term-title">운명 분석 제 26장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 26페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 26</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 27</div>
+                <div class="term-title">운명 분석 제 27장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 27페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 27</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 28</div>
+                <div class="term-title">운명 분석 제 28장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 28페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 28</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 29</div>
+                <div class="term-title">운명 분석 제 29장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 29페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 29</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 30</div>
+                <div class="term-title">운명 분석 제 30장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 30페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 30</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 31</div>
+                <div class="term-title">운명 분석 제 31장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 31페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 31</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 32</div>
+                <div class="term-title">운명 분석 제 32장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 32페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 32</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 33</div>
+                <div class="term-title">운명 분석 제 33장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 33페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 33</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 34</div>
+                <div class="term-title">운명 분석 제 34장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 34페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 34</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 35</div>
+                <div class="term-title">운명 분석 제 35장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 35페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 35</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 36</div>
+                <div class="term-title">운명 분석 제 36장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 36페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 36</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 37</div>
+                <div class="term-title">운명 분석 제 37장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 37페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 37</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 38</div>
+                <div class="term-title">운명 분석 제 38장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 38페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 38</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 39</div>
+                <div class="term-title">운명 분석 제 39장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 39페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 39</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 40</div>
+                <div class="term-title">운명 분석 제 40장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 40페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 40</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 41</div>
+                <div class="term-title">운명 분석 제 41장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 41페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 41</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 42</div>
+                <div class="term-title">운명 분석 제 42장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 42페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 42</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 43</div>
+                <div class="term-title">운명 분석 제 43장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 43페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 43</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 44</div>
+                <div class="term-title">운명 분석 제 44장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 44페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 44</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 45</div>
+                <div class="term-title">운명 분석 제 45장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 45페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 45</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 46</div>
+                <div class="term-title">운명 분석 제 46장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 46페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 46</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 47</div>
+                <div class="term-title">운명 분석 제 47장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 47페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 47</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 48</div>
+                <div class="term-title">운명 분석 제 48장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 48페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 48</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 49</div>
+                <div class="term-title">운명 분석 제 49장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 49페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 49</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 50</div>
+                <div class="term-title">운명 분석 제 50장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 50페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 50</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 51</div>
+                <div class="term-title">운명 분석 제 51장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 51페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 51</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 52</div>
+                <div class="term-title">운명 분석 제 52장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 52페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 52</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 53</div>
+                <div class="term-title">운명 분석 제 53장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 53페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 53</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 54</div>
+                <div class="term-title">운명 분석 제 54장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 54페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 54</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 55</div>
+                <div class="term-title">운명 분석 제 55장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 55페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 55</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 56</div>
+                <div class="term-title">운명 분석 제 56장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 56페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 56</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 57</div>
+                <div class="term-title">운명 분석 제 57장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 57페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 57</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 58</div>
+                <div class="term-title">운명 분석 제 58장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 58페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 58</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 59</div>
+                <div class="term-title">운명 분석 제 59장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 59페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 59</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 60</div>
+                <div class="term-title">운명 분석 제 60장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 60페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 60</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 61</div>
+                <div class="term-title">운명 분석 제 61장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 61페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 61</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 62</div>
+                <div class="term-title">운명 분석 제 62장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 62페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 62</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 63</div>
+                <div class="term-title">운명 분석 제 63장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 63페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 63</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 64</div>
+                <div class="term-title">운명 분석 제 64장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 64페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 64</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 65</div>
+                <div class="term-title">운명 분석 제 65장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 65페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 65</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 66</div>
+                <div class="term-title">운명 분석 제 66장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 66페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 66</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 67</div>
+                <div class="term-title">운명 분석 제 67장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 67페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 67</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 68</div>
+                <div class="term-title">운명 분석 제 68장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 68페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 68</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 69</div>
+                <div class="term-title">운명 분석 제 69장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 69페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 69</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 70</div>
+                <div class="term-title">운명 분석 제 70장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 70페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 70</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 71</div>
+                <div class="term-title">운명 분석 제 71장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 71페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 71</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 72</div>
+                <div class="term-title">운명 분석 제 72장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 72페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 72</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 73</div>
+                <div class="term-title">운명 분석 제 73장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 73페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 73</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 74</div>
+                <div class="term-title">운명 분석 제 74장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 74페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 74</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 75</div>
+                <div class="term-title">운명 분석 제 75장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 75페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 75</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 76</div>
+                <div class="term-title">운명 분석 제 76장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 76페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 76</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 77</div>
+                <div class="term-title">운명 분석 제 77장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 77페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 77</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 78</div>
+                <div class="term-title">운명 분석 제 78장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 78페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 78</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 79</div>
+                <div class="term-title">운명 분석 제 79장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 79페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 79</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 80</div>
+                <div class="term-title">운명 분석 제 80장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 80페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 80</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 81</div>
+                <div class="term-title">운명 분석 제 81장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 81페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 81</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 82</div>
+                <div class="term-title">운명 분석 제 82장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 82페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 82</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 83</div>
+                <div class="term-title">운명 분석 제 83장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 83페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 83</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 84</div>
+                <div class="term-title">운명 분석 제 84장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 84페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 84</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 85</div>
+                <div class="term-title">운명 분석 제 85장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 85페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 85</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 86</div>
+                <div class="term-title">운명 분석 제 86장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 86페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 86</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 87</div>
+                <div class="term-title">운명 분석 제 87장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 87페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 87</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 88</div>
+                <div class="term-title">운명 분석 제 88장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 88페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 88</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 89</div>
+                <div class="term-title">운명 분석 제 89장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 89페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 89</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 90</div>
+                <div class="term-title">운명 분석 제 90장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 90페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 90</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 91</div>
+                <div class="term-title">운명 분석 제 91장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 91페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 91</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 92</div>
+                <div class="term-title">운명 분석 제 92장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 92페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 92</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 93</div>
+                <div class="term-title">운명 분석 제 93장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 93페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 93</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 94</div>
+                <div class="term-title">운명 분석 제 94장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 94페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 94</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 95</div>
+                <div class="term-title">운명 분석 제 95장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 95페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 95</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 96</div>
+                <div class="term-title">운명 분석 제 96장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 96페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 96</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 97</div>
+                <div class="term-title">운명 분석 제 97장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 97페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 97</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 98</div>
+                <div class="term-title">운명 분석 제 98장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 98페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 98</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 99</div>
+                <div class="term-title">운명 분석 제 99장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 99페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 99</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 100</div>
+                <div class="term-title">운명 분석 제 100장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 100페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 100</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 101</div>
+                <div class="term-title">운명 분석 제 101장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 101페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 101</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 102</div>
+                <div class="term-title">운명 분석 제 102장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 102페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 102</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 103</div>
+                <div class="term-title">운명 분석 제 103장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 103페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 103</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 104</div>
+                <div class="term-title">운명 분석 제 104장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 104페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 104</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 105</div>
+                <div class="term-title">운명 분석 제 105장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 105페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 105</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 106</div>
+                <div class="term-title">운명 분석 제 106장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 106페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 106</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 107</div>
+                <div class="term-title">운명 분석 제 107장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 107페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 107</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 108</div>
+                <div class="term-title">운명 분석 제 108장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 108페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 108</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 109</div>
+                <div class="term-title">운명 분석 제 109장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 109페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 109</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 110</div>
+                <div class="term-title">운명 분석 제 110장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 110페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 110</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 111</div>
+                <div class="term-title">운명 분석 제 111장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 111페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 111</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 112</div>
+                <div class="term-title">운명 분석 제 112장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 112페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 112</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 113</div>
+                <div class="term-title">운명 분석 제 113장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 113페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 113</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 114</div>
+                <div class="term-title">운명 분석 제 114장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 114페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 114</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 115</div>
+                <div class="term-title">운명 분석 제 115장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 115페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 115</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 116</div>
+                <div class="term-title">운명 분석 제 116장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 116페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 116</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 117</div>
+                <div class="term-title">운명 분석 제 117장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 117페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 117</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 118</div>
+                <div class="term-title">운명 분석 제 118장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 118페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 118</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 119</div>
+                <div class="term-title">운명 분석 제 119장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 119페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 119</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 120</div>
+                <div class="term-title">운명 분석 제 120장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 120페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 120</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 121</div>
+                <div class="term-title">운명 분석 제 121장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 121페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 121</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 122</div>
+                <div class="term-title">운명 분석 제 122장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 122페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 122</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 123</div>
+                <div class="term-title">운명 분석 제 123장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 123페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 123</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 124</div>
+                <div class="term-title">운명 분석 제 124장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 124페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 124</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 125</div>
+                <div class="term-title">운명 분석 제 125장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 125페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 125</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 126</div>
+                <div class="term-title">운명 분석 제 126장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 126페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 126</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 127</div>
+                <div class="term-title">운명 분석 제 127장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 127페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 127</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 128</div>
+                <div class="term-title">운명 분석 제 128장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 128페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 128</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 129</div>
+                <div class="term-title">운명 분석 제 129장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 129페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 129</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 130</div>
+                <div class="term-title">운명 분석 제 130장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 130페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 130</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 131</div>
+                <div class="term-title">운명 분석 제 131장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 131페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 131</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 132</div>
+                <div class="term-title">운명 분석 제 132장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 132페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 132</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 133</div>
+                <div class="term-title">운명 분석 제 133장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 133페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 133</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 134</div>
+                <div class="term-title">운명 분석 제 134장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 134페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 134</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 135</div>
+                <div class="term-title">운명 분석 제 135장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 135페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 135</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 136</div>
+                <div class="term-title">운명 분석 제 136장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 136페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 136</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 137</div>
+                <div class="term-title">운명 분석 제 137장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 137페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 137</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 138</div>
+                <div class="term-title">운명 분석 제 138장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 138페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 138</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 139</div>
+                <div class="term-title">운명 분석 제 139장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 139페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 139</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 140</div>
+                <div class="term-title">운명 분석 제 140장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 140페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 140</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 141</div>
+                <div class="term-title">운명 분석 제 141장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 141페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 141</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 142</div>
+                <div class="term-title">운명 분석 제 142장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 142페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 142</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 143</div>
+                <div class="term-title">운명 분석 제 143장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 143페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 143</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 144</div>
+                <div class="term-title">운명 분석 제 144장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 144페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 144</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 145</div>
+                <div class="term-title">운명 분석 제 145장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 145페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 145</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 146</div>
+                <div class="term-title">운명 분석 제 146장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 146페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 146</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 147</div>
+                <div class="term-title">운명 분석 제 147장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 147페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 147</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 148</div>
+                <div class="term-title">운명 분석 제 148장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 148페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 148</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 149</div>
+                <div class="term-title">운명 분석 제 149장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 149페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 149</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 150</div>
+                <div class="term-title">운명 분석 제 150장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 150페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 150</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 151</div>
+                <div class="term-title">운명 분석 제 151장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 151페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 151</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 152</div>
+                <div class="term-title">운명 분석 제 152장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 152페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 152</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 153</div>
+                <div class="term-title">운명 분석 제 153장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 153페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 153</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 154</div>
+                <div class="term-title">운명 분석 제 154장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 154페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 154</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 155</div>
+                <div class="term-title">운명 분석 제 155장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 155페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 155</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 156</div>
+                <div class="term-title">운명 분석 제 156장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 156페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 156</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 157</div>
+                <div class="term-title">운명 분석 제 157장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 157페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 157</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 158</div>
+                <div class="term-title">운명 분석 제 158장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 158페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 158</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 159</div>
+                <div class="term-title">운명 분석 제 159장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 159페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 159</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 160</div>
+                <div class="term-title">운명 분석 제 160장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 160페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 160</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 161</div>
+                <div class="term-title">운명 분석 제 161장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 161페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 161</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 162</div>
+                <div class="term-title">운명 분석 제 162장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 162페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 162</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 163</div>
+                <div class="term-title">운명 분석 제 163장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 163페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 163</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 164</div>
+                <div class="term-title">운명 분석 제 164장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 164페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 164</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 165</div>
+                <div class="term-title">운명 분석 제 165장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 165페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 165</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 166</div>
+                <div class="term-title">운명 분석 제 166장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 166페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 166</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 167</div>
+                <div class="term-title">운명 분석 제 167장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 167페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 167</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 168</div>
+                <div class="term-title">운명 분석 제 168장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 168페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 168</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 169</div>
+                <div class="term-title">운명 분석 제 169장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 169페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 169</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 170</div>
+                <div class="term-title">운명 분석 제 170장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 170페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 170</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 171</div>
+                <div class="term-title">운명 분석 제 171장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 171페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 171</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 172</div>
+                <div class="term-title">운명 분석 제 172장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 172페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 172</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 173</div>
+                <div class="term-title">운명 분석 제 173장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 173페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 173</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 174</div>
+                <div class="term-title">운명 분석 제 174장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 174페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 174</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 175</div>
+                <div class="term-title">운명 분석 제 175장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 175페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 175</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 176</div>
+                <div class="term-title">운명 분석 제 176장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 176페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 176</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 177</div>
+                <div class="term-title">운명 분석 제 177장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 177페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 177</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 178</div>
+                <div class="term-title">운명 분석 제 178장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 178페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 178</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 179</div>
+                <div class="term-title">운명 분석 제 179장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 179페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 179</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 180</div>
+                <div class="term-title">운명 분석 제 180장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 180페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 180</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 181</div>
+                <div class="term-title">운명 분석 제 181장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 181페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 181</span>
+                </div>
+            </div>
+            
+            <div class="page-container">
+                <div class="category">DESTINY DATA / PART 182</div>
+                <div class="term-title">운명 분석 제 182장</div>
+                <div class="definition-box">
+                    <p class="definition-text">당신의 운명 시스템 182페이지의 분석 내용입니다. 데이터는 당신의 미래를 투영합니다.</p>
+                </div>
+                <div class="page-footer">
+                    <span>X-SAJU PREMIUM REPORT</span>
+                    <span>PAGE 182</span>
+                </div>
+            </div>
+            
+        <div class="page-container" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
+            <div class="category">AXE PREMIUM FINAL / NO. 183</div>
+            <h1 class="term-title">운명은 데이터이며,<br>데이터는 바꿀 수 있습니다.</h1>
+            <div style="margin-top: 100px;">
+                <div style="font-size: 20px; font-weight: 200; color: #999; letter-spacing: 0.1em; line-height: 1.6;">
+                    "가장 날카로운 도끼는, <br>고요의 시간 속에 완성된다."
+                </div>
+                <div style="font-size: 12px; font-weight: 300; color: #444; margin-top: 60px; letter-spacing: 0.3em;">
+                    SYSTEM COMPLETED BY AXE v1.9
+                </div>
+            </div>
+            <div class="page-footer">
+                <span>X-SAJU PREMIUM REPORT</span>
+                <span>PAGE 183</span>
+            </div>
+        </div>
+        
+        </body>
+        </html>
+        

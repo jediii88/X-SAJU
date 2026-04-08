@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>X-SAJU [글로벌 테크/럭셔리 한문 폰트 분석]</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@100;400;900&family=Noto+Serif+SC:wght@200;700&family=ZCOOL+XiaoWei&family=ZCOOL+QingKe+HuangYou&family=Ma+Shan+Zheng&display=swap');
+        
+        body { 
+            font-family: 'Noto Sans KR', sans-serif; 
+            background-color: #000000; 
+            color: #ffffff; 
+            padding: 50px; 
+            line-height: 1.6;
+        }
+
+        .container { max-width: 1000px; margin: auto; }
+        
+        .header {
+            border-bottom: 1px solid #333;
+            padding-bottom: 20px;
+            margin-bottom: 50px;
+        }
+        .header h1 { font-size: 26px; font-weight: 900; letter-spacing: -0.05em; color: #fff; }
+        .header p { font-size: 14px; color: #888; }
+
+        .brand-section {
+            margin-bottom: 60px;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 40px;
+            background: #0a0a0a;
+            padding: 40px;
+            border: 1px solid #1a1a1a;
+        }
+
+        .brand-info h2 { font-size: 18px; font-weight: 900; margin-bottom: 10px; color: #fff; }
+        .brand-info p { font-size: 13px; color: #666; margin-bottom: 20px; }
+        .brand-tag { 
+            display: inline-block; 
+            padding: 4px 10px; 
+            background: #222; 
+            color: #aaa; 
+            font-size: 10px; 
+            font-weight: 700; 
+            letter-spacing: 0.1em;
+            margin-right: 5px;
+        }
+
+        .sample-display {
+            font-size: 72px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #000;
+            border: 1px solid #111;
+            padding: 20px;
+        }
+
+        /* 폰트 스타일 모사 */
+        .f-xiaomi { font-family: 'Noto Sans SC', sans-serif; font-weight: 400; letter-spacing: -0.02em; } /* Xiaomi Mi Sans Style */
+        .f-huawei { font-family: 'Noto Sans SC', sans-serif; font-weight: 900; letter-spacing: 0.05em; } /* HarmonyOS Sans Style - Sharp & Heavy */
+        .f-luxury-ev { font-family: 'Noto Sans SC', sans-serif; font-weight: 100; letter-spacing: 0.2em; } /* NIO/Li Auto Style - Ultra Thin & Wide */
+        .f-modern-ming { font-family: 'ZCOOL XiaoWei', serif; } /* High-end Fashion/Luxury Style */
+        .f-tech-future { font-family: 'ZCOOL QingKe HuangYou', cursive; } /* Tech/Cyberpunk Style */
+
+        .comparison {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #888;
+        }
+        .highlight { color: #fff; font-weight: 700; }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>X-SAJU / 글로벌 테크 & 럭셔리 한문 폰트 분석</h1>
+            <p>중국 하이테크 기업과 프리미엄 브랜드의 서체 전략을 X-SAJU에 이식합니다.</p>
+        </div>
+
+        <!-- 1. Xiaomi (Mi Sans) Style -->
+        <div class="brand-section">
+            <div class="brand-info">
+                <div class="brand-tag">XIAOMI</div>
+                <div class="brand-tag">MINIMAL</div>
+                <h2>MI SANS 스타일</h2>
+                <p>샤오미가 자체 개발한 Mi Sans는 가독성과 밸런스에 집중합니다. 본고딕(Noto Sans)보다 부드럽고 '지능적(Intelligent)'인 느낌을 줍니다.</p>
+                <div class="comparison">특징: <span class="highlight">군더더기 없는 완벽한 균형</span></div>
+            </div>
+            <div class="sample-display f-xiaomi">
+                戊辰乙卯
+            </div>
+        </div>
+
+        <!-- 2. Huawei / High-Tech Style -->
+        <div class="brand-section">
+            <div class="brand-info">
+                <div class="brand-tag">HUAWEI</div>
+                <div class="brand-tag">AUTHORITY</div>
+                <h2>HARMONY OS 스타일</h2>
+                <p>화웨이의 서체는 획의 굵기가 매우 강조되며, 하이테크 하드웨어의 강인함과 정밀함을 나타냅니다. 'Axe'의 강력한 실행력과 일맥상통합니다.</p>
+                <div class="comparison">특징: <span class="highlight">강한 대비와 압도적인 존재감</span></div>
+            </div>
+            <div class="sample-display f-huawei">
+                丙寅戊子
+            </div>
+        </div>
+
+        <!-- 3. Premium EV (NIO / Li Auto) Style -->
+        <div class="brand-section">
+            <div class="brand-info">
+                <div class="brand-tag">PREMIUM EV</div>
+                <div class="brand-tag">LUXURY</div>
+                <h2>하이엔드 전기차 스타일</h2>
+                <p>중국의 고가 전기차 브랜드(NIO 등)는 극단적으로 얇은 획(Ultra Thin)과 넓은 자간을 사용하여 '여백의 미'와 '기술적 사치'를 표현합니다.</p>
+                <div class="comparison">특징: <span class="highlight">세련된 차가움, 극강의 미니멀</span></div>
+            </div>
+            <div class="sample-display f-luxury-ev">
+                戊辰乙卯
+            </div>
+        </div>
+
+        <!-- 4. High-end Fashion / Modern Ming -->
+        <div class="brand-section">
+            <div class="brand-info">
+                <div class="brand-tag">FASHION</div>
+                <div class="brand-tag">ART</div>
+                <h2>모던 럭셔리 명조</h2>
+                <p>전통적인 명조체를 현대적으로 재해석한 스타일입니다. 중국 내 고가 화장품이나 명품 브랜드에서 '전통의 현대화'를 위해 사용합니다.</p>
+                <div class="comparison">특징: <span class="highlight">우아함 속에 숨겨진 날카로움</span></div>
+            </div>
+            <div class="sample-display f-modern-ming">
+                丙寅戊子
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

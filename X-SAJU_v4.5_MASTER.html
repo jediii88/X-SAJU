@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>X-SAJU MASTER v4.5 | Ultimate Precision Engine</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;700&family=Noto+Serif+KR:wght@200;400&display=swap');
+        :root { --bg: #050505; --card: #0f0f0f; --text: #f0f0f0; --dim: #777; --accent: #fff; --gold: #d4af37; --border: #222; --wood: #2ecc71; --fire: #e74c3c; --earth: #f1c40f; --metal: #bdc3c7; --water: #3498db; }
+        body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', sans-serif; margin: 0; display: flex; justify-content: center; line-height: 1.6; }
+        .container { width: 100%; max-width: 480px; padding: 40px 24px; box-sizing: border-box; text-align: center; }
+        .logo { font-size: 22px; letter-spacing: 4px; font-weight: 700; color: var(--accent); margin-bottom: 50px; text-transform: uppercase; }
+        
+        .section-label { font-size: 11px; color: var(--gold); font-weight: 700; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; display: block; text-align: left; letter-spacing: 1px; }
+        .input-group { margin-bottom: 25px; text-align: left; }
+        label { display: block; font-size: 11px; color: var(--dim); margin-bottom: 8px; font-weight: 700; text-transform: uppercase; }
+        input, select { width: 100%; background: #111; border: 1px solid var(--border); color: #fff; padding: 15px; font-size: 16px; border-radius: 4px; box-sizing: border-box; outline: none; transition: 0.2s; }
+        input:focus, select:focus { border-color: var(--gold); }
+        .btn-main { width: 100%; padding: 22px; background: var(--accent); color: #000; border: none; border-radius: 4px; font-weight: 700; cursor: pointer; margin-top: 10px; letter-spacing: 1px; font-size: 15px; }
+        
+        #step-2, #step-3 { display: none; text-align: left; animation: fadeIn 0.5s ease; }
+        
+        /* [CORE FIX] Right-to-Left Layout (Year on Right, Hour on Left) */
+        .saju-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 40px; }
+        .pillar-card { border: 1px solid var(--border); padding: 20px 0; background: var(--card); border-radius: 4px; text-align: center; position: relative; }
+        .pillar-label { font-size: 10px; color: #555; margin-bottom: 10px; font-weight: 700; }
+        .sipseong { font-size: 11px; color: var(--gold); background: rgba(212,175,55,0.1); padding: 4px 0; width: 100%; margin-bottom: 10px; }
+        .hanja { font-size: 30px; font-weight: 300; line-height: 1.1; margin-bottom: 10px; }
+        .hangul { font-size: 13px; color: #888; }
+        
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 40px; }
+        .stat-item { background: var(--card); padding: 15px; border-radius: 4px; border: 1px solid var(--border); }
+        .stat-item label { color: #555; font-size: 9px; margin-bottom: 5px; }
+        .stat-item div { font-size: 16px; color: var(--accent); font-weight: 700; }
+
+        .report-act { margin-bottom: 50px; }
+        .act-title { font-size: 17px; color: var(--gold); margin-bottom: 15px; font-weight: 700; display: flex; align-items: center; }
+        .act-title::after { content: ''; flex: 1; height: 1px; background: var(--border); margin-left: 15px; }
+        .report-content { font-size: 14px; color: #aaa; line-height: 1.8; font-weight: 300; }
+        .highlight-box { background: #151515; padding: 20px; border-left: 3px solid var(--gold); margin: 20px 0; font-style: italic; color: #eee; }
+
+        .loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 1000; justify-content: center; align-items: center; flex-direction: column; }
+        .loader-progress { width: 120px; height: 1px; background: #222; margin-top: 25px; position: relative; overflow: hidden; }
+        .loader-bar { position: absolute; width: 100%; height: 100%; background: var(--gold); animation: load 2s infinite; }
+        @keyframes load { 0% { left: -100%; } 100% { left: 100%; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .wood { color: var(--wood); } .fire { color: var(--fire); } .earth { color: var(--earth); } .metal { color: var(--metal); } .water { color: var(--water); }
+        .error-msg { color: var(--fire); font-size: 12px; margin-top: 8px; display: none; text-align: left; }
+    </style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loading">
+    <div style="letter-spacing: 10px; font-size: 11px; color: var(--gold);">AXE ENGINE v4.5</div>
+    <div class="loader-progress"><div class="loader-bar"></div></div>
+</div>
+
+<div class="container">
+    <div class="logo">X-SAJU MASTER</div>
+
+    <!-- STEP 1 -->
+    <div id="step-1">
+        <span class="section-label">01. 데이터 동기화 (Initialization)</span>
+        <div class="input-group"><label>성함</label><input type="text" id="user-name" placeholder="이름 입력"></div>
+        
+        <div class="input-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div><label>성별</label><select id="gender"><option value="M">남성</option><option value="F">여성</option></select></div>
+            <div><label>역법</label><select id="cal-type"><option value="S">양력</option><option value="L">음력</option><option value="LY">음력(윤달)</option></select></div>
+        </div>
+
+        <div class="input-group"><label>생년월일 (YYMMDD / YYYYMMDD)</label><input type="text" id="birth-date" placeholder="예: 880427" maxlength="8"></div>
+        <div class="input-group"><label>생시 (HHMM - 24시간제)</label><input type="text" id="birth-time" placeholder="예: 0104" maxlength="4"></div>
+        
+        <button class="btn-main" onclick="startEngine()">분석 엔진 가동</button>
+        <div id="input-err" class="error-msg">데이터 형식을 확인해 주십시오.</div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div id="step-2">
+        <span class="section-label">02. 데이터 원국 (DATA MANIFEST)</span>
+        <div class="saju-grid">
+            <div id="pillar-hour" class="pillar-card"></div>
+            <div id="pillar-day" class="pillar-card"></div>
+            <div id="pillar-month" class="pillar-card"></div>
+            <div id="pillar-year" class="pillar-card"></div>
+        </div>
+        <div class="stat-grid">
+            <div class="stat-item"><label>일주</label><div id="ilju-val">-</div></div>
+            <div class="stat-item"><label>격국</label><div id="gyeok-val">-</div></div>
+        </div>
+        <button class="btn-main" onclick="generateReport()">심층 분석 리포트 생성</button>
+    </div>
+
+    <!-- STEP 3 -->
+    <div id="step-3">
+        <div id="final-report"></div>
+        <button class="btn-main" onclick="location.reload()" style="background:transparent; border:1px solid var(--border); color:var(--dim); margin-top:40px;">새로운 분석 시작</button>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/lunar-javascript/lunar.js"></script>
+<script>
+    const S = ["甲","乙","丙","丁","戊","己","庚","辛","壬","癸"], B = ["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
+    const E = {"甲":"wood","乙":"wood","寅":"wood","卯":"wood","丙":"fire","丁":"fire","巳":"fire","午":"fire","戊":"earth","己":"earth","辰":"earth","戌":"earth","丑":"earth","未":"earth","庚":"metal","辛":"metal","申":"metal","酉":"metal","壬":"water","癸":"water","亥":"water","子":"water"};
+    
+    function getSipseong(ds, t) {
+        const o = ["wood","fire","earth","metal","water"], di = o.indexOf(E[ds]), ti = o.indexOf(E[t]);
+        const dy = ["甲","丙","戊","庚","壬"].includes(ds), ty = ["甲","丙","戊","庚","壬","寅","辰","午","申","戌","子"].includes(t);
+        const s = dy === ty, d = (ti - di + 5) % 5;
+        if(d===0) return s?"비견":"겁재"; if(d===1) return s?"식신":"상관"; if(d===2) return s?"편재":"정재"; if(d===3) return s?"편관":"정관"; if(d===4) return s?"편인":"정인";
+    }
+
+    let ps = [];
+    function startEngine() {
+        const ds = document.getElementById('birth-date').value, ts = document.getElementById('birth-time').value || "0000";
+        const ct = document.getElementById('cal-type').value;
+        let y, m, d, h = parseInt(ts.substring(0,2)), mn = parseInt(ts.substring(2,4));
+        
+        if(ds.length===6) { let yy=parseInt(ds.substring(0,2)); y=(yy>30?1900:2000)+yy; m=parseInt(ds.substring(2,4)); d=parseInt(ds.substring(4,6)); }
+        else if(ds.length===8) { y=parseInt(ds.substring(0,4)); m=parseInt(ds.substring(4,6)); d=parseInt(ds.substring(6,8)); }
+        else { document.getElementById('input-err').style.display='block'; return; }
+
+        document.getElementById('loading').style.display='flex';
+        
+        setTimeout(() => {
+            let lunar, solar;
+            try {
+                if(ct === 'S') {
+                    solar = Solar.fromYmdHms(y, m, d, h, mn, 0);
+                    lunar = solar.getLunar();
+                } else {
+                    lunar = Lunar.fromYmdHms(y, m, d, h, mn, 0);
+                    if(ct === 'LY') { /* Handle leap month if library supports specifically or adjust */ }
+                }
+
+                // Get Eight Characters (Ba-Zi) via Lunar lib (Highly accurate)
+                const baZi = lunar.getEightChar();
+                const year = baZi[0], month = baZi[1], day = baZi[2], hour = baZi[3];
+                const dayStem = day.substring(0,1);
+
+                ps = [
+                    {h: year, p: "년", s: getSipseong(dayStem, year[0]), c1: E[year[0]], c2: E[year[1]]},
+                    {h: month, p: "월", s: getSipseong(dayStem, month[0]), c1: E[month[0]], c2: E[month[1]]},
+                    {h: day, p: "일", s: "본인", c1: E[day[0]], c2: E[day[1]]},
+                    {h: hour, p: "시", s: getSipseong(dayStem, hour[0]), c1: E[hour[0]], c2: E[hour[1]]}
+                ];
+
+                renderStep2();
+            } catch(e) {
+                alert("엔진 가동 오류: 날짜 데이터를 확인하십시오.");
+                location.reload();
+            }
+        }, 1200);
+    }
+
+    function renderStep2() {
+        document.getElementById('loading').style.display='none';
+        document.getElementById('step-1').style.display='none';
+        document.getElementById('step-2').style.display='block';
+
+        const ids = ['pillar-year', 'pillar-month', 'pillar-day', 'pillar-hour'];
+        // Reverse for UI: Hour Day Month Year
+        [3, 2, 1, 0].forEach((idx, i) => {
+            const p = ps[idx];
+            const targetId = ['pillar-hour', 'pillar-day', 'pillar-month', 'pillar-year'][i];
+            document.getElementById(targetId).innerHTML = `
+                <div class="pillar-label">${p.p}</div>
+                <div class="sipseong">${p.s}</div>
+                <div class="hanja"><span class="${p.c1}">${p.h[0]}</span><br><span class="${p.c2}">${p.h[1]}</span></div>
+                <div class="hangul">${p.h}</div>
+            `;
+        });
+
+        document.getElementById('ilju-val').innerText = ps[2].h;
+        document.getElementById('gyeok-val').innerText = ps[1].s + "격";
+    }
+
+    function generateReport() {
+        document.getElementById('loading').style.display='flex';
+        setTimeout(() => {
+            document.getElementById('loading').style.display='none';
+            document.getElementById('step-2').style.display='none';
+            document.getElementById('step-3').style.display='block';
+            const name = document.getElementById('user-name').value || "사용자";
+            document.getElementById('final-report').innerHTML = `
+                <div class="report-header"><h2>${name} 님의 마스터 설계도</h2></div>
+                <div class="report-act"><div class="act-title">제 1막: [기질] 본질의 분석</div><div class="report-content"><p>당신은 <strong>${ps[2].h}</strong>의 기운으로 세상의 문을 열었습니다. 이는 당신이 가진 가장 순수하고 강력한 엔진의 사양입니다.</p></div></div>
+                <div class="report-act"><div class="act-title">제 2막: [환경] 사회적 궤도</div><div class="report-content"><p>월지의 <strong>${ps[1].s}</strong> 에너지는 당신이 사회라는 무대에서 어떤 역할을 맡고, 어떤 경쟁력을 발휘할지 결정짓는 핵심 알고리즘입니다.</p><div class="highlight-box">"자신의 데이터를 믿고, Axe Intelligence의 정밀한 통찰을 따르십시오."</div></div></div>
+                <div class="report-act"><div class="act-title">제 3막: [전략] 개운의 로직</div><div class="report-content"><p>운명은 고정된 값이 아닙니다. 부족한 오행의 밸런스를 맞추고, 강점을 극대화하는 전략적 행동이 당신을 0.1%의 정점으로 안내할 것입니다.</p></div></div>
+            `;
+        }, 1500);
+    }
+</script>
+</body>
+</html>

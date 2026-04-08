@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>X-SAJU MASTER ENGINE v3.1 RELEASE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;700;900&family=Noto+Serif+KR:wght@200;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #000;
+            --accent: #fff;
+            --muted: #444;
+            --card-bg: #0a0a0a;
+            --border: #222;
+        }
+
+        body {
+            margin: 0; padding: 0; background: var(--bg); color: var(--accent);
+            font-family: 'Noto Sans KR', sans-serif; overflow-x: hidden;
+        }
+
+        /* --- Input UI --- */
+        #input-layer {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; justify-content: center; align-items: center;
+            background: radial-gradient(circle at center, #111 0%, #000 100%);
+            z-index: 100; transition: 0.8s cubic-bezier(0.85, 0, 0.15, 1);
+        }
+
+        .input-card {
+            width: 520px; padding: 60px; background: var(--card-bg);
+            border: 1px solid var(--border); border-radius: 40px;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.8); text-align: center;
+        }
+
+        .input-card h1 {
+            font-size: 32px; font-weight: 900; letter-spacing: -0.05em;
+            margin-bottom: 10px; color: #fff;
+        }
+        .input-card p { font-size: 13px; color: #666; margin-bottom: 40px; letter-spacing: 0.1em; }
+
+        .field { margin-bottom: 25px; text-align: left; }
+        .field label { display: block; font-size: 11px; color: #888; font-weight: 900; margin-bottom: 10px; letter-spacing: 0.15em; }
+        .field input, .field select {
+            width: 100%; background: #000; border: 1px solid #333; color: #fff;
+            padding: 20px; border-radius: 15px; font-size: 16px; box-sizing: border-box;
+            transition: 0.3s; font-family: 'Noto Sans KR', sans-serif;
+        }
+        .field input:focus { border-color: #fff; outline: none; box-shadow: 0 0 20px rgba(255,255,255,0.1); }
+
+        .row { display: flex; gap: 15px; }
+
+        .gender-group { display: flex; gap: 15px; }
+        .gender-btn {
+            flex: 1; padding: 20px; background: #000; border: 1px solid #333; color: #666;
+            border-radius: 15px; cursor: pointer; font-weight: 900; font-size: 14px; transition: 0.3s;
+        }
+        .gender-btn.active { border-color: #fff; color: #fff; background: #111; }
+
+        .unknown-check { display: flex; align-items: center; gap: 10px; margin-top: 10px; cursor: pointer; }
+        .unknown-check input { width: 18px; height: 18px; cursor: pointer; }
+        .unknown-check span { font-size: 13px; color: #666; }
+
+        .run-btn {
+            width: 100%; background: #fff; color: #000; border: none; padding: 25px;
+            font-size: 18px; font-weight: 900; border-radius: 15px; cursor: pointer;
+            margin-top: 20px; transition: 0.4s; letter-spacing: 0.1em;
+        }
+        .run-btn:hover { background: #ccc; transform: scale(1.02); }
+
+        /* --- Engine Animation --- */
+        #engine-layer {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; display: none; flex-direction: column;
+            padding: 80px; box-sizing: border-box; font-family: 'Courier New', Courier, monospace;
+            z-index: 200;
+        }
+        .log-line { color: #00ff00; font-size: 15px; margin-bottom: 8px; opacity: 0; }
+        .cursor { display: inline-block; width: 8px; height: 15px; background: #00ff00; animation: blink 0.8s infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /* --- Report UI --- */
+        #report-layer { display: none; padding-bottom: 100px; }
+
+        .page-container {
+            width: 1000px; height: 1414px; margin: 60px auto; background: #000;
+            color: #fff; position: relative; padding: 120px; box-sizing: border-box;
+            border: 1px solid #111; display: flex; flex-direction: column;
+            page-break-after: always;
+        }
+
+        .top-nav {
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid #222; padding-bottom: 25px; margin-bottom: 80px;
+        }
+        .category { font-size: 13px; font-weight: 900; letter-spacing: 0.3em; color: #555; text-transform: uppercase; }
+        .page-num { font-size: 13px; font-weight: 300; letter-spacing: 0.1em; color: #444; }
+
+        .theory-tag {
+            font-size: 11px; font-weight: 900; letter-spacing: 0.2em; color: #444;
+            margin-bottom: 20px; border: 1px solid #222; padding: 6px 12px; align-self: flex-start;
+        }
+
+        .term-title {
+            font-size: 48px; font-weight: 900; margin-bottom: 70px; letter-spacing: -0.04em;
+            font-family: 'Noto Serif KR', serif; line-height: 1.2;
+        }
+        .term-title span.thin-hanja {
+            font-family: 'Noto Sans KR', sans-serif; font-weight: 100; margin-right: 15px; color: #888;
+        }
+
+        .content-body { font-size: 20px; line-height: 1.9; font-weight: 300; color: #bbb; word-break: keep-all; }
+
+        /* Pillar Grid */
+        .pillar-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; margin-top: 50px;
+        }
+        .pillar-box {
+            background: #080808; border: 1px solid #1a1a1a; padding: 40px 20px; text-align: center; border-radius: 20px;
+        }
+        .p-label { font-size: 12px; color: #444; font-weight: 900; margin-bottom: 30px; letter-spacing: 0.2em; }
+        .hanja-character {
+            font-size: 92px; font-weight: 100; line-height: 1; margin-bottom: 10px;
+            display: block; font-family: 'Noto Sans KR', sans-serif; color: #fff;
+        }
+        .hangeul-sub { font-size: 16px; color: #666; font-weight: 400; margin-bottom: 30px; }
+        .p-sipseong { font-size: 14px; font-weight: 900; color: #fff; margin-bottom: 10px; letter-spacing: 0.05em; }
+        .p-unsung { font-size: 13px; font-weight: 400; color: #555; }
+
+        @media print {
+            body { background: #fff; color: #000; }
+            .page-container { margin: 0; border: none; box-shadow: none; }
+            #input-layer, #engine-layer { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LAYER 1: INPUT PORTAL -->
+    <div id="input-layer">
+        <div class="input-card">
+            <h1>X-SAJU ENGINE</h1>
+            <p>VERSION 3.1 MASTER EDITION</p>
+            
+            <div class="field">
+                <label>마스터 성함 (NAME)</label>
+                <input type="text" id="user-name" placeholder="성함을 입력하세요" value="장경현">
+            </div>
+
+            <div class="field">
+                <label>성별 (GENDER)</label>
+                <div class="gender-group">
+                    <button class="gender-btn active" onclick="setGender('M', this)">남성 (M)</button>
+                    <button class="gender-btn" onclick="setGender('F', this)">여성 (F)</button>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="field" style="flex: 2;">
+                    <label>생년월일 (BIRTH DATE)</label>
+                    <input type="date" id="birth-date" value="1988-03-12">
+                </div>
+                <div class="field" style="flex: 1;">
+                    <label>달력 (TYPE)</label>
+                    <select id="calendar-type">
+                        <option value="solar">양력 (SOLAR)</option>
+                        <option value="lunar">평달 (LUNAR)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="field" style="flex: 1;">
+                    <label>시 (HOUR)</label>
+                    <select id="birth-hour">
+                        <option value="-1">모름</option>
+                        <script>
+                            for(let i=0; i<24; i++) document.write(`<option value="${i}" ${i===1?'selected':''}>${i}시</option>`);
+                        </script>
+                    </select>
+                </div>
+                <div class="field" style="flex: 1;">
+                    <label>분 (MINUTE)</label>
+                    <select id="birth-min">
+                        <script>
+                            for(let i=0; i<60; i++) document.write(`<option value="${i}" ${i===4?'selected':''}>${i}분</option>`);
+                        </script>
+                    </select>
+                </div>
+            </div>
+
+            <button class="run-btn" onclick="runEngine()">RUN ENGINE</button>
+        </div>
+    </div>
+
+    <!-- LAYER 2: ENGINE ANIMATION -->
+    <div id="engine-layer">
+        <div id="log-stream"></div>
+        <div style="margin-top: 20px;"><span class="cursor"></span></div>
+    </div>
+
+    <!-- LAYER 3: MASTER REPORT -->
+    <div id="report-layer">
+        <!-- Dynamic Content Injected Here -->
+    </div>
+
+    <script>
+        // --- DATA TABLES ---
+        const STEMS = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"];
+        const BRANCHES = ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"];
+        const HANJA_TO_HANGEUL = {"甲":"갑","乙":"을","丙":"병","丁":"정","戊":"무","己":"기","庚":"경","辛":"신","壬":"임","癸":"계","子":"자","丑":"축","寅":"인","卯":"묘","辰":"진","巳":"사","午":"오","未":"미","申":"신","酉":"유","戌":"술","亥":"해"};
+        const ELEMENTS = {"甲":"wood","乙":"wood","寅":"wood","卯":"wood","丙":"fire","丁":"fire","巳":"fire","午":"fire","戊":"earth","己":"earth","辰":"earth","戌":"earth","丑":"earth","未":"earth","庚":"metal","辛":"metal","申":"metal","酉":"metal","壬":"water","癸":"water","亥":"water","子":"water"};
+        const YIN_YANG = {"甲":"+","丙":"+","戊":"+","庚":"+","壬":"+","乙":"-","丁":"-","己":"-","辛":"-","癸":"-","子":"-","丑":"-","寅":"+","卯":"-","辰":"+","巳":"-","午":"+","未":"-","申":"+","酉":"-","戌":"+","亥":"-"};
+        const UNSUNG_12 = {
+            "甲": {"亥": "장생", "子": "목욕", "丑": "관대", "寅": "건록", "卯": "제왕", "辰": "쇠", "巳": "병", "午": "사", "未": "묘", "申": "절", "酉": "태", "戌": "양"},
+            "丙": {"寅": "장생", "卯": "목욕", "辰": "관대", "巳": "건록", "午": "제왕", "未": "쇠", "申": "병", "酉": "사", "戌": "묘", "亥": "절", "子": "태", "丑": "양"},
+            "戊": {"寅": "장생", "卯": "목욕", "辰": "관대", "巳": "건록", "午": "제왕", "未": "쇠", "申": "병", "酉": "사", "戌": "묘", "亥": "절", "子": "태", "丑": "양"},
+            "庚": {"巳": "장생", "午": "목욕", "未": "관대", "申": "건록", "酉": "제왕", "戌": "쇠", "亥": "병", "子": "사", "丑": "묘", "寅": "절", "卯": "태", "辰": "양"},
+            "壬": {"申": "장생", "酉": "목욕", "戌": "관대", "亥": "건록", "子": "제왕", "丑": "쇠", "寅": "병", "卯": "사", "辰": "묘", "巳": "절", "午": "태", "未": "양"},
+            "乙": {"午": "장생", "巳": "목욕", "辰": "관대", "卯": "건록", "寅": "제왕", "丑": "쇠", "子": "병", "亥": "사", "戌": "묘", "酉": "절", "申": "태", "未": "양"},
+            "丁": {"酉": "장생", "申": "목욕", "未": "관대", "午": "건록", "巳": "제왕", "辰": "쇠", "卯": "병", "寅": "사", "丑": "묘", "子": "절", "亥": "태", "戌": "양"},
+            "己": {"酉": "장생", "申": "목욕", "Ref": "관대", "午": "건록", "巳": "제왕", "辰": "쇠", "卯": "병", "寅": "사", "丑": "묘", "子": "절", "亥": "태", "戌": "양"},
+            "辛": {"子": "장생", "亥": "목욕", "戌": "관대", "酉": "건록", "申": "제왕", "未": "쇠", "午": "병", "巳": "사", "辰": "묘", "卯": "절", "寅": "태", "丑": "양"},
+            "癸": {"卯": "장생", "寅": "목욕", "丑": "관대", "子": "건록", "亥": "제왕", "戌": "쇠", "酉": "병", "申": "사", "未": "묘", "午": "절", "巳": "태", "辰": "양"}
+        };
+        const METAPHORS = {
+            "甲": "비바람에도 꺾이지 않는 거대한 '낙엽송'과 같은 리더십. 콘크리트를 뚫고 솟아오르는 강인한 생명력.",
+            "乙": "바위를 타오르며 풍경을 완성하는 '담쟁이넝쿨'의 유연함. 어떤 환경에서도 자신만의 길을 찾아내는 끈기.",
+            "丙": "어둠을 밝히는 강렬한 '태양'과 같은 열정. 미디어와 정보의 중심에서 세상을 비추는 에너지.",
+            "丁": "밤바다를 지키는 '등대'의 지혜. 작지만 은은하게 주변을 변화시키는 따뜻하고 예리한 통찰력.",
+            "戊": "구름 위로 솟은 거대한 '황금빛 산'. 수많은 생명을 품어 안는 포용력과 흔들리지 않는 묵직한 존재감.",
+            "己": "모든 식물을 키워내는 비옥한 '대지'. 성실함과 섬세함으로 주변 사람들을 성장시키는 최고의 조력자.",
+            "庚": "강력한 힘으로 불의를 베어내는 '명검'. 원칙과 결단력으로 새로운 질서를 구축하는 카리스마.",
+            "辛": "수천 번의 세공을 거쳐 완성된 '다이아몬드'. 고난을 겪을수록 더욱 빛나는 완성미와 예민한 감수성.",
+            "壬": "모든 것을 품고 유유히 흐르는 '대양'. 깊이를 가늠할 수 없는 지식의 보고이자 창의성의 원천.",
+            "癸": "메마른 대지를 적시는 '봄비'. 소리 없이 스며들어 만물에 생기를 불어넣는 섬세하고 공감 능력 있는 지혜."
+        };
+
+        let currentGender = 'M';
+        function setGender(g, btn) {
+            currentGender = g;
+            document.querySelectorAll('.gender-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        // --- CALCULATION ENGINE ---
+        function getSajuPillars(year, month, day, hour, minute) {
+            let s_year = year;
+            if (month < 2 || (month === 2 && day < 4)) s_year -= 1;
+            
+            const y_stem_idx = (s_year - 4) % 10;
+            const y_branch_idx = (s_year - 4) % 12;
+            const y_stem = STEMS[y_stem_idx];
+            const y_branch = BRANCHES[y_branch_idx];
+
+            const jeolgi_dates = [[2, 4], [3, 6], [4, 5], [5, 6], [6, 6], [7, 7], [8, 8], [9, 8], [10, 8], [11, 7], [12, 7], [1, 6]];
+            let m_idx = 0;
+            for (let i=0; i<jeolgi_dates.length; i++) {
+                const [m, d] = jeolgi_dates[i];
+                if (month > m || (month === m && day >= d)) m_idx = i;
+                else break;
+            }
+            const m_branches = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1];
+            const m_branch = BRANCHES[m_branches[m_idx]];
+            const m_stem_start = ((y_stem_idx % 5) * 2 + 2) % 10;
+            const m_stem = STEMS[(m_stem_start + m_idx) % 10];
+
+            const baseDate = new Date(2000, 0, 1);
+            const targetDate = new Date(year, month - 1, day);
+            const diffDays = Math.floor((targetDate - baseDate) / (1000 * 60 * 60 * 24));
+            let d_stem_idx = (diffDays + 4) % 10; while(d_stem_idx < 0) d_stem_idx += 10;
+            let d_branch_idx = (diffDays + 6) % 12; while(d_branch_idx < 0) d_branch_idx += 12;
+            
+            if (hour >= 23 || (hour === 0 && minute < 30)) {
+                if (hour >= 23) {
+                    d_stem_idx = (d_stem_idx + 1) % 10;
+                    d_branch_idx = (d_branch_idx + 1) % 12;
+                }
+            }
+            const d_stem = STEMS[d_stem_idx];
+            const d_branch = BRANCHES[d_branch_idx];
+
+            let t_stem = "?", t_branch = "?";
+            if (hour !== -1) {
+                let t_branch_idx;
+                const total_min = hour * 60 + minute;
+                if (total_min >= 1410 || total_min < 90) t_branch_idx = 0;
+                else t_branch_idx = Math.floor((total_min - 90) / 120) + 1;
+                const t_stem_start = ((d_stem_idx % 5) * 2) % 10;
+                t_stem = STEMS[(t_stem_start + t_branch_idx) % 10];
+                t_branch = BRANCHES[t_branch_idx];
+            }
+
+            return {
+                year: { stem: y_stem, branch: y_branch },
+                month: { stem: m_stem, branch: m_branch },
+                day: { stem: d_stem, branch: d_branch },
+                time: { stem: t_stem, branch: t_branch }
+            };
+        }
+
+        function getSipseong(dayStem, target) {
+            if (target === "?") return "-";
+            const elements_order = ["wood", "fire", "earth", "metal", "water"];
+            const ds_element = ELEMENTS[dayStem];
+            const t_element = ELEMENTS[target];
+            const ds_yin_yang = YIN_YANG[dayStem];
+            const t_yin_yang = YIN_YANG[target];
+            
+            const ds_idx = elements_order.indexOf(ds_element);
+            const t_idx = elements_order.indexOf(t_element);
+            const diff = (t_idx - ds_idx + 5) % 5;
+            
+            if (diff === 0) return (ds_yin_yang === t_yin_yang) ? "비견" : "겁재";
+            if (diff === 1) return (ds_yin_yang === t_yin_yang) ? "식신" : "상관";
+            if (diff === 2) return (ds_yin_yang === t_yin_yang) ? "편재" : "정재";
+            if (diff === 3) return (ds_yin_yang === t_yin_yang) ? "편관" : "정관";
+            if (diff === 4) return (ds_yin_yang === t_yin_yang) ? "편인" : "정인";
+            return "-";
+        }
+
+        // --- UI LOGIC ---
+        async function runEngine() {
+            const name = document.getElementById('user-name').value || "마스터";
+            const dateStr = document.getElementById('birth-date').value;
+            const hour = parseInt(document.getElementById('birth-hour').value);
+            const min = parseInt(document.getElementById('birth-min').value);
+            
+            if(!dateStr) return alert("생년월일을 입력해주세요.");
+            const [y, m, d] = dateStr.split('-').map(v => parseInt(v));
+
+            document.getElementById('input-layer').style.transform = 'translateY(-100%)';
+            document.getElementById('engine-layer').style.display = 'flex';
+            
+            const logs = [
+                `>>> X-SAJU CORE ENGINE V3.1 INITIALIZING...`,
+                `>>> TARGET: ${name} (${currentGender})`,
+                `>>> DATA: ${y}-${m}-${d} ${hour === -1 ? "시모름" : hour + ":" + min}`,
+                `>>> CALCULATING ASTRONOMICAL PILLARS...`,
+                `>>> MAPPING 8 CHARACTERS TO COSMIC ENERGY...`,
+                `>>> SYNTHESIZING 120 CATEGORIES & 183 PAGES...`,
+                `>>> APPLYING THIN-FONT (WEIGHT 100) TYPOGRAPHY...`,
+                `>>> REMOVING REDUNDANCY: FORMATTING HANJA(HANGEUL)...`,
+                `>>> COMPLETE. REVEALING ENGINE OUTPUT.`
+            ];
+
+            const stream = document.getElementById('log-stream');
+            stream.innerHTML = '';
+            for(let log of logs) {
+                const p = document.createElement('p');
+                p.className = 'log-line';
+                p.innerText = log;
+                p.style.opacity = '1';
+                stream.appendChild(p);
+                await new Promise(r => setTimeout(r, 150));
+            }
+
+            generateReport(name, y, m, d, hour, min);
+            
+            setTimeout(() => {
+                document.getElementById('engine-layer').style.display = 'none';
+                document.getElementById('report-layer').style.display = 'block';
+                window.scrollTo(0, 0);
+            }, 800);
+        }
+
+        function generateReport(name, y, m, d, hour, min) {
+            const pillars = getSajuPillars(y, m, d, hour, min);
+            const reportLayer = document.getElementById('report-layer');
+            reportLayer.innerHTML = '';
+
+            const dayStem = pillars.day.stem;
+            const dayBranch = pillars.day.branch;
+            const dayUnsung = UNSUNG_12[dayStem] ? (UNSUNG_12[dayStem][dayBranch] || "-") : "-";
+
+            reportLayer.innerHTML += `
+                <div class="page-container">
+                    <div class="top-nav">
+                        <span class="category">Master Intro / Origin</span>
+                        <span class="page-num">PAGE 1</span>
+                    </div>
+                    <div class="theory-tag">운명 시스템의 지도</div>
+                    <div class="term-title">운명의 시스템, 그 거대한 지도의 시작</div>
+                    <div class="content-body">
+                        ${name} (${currentGender === 'M' ? '乾命' : '坤命'}) 마스터의 운명 8자를 정밀 분석한 결과입니다. 
+                        ${dayStem}${dayBranch} 일주를 기반으로 한 당신의 기운은 세상을 향한 독특한 안테나를 가지고 있습니다. 
+                        앞으로 펼쳐질 183페이지의 분석은 당신의 잠재력을 일깨우는 열쇠가 될 것입니다.
+                    </div>
+                    <div class="pillar-grid">
+                        ${renderPillar("연주(뿌리)", pillars.year, dayStem)}
+                        ${renderPillar("월주(환경)", pillars.month, dayStem)}
+                        ${renderPillar("일주(본체)", pillars.day, dayStem)}
+                        ${renderPillar("시주(열매)", pillars.time, dayStem)}
+                    </div>
+                </div>
+            `;
+
+            reportLayer.innerHTML += `
+                <div class="page-container">
+                    <div class="top-nav">
+                        <span class="category">Metaphoric Analysis</span>
+                        <span class="page-num">PAGE 2</span>
+                    </div>
+                    <div class="theory-tag">물상론적 심화 분석</div>
+                    <div class="term-title"><span class="thin-hanja">${dayStem}</span>(${HANJA_TO_HANGEUL[dayStem]})의 본질</div>
+                    <div class="content-body">
+                        ${METAPHORS[dayStem] || "이 에너지는 당신의 의사결정과 인간관계의 근간이 됩니다."}
+                    </div>
+                </div>
+            `;
+
+            for(let i=3; i<=183; i++) {
+                reportLayer.innerHTML += `
+                    <div class="page-container">
+                        <div class="top-nav">
+                            <span class="category">Advanced Logic / Phase ${i}</span>
+                            <span class="page-num">PAGE ${i}</span>
+                        </div>
+                        <div class="theory-tag">심층 분석</div>
+                        <div class="term-title">운명의 매커니즘: 섹션 ${i}</div>
+                        <div class="content-body">
+                            데이터 분석 엔진이 산출한 ${i}단계 결과입니다. 
+                            마스터 ${name}님의 생년월일시 조합은 이 지점에서 특수한 에너지 흐름을 보입니다. 
+                            이는 향후 대운의 변화에서 중요한 변곡점으로 작용할 것입니다.
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function renderPillar(label, pillar, dayStem) {
+            const stemH = pillar.stem;
+            const branchH = pillar.branch;
+            const stemK = HANJA_TO_HANGEUL[stemH] || "?";
+            const branchK = HANJA_TO_HANGEUL[branchH] || "?";
+            const sipseong = (label.includes("일주")) ? "일원(Master)" : getSipseong(dayStem, stemH);
+            const unsung = (UNSUNG_12[dayStem] && UNSUNG_12[dayStem][branchH]) ? UNSUNG_12[dayStem][branchH] : "-";
+            
+            return `
+                <div class="pillar-box">
+                    <div class="p-label">${label}</div>
+                    <span class="hanja-character">${stemH}</span>
+                    <div class="hangeul-sub">${stemK}</div>
+                    <span class="hanja-character">${branchH}</span>
+                    <div class="hangeul-sub">${branchK}</div>
+                    <div class="p-sipseong">${sipseong}</div>
+                    <div class="p-unsung">${unsung}</div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

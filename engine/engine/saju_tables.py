@@ -17,12 +17,6 @@ HANJA_TO_ELEMENT = {
     "壬": "water", "癸": "water", "亥": "water", "子": "water"
 }
 
-# 12 Unsung Hangeul to Hanja Mapping
-UNSUNG_HANGEUL_TO_HANJA = {
-    "장생": "長生", "목욕": "沐浴", "관대": "冠帶", "건록": "建祿", "제왕": "帝旺",
-    "쇠": "衰", "병": "病", "사": "死", "묘": "墓", "절": "絶", "태": "胎", "양": "養"
-}
-
 # Metaphoric Mappings for Celestial Stems
 METAPHORS = {
     "甲": "비바람에도 꺾이지 않는 거대한 '낙엽송'과 같은 리더십. 콘크리트를 뚫고 솟아오르는 강인한 생명력.",

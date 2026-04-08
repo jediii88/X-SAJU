@@ -1,0 +1,10 @@
+const {Solar, Lunar} = require('./lunar.js');
+const solar = Solar.fromYmdHms(1988, 3, 12, 1, 4, 0);
+const lunar = solar.getLunar();
+const ec = lunar.getEightChar();
+ec.setSect(2);
+console.log('Year:', ec.getYear());
+console.log('Month:', ec.getMonth());
+console.log('Day:', ec.getDay());
+console.log('Time:', ec.getTime());
+console.log('Day Pillar:', ec.getDay());

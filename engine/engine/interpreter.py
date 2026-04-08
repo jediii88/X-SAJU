@@ -1,11 +1,5 @@
 # -*- coding: utf-8 -*-
-from .saju_tables import (
-    UNSUNG_12, SIPSEONG, METAPHORS, UNSUNG_MASTER_TEXTS, 
-    SIPSEONG_ADVICE, SHINSAL, DAEUN_TEXTS, RELATIONSHIPS, 
-    YONGSIN_GUIDE, CAREER_WEALTH, HEALTH_VITALITY, LIFE_STAGES, 
-    GAEWUN_STRATEGIES, FINAL_ADVICE, HANJA_TO_HANGEUL, HANJA_TO_ELEMENT,
-    UNSUNG_HANGEUL_TO_HANJA
-)
+from .saju_tables import UNSUNG_12, SIPSEONG, METAPHORS, UNSUNG_MASTER_TEXTS, SIPSEONG_ADVICE, SHINSAL, DAEUN_TEXTS, RELATIONSHIPS, YONGSIN_GUIDE, CAREER_WEALTH, HEALTH_VITALITY, LIFE_STAGES, GAEWUN_STRATEGIES, FINAL_ADVICE
 
 class Interpreter:
     def __init__(self, won_guk):
@@ -48,11 +42,6 @@ class Interpreter:
         percentages = {k: round((v / total) * 100, 1) for k, v in counts.items()}
         return counts, percentages
 
-    def format_title(self, hanja, hangeul):
-        if not hanja or hanja == hangeul:
-            return hangeul
-        return f"{hanja}({hangeul})"
-
     def generate_page_content(self, page_num):
         balance, percentages = self.get_element_balance()
         pillar_info = self.analyze_pillars()
@@ -61,7 +50,7 @@ class Interpreter:
             return {
                 "category": "Master Intro",
                 "title": "운명의 시스템, 그 거대한 지도의 시작",
-                "content": f"{self.day_stem}{self.day_branch} 일주를 타고난 당신의 운명은 {pillar_info['day']['unsung']}의 강력한 기운을 엔진으로 삼고 있습니다. 이는 {UNSUNG_MASTER_TEXTS.get(pillar_info['day']['unsung'], '')}"
+                "content": f"{self.day_stem}{self.day_branch} 일주를 타고난 당신의 운명은 {pillar_info['day']['unsung']}의 강력한 기운을 엔진으로 삼고 있습니다. 이는 {pillar_info['day']['unsung_text']}"
             }
         
         # Pillar Analysis (Pages 2-5)
@@ -69,20 +58,17 @@ class Interpreter:
             p_names = ["연주 (뿌리)", "월주 (환경)", "일주 (본체)", "시주 (열매)"]
             p_key = ["year", "month", "day", "time"][page_num-2]
             info = pillar_info[p_key]
-            title_text = self.format_title(f"{info['stem']}{info['branch']}", f"{HANJA_TO_HANGEUL.get(info['stem'])}{HANJA_TO_HANGEUL.get(info['branch'])}")
             return {
                 "category": f"Pillar Depth / {p_names[page_num-2]}",
-                "title": f"{p_names[page_num-2]}의 정밀 분석: {title_text}",
+                "title": f"{p_names[page_num-2]}의 정밀 분석: {info['stem']}{info['branch']}",
                 "content": f"이 기둥에 깃든 {info['sipseong']}의 에너지는 당신의 삶에서 {info['sipseong_advice']}와 같은 양상으로 나타납니다. 특히 {info['unsung']}의 단계에 머물러 있어, {info['unsung_text']}"
             }
             
         # Element Balance (Pages 6-10)
         if 6 <= page_num <= 10:
             elements = ["木", "火", "土", "金", "水"]
-            e_hangeul = {"木": "목", "火": "화", "土": "토", "金": "금", "水": "수"}
             e = elements[page_num-6]
             pct = percentages[e]
-            title_text = self.format_title(e, e_hangeul[e])
             desc = {
                 "木": "성장과 추진력, 그리고 새로운 시작의 에너지입니다.",
                 "火": "열정과 확산, 그리고 세상을 밝히는 명예의 에너지입니다.",
@@ -92,7 +78,7 @@ class Interpreter:
             }
             return {
                 "category": "Element Analysis",
-                "title": f"오행의 균형: {title_text} ({pct}%)",
+                "title": f"오행의 균형: {e} ({pct}%)",
                 "content": f"당신의 운명 시스템에서 {e}의 기운은 {pct}%의 비중을 차지하고 있습니다. 이는 {desc[e]} 이 기운의 강약에 따라 당신의 성격적 특성과 건강의 리스크가 결정됩니다."
             }
 
@@ -100,11 +86,9 @@ class Interpreter:
         if 11 <= page_num <= 22:
             unsung_list = list(UNSUNG_MASTER_TEXTS.keys())
             u = unsung_list[page_num-11]
-            u_hanja = UNSUNG_HANGEUL_TO_HANJA.get(u, "")
-            title_text = self.format_title(u_hanja, u)
             return {
                 "category": "12 Stages of Life",
-                "title": f"운명의 순환: {title_text}",
+                "title": f"운명의 순환: {u}({u})",
                 "content": f"사주학에서 {u}은 {UNSUNG_MASTER_TEXTS[u]} 당신의 원국이나 대운에서 이 기운이 들어올 때, 해당 시기의 전략을 수정해야 할 필요가 있습니다."
             }
 

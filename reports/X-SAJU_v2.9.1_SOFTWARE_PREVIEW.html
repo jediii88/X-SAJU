@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>X-SAJU MASTER CORE v2.9.1 GUI PREVIEW</title>
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; background: #f0f0f0; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .window { width: 800px; height: 750px; background: white; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); display: flex; flex-direction: column; overflow: hidden; border: 1px solid #ddd; }
+        .title-bar { background: #eee; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; }
+        .title { font-weight: bold; font-size: 14px; color: #666; }
+        .dots { display: flex; gap: 8px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .dot-red { background: #ff5f56; } .dot-yellow { background: #ffbd2e; } .dot-green { background: #27c93f; }
+        
+        .content { padding: 40px; flex: 1; display: flex; flex-direction: column; gap: 20px; }
+        .header { text-align: center; font-size: 32px; font-weight: 900; letter-spacing: -0.05em; margin-bottom: 10px; }
+        
+        .input-group { background: #f8f8f8; padding: 25px; border-radius: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; border: 1px solid #eee; }
+        .field { display: flex; flex-direction: column; gap: 8px; }
+        label { font-size: 13px; font-weight: bold; color: #666; }
+        input, select { padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px; background: white; }
+        
+        .btn-run { background: #000; color: white; border: none; padding: 20px; font-size: 18px; font-weight: 900; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+        .btn-run:hover { background: #333; transform: translateY(-2px); }
+        
+        .status { font-size: 13px; font-weight: bold; color: #888; }
+        .terminal { background: #000; color: #00ff00; padding: 20px; border-radius: 8px; font-family: 'Consolas', monospace; font-size: 14px; flex: 1; overflow-y: auto; line-height: 1.5; }
+        .term-line { margin: 0; }
+        .cursor { display: inline-block; width: 8px; height: 15px; background: #00ff00; animation: blink 1s infinite; margin-left: 5px; vertical-align: middle; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+    </style>
+</head>
+<body>
+    <div class="window">
+        <div class="title-bar">
+            <div class="dots">
+                <div class="dot dot-red"></div>
+                <div class="dot dot-yellow"></div>
+                <div class="dot dot-green"></div>
+            </div>
+            <div class="title">X-SAJU CORE ENGINE v2.9.1 (MASTER EDITION)</div>
+            <div></div>
+        </div>
+        <div class="content">
+            <div class="header">X-SAJU / MASTER CORE SYSTEM</div>
+            
+            <div class="input-group">
+                <div class="field">
+                    <label>이름 (Name)</label>
+                    <input type="text" placeholder="성함을 입력하세요" value="장경현">
+                </div>
+                <div class="field">
+                    <label>성별 (Gender)</label>
+                    <select>
+                        <option>남성 (Male)</option>
+                        <option>여성 (Female)</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>생년월일 (Birth Date)</label>
+                    <input type="date" value="1988-03-12">
+                </div>
+                <div class="field">
+                    <label>태어난 시 (Birth Time)</label>
+                    <div style="display: flex; gap: 10px;">
+                        <select style="flex: 1;"><option>01시</option></select>
+                        <select style="flex: 1;"><option>04분</option></select>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="btn-run">183P 마스터 에디션 리포트 생성 (RUN ENGINE)</button>
+            
+            <div class="status">SYSTEM STATUS: READY</div>
+            
+            <div class="terminal">
+                <p class="term-line">>>> X-SAJU CORE KERNEL v2.9.1 INITIALIZED...</p>
+                <p class="term-line">>>> LOADING MASTER MAPPING TABLE (saju_tables.py)...</p>
+                <p class="term-line">>>> SYSTEM READY. WAITING FOR MASTER INPUT...</p>
+                <p class="term-line">>>> <span class="cursor"></span></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

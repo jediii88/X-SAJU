@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>X-SAJU MASTER v4.4 | Universal Precision Engine</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;700&family=Noto+Serif+KR:wght@200;400&display=swap');
+        :root { --bg: #050505; --card: #0f0f0f; --text: #f0f0f0; --dim: #777; --accent: #fff; --gold: #d4af37; --border: #222; --wood: #2ecc71; --fire: #e74c3c; --earth: #f1c40f; --metal: #bdc3c7; --water: #3498db; }
+        body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', sans-serif; margin: 0; display: flex; justify-content: center; line-height: 1.6; }
+        .container { width: 100%; max-width: 480px; padding: 40px 24px; box-sizing: border-box; text-align: center; }
+        .logo { font-size: 20px; letter-spacing: 4px; font-weight: 700; margin-bottom: 50px; }
+        .input-group { margin-bottom: 25px; text-align: left; }
+        label { display: block; font-size: 11px; color: var(--dim); margin-bottom: 8px; font-weight: 700; text-transform: uppercase; }
+        input { width: 100%; background: #111; border: 1px solid var(--border); color: #fff; padding: 15px; font-size: 16px; border-radius: 4px; box-sizing: border-box; outline: none; transition: 0.2s; }
+        input:focus { border-color: var(--gold); }
+        .btn { width: 100%; padding: 20px; background: var(--accent); color: #000; border: none; border-radius: 4px; font-weight: 700; cursor: pointer; margin-top: 20px; letter-spacing: 1px; }
+        
+        #step-2, #step-3 { display: none; text-align: left; animation: fadeIn 0.5s ease; }
+        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 40px; direction: rtl; }
+        .card { direction: ltr; border: 1px solid var(--border); padding: 15px 0; background: var(--card); border-radius: 4px; text-align: center; }
+        .card-label { font-size: 10px; color: #555; margin-bottom: 8px; }
+        .card-sipseong { font-size: 11px; color: var(--gold); margin-bottom: 10px; background: rgba(212,175,55,0.1); padding: 3px 0; }
+        .hanja { font-size: 26px; font-weight: 300; line-height: 1.1; margin-bottom: 10px; }
+        .hangul { font-size: 12px; color: #888; }
+        
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 40px; }
+        .stat-item { background: var(--card); padding: 15px; border-radius: 4px; border: 1px solid var(--border); }
+        .stat-item label { color: #555; font-size: 9px; margin: 0 0 5px 0; }
+        .stat-item div { font-size: 16px; font-weight: 700; }
+
+        .act { margin-bottom: 50px; }
+        .act-title { font-size: 17px; color: var(--gold); margin-bottom: 15px; font-weight: 700; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .act-content { font-size: 14px; color: #aaa; font-weight: 300; line-height: 1.8; }
+        .highlight { background: #151515; padding: 20px; border-left: 3px solid var(--gold); margin: 20px 0; color: #eee; font-style: italic; }
+
+        .loading { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 100; justify-content: center; align-items: center; flex-direction: column; }
+        .progress { width: 100px; height: 1px; background: #222; margin-top: 20px; position: relative; overflow: hidden; }
+        .progress-bar { position: absolute; width: 100%; height: 100%; background: var(--gold); animation: load 2s infinite; }
+        @keyframes load { 0% { left: -100%; } 100% { left: 100%; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .wood { color: var(--wood); } .fire { color: var(--fire); } .earth { color: var(--earth); } .metal { color: var(--metal); } .water { color: var(--water); }
+    </style>
+</head>
+<body>
+<div class="loading" id="loading">
+    <div style="letter-spacing:8px; font-size:12px; color:var(--gold);">AXE CORE v4.4</div>
+    <div class="progress"><div class="progress-bar"></div></div>
+</div>
+<div class="container">
+    <div class="logo">X-SAJU MASTER</div>
+    <div id="step-1">
+        <div class="input-group"><label>이름</label><input type="text" id="name" placeholder="입력하세요"></div>
+        <div class="input-group"><label>생년월일 (YYMMDD / YYYYMMDD)</label><input type="text" id="date" placeholder="예: 880427" maxlength="8"></div>
+        <div class="input-group"><label>생시 (HHMM - 24H)</label><input type="text" id="time" placeholder="예: 0104" maxlength="4"></div>
+        <button class="btn" onclick="run()">엔진 가동</button>
+    </div>
+    <div id="step-2">
+        <div class="grid" id="result"></div>
+        <div class="stat-grid">
+            <div class="stat-item"><label>일주</label><div id="ilju">-</div></div>
+            <div class="stat-item"><label>중심 기운</label><div id="core">-</div></div>
+            <div class="stat-item"><label>격국</label><div id="gyeok">-</div></div>
+            <div class="stat-item"><label>상태</label><div style="color:var(--wood)">VERIFIED</div></div>
+        </div>
+        <button class="btn" onclick="show()">리포트 생성</button>
+    </div>
+    <div id="step-3"><div id="report"></div><button class="btn" onclick="location.reload()" style="background:none; border:1px solid var(--border); color:var(--dim);">다시 하기</button></div>
+</div>
+<script>
+    const S = ["甲","乙","丙","丁","戊","己","庚","辛","壬","癸"], B = ["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
+    const E = {"甲":"wood","乙":"wood","寅":"wood","卯":"wood","丙":"fire","丁":"fire","巳":"fire","午":"fire","戊":"earth","己":"earth","辰":"earth","戌":"earth","丑":"earth","未":"earth","庚":"metal","辛":"metal","申":"metal","酉":"metal","壬":"water","癸":"water","亥":"water","子":"water"};
+    const K = {"wood":"木(나무)","fire":"火(불)","earth":"土(흙)","metal":"金(쇠)","water":"水(물)"};
+    const M = {"甲":"거대한 낙엽송","乙":"유연한 담쟁이","丙":"강렬한 태양","丁":"은은한 등대","戊":"황금빛 산","己":"비옥한 대지","庚":"날카로운 명검","辛":"빛나는 보석","壬":"끝없는 대양","癸":"생명의 봄비"};
+
+    function getS(ds, t) {
+        const o = ["wood","fire","earth","metal","water"], di = o.indexOf(E[ds]), ti = o.indexOf(E[t]);
+        const dy = ["甲","丙","戊","庚","壬"].includes(ds), ty = ["甲","丙","戊","庚","壬","寅","辰","午","申","戌","子"].includes(t);
+        const s = dy === ty, d = (ti - di + 5) % 5;
+        if(d===0) return s?"비견":"겁재"; if(d===1) return s?"식신":"상관"; if(d===2) return s?"편재":"정재"; if(d===3) return s?"편관":"정관"; if(d===4) return s?"편인":"정인";
+    }
+
+    function calc(y, m, d, hh, mm) {
+        // Year
+        let yb = y; if (m<2 || (m===2 && d<4)) yb--;
+        let yi = (yb-4)%60; if(yi<0) yi+=60;
+        const yp = S[yi%10]+B[yi%12];
+        // Month (Standard Jeolgi Boundaries)
+        const j = [5,4,5,5,5,5,7,7,7,8,7,7];
+        let mi = m-1; if(d < j[mi]) mi--; if(mi<0) mi=11;
+        const mb = B[(mi+2)%12], ms = S[((yi%10%5)*2+2+mi)%10];
+        const mp = ms+mb;
+        // Day
+        const target = new Date(y, m-1, d); if(hh===23 && mm>=30) target.setDate(target.getDate()+1);
+        const diff = Math.floor((target - new Date(2000,0,1))/86400000);
+        let di = (54+diff)%60; if(di<0) di+=60;
+        const dp = S[di%10]+B[di%12];
+        // Hour
+        const total = hh*60+mm;
+        let hi = (total>=1410 || total<90)?0:Math.floor((total-90)/120+1)%12;
+        const hp = S[((di%10%5)*2+hi)%10]+B[hi];
+        return [{h:yp,p:"년",s:getS(dp[0],yp[0]),c1:E[yp[0]],c2:E[yp[1]]},{h:mp,p:"월",s:getS(dp[0],mp[0]),c1:E[mp[0]],c2:E[mp[1]]},{h:dp,p:"일",s:"본인",c1:E[dp[0]],c2:E[dp[1]]},{h:hp,p:"시",s:getS(dp[0],hp[0]),c1:E[hp[0]],c2:E[hp[1]]}];
+    }
+
+    let ps = [];
+    function run() {
+        const ds = document.getElementById('date').value, ts = document.getElementById('time').value || "0000";
+        let y, m, d, h = parseInt(ts.substring(0,2)), mn = parseInt(ts.substring(2,4));
+        if(ds.length===6) { let yy=parseInt(ds.substring(0,2)); y=(yy>30?1900:2000)+yy; m=parseInt(ds.substring(2,4)); d=parseInt(ds.substring(4,6)); }
+        else if(ds.length===8) { y=parseInt(ds.substring(0,4)); m=parseInt(ds.substring(4,6)); d=parseInt(ds.substring(6,8)); }
+        else return alert("날짜 확인");
+        document.getElementById('loading').style.display='flex';
+        setTimeout(() => {
+            ps = calc(y, m, d, h, mn);
+            document.getElementById('loading').style.display='none';
+            document.getElementById('step-1').style.display='none';
+            document.getElementById('step-2').style.display='block';
+            let htm = ''; [3,2,1,0].forEach(i => {
+                const p = ps[i]; htm += `<div class="card"><div class="card-label">${p.p}</div><div class="card-sipseong">${p.s}</div><div class="hanja"><span class="${p.c1}">${p.h[0]}</span><br><span class="${p.c2}">${p.h[1]}</span></div><div class="hangul">${p.h}</div></div>`;
+            });
+            document.getElementById('result').innerHTML = htm;
+            document.getElementById('ilju').innerText = ps[2].h;
+            document.getElementById('core').innerText = K[E[ps[2].h[0]]];
+            document.getElementById('gyeok').innerText = ps[1].s+"격";
+        }, 1200);
+    }
+
+    function show() {
+        document.getElementById('loading').style.display='flex';
+        setTimeout(() => {
+            document.getElementById('loading').style.display='none';
+            document.getElementById('step-2').style.display='none';
+            document.getElementById('step-3').style.display='block';
+            const name = document.getElementById('name').value || "사용자", ij = ps[2].h;
+            document.getElementById('report').innerHTML = `
+                <div class="report-header"><h2>${name} 님의 정밀 보고서</h2></div>
+                <div class="act"><div class="act-title">제 1막: 타고난 본질</div><div class="act-content"><p>당신은 <strong>${ij}</strong> 일주를 타고났습니다. 이는 <strong>${M[ij[0]]}</strong>의 기운으로 세상을 살아가는 에너지를 의미합니다.</p></div></div>
+                <div class="act"><div class="act-title">제 2막: 사회적 환경</div><div class="act-content"><p>월지의 기운이 <strong>${ps[1].s}</strong>으로 작용하고 있습니다. 사회적 관계에서 당신의 위치와 성취를 결정짓는 핵심입니다.</p><div class="highlight">"당신의 강점을 명확히 알고 전략적으로 행동하십시오."</div></div></div>
+                <div class="act"><div class="act-title">제 3막: 개운 제언</div><div class="act-content"><p>부족한 기운을 보완하고 넘치는 기운을 다스릴 때 운이 열립니다. <strong>Axe Intelligence</strong>가 분석한 최적의 전략은 자신의 본질에 집중하는 것입니다.</p></div></div>
+            `;
+        }, 1500);
+    }
+</script>
+</body>
+</html>

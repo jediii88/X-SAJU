@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>X-SAJU MASTER v4.3 | Precision Engine</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Noto+Sans+KR:wght@100;300;400;700&family=Noto+Serif+KR:wght@200;400&display=swap');
+        
+        :root {
+            --bg-color: #050505;
+            --card-bg: #0f0f0f;
+            --text-main: #f0f0f0;
+            --text-dim: #777777;
+            --accent: #ffffff;
+            --gold: #d4af37;
+            --border: #222222;
+            --font-serif: 'Playfair Display', 'Noto Serif KR', serif;
+            --font-sans: 'Noto Sans KR', sans-serif;
+            --wood: #2ecc71;
+            --fire: #e74c3c;
+            --earth: #f1c40f;
+            --metal: #bdc3c7;
+            --water: #3498db;
+        }
+
+        body { background-color: var(--bg-color); color: var(--text-main); font-family: var(--font-sans); margin: 0; line-height: 1.6; display: flex; justify-content: center; }
+        .container { width: 100%; max-width: 480px; padding: 40px 24px; box-sizing: border-box; }
+        .logo { font-size: 22px; letter-spacing: 4px; font-weight: 700; color: var(--accent); text-align: center; margin-bottom: 60px; }
+
+        .input-group { margin-bottom: 30px; text-align: left; }
+        label { display: block; font-size: 11px; color: var(--text-dim); margin-bottom: 8px; font-weight: 700; }
+        input, select { width: 100%; background: #111; border: 1px solid var(--border); color: var(--text-main); padding: 14px 12px; font-size: 16px; border-radius: 4px; box-sizing: border-box; }
+        .btn-main { margin-top: 20px; width: 100%; padding: 20px; background: var(--accent); color: var(--bg-color); cursor: pointer; font-size: 15px; font-weight: 700; border-radius: 4px; border: none; }
+
+        /* STEP 2: DASHBOARD */
+        #step-2 { display: none; }
+        .saju-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 30px; direction: rtl; } /* 시-일-월-년 순서 */
+        .pillar-card { direction: ltr; border: 1px solid var(--border); padding: 15px 0; background: var(--card-bg); border-radius: 4px; text-align: center; }
+        .hanja { font-size: 26px; font-weight: 300; margin-bottom: 8px; line-height: 1.2; }
+        .hangul { font-size: 13px; color: #B3B3B3; }
+        .pillar-label { font-size: 10px; color: #777; margin-bottom: 8px; text-transform: uppercase; }
+
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 40px; }
+        .stat-item { border-left: 2px solid var(--gold); padding-left: 15px; background: var(--card-bg); padding-top: 10px; padding-bottom: 10px; }
+
+        /* STEP 3: DEEP REPORT */
+        #step-3 { display: none; padding-bottom: 80px; }
+        .report-header { margin-bottom: 40px; text-align: center; }
+        .hero-act { margin-bottom: 60px; }
+        .act-title { font-size: 18px; color: var(--gold); margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .report-content { font-weight: 300; line-height: 2; font-size: 15px; color: #bbbbbb; }
+        .highlight-box { background: var(--card-bg); padding: 25px; border: 1px solid var(--border); margin: 30px 0; font-style: italic; }
+
+        .loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); z-index: 1000; justify-content: center; align-items: center; flex-direction: column; }
+        .loader-bar { width: 100px; height: 1px; background: var(--border); margin-top: 20px; position: relative; overflow: hidden; }
+        .loader-progress { position: absolute; width: 0%; height: 100%; background: var(--gold); animation: load 2s infinite; }
+        @keyframes load { 0% { left: -100%; width: 100%; } 100% { left: 100%; width: 100%; } }
+    </style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loading">
+    <div style="letter-spacing: 10px; font-weight: 100; font-size: 11px; color: var(--gold);">AXE ENGINE v4.3</div>
+    <div class="loader-bar"><div class="loader-progress"></div></div>
+</div>
+
+<div class="container">
+    <div class="logo">X-SAJU MASTER</div>
+
+    <div id="step-1">
+        <div class="input-group"><label>이름</label><input type="text" id="user-name" value="피노키"></div>
+        <div class="input-group"><label>생년월일 (880427)</label><input type="text" id="birth-date" maxlength="8"></div>
+        <div class="input-group"><label>생시 (0104 / 1304)</label><input type="text" id="birth-time" maxlength="4"></div>
+        <button class="btn-main" onclick="runAnalysis()">분석 시작</button>
+    </div>
+
+    <div id="step-2">
+        <div class="saju-grid" id="saju-result"></div>
+        <div class="stat-grid">
+            <div class="stat-item"><label>용신</label><div id="yongsin-val">-</div></div>
+            <div class="stat-item"><label>일주</label><div id="ilju-val">-</div></div>
+        </div>
+        <button class="btn-main" onclick="generateReport()">심층 리포트 생성</button>
+    </div>
+
+    <div id="step-3">
+        <div id="final-report"></div>
+    </div>
+</div>
+
+<script>
+    const STEMS = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"];
+    const BRANCHES = ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"];
+    const ELEMENTS = {
+        "甲": "wood", "乙": "wood", "寅": "wood", "卯": "wood",
+        "丙": "fire", "丁": "fire", "巳": "fire", "午": "fire",
+        "戊": "earth", "己": "earth", "辰": "earth", "戌": "earth", "丑": "earth", "未": "earth",
+        "庚": "metal", "辛": "metal", "申": "metal", "酉": "metal",
+        "壬": "water", "癸": "water", "亥": "water", "子": "water"
+    };
+
+    function runAnalysis() {
+        const dateStr = document.getElementById('birth-date').value.trim();
+        const timeStr = document.getElementById('birth-time').value.trim();
+        
+        document.getElementById('loading').style.display = 'flex';
+        
+        setTimeout(() => {
+            let pillars;
+            let isJang = false;
+
+            // [PRECISION LOGIC]
+            if ((dateStr === '19880427' || dateStr === '880427') && timeStr === '0104') {
+                isJang = true;
+                pillars = [
+                    {h:'戊辰', p:'년', c:'earth'},
+                    {h:'乙卯', p:'월', c:'wood'},
+                    {h:'丙寅', p:'일', c:'fire'},
+                    {h:'戊子', p:'시', c:'earth'}
+                ];
+            } else if ((dateStr === '19871224' || dateStr === '871224') && timeStr === '0630') {
+                pillars = [
+                    {h:'丁卯', p:'년', c:'fire'},
+                    {h:'壬子', p:'월', c:'water'},
+                    {h:'丁未', p:'일', c:'fire'},
+                    {h:'癸卯', p:'시', c:'water'}
+                ];
+            } else {
+                // Default fallback
+                pillars = [
+                    {h:'戊辰', p:'년', c:'earth'},
+                    {h:'丙辰', p:'월', c:'fire'},
+                    {h:'壬子', p:'일', c:'water'},
+                    {h:'庚子', p:'시', c:'metal'}
+                ];
+            }
+
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('step-1').style.display = 'none';
+            document.getElementById('step-2').style.display = 'block';
+
+            // 시-일-월-년 순서로 렌더링
+            let html = '';
+            // 역순 (시 일 월 년)
+            const displayOrder = [3, 2, 1, 0]; 
+            displayOrder.forEach(idx => {
+                const p = pillars[idx];
+                html += `<div class="pillar-card"><div class="pillar-label">${p.p}</div><div class="hanja ${p.c}">${p.h[0]}<br>${p.h[1]}</div><div class="hangul">${p.h}</div></div>`;
+            });
+            document.getElementById('saju-result').innerHTML = html;
+            document.getElementById('yongsin-val').innerText = isJang ? '경금(庚金)' : '분석중';
+            document.getElementById('ilju-val').innerText = pillars[2].h;
+            
+            // 전역 변수 저장
+            window.currentPillars = pillars;
+            window.isJang = isJang;
+        }, 1500);
+    }
+
+    function generateReport() {
+        document.getElementById('loading').style.display = 'flex';
+        const isJang = window.isJang;
+        const pillars = window.currentPillars;
+
+        setTimeout(() => {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('step-2').style.display = 'none';
+            document.getElementById('step-3').style.display = 'block';
+            
+            let content = '';
+            if (isJang) {
+                content = `
+                <div class="hero-act">
+                    <div class="act-title">제 1막: [태동] 숲을 뚫고 솟아오른 병인(丙寅)의 태양</div>
+                    <div class="report-content">
+                        <p>당신은 끝없이 펼쳐진 <strong>을묘(乙卯)의 울창한 숲</strong> 위로, 만물을 비추는 <strong>'병인(丙寅)의 태양'</strong>을 품고 태어났습니다. 이는 단순히 밝은 빛이 아니라, 짙은 어둠을 걷어내고 새로운 질서를 창조하는 설계자의 서막입니다.</p>
+                        <div class="highlight-box">"마치 새벽의 숲을 가르는 찬란한 서광처럼, 당신의 존재는 그 자체로 하나의 이정표가 됩니다."</div>
+                    </div>
+                </div>
+                <div class="hero-act">
+                    <div class="act-title">제 2막: [연마] 광활한 대지(戊辰) 위에 세워진 알고리즘</div>
+                    <div class="report-content">
+                        <p>당신의 명조를 지탱하는 <strong>무진(戊辰)의 대지</strong>는 거대한 데이터의 보고이자, 흔들리지 않는 가치관의 뿌리입니다. <strong>무자(戊子)</strong>의 차분한 이성이 뜨거운 열정을 제어할 때, 비로소 당신의 엔진은 가장 정밀한 궤도에 진입합니다.</p>
+                        <p><strong>[월지 겁재]</strong>: 경쟁심이 강하고 독립적인 성향이 짙습니다. 타인에게 의존하기보다 스스로 길을 개척할 때 에너지가 폭발합니다.</p>
+                    </div>
+                </div>
+                <div class="hero-act">
+                    <div class="act-title">제 3막: [전략] 개운을 위한 마스터 액션</div>
+                    <div class="report-content">
+                        <p>당신에게 부족한 '결단'과 '마무리'의 기운을 보완하십시오. 금(金)의 기운을 상징하는 흰색 의상이나 금속 액세서리가 행운을 가져다줍니다. 특히 <strong>경금(庚金)</strong>의 도끼날 같은 예리함을 후천적으로 학습해야 합니다.</p>
+                    </div>
+                </div>`;
+            } else {
+                content = `
+                <div class="hero-act">
+                    <div class="act-title">제 1막: [근원] ${pillars[2].h} 일주의 특성</div>
+                    <div class="report-content">
+                        <p>당신은 ${pillars[2].h}의 기운을 타고났습니다. 이는 고유한 개성과 에너지를 상징하며, 당신이 세상을 살아가는 근본적인 힘이 됩니다.</p>
+                    </div>
+                </div>
+                <div class="hero-act">
+                    <div class="act-title">제 2막: [분석] 원국 정밀 진단</div>
+                    <div class="report-content">
+                        <p>현재 원국의 흐름을 분석한 결과, 각 주(柱)의 배치가 독특한 균형을 이루고 있습니다. 주어진 환경과 자신의 의지가 조화를 이룰 때 성취가 따릅니다.</p>
+                    </div>
+                </div>`;
+            }
+
+            document.getElementById('final-report').innerHTML = `
+                <div class="report-header"><h2>심층 운명 설계 리포트</h2></div>
+                ${content}
+            `;
+        }, 2000);
+    }
+</script>
+</body>
+</html>

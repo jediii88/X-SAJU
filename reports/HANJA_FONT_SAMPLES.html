@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>X-SAJU [한문 폰트 샘플러]</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;400;700;900&family=Noto+Sans+KR:wght@100;400;900&family=Nanum+Myeongjo:wght@400;700;800&family=Gowun+Batang:wght@400;700&family=Song+Myung&family=Nanum+Gothic:wght@400;700;800&display=swap');
+        
+        body { 
+            font-family: 'Noto Sans KR', sans-serif; 
+            background-color: #000000; 
+            color: #ffffff; 
+            margin: 0; 
+            padding: 50px; 
+            line-height: 1.6;
+        }
+
+        .container { max-width: 900px; margin: auto; }
+        
+        .header {
+            border-bottom: 1px solid #333;
+            padding-bottom: 20px;
+            margin-bottom: 50px;
+        }
+        .header h1 { font-size: 24px; font-weight: 900; letter-spacing: -0.05em; }
+        .header p { font-size: 13px; color: #666; }
+
+        .font-section {
+            margin-bottom: 80px;
+            padding: 40px;
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 4px;
+        }
+
+        .font-info {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #222;
+            padding-bottom: 10px;
+        }
+
+        .sample-text {
+            font-size: 64px;
+            letter-spacing: 0.1em;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .sample-desc {
+            margin-top: 30px;
+            font-size: 15px;
+            color: #ccc;
+            font-weight: 300;
+        }
+
+        /* Font Classes */
+        .f-noto-serif { font-family: 'Noto Serif KR', serif; }
+        .f-nanum-myeongjo { font-family: 'Nanum Myeongjo', serif; }
+        .f-gowun-batang { font-family: 'Gowun Batang', serif; }
+        .f-song-myung { font-family: 'Song Myung', serif; }
+        .f-noto-sans { font-family: 'Noto Sans KR', sans-serif; }
+        .f-nanum-gothic { font-family: 'Nanum Gothic', sans-serif; }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>X-SAJU / 한문 폰트 셀렉터</h1>
+            <p>프리미엄 리포트의 권위와 현대적 감각을 결정짓는 한문 서체를 선택하십시오. (샘플: 戊辰 乙卯 丙寅 戊子)</p>
+        </div>
+
+        <!-- 1. Noto Serif KR -->
+        <div class="font-section">
+            <div class="font-info">
+                <span>OPTION 01: NOTO SERIF KR (본고딕 명조)</span>
+                <span>Authoritative / Stable / Premium</span>
+            </div>
+            <div class="sample-text f-noto-serif">
+                <span>戊辰</span> <span>乙卯</span> <span>丙寅</span> <span>戊子</span>
+            </div>
+            <p class="sample-desc">가장 표준적이면서도 묵직한 권위를 줍니다. 획의 끝처리가 날카로워 '도끼(Axe)'의 이미지와 잘 어울리는 서체입니다.</p>
+        </div>
+
+        <!-- 2. Nanum Myeongjo -->
+        <div class="font-section">
+            <div class="font-info">
+                <span>OPTION 02: NANUM MYEONGJO (나눔명조)</span>
+                <span>Classic / Traditional / Elegant</span>
+            </div>
+            <div class="sample-text f-nanum-myeongjo">
+                <span>戊辰</span> <span>乙卯</span> <span>丙寅</span> <span>戊子</span>
+            </div>
+            <p class="sample-desc">한국인에게 가장 익숙하고 고전적인 명조체입니다. 사주 리포트 본연의 '전통적인 신뢰감'을 강조하기에 최적입니다.</p>
+        </div>
+
+        <!-- 3. Song Myung -->
+        <div class="font-section">
+            <div class="font-info">
+                <span>OPTION 03: SONG MYUNG (송명체)</span>
+                <span>Sharp / Ancient / Strong</span>
+            </div>
+            <div class="sample-text f-song-myung">
+                <span>戊辰</span> <span>乙卯</span> <span>丙寅</span> <span>戊子</span>
+            </div>
+            <p class="sample-desc">붓글씨의 날카로움이 살아있는 서체입니다. 획이 강렬하여 운명의 역동성을 표현하기 좋으며, 디자인적 임팩트가 큽니다.</p>
+        </div>
+
+        <!-- 4. Gowun Batang -->
+        <div class="font-section">
+            <div class="font-info">
+                <span>OPTION 04: GOWUN BATANG (고운바탕)</span>
+                <span>Modern / Soft / Humanistic</span>
+            </div>
+            <div class="sample-text f-gowun-batang">
+                <span>戊辰</span> <span>乙卯</span> <span>丙寅</span> <span>戊子</span>
+            </div>
+            <p class="sample-desc">현대적이고 부드러운 느낌의 서체입니다. 너무 딱딱하지 않은 하이엔드 감성을 추구할 때 적합합니다.</p>
+        </div>
+
+        <!-- 5. Noto Sans KR -->
+        <div class="font-section">
+            <div class="font-info">
+                <span>OPTION 05: NOTO SANS KR (본고딕)</span>
+                <span>Minimal / Tech / Apple Style</span>
+            </div>
+            <div class="sample-text f-noto-sans" style="font-weight: 900;">
+                <span>戊辰</span> <span>乙卯</span> <span>丙寅</span> <span>戊子</span>
+            </div>
+            <p class="sample-desc">장식성을 완전히 배제한 극단적 미니멀리즘입니다. 테슬라/애플 같은 '데이터 기반 하이테크' 느낌을 주기에 가장 좋습니다.</p>
+        </div>
+
+    </div>
+</body>
+</html>
