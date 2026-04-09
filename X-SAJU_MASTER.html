@@ -764,6 +764,78 @@ function go(n) {
     window.scrollTo(0, 0);
 }
 
+function setToggle(groupId, btn) {
+    const parent = document.getElementById(groupId);
+    parent.querySelectorAll('.btn-toggle').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const hiddenInput = document.getElementById(groupId.replace('-group', ''));
+    if (hiddenInput) hiddenInput.value = btn.getAttribute('data-val');
+}
+
+function toggleLeap(show) {
+    const wrap = document.getElementById('leap-wrap');
+    if (show) {
+        wrap.style.display = 'block';
+    } else {
+        wrap.style.display = 'none';
+        const falseBtn = document.querySelector('#leap-group .btn-toggle[data-val="false"]');
+        if (falseBtn) setToggle('leap-group', falseBtn);
+    }
+}
+
+function scrollToSec(id) {
+    const el = document.getElementById(id);
+    if (el) {
+        const offset = 80;
+        const bodyRect = document.body.getBoundingClientRect().top;
+        const elRect = el.getBoundingClientRect().top;
+        const elPosition = elRect - bodyRect;
+        window.scrollTo({ top: elPosition - offset, behavior: 'smooth' });
+    }
+}
+
+document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', function() {
+        document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+        this.classList.add('active');
+    });
+});
+
+window.addEventListener('scroll', () => {
+    const sections = ['sec-manse', 'sec-relation', 'sec-shinsal', 'sec-fortune'];
+    let currentId = 'sec-manse';
+    sections.forEach(id => {
+        const el = document.getElementById(id);
+        if (el && window.scrollY >= (el.offsetTop - 100)) {
+            currentId = id;
+        }
+    });
+    document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+    const activeNav = document.querySelector(`.nav-item[onclick="scrollToSec('${currentId}')"]`);
+    if (activeNav) activeNav.classList.add('active');
+});
+
+const ANIMAL_MAP = {
+    '子': {emoji:'🐭', color:'black', kr:'쥐'},
+    '丑': {emoji:'🐮', color:'yellow', kr:'소'},
+    '寅': {emoji:'🐯', color:'green', kr:'호랑이'},
+    '卯': {emoji:'🐰', color:'green', kr:'토끼'},
+    '辰': {emoji:'🐲', color:'yellow', kr:'용'},
+    '巳': {emoji:'🐍', color:'red', kr:'뱀'},
+    '午': {emoji:'🐴', color:'red', kr:'말'},
+    '未': {emoji:'🐑', color:'yellow', kr:'양'},
+    '申': {emoji:'🐵', color:'white', kr:'원숭이'},
+    '酉': {emoji:'🐔', color:'white', kr:'닭'},
+    '戌': {emoji:'🐶', color:'yellow', kr:'개'},
+    '亥': {emoji:'🐷', color:'black', kr:'돼지'}
+};
+const COLOR_KR_MAP = {
+    'wood': '푸른', 'fire': '붉은', 'earth': '황금', 'metal': '하얀', 'water': '검은'
+};
+const CIRCLE_BG = {
+    'wood': '#1E3C28', 'fire': '#4A2320', 'earth': '#4A3E1B', 'metal': '#3A3A3A', 'water': '#182C4A'
+};
+
 function showLoading(msg, callback) {
     document.getElementById('loading').style.display = 'flex';
     document.getElementById('loading-msg').innerText = msg;
@@ -920,7 +992,7 @@ function runAnalysis() {
 
         const isUnknown = document.getElementById('no-time').checked;
         const isSolar = document.getElementById('cal-type').value === 'S';
-        const isLeap = document.getElementById('is-leap').checked;
+        const isLeap = document.getElementById('is-leap').value === 'true';
 
         if (document.getElementById('adj-l').checked && !isUnknown) {
             const dt = new Date(y, m - 1, d, hr, mn);
