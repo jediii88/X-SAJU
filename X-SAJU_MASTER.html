@@ -55,66 +55,123 @@
         .page { display: none; }
         .page.active { display: block; }
 
-        .field-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 14px;
+        /* --- 입력 폼 (점신 스타일) --- */
+        .input-group {
+            margin-bottom: 32px;
         }
-
-        .field {
-            margin-bottom: 22px;
-        }
-
-        .field label {
+        .input-group label {
             display: block;
-            margin-bottom: 10px;
-            font-size: 12px;
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 8px;
             font-weight: 400;
-            letter-spacing: -0.01em;
-            color: var(--text-soft);
         }
-
-        .field input,
-        .field select {
+        .input-wrapper {
+            position: relative;
+        }
+        .input-wrapper input {
             width: 100%;
             border: none;
-            border-bottom: 1px solid var(--line);
+            border-bottom: 1px solid #333;
             background: transparent;
             color: var(--text);
-            padding: 14px 0;
-            font-size: 19px;
-            font-weight: 300;
+            padding: 8px 0;
+            font-size: 20px;
+            font-weight: 700;
             outline: none;
-            border-radius: 0;
         }
+        .input-wrapper input::placeholder { color: #444; font-weight: 300; }
+        
+        /* 쭈욱~ 애니메이션 밑줄 */
+        .input-wrapper input:focus { border-bottom-color: transparent; }
+        .underline {
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 0; height: 2px;
+            background-color: #fff;
+            transition: width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .input-wrapper input:focus ~ .underline { width: 100%; }
 
-        .field input::placeholder { color: rgba(255,255,255,0.28); }
-
-        .sub-preview {
-            min-height: 18px;
-            margin-top: 8px;
-            font-size: 13px;
-            font-weight: 300;
-            color: var(--gold);
+        /* 버튼류 (성별, 달력) */
+        .btn-group {
+            display: flex; gap: 12px; margin-top: 8px;
+        }
+        .btn-toggle {
+            flex: 1; padding: 14px;
+            border-radius: 12px; border: none;
+            background: #1a1a1a; color: #666;
+            font-size: 15px; font-weight: 400;
+            cursor: pointer; transition: 0.2s;
+        }
+        .btn-toggle.active {
+            background: #fff; color: #000; font-weight: 700;
         }
 
         .toggle-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 14px;
-            margin-top: 10px;
+            display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px;
         }
-
         .toggle {
-            display: inline-flex;
-            align-items: center;
-            gap: 7px;
-            color: var(--text-dim);
-            font-size: 13px;
-            font-weight: 300;
+            display: inline-flex; align-items: center; gap: 7px;
+            color: var(--text-dim); font-size: 13px; font-weight: 300; cursor: pointer;
+        }
+        .toggle input { width: 16px; height: 16px; accent-color: #fff; cursor: pointer; }
+
+        /* 네비게이션 스티키 탭 */
+        .sticky-nav {
+            position: sticky;
+            top: 0;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            display: flex;
+            overflow-x: auto;
+            white-space: nowrap;
+            border-bottom: 1px solid #222;
+            margin: -28px -18px 24px;
+            padding: 0 18px;
+        }
+        .sticky-nav::-webkit-scrollbar { display: none; }
+        .nav-item {
+            padding: 16px 14px;
+            color: #888;
+            font-size: 15px;
+            font-weight: 400;
+            cursor: pointer;
+            position: relative;
+        }
+        .nav-item.active {
+            color: #fff;
+            font-weight: 700;
+        }
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 100%; height: 2px;
+            background: #fff;
         }
 
-        .toggle input { width: 16px; height: 16px; accent-color: #fff; }
+        /* 아바타 헤더 (동물 이미지) */
+        .avatar-header {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 20px 0 40px; text-align: center;
+        }
+        .avatar-circle {
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            background: #222; /* 자바스크립트로 색상 변경 */
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 16px;
+            font-size: 40px; /* 이모지 임시 사용, 나중에 이미지로 교체 가능 */
+        }
+        .avatar-name { font-size: 24px; font-weight: 800; color: #fff; margin-bottom: 8px; }
+        .avatar-desc { font-size: 14px; color: var(--gold); font-weight: 400; margin-bottom: 12px; }
+        .avatar-badges { display: flex; gap: 8px; justify-content: center; }
+        .badge {
+            border: 1px solid #333; border-radius: 16px; padding: 4px 10px;
+            font-size: 12px; color: #aaa; background: #0a0a0a;
+        }
 
         .btn {
             width: 100%;
@@ -481,43 +538,62 @@
     <div class="brand">X-사주 마스터</div>
 
     <div id="step-1" class="page active">
-        <div class="field">
+        <!-- 이름 -->
+        <div class="input-group">
             <label>성함</label>
-            <input type="text" id="user-name" placeholder="성함을 입력하세요" autocomplete="off">
+            <div class="input-wrapper">
+                <input type="text" id="user-name" placeholder="정보를 입력해주세요" autocomplete="off">
+                <div class="underline"></div>
+            </div>
             <div class="sub-preview" id="n-pre"></div>
         </div>
 
-        <div class="field-grid">
-            <div class="field">
-                <label>성별</label>
-                <select id="gender">
-                    <option value="M">남성</option>
-                    <option value="F">여성</option>
-                </select>
+        <!-- 성별 & 달력 (점신 버튼 스타일) -->
+        <div class="input-group">
+            <label>성별</label>
+            <div class="btn-group" id="gender-group">
+                <button class="btn-toggle active" data-val="M" onclick="setToggle('gender-group', this)">남성</button>
+                <button class="btn-toggle" data-val="F" onclick="setToggle('gender-group', this)">여성</button>
             </div>
-            <div class="field" style="display:flex; align-items:center; gap:15px;">
-                <div style="flex:1;">
-                    <label>달력</label>
-                    <select id="cal-type" onchange="document.getElementById('leap-wrap').style.display = this.value === 'L' ? 'inline-flex' : 'none'">
-                        <option value="S">양력</option>
-                        <option value="L">음력</option>
-                    </select>
-                </div>
-                <label id="leap-wrap" class="toggle" style="display:none; margin-top:20px;">
-                    <input type="checkbox" id="is-leap"> 윤달
-                </label>
-            </div>
+            <input type="hidden" id="gender" value="M">
         </div>
 
-        <div class="field">
-            <label>생년월일</label>
-            <input type="text" id="birth-date" placeholder="예: 19880312" maxlength="8">
+        <div class="input-group">
+            <label>달력</label>
+            <div class="btn-group" id="cal-group">
+                <button class="btn-toggle active" data-val="S" onclick="setToggle('cal-group', this); toggleLeap(false)">양력</button>
+                <button class="btn-toggle" data-val="L" onclick="setToggle('cal-group', this); toggleLeap(true)">음력</button>
+            </div>
+            <input type="hidden" id="cal-type" value="S">
+        </div>
+
+        <!-- 윤달 토글 -->
+        <div class="input-group" id="leap-wrap" style="display:none;">
+            <label>윤달 여부</label>
+            <div class="btn-group" id="leap-group">
+                <button class="btn-toggle active" data-val="false" onclick="setToggle('leap-group', this)">평달</button>
+                <button class="btn-toggle" data-val="true" onclick="setToggle('leap-group', this)">윤달</button>
+            </div>
+            <input type="hidden" id="is-leap" value="false">
+        </div>
+
+        <!-- 생년월일 -->
+        <div class="input-group">
+            <label>생년월일 (8자리)</label>
+            <div class="input-wrapper">
+                <input type="text" id="birth-date" placeholder="예: 19880312" maxlength="8">
+                <div class="underline"></div>
+            </div>
             <div class="sub-preview" id="d-pre"></div>
         </div>
 
-        <div class="field">
+        <!-- 태어난 시간 -->
+        <div class="input-group">
             <label>태어난 시간</label>
-            <input type="text" id="birth-time" placeholder="예: 0104" maxlength="4">
+            <div class="input-wrapper">
+                <input type="text" id="birth-time" placeholder="예: 0104" maxlength="4">
+                <div class="underline"></div>
+            </div>
             <div class="sub-preview" id="t-pre"></div>
             <div class="toggle-row">
                 <label class="toggle"><input type="checkbox" id="no-time"> 태어난 시간 모름</label>
@@ -525,26 +601,40 @@
             </div>
         </div>
 
-        <button class="btn" onclick="runAnalysis()">만세력 열기</button>
+        <button class="btn" onclick="runAnalysis()">만세력 결과 보기</button>
     </div>
 
     <div id="step-2" class="page">
-        <div class="hero-summary">
-            <div class="hero-name" id="hero-name">사주 결과</div>
-            <div class="hero-meta" id="hero-meta"></div>
+        
+        <!-- 점신식 스티키 네비게이션 (책갈피) -->
+        <div class="sticky-nav">
+            <div class="nav-item active" onclick="scrollToSec('sec-manse')">사주원국</div>
+            <div class="nav-item" onclick="scrollToSec('sec-relation')">사주관계</div>
+            <div class="nav-item" onclick="scrollToSec('sec-shinsal')">신살/오행</div>
+            <div class="nav-item" onclick="scrollToSec('sec-fortune')">대운/세운</div>
         </div>
 
-        <div class="section">
+        <!-- 동물 이미지 헤더 프로필 -->
+        <div class="avatar-header">
+            <div class="avatar-circle" id="av-circle">🐯</div>
+            <div class="avatar-name" id="av-name">장경현</div>
+            <div class="avatar-desc" id="av-desc">병인 (붉은 호랑이)</div>
+            <div class="avatar-badges" id="av-badges">
+                <!-- 태그 동적 주입 -->
+            </div>
+        </div>
+
+        <div class="section" id="sec-manse" style="margin-top:0;">
             <div class="section-title"><div class="title-left"><span>만세력 원국</span><span class="help-icon" onclick="openHelp('manse')">?</span></div><span>풀이 전 참고 데이터</span></div>
             <div class="manse-table" id="manse-table"></div>
         </div>
 
-        <div class="section">
+        <div class="section" id="sec-relation">
             <div class="section-title"><div class="title-left"><span>합 · 충 · 형 · 파 · 해</span><span class="help-icon" onclick="openHelp('relation')">?</span></div><span>관계 구조</span></div>
             <div class="line-list" id="relation-list"></div>
         </div>
 
-        <div class="section">
+        <div class="section" id="sec-shinsal">
             <div class="section-title"><div class="title-left"><span>신살 · 길성</span><span class="help-icon" onclick="openHelp('shinsal')">?</span></div><span>원국 전체 기준</span></div>
             <div class="pill-grid" id="shinsal-grid"></div>
         </div>
@@ -559,7 +649,7 @@
             <div class="bar-group" id="sipseong-bars"></div>
         </div>
 
-        <div class="section">
+        <div class="section" id="sec-fortune">
             <div class="section-title"><div class="title-left"><span>신강 · 신약</span><span class="help-icon" onclick="openHelp('strength')">?</span></div><span>중심 판단</span></div>
             <div class="pill-grid">
                 <div class="info-card">
