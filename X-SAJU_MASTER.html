@@ -1022,12 +1022,40 @@ function runAnalysis() {
         const dayStem = ec.getDay()[0];
         const allShinsal = getAllShinsal(pillars, ec, isUnknown);
 
-        document.getElementById('hero-name').innerText = `${name}님의 만세력`;
-        const lunarMonth = lunar.getMonth();
-        const lunarDay = lunar.getDay();
-        const lunarMonthText = lunarMonth < 0 ? String(Math.abs(lunarMonth)).padStart(2, '0') : String(lunarMonth).padStart(2, '0');
-        const lunarLeapText = lunarMonth < 0 ? '(윤달)' : '(평달)';
-        document.getElementById('hero-meta').innerHTML = `양력 ${solar.getYear()}.${String(solar.getMonth()).padStart(2,'0')}.${String(solar.getDay()).padStart(2,'0')} (${String(solar.getHour()).padStart(2,'0')}:${String(solar.getMinute()).padStart(2,'0')})<br>음력 ${lunar.getYear()}.${lunarMonthText}.${String(lunarDay).padStart(2,'0')} ${lunarLeapText}`;
+        // 동물 아바타 및 배지 업데이트
+        const dStemC = HAN_COLOR[dayStem];
+        const dColorKr = COLOR_KR_MAP[dStemC] || '';
+        const dAnimal = ANIMAL_MAP[pillars[1].h[1]];
+        const dAnimalKr = dAnimal ? dAnimal.kr : '';
+        const dEmoji = dAnimal ? dAnimal.emoji : '👤';
+        const dCircleColor = CIRCLE_BG[dStemC] || '#222';
+
+        document.getElementById('av-name').innerText = name + "님";
+        document.getElementById('av-desc').innerText = `${dayStem}${pillars[1].h[1]} (${dColorKr} ${dAnimalKr})`;
+        const avCircle = document.getElementById('av-circle');
+        if(avCircle) {
+            avCircle.innerText = dEmoji;
+            avCircle.style.backgroundColor = dCircleColor;
+        }
+        
+        let lMon = typeof lunar.getMonth === 'function' ? Math.abs(lunar.getMonth()) : 1;
+        let leapStr = typeof lunar.getMonth === 'function' && lunar.getMonth() < 0 ? '(윤달)' : '(평달)';
+        let sMon = typeof solar.getMonth === 'function' ? solar.getMonth() : m;
+        let sDay = typeof solar.getDay === 'function' ? solar.getDay() : d;
+        let lDay = typeof lunar.getDay === 'function' ? lunar.getDay() : d;
+        
+        const badges = document.getElementById('av-badges');
+        if(badges) {
+            badges.innerHTML = `
+                <div class="badge">${document.getElementById('gender').value === 'M' ? '남성' : '여성'}</div>
+                <div class="badge">양력 ${y}.${String(m).padStart(2,'0')}.${String(d).padStart(2,'0')}</div>
+                <div class="badge">음력 ${lunar.getYear ? lunar.getYear() : y}.${String(lMon).padStart(2,'0')}.${String(lDay).padStart(2,'0')} ${leapStr}</div>
+            `;
+        }
+
+        // 기존 hero-summary 숨기기 (점신 아바타로 대체됨)
+        const hm = document.getElementById('hero-meta');
+        if(hm) hm.parentElement.style.display = 'none';
 
         const header = `
             <div class="row">
