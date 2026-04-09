@@ -552,8 +552,8 @@
         <div class="input-group">
             <label>성별</label>
             <div class="btn-group" id="gender-group">
-                <button class="btn-toggle active" data-val="M" onclick="setToggle('gender-group', this)">남성</button>
-                <button class="btn-toggle" data-val="F" onclick="setToggle('gender-group', this)">여성</button>
+                <button class="btn-toggle active" data-val="M" onclick="setToggle('gender-group', this, 'gender')">남성</button>
+                <button class="btn-toggle" data-val="F" onclick="setToggle('gender-group', this, 'gender')">여성</button>
             </div>
             <input type="hidden" id="gender" value="M">
         </div>
@@ -561,8 +561,8 @@
         <div class="input-group">
             <label>달력</label>
             <div class="btn-group" id="cal-group">
-                <button class="btn-toggle active" data-val="S" onclick="setToggle('cal-group', this); toggleLeap(false)">양력</button>
-                <button class="btn-toggle" data-val="L" onclick="setToggle('cal-group', this); toggleLeap(true)">음력</button>
+                <button class="btn-toggle active" data-val="S" onclick="setToggle('cal-group', this, 'cal-type'); toggleLeap(false)">양력</button>
+                <button class="btn-toggle" data-val="L" onclick="setToggle('cal-group', this, 'cal-type'); toggleLeap(true)">음력</button>
             </div>
             <input type="hidden" id="cal-type" value="S">
         </div>
@@ -571,8 +571,8 @@
         <div class="input-group" id="leap-wrap" style="display:none;">
             <label>윤달 여부</label>
             <div class="btn-group" id="leap-group">
-                <button class="btn-toggle active" data-val="false" onclick="setToggle('leap-group', this)">평달</button>
-                <button class="btn-toggle" data-val="true" onclick="setToggle('leap-group', this)">윤달</button>
+                <button class="btn-toggle active" data-val="false" onclick="setToggle('leap-group', this, 'is-leap')">평달</button>
+                <button class="btn-toggle" data-val="true" onclick="setToggle('leap-group', this, 'is-leap')">윤달</button>
             </div>
             <input type="hidden" id="is-leap" value="false">
         </div>
@@ -764,11 +764,11 @@ function go(n) {
     window.scrollTo(0, 0);
 }
 
-function setToggle(groupId, btn) {
+function setToggle(groupId, btn, inputId) {
     const parent = document.getElementById(groupId);
     parent.querySelectorAll('.btn-toggle').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    const hiddenInput = document.getElementById(groupId.replace('-group', ''));
+    const hiddenInput = document.getElementById(inputId || groupId.replace('-group', ''));
     if (hiddenInput) hiddenInput.value = btn.getAttribute('data-val');
 }
 
@@ -779,7 +779,7 @@ function toggleLeap(show) {
     } else {
         wrap.style.display = 'none';
         const falseBtn = document.querySelector('#leap-group .btn-toggle[data-val="false"]');
-        if (falseBtn) setToggle('leap-group', falseBtn);
+        if (falseBtn) setToggle('leap-group', falseBtn, 'is-leap');
     }
 }
 
