@@ -214,7 +214,8 @@
         }
 
         .section {
-            margin-top: 38px;
+            padding-top: 60px; /* offset for sticky nav */
+            margin-top: -22px;
         }
 
         .section-title {
@@ -299,6 +300,8 @@
             margin-bottom: 12px;
         }
         .modal-body {
+            line-height: 1.6;
+            text-align: left;
             font-size: 14px;
             line-height: 1.6;
             color: var(--text-soft);
@@ -529,6 +532,10 @@
     
         /* 점신 스타일 애니메이션 및 레이아웃 */
         .jeomsin-nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--bg);
             display: flex;
             overflow-x: auto;
             gap: 16px;
@@ -941,6 +948,11 @@
     <div id="step-2" class="page">
         
         <!-- 점신식 스티키 네비게이션 (책갈피) -->
+        
+        <!-- 동물 이미지 헤더 프로필 -->
+        <div class="avatar-header">
+            <div class="avatar-circle" id="av-circle">🐯</div>
+
         <div class="jeomsin-nav">
             <div class="j-nav-item active" onclick="scrollToSec('sec-manse'); updateNav(this);">사주원국</div>
             <div class="j-nav-item" onclick="scrollToSec('sec-relation'); updateNav(this);">사주관계</div>
@@ -953,10 +965,6 @@
             el.classList.add('active');
         }
         </script>
-
-        <!-- 동물 이미지 헤더 프로필 -->
-        <div class="avatar-header">
-            <div class="avatar-circle" id="av-circle">🐯</div>
             <div class="avatar-name" id="av-name">장경현</div>
             <div class="avatar-desc" id="av-desc">병인 (붉은 호랑이)</div>
             <div class="avatar-badges" id="av-badges">
@@ -993,31 +1001,32 @@
         <div class="section" id="sec-yonghee">
             <div class="section-title"><div class="title-left"><span>용희기구한</span><span class="help-icon" onclick="openHelp('yonghee')">?</span></div><span>사주의 길흉성 판단</span></div>
             <div class="pill-grid" id="yonghee-grid">
-                <div class="info-card"><div class="info-label" style="color:var(--wood)">용신 (수호)</div><div class="info-value" id="yong-val">-</div></div>
-                <div class="info-card"><div class="info-label" style="color:var(--fire)">희신 (도움)</div><div class="info-value" id="hee-val">-</div></div>
-                <div class="info-card"><div class="info-label" style="color:var(--metal)">기신 (방해)</div><div class="info-value" id="gi-val">-</div></div>
-                <div class="info-card"><div class="info-label" style="color:var(--water)">구신 (적대)</div><div class="info-value" id="goo-val">-</div></div>
+                <div class="info-card"><div class="info-label">용신 (수호)</div><div class="info-value" id="yong-val">-</div></div>
+                <div class="info-card"><div class="info-label">희신 (도움)</div><div class="info-value" id="hee-val">-</div></div>
+                <div class="info-card"><div class="info-label">기신 (방해)</div><div class="info-value" id="gi-val">-</div></div>
+                <div class="info-card"><div class="info-label">구신 (적대)</div><div class="info-value" id="goo-val">-</div></div>
             </div>
         </div>
 
                 <div class="section" id="sec-fortune">
             <div class="section-title"><div class="title-left"><span>신강 · 신약</span><span class="help-icon" onclick="openHelp('strength')">?</span></div><span>나의 에너지 중심</span></div>
             <div class="gauge-wrap" id="strength-gauge">
-                <svg class="gauge-svg" viewBox="0 0 200 100">
-                    <defs>
-                        <linearGradient id="gold-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" stop-color="#4e87d9" />
-                            <stop offset="50%" stop-color="#c7a76a" />
-                            <stop offset="100%" stop-color="#d45a52" />
-                        </linearGradient>
-                    </defs>
-                    <path class="gauge-arc" d="M 20 90 A 80 80 0 0 1 180 90" />
-                    <!-- Length of semi circle r=80 is ~251 -->
-                    <path class="gauge-fill" id="gauge-path" d="M 20 90 A 80 80 0 0 1 180 90" stroke-dasharray="251" stroke-dashoffset="251" />
-                </svg>
-                <div class="gauge-needle" id="gauge-needle" style="transform: rotate(-90deg);"></div>
-                <div class="gauge-labels"><span>신약</span><span>중화</span><span>신강</span></div>
-                <div class="gauge-text" id="strength-text">-</div>
+                <div style="position:relative; width:200px; height:110px; display:flex; justify-content:center;">
+                    <svg class="gauge-svg" viewBox="0 0 200 100" style="position:absolute; top:0; left:0;">
+                        <defs>
+                            <linearGradient id="gold-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="#4e87d9" />
+                                <stop offset="50%" stop-color="#c7a76a" />
+                                <stop offset="100%" stop-color="#d45a52" />
+                            </linearGradient>
+                        </defs>
+                        <path class="gauge-arc" d="M 20 90 A 80 80 0 0 1 180 90" />
+                        <path class="gauge-fill" id="gauge-path" d="M 20 90 A 80 80 0 0 1 180 90" stroke-dasharray="251" stroke-dashoffset="251" />
+                    </svg>
+                    <div class="gauge-needle" id="gauge-needle" style="transform: rotate(-90deg); position:absolute; bottom:20px; left:calc(50% - 2px);"></div>
+                </div>
+                <div class="gauge-labels" style="margin-top:-10px;"><span>신약</span><span style="color:var(--gold);">중화</span><span>신강</span></div>
+                <div class="gauge-text" id="strength-text" style="margin-top: 10px;">-</div>
                 <div class="gauge-sub" id="strength-sub">에너지 강도</div>
             </div>
             
@@ -1705,11 +1714,19 @@ function runAnalysis() {
         const gi = sortedDesc[0][0];
         const goo = sortedDesc[1][0];
         
+        
         const korE = {wood:"목(木)", fire:"화(火)", earth:"토(土)", metal:"금(金)", water:"수(水)"};
-        document.getElementById('yong-val').innerText = korE[yong];
-        document.getElementById('hee-val').innerText = korE[hee];
-        document.getElementById('gi-val').innerText = korE[gi];
-        document.getElementById('goo-val').innerText = korE[goo];
+        
+        const setYong = (id, key) => {
+            const el = document.getElementById(id);
+            el.innerText = korE[key];
+            el.className = 'info-value ' + key; // applies color text
+        };
+        setYong('yong-val', yong);
+        setYong('hee-val', hee);
+        setYong('gi-val', gi);
+        setYong('goo-val', goo);
+
 
         const support = counts.wood + counts.fire; 
         const control = counts.metal + counts.water;
