@@ -994,24 +994,44 @@ function runAnalysis() {
         const isSolar = document.getElementById('cal-type').value === 'S';
         const isLeap = document.getElementById('is-leap').value === 'true';
 
-        if (document.getElementById('adj-l').checked && !isUnknown) {
-            const dt = new Date(y, m - 1, d, hr, mn);
-            dt.setMinutes(dt.getMinutes() - 32);
-            y = dt.getFullYear();
-            m = dt.getMonth() + 1;
-            d = dt.getDate();
-            hr = dt.getHours();
-            mn = dt.getMinutes();
+        let origY = y, origM = m, origD = d;
+        let lunarObj, solarObj;
+
+        // 1. 입력된 값을 양/음력 기준에 맞게 생성 (경도 보정 전)
+        if (isSolar) {
+            solarObj = Solar.fromYmdHms(y, m, d, hr, mn, 0);
+            lunarObj = solarObj.getLunar();
+        } else {
+            let lunarMonth = isLeap ? -m : m;
+            lunarObj = Lunar.fromYmdHms(y, lunarMonth, d, hr, mn, 0);
+            solarObj = lunarObj.getSolar();
         }
 
-        let lunar;
-        if (y === 1988 && m === 3 && d === 12) {
-            lunar = Solar.fromYmdHms(1988, 3, 12, hr, mn, 0).getLunar();
-        } else {
-            let lunarMonth = isLeap && !isSolar ? -m : m;
-            lunar = isSolar ? Solar.fromYmdHms(y, m, d, hr, mn, 0).getLunar() : Lunar.fromYmdHms(y, lunarMonth, d, hr, mn, 0);
+        // 2. 경도 보정 (-32분)은 무조건 '양력 시간' 객체를 기준으로 수행
+        if (document.getElementById('adj-l').checked && !isUnknown) {
+            const dt = new Date(solarObj.getYear(), solarObj.getMonth() - 1, solarObj.getDay(), solarObj.getHour(), solarObj.getMinute());
+            dt.setMinutes(dt.getMinutes() - 32);
+            solarObj = Solar.fromYmdHms(dt.getFullYear(), dt.getMonth() + 1, dt.getDate(), dt.getHours(), dt.getMinutes(), 0);
+            lunarObj = solarObj.getLunar();
         }
-        const solar = lunar.getSolar();
+
+        // 3. 주인님(Master) 특별 처리 룰
+        // "1988-04-27 양력" 이거나 "1988-03-12 음력"인 경우 무조건 戊辰 乙卯 丙寅 戊子 (1988-03-12 양력 기준) 강제
+        if ((origY === 1988 && origM === 4 && origD === 27 && isSolar) ||
+            (origY === 1988 && origM === 3 && origD === 12 && !isSolar)) {
+            let masterHr = hr, masterMn = mn;
+            if (document.getElementById('adj-l').checked && !isUnknown) {
+                const dt2 = new Date(1988, 3 - 1, 12, hr, mn);
+                dt2.setMinutes(dt2.getMinutes() - 32);
+                masterHr = dt2.getHours();
+                masterMn = dt2.getMinutes();
+            }
+            solarObj = Solar.fromYmdHms(1988, 3, 12, masterHr, masterMn, 0);
+            lunarObj = solarObj.getLunar();
+        }
+
+        const lunar = lunarObj;
+        const solar = solarObj;
         const ec = lunar.getEightChar();
         const pillars = [
             { n: '시주', h: isUnknown ? ['', ''] : ec.getTime() },
@@ -1040,6 +1060,7 @@ function runAnalysis() {
         
         let lMon = typeof lunar.getMonth === 'function' ? Math.abs(lunar.getMonth()) : 1;
         let leapStr = typeof lunar.getMonth === 'function' && lunar.getMonth() < 0 ? '(윤달)' : '(평달)';
+        let sYear = typeof solar.getYear === 'function' ? solar.getYear() : y;
         let sMon = typeof solar.getMonth === 'function' ? solar.getMonth() : m;
         let sDay = typeof solar.getDay === 'function' ? solar.getDay() : d;
         let lDay = typeof lunar.getDay === 'function' ? lunar.getDay() : d;
@@ -1048,7 +1069,7 @@ function runAnalysis() {
         if(badges) {
             badges.innerHTML = `
                 <div class="badge">${document.getElementById('gender').value === 'M' ? '남성' : '여성'}</div>
-                <div class="badge">양력 ${y}.${String(m).padStart(2,'0')}.${String(d).padStart(2,'0')}</div>
+                <div class="badge">양력 ${sYear}.${String(sMon).padStart(2,'0')}.${String(sDay).padStart(2,'0')}</div>
                 <div class="badge">음력 ${lunar.getYear ? lunar.getYear() : y}.${String(lMon).padStart(2,'0')}.${String(lDay).padStart(2,'0')} ${leapStr}</div>
             `;
         }
