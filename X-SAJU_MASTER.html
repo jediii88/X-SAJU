@@ -1216,9 +1216,11 @@ function runAnalysis() {
         }
 
         // 3. 주인님(Master) 특별 처리 룰
-        // "1988-04-27 양력"인 경우에만 무조건 戊辰 乙卯 丙寅 戊子 (1988-03-12 양력 기준) 강제
+        // "1988-04-27 양력" 이거나 "1988-01-24 음력" 이거나 "1988-03-12 음력(기존 오류 데이터 대응)"인 경우 무조건 戊辰 乙卯 丙寅 戊子 (1988-03-12 양력 기준) 강제
         let masterEcObj = null;
-        if (origY === 1988 && origM === 4 && origD === 27 && isSolar) {
+        if ((origY === 1988 && origM === 4 && origD === 27 && isSolar) ||
+            (origY === 1988 && origM === 1 && origD === 24 && !isSolar) ||
+            (origY === 1988 && origM === 3 && origD === 12 && !isSolar)) {
             let masterHr = hr, masterMn = mn;
             if (document.getElementById('adj-l').checked && !isUnknown) {
                 const dt2 = new Date(1988, 3 - 1, 12, hr, mn);
@@ -1228,6 +1230,10 @@ function runAnalysis() {
             }
             let msObj = Solar.fromYmdHms(1988, 3, 12, masterHr, masterMn, 0);
             masterEcObj = msObj.getLunar().getEightChar();
+            
+            // 배지 출력을 위해 양력/음력 객체도 마스터 기준으로 덮어씌움
+            solarObj = msObj;
+            lunarObj = Lunar.fromYmdHms(1988, 1, 24, masterHr, masterMn, 0);
         }
 
         const lunar = lunarObj;
