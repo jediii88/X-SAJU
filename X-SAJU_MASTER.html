@@ -1051,7 +1051,7 @@ function showLoading(msg, callback) {
     document.getElementById('loading').style.display = 'flex';
     document.getElementById('loading-msg').innerText = msg;
     setTimeout(() => {
-        try { callback(); } catch (e) { console.error(e); alert('오류: ' + e.message); }
+        try { callback(); } catch (e) { console.error(e); }
         document.getElementById('loading').style.display = 'none';
     }, 300);
 }
