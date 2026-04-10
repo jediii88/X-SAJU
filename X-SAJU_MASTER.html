@@ -323,47 +323,90 @@
         }
 
         .manse-table {
-            border-top: 1px solid var(--line);
-            border-left: 1px solid var(--line);
-            background: #080808;
-            border-radius: 4px;
-            overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-        }
-
-        .row {
             display: grid;
-            grid-template-columns: 76px repeat(4, 1fr);
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            background: transparent;
         }
 
-        .cell {
-            min-height: 48px;
-            border-right: 1px solid var(--line);
-            border-bottom: 1px solid var(--line);
+        .pillar-col {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 16px 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .p-title {
+            font-size: 13px;
+            color: var(--text-soft);
+            margin-bottom: 14px;
+            font-weight: 500;
+        }
+
+        .p-badge {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            color: #ddd;
+            margin-bottom: 10px;
+        }
+
+        .p-badge.me {
+            background: var(--gold);
+            color: #000;
+            border-color: var(--gold);
+            font-weight: 700;
+        }
+
+        .p-hanja {
+            font-size: 32px;
+            font-weight: 500;
+            line-height: 1.1;
+            margin-bottom: 2px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+
+        .p-hangul {
+            font-size: 11px;
+            color: var(--text-dim);
+            margin-bottom: 16px;
+        }
+
+        .p-divider {
+            width: 70%;
+            height: 1px;
+            background: var(--line-soft);
+            margin: 12px 0;
+        }
+
+        .p-hidden {
+            font-size: 11px;
+            color: var(--text-soft);
+            line-height: 1.6;
+            min-height: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-direction: column;
             text-align: center;
-            padding: 8px 4px;
         }
 
-        .row-label {
-            align-items: flex-start;
-            justify-content: center;
-            padding-left: 12px;
-            text-align: left;
-            color: #999;
-            font-size: 12px;
-            font-weight: 500;
-            background: #111;
-        }
-
-        .col-head {
+        .p-bot {
             font-size: 13px;
-            color: #aaa;
-            font-weight: 500;
-            background: #111;
+            color: var(--text);
+            margin-top: 12px;
+        }
+        
+        .p-bot-sub {
+            font-size: 11px;
+            color: var(--text-dim);
+            margin-top: 6px;
         }
 
         .hanja-main {
@@ -678,6 +721,11 @@
             <div class="fortune-table" id="wolun-table"></div>
         </div>
 
+        <div class="section" id="sec-report" style="margin-top: 30px; text-align: center;">
+            <div style="margin-bottom: 20px; font-size: 15px; color: var(--gold); font-weight: 700;">본격적인 심층 사주 풀이를 시작하시겠습니까?</div>
+            <button class="btn" style="background: var(--gold); color: #000; font-weight: 700; box-shadow: 0 4px 15px rgba(199, 167, 106, 0.4);" onclick="startReport()">심층 사주풀이 시작</button>
+        </div>
+
         <button class="btn subtle" onclick="go(1)">입력 정보 수정</button>
     </div>
 </div>
@@ -690,7 +738,11 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/lunar-javascript/lunar.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lunar-javascript/lunar.js">
+function startReport() {
+    alert("심층 사주풀이 시스템 연동 준비 중입니다. (만세력 데이터 추출 완료)");
+}
+</script>
 <script>
 const HAN_COLOR = {"甲":"wood","乙":"wood","寅":"wood","卯":"wood","丙":"fire","丁":"fire","巳":"fire","午":"fire","戊":"earth","己":"earth","辰":"earth","戌":"earth","丑":"earth","未":"earth","庚":"metal","辛":"metal","申":"metal","酉":"metal","壬":"water","癸":"water","亥":"water","子":"water"};
 const HAN_KOR = {"甲":"갑","乙":"을","丙":"병","丁":"정","戊":"무","己":"기","庚":"경","辛":"신","壬":"임","癸":"계","子":"자","丑":"축","寅":"인","卯":"묘","辰":"진","巳":"사","午":"오","未":"미","申":"신","酉":"유","戌":"술","亥":"해"};
@@ -1078,32 +1130,48 @@ function runAnalysis() {
         const hm = document.getElementById('hero-meta');
         if(hm) hm.parentElement.style.display = 'none';
 
-        const header = `
-            <div class="row">
-                <div class="cell col-head"></div>
-                <div class="cell col-head">시주</div>
-                <div class="cell col-head">일주</div>
-                <div class="cell col-head">월주</div>
-                <div class="cell col-head">년주</div>
-            </div>`;
+        const manseHtml = pillars.map((p, idx) => {
+            if (isUnknown && idx === 0) {
+                return `
+                <div class="pillar-col" style="opacity: 0.5;">
+                    <div class="p-title">${p.n}</div>
+                    <div class="p-badge">-</div>
+                    <div class="p-hanja">?</div>
+                    <div class="p-hangul">미상</div>
+                    <div class="p-hanja">?</div>
+                    <div class="p-hangul">미상</div>
+                    <div class="p-badge">-</div>
+                </div>`;
+            }
 
-        const buildRow = (label, renderer) => `
-            <div class="row">
-                <div class="cell row-label">${label}</div>
-                ${pillars.map((p, idx) => `<div class="cell">${isUnknown && idx === 0 ? '<span class="tiny-dim">미상</span>' : renderer(p, idx)}</div>`).join('')}
-            </div>`;
+            const tGan = p.h[0];
+            const tZhi = p.h[1];
+            const sGan = p.n === '일주' ? '일원' : getSipseong(dayStem, tGan);
+            const sZhi = getSipseong(dayStem, tZhi);
+            const isMe = p.n === '일주' ? 'me' : '';
 
-        const manseHtml = [
-            header,
-            buildRow('천간십성', p => `<div class="mini-top badge-ss">${p.n === '일주' ? '일원' : getSipseong(dayStem, p.h[0])}</div>`),
-            buildRow('천간', p => `<div class="hanja-main ${HAN_COLOR[p.h[0]] || ''}">${p.h[0]}</div><div class="hangul-main">${getElementDesc(p.h[0])}</div>`),
-            buildRow('지지', p => `<div class="hanja-main ${HAN_COLOR[p.h[1]] || ''}">${p.h[1]}</div><div class="hangul-main">${getElementDesc(p.h[1])}</div>`),
-            buildRow('지지십성', p => `<div class="mini-mid badge-ss">${getSipseong(dayStem, p.h[1])}</div>`),
-            buildRow('지장간', p => `<div class="mini-low" style="display:flex; flex-direction:column; justify-content:center;">${getHidden(p.h[1], dayStem)}</div>`),
-            buildRow('12운성', p => `<div class="mini-mid">${getUnsung(dayStem, p.h[1]) || '-'}</div>`),
-            buildRow('12신살', p => `<div class="mini-low">${(allShinsal[p.n] || []).join(' · ') || '-'}</div>`),
-            buildRow('공망', p => `<div class="mini-mid">-</div>`)
-        ].join('');
+            return `
+            <div class="pillar-col">
+                <div class="p-title">${p.n}</div>
+                
+                <div class="p-badge ${isMe}">${sGan}</div>
+                <div class="p-hanja ${HAN_COLOR[tGan] || ''}">${tGan}</div>
+                <div class="p-hangul">${getElementDesc(tGan)}</div>
+                
+                <div class="p-hanja ${HAN_COLOR[tZhi] || ''}">${tZhi}</div>
+                <div class="p-hangul">${getElementDesc(tZhi)}</div>
+                <div class="p-badge">${sZhi}</div>
+
+                <div class="p-divider"></div>
+                
+                <div class="p-hidden">${getHidden(tZhi, dayStem)}</div>
+                
+                <div class="p-divider"></div>
+
+                <div class="p-bot">${getUnsung(dayStem, tZhi) || '-'}</div>
+                <div class="p-bot-sub">${(allShinsal[p.n] || []).slice(0, 2).join('<br>') || '-'}</div>
+            </div>`;
+        }).join('');
         document.getElementById('manse-table').innerHTML = manseHtml;
 
         document.getElementById('relation-list').innerHTML = buildRelationLines(pillars).map(line => `<div class="line-item">${line}</div>`).join('');
