@@ -711,6 +711,144 @@
             color: var(--text-soft);
         }
 
+
+        /* 사주관계 비주얼 노드 스타일 */
+        .rel-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 10px;
+        }
+        .rel-card {
+            background: linear-gradient(135deg, #151515, #0a0a0a);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .rel-nodes {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .rel-char {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #222;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 500;
+            color: #fff;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1);
+        }
+        .rel-link {
+            flex: 1;
+            height: 2px;
+            background: var(--line);
+            position: relative;
+            min-width: 20px;
+        }
+        .rel-link::after {
+            content: '↔';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #0a0a0a;
+            color: var(--text-dim);
+            font-size: 14px;
+            padding: 0 4px;
+        }
+        .rel-badge {
+            background: #2a2a2a;
+            color: var(--gold);
+            font-size: 13px;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(199, 167, 106, 0.3);
+        }
+
+        /* 신강신약 게이지 스타일 */
+        .gauge-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+            position: relative;
+            margin-bottom: 20px;
+        }
+        .gauge-svg {
+            width: 200px;
+            height: 100px;
+            overflow: visible;
+        }
+        .gauge-arc {
+            fill: none;
+            stroke: #222;
+            stroke-width: 14;
+            stroke-linecap: round;
+        }
+        .gauge-fill {
+            fill: none;
+            stroke: url(#gold-grad);
+            stroke-width: 14;
+            stroke-linecap: round;
+            stroke-dasharray: 251 251;
+            stroke-dashoffset: 0;
+            transition: stroke-dashoffset 1s ease-in-out;
+        }
+        .gauge-needle {
+            width: 4px;
+            height: 70px;
+            background: #fff;
+            position: absolute;
+            bottom: 30px;
+            left: calc(50% - 2px);
+            transform-origin: bottom center;
+            border-radius: 2px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.5);
+            transition: transform 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+            z-index: 2;
+        }
+        .gauge-needle::after {
+            content: '';
+            width: 12px;
+            height: 12px;
+            background: #fff;
+            border-radius: 50%;
+            position: absolute;
+            bottom: -4px;
+            left: -4px;
+        }
+        .gauge-text {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--gold);
+            margin-top: -10px;
+        }
+        .gauge-sub {
+            font-size: 13px;
+            color: var(--text-soft);
+            margin-top: 4px;
+        }
+        .gauge-labels {
+            display: flex;
+            justify-content: space-between;
+            width: 220px;
+            margin-top: -15px;
+            font-size: 12px;
+            color: var(--text-dim);
+            font-weight: 500;
+        }
+
 </style>
 </head>
 <body>
@@ -831,9 +969,9 @@
             <div class="manse-table" id="manse-table"></div>
         </div>
 
-        <div class="section" id="sec-relation">
-            <div class="section-title"><div class="title-left"><span>합 · 충 · 형 · 파 · 해</span><span class="help-icon" onclick="openHelp('relation')">?</span></div><span>관계 구조</span></div>
-            <div class="line-list" id="relation-list"></div>
+                <div class="section" id="sec-relation">
+            <div class="section-title"><div class="title-left"><span>합 · 충 · 형 · 파 · 해</span><span class="help-icon" onclick="openHelp('relation')">?</span></div><span>사주관계</span></div>
+            <div class="rel-grid" id="relation-grid"></div>
         </div>
 
         <div class="section" id="sec-shinsal">
@@ -862,17 +1000,30 @@
             </div>
         </div>
 
-        <div class="section" id="sec-fortune">
-            <div class="section-title"><div class="title-left"><span>신강 · 신약</span><span class="help-icon" onclick="openHelp('strength')">?</span></div><span>중심 판단</span></div>
-            <div class="pill-grid">
-                <div class="info-card">
-                    <div class="info-label">판정</div>
-                    <div class="info-value" id="strength-text">-</div>
-                </div>
-                <div class="info-card">
-                    <div class="info-label">대운수</div>
-                    <div class="info-value" id="yun-text">-</div>
-                </div>
+                <div class="section" id="sec-fortune">
+            <div class="section-title"><div class="title-left"><span>신강 · 신약</span><span class="help-icon" onclick="openHelp('strength')">?</span></div><span>나의 에너지 중심</span></div>
+            <div class="gauge-wrap" id="strength-gauge">
+                <svg class="gauge-svg" viewBox="0 0 200 100">
+                    <defs>
+                        <linearGradient id="gold-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#4e87d9" />
+                            <stop offset="50%" stop-color="#c7a76a" />
+                            <stop offset="100%" stop-color="#d45a52" />
+                        </linearGradient>
+                    </defs>
+                    <path class="gauge-arc" d="M 20 90 A 80 80 0 0 1 180 90" />
+                    <!-- Length of semi circle r=80 is ~251 -->
+                    <path class="gauge-fill" id="gauge-path" d="M 20 90 A 80 80 0 0 1 180 90" stroke-dasharray="251" stroke-dashoffset="251" />
+                </svg>
+                <div class="gauge-needle" id="gauge-needle" style="transform: rotate(-90deg);"></div>
+                <div class="gauge-labels"><span>신약</span><span>중화</span><span>신강</span></div>
+                <div class="gauge-text" id="strength-text">-</div>
+                <div class="gauge-sub" id="strength-sub">에너지 강도</div>
+            </div>
+            
+            <div class="info-card">
+                <div class="info-label" style="margin-bottom:8px;">대운수 (대운의 진입점)</div>
+                <div class="info-value" id="yun-text" style="font-size:18px; color:var(--text);">-</div>
             </div>
         </div>
 
@@ -1419,7 +1570,33 @@ function runAnalysis() {
         document.getElementById('manse-table').innerHTML = manseHtml;
 
 
-        document.getElementById('relation-list').innerHTML = buildRelationLines(pillars).map(line => `<div class="line-item">${line}</div>`).join('');
+        const relGrid = document.getElementById('relation-grid');
+        const relLines = buildRelationLines(pillars);
+        if(relLines.length === 0 || (relLines.length === 1 && relLines[0].includes('없음'))) {
+            relGrid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:#777;font-size:13px;">특별한 관계 구조가 없습니다.</div>';
+        } else {
+            relGrid.innerHTML = relLines.map(line => {
+                const parts = line.split(':');
+                const title = parts[0].trim();
+                const desc = parts[1] ? parts[1].trim() : line;
+                
+                let c1 = '?', c2 = '?';
+                const match = desc.match(/([가-힣])\s*([가-힣])\s/);
+                if(match) { c1 = match[1]; c2 = match[2]; }
+                else if (desc.length >= 2) { c1 = desc[0]; c2 = desc[1]; }
+                
+                return `
+                <div class="rel-card">
+                    <div class="rel-nodes">
+                        <div class="rel-char">${c1}</div>
+                        <div class="rel-link"></div>
+                        <div class="rel-char">${c2}</div>
+                    </div>
+                    <div class="rel-badge">${title}</div>
+                    <div style="font-size:11px;color:var(--text-dim);margin-top:8px;">${desc}</div>
+                </div>`;
+            }).join('');
+        }
 
         document.getElementById('shinsal-grid').innerHTML = pillars.map((p, idx) => `
             <div class="info-card">
@@ -1534,12 +1711,27 @@ function runAnalysis() {
         document.getElementById('gi-val').innerText = korE[gi];
         document.getElementById('goo-val').innerText = korE[goo];
 
-        const support = counts.wood + counts.fire;
+        const support = counts.wood + counts.fire; 
         const control = counts.metal + counts.water;
+        const totalW = support + control + counts.earth;
+        
         let strength = '중화';
-        if (support - control >= 2) strength = '신강';
-        if (control - support >= 2) strength = '신약';
+        let ratio = 0.5; // 0 to 1
+        if (totalW > 0) {
+            ratio = support / totalW;
+            if (ratio > 0.6) strength = '신강';
+            else if (ratio < 0.4) strength = '신약';
+        }
+        
+        // Needle rotation: -90deg (0%) to +90deg (100%)
+        const rot = (ratio * 180) - 90;
+        // Gauge fill: dashoffset 251 (empty) to 0 (full)
+        const offset = 251 - (251 * ratio);
+
         document.getElementById('strength-text').innerText = strength;
+        document.getElementById('strength-sub').innerText = `나의 에너지: ${Math.round((support/totalW)*100)}%`;
+        document.getElementById('gauge-needle').style.transform = `rotate(${rot}deg)`;
+        document.getElementById('gauge-path').style.strokeDashoffset = offset;
 
         const yun = ec.getYun(document.getElementById('gender').value === 'M' ? 1 : 0);
         const yunDirection = document.getElementById('gender').value === 'M' ? '순행' : '역행';
