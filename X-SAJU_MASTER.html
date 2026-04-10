@@ -329,6 +329,21 @@
             background: transparent;
         }
 
+
+        @keyframes pillarDrop {
+            0% { transform: translateY(-20px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes pillarDropDim {
+            0% { transform: translateY(-20px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 0.3; }
+        }
+        @keyframes pulseGold {
+            0% { box-shadow: 0 0 0 rgba(199, 167, 106, 0); }
+            50% { box-shadow: 0 4px 20px rgba(199, 167, 106, 0.15); }
+            100% { box-shadow: 0 0 0 rgba(199, 167, 106, 0); }
+        }
+
         .pillar-col {
             background: var(--panel);
             border: 1px solid var(--line);
@@ -338,7 +353,23 @@
             align-items: center;
             padding: 16px 4px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            opacity: 0;
+            animation: pillarDrop 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
         }
+
+        /* 오른쪽(년주)부터 왼쪽(시주)으로 차례대로 떨어지는 점신 스타일 애니메이션 */
+        .pillar-col:nth-child(4) { animation-delay: 0.1s; } /* 년주 */
+        .pillar-col:nth-child(3) { animation-delay: 0.25s; } /* 월주 */
+        .pillar-col:nth-child(2) { animation-delay: 0.4s; } /* 일주 */
+        .pillar-col:nth-child(1) { animation-delay: 0.55s; } /* 시주 */
+
+        .pillar-col.highlight-me {
+            border-color: rgba(199, 167, 106, 0.3);
+            background: linear-gradient(180deg, #0a0a0a 0%, #15120a 100%);
+            animation: pillarDrop 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards, pulseGold 3s ease-in-out infinite;
+            animation-delay: 0.4s, 1s; /* 드롭 애니메이션 끝나고 펄스 시작 */
+        }
+
 
         .p-title {
             font-size: 13px;
@@ -1133,7 +1164,7 @@ function runAnalysis() {
         const manseHtml = pillars.map((p, idx) => {
             if (isUnknown && idx === 0) {
                 return `
-                <div class="pillar-col" style="opacity: 0.5;">
+                <div class="pillar-col" style="opacity: 0; animation-name: pillarDropDim;">
                     <div class="p-title">${p.n}</div>
                     <div class="p-badge">-</div>
                     <div class="p-hanja">?</div>
@@ -1151,7 +1182,7 @@ function runAnalysis() {
             const isMe = p.n === '일주' ? 'me' : '';
 
             return `
-            <div class="pillar-col">
+            <div class="pillar-col ${p.n === '일주' ? 'highlight-me' : ''}">
                 <div class="p-title">${p.n}</div>
                 
                 <div class="p-badge ${isMe}">${sGan}</div>
