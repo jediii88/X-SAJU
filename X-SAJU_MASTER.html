@@ -964,7 +964,11 @@
             document.querySelectorAll('.j-nav-item').forEach(n => n.classList.remove('active'));
             el.classList.add('active');
         }
-        </script>
+        
+function startReport() {
+    alert("심층 사주풀이 시스템 연동 준비 중입니다. (기본 성격, 재물운 파트 엔진 개발 예정)");
+}
+</script>
             <div class="avatar-name" id="av-name">장경현</div>
             <div class="avatar-desc" id="av-desc">병인 (붉은 호랑이)</div>
             <div class="avatar-badges" id="av-badges">
@@ -1051,7 +1055,14 @@
             <div class="fortune-table" id="wolun-table"></div>
         </div>
 
+        
+        <div class="section" id="sec-report" style="margin-top: 30px; text-align: center; padding-bottom: 40px;">
+            <div style="margin-bottom: 20px; font-size: 15px; color: var(--gold); font-weight: 700;">본격적인 심층 사주 풀이를 시작하시겠습니까?</div>
+            <button class="btn" style="background: var(--gold); color: #000; font-weight: 800; font-size: 16px; box-shadow: 0 4px 15px rgba(199, 167, 106, 0.4);" onclick="startReport()">심층 사주풀이 시작</button>
+        </div>
+
         <button class="btn subtle" onclick="go(1)">입력 정보 수정</button>
+
     </div>
 </div>
 
@@ -1259,15 +1270,10 @@ function scrollToSec(id) {
     }
 }
 
-document.querySelectorAll('.nav-item').forEach(item => {
-    item.addEventListener('click', function() {
-        document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-        this.classList.add('active');
-    });
-});
+
 
 window.addEventListener('scroll', () => {
-    const sections = ['sec-manse', 'sec-relation', 'sec-shinsal', 'sec-fortune'];
+    const sections = ['sec-manse', 'sec-relation', 'sec-wuxing', 'sec-fortune'];
     let currentId = 'sec-manse';
     sections.forEach(id => {
         const el = document.getElementById(id);
@@ -1275,8 +1281,8 @@ window.addEventListener('scroll', () => {
             currentId = id;
         }
     });
-    document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-    const activeNav = document.querySelector(`.nav-item[onclick="scrollToSec('${currentId}')"]`);
+    document.querySelectorAll('.j-nav-item').forEach(nav => nav.classList.remove('active'));
+    const activeNav = document.querySelector(`.j-nav-item[onclick*="${currentId}"]`);
     if (activeNav) activeNav.classList.add('active');
 });
 
