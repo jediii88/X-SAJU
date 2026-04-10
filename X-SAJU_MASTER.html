@@ -1031,9 +1031,9 @@ function runAnalysis() {
         }
 
         // 3. 주인님(Master) 특별 처리 룰
-        // "1988-04-27 양력" 이거나 "1988-03-12 음력"인 경우 무조건 戊辰 乙卯 丙寅 戊子 (1988-03-12 양력 기준) 강제
-        if ((origY === 1988 && origM === 4 && origD === 27 && isSolar) ||
-            (origY === 1988 && origM === 3 && origD === 12 && !isSolar)) {
+        // "1988-04-27 양력"인 경우에만 무조건 戊辰 乙卯 丙寅 戊子 (1988-03-12 양력 기준) 강제
+        let masterEcObj = null;
+        if (origY === 1988 && origM === 4 && origD === 27 && isSolar) {
             let masterHr = hr, masterMn = mn;
             if (document.getElementById('adj-l').checked && !isUnknown) {
                 const dt2 = new Date(1988, 3 - 1, 12, hr, mn);
@@ -1041,13 +1041,13 @@ function runAnalysis() {
                 masterHr = dt2.getHours();
                 masterMn = dt2.getMinutes();
             }
-            solarObj = Solar.fromYmdHms(1988, 3, 12, masterHr, masterMn, 0);
-            lunarObj = solarObj.getLunar();
+            let msObj = Solar.fromYmdHms(1988, 3, 12, masterHr, masterMn, 0);
+            masterEcObj = msObj.getLunar().getEightChar();
         }
 
         const lunar = lunarObj;
         const solar = solarObj;
-        const ec = lunar.getEightChar();
+        const ec = masterEcObj ? masterEcObj : lunar.getEightChar();
         const pillars = [
             { n: '시주', h: isUnknown ? ['', ''] : ec.getTime() },
             { n: '일주', h: ec.getDay() },
