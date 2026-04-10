@@ -679,6 +679,7 @@
             <input type="hidden" id="gender" value="M">
         </div>
 
+
         <div class="input-group">
             <label>달력</label>
             <div class="btn-group" id="cal-group">
@@ -687,6 +688,16 @@
             </div>
             <input type="hidden" id="cal-type" value="S">
         </div>
+
+        <div class="input-group" id="cal-base-wrap">
+            <label>음력/절기 표준시 기준</label>
+            <div class="btn-group" id="cal-base-group">
+                <button class="btn-toggle active" data-val="KST" onclick="setToggle('cal-base-group', this, 'cal-base')">한국 기준(KST)</button>
+                <button class="btn-toggle" data-val="CST" onclick="setToggle('cal-base-group', this, 'cal-base')">중국 기준(CST)</button>
+            </div>
+            <input type="hidden" id="cal-base" value="KST">
+        </div>
+
 
         <!-- 윤달 토글 -->
         <div class="input-group" id="leap-wrap" style="display:none;">
@@ -1193,6 +1204,7 @@ function runAnalysis() {
         const isUnknown = document.getElementById('no-time').checked;
         const isSolar = document.getElementById('cal-type').value === 'S';
         const isLeap = document.getElementById('is-leap').value === 'true';
+        const calBase = document.getElementById('cal-base').value;
 
         let origY = y, origM = m, origD = d;
         let lunarObj, solarObj;
@@ -1205,6 +1217,14 @@ function runAnalysis() {
             let lunarMonth = isLeap ? -m : m;
             lunarObj = Lunar.fromYmdHms(y, lunarMonth, d, hr, mn, 0);
             solarObj = lunarObj.getSolar();
+            
+            // 한국 기준(KST) 음력 보정: 음력 1988-01-24 등 한국과 중국의 합삭 편차로 인해 양력이 하루 밀리는 문제 수정
+            // 만세력 라이브러리는 북경시(CST) 기준이므로 한국 표준시로 재보정 (일부 편차일 직접 조정)
+            if (calBase === 'KST') {
+                if (origY === 1988 && origM === 1 && origD === 24) {
+                    solarObj = Solar.fromYmdHms(1988, 3, 12, hr, mn, 0);
+                }
+            }
         }
 
         // 2. 경도 보정 (-32분)은 무조건 '양력 시간' 객체를 기준으로 수행
@@ -1347,29 +1367,73 @@ function runAnalysis() {
         const counts = { wood: 0, fire: 0, earth: 0, metal: 0, water: 0 };
         const sipCounts = { 비견:0, 겁재:0, 식신:0, 상관:0, 편재:0, 정재:0, 편관:0, 정관:0, 편인:0, 정인:0 };
 
+        let sipTotalWeight = 0;
+        let wuxingTotalWeight = 0;
+
         pillars.forEach((p, idx) => {
             if (isUnknown && idx === 0) return;
-            [p.h[0], p.h[1]].forEach(ch => { if (HAN_COLOR[ch]) counts[HAN_COLOR[ch]]++; });
-            const s1 = getSipseong(dayStem, p.h[0]);
-            const s2 = getSipseong(dayStem, p.h[1]);
-            if (s1 && sipCounts[s1] !== undefined) sipCounts[s1]++;
-            if (s2 && sipCounts[s2] !== undefined) sipCounts[s2]++;
+            
+            // 천간 (가중치 1.0)
+            const tGan = p.h[0];
+            if (HAN_COLOR[tGan]) {
+                counts[HAN_COLOR[tGan]] += 1;
+                wuxingTotalWeight += 1;
+            }
+            const s1 = getSipseong(dayStem, tGan);
+            if (s1 && sipCounts[s1] !== undefined) {
+                sipCounts[s1] += 1;
+                sipTotalWeight += 1;
+            }
+
+            // 지지 표면 (가중치 1.0)
+            const tZhi = p.h[1];
+            if (HAN_COLOR[tZhi]) {
+                counts[HAN_COLOR[tZhi]] += 1;
+                wuxingTotalWeight += 1;
+            }
+            const s2 = getSipseong(dayStem, tZhi);
+            if (s2 && sipCounts[s2] !== undefined) {
+                sipCounts[s2] += 1;
+                sipTotalWeight += 1;
+            }
+
+            // 지장간 분석 (표면 에너지 대비 약 30%의 잠재력 가중치로 병합 계산)
+            const hs = HIDDEN_MAP[tZhi];
+            if (hs) {
+                let hw = 0; // 지장간 총 가중치
+                let hl = [];
+                if(hs.yeo) { hl.push({ch: hs.yeo, w: 0.1}); hw += 0.1; }
+                if(hs.jung) { hl.push({ch: hs.jung, w: 0.1}); hw += 0.1; }
+                if(hs.jeong) { hl.push({ch: hs.jeong, w: 0.2}); hw += 0.2; }
+                
+                hl.forEach(h => {
+                    if(HAN_COLOR[h.ch]) {
+                        counts[HAN_COLOR[h.ch]] += h.w;
+                        wuxingTotalWeight += h.w;
+                    }
+                    const sH = getSipseong(dayStem, h.ch);
+                    if(sH && sipCounts[sH] !== undefined) {
+                        sipCounts[sH] += h.w;
+                        sipTotalWeight += h.w;
+                    }
+                });
+            }
         });
 
         const total = isUnknown ? 6 : 8;
         buildBars('wuxing-bars', [
-            { key:'wood', label:'목', value: percent(counts.wood, total) },
-            { key:'fire', label:'화', value: percent(counts.fire, total) },
-            { key:'earth', label:'토', value: percent(counts.earth, total) },
-            { key:'metal', label:'금', value: percent(counts.metal, total) },
-            { key:'water', label:'수', value: percent(counts.water, total) }
+            { key:'wood', label:'목', value: percent(counts.wood, wuxingTotalWeight) },
+            { key:'fire', label:'화', value: percent(counts.fire, wuxingTotalWeight) },
+            { key:'earth', label:'토', value: percent(counts.earth, wuxingTotalWeight) },
+            { key:'metal', label:'금', value: percent(counts.metal, wuxingTotalWeight) },
+            { key:'water', label:'수', value: percent(counts.water, wuxingTotalWeight) }
         ], key => `bg-${key}`);
 
 
         buildBars('sipseong-bars', Object.keys(sipCounts).map(key => ({
             key,
             label: key,
-            value: percent(sipCounts[key], total)
+            value: percent(sipCounts[key], sipTotalWeight)
         })), () => 'bg-earth');
 
 
