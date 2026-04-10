@@ -647,6 +647,70 @@
         
         .f-card.current-fortune .f-head { color: var(--gold); }
 
+
+        .wuxing-circles {
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0 20px;
+        }
+        .w-circle-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+        .liq-container {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #111;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.05);
+        }
+        .liq-bg {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: var(--bg-color);
+            opacity: 0.8;
+            transition: height 1.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .liq-bg::before, .liq-bg::after {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -150%;
+            left: -50%;
+            background: rgba(0,0,0,0.3);
+            border-radius: 40%;
+            animation: slowSpin 6s linear infinite;
+        }
+        .liq-bg::after {
+            background: #111;
+            border-radius: 45%;
+            animation: slowSpin 5s linear infinite;
+        }
+        @keyframes slowSpin {
+            100% { transform: rotate(360deg); }
+        }
+        .w-val {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12px;
+            font-weight: 700;
+            color: #fff;
+            z-index: 10;
+        }
+        .w-label {
+            font-size: 13px;
+            color: var(--text-soft);
+        }
+
 </style>
 </head>
 <body>
@@ -1426,13 +1490,28 @@ function runAnalysis() {
         });
 
         const total = isUnknown ? 6 : 8;
-        buildBars('wuxing-bars', [
-            { key:'wood', label:'목', value: percent(counts.wood, wuxingTotalWeight) },
-            { key:'fire', label:'화', value: percent(counts.fire, wuxingTotalWeight) },
-            { key:'earth', label:'토', value: percent(counts.earth, wuxingTotalWeight) },
-            { key:'metal', label:'금', value: percent(counts.metal, wuxingTotalWeight) },
-            { key:'water', label:'수', value: percent(counts.water, wuxingTotalWeight) }
-        ], key => `bg-${key}`);
+        const wxData = [
+            { key:'wood', label:'목(木)', val: percent(counts.wood, wuxingTotalWeight) },
+            { key:'fire', label:'화(火)', val: percent(counts.fire, wuxingTotalWeight) },
+            { key:'earth', label:'토(土)', val: percent(counts.earth, wuxingTotalWeight) },
+            { key:'metal', label:'금(金)', val: percent(counts.metal, wuxingTotalWeight) },
+            { key:'water', label:'수(水)', val: percent(counts.water, wuxingTotalWeight) }
+        ];
+        
+        let wxHtml = '<div class="wuxing-circles">';
+        wxData.forEach(w => {
+            wxHtml += `
+                <div class="w-circle-wrap">
+                    <div class="liq-container" style="--bg-color: var(--${w.key});">
+                        <div class="liq-bg" style="height: ${w.val}%;"></div>
+                        <div class="w-val">${w.val}%</div>
+                    </div>
+                    <div class="w-label">${w.label}</div>
+                </div>
+            `;
+        });
+        wxHtml += '</div>';
+        document.getElementById('wuxing-bars').innerHTML = wxHtml;
 
 
         buildBars('sipseong-bars', Object.keys(sipCounts).map(key => ({
