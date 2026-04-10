@@ -1160,6 +1160,36 @@ const SHINSAL_LOGIC = {
         const targets = {"甲":"丑未","戊":"丑未","庚":"丑未","乙":"子申","己":"子申","丙":"亥酉","丁":"亥酉","壬":"卯巳","癸":"卯巳","辛":"寅午"}[ds];
         return targets && targets.includes(gz[1]) ? '천을귀인' : '';
     },
+    
+    '백호대살': (gz, ec) => {
+        return ['甲辰','乙未','丙戌','丁丑','戊辰','壬戌','癸丑'].includes(gz) ? '백호대살' : '';
+    },
+    '괴강살': (gz, ec) => {
+        return ['庚辰','庚戌','壬辰','壬戌','戊戌'].includes(gz) ? '괴강살' : '';
+    },
+    '양인살': (gz, ec) => {
+        const ds = ec.getDay()[0];
+        const targets = {"甲":"卯","丙":"午","戊":"午","庚":"酉","壬":"子"}[ds];
+        return targets === gz[1] ? '양인살' : '';
+    },
+    '원진살': (gz, ec) => {
+        const db = ec.getDay()[1];
+        if(!db) return '';
+        const wjMap = {"子":"未","丑":"午","寅":"酉","卯":"申","辰":"亥","巳":"戌","午":"丑","未":"子","申":"卯","酉":"寅","戌":"巳","亥":"辰"};
+        // Only output wonjin if the branch matches the day branch's wonjin pair, and it's NOT the day pillar itself
+        return (gz[1] === wjMap[db] && gz !== ec.getDay()) ? '원진살' : '';
+    },
+    '귀문관살': (gz, ec) => {
+        const db = ec.getDay()[1];
+        if(!db) return '';
+        const gmMap = {"子":"酉","丑":"午","寅":"未","卯":"申","辰":"亥","巳":"戌","午":"丑","未":"寅","申":"卯","酉":"子","戌":"巳","亥":"辰"};
+        return (gz[1] === gmMap[db] && gz !== ec.getDay()) ? '귀문관살' : '';
+    },
+    '홍염살': (gz, ec) => {
+        const ds = ec.getDay()[0];
+        const targets = {"甲":"午","乙":"午","丙":"寅","丁":"未","戊":"辰","己":"辰","庚":"戌","辛":"酉","壬":"子","癸":"申"}[ds];
+        return targets === gz[1] ? '홍염살' : '';
+    },
     '문창귀인': (gz, ec) => {
         const ds = ec.getDay()[0];
         const targets = {"甲":"巳","乙":"午","丙":"申","丁":"酉","戊":"申","己":"酉","庚":"亥","辛":"子","壬":"寅","癸":"卯"}[ds];
@@ -1317,6 +1347,27 @@ function getSipseong(dayStem, target) {
     const diff = (tIdx - dIdx + 5) % 5;
     const same = isYang(dayStem) === isYang(t);
     return [["비견","겁재"],["식신","상관"],["편재","정재"],["편관","정관"],["편인","정인"]][diff][same ? 0 : 1];
+}
+
+
+function getGongmang(dayPillar) {
+    const stems = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+    const branches = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+    if (!dayPillar || dayPillar.length < 2) return '';
+    const stemIdx = stems.indexOf(dayPillar[0]);
+    const branchIdx = branches.indexOf(dayPillar[1]);
+    if (stemIdx === -1 || branchIdx === -1) return '';
+    
+    // Calculate the branch offset relative to stem
+    let offset = branchIdx - stemIdx;
+    if (offset < 0) offset += 12;
+    
+    // The gongmang branches are the two preceding the group start
+    // Groups are starting from Gap(0). The offset gives the starting group's branch.
+    // Actually, simple formula: (branchIdx - stemIdx + 10) % 12 and +11
+    const gm1 = branches[(offset + 10) % 12];
+    const gm2 = branches[(offset + 11) % 12];
+    return gm1 + gm2;
 }
 
 function getUnsung(stem, branch) {
@@ -1574,7 +1625,10 @@ function runAnalysis() {
             bRow('지장간', p => `<div class="m-badge">${getHidden(p.h[1], dayStem).replace(/<br>/g, '')}</div>`),
             bRow('12운성', p => `<div class="m-badge">${getUnsung(dayStem, p.h[1]) || '-'}</div>`),
             bRow('12신살', p => `<div class="m-badge">${(allShinsal[p.n] || []).join('<br>') || '-'}</div>`),
-            bRow('공망', p => `<div class="m-badge">-</div>`)
+            bRow('공망', p => {
+                const gm = getGongmang(dayStem + ec.getDay()[1]);
+                return `<div class="m-badge" style="${gm.includes(p.h[1]) ? 'color:var(--fire);font-weight:bold;' : ''}">${gm.includes(p.h[1]) ? '공망' : '-'}</div>`;
+            })
         ].join('');
         document.getElementById('manse-table').innerHTML = manseHtml;
 
@@ -1737,16 +1791,28 @@ function runAnalysis() {
         setYong('goo-val', goo);
 
 
-        const support = counts.wood + counts.fire; 
-        const control = counts.metal + counts.water;
-        const totalW = support + control + counts.earth;
+                // 1. 신강/신약 정밀 계산 (일간 기준)
+        const myEl = HAN_COLOR[dayStem];
+        let support = 0; // 나를 돕는 기운 (비겁, 인성)
+        let control = 0; // 내 힘을 빼는 기운 (식상, 재성, 관성)
+        
+        // 오행별 상생상극 (수->목->화->토->금->수)
+        const sngMap = { 'wood':'water', 'fire':'wood', 'earth':'fire', 'metal':'earth', 'water':'metal' };
+        const mySupportEl = sngMap[myEl]; // 나를 낳는 기운 (인성)
+        
+        const totalW = counts.wood + counts.fire + counts.earth + counts.metal + counts.water;
+        
+        if (totalW > 0) {
+            support = (counts[myEl] || 0) + (counts[mySupportEl] || 0);
+            control = totalW - support;
+        }
         
         let strength = '중화';
         let ratio = 0.5; // 0 to 1
         if (totalW > 0) {
             ratio = support / totalW;
-            if (ratio > 0.6) strength = '신강';
-            else if (ratio < 0.4) strength = '신약';
+            if (ratio > 0.55) strength = '신강';
+            else if (ratio < 0.45) strength = '신약';
         }
         
         // Needle rotation: -90deg (0%) to +90deg (100%)
@@ -1755,7 +1821,7 @@ function runAnalysis() {
         const offset = 251 - (251 * ratio);
 
         document.getElementById('strength-text').innerText = strength;
-        document.getElementById('strength-sub').innerText = `나의 에너지: ${Math.round((support/totalW)*100)}%`;
+        document.getElementById('strength-sub').innerText = `내 기운(${Math.round(ratio*100)}%) / 빠지는 기운(${Math.round((1-ratio)*100)}%)`;
         document.getElementById('gauge-needle').style.transform = `rotate(${rot}deg)`;
         document.getElementById('gauge-path').style.strokeDashoffset = offset;
 
