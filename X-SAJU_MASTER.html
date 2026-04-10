@@ -605,7 +605,7 @@
             margin-bottom: 4px;
         }
         .m-hanja {
-            font-size: 26px;
+            font-size: 34px;
             font-weight: 500;
             line-height: 1.1;
             margin-bottom: 2px;
@@ -614,75 +614,16 @@
             font-size: 11px;
             color: var(--text-dim);
         }
-        .m-circle {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            color: #fff;
-            margin-bottom: 4px;
-        }
+        
 
-        /* 물결(액체) 애니메이션 오행 원형 바 */
-        .wuxing-circles {
-            display: flex;
-            justify-content: space-around;
-            padding: 20px 0;
-        }
-        .w-circle-wrap {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-        }
-        .liquid-container {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: #222;
-            overflow: hidden;
-            position: relative;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
-        }
-        .liquid-bg {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: var(--bg-color);
-            transition: height 1s ease-in-out;
-        }
-        .liquid-wave {
-            position: absolute;
-            top: -150%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: #222;
-            border-radius: 40%;
-            animation: spin 5s linear infinite;
-        }
-        @keyframes spin {
-            100% { transform: rotate(360deg); }
-        }
-        .w-val {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 13px;
-            font-weight: 700;
-            color: #fff;
-            z-index: 10;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
-        }
-        .w-label {
-            font-size: 13px;
-            color: var(--text-soft);
-        }
+
+        .bar-group { display: flex; flex-direction: column; gap: 16px; }
+        .bar-item { display: grid; grid-template-columns: 70px 1fr 46px; gap: 12px; align-items: center; }
+        .bar-label { font-size: 14px; color: var(--text-soft); font-weight: 400; }
+        .bar-track { height: 4px; background: rgba(255,255,255,0.08); position: relative; border-radius: 2px; }
+        .bar-fill { height: 4px; position: absolute; left: 0; top: 0; border-radius: 2px; }
+        .bar-value { text-align: right; font-size: 13px; color: var(--text); font-weight: 400; }
+
         
         .fortune-scroll {
             display: flex;
@@ -835,6 +776,17 @@
             <div class="bar-group" id="sipseong-bars"></div>
         </div>
 
+
+        <div class="section" id="sec-yonghee">
+            <div class="section-title"><div class="title-left"><span>용희기구한</span><span class="help-icon" onclick="openHelp('yonghee')">?</span></div><span>사주의 길흉성 판단</span></div>
+            <div class="pill-grid" id="yonghee-grid">
+                <div class="info-card"><div class="info-label" style="color:var(--wood)">용신 (수호)</div><div class="info-value" id="yong-val">-</div></div>
+                <div class="info-card"><div class="info-label" style="color:var(--fire)">희신 (도움)</div><div class="info-value" id="hee-val">-</div></div>
+                <div class="info-card"><div class="info-label" style="color:var(--metal)">기신 (방해)</div><div class="info-value" id="gi-val">-</div></div>
+                <div class="info-card"><div class="info-label" style="color:var(--water)">구신 (적대)</div><div class="info-value" id="goo-val">-</div></div>
+            </div>
+        </div>
+
         <div class="section" id="sec-fortune">
             <div class="section-title"><div class="title-left"><span>신강 · 신약</span><span class="help-icon" onclick="openHelp('strength')">?</span></div><span>중심 판단</span></div>
             <div class="pill-grid">
@@ -878,6 +830,68 @@
 
 <script src="https://cdn.jsdelivr.net/npm/lunar-javascript/lunar.js"></script>
 <script>
+
+const HELP_DATA = {
+    manse: {
+        title: "만세력 원국 (사주팔자)",
+        desc: "태어난 연, 월, 일, 시간을 기준으로 우주의 기운(간지)을 8개의 글자로 표현한 나의 고유한 바코드입니다.<br><br>• <b>일원(일주)</b>: 나 자신과 배우자를 의미합니다.<br>• <b>월주</b>: 나의 부모, 타고난 환경, 직업적 적성을 뜻합니다.<br>• <b>년주</b>: 조상, 초년기, 국가적 스케일을 나타냅니다.<br>• <b>시주</b>: 자식, 말년운, 은밀한 속마음을 나타냅니다."
+    },
+    relation: {
+        title: "합 · 충 · 형 · 파 · 해",
+        desc: "내 사주팔자 안의 글자들이 서로 만나서 일으키는 화학 작용입니다.<br><br>• <b>합(合)</b>: 서로 끌어당기고 묶이는 긍정적/부정적 결합<br>• <b>충(沖)</b>: 서로 부딪혀 깨지거나 역동적인 변화를 일으킴<br>• <b>형(刑)</b>: 다듬어지고 조정되는 과정 (관재, 수술, 혹은 권력)<br>• <b>파(破), 해(害)</b>: 방해, 훼방, 분리 등의 작용"
+    },
+    shinsal: {
+        title: "신살 · 길성",
+        desc: "원국에 숨겨진 특수한 기운들입니다.<br><br>• <b>천을귀인</b>: 최고의 길성으로, 위기에서 나를 돕는 귀인<br>• <b>도화살/홍염살</b>: 타인을 끌어당기는 매력과 인기<br>• <b>역마살</b>: 이동, 변화, 해외와의 인연<br>• <b>괴강살/백호살</b>: 강력한 카리스마, 압도적인 에너지와 프로 의식"
+    },
+    wuxing: {
+        title: "오행 분포 (목화토금수)",
+        desc: "우주를 구성하는 5가지 에너지가 내게 얼마나 골고루 분포되어 있는지 보여줍니다.<br><br>• <b>목(木)</b>: 성장, 시작, 기획력<br>• <b>화(火)</b>: 발산, 열정, 표현력<br>• <b>토(土)</b>: 수용, 중재, 신용<br>• <b>금(金)</b>: 결단, 규칙, 맺고 끊음<br>• <b>수(水)</b>: 지혜, 유연성, 휴식"
+    },
+    sipseong: {
+        title: "십성 분포 (육친)",
+        desc: "오행을 인간관계와 사회적 역할로 변환한 지표입니다.<br><br>• <b>비겁</b>: 자아, 주체성, 동료, 경쟁<br>• <b>식상</b>: 표현력, 재능, 창의력, 부하<br>• <b>재성</b>: 결과, 목표 달성, 재물, 아버지/아내<br>• <b>관성</b>: 규칙, 직장, 명예, 책임감, 남편<br>• <b>인성</b>: 수용성, 학문, 문서, 인내, 어머니"
+    },
+    strength: {
+        title: "신강 · 신약 판단",
+        desc: "내 사주에서 나를 돕는 기운(인성, 비겁)과 내 기운을 빼앗는 기운(식상, 재성, 관성)의 비율을 계산한 결과입니다.<br><br>• <b>신강</b>: 자기 주관이 뚜렷하고 밀어붙이는 힘이 강함. 외부의 압력을 잘 버팀.<br>• <b>신약</b>: 주변 환경과 타인에게 잘 맞추는 유연성과 타협성이 뛰어남.<br>• <b>중화</b>: 기운의 밸런스가 좋아 안정적임."
+    },
+    daeun: {
+        title: "대운 (10년 단위의 큰 흐름)",
+        desc: "나의 사주 원국이라는 '자동차'가 달리는 '10년 단위의 도로'입니다.<br>대운이 좋으면 고속도로를 달리는 것이고, 대운이 나쁘면 비포장도로를 달리는 것과 같습니다. 대운수(예: 3)는 해당 나이(3세, 13세, 23세...)마다 운의 흐름이 바뀜을 의미합니다."
+    },
+    seun: {
+        title: "세운 (1년 단위의 흐름)",
+        desc: "매년 들어오는 운세입니다. 대운이 큰 환경이라면, 세운은 그 해에 일어나는 구체적인 사건과 체감되는 변화를 의미합니다."
+    },
+    wolun: {
+        title: "월운 (한 달 단위의 흐름)",
+        desc: "올해 1월부터 12월까지 매달 들어오는 운세입니다. 단기적인 계획을 세우거나 조심해야 할 달을 파악할 때 사용합니다."
+    },
+    yonghee: {
+        title: "용희기구한 (용신과 기신)",
+        desc: "내 사주를 돕거나 해치는 기운을 5가지로 분류한 것입니다.<br><br>• <b>용신(用)</b>: 내 사주를 중화시키고 가장 크게 돕는 수호신<br>• <b>희신(喜)</b>: 용신을 도와 나에게 좋은 작용을 하는 기운<br>• <b>기신(忌)</b>: 내 사주의 밸런스를 깨고 방해하는 나쁜 기운<br>• <b>구신(仇)</b>: 기신을 도와 나쁜 작용을 거드는 기운<br>• <b>한신(閑)</b>: 운에 따라 좋게도 나쁘게도 작용하는 평범한 기운"
+    }
+};
+
+function openHelp(key) {
+    const data = HELP_DATA[key];
+    if (data) {
+        document.getElementById('help-title').innerHTML = data.title;
+        document.getElementById('help-body').innerHTML = data.desc;
+        const modal = document.getElementById('help-modal');
+        modal.style.display = 'flex';
+        setTimeout(() => modal.style.opacity = '1', 10);
+    }
+}
+
+function closeHelp(e) {
+    if (e && e.target !== document.getElementById('help-modal') && e.target.className !== 'modal-close') return;
+    const modal = document.getElementById('help-modal');
+    modal.style.opacity = '0';
+    setTimeout(() => modal.style.display = 'none', 200);
+}
+
 const HAN_COLOR = {"甲":"wood","乙":"wood","寅":"wood","卯":"wood","丙":"fire","丁":"fire","巳":"fire","午":"fire","戊":"earth","己":"earth","辰":"earth","戌":"earth","丑":"earth","未":"earth","庚":"metal","辛":"metal","申":"metal","酉":"metal","壬":"water","癸":"water","亥":"water","子":"water"};
 const HAN_KOR = {"甲":"갑","乙":"을","丙":"병","丁":"정","戊":"무","己":"기","庚":"경","辛":"신","壬":"임","癸":"계","子":"자","丑":"축","寅":"인","卯":"묘","辰":"진","巳":"사","午":"오","未":"미","申":"신","酉":"유","戌":"술","亥":"해"};
 const STEM_YANG = ["甲","丙","戊","庚","壬"];
@@ -1299,11 +1313,11 @@ function runAnalysis() {
             headerRow,
             bRow('십성', p => `<div class="m-badge">${p.n === '일주' ? '일원' : getSipseong(dayStem, p.h[0])}</div>`),
             bRow('천간', p => `
-                <div class="m-circle bg-${HAN_COLOR[p.h[0]]}">${p.h[0]}</div>
+                <div class="m-hanja ${HAN_COLOR[p.h[0]] || ''}">${p.h[0]}</div>
                 <div class="m-hangul">${getElementDesc(p.h[0])}</div>
             `),
             bRow('지지', p => `
-                <div class="m-circle bg-${HAN_COLOR[p.h[1]]}">${p.h[1]}</div>
+                <div class="m-hanja ${HAN_COLOR[p.h[1]] || ''}">${p.h[1]}</div>
                 <div class="m-hangul">${getElementDesc(p.h[1])}</div>
             `),
             bRow('십성', p => `<div class="m-badge">${getSipseong(dayStem, p.h[1])}</div>`),
@@ -1337,30 +1351,13 @@ function runAnalysis() {
         });
 
         const total = isUnknown ? 6 : 8;
-        const wxData = [
-            { key:'wood', label:'목(木)', val: percent(counts.wood, total) },
-            { key:'fire', label:'화(火)', val: percent(counts.fire, total) },
-            { key:'earth', label:'토(土)', val: percent(counts.earth, total) },
-            { key:'metal', label:'금(金)', val: percent(counts.metal, total) },
-            { key:'water', label:'수(水)', val: percent(counts.water, total) }
-        ];
-        
-        let wxHtml = '<div class="wuxing-circles">';
-        wxData.forEach(w => {
-            wxHtml += `
-                <div class="w-circle-wrap">
-                    <div class="liquid-container" style="--bg-color: var(--${w.key});">
-                        <div class="liquid-bg" style="height: ${w.val}%;">
-                            <div class="liquid-wave" style="top: -${100 - w.val/2}%"></div>
-                        </div>
-                        <div class="w-val">${w.val}%</div>
-                    </div>
-                    <div class="w-label">${w.label}</div>
-                </div>
-            `;
-        });
-        wxHtml += '</div>';
-        document.getElementById('wuxing-bars').innerHTML = wxHtml;
+        buildBars('wuxing-bars', [
+            { key:'wood', label:'목', value: percent(counts.wood, total) },
+            { key:'fire', label:'화', value: percent(counts.fire, total) },
+            { key:'earth', label:'토', value: percent(counts.earth, total) },
+            { key:'metal', label:'금', value: percent(counts.metal, total) },
+            { key:'water', label:'수', value: percent(counts.water, total) }
+        ], key => `bg-${key}`);
 
 
         buildBars('sipseong-bars', Object.keys(sipCounts).map(key => ({
@@ -1368,6 +1365,20 @@ function runAnalysis() {
             label: key,
             value: percent(sipCounts[key], total)
         })), () => 'bg-earth');
+
+
+        const sorted = Object.entries(counts).sort((a,b)=>a[1]-b[1]);
+        const yong = sorted[0][0]; 
+        const hee = sorted[1][0];
+        const sortedDesc = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+        const gi = sortedDesc[0][0];
+        const goo = sortedDesc[1][0];
+        
+        const korE = {wood:"목(木)", fire:"화(火)", earth:"토(土)", metal:"금(金)", water:"수(水)"};
+        document.getElementById('yong-val').innerText = korE[yong];
+        document.getElementById('hee-val').innerText = korE[hee];
+        document.getElementById('gi-val').innerText = korE[gi];
+        document.getElementById('goo-val').innerText = korE[goo];
 
         const support = counts.wood + counts.fire;
         const control = counts.metal + counts.water;
