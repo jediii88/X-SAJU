@@ -1398,13 +1398,18 @@ function runAnalysis() {
             }
 
             // 지장간 분석 (표면 에너지 대비 약 30%의 잠재력 가중치로 병합 계산)
-            const hs = HIDDEN_MAP[tZhi];
-            if (hs) {
+            const hsList = BRANCH_HIDDEN[tZhi];
+            if (hsList && hsList.length > 0) {
                 let hw = 0; // 지장간 총 가중치
                 let hl = [];
-                if(hs.yeo) { hl.push({ch: hs.yeo, w: 0.1}); hw += 0.1; }
-                if(hs.jung) { hl.push({ch: hs.jung, w: 0.1}); hw += 0.1; }
-                if(hs.jeong) { hl.push({ch: hs.jeong, w: 0.2}); hw += 0.2; }
+                if (hsList.length === 2) {
+                    hl.push({ch: hsList[0], w: 0.1}); hw += 0.1; // 여기
+                    hl.push({ch: hsList[1], w: 0.3}); hw += 0.3; // 정기
+                } else if (hsList.length === 3) {
+                    hl.push({ch: hsList[0], w: 0.1}); hw += 0.1; // 여기
+                    hl.push({ch: hsList[1], w: 0.1}); hw += 0.1; // 중기
+                    hl.push({ch: hsList[2], w: 0.2}); hw += 0.2; // 정기
+                }
                 
                 hl.forEach(h => {
                     if(HAN_COLOR[h.ch]) {
