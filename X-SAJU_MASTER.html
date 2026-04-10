@@ -323,121 +323,47 @@
         }
 
         .manse-table {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-            background: transparent;
-        }
-
-
-        @keyframes pillarDrop {
-            0% { transform: translateY(-20px); opacity: 0; }
-            100% { transform: translateY(0); opacity: 1; }
-        }
-        @keyframes pillarDropDim {
-            0% { transform: translateY(-20px); opacity: 0; }
-            100% { transform: translateY(0); opacity: 0.3; }
-        }
-        @keyframes pulseGold {
-            0% { box-shadow: 0 0 0 rgba(199, 167, 106, 0); }
-            50% { box-shadow: 0 4px 20px rgba(199, 167, 106, 0.15); }
-            100% { box-shadow: 0 0 0 rgba(199, 167, 106, 0); }
-        }
-
-        .pillar-col {
-            background: var(--panel);
-            border: 1px solid var(--line);
-            border-radius: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 16px 4px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            opacity: 0;
-            animation: pillarDrop 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-        }
-
-        /* 오른쪽(년주)부터 왼쪽(시주)으로 차례대로 떨어지는 점신 스타일 애니메이션 */
-        .pillar-col:nth-child(4) { animation-delay: 0.1s; } /* 년주 */
-        .pillar-col:nth-child(3) { animation-delay: 0.25s; } /* 월주 */
-        .pillar-col:nth-child(2) { animation-delay: 0.4s; } /* 일주 */
-        .pillar-col:nth-child(1) { animation-delay: 0.55s; } /* 시주 */
-
-        .pillar-col.highlight-me {
-            border-color: rgba(199, 167, 106, 0.3);
-            background: linear-gradient(180deg, #0a0a0a 0%, #15120a 100%);
-            animation: pillarDrop 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards, pulseGold 3s ease-in-out infinite;
-            animation-delay: 0.4s, 1s; /* 드롭 애니메이션 끝나고 펄스 시작 */
-        }
-
-
-        .p-title {
-            font-size: 13px;
-            color: var(--text-soft);
-            margin-bottom: 14px;
-            font-weight: 500;
-        }
-
-        .p-badge {
-            font-size: 11px;
-            padding: 3px 8px;
+            border-top: 1px solid var(--line);
+            border-left: 1px solid var(--line);
+            background: #080808;
             border-radius: 4px;
-            background: #1a1a1a;
-            border: 1px solid #333;
-            color: #ddd;
-            margin-bottom: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
         }
 
-        .p-badge.me {
-            background: var(--gold);
-            color: #000;
-            border-color: var(--gold);
-            font-weight: 700;
+        .row {
+            display: grid;
+            grid-template-columns: 76px repeat(4, 1fr);
         }
 
-        .p-hanja {
-            font-size: 32px;
-            font-weight: 500;
-            line-height: 1.1;
-            margin-bottom: 2px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
-        }
-
-        .p-hangul {
-            font-size: 11px;
-            color: var(--text-dim);
-            margin-bottom: 16px;
-        }
-
-        .p-divider {
-            width: 70%;
-            height: 1px;
-            background: var(--line-soft);
-            margin: 12px 0;
-        }
-
-        .p-hidden {
-            font-size: 11px;
-            color: var(--text-soft);
-            line-height: 1.6;
-            min-height: 50px;
+        .cell {
+            min-height: 48px;
+            border-right: 1px solid var(--line);
+            border-bottom: 1px solid var(--line);
             display: flex;
             align-items: center;
             justify-content: center;
             flex-direction: column;
             text-align: center;
+            padding: 8px 4px;
         }
 
-        .p-bot {
-            font-size: 13px;
-            color: var(--text);
-            margin-top: 12px;
+        .row-label {
+            align-items: flex-start;
+            justify-content: center;
+            padding-left: 12px;
+            text-align: left;
+            color: #999;
+            font-size: 12px;
+            font-weight: 500;
+            background: #111;
         }
-        
-        .p-bot-sub {
-            font-size: 11px;
-            color: var(--text-dim);
-            margin-top: 6px;
+
+        .col-head {
+            font-size: 13px;
+            color: #aaa;
+            font-weight: 500;
+            background: #111;
         }
 
         .hanja-main {
@@ -600,7 +526,187 @@
         }
 
         @keyframes spin { to { transform: rotate(360deg); } }
-    </style>
+    
+        /* 점신 스타일 애니메이션 및 레이아웃 */
+        .jeomsin-nav {
+            display: flex;
+            overflow-x: auto;
+            gap: 16px;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--line);
+            margin-bottom: 20px;
+            white-space: nowrap;
+        }
+        .jeomsin-nav::-webkit-scrollbar { display: none; }
+        .j-nav-item {
+            font-size: 15px;
+            color: var(--text-soft);
+            font-weight: 500;
+            padding-bottom: 8px;
+            position: relative;
+            cursor: pointer;
+        }
+        .j-nav-item.active {
+            color: var(--text);
+            font-weight: 700;
+        }
+        .j-nav-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--text);
+        }
+
+        .manse-table {
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .manse-row {
+            display: grid;
+            grid-template-columns: 60px repeat(4, 1fr);
+            gap: 4px;
+            align-items: center;
+        }
+        .manse-cell {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 4px;
+            background: var(--panel);
+            border-radius: 8px;
+            min-height: 48px;
+            text-align: center;
+        }
+        .manse-label {
+            background: transparent;
+            color: var(--text-dim);
+            font-size: 12px;
+            font-weight: 500;
+            justify-content: center;
+            align-items: center;
+        }
+        .manse-head {
+            background: transparent;
+            color: var(--text-soft);
+            font-size: 13px;
+            font-weight: 700;
+        }
+        .m-badge {
+            font-size: 11px;
+            color: var(--text-dim);
+            margin-bottom: 4px;
+        }
+        .m-hanja {
+            font-size: 26px;
+            font-weight: 500;
+            line-height: 1.1;
+            margin-bottom: 2px;
+        }
+        .m-hangul {
+            font-size: 11px;
+            color: var(--text-dim);
+        }
+        .m-circle {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        /* 물결(액체) 애니메이션 오행 원형 바 */
+        .wuxing-circles {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px 0;
+        }
+        .w-circle-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+        .liquid-container {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #222;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+        .liquid-bg {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: var(--bg-color);
+            transition: height 1s ease-in-out;
+        }
+        .liquid-wave {
+            position: absolute;
+            top: -150%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: #222;
+            border-radius: 40%;
+            animation: spin 5s linear infinite;
+        }
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+        .w-val {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 13px;
+            font-weight: 700;
+            color: #fff;
+            z-index: 10;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+        }
+        .w-label {
+            font-size: 13px;
+            color: var(--text-soft);
+        }
+        
+        .fortune-scroll {
+            display: flex;
+            overflow-x: auto;
+            gap: 12px;
+            padding-bottom: 16px;
+        }
+        .fortune-scroll::-webkit-scrollbar { height: 4px; }
+        .fortune-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+        .f-card.current-fortune {
+            background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%);
+            border: 1px solid var(--gold);
+            box-shadow: 0 4px 15px rgba(199, 167, 106, 0.2);
+            animation: pulseGold 2s infinite;
+        }
+        @keyframes pulseGold {
+            0% { box-shadow: 0 0 0 0 rgba(199, 167, 106, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(199, 167, 106, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(199, 167, 106, 0); }
+        }
+        
+        .f-card.current-fortune .f-head { color: var(--gold); }
+
+</style>
 </head>
 <body>
 <div class="loading" id="loading">
@@ -681,12 +787,18 @@
     <div id="step-2" class="page">
         
         <!-- 점신식 스티키 네비게이션 (책갈피) -->
-        <div class="sticky-nav">
-            <div class="nav-item active" onclick="scrollToSec('sec-manse')">사주원국</div>
-            <div class="nav-item" onclick="scrollToSec('sec-relation')">사주관계</div>
-            <div class="nav-item" onclick="scrollToSec('sec-shinsal')">신살/오행</div>
-            <div class="nav-item" onclick="scrollToSec('sec-fortune')">대운/세운</div>
+        <div class="jeomsin-nav">
+            <div class="j-nav-item active" onclick="scrollToSec('sec-manse'); updateNav(this);">사주원국</div>
+            <div class="j-nav-item" onclick="scrollToSec('sec-relation'); updateNav(this);">사주관계</div>
+            <div class="j-nav-item" onclick="scrollToSec('sec-wuxing'); updateNav(this);">오행과 십성</div>
+            <div class="j-nav-item" onclick="scrollToSec('sec-fortune'); updateNav(this);">신강신약/대운수</div>
         </div>
+        <script>
+        function updateNav(el) {
+            document.querySelectorAll('.j-nav-item').forEach(n => n.classList.remove('active'));
+            el.classList.add('active');
+        }
+        </script>
 
         <!-- 동물 이미지 헤더 프로필 -->
         <div class="avatar-header">
@@ -713,7 +825,7 @@
             <div class="pill-grid" id="shinsal-grid"></div>
         </div>
 
-        <div class="section">
+        <div class="section" id="sec-wuxing">
             <div class="section-title"><div class="title-left"><span>오행 분포</span><span class="help-icon" onclick="openHelp('wuxing')">?</span></div><span>한글 가독성 중심</span></div>
             <div class="bar-group" id="wuxing-bars"></div>
         </div>
@@ -752,11 +864,6 @@
             <div class="fortune-table" id="wolun-table"></div>
         </div>
 
-        <div class="section" id="sec-report" style="margin-top: 30px; text-align: center;">
-            <div style="margin-bottom: 20px; font-size: 15px; color: var(--gold); font-weight: 700;">본격적인 심층 사주 풀이를 시작하시겠습니까?</div>
-            <button class="btn" style="background: var(--gold); color: #000; font-weight: 700; box-shadow: 0 4px 15px rgba(199, 167, 106, 0.4);" onclick="startReport()">심층 사주풀이 시작</button>
-        </div>
-
         <button class="btn subtle" onclick="go(1)">입력 정보 수정</button>
     </div>
 </div>
@@ -769,70 +876,8 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/lunar-javascript/lunar.js">
-function startReport() {
-    alert("심층 사주풀이 시스템 연동 준비 중입니다. (만세력 데이터 추출 완료)");
-}
-</script>
+<script src="https://cdn.jsdelivr.net/npm/lunar-javascript/lunar.js"></script>
 <script>
-
-const HELP_DATA = {
-    manse: {
-        title: "만세력 원국 (사주팔자)",
-        desc: "태어난 연, 월, 일, 시간을 기준으로 우주의 기운(간지)을 8개의 글자로 표현한 나의 고유한 바코드입니다.<br><br>• <b>일원(일주)</b>: 나 자신과 배우자를 의미합니다.<br>• <b>월주</b>: 나의 부모, 타고난 환경, 직업적 적성을 뜻합니다.<br>• <b>년주</b>: 조상, 초년기, 국가적 스케일을 나타냅니다.<br>• <b>시주</b>: 자식, 말년운, 은밀한 속마음을 나타냅니다."
-    },
-    relation: {
-        title: "합 · 충 · 형 · 파 · 해",
-        desc: "내 사주팔자 안의 글자들이 서로 만나서 일으키는 화학 작용입니다.<br><br>• <b>합(合)</b>: 서로 끌어당기고 묶이는 긍정적/부정적 결합<br>• <b>충(沖)</b>: 서로 부딪혀 깨지거나 역동적인 변화를 일으킴<br>• <b>형(刑)</b>: 다듬어지고 조정되는 과정 (관재, 수술, 혹은 권력)<br>• <b>파(破), 해(害)</b>: 방해, 훼방, 분리 등의 작용"
-    },
-    shinsal: {
-        title: "신살 · 길성",
-        desc: "원국에 숨겨진 특수한 기운들입니다.<br><br>• <b>천을귀인</b>: 최고의 길성으로, 위기에서 나를 돕는 귀인<br>• <b>도화살/홍염살</b>: 타인을 끌어당기는 매력과 인기<br>• <b>역마살</b>: 이동, 변화, 해외와의 인연<br>• <b>괴강살/백호살</b>: 강력한 카리스마, 압도적인 에너지와 프로 의식"
-    },
-    wuxing: {
-        title: "오행 분포 (목화토금수)",
-        desc: "우주를 구성하는 5가지 에너지가 내게 얼마나 골고루 분포되어 있는지 보여줍니다.<br><br>• <b>목(木)</b>: 성장, 시작, 기획력<br>• <b>화(火)</b>: 발산, 열정, 표현력<br>• <b>토(土)</b>: 수용, 중재, 신용<br>• <b>금(金)</b>: 결단, 규칙, 맺고 끊음<br>• <b>수(水)</b>: 지혜, 유연성, 휴식"
-    },
-    sipseong: {
-        title: "십성 분포 (육친)",
-        desc: "오행을 인간관계와 사회적 역할로 변환한 지표입니다.<br><br>• <b>비겁</b>: 자아, 주체성, 동료, 경쟁<br>• <b>식상</b>: 표현력, 재능, 창의력, 부하<br>• <b>재성</b>: 결과, 목표 달성, 재물, 아버지/아내<br>• <b>관성</b>: 규칙, 직장, 명예, 책임감, 남편<br>• <b>인성</b>: 수용성, 학문, 문서, 인내, 어머니"
-    },
-    strength: {
-        title: "신강 · 신약 판단",
-        desc: "내 사주에서 나를 돕는 기운(인성, 비겁)과 내 기운을 빼앗는 기운(식상, 재성, 관성)의 비율을 계산한 결과입니다.<br><br>• <b>신강</b>: 자기 주관이 뚜렷하고 밀어붙이는 힘이 강함. 외부의 압력을 잘 버팀.<br>• <b>신약</b>: 주변 환경과 타인에게 잘 맞추는 유연성과 타협성이 뛰어남.<br>• <b>중화</b>: 기운의 밸런스가 좋아 안정적임."
-    },
-    daeun: {
-        title: "대운 (10년 단위의 큰 흐름)",
-        desc: "나의 사주 원국이라는 '자동차'가 달리는 '10년 단위의 도로'입니다.<br>대운이 좋으면 고속도로를 달리는 것이고, 대운이 나쁘면 비포장도로를 달리는 것과 같습니다. 대운수(예: 3)는 해당 나이(3세, 13세, 23세...)마다 운의 흐름이 바뀜을 의미합니다."
-    },
-    seun: {
-        title: "세운 (1년 단위의 흐름)",
-        desc: "매년 들어오는 운세입니다. 대운이 큰 환경이라면, 세운은 그 해에 일어나는 구체적인 사건과 체감되는 변화를 의미합니다."
-    },
-    wolun: {
-        title: "월운 (한 달 단위의 흐름)",
-        desc: "올해 1월부터 12월까지 매달 들어오는 운세입니다. 단기적인 계획을 세우거나 조심해야 할 달을 파악할 때 사용합니다."
-    }
-};
-
-function openHelp(key) {
-    const data = HELP_DATA[key];
-    if (data) {
-        document.getElementById('help-title').innerHTML = data.title;
-        document.getElementById('help-body').innerHTML = data.desc;
-        const modal = document.getElementById('help-modal');
-        modal.style.display = 'flex';
-        setTimeout(() => modal.style.opacity = '1', 10);
-    }
-}
-
-function closeHelp(e) {
-    if (e && e.target !== document.getElementById('help-modal') && e.target.className !== 'modal-close') return;
-    const modal = document.getElementById('help-modal');
-    modal.style.opacity = '0';
-    setTimeout(() => modal.style.display = 'none', 200);
-}
-
 const HAN_COLOR = {"甲":"wood","乙":"wood","寅":"wood","卯":"wood","丙":"fire","丁":"fire","巳":"fire","午":"fire","戊":"earth","己":"earth","辰":"earth","戌":"earth","丑":"earth","未":"earth","庚":"metal","辛":"metal","申":"metal","酉":"metal","壬":"water","癸":"water","亥":"water","子":"water"};
 const HAN_KOR = {"甲":"갑","乙":"을","丙":"병","丁":"정","戊":"무","己":"기","庚":"경","辛":"신","壬":"임","癸":"계","子":"자","丑":"축","寅":"인","卯":"묘","辰":"진","巳":"사","午":"오","未":"미","申":"신","酉":"유","戌":"술","亥":"해"};
 const STEM_YANG = ["甲","丙","戊","庚","壬"];
@@ -1101,10 +1146,10 @@ function buildBars(targetId, rows, toneMap) {
     `).join('');
 }
 
-function buildFortuneCards(targetId, rows, highlightIndex = -1) {
+function buildFortuneCards(targetId, rows) {
     const html = `<div class="fortune-scroll">
-        ${rows.map((row, idx) => `
-            <div class="f-card ${idx === highlightIndex ? 'current-fortune' : ''}">
+        ${rows.map(row => `
+            <div class="f-card">
                 <div class="f-head">${row[0]}</div>
                 <div class="f-sip">${row[1]}</div>
                 <div class="f-hz"><span class="${HAN_COLOR[row[2][0]]||''}">${row[2][0]}</span><br><span class="${HAN_COLOR[row[2][1]]||''}">${row[2][1]}</span></div>
@@ -1219,49 +1264,56 @@ function runAnalysis() {
         const hm = document.getElementById('hero-meta');
         if(hm) hm.parentElement.style.display = 'none';
 
-        const manseHtml = pillars.map((p, idx) => {
-            if (isUnknown && idx === 0) {
-                return `
-                <div class="pillar-col" style="opacity: 0; animation-name: pillarDropDim;">
-                    <div class="p-title">${p.n}</div>
-                    <div class="p-badge">-</div>
-                    <div class="p-hanja">?</div>
-                    <div class="p-hangul">미상</div>
-                    <div class="p-hanja">?</div>
-                    <div class="p-hangul">미상</div>
-                    <div class="p-badge">-</div>
-                </div>`;
-            }
-
-            const tGan = p.h[0];
-            const tZhi = p.h[1];
-            const sGan = p.n === '일주' ? '일원' : getSipseong(dayStem, tGan);
-            const sZhi = getSipseong(dayStem, tZhi);
-            const isMe = p.n === '일주' ? 'me' : '';
-
-            return `
-            <div class="pillar-col ${p.n === '일주' ? 'highlight-me' : ''}">
-                <div class="p-title">${p.n}</div>
-                
-                <div class="p-badge ${isMe}">${sGan}</div>
-                <div class="p-hanja ${HAN_COLOR[tGan] || ''}">${tGan}</div>
-                <div class="p-hangul">${getElementDesc(tGan)}</div>
-                
-                <div class="p-hanja ${HAN_COLOR[tZhi] || ''}">${tZhi}</div>
-                <div class="p-hangul">${getElementDesc(tZhi)}</div>
-                <div class="p-badge">${sZhi}</div>
-
-                <div class="p-divider"></div>
-                
-                <div class="p-hidden">${getHidden(tZhi, dayStem)}</div>
-                
-                <div class="p-divider"></div>
-
-                <div class="p-bot">${getUnsung(dayStem, tZhi) || '-'}</div>
-                <div class="p-bot-sub">${(allShinsal[p.n] || []).slice(0, 2).join('<br>') || '-'}</div>
+        const header = `
+            <div class="row">
+                <div class="cell col-head"></div>
+                <div class="cell col-head">시주</div>
+                <div class="cell col-head">일주</div>
+                <div class="cell col-head">월주</div>
+                <div class="cell col-head">년주</div>
             </div>`;
-        }).join('');
+
+        const buildRow = (label, renderer) => `
+            <div class="row">
+                <div class="cell row-label">${label}</div>
+                ${pillars.map((p, idx) => `<div class="cell">${isUnknown && idx === 0 ? '<span class="tiny-dim">미상</span>' : renderer(p, idx)}</div>`).join('')}
+            </div>`;
+
+
+        const headerRow = `
+            <div class="manse-row">
+                <div class="manse-label"></div>
+                <div class="manse-head">시주</div>
+                <div class="manse-head">일주</div>
+                <div class="manse-head">월주</div>
+                <div class="manse-head">년주</div>
+            </div>`;
+
+        const bRow = (lbl, fn) => `
+            <div class="manse-row">
+                <div class="manse-cell manse-label">${lbl}</div>
+                ${pillars.map((p, i) => `<div class="manse-cell">${(isUnknown && i===0) ? '<span style="color:#555;font-size:11px;">미상</span>' : fn(p, i)}</div>`).join('')}
+            </div>`;
+
+        const manseHtml = [
+            headerRow,
+            bRow('십성', p => `<div class="m-badge">${p.n === '일주' ? '일원' : getSipseong(dayStem, p.h[0])}</div>`),
+            bRow('천간', p => `
+                <div class="m-circle bg-${HAN_COLOR[p.h[0]]}">${p.h[0]}</div>
+                <div class="m-hangul">${getElementDesc(p.h[0])}</div>
+            `),
+            bRow('지지', p => `
+                <div class="m-circle bg-${HAN_COLOR[p.h[1]]}">${p.h[1]}</div>
+                <div class="m-hangul">${getElementDesc(p.h[1])}</div>
+            `),
+            bRow('십성', p => `<div class="m-badge">${getSipseong(dayStem, p.h[1])}</div>`),
+            bRow('지장간', p => `<div class="m-badge">${getHidden(p.h[1], dayStem).replace(/<br>/g, '')}</div>`),
+            bRow('12운성', p => `<div class="m-badge">${getUnsung(dayStem, p.h[1]) || '-'}</div>`),
+            bRow('12신살', p => `<div class="m-badge">${(allShinsal[p.n] || []).join('<br>') || '-'}</div>`),
+            bRow('공망', p => `<div class="m-badge">-</div>`)
+        ].join('');
         document.getElementById('manse-table').innerHTML = manseHtml;
+
 
         document.getElementById('relation-list').innerHTML = buildRelationLines(pillars).map(line => `<div class="line-item">${line}</div>`).join('');
 
@@ -1285,13 +1337,31 @@ function runAnalysis() {
         });
 
         const total = isUnknown ? 6 : 8;
-        buildBars('wuxing-bars', [
-            { key:'wood', label:'목', value: percent(counts.wood, total) },
-            { key:'fire', label:'화', value: percent(counts.fire, total) },
-            { key:'earth', label:'토', value: percent(counts.earth, total) },
-            { key:'metal', label:'금', value: percent(counts.metal, total) },
-            { key:'water', label:'수', value: percent(counts.water, total) }
-        ], key => `bg-${key}`);
+        const wxData = [
+            { key:'wood', label:'목(木)', val: percent(counts.wood, total) },
+            { key:'fire', label:'화(火)', val: percent(counts.fire, total) },
+            { key:'earth', label:'토(土)', val: percent(counts.earth, total) },
+            { key:'metal', label:'금(金)', val: percent(counts.metal, total) },
+            { key:'water', label:'수(水)', val: percent(counts.water, total) }
+        ];
+        
+        let wxHtml = '<div class="wuxing-circles">';
+        wxData.forEach(w => {
+            wxHtml += `
+                <div class="w-circle-wrap">
+                    <div class="liquid-container" style="--bg-color: var(--${w.key});">
+                        <div class="liquid-bg" style="height: ${w.val}%;">
+                            <div class="liquid-wave" style="top: -${100 - w.val/2}%"></div>
+                        </div>
+                        <div class="w-val">${w.val}%</div>
+                    </div>
+                    <div class="w-label">${w.label}</div>
+                </div>
+            `;
+        });
+        wxHtml += '</div>';
+        document.getElementById('wuxing-bars').innerHTML = wxHtml;
+
 
         buildBars('sipseong-bars', Object.keys(sipCounts).map(key => ({
             key,
@@ -1311,21 +1381,7 @@ function runAnalysis() {
         const yunStartAge = yun.getStartAge ? yun.getStartAge() : '-';
         document.getElementById('yun-text').innerText = `${yunStartAge}세 시작 · ${yunDirection}`;
 
-        const currentYearObj = new Date();
-        const currentYear = currentYearObj.getFullYear();
-        const currentMonth = currentYearObj.getMonth() + 1;
-        const currentAge = currentYear - y + 1; // Korean age approximation for daeun
-        
-        let activeDaeunIdx = -1;
-        const daeunData = yun.getDaYun().slice(1, 9);
-        for(let i = 0; i < daeunData.length; i++) {
-            if(currentAge >= daeunData[i].getStartAge() && (i === daeunData.length - 1 || currentAge < daeunData[i+1].getStartAge())) {
-                activeDaeunIdx = i;
-                break;
-            }
-        }
-
-        const daeunRows = daeunData.map(dy => {
+        const daeunRows = yun.getDaYun().slice(1, 9).map(dy => {
             const gz = dy.getGanZhi();
             return [
                 dy.getStartAge() + '세',
@@ -1335,9 +1391,40 @@ function runAnalysis() {
                 getUnsung(dayStem, gz[1]) || '-'
             ];
         });
-        buildFortuneCards('daeun-table', daeunRows, activeDaeunIdx);
+        buildFortuneCards('daeun-table', daeunRows);
 
+        const currentYearObj = new Date();
+        const currentYear = currentYearObj.getFullYear();
+        const currentMonth = currentYearObj.getMonth() + 1;
+        const currentAge = currentYear - y + 1; // Korean age approximation
         
+        // Find active Daeun
+        let activeDaeunIdx = -1;
+        const daeunData = yun.getDaYun().slice(1, 9);
+        for(let i = 0; i < daeunData.length; i++) {
+            if(currentAge >= daeunData[i].getStartAge() && (i === daeunData.length - 1 || currentAge < daeunData[i+1].getStartAge())) {
+                activeDaeunIdx = i; break;
+            }
+        }
+        // inject highlight logic into buildFortuneCards
+        window.buildFortuneCards = function(targetId, rows, hIdx = -1) {
+            document.getElementById(targetId).innerHTML = '<div class="fortune-scroll">' + rows.map((row, idx) => `
+                <div class="f-card ${idx === hIdx ? 'current-fortune' : ''}">
+                    <div class="f-head">${row[0]}</div>
+                    <div class="f-sip">${row[1]}</div>
+                    <div class="f-hz"><span class="${HAN_COLOR[row[2][0]]||''}">${row[2][0]}</span><br><span class="${HAN_COLOR[row[2][1]]||''}">${row[2][1]}</span></div>
+                    <div class="f-kr">${row[3]}</div>
+                    <div class="f-un">${row[4]}</div>
+                </div>
+            `).join('') + '</div>';
+        };
+
+        const daeunRows2 = daeunData.map(dy => {
+            const gz = dy.getGanZhi();
+            return [ dy.getStartAge() + '세', getSipseong(dayStem, gz[0]), `${gz[0]}${gz[1]}`, `${HAN_KOR[gz[0]]}${HAN_KOR[gz[1]]}`, getUnsung(dayStem, gz[1]) || '-' ];
+        });
+        buildFortuneCards('daeun-table', daeunRows2, activeDaeunIdx);
+
         const seunRows = [];
         for (let year = currentYear; year < currentYear + 10; year++) {
             const yLunar = Solar.fromYmd(year, 6, 15).getLunar();
@@ -1351,7 +1438,7 @@ function runAnalysis() {
                 getUnsung(dayStem, gz[1]) || '-'
             ]);
         }
-        buildFortuneCards('seun-table', seunRows, 0); // first item is current year
+        buildFortuneCards('seun-table', seunRows, 0);
 
         const wolunRows = [];
         for (let m = 1; m <= 12; m++) {
