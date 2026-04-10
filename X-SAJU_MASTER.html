@@ -1623,42 +1623,51 @@ function runAnalysis() {
         pillars.forEach((p, idx) => {
             if (isUnknown && idx === 0) return;
             
-            // 천간 (가중치 1.0)
+            // 기둥별 핵심 가중치 (월지 > 일지 > 시지/년지)
+            let stemW = 1.0;
+            let zhiW = 1.0;
+            if (p.n === '월주') { stemW = 1.2; zhiW = 2.0; } // 월지(계절) 가중치 대폭 상향
+            else if (p.n === '일주') { stemW = 1.0; zhiW = 1.5; } // 일지(배우자궁, 나의 근간) 가중치 상향
+            else if (p.n === '시주') { stemW = 0.8; zhiW = 1.0; }
+            else if (p.n === '년주') { stemW = 0.8; zhiW = 0.8; }
+            
+            // 천간 적용
             const tGan = p.h[0];
             if (HAN_COLOR[tGan]) {
-                counts[HAN_COLOR[tGan]] += 1;
-                wuxingTotalWeight += 1;
+                counts[HAN_COLOR[tGan]] += stemW;
+                wuxingTotalWeight += stemW;
             }
             const s1 = getSipseong(dayStem, tGan);
             if (s1 && sipCounts[s1] !== undefined) {
-                sipCounts[s1] += 1;
-                sipTotalWeight += 1;
+                sipCounts[s1] += stemW;
+                sipTotalWeight += stemW;
             }
 
-            // 지지 표면 (가중치 1.0)
+            // 지지 표면 적용
             const tZhi = p.h[1];
             if (HAN_COLOR[tZhi]) {
-                counts[HAN_COLOR[tZhi]] += 1;
-                wuxingTotalWeight += 1;
+                counts[HAN_COLOR[tZhi]] += zhiW;
+                wuxingTotalWeight += zhiW;
             }
             const s2 = getSipseong(dayStem, tZhi);
             if (s2 && sipCounts[s2] !== undefined) {
-                sipCounts[s2] += 1;
-                sipTotalWeight += 1;
+                sipCounts[s2] += zhiW;
+                sipTotalWeight += zhiW;
             }
 
-            // 지장간 분석 (표면 에너지 대비 약 30%의 잠재력 가중치로 병합 계산)
+            // 지장간 분석 (표면 지지 가중치에 비례하여 잠재력 배분)
             const hsList = BRANCH_HIDDEN[tZhi];
             if (hsList && hsList.length > 0) {
-                let hw = 0; // 지장간 총 가중치
                 let hl = [];
+                // 지장간 총합은 해당 지지 가중치(zhiW)의 약 30~40% 영향력
+                const baseHw = zhiW * 0.4; 
                 if (hsList.length === 2) {
-                    hl.push({ch: hsList[0], w: 0.1}); hw += 0.1; // 여기
-                    hl.push({ch: hsList[1], w: 0.3}); hw += 0.3; // 정기
+                    hl.push({ch: hsList[0], w: baseHw * 0.3}); // 여기
+                    hl.push({ch: hsList[1], w: baseHw * 0.7}); // 정기
                 } else if (hsList.length === 3) {
-                    hl.push({ch: hsList[0], w: 0.1}); hw += 0.1; // 여기
-                    hl.push({ch: hsList[1], w: 0.1}); hw += 0.1; // 중기
-                    hl.push({ch: hsList[2], w: 0.2}); hw += 0.2; // 정기
+                    hl.push({ch: hsList[0], w: baseHw * 0.25}); // 여기
+                    hl.push({ch: hsList[1], w: baseHw * 0.25}); // 중기
+                    hl.push({ch: hsList[2], w: baseHw * 0.50}); // 정기
                 }
                 
                 hl.forEach(h => {
