@@ -1101,10 +1101,10 @@ function buildBars(targetId, rows, toneMap) {
     `).join('');
 }
 
-function buildFortuneCards(targetId, rows) {
+function buildFortuneCards(targetId, rows, highlightIndex = -1) {
     const html = `<div class="fortune-scroll">
-        ${rows.map(row => `
-            <div class="f-card">
+        ${rows.map((row, idx) => `
+            <div class="f-card ${idx === highlightIndex ? 'current-fortune' : ''}">
                 <div class="f-head">${row[0]}</div>
                 <div class="f-sip">${row[1]}</div>
                 <div class="f-hz"><span class="${HAN_COLOR[row[2][0]]||''}">${row[2][0]}</span><br><span class="${HAN_COLOR[row[2][1]]||''}">${row[2][1]}</span></div>
@@ -1311,7 +1311,21 @@ function runAnalysis() {
         const yunStartAge = yun.getStartAge ? yun.getStartAge() : '-';
         document.getElementById('yun-text').innerText = `${yunStartAge}세 시작 · ${yunDirection}`;
 
-        const daeunRows = yun.getDaYun().slice(1, 9).map(dy => {
+        const currentYearObj = new Date();
+        const currentYear = currentYearObj.getFullYear();
+        const currentMonth = currentYearObj.getMonth() + 1;
+        const currentAge = currentYear - y + 1; // Korean age approximation for daeun
+        
+        let activeDaeunIdx = -1;
+        const daeunData = yun.getDaYun().slice(1, 9);
+        for(let i = 0; i < daeunData.length; i++) {
+            if(currentAge >= daeunData[i].getStartAge() && (i === daeunData.length - 1 || currentAge < daeunData[i+1].getStartAge())) {
+                activeDaeunIdx = i;
+                break;
+            }
+        }
+
+        const daeunRows = daeunData.map(dy => {
             const gz = dy.getGanZhi();
             return [
                 dy.getStartAge() + '세',
@@ -1321,9 +1335,9 @@ function runAnalysis() {
                 getUnsung(dayStem, gz[1]) || '-'
             ];
         });
-        buildFortuneCards('daeun-table', daeunRows);
+        buildFortuneCards('daeun-table', daeunRows, activeDaeunIdx);
 
-        const currentYear = new Date().getFullYear();
+        
         const seunRows = [];
         for (let year = currentYear; year < currentYear + 10; year++) {
             const yLunar = Solar.fromYmd(year, 6, 15).getLunar();
@@ -1337,7 +1351,7 @@ function runAnalysis() {
                 getUnsung(dayStem, gz[1]) || '-'
             ]);
         }
-        buildFortuneCards('seun-table', seunRows);
+        buildFortuneCards('seun-table', seunRows, 0); // first item is current year
 
         const wolunRows = [];
         for (let m = 1; m <= 12; m++) {
@@ -1352,7 +1366,7 @@ function runAnalysis() {
                 getUnsung(dayStem, gz[1]) || '-'
             ]);
         }
-        buildFortuneCards('wolun-table', wolunRows);
+        buildFortuneCards('wolun-table', wolunRows, currentMonth - 1);
 
         go(2);
     });
