@@ -159,6 +159,7 @@
         }
         
         /* 동물 아바타 스프라이트 & 필터 설정 */
+        
         .avatar-circle {
             width: 80px;
             height: 80px;
@@ -167,10 +168,13 @@
             border: 2px solid var(--gold);
             background-color: var(--card-bg);
             background-image: url('../media/inbound/01dd6bee-f1f9-4d7b-8d76-7509736e1c8f.jpg');
-            background-size: 400% 300%; /* Adjust based on image grid: e.g. 4 cols x 3 rows */
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            background-size: 400% 300%; 
+            /* 이미지 배경 톤다운을 위한 필터 */
+            filter: contrast(1.1) brightness(0.85);
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 4px 10px rgba(0,0,0,0.5);
             transition: all 0.5s ease;
         }
+
 
         /* 5행 컬러 필터 (Mix-blend 방식) */
         .avatar-circle.wood { position:relative; }
