@@ -1582,19 +1582,20 @@ function runAnalysis() {
         const allShinsal = getAllShinsal(pillars, ec, isUnknown);
 
         // 동물 아바타 및 배지 업데이트
-        const dStemC = HAN_COLOR[dayStem];
-        const dColorKr = COLOR_KR_MAP[dStemC] || '';
-        const dAnimal = ANIMAL_MAP[pillars[1].h[1]];
-        const dAnimalKr = dAnimal ? dAnimal.kr : '';
-        const dEmoji = dAnimal ? dAnimal.emoji : '👤';
-        const dCircleColor = CIRCLE_BG[dStemC] || '#222';
-
+        const elType = HAN_COLOR[dayStem] || 'wood';
+        const animalInfo = ANIMAL_SPRITE[pillars[1].h[1]] || ANIMAL_SPRITE['寅'];
+        
         document.getElementById('av-name').innerText = name + "님";
-        document.getElementById('av-desc').innerText = `${dayStem}${pillars[1].h[1]} (${dColorKr} ${dAnimalKr})`;
-        const avCircle = document.getElementById('av-circle');
-        if(avCircle) {
-            avCircle.innerText = dEmoji;
-            avCircle.style.backgroundColor = dCircleColor;
+        
+        const krColor = COLOR_KR_MAP[elType];
+        document.getElementById('av-desc').innerText = `${dayStem}${pillars[1].h[1]} (${krColor} ${animalInfo.kr})`;
+        
+        const circle = document.getElementById('av-circle');
+        if(circle) {
+            circle.innerText = ''; // Remove emoji
+            circle.style.backgroundPosition = animalInfo.pos;
+            circle.style.backgroundSize = animalInfo.size;
+            circle.className = 'avatar-circle ' + elType; // Add wuxing color class
         }
         
         let lMon = typeof lunar.getMonth === 'function' ? Math.abs(lunar.getMonth()) : 1;
