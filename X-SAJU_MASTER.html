@@ -170,25 +170,28 @@
             background-image: url('../media/inbound/01dd6bee-f1f9-4d7b-8d76-7509736e1c8f.jpg');
             background-size: 400% 300%; 
             /* 이미지 배경 톤다운을 위한 필터 */
-            filter: contrast(1.1) brightness(0.85);
+            /* filter removed */
             box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 4px 10px rgba(0,0,0,0.5);
             transition: all 0.5s ease;
         }
 
 
+        
         /* 5행 컬러 필터 (Mix-blend 방식) */
         .avatar-circle.wood { position:relative; }
-        .avatar-circle.wood::after { content:''; position:absolute; top:0;left:0;right:0;bottom:0; border-radius:50%; background:rgba(30,136,229,0.25); mix-blend-mode: overlay; }
+        .avatar-circle.wood::after { content:''; position:absolute; top:0;left:0;right:0;bottom:0; border-radius:50%; background:rgba(30,136,229,0.5); mix-blend-mode: multiply; pointer-events:none; }
         
         .avatar-circle.fire { position:relative; }
-        .avatar-circle.fire::after { content:''; position:absolute; top:0;left:0;right:0;bottom:0; border-radius:50%; background:rgba(211,47,47,0.25); mix-blend-mode: overlay; }
+        .avatar-circle.fire::after { content:''; position:absolute; top:0;left:0;right:0;bottom:0; border-radius:50%; background:rgba(211,47,47,0.5); mix-blend-mode: multiply; pointer-events:none; }
         
         .avatar-circle.earth { position:relative; }
-        .avatar-circle.earth::after { content:''; position:absolute; top:0;left:0;right:0;bottom:0; border-radius:50%; background:rgba(24bc0,192,40,0.25); mix-blend-mode: overlay; }
+        .avatar-circle.earth::after { content:''; position:absolute; top:0;left:0;right:0;bottom:0; border-radius:50%; background:rgba(240,192,40,0.5); mix-blend-mode: multiply; pointer-events:none; }
         
-        .avatar-circle.metal { position:relative; filter: grayscale(50%) brightness(1.2); }
+        .avatar-circle.metal { position:relative; filter: grayscale(100%) contrast(1.2); }
+        .avatar-circle.metal::after { content:''; position:absolute; top:0;left:0;right:0;bottom:0; border-radius:50%; background:rgba(255,255,255,0.2); mix-blend-mode: overlay; pointer-events:none; }
+
         .avatar-circle.water { position:relative; }
-        .avatar-circle.water::after { content:''; position:absolute; top:0;left:0;right:0;bottom:0; border-radius:50%; background:rgba(66,66,66,0.3); mix-blend-mode: overlay; }
+        .avatar-circle.water::after { content:''; position:absolute; top:0;left:0;right:0;bottom:0; border-radius:50%; background:rgba(30,30,30,0.7); mix-blend-mode: multiply; pointer-events:none; }
 
         /* OLD AVATAR */
         .old-avatar-circle {
