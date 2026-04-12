@@ -1604,8 +1604,7 @@ function runAnalysis() {
         const descHanja = document.getElementById('av-desc-hanja');
         const descHangul = document.getElementById('av-desc-hangul');
         if (descHanja && descHangul) {
-            descHanja.innerText = `${dayStem}${pillars[1].h[1]}`;
-            descHanja.style.color = 'var(--' + elType + ')';
+            descHanja.innerHTML = `<span class="${HAN_COLOR[dayStem]}">${dayStem}</span><span class="${HAN_COLOR[pillars[1].h[1]]}">${pillars[1].h[1]}</span>`;
             descHangul.innerText = `${krColor} ${animalInfo.kr}`;
         } else {
             // Fallback if elements not found
