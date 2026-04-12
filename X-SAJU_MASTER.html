@@ -1696,28 +1696,47 @@ function runAnalysis() {
 
         const relGrid = document.getElementById('relation-grid');
         const relLines = buildRelationLines(pillars);
-        if(relLines.length === 0 || (relLines.length === 1 && relLines[0].includes('없음'))) {
+        if(relLines.length === 0 || (relLines.length === 1 && relLines[0].type === '없음')) {
             relGrid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:#777;font-size:13px;">특별한 관계 구조가 없습니다.</div>';
         } else {
-            relGrid.innerHTML = relLines.map(line => {
-                const parts = line.split(':');
-                const title = parts[0].trim();
-                const desc = parts[1] ? parts[1].trim() : line;
-                
-                let c1 = '?', c2 = '?';
-                const match = desc.match(/([가-힣])\s*([가-힣])\s/);
-                if(match) { c1 = match[1]; c2 = match[2]; }
-                else if (desc.length >= 2) { c1 = desc[0]; c2 = desc[1]; }
+            relGrid.innerHTML = relLines.map(item => {
+                let nodesHtml = '';
+                if (item.chars.length === 2) {
+                    nodesHtml = `
+                        <div class="rel-char" style="display:flex;flex-direction:column;align-items:center;">
+                            <span class="${HAN_COLOR[item.chars[0]]}" style="font-family:'Noto Serif KR', serif; font-weight:300;">${item.chars[0]}</span>
+                            <span style="font-size:10px; color:#888; margin-top:2px; font-weight:400;">${HAN_KOR[item.chars[0]] || ''}</span>
+                        </div>
+                        <div class="rel-link"></div>
+                        <div class="rel-char" style="display:flex;flex-direction:column;align-items:center;">
+                            <span class="${HAN_COLOR[item.chars[1]]}" style="font-family:'Noto Serif KR', serif; font-weight:300;">${item.chars[1]}</span>
+                            <span style="font-size:10px; color:#888; margin-top:2px; font-weight:400;">${HAN_KOR[item.chars[1]] || ''}</span>
+                        </div>
+                    `;
+                } else if (item.chars.length === 3) {
+                    nodesHtml = `
+                        <div class="rel-char" style="display:flex;flex-direction:column;align-items:center;">
+                            <span class="${HAN_COLOR[item.chars[0]]}" style="font-family:'Noto Serif KR', serif; font-weight:300;">${item.chars[0]}</span>
+                            <span style="font-size:10px; color:#888; margin-top:2px; font-weight:400;">${HAN_KOR[item.chars[0]] || ''}</span>
+                        </div>
+                        <div class="rel-link"></div>
+                        <div class="rel-char" style="display:flex;flex-direction:column;align-items:center;">
+                            <span class="${HAN_COLOR[item.chars[1]]}" style="font-family:'Noto Serif KR', serif; font-weight:300;">${item.chars[1]}</span>
+                            <span style="font-size:10px; color:#888; margin-top:2px; font-weight:400;">${HAN_KOR[item.chars[1]] || ''}</span>
+                        </div>
+                        <div class="rel-link"></div>
+                        <div class="rel-char" style="display:flex;flex-direction:column;align-items:center;">
+                            <span class="${HAN_COLOR[item.chars[2]]}" style="font-family:'Noto Serif KR', serif; font-weight:300;">${item.chars[2]}</span>
+                            <span style="font-size:10px; color:#888; margin-top:2px; font-weight:400;">${HAN_KOR[item.chars[2]] || ''}</span>
+                        </div>
+                    `;
+                }
                 
                 return `
                 <div class="rel-card">
-                    <div class="rel-nodes">
-                        <div class="rel-char">${c1}</div>
-                        <div class="rel-link"></div>
-                        <div class="rel-char">${c2}</div>
-                    </div>
-                    <div class="rel-badge">${title}</div>
-                    <div style="font-size:11px;color:var(--text-dim);margin-top:8px;">${desc}</div>
+                    <div class="rel-nodes">${nodesHtml}</div>
+                    <div class="rel-badge" style="margin-top:10px; margin-bottom:5px;">${item.type}</div>
+                    <div class="rel-desc" style="font-size:11px;color:var(--text-dim);">${item.label}</div>
                 </div>`;
             }).join('');
         }
