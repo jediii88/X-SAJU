@@ -980,7 +980,21 @@
             </div>
         </div>
 
+        <button class="btn subtle" onclick="addUserForm()" style="margin-bottom:15px; border:1px dashed var(--gold); color:var(--gold);">+ 인원 추가 (최대 4인)</button>
         <button class="btn" onclick="runAnalysis()">만세력 결과 보기</button>
+
+<script>
+let userCount = 1;
+function addUserForm() {
+    if (userCount >= 4) {
+        alert("최대 4명까지만 분석 가능합니다.");
+        return;
+    }
+    userCount++;
+    // 복제 및 ID/이벤트 처리 로직 추후 구현 (임시 알림)
+    alert("인원 추가 기능(UI)이 곧 연동됩니다! 현재는 1인 분석 기준으로 작동합니다.");
+}
+</script>
     </div>
 
     <div id="step-2" class="page">
