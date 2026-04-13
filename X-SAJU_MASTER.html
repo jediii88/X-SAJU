@@ -895,6 +895,13 @@
         }
 
 </style>
+
+    <style>
+        .report-chapter { margin-bottom: 40px; }
+        .ch-title { color: var(--gold); border-bottom: 1px solid #333; padding-bottom: 8px; margin-bottom: 15px; font-family: 'Noto Serif KR', serif; font-weight: 300; font-size: 20px; }
+        .ch-text { font-size: 15px; line-height: 1.8; color: #eee; margin-bottom: 15px; text-align: justify; word-break: keep-all; }
+        .axe-advice { background: #111; padding: 18px; border-radius: 8px; border-left: 3px solid var(--gold); font-size: 14.5px; line-height: 1.6; color: #ddd; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+    </style>
 </head>
 <body>
 <div class="loading" id="loading">
@@ -1025,40 +1032,7 @@ function startReport() {
     });
 }
 
-function generateDeepReport(data) {
-    if(!data.dayStem) return;
-    
-    // 엔진의 톤앤매너(Hooking & Empowering)
-    // 챕터 1: 운명의 초상 (성격)
-    let ch1 = `
-        <h3 style="color:var(--gold); border-bottom:1px solid #333; padding-bottom:8px; margin-bottom:15px; font-family:'Noto Serif KR', serif; font-weight:300;">Chapter 1. 운명의 초상</h3>
-        <p style="font-size:15px; line-height:1.7; color:#eee;">
-            당신은 거대한 대지에 태어난 <b>${data.dayStem}${data.dayBranch}</b>의 기운을 품고 있습니다. 
-            만세력 계산 결과, 당신의 현재 에너지 총량은 <b>${data.strengthText}</b> 상태입니다.
-            <br><br>
-            ${data.strengthText === '신강' 
-                ? "주변의 시선이나 낡은 규칙에 얽매이기보다는, 스스로 길을 개척하고 판을 뒤흔들 때 당신의 진짜 가치가 폭발합니다. 남들에게 기대지 않고 주도권을 쥐십시오."
-                : data.strengthText === '신약'
-                ? "거센 바람에도 부러지지 않는 유연함과 타인과의 조화를 이끌어내는 천부적인 융통성이 당신의 가장 강력한 무기입니다. 홀로 싸우기보다 영리하게 협력하십시오."
-                : "어떤 극단적인 상황에서도 쉽게 흥분하지 않고 중심을 잡는 평정심이 당신을 지켜줍니다."}
-        </p>
-    `;
-
-    // 챕터 2: 지장간과 재물운 (결핍과 채움)
-    let ch2 = `
-        <h3 style="color:var(--gold); border-bottom:1px solid #333; padding-bottom:8px; margin-top:40px; margin-bottom:15px; font-family:'Noto Serif KR', serif; font-weight:300;">Chapter 2. 재물의 지도와 결핍</h3>
-        <p style="font-size:15px; line-height:1.7; color:#eee;">
-            보이는 원국 너머, 지장간(숨겨진 땅 속)에 당신의 진정한 금고가 숨어있습니다. 
-            단순히 돈을 좇으면 오히려 돈에 쫓기게 됩니다. 당신을 억누르는 결핍(공망)을 집착이 아닌 원동력으로 바꾸는 지혜가 필요합니다.
-        </p>
-        <div style="background:#111; padding:15px; border-radius:8px; border-left:3px solid var(--gold); margin-top:15px; font-size:14px; line-height:1.6; color:#ccc;">
-            <b>👉 Axe의 조언:</b> 당신이 가진 기운은 예리한 칼과 같습니다. 어떻게 휘두르느냐에 따라 흉기가 될 수도, 걸작을 깎아내는 도구가 될 수도 있습니다. 환경(월지 ${data.monthBranch})을 탓하기보다, 그 무대가 당신을 원하게 만드십시오.
-        </div>
-    `;
-
-    // 임시로 렌더링 (볼륨 확장 중)
-    document.getElementById('report-container').innerHTML = ch1 + ch2 + `<div style="text-align:center; margin-top:30px; font-size:12px; color:#555;">(상세 데이터 및 커플/가족 연산 모듈 백그라운드 컴파일 중...)</div>`;
-}
+// generateDeepReport is now imported from report_engine.js
 
 </script>
             <div class="avatar-name" id="av-name">장경현</div>
@@ -2067,5 +2041,6 @@ function runAnalysis() {
     });
 }
 </script>
+<script src="report_engine.js"></script>
 </body>
 </html>
