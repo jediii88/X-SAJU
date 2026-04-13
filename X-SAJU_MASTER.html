@@ -1758,17 +1758,6 @@ function runAnalysis() {
             })
         ].join('');
         document.getElementById('manse-table').innerHTML = manseHtml;
-        globalSajuData = {
-            name: name,
-            dayStem: dayStem,
-            dayBranch: pillars[1].h[1],
-            monthBranch: pillars[2].h[1],
-            pillars: pillars,
-            strengthText: document.getElementById('strength-text').innerText,
-            allShinsal: allShinsal,
-            wuxing: counts,
-            sipseong: sipCounts
-        };
 
 
 
@@ -2061,6 +2050,18 @@ function runAnalysis() {
             ]);
         }
         buildFortuneCards('wolun-table', wolunRows, currentMonth - 1);
+
+        globalSajuData = {
+            name: name,
+            dayStem: dayStem,
+            dayBranch: pillars[1].h[1],
+            monthBranch: pillars[2].h[1],
+            pillars: pillars,
+            strengthText: strength,
+            allShinsal: allShinsal,
+            wuxing: counts,
+            sipseong: sipCounts
+        };
 
         go(2);
     });
