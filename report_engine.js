@@ -17,12 +17,12 @@ function generateDeepReport(data) {
     
     let html = '';
     html += buildSectionHeader("PART 1. 운명의 해부도 (원국 분석)");
-    html += buildChapter_Basic(data);
-    html += buildChapter_Wuxing(data);
-    html += buildChapter_Sipseong(data);
+    html += buildChapter1_Basic(data);
+    html += buildChapter2_Wuxing(data);
+    html += buildChapter3_Sipseong(data);
     
     html += buildSectionHeader("PART 2. 인생의 무대와 성취");
-    html += buildChapter_Wealth(data);
+    html += buildChapter4_Wealth(data);
     html += buildChapter5_Career(data);
     html += buildChapter6_Love(data);
     
@@ -70,8 +70,33 @@ function buildChapter1_Basic(data) {
     `;
 }
 
-function
+function buildChapter2_Wuxing(data) {
+    let html = `<div class="report-chapter"><h3 class="ch-title">Chapter 2. 오행의 세력과 절대적 무기</h3>`;
+    
+    let maxWuxing = 'earth';
+    if(data.wuxing && Object.keys(data.wuxing).length > 0) {
+        maxWuxing = Object.keys(data.wuxing).reduce((a, b) => data.wuxing[a] > data.wuxing[b] ? a : b);
+    }
+    let excessText = window.SAJU_DB?.WUXING_EXCESS?.[maxWuxing] || "기운이 한쪽으로 강하게 쏠려 있습니다.";
+    
+    let wuxingKor = {'wood':'목(木)','fire':'화(火)','earth':'토(土)','metal':'금(金)','water':'수(水)'}[maxWuxing] || maxWuxing;
+    
+    let extra1 = "사람들은 오행(목화토금수)이 골고루 섞여 있는 '중화(中和)'된 사주를 좋은 사주라고 말합니다. 평범하게 남들처럼 직장 다니며 큰 굴곡 없이 살기엔 중화가 최고일 수 있습니다. 하지만 한 시대를 풍미하고 자신만의 확고한 제국을 건설하는 거물들은 거의 예외 없이 오행이 극단적으로 쏠려 있습니다.";
+    let extra2 = "당신의 사주 원국을 해부해 본 결과, 당신의 절대적인 무기이자 동시에 아킬레스건은 바로 <b>" + wuxingKor + "</b>의 기운입니다. 이 거대한 기운이 당신의 뇌 구조, 판단력, 그리고 인간관계를 80% 이상 지배하고 있습니다.";
+    let extra3 = "이 편중된 에너지를 어떻게 다루느냐가 당신 인생의 스케일을 결정합니다. 이 에너지를 남들처럼 평범하게 억누르려 하면 속병이 나고 맙니다. 차라리 이 기운이 필요한 극한의 환경에 스스로를 던져넣어, 흉기(凶器)를 명검(名劍)으로 바꿔 쥐어야 합니다.";
 
+    html += `
+        <p class="ch-text">${extra1}</p>
+        <p class="ch-text">${extra2}</p>
+        <div style="background: #111; padding: 20px; border-left: 3px solid var(--gold); margin: 20px 0;">
+            <div style="color: #fff; font-weight: bold; margin-bottom: 10px;">[ ${wuxingKor} 기운 집중 분석 ]</div>
+            <div style="color: #ccc; font-size: 15px; line-height: 1.7;">${excessText}</div>
+        </div>
+        <p class="ch-text">${extra3}</p>
+        </div>
+    `;
+    return html;
+}
 
 function buildChapter3_Sipseong(data) {
     let html = `<div class="report-chapter"><h3 class="ch-title">Chapter 3. 사회적 가면과 내면의 권력욕 (십성)</h3>`;
@@ -99,9 +124,6 @@ function buildChapter3_Sipseong(data) {
     return html;
 }
 
-function
-
-
 function buildChapter4_Wealth(data) {
     let html = `<div class="report-chapter"><h3 class="ch-title">Chapter 4. 평생 재물운과 거대한 금고의 비밀</h3>`;
     let jaeCount = (data.sipseong && (data.sipseong['정재'] || 0) + (data.sipseong['편재'] || 0)) || 0;
@@ -126,7 +148,31 @@ function buildChapter4_Wealth(data) {
     return html;
 }
 
-function
+function buildDaewunLoop(data) {
+    let daewuns = [];
+    let startAge = 4;
+    const stems = ['갑','을','병','정','무','기','경','신','임','계'];
+    const branches = ['자','축','인','묘','진','사','오','미','신','유','술','해'];
+    
+    for(let i=0; i<8; i++) {
+        let dwName = stems[(i+3)%10] + branches[(i+5)%12];
+        daewuns.push({ age: startAge + (i * 10), name: dwName });
+    }
+
+    let html = `<div class="report-chapter"><h3 class="ch-title">Chapter 10. 대운(大運) 80년 심층 해부</h3><div class="timeline">`;
+
+    daewuns.forEach((dw, idx) => {
+        let eventText = window.SAJU_DB?.DAEWUN_EVENTS ? window.SAJU_DB.DAEWUN_EVENTS[idx % 60] : "거대한 환경의 변화가 찾아오는 시기입니다.";
+        html += `
+            <div class="timeline-item" style="margin-bottom: 25px; padding: 20px; background: #151515; border-left: 4px solid var(--gold); border-radius: 4px;">
+                <h4 style="color: var(--gold); margin-bottom: 12px; font-size: 18px;">${dw.age}세 ~ ${dw.age+9}세 : [${dw.name} 대운]</h4>
+                <p style="color: #ccc; font-size: 15px; line-height: 1.7;">${eventText}</p>
+            </div>
+        `;
+    });
+    html += `</div></div>`;
+    return html;
+}
 
 function buildSewunLoop(data) {
     let currentYear = new Date().getFullYear();
@@ -306,3 +352,6 @@ function buildChapter9_Remedy(data) {
         </ul>
     </div>`;
 }
+
+
+window.generateDeepReport = generateDeepReport;
