@@ -1,36 +1,16 @@
 
-// --- X-SAJU DEEP REPORT GENERATOR ENGINE (MEGA V3) ---
-// 그링그링 대가의 183P PDF를 모사하는 초거대 텍스트 제너레이터
+// --- X-SAJU DEEP REPORT GENERATOR ENGINE (V4 - REAL DB INTEGRATION) ---
 
-
-function getSajuText(category, key, length = 1) {
-    if(!window.SAJU_DB) return "데이터 로딩 중...";
-    let text = window.SAJU_DB[category]?.[key] || "";
-    if(!text) return "이 시기에는 당신의 숨겨진 잠재력이 발현되는 때입니다."; // fallback
-    
-    let res = text + " ";
-    for(let i=1; i<length; i++) {
-        res += "이러한 흐름은 당신의 원국과 맞물려 더 큰 시너지를 내거나, 피할 수 없는 과제로 다가옵니다. ";
-    }
-    return res;
-}
-
-const MEGA_DB_OLD = {
-    // 임시 더미 텍스트를 길게 뽑아내는 함수 (실제로는 사주 변수 결합)
-    genPara: function(theme, val, length) {
-        let base = "";
-        if(theme === 'wealth') base = "재물에 관한 당신의 본질적인 태도는 매우 복합적입니다. 흔히 사주에서 재물을 논할 때 단순히 돈의 많고 적음만을 보지만, 명리학적 관점에서 재성은 '내가 통제할 수 있는 영역'을 의미합니다. 당신이 세상이라는 무대 위에서 어떻게 자산을 획득하고, 그것을 유지하며, 최종적으로 어떤 형태의 부를 축적할 것인지에 대한 설계도입니다. ";
-        else if(theme === 'career') base = "직업과 사회적 무대는 당신의 에너지가 가장 강하게 발현되는 곳입니다. 월지의 기운을 바탕으로 볼 때, 당신은 짜여진 틀 안에서 단순 반복하는 업무에는 극도의 피로감을 느낍니다. 당신의 내면에는 스스로 판을 짜고 규칙을 만들어가려는 독립적인 기질이 강하게 자리 잡고 있습니다. ";
-        else if(theme === 'love') base = "인간관계와 이성운에 있어서 당신은 특유의 매력과 방어기제를 동시에 지니고 있습니다. 누군가에게 마음을 열기까지 상당한 검증의 시간이 필요하지만, 한 번 내 바운더리 안에 들어온 사람에게는 무한한 책임감을 보여줍니다. 배우자 자리인 일지의 기운을 볼 때, 당신에게 필요한 사람은 당신의 속도를 통제하려 드는 사람이 아니라 묵묵히 지지해 주는 나무 같은 사람입니다. ";
-        else if(theme === 'shinsal') base = "당신의 사주 원국에 내재된 신살과 공망은 당신의 삶을 역동적으로 만드는 숨은 엔진입니다. 남들은 평범하게 넘어갈 일도 당신에게는 특별한 사건으로 증폭되어 다가오는 이유가 여기에 있습니다. 결핍을 채우려는 무의식적인 갈망이 당신을 남들보다 더 높이 도약하게 만들었습니다. ";
-        
-        let result = base;
-        for(let i=0; i<length; i++) {
-            result += "당신의 원국에 나타난 " + val + "의 기운은 인생의 중요한 변곡점마다 작용하여, 때로는 위기를 기회로 바꾸고 때로는 순조로운 길에 예기치 않은 브레이크를 걸기도 합니다. 이는 단순히 길흉의 문제가 아니라, 당신의 그릇을 키우기 위한 우주의 담금질과 같습니다. ";
+function getDBText(category, key, fallback) {
+    if(window.SAJU_DB && window.SAJU_DB[category] && window.SAJU_DB[category][key]) {
+        let val = window.SAJU_DB[category][key];
+        if(typeof val === 'object') {
+            return val.core + " " + val.weapon;
         }
-        return result;
+        return val;
     }
-};
+    return fallback || "이 시기에는 잠재력을 발휘해야 합니다.";
+}
 
 function generateDeepReport(data) {
     if(!data.dayStem) return;
@@ -47,9 +27,9 @@ function generateDeepReport(data) {
     html += buildChapter_Love(data);
     
     html += buildSectionHeader("PART 3. 숨겨진 무기와 취약점");
-    html += buildChapter_Shinsal(data);
+    html += buildChapter_Hidden(data); // 지장간
     html += buildChapter_Health(data);
-    html += buildChapter_Remedy(data); // 개운법
+    html += buildChapter_Remedy(data);
     
     html += buildSectionHeader("PART 4. 시간의 지배자 (대운과 세운)");
     html += buildDaewunLoop(data);
@@ -60,46 +40,51 @@ function generateDeepReport(data) {
 }
 
 function buildSectionHeader(title) {
-    return `
-        <div style="margin: 60px 0 30px 0; padding-bottom: 15px; border-bottom: 2px solid var(--gold);">
+    return `<div style="margin: 60px 0 30px 0; padding-bottom: 15px; border-bottom: 2px solid var(--gold);">
             <h2 style="color: var(--gold); font-size: 24px; font-family: 'Noto Serif KR', serif; letter-spacing: 2px;">${title}</h2>
-        </div>
-    `;
+        </div>`;
 }
 
 function buildChapter_Basic(data) {
+    let iljuKey = data.dayStem + data.dayBranch;
+    let iljuText = getDBText('ILJU', iljuKey, "당신은 거대한 대지의 기운을 품고 있습니다.");
+    
     return `
         <div class="report-chapter">
             <h3 class="ch-title">Chapter 1. 나의 본질과 영혼의 그릇</h3>
-            <p class="ch-text">${MEGA_DB.genPara('wealth', data.dayStem + data.dayBranch, 3)}</p>
-            <p class="ch-text">${MEGA_DB.genPara('career', '신강/신약', 2)} 당신의 에너지는 <b>${data.strengthText}</b>입니다.</p>
+            <p class="ch-text">${iljuText}</p>
+            <p class="ch-text">당신의 에너지는 <b>${data.strengthText}</b> 상태입니다. 이는 당신이 단순히 머무르는 존재가 아니라, 끊임없이 환경과 충돌하며 자신만의 영역을 개척해야 함을 의미합니다.</p>
         </div>
     `;
 }
 
 function buildChapter_Wuxing(data) {
-    return `
-        <div class="report-chapter">
-            <h3 class="ch-title">Chapter 2. 오행의 세력과 나의 무기</h3>
-            <p class="ch-text">${MEGA_DB.genPara('shinsal', '오행의 불균형', 4)}</p>
-        </div>
-    `;
+    let html = `<div class="report-chapter"><h3 class="ch-title">Chapter 2. 오행의 세력과 나의 무기</h3>`;
+    if(data.wuxing) {
+        let maxWuxing = Object.keys(data.wuxing).reduce((a, b) => data.wuxing[a] > data.wuxing[b] ? a : b);
+        let excessText = getDBText('WUXING_EXCESS', maxWuxing, "오행의 기운이 한쪽으로 몰려 있습니다.");
+        html += `<p class="ch-text">가장 강한 기운(${maxWuxing}): ${excessText}</p>`;
+    }
+    html += `</div>`;
+    return html;
 }
 
 function buildChapter_Sipseong(data) {
-    return `
-        <div class="report-chapter">
-            <h3 class="ch-title">Chapter 3. 사회적 가면과 내면의 욕망 (십성)</h3>
-            <p class="ch-text">${MEGA_DB.genPara('career', '십성 밸런스', 4)}</p>
-        </div>
-    `;
+    let html = `<div class="report-chapter"><h3 class="ch-title">Chapter 3. 사회적 가면과 내면의 욕망 (십성)</h3>`;
+    let mainSip = "정재";
+    if(data.sipseong && Object.keys(data.sipseong).length > 0) {
+        mainSip = Object.keys(data.sipseong).reduce((a, b) => data.sipseong[a] > data.sipseong[b] ? a : b) || "정재";
+    }
+    let sipText = getDBText('SIPSEONG', mainSip, "사회의 규칙에 순응하기보다 주도적으로 판을 짜는 기질입니다.");
+    html += `<p class="ch-text">가장 발달한 십성(${mainSip}): ${sipText}</p></div>`;
+    return html;
 }
 
 function buildChapter_Wealth(data) {
     return `
         <div class="report-chapter">
             <h3 class="ch-title">Chapter 4. 평생 재물운과 축적의 기술</h3>
-            <p class="ch-text">${MEGA_DB.genPara('wealth', '재성(財星)', 5)}</p>
+            <p class="ch-text">당신의 재물운은 매우 역동적입니다. 눈앞의 현금보다는 시스템과 사람을 통해 부를 증식하는 구조입니다.</p>
             <div class="axe-advice"><b>👉 재물 증식 전략:</b> 투기성 자본보다는 당신의 전문성을 담보로 한 시스템 수익을 노려야 합니다.</div>
         </div>
     `;
@@ -109,25 +94,29 @@ function buildChapter_Career(data) {
     return `
         <div class="report-chapter">
             <h3 class="ch-title">Chapter 5. 최적의 직업과 사회적 성취</h3>
-            <p class="ch-text">${MEGA_DB.genPara('career', '관성(官星)과 식상(食傷)', 4)}</p>
+            <p class="ch-text">누군가의 밑에서 부품처럼 쓰이는 것을 견디지 못합니다. 당신만의 권한이 완벽히 주어지는 독립적인 무대에서 10배의 퍼포먼스를 냅니다.</p>
         </div>
     `;
 }
 
 function buildChapter_Love(data) {
+    let iljuKey = data.dayStem + data.dayBranch;
+    let loveText = window.SAJU_DB?.ILJU?.[iljuKey]?.love || "당신의 템포를 이해하고 묵묵히 지지해주는 사람이 필요합니다.";
     return `
         <div class="report-chapter">
             <h3 class="ch-title">Chapter 6. 이성운과 나에게 맞는 배우자상</h3>
-            <p class="ch-text">${MEGA_DB.genPara('love', '일지(배우자궁)', 4)}</p>
+            <p class="ch-text">${loveText}</p>
         </div>
     `;
 }
 
-function buildChapter_Shinsal(data) {
+function buildChapter_Hidden(data) {
+    let branch = data.dayBranch;
+    let hiddenText = getDBText('HIDDEN', branch, "보이지 않는 무의식적 잠재력이 매우 강합니다.");
     return `
         <div class="report-chapter">
-            <h3 class="ch-title">Chapter 7. 나의 콤플렉스와 폭발력 (공망과 신살)</h3>
-            <p class="ch-text">${MEGA_DB.genPara('shinsal', '공망의 결핍', 3)}</p>
+            <h3 class="ch-title">Chapter 7. 지장간에 숨겨진 은밀한 무기</h3>
+            <p class="ch-text">${hiddenText}</p>
         </div>
     `;
 }
@@ -136,7 +125,7 @@ function buildChapter_Health(data) {
     return `
         <div class="report-chapter">
             <h3 class="ch-title">Chapter 8. 신체 취약점과 건강 관리</h3>
-            <p class="ch-text">${MEGA_DB.genPara('shinsal', '오행 태과', 2)}</p>
+            <p class="ch-text">심리적 압박감이 곧바로 신체의 병으로 이어지는 구조입니다. 과부하가 걸리기 전에 전원을 끄는 연습이 필요합니다.</p>
         </div>
     `;
 }
@@ -145,12 +134,9 @@ function buildChapter_Remedy(data) {
     return `
         <div class="report-chapter">
             <h3 class="ch-title">Chapter 9. 운명을 바꾸는 행동 지침 (개운법)</h3>
-            <p class="ch-text">사주는 정해진 운명이 아니라, 나에게 주어진 패를 어떻게 효율적으로 쓸 것인가의 문제입니다. 행운의 컬러, 방향, 그리고 대인관계 처세술을 통해 불리한 기운을 상쇄할 수 있습니다.</p>
             <ul style="color: #ccc; line-height: 2; font-size: 15px;">
-                <li><b>행운의 색상:</b> 블랙, 네이비, 그리고 다크 그린. 중요한 계약 시 이 색상을 활용하십시오.</li>
-                <li><b>행운의 방향:</b> 북쪽과 동쪽. 책상이나 침대 머리맡을 이 방향으로 두면 에너지가 순환됩니다.</li>
-                <li><b>행운의 숫자:</b> 1, 3, 6, 8.</li>
-                <li><b>마인드 셋:</b> 타인의 인정에 목마를 때마다 스스로의 성취를 먼저 인정하십시오.</li>
+                <li><b>행운의 마인드:</b> 타인의 평가에 휘둘리지 말고 오직 자신의 성취에 집중하십시오.</li>
+                <li><b>액션 플랜:</b> 결정을 미루는 습관이 가장 큰 리스크입니다. 70%의 확신이 서면 즉시 실행하십시오.</li>
             </ul>
         </div>
     `;
@@ -163,29 +149,18 @@ function buildDaewunLoop(data) {
     const branches = ['자','축','인','묘','진','사','오','미','신','유','술','해'];
     
     for(let i=0; i<8; i++) {
-        daewuns.push({ 
-            age: startAge + (i * 10), 
-            name: stems[(i+3)%10] + branches[(i+5)%12] 
-        });
+        let dwName = stems[(i+3)%10] + branches[(i+5)%12];
+        daewuns.push({ age: startAge + (i * 10), name: dwName });
     }
 
-    let html = `
-        <div class="report-chapter">
-            <h3 class="ch-title">Chapter 10. 대운(大運) 80년 심층 해부</h3>
-            <p class="ch-text">당신 인생의 10년 단위 거대한 배경화면입니다.</p>
-            <div class="timeline">
-    `;
+    let html = `<div class="report-chapter"><h3 class="ch-title">Chapter 10. 대운(大運) 80년 심층 해부</h3><div class="timeline">`;
 
-    daewuns.forEach(dw => {
+    daewuns.forEach((dw, idx) => {
+        let eventText = window.SAJU_DB?.DAEWUN_EVENTS ? window.SAJU_DB.DAEWUN_EVENTS[idx % 60] : "거대한 환경의 변화가 찾아오는 시기입니다.";
         html += `
             <div class="timeline-item" style="margin-bottom: 25px; padding: 20px; background: #151515; border-left: 4px solid var(--gold); border-radius: 4px;">
                 <h4 style="color: var(--gold); margin-bottom: 12px; font-size: 18px;">${dw.age}세 ~ ${dw.age+9}세 : [${dw.name} 대운]</h4>
-                <p style="color: #ccc; font-size: 15px; line-height: 1.7; margin-bottom: 10px;">
-                    ${MEGA_DB.genPara('wealth', dw.name, 2)}
-                </p>
-                <p style="color: #aaa; font-size: 14px; line-height: 1.6; background: #0a0a0a; padding: 10px; border-radius: 4px;">
-                    <b>💡 핵심 요약:</b> 이 10년은 기존의 틀을 부수고 새로운 영토를 확장하는 시기입니다. 무리한 확장보다는 내실을 다지는 것이 유리합니다.
-                </p>
+                <p style="color: #ccc; font-size: 15px; line-height: 1.7;">${eventText}</p>
             </div>
         `;
     });
@@ -195,11 +170,7 @@ function buildDaewunLoop(data) {
 
 function buildSewunLoop(data) {
     let currentYear = new Date().getFullYear();
-    let html = `
-        <div class="report-chapter">
-            <h3 class="ch-title">Chapter 11. 향후 10년 세운(歲運) 정밀 타격</h3>
-            <p class="ch-text">당장 올해부터 10년 동안 일어날 구체적인 사건과 흐름입니다.</p>
-    `;
+    let html = `<div class="report-chapter"><h3 class="ch-title">Chapter 11. 향후 10년 세운(歲運) 정밀 타격</h3>`;
 
     const stems = ['갑','을','병','정','무','기','경','신','임','계'];
     const branches = ['자','축','인','묘','진','사','오','미','신','유','술','해'];
@@ -207,12 +178,17 @@ function buildSewunLoop(data) {
     for(let i=0; i<10; i++) {
         let y = currentYear + i;
         let sb = stems[(2+i)%10] + branches[(6+i)%12]; // 2026 병오년 기준
+        
+        let interactionText = "";
+        // Simple mock interaction for the sake of dynamic generation
+        if (i % 3 === 0) interactionText = window.SAJU_DB?.INTERACTION?.['합'] || "결합과 성장의 기운이 강합니다.";
+        else if (i % 4 === 0) interactionText = window.SAJU_DB?.INTERACTION?.['충'] || "충돌과 변화가 발생합니다.";
+        else interactionText = "안정적으로 내실을 다져야 하는 한 해입니다.";
+
         html += `
             <div style="margin-bottom: 20px; border-bottom: 1px dashed #333; padding-bottom: 20px;">
                 <div style="font-weight: bold; color: #fff; font-size: 17px; margin-bottom: 8px;">${y}년 (${sb}년)</div>
-                <p style="color: #ccc; font-size: 15px; line-height: 1.7;">
-                    ${MEGA_DB.genPara('career', sb, 1)} 올해는 주변 사람들과의 협력이 무엇보다 중요하며, 성급한 결정은 구설수를 낳을 수 있습니다.
-                </p>
+                <p style="color: #ccc; font-size: 15px; line-height: 1.7;">${interactionText}</p>
             </div>
         `;
     }
@@ -221,16 +197,13 @@ function buildSewunLoop(data) {
 }
 
 function buildWolunLoop(data) {
-    let html = `
-        <div class="report-chapter">
-            <h3 class="ch-title">Chapter 12. ${new Date().getFullYear()}년 12개월 작전 지도</h3>
-            <div style="display: flex; flex-direction: column; gap: 10px;">
-    `;
+    let html = `<div class="report-chapter"><h3 class="ch-title">Chapter 12. ${new Date().getFullYear()}년 12개월 작전 지도</h3><div style="display: flex; flex-direction: column; gap: 10px;">`;
     for(let m=1; m<=12; m++) {
+        let text = m % 2 === 0 ? "현상 유지 및 리스크 관리" : "적극적인 행동 및 기회 창출";
         html += `
             <div style="background: #111; padding: 15px; border-radius: 4px; border-left: 2px solid var(--gold);">
                 <div style="color:#fff; font-weight:bold; margin-bottom: 5px;">${m}월의 기운</div>
-                <div style="color:#aaa; font-size:14px; line-height: 1.5;">${MEGA_DB.genPara('shinsal', m+'월', 0)} 이번 달은 불필요한 지출을 막고 건강 관리에 신경 써야 하는 달입니다. 타인과의 언쟁을 피하십시오.</div>
+                <div style="color:#aaa; font-size:14px;">${text}</div>
             </div>
         `;
     }
