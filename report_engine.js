@@ -23,13 +23,13 @@ function generateDeepReport(data) {
     
     html += buildSectionHeader("PART 2. 인생의 무대와 성취");
     html += buildChapter_Wealth(data);
-    html += buildChapter_Career(data);
-    html += buildChapter_Love(data);
+    html += buildChapter5_Career(data);
+    html += buildChapter6_Love(data);
     
     html += buildSectionHeader("PART 3. 숨겨진 무기와 취약점");
-    html += buildChapter_Hidden(data); // 지장간
-    html += buildChapter_Health(data);
-    html += buildChapter_Remedy(data);
+    html += buildChapter7_Hidden(data); // 지장간
+    html += buildChapter8_Health(data);
+    html += buildChapter9_Remedy(data);
     
     html += buildSectionHeader("PART 4. 시간의 지배자 (대운과 세운)");
     html += buildDaewunLoop(data);
@@ -192,4 +192,117 @@ function buildWolunLoop(data) {
     }
     html += `</div></div>`;
     return html;
+}
+
+
+function buildChapter5_Career(data) {
+    let mainSip = "정관";
+    if(data.sipseong && Object.keys(data.sipseong).length > 0) {
+        mainSip = Object.keys(data.sipseong).reduce((a, b) => data.sipseong[a] > data.sipseong[b] ? a : b);
+    }
+    
+    let careerCore = "";
+    if(['식신', '상관'].includes(mainSip)) {
+        careerCore = "당신의 사회적 무대는 '창작과 표현'입니다. 남들이 만들어 놓은 시스템 안에서는 부품처럼 쓰이다가 빠르게 소진됩니다. 누군가의 지시를 받기보다는 당신의 아이디어와 목소리가 곧 돈이 되고 권력이 되는 프리랜서, 기획자, 예술가, 또는 자기 사업의 영역에서 압도적인 성취를 이룹니다.";
+    } else if(['편관', '정관'].includes(mainSip)) {
+        careerCore = "조직 생활의 생리를 누구보다 잘 이해하며, 그 안에서 승진과 권력을 쟁취하는 데 천부적인 재능이 있습니다. 무에서 유를 창조하는 맨땅의 헤딩보다는, 이미 갖춰진 거대한 시스템 안에서 자신의 덩치를 키워가며 '완장'을 차는 것이 가장 효율적인 길입니다.";
+    } else if(['편인', '정인'].includes(mainSip)) {
+        careerCore = "당신의 무기는 '지적재산권'과 '문서'입니다. 자격증, 학위, 혹은 남들이 쉽게 범접할 수 없는 특수한 기술력을 바탕으로 컨설턴트, 교육자, 연구자로서 독보적인 입지를 구축합니다. 몸을 쓰기보다 머리를 쓸 때 보상이 10배로 돌아옵니다.";
+    } else {
+        careerCore = "남 밑에 있지 못하고 내 구역을 지켜내려는 야생성이 강합니다. 독고다이 기질이 강해 치열한 경쟁이 있는 영업, 스포츠, 독립적인 프로젝트 팀장 등에서 최고의 퍼포먼스를 냅니다.";
+    }
+
+    return `<div class="report-chapter">
+        <h3 class="ch-title">Chapter 5. 최적의 직업과 사회적 권력</h3>
+        <p class="ch-text">직업은 단순히 돈을 버는 수단이 아닙니다. 사주 명리학에서 '직업운'은 내 에너지를 가장 안정적으로, 그리고 가장 파괴적으로 발산할 수 있는 '전쟁터의 종류'를 의미합니다. 물고기 사주를 타고났으면 바다로 가야지 산으로 올라가면 안 됩니다.</p>
+        <p class="ch-text">${careerCore}</p>
+        <div class="axe-advice" style="margin-top: 15px; border-left-color: #3f51b5;">
+            <b>👉 Axe의 무대 세팅:</b> "내 권한이 100% 보장되는가?" 이것이 당신이 직업을 선택할 때 최우선으로 고려해야 단 하나의 질문입니다.
+        </div>
+    </div>`;
+}
+
+function buildChapter6_Love(data) {
+    let iljuKey = data.dayStem + data.dayBranch;
+    let dbEntry = window.SAJU_DB?.ILJU?.[iljuKey] || {};
+    let loveText = dbEntry.love || "당신의 템포를 묵묵히 맞춰주고 지지해 줄 수 있는 안정적인 인연이 닿습니다.";
+    
+    let extra1 = "사주에서 일지(日支)는 당신의 안방이자, 배우자의 자리입니다. 사회적 가면을 벗어던지고 가장 취약한 민낯을 드러냈을 때, 그것을 품어낼 수 있는 인연의 형태가 이 자리에 각인되어 있습니다.";
+    let extra2 = "당신은 매력적이지만 곁을 내어주기까지 상당히 까다로운 기준을 가지고 있습니다. 불타오르는 감정보다는 나와 결이 맞는 사람인지 수없이 테스트하는 과정을 거칩니다.";
+
+    return `<div class="report-chapter">
+        <h3 class="ch-title">Chapter 6. 닫힌 문을 여는 열쇠 (이성운과 인연)</h3>
+        <p class="ch-text">${extra1}</p>
+        <p class="ch-text">${extra2}</p>
+        <p class="ch-text" style="font-weight: 600; color: #fff;">[배우자궁 분석]</p>
+        <p class="ch-text">${loveText}</p>
+    </div>`;
+}
+
+function buildChapter7_Hidden(data) {
+    let branch = data.dayBranch;
+    let hiddenText = "겉으로 드러난 환경 아래에는 거대한 잠재력이 숨겨져 있습니다.";
+    if (window.SAJU_DB?.HIDDEN?.[branch]) {
+        hiddenText = window.SAJU_DB.HIDDEN[branch];
+    }
+    
+    let extra1 = "사람들은 원국에 드러난 8글자만으로 운명을 논합니다. 그러나 빙산의 일각처럼, 물 밑에 숨겨져 당신을 무의식적으로 조종하는 진짜 본능은 '지장간(地藏干)'에 숨어 있습니다. 지장간은 당신의 비상금이면서 동시에 내면에 억눌린 가장 솔직한 욕망입니다.";
+
+    return `<div class="report-chapter">
+        <h3 class="ch-title">Chapter 7. 빙산 아래의 욕망 (지장간 해부)</h3>
+        <p class="ch-text">${extra1}</p>
+        <div style="background: #111; padding: 20px; border-left: 3px solid var(--gold); margin: 20px 0;">
+            <div style="color: #fff; font-weight: bold; margin-bottom: 10px;">[ 태어난 날(${branch})에 숨겨진 지장간 ]</div>
+            <div style="color: #ccc; font-size: 15px; line-height: 1.7;">${hiddenText}</div>
+        </div>
+        <p class="ch-text">이 숨겨진 무기는 평소에는 작동하지 않다가 인생의 극적인 위기 상황이나 극한의 결핍 상황에 몰렸을 때 비로소 폭발하며 당신을 구원합니다.</p>
+    </div>`;
+}
+
+function buildChapter8_Health(data) {
+    let html = `<div class="report-chapter"><h3 class="ch-title">Chapter 8. 신체 취약점과 마지노선 (건강)</h3>`;
+    let maxWuxing = 'earth';
+    if(data.wuxing && Object.keys(data.wuxing).length > 0) {
+        maxWuxing = Object.keys(data.wuxing).reduce((a, b) => data.wuxing[a] > data.wuxing[b] ? a : b);
+    }
+    
+    let organ = {
+        'wood': '간, 담낭, 신경계',
+        'fire': '심장, 심혈관, 안구',
+        'earth': '위장, 비장, 소화기 계통',
+        'metal': '폐, 대장, 호흡기',
+        'water': '신장, 방광, 호르몬'
+    }[maxWuxing] || '위장';
+
+    html += `<p class="ch-text">사주 명리학은 결국 에너지(오행)의 분배와 편중을 다루는 학문이며, 이는 한의학의 오장육부와 직결됩니다. 당신의 사주에서 특정 에너지가 극도로 과부하 걸릴 때, 마음의 스트레스는 즉각적으로 해당 장기의 병변으로 나타납니다.</p>`;
+    html += `<p class="ch-text">당신의 원국에서 <b>${maxWuxing}</b>의 기운이 가장 강하게 편중되어 있으므로, 당신 인생의 건강 마지노선은 바로 <b>[${organ}]</b>입니다. 화가 나고 억눌릴 때 이곳부터 타격을 받습니다.</p>`;
+    html += `<div class="axe-advice" style="border-left-color: #d32f2f; margin-top: 15px;">
+        <b>🚨 Axe의 생존 지침:</b> 성과를 내기 위해 몸을 연료로 태우지 마십시오. 당신은 멈춰야 할 때 멈추는 데 대단한 용기가 필요한 타입입니다.
+    </div></div>`;
+    return html;
+}
+
+function buildChapter9_Remedy(data) {
+    let ds = data.dayStem;
+    let color = "블랙과 네이비";
+    let dir = "북쪽";
+    let num = "1, 6";
+    if (['갑', '을', '병', '정'].includes(ds)) {
+        color = "화이트와 실버 메탈릭"; dir = "서쪽"; num = "4, 9";
+    } else if (['무', '기'].includes(ds)) {
+        color = "레드와 강렬한 오렌지"; dir = "남쪽"; num = "2, 7";
+    } else {
+        color = "차분한 옐로우와 베이지"; dir = "중앙"; num = "5, 10";
+    }
+
+    return `<div class="report-chapter">
+        <h3 class="ch-title">Chapter 9. 운명을 비트는 레버리지 (Axe 개운법)</h3>
+        <p class="ch-text">명리학은 정해진 불행을 넋 놓고 기다리라고 있는 학문이 아닙니다. 비가 올 것을 알았으면 우산을 쓰고 나가면 됩니다. 부족한 기운을 채우고 과도한 기운을 빼내는 생활 속의 '액션 플랜'을 처방합니다.</p>
+        <ul style="color: #ccc; line-height: 2; font-size: 15px;">
+            <li><b>행운의 컬러:</b> ${color}. 중요한 계약을 하거나 사람을 만날 때 이 색상의 넥타이, 지갑, 속옷을 활용하십시오. 무의식적인 기운을 보완합니다.</li>
+            <li><b>운이 뚫리는 방향:</b> ${dir}. 책상이나 침대 머리맡을 이 방향으로 두십시오. 일이 안 풀릴 때 이 방향으로 여행을 다녀오는 것도 기운을 씻어내는 방법입니다.</li>
+            <li><b>재물을 부르는 숫자:</b> ${num}. 비밀번호나 계좌번호 등에 의식적으로 배치하십시오.</li>
+            <li><b>행운의 마인드셋:</b> 완벽주의를 70%만 발휘하십시오. 30%의 빈틈이 있어야 돈과 사람이 들어옵니다.</li>
+        </ul>
+    </div>`;
 }
