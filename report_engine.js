@@ -2,7 +2,20 @@
 // --- X-SAJU DEEP REPORT GENERATOR ENGINE (MEGA V3) ---
 // 그링그링 대가의 183P PDF를 모사하는 초거대 텍스트 제너레이터
 
-const MEGA_DB = {
+
+function getSajuText(category, key, length = 1) {
+    if(!window.SAJU_DB) return "데이터 로딩 중...";
+    let text = window.SAJU_DB[category]?.[key] || "";
+    if(!text) return "이 시기에는 당신의 숨겨진 잠재력이 발현되는 때입니다."; // fallback
+    
+    let res = text + " ";
+    for(let i=1; i<length; i++) {
+        res += "이러한 흐름은 당신의 원국과 맞물려 더 큰 시너지를 내거나, 피할 수 없는 과제로 다가옵니다. ";
+    }
+    return res;
+}
+
+const MEGA_DB_OLD = {
     // 임시 더미 텍스트를 길게 뽑아내는 함수 (실제로는 사주 변수 결합)
     genPara: function(theme, val, length) {
         let base = "";
