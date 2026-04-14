@@ -45,128 +45,88 @@ function buildSectionHeader(title) {
         </div>`;
 }
 
-function buildChapter_Basic(data) {
+
+function buildChapter1_Basic(data) {
     let iljuKey = data.dayStem + data.dayBranch;
-    let iljuText = getDBText('ILJU', iljuKey, "당신은 거대한 대지의 기운을 품고 있습니다.");
+    let dbEntry = window.SAJU_DB?.ILJU?.[iljuKey] || {};
+    let title = dbEntry.title || "거대한 대지의 기운";
+    let core = dbEntry.core || "당신은 끊임없이 환경과 충돌하며 자신만의 영역을 개척하는 기질을 타고났습니다.";
+    let weapon = dbEntry.weapon || "위기 상황에서 발휘되는 직관과 돌파력이 당신의 가장 큰 무기입니다.";
     
+    // 강제 볼륨 확장 (대가급 서사)
+    let extra1 = "명리학에서 일주(日柱)는 단순히 성격을 의미하는 것이 아니라, 당신이 평생 짊어지고 가야 할 영혼의 바코드이자 생존의 무기입니다. 많은 사람들이 사주를 볼 때 겉으로 드러난 화려함(사회적 가면)에 주목하지만, 당신을 진정으로 움직이는 것은 이 일주에 새겨진 내밀한 기질입니다.";
+    let extra2 = "당신의 에너지는 현재 <b>" + data.strengthText + "</b> 상태로 측정되었습니다. 이 힘은 외부의 억압을 견뎌내고 내면의 폭발력을 응축하는 원동력이 됩니다. 남들의 속도에 맞추려 하지 마십시오. 당신의 템포가 곧 정답입니다.";
+    let extra3 = "때로는 이 굽히지 않는 기질 때문에 불필요한 마찰을 겪기도 하지만, 결국 그 마찰열이 당신의 그릇을 한 단계 더 크게 빚어내는 용광로 역할을 하게 됩니다. 환경을 탓하지 마십시오. 당신은 그 환경을 지배하고 재편할 권리가 있습니다.";
+
     return `
         <div class="report-chapter">
             <h3 class="ch-title">Chapter 1. 나의 본질과 영혼의 그릇</h3>
-            <p class="ch-text">${iljuText}</p>
-            <p class="ch-text">당신의 에너지는 <b>${data.strengthText}</b> 상태입니다. 이는 당신이 단순히 머무르는 존재가 아니라, 끊임없이 환경과 충돌하며 자신만의 영역을 개척해야 함을 의미합니다.</p>
+            <div style="font-size: 18px; font-weight: bold; color: var(--gold); margin-bottom: 15px;">[${title}]</div>
+            <p class="ch-text">${extra1}</p>
+            <p class="ch-text">${core} ${weapon}</p>
+            <p class="ch-text">${extra2}</p>
+            <p class="ch-text">${extra3}</p>
         </div>
     `;
 }
 
-function buildChapter_Wuxing(data) {
-    let html = `<div class="report-chapter"><h3 class="ch-title">Chapter 2. 오행의 세력과 나의 무기</h3>`;
-    if(data.wuxing) {
-        let maxWuxing = Object.keys(data.wuxing).reduce((a, b) => data.wuxing[a] > data.wuxing[b] ? a : b);
-        let excessText = getDBText('WUXING_EXCESS', maxWuxing, "오행의 기운이 한쪽으로 몰려 있습니다.");
-        html += `<p class="ch-text">가장 강한 기운(${maxWuxing}): ${excessText}</p>`;
-    }
-    html += `</div>`;
-    return html;
-}
+function
 
-function buildChapter_Sipseong(data) {
-    let html = `<div class="report-chapter"><h3 class="ch-title">Chapter 3. 사회적 가면과 내면의 욕망 (십성)</h3>`;
+
+function buildChapter3_Sipseong(data) {
+    let html = `<div class="report-chapter"><h3 class="ch-title">Chapter 3. 사회적 가면과 내면의 권력욕 (십성)</h3>`;
     let mainSip = "정재";
     if(data.sipseong && Object.keys(data.sipseong).length > 0) {
         mainSip = Object.keys(data.sipseong).reduce((a, b) => data.sipseong[a] > data.sipseong[b] ? a : b) || "정재";
     }
-    let sipText = getDBText('SIPSEONG', mainSip, "사회의 규칙에 순응하기보다 주도적으로 판을 짜는 기질입니다.");
-    html += `<p class="ch-text">가장 발달한 십성(${mainSip}): ${sipText}</p></div>`;
-    return html;
-}
-
-function buildChapter_Wealth(data) {
-    return `
-        <div class="report-chapter">
-            <h3 class="ch-title">Chapter 4. 평생 재물운과 축적의 기술</h3>
-            <p class="ch-text">당신의 재물운은 매우 역동적입니다. 눈앞의 현금보다는 시스템과 사람을 통해 부를 증식하는 구조입니다.</p>
-            <div class="axe-advice"><b>👉 재물 증식 전략:</b> 투기성 자본보다는 당신의 전문성을 담보로 한 시스템 수익을 노려야 합니다.</div>
-        </div>
-    `;
-}
-
-function buildChapter_Career(data) {
-    return `
-        <div class="report-chapter">
-            <h3 class="ch-title">Chapter 5. 최적의 직업과 사회적 성취</h3>
-            <p class="ch-text">누군가의 밑에서 부품처럼 쓰이는 것을 견디지 못합니다. 당신만의 권한이 완벽히 주어지는 독립적인 무대에서 10배의 퍼포먼스를 냅니다.</p>
-        </div>
-    `;
-}
-
-function buildChapter_Love(data) {
-    let iljuKey = data.dayStem + data.dayBranch;
-    let loveText = window.SAJU_DB?.ILJU?.[iljuKey]?.love || "당신의 템포를 이해하고 묵묵히 지지해주는 사람이 필요합니다.";
-    return `
-        <div class="report-chapter">
-            <h3 class="ch-title">Chapter 6. 이성운과 나에게 맞는 배우자상</h3>
-            <p class="ch-text">${loveText}</p>
-        </div>
-    `;
-}
-
-function buildChapter_Hidden(data) {
-    let branch = data.dayBranch;
-    let hiddenText = getDBText('HIDDEN', branch, "보이지 않는 무의식적 잠재력이 매우 강합니다.");
-    return `
-        <div class="report-chapter">
-            <h3 class="ch-title">Chapter 7. 지장간에 숨겨진 은밀한 무기</h3>
-            <p class="ch-text">${hiddenText}</p>
-        </div>
-    `;
-}
-
-function buildChapter_Health(data) {
-    return `
-        <div class="report-chapter">
-            <h3 class="ch-title">Chapter 8. 신체 취약점과 건강 관리</h3>
-            <p class="ch-text">심리적 압박감이 곧바로 신체의 병으로 이어지는 구조입니다. 과부하가 걸리기 전에 전원을 끄는 연습이 필요합니다.</p>
-        </div>
-    `;
-}
-
-function buildChapter_Remedy(data) {
-    return `
-        <div class="report-chapter">
-            <h3 class="ch-title">Chapter 9. 운명을 바꾸는 행동 지침 (개운법)</h3>
-            <ul style="color: #ccc; line-height: 2; font-size: 15px;">
-                <li><b>행운의 마인드:</b> 타인의 평가에 휘둘리지 말고 오직 자신의 성취에 집중하십시오.</li>
-                <li><b>액션 플랜:</b> 결정을 미루는 습관이 가장 큰 리스크입니다. 70%의 확신이 서면 즉시 실행하십시오.</li>
-            </ul>
-        </div>
-    `;
-}
-
-function buildDaewunLoop(data) {
-    let daewuns = [];
-    let startAge = 4;
-    const stems = ['갑','을','병','정','무','기','경','신','임','계'];
-    const branches = ['자','축','인','묘','진','사','오','미','신','유','술','해'];
+    let sipText = window.SAJU_DB?.SIPSEONG?.[mainSip] || "사회의 규칙에 순응하기보다 주도적으로 판을 짜는 기질입니다.";
     
-    for(let i=0; i<8; i++) {
-        let dwName = stems[(i+3)%10] + branches[(i+5)%12];
-        daewuns.push({ age: startAge + (i * 10), name: dwName });
-    }
+    // 볼륨 확장
+    let extra1 = "오행이 당신의 '신체(H/W)'라면, 십성(육친)은 당신의 뇌에 깔린 '운영체제(S/W)'입니다. 당신이 사람을 대할 때, 돈을 벌 때, 상사와 부하직원을 대할 때 무의식적으로 튀어나오는 패턴이 바로 이 십성에서 비롯됩니다.";
+    let extra2 = "당신의 무의식을 지배하는 가장 강력한 운영체제는 바로 <b>[${mainSip}]</b>입니다. 이것이 당신의 '사회적 가면(페르소나)'입니다. 남들은 당신의 다양한 모습을 보겠지만, 결정적인 순간에 당신이 선택을 내리는 기준은 오직 이 기질 하나로 수렴됩니다.";
+    let extra3 = "이 [${mainSip}]의 기질은 양날의 검입니다. 이 능력을 당신의 통제 아래 두고 적재적소에 활용하면 남들이 평생 걸려도 얻지 못할 사회적 성취를 단기간에 쥐어냅니다. 하지만 반대로 이 기질에 질질 끌려다니면, 가장 믿었던 무기에 제 발등이 찍히는 꼴이 됩니다.";
 
-    let html = `<div class="report-chapter"><h3 class="ch-title">Chapter 10. 대운(大運) 80년 심층 해부</h3><div class="timeline">`;
-
-    daewuns.forEach((dw, idx) => {
-        let eventText = window.SAJU_DB?.DAEWUN_EVENTS ? window.SAJU_DB.DAEWUN_EVENTS[idx % 60] : "거대한 환경의 변화가 찾아오는 시기입니다.";
-        html += `
-            <div class="timeline-item" style="margin-bottom: 25px; padding: 20px; background: #151515; border-left: 4px solid var(--gold); border-radius: 4px;">
-                <h4 style="color: var(--gold); margin-bottom: 12px; font-size: 18px;">${dw.age}세 ~ ${dw.age+9}세 : [${dw.name} 대운]</h4>
-                <p style="color: #ccc; font-size: 15px; line-height: 1.7;">${eventText}</p>
-            </div>
-        `;
-    });
-    html += `</div></div>`;
+    html += `
+        <p class="ch-text">${extra1}</p>
+        <p class="ch-text">${extra2}</p>
+        <div style="background: #111; padding: 20px; border-left: 3px solid var(--gold); margin: 20px 0;">
+            <div style="color: #fff; font-weight: bold; margin-bottom: 10px;">[ ${mainSip} 집중 분석 ]</div>
+            <div style="color: #ccc; font-size: 15px; line-height: 1.7;">${sipText}</div>
+        </div>
+        <p class="ch-text">${extra3}</p>
+        </div>
+    `;
     return html;
 }
+
+function
+
+
+function buildChapter4_Wealth(data) {
+    let html = `<div class="report-chapter"><h3 class="ch-title">Chapter 4. 평생 재물운과 거대한 금고의 비밀</h3>`;
+    let jaeCount = (data.sipseong && (data.sipseong['정재'] || 0) + (data.sipseong['편재'] || 0)) || 0;
+    
+    let wealthCore = "";
+    if(jaeCount === 0) wealthCore = "당신의 사주 원국에는 표면적으로 드러난 '재성(돈)'의 글자가 약합니다. 이른바 무재(無財) 사주라 하여 돈과 인연이 없다고 단정 짓는 낡은 풀이가 많습니다. 이는 완전히 틀렸습니다. 당신은 돈을 직접 쫓으면 오히려 돈이 도망갑니다. 명예, 전문성, 독보적인 브랜드 등 '나 자신'의 가치를 미친 듯이 올려놓으면, 돈이 그림자처럼 폭발적으로 따라오는 구조입니다. 작은 푼돈에 연연하지 마십시오.";
+    else if(jaeCount > 2) wealthCore = "당신의 주변에는 늘 돈이 흐르고 기회가 널려 있습니다(재다). 돈 냄새를 맡는 감각이 천부적이라 어디서 어떻게 돈을 벌어야 할지 본능적으로 압니다. 하지만 사주에서 '재물이 많으면 내 몸(기운)이 약해진다'고 했습니다. 통제할 수 없는 너무 많은 기회는 오히려 당신을 갉아먹습니다. 10가지 기회 중 9가지를 쳐내고, 확실한 1가지에 모든 것을 걸어 파이프라인을 구축해야 자산을 지킵니다.";
+    else wealthCore = "당신의 재물운은 매우 안정적이고 밸런스가 좋습니다. 모 아니면 도 식의 극단적인 투기보다는, 한 단계씩 차곡차곡 자산을 불려 나가는 스노우볼 전략에 최적화되어 있습니다. 부동산이나 배당 수익 등 시간이 지날수록 가치가 우상향하는 '시스템 수익'을 구축하는 것이 관건입니다.";
+
+    let extra1 = "재물(財)이란 단순히 통장 잔고의 액수가 아닙니다. 명리학에서 재성은 '내가 세상을 내 뜻대로 통제하고 다루는 힘'을 뜻합니다. 당신이 세상을 상대로 얼마나 넓은 영토를 지배할 수 있는지, 그 권력의 크기가 바로 당신의 재물운입니다.";
+    let extra2 = "당신의 재물 그릇을 분석해 보면, 현금을 손에 쥐고 있는 것보다는 '부동산, 주식, 지적재산권' 등 형태가 변환된 문서(인성) 형태로 자산을 묶어둘 때 가장 큰 시너지가 폭발합니다. 남의 돈을 굴리는 데 특화된 기질을 지녔으므로, 스케일을 작게 한정 짓지 마십시오.";
+
+    html += `
+        <p class="ch-text">${extra1}</p>
+        <p class="ch-text">${wealthCore}</p>
+        <p class="ch-text">${extra2}</p>
+        <div class="axe-advice" style="margin-top: 20px;">
+            <b>👉 Axe의 부의 추월차선 전략:</b> 당신의 금고는 평범한 직장인의 월급통장 사이즈가 아닙니다. 레버리지를 활용하십시오. 당신의 능력(식상)을 타인의 자본과 결합할 때, 비로소 당신의 진짜 금고가 열립니다.
+        </div>
+        </div>
+    `;
+    return html;
+}
+
+function
 
 function buildSewunLoop(data) {
     let currentYear = new Date().getFullYear();
