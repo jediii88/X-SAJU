@@ -170,25 +170,36 @@ function buildDaewunLoop(data) {
 
 function buildSewunLoop(data) {
     let currentYear = new Date().getFullYear();
-    let html = `<div class="report-chapter"><h3 class="ch-title">Chapter 11. 향후 10년 세운(歲運) 정밀 타격</h3>`;
+    let html = `<div class="report-chapter"><h3 class="ch-title">Chapter 11. 향후 10년 세운(歲運) 정밀 타격</h3>
+    <p class="ch-text" style="margin-bottom:30px;">대운이 10년의 기후라면, 세운(歲運)은 그해의 날씨입니다. 올해부터 향후 10년간 당신에게 어떤 비바람이 몰아치고 어떤 해가 뜰지 예측합니다. 매년 당신의 사주 원국 8글자가 그해의 기운과 충돌하며 만들어내는 구체적인 서사입니다.</p>`;
 
     const stems = ['갑','을','병','정','무','기','경','신','임','계'];
     const branches = ['자','축','인','묘','진','사','오','미','신','유','술','해'];
     
+    const sip_list = ["비견(나의 세력 확장)", "겁재(치열한 경쟁과 쟁탈)", "식신(재능 발현과 생산)", "상관(틀을 깨는 혁신)", "편재(큰 돈의 흐름)", "정재(안정적 수익)", "편관(강한 압박과 명예)", "정관(안정된 직장과 승진)", "편인(특수한 자격과 직관)", "정인(문서와 귀인의 도움)"];
+    const event_list = ["새로운 귀인과의 합(合)이 들어와 막혔던 일이 풀립니다.", "기존의 환경을 박살내는 충(沖)이 발생하여 이직이나 이사가 필연적입니다.", "스스로 깎고 다듬어야 하는 형(刑)살이 발동하여 법적 문서나 건강을 챙겨야 합니다.", "알 수 없는 오해와 갈등이 생기는 원진(怨嗔)이 작용하니 인간관계에 거리를 두어야 합니다."];
+
     for(let i=0; i<10; i++) {
         let y = currentYear + i;
-        let sb = stems[(2+i)%10] + branches[(6+i)%12]; // 2026 병오년 기준
+        let sb = stems[(2+i)%10] + branches[(6+i)%12];
         
-        let interactionText = "";
-        // Simple mock interaction for the sake of dynamic generation
-        if (i % 3 === 0) interactionText = window.SAJU_DB?.INTERACTION?.['합'] || "결합과 성장의 기운이 강합니다.";
-        else if (i % 4 === 0) interactionText = window.SAJU_DB?.INTERACTION?.['충'] || "충돌과 변화가 발생합니다.";
-        else interactionText = "안정적으로 내실을 다져야 하는 한 해입니다.";
-
+        let sip = sip_list[i % 10];
+        let evt = event_list[(i*3) % 4];
+        
         html += `
-            <div style="margin-bottom: 20px; border-bottom: 1px dashed #333; padding-bottom: 20px;">
-                <div style="font-weight: bold; color: #fff; font-size: 17px; margin-bottom: 8px;">${y}년 (${sb}년)</div>
-                <p style="color: #ccc; font-size: 15px; line-height: 1.7;">${interactionText}</p>
+            <div style="margin-bottom: 35px; border-bottom: 1px solid #333; padding-bottom: 25px;">
+                <div style="font-weight: 800; color: var(--gold); font-size: 20px; margin-bottom: 12px;">${y}년 (${sb}년) : ${sip}의 해</div>
+                
+                <p style="color: #eee; font-size: 15px; line-height: 1.8; margin-bottom: 12px;">
+                    <b>[사회적 무대와 재물]</b> 올해 천간으로 들어오는 '${stems[(2+i)%10]}'의 기운은 당신에게 <b>${sip}</b>의 작용을 일으킵니다. 이는 사회적으로 당신의 역할이 크게 변동함을 암시합니다. 당신이 그동안 준비해왔던 것들이 세상의 평가를 받게 되며, 재물의 흐름 역시 이 십성의 특성에 따라 요동치게 됩니다.
+                </p>
+                <p style="color: #ddd; font-size: 15px; line-height: 1.8; margin-bottom: 15px;">
+                    <b>[인간관계와 환경 변화]</b> 특히 올해의 지지 '${branches[(6+i)%12]}'는 당신의 원국과 맞물려 강력한 화학작용을 일으킵니다. <b>${evt}</b> 이 시기에는 내 뜻대로 상황을 통제하려 하기보다는, 외부에서 불어오는 변화의 바람에 유연하게 올라타는 것이 유리합니다.
+                </p>
+                <div style="background: #1a1a1a; padding: 15px; border-radius: 6px; border-left: 3px solid #d32f2f;">
+                    <span style="color: #ff6b6b; font-weight: bold; font-size: 14px;">🚨 Axe의 행동 지침:</span>
+                    <span style="color: #bbb; font-size: 14px; line-height: 1.6;"> ${i%2===0 ? "올해는 투자를 확장하거나 새로운 일을 벌이기보다는, 내실을 다지고 현금을 확보하는 방어적 태세가 당신을 살립니다." : "올해는 당신의 판입니다. 70%의 확신만 섰다면 뒤돌아보지 말고 즉시 실행하십시오. 머뭇거리면 기운을 뺏깁니다."}</span>
+                </div>
             </div>
         `;
     }
@@ -197,13 +208,25 @@ function buildSewunLoop(data) {
 }
 
 function buildWolunLoop(data) {
-    let html = `<div class="report-chapter"><h3 class="ch-title">Chapter 12. ${new Date().getFullYear()}년 12개월 작전 지도</h3><div style="display: flex; flex-direction: column; gap: 10px;">`;
+    let html = `<div class="report-chapter"><h3 class="ch-title">Chapter 12. ${new Date().getFullYear()}년 12개월 작전 지도</h3>
+    <p class="ch-text" style="margin-bottom:25px;">올해 당신이 마주할 12개월의 상세한 기운 파동입니다. 언제 액셀을 밟고 언제 브레이크를 밟아야 할지 정확히 짚어드립니다.</p>
+    <div style="display: flex; flex-direction: column; gap: 15px;">`;
+    
+    const monthThemes = [
+        "새로운 프로젝트를 기획하고 씨앗을 뿌리기에 최적의 달입니다. 귀인의 도움이 있습니다.",
+        "감정 기복이 심해지고 예상치 못한 지출이 발생합니다. 충동구매와 투자를 절대 피하십시오.",
+        "직장이나 소속된 단체에서 능력을 인정받습니다. 다만 과로로 인한 위장장애를 조심해야 합니다.",
+        "대인관계에서 꼬임이 발생합니다. 오해가 생기기 쉬우니 중요한 계약이나 서류 서명은 다음 달로 미루십시오.",
+        "나의 매력과 재능이 폭발하는 시기입니다. 이성운이 상승하며, 영업이나 발표에서 큰 성과를 냅니다."
+    ];
+
     for(let m=1; m<=12; m++) {
-        let text = m % 2 === 0 ? "현상 유지 및 리스크 관리" : "적극적인 행동 및 기회 창출";
+        let theme = monthThemes[m % 5];
         html += `
-            <div style="background: #111; padding: 15px; border-radius: 4px; border-left: 2px solid var(--gold);">
-                <div style="color:#fff; font-weight:bold; margin-bottom: 5px;">${m}월의 기운</div>
-                <div style="color:#aaa; font-size:14px;">${text}</div>
+            <div style="background: #111; padding: 20px; border-radius: 8px; border-left: 4px solid ${m%3===0 ? '#d32f2f' : 'var(--gold)'}; display:flex; flex-direction:column;">
+                <div style="color:#fff; font-weight:800; font-size: 18px; margin-bottom: 8px;">${m}월의 기운</div>
+                <div style="color:#ddd; font-size:15px; line-height: 1.6; margin-bottom: 8px;">${theme}</div>
+                <div style="color:#888; font-size:13px;"><b>Focus:</b> ${m%3===0 ? '리스크 관리 및 건강 체크' : '적극적인 인맥 확장 및 성과 창출'}</div>
             </div>
         `;
     }
