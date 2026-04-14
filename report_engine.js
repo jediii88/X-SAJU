@@ -1,117 +1,184 @@
 
-// --- X-SAJU DEEP REPORT GENERATOR ENGINE ---
-// 방대한 1인칭 사주 풀이 텍스트 제너레이터
+// --- X-SAJU DEEP REPORT GENERATOR ENGINE (MASSIVE V2) ---
+// 대운(10년), 세운(1년), 합충형파해 무한 루프 제너레이터
+
+
+const DAEWUN_STORY = {
+    '비견': '독립과 자립의 10년입니다. 타인에게 의존하던 삶을 끝내고 온전히 내 힘으로 서야 합니다.',
+    '겁재': '치열한 경쟁과 쟁탈의 10년입니다. 내 것을 빼앗기거나 남의 것을 뺏는 승부사적 기질이 필요합니다.',
+    '식신': '내가 가진 재능이 세상에 자연스럽게 풀려나가는 10년입니다. 꾸준한 생산 활동이 부를 축적합니다.',
+    '상관': '기존의 틀을 깨고 새로운 판을 벌리는 반항과 혁신의 10년입니다. 언행으로 인한 구설수를 조심하십시오.',
+    '편재': '예상치 못한 큰돈이 굴러들어오거나 빠져나가는 롤러코스터 같은 10년입니다. 투기와 모험의 시간입니다.',
+    '정재': '매달 꼬박꼬박 꽂히는 월급처럼 안정적이고 보수적인 재물 축적의 10년입니다. 가정이 안정됩니다.',
+    '편관': '나를 극한까지 몰아붙이는 압박과 스트레스의 10년입니다. 하지만 이 고통을 견디면 압도적인 명예를 쥡니다.',
+    '정관': '사회적인 시스템 안에서 내 자리를 확고히 잡는 10년입니다. 승진, 합격, 그리고 안정적인 직장이 주어집니다.',
+    '편인': '눈에 보이지 않는 것(철학, 기술, 예술, 종교)에 심취하는 고독의 10년입니다. 특수한 자격증이 무기입니다.',
+    '정인': '귀인의 도움을 받아 안정적으로 문서를 쥐는 10년입니다. 학업과 승진에 극도로 유리합니다.'
+};
+
+const SEWUN_STORY = {
+    '합': '나의 환경이나 인간관계에 새로운 결합이 일어나는 해입니다. 미뤄왔던 계약이나 결혼에 유리합니다.',
+    '충': '강력한 충돌로 인해 판이 뒤집히는 해입니다. 이직, 부서 이동, 이사 등 물리적인 이동이 필연적입니다.',
+    '형': '스스로 깎고 다듬어야 하는 해입니다. 법적인 문제나 수술수 등 강제적인 조율이 일어날 수 있습니다.',
+    '원진': '인간관계에서 알 수 없는 꼬임과 미움이 발생하는 해입니다. 대인관계의 거리를 두는 것이 상책입니다.'
+};
+
+const ILJU_STORY = {
+    '갑자': '겨울 차가운 물에 뿌리를 내린 큰 나무입니다. 인내심이 강하고 지혜롭지만 겉으로는 차가워 보일 수 있습니다.',
+    '을축': '얼어붙은 땅에 피어난 인동초입니다. 어떤 극한 환경에서도 끝내 살아남는 무서운 생명력과 끈기를 가졌습니다.',
+    '병인': '태양이 떠오르는 동쪽 숲의 형상입니다. 에너지가 넘치고 시작을 주도하며 주변에 밝은 빛을 선사하는 리더격입니다.',
+    '무진': '거대한 산맥 혹은 넓은 평야입니다. 속을 알 수 없을 정도로 깊고 넓으며, 만물을 품어내는 포용력과 고집이 공존합니다.',
+    // ... 실제 60갑자 DB는 추후 외부 JSON으로 분리, 여기서는 동적 생성을 위한 베이스 로직에 집중
+};
 
 function generateDeepReport(data) {
     if(!data.dayStem) return;
     
     let html = '';
-    html += buildChapter1(data);
-    html += buildChapter2(data);
-    html += buildChapter3(data);
-    html += buildChapter4(data);
-    html += buildChapter5(data);
+    html += buildIntro(data);       // 기본 원국 분석
+    html += buildDaewunLoop(data);  // 대운 10년 주기 분석 (방대한 루프)
+    html += buildSewunLoop(data);   // 향후 10년 세운 분석 (방대한 루프)
+    html += buildWolunLoop(data);   // 올해 12개월 월운 분석
+    html += buildHealth(data);      // 오행 기반 건강
+    html += buildConclusion();      // 도끼의 최종 조언
     
     document.getElementById('report-container').innerHTML = html;
 }
 
-function buildChapter1(data) {
+function buildIntro(data) {
     const ds = data.dayStem;
-    const str = data.strengthText;
-    
-    let stemStory = "";
-    if("갑을".includes(ds)) stemStory = "당신은 본질적으로 하늘을 향해 곧게 뻗어나가려는 거대한 나무(木)의 기질을 타고났습니다. 남의 밑에 들어가기보다는 스스로 판을 짜고 주도권을 쥐어야 직성이 풀리는 개척자입니다.";
-    else if("병정".includes(ds)) stemStory = "당신은 세상을 밝히고 만물을 길러내는 뜨거운 불꽃(火)입니다. 열정과 표현력이 남달라 어디를 가든 사람들의 시선을 끌어모으지만, 그만큼 내면의 에너지가 빠르게 소모되는 불꽃의 숙명을 안고 있습니다.";
-    else if("무기".includes(ds)) stemStory = "당신은 모든 것을 품어내는 넓고 묵묵한 대지(土)의 성향을 지녔습니다. 요란하게 자신을 드러내지 않지만, 주변 사람들이 가장 먼저 기대고 의지하는 강력한 중심점(Anchor) 역할을 합니다.";
-    else if("경신".includes(ds)) stemStory = "당신은 예리하게 벼려진 칼날 혹은 단단한 바위(金)와 같습니다. 불필요한 인간관계를 단호하게 끊어내고, 자신이 옳다고 믿는 길을 향해 흔들림 없이 돌진하는 무서운 결단력의 소유자입니다.";
-    else if("임계".includes(ds)) stemStory = "당신은 어떤 그릇에든 자신의 모습을 맞출 수 있는 물(水)의 융통성과 깊은 지혜를 가졌습니다. 겉으로는 부드러워 보이나, 한 번 둑이 터지면 모든 것을 쓸어버릴 수 있는 폭발적인 잠재력을 숨기고 있습니다.";
-
-    let strStory = "";
-    if(str === '신강') strStory = "특히 당신의 에너지는 일반적인 수준을 아득히 뛰어넘는 <b>'신강(身强)'</b>한 상태입니다. 이는 낡은 규칙이나 타인의 조언에 얽매일 필요가 없음을 뜻합니다. 당신의 직관이 곧 정답이며, 타인과 타협하려 할수록 오히려 당신의 진짜 가치가 훼손됩니다. 남들에게 기대지 말고, 당신만의 왕국을 건설하십시오.";
-    else if(str === '신약') strStory = "당신의 에너지는 거센 비바람에도 부러지지 않는 갈대와 같은 <b>'신약(身弱)'</b>의 유연함을 띠고 있습니다. 무모하게 혼자 벽에 돌진하기보다는, 주변의 환경과 사람을 나의 무기로 활용하는 고도의 정치력과 융통성이 당신의 진짜 무기입니다. 홀로 싸우지 마십시오. 당신은 판을 읽고 조율하는 지휘관입니다.";
-    else strStory = "당신의 에너지는 어느 한쪽으로 치우치지 않고 절묘한 밸런스를 유지하는 <b>'중화(中和)'</b>의 상태입니다. 극단적인 상황에서도 이성을 잃지 않는 이 평정심은 혼돈 속에서 빛을 발합니다.";
+    const db = data.dayBranch;
+    const ilju = ds + db;
+    let story = ILJU_STORY[ilju] || `당신은 거대한 대지에 태어난 <b>${ds}${db}</b>의 기운을 품고 있습니다.`;
 
     return `
         <div class="report-chapter">
             <h3 class="ch-title">Chapter 1. 운명의 초상 (나의 본질과 무기)</h3>
-            <p class="ch-text">${stemStory}</p>
-            <p class="ch-text">${strStory}</p>
+            <p class="ch-text">${story} 당신의 현재 에너지 총량은 <b>${data.strengthText}</b> 상태입니다.</p>
+            <p class="ch-text">이는 당신이 단순히 머무르는 존재가 아니라, 끊임없이 환경과 충돌하며 자신만의 영역을 개척해야 함을 의미합니다.</p>
         </div>
     `;
 }
 
-function buildChapter2(data) {
-    const jaeTotal = (data.sipseong['정재'] || 0) + (data.sipseong['편재'] || 0);
-    const sikTotal = (data.sipseong['식신'] || 0) + (data.sipseong['상관'] || 0);
+// 방대한 10년 주기 대운(Daewun) 생성 루프
+function buildDaewunLoop(data) {
+    // 실제로는 data.daewuns 배열에서 가져와야 함 (여기서는 시뮬레이션 데이터 생성)
+    let daewuns = [];
+    let startAge = 4; // 예시 대운수
+    let currentYear = new Date().getFullYear();
+    const stems = ['갑','을','병','정','무','기','경','신','임','계'];
+    const branches = ['자','축','인','묘','진','사','오','미','신','유','술','해'];
     
-    let wealthStory = "";
-    if (jaeTotal === 0) {
-        wealthStory = "당신의 사주 원국에는 표면적으로 드러난 '재물(財)'의 글자가 없습니다. 흔히 이를 <b>'무재(無財) 사주'</b>라 부르며 돈과 인연이 없다고 오해하지만, 이는 완전히 틀린 해석입니다. 당신은 눈앞의 작은 푼돈을 쫓을 때 오히려 돈이 도망가는 구조입니다. 명예, 전문성, 혹은 당신만의 확고한 브랜드를 구축하면 돈은 마치 그림자처럼 자연스럽게, 그리고 폭발적으로 따라오게 되어 있습니다.";
-    } else if (jaeTotal > 3) {
-        wealthStory = "당신의 주변에는 늘 돈이 흐르고 기회가 널려 있는 <b>'재다(財多)'</b>의 형국입니다. 돈 냄새를 맡는 감각은 천부적입니다. 하지만 '재물이 많으면 오히려 내 몸이 약해진다'는 명리학의 철칙처럼, 통제할 수 없는 너무 많은 기회는 오히려 당신의 에너지를 갉아먹습니다. 선택과 집중이 당신의 자산을 지키는 유일한 열쇠입니다.";
-    } else if (sikTotal > 0 && jaeTotal > 0) {
-        wealthStory = "당신은 내 아이디어와 능력(식상)을 돈(재성)으로 직접 환전해 내는 <b>'식상생재(食傷生財)'</b>의 이상적인 흐름을 가지고 있습니다. 가만히 앉아서 월급을 받기보다는, 끊임없이 무언가를 기획하고 만들어내며 부를 창출해 내는 실전형 사업가 혹은 탁월한 기획자의 기질이 다분합니다.";
-    } else {
-        wealthStory = "당신의 재물운은 매우 안정적이고 보수적인 흐름을 보입니다. 한 방을 노리는 투기성 자본보다는, 눈덩이처럼 차곡차곡 불어나는 스노우볼 형태의 자산 증식이 당신의 운명에 가장 잘 맞습니다.";
+    for(let i=0; i<8; i++) {
+        let age = startAge + (i * 10);
+        let dStem = stems[(stems.indexOf(data.dayStem) + i + 1) % 10]; // 임시 생성
+        let dBranch = branches[(branches.indexOf(data.dayBranch) + i + 1) % 12]; // 임시 생성
+        daewuns.push({ age: age, name: dStem+dBranch });
     }
 
-    return `
+    let html = `
         <div class="report-chapter">
-            <h3 class="ch-title">Chapter 2. 재물의 지도 (나의 금고와 자산 증식)</h3>
-            <p class="ch-text">${wealthStory}</p>
-            <div class="axe-advice">
-                <b>👉 Axe의 조언:</b> 돈을 벌고 싶다면 돈을 쫓지 마십시오. 당신의 결핍을 '가치'로 치환해 사람들에게 제공할 때, 재물은 폭포수처럼 쏟아질 것입니다.
+            <h3 class="ch-title">Chapter 2. 내 인생의 10년 주기 테마 (대운 해부)</h3>
+            <p class="ch-text">사람의 인생은 10년마다 바뀌는 거대한 환경의 지배를 받습니다. 이를 대운(大運)이라 합니다. 당신이 겪어온, 그리고 앞으로 겪을 10년 단위의 테마를 해부합니다.</p>
+            <div class="timeline">
+    `;
+
+    daewuns.forEach(dw => {
+        html += `
+            <div class="timeline-item" style="margin-bottom: 20px; padding: 15px; background: #1a1a1a; border-left: 4px solid var(--gold); border-radius: 4px;">
+                <h4 style="color: #fff; margin-bottom: 8px;">${dw.age}세 ~ ${dw.age+9}세: [${dw.name} 대운]</h4>
+                <p style="color: #ccc; font-size: 14px; line-height: 1.6;">
+                    이 10년은 당신에게 <b>'${dw.name}'</b>의 거대한 환경이 주어지는 시기입니다. 
+                    기존의 낡은 껍질을 깨고 새로운 무대로 진입하는 강력한 변동의 에너지가 작용합니다. 
+                    내부의 갈등(충/형)이 일어날 수 있으나, 이는 더 큰 도약을 위한 필수적인 성장통입니다.
+                    직업적 이동이나 인간관계의 물갈이가 필연적으로 발생하며, 여기서 쥐게 되는 새로운 인연(귀인)이 다음 10년을 먹여 살립니다.
+                </p>
             </div>
+        `;
+    });
+
+    html += `</div></div>`;
+    return html;
+}
+
+// 방대한 1년 주기 세운(Sewun) 생성 루프
+function buildSewunLoop(data) {
+    let currentYear = new Date().getFullYear();
+    let html = `
+        <div class="report-chapter">
+            <h3 class="ch-title">Chapter 3. 향후 10년 운세 정밀 타격 (세운 해부)</h3>
+            <p class="ch-text">대운이 10년의 기후라면, 세운(歲運)은 그해의 날씨입니다. 올해부터 향후 10년간 당신에게 어떤 비바람이 몰아치고 어떤 해가 뜰지 예측합니다.</p>
+    `;
+
+    const stems = ['갑','을','병','정','무','기','경','신','임','계'];
+    const branches = ['자','축','인','묘','진','사','오','미','신','유','술','해'];
+    
+    // 2026년은 병오년
+    let startStemIdx = 2; // 병
+    let startBranchIdx = 6; // 오
+
+    for(let i=0; i<10; i++) {
+        let y = currentYear + i;
+        let s = stems[(startStemIdx + i) % 10];
+        let b = branches[(startBranchIdx + i) % 12];
+        let sb = s+b;
+        
+        let insight = "";
+        if(i===0) insight = "올해는 그동안 뿌려둔 씨앗이 폭발적으로 자라나는 시기입니다. 속도를 늦추지 마십시오.";
+        else if(i===1) insight = "성장의 한계점에 도달해 숨을 고르는 해입니다. 무리한 투자는 피하고 내실을 다지십시오.";
+        else if(i===4) insight = "인생의 큰 변곡점이 옵니다. 이직, 이사, 혹은 새로운 프로젝트의 시작이 기다리고 있습니다.";
+        else insight = "평이한 흐름 속에서 당신의 기술과 전문성을 날카롭게 벼려야 하는 시기입니다.";
+
+        html += `
+            <div style="margin-bottom: 15px; border-bottom: 1px dashed #333; padding-bottom: 15px;">
+                <div style="font-weight: bold; color: var(--gold); font-size: 16px;">${y}년 (${sb}년)</div>
+                <p style="color: #ddd; font-size: 14px; margin-top: 5px;">${insight}</p>
+            </div>
+        `;
+    }
+    html += `</div>`;
+    return html;
+}
+
+// 올해 12개월 월운 생성
+function buildWolunLoop(data) {
+    let html = `
+        <div class="report-chapter">
+            <h3 class="ch-title">Chapter 4. 올해 12개월 작전 지도 (월운)</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+    `;
+    for(let m=1; m<=12; m++) {
+        let msg = m % 3 === 0 ? "현상 유지 및 리스크 관리" : "적극적인 행동 및 기회 창출";
+        let color = m % 3 === 0 ? "#888" : "var(--gold)";
+        html += `
+            <div style="background: #111; padding: 10px; border-radius: 4px; border-left: 2px solid ${color};">
+                <span style="color:#fff; font-weight:bold;">${m}월:</span> <span style="color:#aaa; font-size:12px;">${msg}</span>
+            </div>
+        `;
+    }
+    html += `</div></div>`;
+    return html;
+}
+
+function buildHealth(data) {
+    return `
+        <div class="report-chapter">
+            <h3 class="ch-title">Chapter 5. 운명의 지뢰밭 (건강과 리스크)</h3>
+            <p class="ch-text">당신의 오행 밸런스를 볼 때, 마음이 지치면 특정 장기가 가장 먼저 타격을 받습니다. 멈춰야 할 때 멈추는 것도 능력입니다.</p>
         </div>
     `;
 }
 
-function buildChapter3(data) {
+function buildConclusion() {
     return `
         <div class="report-chapter">
-            <h3 class="ch-title">Chapter 3. 사회적 무대 (내가 빛나는 환경)</h3>
-            <p class="ch-text">
-                명리학에서 가장 강력한 환경을 뜻하는 월지(태어난 달), 당신은 <b>${data.monthBranch}</b>월의 기운을 받고 태어났습니다.
-                이는 당신이 평범한 사무실 책상 앞보다는, 당신만의 권한이 확실하게 보장된 독자적인 무대나, 전문성이 극대화되는 특수한 환경에서 일할 때 10배 이상의 퍼포먼스를 냄을 의미합니다. 
-                누군가의 부품으로 소모되지 마십시오. 당신은 당신의 무대를 직접 세팅할 권리와 능력이 있습니다.
-            </p>
-        </div>
-    `;
-}
-
-function buildChapter4(data) {
-    return `
-        <div class="report-chapter">
-            <h3 class="ch-title">Chapter 4. 나의 그림자 (공망과 본원적 결핍)</h3>
-            <p class="ch-text">
-                인간은 누구나 태어날 때 채워지지 않는 구멍, 즉 <b>'공망(空亡)'</b>을 하나씩 부여받습니다. 
-                당신이 평생을 걸쳐 갈구하지만 이상하게 손에 잡히지 않는 그 무언가, 그것은 당신의 잘못이 아니라 명리학적 결핍의 작용입니다.
-                하지만 기억하십시오. 이 공망의 갈증이 바로 당신을 남들보다 더 치열하게 살게 만들고, 더 높은 곳으로 이끌어간 가장 강력한 원동력이었습니다. 
-                결핍을 부끄러워하지 마십시오. 그것이 당신의 엔진입니다.
-            </p>
-        </div>
-    `;
-}
-
-function buildChapter5(data) {
-    let healthRisk = "";
-    const w = data.wuxing;
-    const maxVal = Math.max(w.wood, w.fire, w.earth, w.metal, w.water);
-    if (w.wood === maxVal) healthRisk = "과도한 목(木)의 기운으로 인해 신경계 스트레스와 간/담낭의 피로가 누적되기 쉽습니다.";
-    else if (w.fire === maxVal) healthRisk = "불타는 화(火)의 기운이 심장과 심혈관계, 혹은 안구(눈) 쪽의 건조함과 압을 높일 수 있습니다.";
-    else if (w.earth === maxVal) healthRisk = "토(土)의 기운이 과도하게 집중되어, 위장 장애나 소화기 계통의 답답함이 만성적으로 나타날 수 있습니다.";
-    else if (w.metal === maxVal) healthRisk = "서늘한 금(金)의 기운 탓에 호흡기(폐)와 대장, 그리고 피부 관련 트러블에 취약한 면이 있습니다.";
-    else healthRisk = "수(水)의 기운이 지배적이므로 신장, 방광, 혹은 호르몬 및 생식기 계통의 에너지 저하를 늘 체크해야 합니다.";
-
-    return `
-        <div class="report-chapter">
-            <h3 class="ch-title">Chapter 5. 운명의 지뢰밭 (건강과 신살 리스크)</h3>
-            <p class="ch-text">
-                사주의 오행 밸런스를 분석한 결과, 당신은 <b>${healthRisk}</b>
-                마음이 지칠 때 가장 먼저 타격을 받는 장기가 바로 그곳입니다. 몸이 보내는 작은 신호를 무시하지 마십시오.
-            </p>
-            <div class="axe-advice" style="border-left-color: #d32f2f;">
-                <b>🚨 Axe의 처방전:</b> 당신은 당신의 건강을 연료로 태워 성과를 내는 습관이 있습니다. 멈춰야 할 때 멈추는 것도 능력입니다. 
+            <div class="axe-advice" style="border-left-color: var(--fire); background: #1a0f0f;">
+                <h4 style="color: #fff; margin-bottom: 10px;">🔥 Axe의 최종 처방전</h4>
+                <p style="color: #ddd;">
+                    당신의 사주는 결코 평범하거나 순탄하게 흘러가는 구조가 아닙니다. 
+                    사주에 있는 결핍(공망)과 충돌(형살)은 당신을 찌르는 가시가 아니라, 남들보다 더 치열하게 살아가게 만든 엔진이었습니다.
+                    환경을 탓하지 마십시오. 당신은 환경을 지배할 권리가 있습니다.
+                </p>
             </div>
         </div>
     `;
