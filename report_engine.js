@@ -118,6 +118,18 @@ function buildChapter4_Wealth(data) {
     return html;
 }
 
+
+    const branchChung = {"자":"오", "축":"미", "인":"신", "묘":"유", "진":"술", "사":"해", "오":"자", "미":"축", "신":"인", "유":"묘", "술":"진", "해":"사"};
+    const branchHap = {"자":"축", "축":"자", "인":"해", "묘":"술", "진":"유", "사":"신", "오":"미", "미":"오", "신":"사", "유":"진", "술":"묘", "해":"인"};
+    const branchWonjin = {"자":"미", "축":"오", "인":"유", "묘":"신", "진":"해", "사":"술", "오":"축", "미":"자", "신":"묘", "유":"인", "술":"사", "해":"진"};
+
+    function getEventForBranch(targetBranch, myBranch) {
+        if(branchChung[myBranch] === targetBranch) return "기존의 안락했던 환경이 산산조각 나는 강한 충(沖)의 에너지가 발생합니다. 이직, 이사, 이별 등 강제적인 이동수가 생기며 껍질을 깨고 나와야만 합니다.";
+        if(branchHap[myBranch] === targetBranch) return "나의 기운과 강력하게 결합하는 합(合)이 들어옵니다. 막혔던 문서나 인간관계가 풀리며 조력자의 개입으로 정체되었던 일들이 급진전됩니다.";
+        if(branchWonjin[myBranch] === targetBranch) return "설명할 수 없는 감정 소모와 오해가 발생하는 원진(怨嗔)의 기운이 있습니다. 가까운 인간관계에 거리를 두고 혼자만의 멘탈 디톡스가 필수적입니다.";
+        return "나의 고유한 기운이 세상의 흐름과 만나 서서히 템포를 조율해 나가는 시기입니다.";
+    }
+
 function buildDaewunLoop(data) {
     let daewuns = [];
     let startAge = data.daewunNum || 4; 
@@ -148,7 +160,8 @@ function buildDaewunLoop(data) {
     let html = `<div class="report-chapter"><h3 class="ch-title">Chapter 10. 거대한 기후의 변화 : 80년 대운(大運) 시퀀스</h3><div class="timeline">`;
 
     daewuns.forEach((dw, idx) => {
-        let eventText = window.SAJU_DB?.DAEWUN_EVENTS ? window.SAJU_DB.DAEWUN_EVENTS[idx % 60] : "나를 둘러싼 거대한 환경과 주파수가 바뀌는 시기입니다.";
+        let myBranchKor = {'子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해'}[data.dayBranch] || '자';
+        let eventText = getEventForBranch(dw.name.charAt(1), myBranchKor);
         html += `
             <div class="timeline-item" style="margin-bottom: 25px; padding: 20px; background: #151515; border-left: 4px solid var(--gold); border-radius: 4px;">
                 <h4 style="color: var(--gold); margin-bottom: 12px; font-size: 18px;">${dw.age}세 ~ ${dw.age+9}세 : [${dw.name} 대운]</h4>
@@ -169,14 +182,14 @@ function buildSewunLoop(data) {
     const branches = ['자','축','인','묘','진','사','오','미','신','유','술','해'];
     
     const sip_list = ["비견(나의 세력 확장)", "겁재(치열한 경쟁과 쟁탈)", "식신(재능 발현과 생산)", "상관(틀을 깨는 혁신)", "편재(큰 돈의 흐름)", "정재(안정적 수익)", "편관(강한 압박과 명예)", "정관(안정된 직장과 승진)", "편인(특수한 자격과 직관)", "정인(문서와 귀인의 도움)"];
-    const event_list = ["새로운 귀인과의 합(合)이 들어와 막혔던 일이 풀립니다.", "기존의 환경을 박살내는 충(沖)이 발생하여 이직이나 이사가 필연적입니다.", "스스로 깎고 다듬어야 하는 형(刑)살이 발동하여 법적 문서나 건강을 챙겨야 합니다.", "알 수 없는 오해와 갈등이 생기는 원진(怨嗔)이 작용하니 인간관계에 거리를 두어야 합니다."];
-
+    
     for(let i=0; i<10; i++) {
         let y = currentYear + i;
         let sb = stems[(2+i)%10] + branches[(6+i)%12];
         
-        let sip = sip_list[i % 10];
-        let evt = event_list[(i*3) % 4];
+        let sip = sip_list[i % 10]; 
+        let myBranchKor = {'子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해'}[data.dayBranch] || '자';
+        let evt = getEventForBranch(branches[(6+i)%12], myBranchKor);
         
         html += `
             <div style="margin-bottom: 35px; border-bottom: 1px solid #333; padding-bottom: 25px;">
@@ -259,12 +272,26 @@ function buildChapter9_Remedy(data) {
     let color = "블랙과 네이비";
     let dir = "북쪽";
     let num = "1, 6";
-    if (['갑', '을', '병', '정'].includes(ds)) {
+    let maxWuxing = 'earth';
+    let minWuxing = 'wood';
+    if(data.wuxing && Object.keys(data.wuxing).length > 0) {
+        let sorted = Object.keys(data.wuxing).sort((a,b) => data.wuxing[b] - data.wuxing[a]);
+        maxWuxing = sorted[0];
+        minWuxing = sorted[sorted.length-1];
+    }
+    
+    let yongshinTarget = minWuxing; 
+    
+    if (yongshinTarget === 'wood') {
+        color = "딥 그린과 포레스트 계열"; dir = "동쪽"; num = "3, 8";
+    } else if (yongshinTarget === 'fire') {
+        color = "버건디와 강렬한 레드"; dir = "남쪽"; num = "2, 7";
+    } else if (yongshinTarget === 'earth') {
+        color = "카멜 브라운과 샌드 베이지"; dir = "중앙"; num = "5, 10";
+    } else if (yongshinTarget === 'metal') {
         color = "화이트와 실버 메탈릭"; dir = "서쪽"; num = "4, 9";
-    } else if (['무', '기'].includes(ds)) {
-        color = "레드와 강렬한 오렌지"; dir = "남쪽"; num = "2, 7";
     } else {
-        color = "차분한 옐로우와 베이지"; dir = "중앙"; num = "5, 10";
+        color = "차분한 네이비와 블랙"; dir = "북쪽"; num = "1, 6";
     }
 
     return `<div class="report-chapter">
