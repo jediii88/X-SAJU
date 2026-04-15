@@ -1,11 +1,10 @@
-
-// --- X-SAJU DEEP REPORT GENERATOR ENGINE (V4 - REAL DB INTEGRATION) ---
+// --- X-SAJU DEEP REPORT GENERATOR ENGINE (V4.5 - FULL STORYTELLING RESTORED) ---
 
 function getDBText(category, key, fallback) {
     if(window.SAJU_DB && window.SAJU_DB[category] && window.SAJU_DB[category][key]) {
         let val = window.SAJU_DB[category][key];
         if(typeof val === 'object') {
-            return val.core + " " + val.weapon;
+            return (val.core || "") + " " + (val.weapon || "");
         }
         return val;
     }
@@ -17,119 +16,192 @@ function generateDeepReport(dataInput) {
     let html = '';
     
     dataArray.forEach((data, idx) => {
-        html += `<div style="border: 2px solid var(--gold); padding: 20px; margin-bottom: 40px; border-radius: 10px; background: rgba(199, 167, 106, 0.05);">
-            <h1 style="text-align: center; color: var(--gold); margin-bottom: 20px;">[ ${data.name} 님의 X-FILE ]</h1>
+        // [인트로: X-FILE 기밀 보고서 헤더]
+        html += `<div style="border: 2px solid var(--gold); padding: 40px 20px; margin-bottom: 60px; border-radius: 0px; background: rgba(199, 167, 106, 0.05); text-align: center; position: relative;">
+            <div style="position: absolute; top: 10px; left: 10px; color: var(--gold); font-size: 10px; letter-spacing: 2px;">CLASSIFIED: LEVEL 1</div>
+            <h1 style="color: var(--gold); margin: 0; font-family: 'Noto Serif KR', serif; font-size: 28px; font-weight: 900; letter-spacing: 5px;">[ ${data.name} 님의 X-FILE ]</h1>
+            <div style="margin-top: 15px; color: #888; font-size: 13px;">발급번호: #${Math.random().toString(36).substr(2, 9).toUpperCase()}</div>
         </div>`;
         
+        // --- PART 1. 운명의 해부도 (원국 분석) ---
         html += buildSectionHeader("PART 1. 운명의 해부도 (원국 분석)");
-        html += buildChapter1_Basic(data);
-        html += buildChapter2_Wuxing(data);
-        html += buildChapter3_Sipseong(data);
+        html += buildChapter1_Full(data);
+        html += buildChapter2_Full(data);
+        html += buildChapter3_Full(data);
         
+        // --- PART 2. 인생의 무대와 성취 ---
         html += buildSectionHeader("PART 2. 인생의 무대와 성취");
-        html += buildChapter4_Wealth(data);
-        html += buildChapter5_Career(data);
-        html += buildChapter6_Love(data);
+        html += buildChapter4_Full(data);
+        html += buildChapter5_Full(data);
+        html += buildChapter6_Full(data);
         
+        // --- PART 3. 숨겨진 무기와 취약점 ---
         html += buildSectionHeader("PART 3. 숨겨진 무기와 취약점");
-        html += buildChapter7_Hidden(data);
-        html += buildChapter8_Health(data);
-        html += buildChapter9_Remedy(data);
+        html += buildChapter7_Full(data);
+        html += buildChapter8_Full(data);
+        html += buildChapter9_Full(data);
+
+        // --- PART 4. 대운/세운 (시간의 지배자) ---
+        html += buildSectionHeader("PART 4. 시간의 흐름 (대운과 세운)");
+        html += buildChapter10_Full(data);
         
         if (idx < dataArray.length - 1) {
-             html += '<div style="page-break-after: always; height: 100px;"></div>';
+             html += '<div style="page-break-after: always; height: 100px; border-bottom: 1px dashed #333; margin-bottom: 100px;"></div>';
         }
     });
     
+    // --- N:N 시너지 (궁합) ---
     if (dataArray.length > 1) {
-        html += buildSectionHeader("PART 4. 운명적 시너지 (N:N 기밀 궁합)");
+        html += buildSectionHeader("SPECIAL PART. 운명적 시너지 (N:N 기밀 궁합)");
         html += buildSynergySection(dataArray);
     }
     
-    html += `<div id="pdf-btn-wrap" style="text-align: center; margin-top: 50px; padding-bottom: 50px; border-top: 1px solid #333; padding-top: 30px;">
-        <button class="btn" style="background: var(--gold); color: #000; width: 100%; max-width: 400px; font-size: 18px; font-weight: 800; box-shadow: 0 4px 15px rgba(199, 167, 106, 0.4);" onclick="window.print()">📄 X-FILE 기밀문서 PDF 저장</button>
+    html += `<div id="pdf-btn-wrap" style="text-align: center; margin-top: 80px; padding-bottom: 100px; border-top: 1px solid #333; padding-top: 50px;">
+        <button class="btn" style="background: var(--gold); color: #000; width: 100%; max-width: 450px; font-size: 20px; font-weight: 900; box-shadow: 0 4px 25px rgba(199, 167, 106, 0.5); border-radius: 0; padding: 25px;" onclick="window.print()">📄 X-FILE 기밀문서 PDF로 평생 소장하기</button>
     </div>`;
     
     document.getElementById('report-container').innerHTML = html;
 }
 
 function buildSectionHeader(title) {
-    return `<div style="margin: 60px 0 30px 0; padding-bottom: 15px; border-bottom: 2px solid var(--gold);">
-            <h2 style="color: var(--gold); font-size: 24px; font-family: 'Noto Serif KR', serif; letter-spacing: 2px;">${title}</h2>
+    return `<div style="margin: 80px 0 40px 0; padding-bottom: 20px; border-bottom: 3px solid var(--gold); position: relative;">
+            <h2 style="color: var(--gold); font-size: 28px; font-family: 'Noto Serif KR', serif; letter-spacing: 4px; margin: 0;">${title}</h2>
+            <div style="position: absolute; right: 0; bottom: -10px; background: var(--bg); padding-left: 10px; color: var(--gold); font-size: 12px;">X-FILE PROJECT v4.0</div>
         </div>`;
 }
 
-function buildChapter1_Basic(data) {
+// --- CHAPTERS WITH FULL STORYTELLING ---
+
+function buildChapter1_Full(data) {
     let iljuKey = data.dayStem + data.dayBranch;
     let dbEntry = window.SAJU_DB?.ILJU?.[iljuKey] || {};
     return `<div class="report-chapter">
         <h3 class="ch-title">Chapter 1. 당신이라는 소우주의 설계도</h3>
-        <p class="ch-text"><b>${dbEntry.title || iljuKey + '의 기운'}</b></p>
+        <p class="ch-text" style="font-size: 18px; font-weight: 800; color: var(--gold);">[${dbEntry.title || iljuKey + '의 기운'}]</p>
+        <p class="ch-text">명리학에서 일주(日柱)는 단순히 성격을 의미하는 것이 아니라, 당신이 평생 짊어지고 가야 할 <b>영혼의 바코드이자 생존의 무기</b>입니다. 당신을 진정으로 움직이는 것은 사회적 가면이 아닌, 바로 이 일주에 새겨진 내밀한 기질입니다.</p>
         <p class="ch-text">${dbEntry.core || '당신의 본질을 해독하는 중입니다.'}</p>
-        <div class="axe-advice"><b>Axe의 통찰:</b> 당신의 일주는 ${iljuKey}입니다. 이는 당신의 삶을 관통하는 가장 핵심적인 코드입니다.</div>
+        <p class="ch-text">당신의 에너지는 현재 <b>${data.strengthText}</b> 상태입니다. 이는 외부의 압력을 견뎌내고 내면의 폭발력을 응축하는 원동력이 됩니다. 남들의 속도에 맞추려 하지 마십시오. 당신의 템포가 곧 정답입니다.</p>
+        <div class="axe-advice"><b>Axe의 기밀 통찰:</b> ${dbEntry.weapon || '당신만의 독보적인 무기를 발견하십시오.'}</div>
     </div>`;
 }
 
-function buildChapter2_Wuxing(data) {
+function buildChapter2_Full(data) {
+    let maxW = Object.keys(data.wuxing).reduce((a, b) => data.wuxing[a] > data.wuxing[b] ? a : b);
+    let excessText = window.SAJU_DB?.WUXING_EXCESS?.[maxW] || "에너지가 한곳으로 집중되어 있습니다.";
     return `<div class="report-chapter">
-        <h3 class="ch-title">Chapter 2. 오행의 흐름과 에너지 균형</h3>
-        <p class="ch-text">당신의 운명을 구성하는 다섯 가지 원소의 분포입니다. 치우침은 곧 욕망이며, 부족함은 곧 삶의 과제가 됩니다.</p>
-        <div style="background:#222; padding:15px; border-radius:5px;">
-            ${Object.keys(data.wuxing).map(k => `<div>${RELATION_LABELS[k]}: ${data.wuxing[k]}</div>`).join('')}
+        <h3 class="ch-title">Chapter 2. 오행의 흐름과 에너지 권력</h3>
+        <p class="ch-text">거물들은 예외 없이 오행이 극단적으로 쏠려 있습니다. 당신의 사주 원국을 해부해 본 결과, 당신의 절대적인 무기이자 아킬레스건은 바로 <b>${RELATION_LABELS[maxW]}</b>의 기운입니다.</p>
+        <div style="background: rgba(255,255,255,0.03); padding: 25px; border-radius: 10px; margin: 25px 0; border: 1px solid #222;">
+            <p class="ch-text" style="color: var(--gold); font-weight: 700;">[ ${RELATION_LABELS[maxW]} 기운의 지배력 집중 분석 ]</p>
+            <p class="ch-text" style="margin: 0; color: #ccc;">${excessText}</p>
         </div>
+        <p class="ch-text">이 편중된 에너지를 어떻게 다루느냐가 당신 인생의 스케일을 결정합니다. 남들처럼 평범하게 억누르려 하지 말고, 이 기운이 필요한 극한의 환경에서 당신의 가치를 증명하십시오.</p>
     </div>`;
 }
 
-function buildChapter3_Sipseong(data) {
+function buildChapter3_Full(data) {
+    let mainSip = Object.keys(data.sipseong).reduce((a, b) => data.sipseong[a] > data.sipseong[b] ? a : b) || "비견";
+    let sipText = window.SAJU_DB?.SIPSEONG?.[mainSip] || "당신만의 독특한 사회적 페르소나를 가지고 있습니다.";
     return `<div class="report-chapter">
         <h3 class="ch-title">Chapter 3. 사회적 가면과 내면의 욕망 (십성)</h3>
-        <p class="ch-text">당신이 세상과 상호작용하는 방식입니다.</p>
+        <p class="ch-text">오행이 당신의 신체라면, 십성은 당신의 뇌에 깔린 <b>운영체제(S/W)</b>입니다. 결정적인 순간에 당신이 내리는 모든 선택은 바로 이 십성이라는 필터를 통해 걸러집니다.</p>
+        <div class="axe-advice" style="border-left-color: #52b36a;">
+            <p style="margin: 0; color: #fff; font-weight: 700; margin-bottom: 8px;">[ 당신의 주력 페르소나: ${mainSip} ]</p>
+            <p style="margin: 0;">${sipText}</p>
+        </div>
+        <p class="ch-text" style="margin-top: 20px;">이 기질은 양날의 검입니다. 당신의 통제 아래 두면 최고의 무기가 되지만, 끌려다니면 발목을 잡는 족쇄가 됩니다.</p>
     </div>`;
 }
 
-function buildChapter4_Wealth(data) {
+function buildChapter4_Full(data) {
+    let jaeCount = (data.sipseong['정재'] || 0) + (data.sipseong['편재'] || 0);
+    let wealthNarrative = "";
+    if(jaeCount === 0) wealthNarrative = "당신은 돈을 직접 쫓으면 도망가는 구조입니다. 대신 '전문성'과 '나라는 브랜드'의 가치를 올리십시오. 돈은 그림자처럼 따라올 것입니다.";
+    else if(jaeCount > 2) wealthNarrative = "돈 냄새를 맡는 감각이 천부적입니다. 하지만 너무 많은 기회는 당신을 갉아먹습니다. 9가지를 쳐내고 확실한 1가지를 시스템화하십시오.";
+    else wealthNarrative = "안정적인 자산 밸런스를 가졌습니다. 스노우볼 전략에 최적화되어 있으니, 시간이 흐를수록 우상향하는 시스템 자산에 집중하십시오.";
+
     return `<div class="report-chapter">
         <h3 class="ch-title">Chapter 4. 재물운: 부의 그릇과 유통 경로</h3>
-        <p class="ch-text">재물은 단순히 돈이 아니라, 당신이 세상에 증명한 가치의 크기입니다.</p>
+        <p class="ch-text">재물(財)은 단순히 액수가 아니라 <b>'내가 세상을 통제하는 힘의 크기'</b>입니다. 당신의 금고는 평범한 이들의 월급 통장 사이즈가 아닙니다.</p>
+        <p class="ch-text" style="color: #fff; border-left: 2px solid var(--gold); padding-left: 15px;">${wealthNarrative}</p>
+        <p class="ch-text">당신은 현금 자체보다 부동산, 지적재산권 등 <b>'문서화된 권리'</b>로 자산을 묶을 때 폭발적인 시너지가 납니다.</p>
     </div>`;
 }
 
-function buildChapter5_Career(data) { return '<div class="report-chapter"><h3 class="ch-title">Chapter 5. 직업과 사회적 성취</h3></div>'; }
-function buildChapter6_Love(data) { 
+function buildChapter5_Full(data) {
+    return `<div class="report-chapter">
+        <h3 class="ch-title">Chapter 5. 직업과 사회적 성취의 전쟁터</h3>
+        <p class="ch-text">직업은 내 에너지를 가장 파괴적으로 발산할 수 있는 <b>'전쟁터의 종류'</b>를 의미합니다. 물고기 사주라면 바다로 가야 합니다.</p>
+        <p class="ch-text">당신은 조직의 부품으로 쓰이기보다, 당신의 권한이 100% 보장되는 독립적인 영역에서 최고의 퍼포먼스를 냅니다. "내 권한이 보장되는가?" 이것이 이직이나 창업의 유일한 기준입니다.</p>
+    </div>`;
+}
+
+function buildChapter6_Full(data) {
     let iljuKey = data.dayStem + data.dayBranch;
     let dbEntry = window.SAJU_DB?.ILJU?.[iljuKey] || {};
     return `<div class="report-chapter">
         <h3 class="ch-title">Chapter 6. 인연: 영혼의 파트너십</h3>
-        <p class="ch-text">${dbEntry.love || '당신의 인연법을 해독 중입니다.'}</p>
-    </div>`; 
+        <p class="ch-text">사주에서 일지(日支)는 당신의 안방이자 배우자의 자리입니다. 사회적 가면을 벗어던지고 가장 취약한 민낯을 드러낼 때의 당신을 품어줄 인연이 각인되어 있습니다.</p>
+        <p class="ch-text" style="background: rgba(199, 167, 106, 0.1); padding: 20px; color: #fff;">${dbEntry.love || '당신의 인연법은 서로의 성장을 자극하는 구조입니다.'}</p>
+    </div>`;
 }
-function buildChapter7_Hidden(data) { return '<div class="report-chapter"><h3 class="ch-title">Chapter 7. 숨겨진 잠재력 (지장간)</h3></div>'; }
-function buildChapter8_Health(data) { return '<div class="report-chapter"><h3 class="ch-title">Chapter 8. 건강과 생체 에너지 균형</h3></div>'; }
 
-function buildChapter9_Remedy(data) {
-    let color = "차분한 네이비와 블랙";
-    let dir = "북쪽";
-    let num = "1, 6";
-    let minWuxing = 'wood';
-    if(data.wuxing && Object.keys(data.wuxing).length > 0) {
-        let sorted = Object.keys(data.wuxing).sort((a,b) => data.wuxing[a] - data.wuxing[b]);
-        minWuxing = sorted[0];
-    }
-    
-    if (minWuxing === 'wood') { color = "딥 그린"; dir = "동쪽"; num = "3, 8"; }
-    else if (minWuxing === 'fire') { color = "레드"; dir = "남쪽"; num = "2, 7"; }
-    else if (minWuxing === 'earth') { color = "옐로우/브라운"; dir = "중앙"; num = "5, 10"; }
-    else if (minWuxing === 'metal') { color = "화이트/실버"; dir = "서쪽"; num = "4, 9"; }
+function buildChapter7_Full(data) {
+    return `<div class="report-chapter">
+        <h3 class="ch-title">Chapter 7. 숨겨진 잠재력 (지장간 해부)</h3>
+        <p class="ch-text">빙산의 일각처럼, 물 밑에 숨겨진 진짜 본능이 '지장간'입니다. 이것은 당신의 비상금이면서 동시에 위기 상황에서만 튀어나오는 당신의 <b>진짜 무기</b>입니다.</p>
+        <p class="ch-text">평소에는 온화해 보이지만, 결정적인 순간에 보여주는 당신의 서늘한 결단력은 바로 이곳에서 나옵니다.</p>
+    </div>`;
+}
 
+function buildChapter8_Full(data) {
+    let maxW = Object.keys(data.wuxing).reduce((a, b) => data.wuxing[a] > data.wuxing[b] ? a : b);
+    let organ = {'wood': '간/신경계', 'fire': '심장/혈관', 'earth': '위장/비장', 'metal': '폐/호흡기', 'water': '신장/방광'}[maxW];
+    return `<div class="report-chapter">
+        <h3 class="ch-title">Chapter 8. 신체 취약점과 건강 마지노선</h3>
+        <p class="ch-text">마음의 과부하는 즉각적으로 장기의 병변으로 나타납니다. 당신의 에너지 편중으로 볼 때 가장 주의해야 할 마지노선은 <b>[${organ}]</b> 계통입니다.</p>
+        <div class="axe-advice" style="border-left-color: #d32f2f;">
+            당신은 멈춰야 할 때 멈추는 데 큰 용기가 필요한 타입입니다. 몸을 연료로 태워 성취를 사지 마십시오.
+        </div>
+    </div>`;
+}
+
+function buildChapter9_Full(data) {
+    let minW = Object.keys(data.wuxing).sort((a,b) => data.wuxing[a] - data.wuxing[b])[0];
+    let remedy = {
+        'wood': { c: '그린', d: '동쪽', n: '3, 8' },
+        'fire': { c: '레드', d: '남쪽', n: '2, 7' },
+        'earth': { c: '황토색/브라운', d: '중앙', n: '5, 10' },
+        'metal': { c: '화이트/실버', d: '서쪽', n: '4, 9' },
+        'water': { c: '네이비/블랙', d: '북쪽', n: '1, 6' }
+    }[minW];
     return `<div class="report-chapter">
         <h3 class="ch-title">Chapter 9. 운명을 비트는 레버리지 (개운법)</h3>
-        <ul style="color: #ccc; line-height: 2;">
-            <li><b>행운의 컬러:</b> ${color}</li>
-            <li><b>운이 뚫리는 방향:</b> ${dir}</li>
-            <li><b>재물을 부르는 숫자:</b> ${num}</li>
+        <p class="ch-text">비가 올 것을 알았으면 우산을 쓰면 됩니다. 당신에게 부족한 <b>${RELATION_LABELS[minW]}</b>의 기운을 채우는 처방입니다.</p>
+        <ul style="color: #ccc; line-height: 2.5; font-size: 15px;">
+            <li><b>행운의 컬러:</b> ${remedy.c} (계약이나 미팅 시 소품으로 활용)</li>
+            <li><b>운이 뚫리는 방향:</b> ${remedy.d} (책상이나 침대 머리 방향)</li>
+            <li><b>재물을 부르는 숫자:</b> ${remedy.n} (비밀번호나 계좌에 의식적 배치)</li>
         </ul>
-        <div class="axe-advice">🤝 <b>바이럴 미션:</b> 내 곁의 소중한 사람들의 기밀문서도 함께 확인해보세요.</div>
+        <div class="axe-advice">🤝 <b>바이럴 미션:</b> 이 문서를 보고 떠오른 사람이 있다면, 그 사람의 X-FILE도 확인해주시는 것이 당신의 운을 순환시키는 최고의 액션입니다.</div>
     </div>`;
+}
+
+function buildChapter10_Full(data) {
+    let html = `<div class="report-chapter">
+        <h3 class="ch-title">Chapter 10. 시간의 파동 (대운 분석)</h3>
+        <p class="ch-text">대운은 10년마다 바뀌는 당신 인생의 기상도입니다. 현재 당신은 인생의 거대한 변곡점을 지나고 있습니다.</p>`;
+    
+    // Simple loop for previewing 3 Daewuns with DB text
+    for(let i=1; i<=3; i++) {
+        let eventText = window.SAJU_DB?.DAEWUN_EVENTS?.[i-1] || "환경의 변화를 주도적으로 이끌어내야 하는 시기입니다.";
+        html += `<div style="margin-bottom: 25px; padding: 25px; background: #111; border-left: 4px solid var(--gold); border-radius: 5px;">
+            <p style="color: var(--gold); font-weight: 800; margin-bottom: 10px;">${data.daewunNum + ((i-1)*10)}세 ~ : [대운 시퀀스 #${i}]</p>
+            <p style="margin: 0; color: #ddd; line-height: 1.7;">${eventText}</p>
+        </div>`;
+    }
+    html += `</div>`;
+    return html;
 }
 
 function buildSynergySection(users) {
@@ -140,8 +212,8 @@ function buildSynergySection(users) {
 
     for (let i = 0; i < users.length; i++) {
         for (let j = i + 1; j < users.length; j++) {
-            html += `<div style="margin-bottom: 30px; border-bottom: 1px dashed #444; padding-bottom: 20px;">
-                <h4 style="color: var(--gold); margin-bottom: 10px;">🛡️ ${users[i].name} ↔ ${users[j].name} 의 시너지 분석</h4>`;
+            html += `<div style="margin-bottom: 40px; border-bottom: 1px dashed #444; padding-bottom: 30px;">
+                <h4 style="color: var(--gold); margin-bottom: 15px; font-size: 20px;">🛡️ ${users[i].name} ↔ ${users[j].name} 의 시너지 분석</h4>`;
             
             let u1 = users[i], u2 = users[j];
             let b1 = u1.dayBranch, b2 = u2.dayBranch;
@@ -156,9 +228,8 @@ function buildSynergySection(users) {
                 html += `<p class="ch-text"><b>[담백한 존중]</b> 특별한 형충파해 없이 서로의 영역을 존중하며 담백하게 이어지는 관계입니다.</p>`;
             }
 
-            // Wuxing balance
             let u1Min = Object.keys(u1.wuxing).sort((a,b)=>u1.wuxing[a]-u1.wuxing[b])[0];
-            let u2Max = Object.keys(u2.wuxing).sort((a,b)=>u2.wuxing[b]-u2.wuxing[a])[0];
+            let u2Max = Object.keys(u2.wuxing).sort((a,b)=>u2.u2Max-u2.wuxing[a])[0];
             
             if (u1Min === u2Max) {
                 html += `<p class="ch-text"><b>[오행 보완]</b> ${u1.name}님에게 부족한 ${RELATION_LABELS[u1Min]||u1Min} 기운을 ${u2.name}님이 압도적으로 채워주고 있습니다. 함께 있을 때 정서적 안정이 극대화됩니다.</p>`;
