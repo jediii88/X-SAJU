@@ -1,3 +1,12 @@
+
+function buildReportIntro(data) {
+    return `
+    <div class="report-chapter" style="text-align: center; border-bottom: 1px solid #333; padding-bottom: 40px; margin-bottom: 50px;">
+        <h2 style="color: var(--gold); font-size: 22px; font-family: 'Noto Serif KR', serif;">사주 X-FILE: 분석 대상 [${data.name}]</h2>
+        <p class="ch-text" style="text-align: center; color: #888;">본 문서는 ${data.name} 님의 고유한 생성 에너지를 명리학적 알고리즘으로 해독한 1급 기밀 리포트입니다. <br>타인에게 유출 시 운명의 흐름이 왜곡될 수 있으니 주의하십시오.</p>
+    </div>`;
+}
+
 // --- X-SAJU DEEP REPORT GENERATOR ENGINE (V4.5 - FULL STORYTELLING RESTORED) ---
 
 function getDBText(category, key, fallback) {
@@ -25,6 +34,7 @@ function generateDeepReport(dataInput) {
         
         // --- PART 1. 운명의 해부도 (원국 분석) ---
         html += buildSectionHeader("PART 1. 운명의 해부도 (원국 분석)");
+        html += buildReportIntro(data);
         html += buildChapter1_Full(data);
         html += buildChapter2_Full(data);
         html += buildChapter3_Full(data);
