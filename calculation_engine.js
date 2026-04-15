@@ -150,7 +150,7 @@ function calculateEightChar(name, birthDate, birthTime, gender, isSolar, isLeap,
     const daewuns = [];
     for (let i = 1; i < daYunList.length; i++) {
         const dy = daYunList[i];
-        const gz = dy.getGanZi();
+        const gz = dy.getGanZhi();
         daewuns.push({
             age: dy.getStartAge(),
             gan: gz[0],
