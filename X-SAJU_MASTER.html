@@ -287,6 +287,8 @@
     
     /* 천간/지지 강조 */
     .hz-main {
+        font-family: "Noto Serif KR", serif !important;
+        font-weight: 900 !important;
         font-family: "Noto Serif KR", serif;
         font-size: 28px;
         font-weight: 900;
@@ -881,11 +883,12 @@ function renderDashboard(data) {
     document.getElementById('strength-text').innerText = `${data.strengthText} (${Math.round(ratio)})`;
 }
 
+
 function renderLuckSection(data) {
     let html = `
         <div class="luck-tabs">
-            <div class="luck-tab active" onclick="showLuck('daewun')">대운</div>
-            <div class="luck-tab" onclick="showLuck('sewun')">세운</div>
+            <div class="luck-tab active" onclick="showLuck('daewun')">대운 (${data.daewunNum}대운)</div>
+            <div class="luck-tab" onclick="showLuck('sewun')">세운 (10년 흐름)</div>
         </div>
         <div id="daewun-list" class="fortune-scroll"></div>
         <div id="sewun-list" class="fortune-scroll" style="display:none;"></div>
@@ -894,20 +897,24 @@ function renderLuckSection(data) {
     
     let dHtml = '';
     data.daewunList.forEach((dy, idx) => {
-        dHtml += `<div class="f-card">
+        dHtml += `<div class="f-card ${idx === 0 ? 'active' : ''}">
             <div class="f-age">${dy.age}세</div>
-            <div class="f-gz"><span class="${HAN_COLOR[dy.gan]}">${dy.gan}</span><span class="${HAN_COLOR[dy.zi]}">${dy.zi}</span></div>
-            <div class="f-sip" style="font-size:9px;">${dy.sip.replace(' / ', '<br>')}<br>${dy.unsung}</div>
+            <div class="f-gz" style="font-family: 'Noto Serif KR', serif; font-weight:900;">
+                <span class="${HAN_COLOR[dy.gan]}">${dy.gan}</span><span class="${HAN_COLOR[dy.zi]}">${dy.zi}</span>
+            </div>
+            <div class="f-sip" style="font-size:10px; font-weight:700;">${dy.sip.replace(' / ', '<br>')}<br><span style="color:#666;">${dy.unsung}</span></div>
         </div>`;
     });
     document.getElementById('daewun-list').innerHTML = dHtml;
 
     let sHtml = '';
     data.sewunList.forEach((sy, idx) => {
-        sHtml += `<div class="f-card">
+        sHtml += `<div class="f-card ${sy.year === new Date().getFullYear() ? 'active' : ''}">
             <div class="f-age">${sy.year}년</div>
-            <div class="f-gz"><span class="${HAN_COLOR[sy.gan]}">${sy.gan}</span><span class="${HAN_COLOR[sy.zi]}">${sy.zi}</span></div>
-            <div class="f-sip" style="font-size:9px;">${sy.sip.replace(' / ', '<br>')}<br>${sy.unsung}</div>
+            <div class="f-gz" style="font-family: 'Noto Serif KR', serif; font-weight:900;">
+                <span class="${HAN_COLOR[sy.gan]}">${sy.gan}</span><span class="${HAN_COLOR[sy.zi]}">${sy.zi}</span>
+            </div>
+            <div class="f-sip" style="font-size:10px; font-weight:700;">${sy.sip.replace(' / ', '<br>')}<br><span style="color:#666;">${sy.unsung}</span></div>
         </div>`;
     });
     document.getElementById('sewun-list').innerHTML = sHtml;
