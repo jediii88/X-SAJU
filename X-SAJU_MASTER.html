@@ -6,287 +6,107 @@
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;700;900&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg: #000;
-            --panel: #0a0a0a;
-            --panel-2: #050505;
-            --line: rgba(255,255,255,0.08);
-            --line-soft: rgba(255,255,255,0.04);
-            --text: rgba(255,255,255,0.96);
-            --text-soft: rgba(255,255,255,0.70);
-            --text-dim: rgba(255,255,255,0.42);
-            --gold: #c7a76a;
-            --wood: #6bb076;
-            --fire: #e67e63;
-            --earth: #dcb372;
-            --metal: #a1aab5;
-            --water: #5d8ab9;
-        }
-
-        * { box-sizing: border-box; }
-        html, body {
-            margin: 0;
-            padding: 0;
-            background: var(--bg);
-            color: var(--text);
-            font-family: 'Noto Sans KR', sans-serif;
-            -webkit-font-smoothing: antialiased;
-            text-rendering: optimizeLegibility;
-        }
-
-        /* [MASTER ORIGINAL DESIGN] */
-        .hz-main { 
-            font-family: "Noto Serif KR", serif; 
-            font-size: 34px; 
-            font-weight: 400; 
-            line-height: 1.1;
-        }
-        .m-hanja { 
-            font-family: "Noto Serif KR", serif; 
-            font-size: 34px; 
-            font-weight: 200; 
-            line-height: 1.1; 
-        }
-        .hz-sub { 
-            font-family: "Noto Sans KR", sans-serif; 
-            font-size: 12px; 
-            font-weight: 300; 
-            color: #888; 
-        }
-        .f-hz { 
-            font-family: 'Noto Serif KR', serif; 
-            font-size: 22px; 
-            font-weight: 400;
-        }
-
-        /* 바 차트 */
-        .bar-group { display: flex; flex-direction: column; gap: 12px; margin-bottom: 30px; }
-        .bar-row { display: grid; grid-template-columns: 60px 1fr 40px; gap: 10px; align-items: center; }
-        .bar-label { font-size: 13px; color: var(--text-soft); }
-        .bar-bg { height: 6px; background: #111; border-radius: 3px; position: relative; }
-        .bar-fill { height: 100%; border-radius: 3px; transition: width 1s; }
-        .bar-val { font-size: 12px; color: var(--text-dim); text-align: right; }
-
-        .wood { color: var(--wood); } .fire { color: var(--fire); } .earth { color: var(--earth); } .metal { color: var(--metal); } .water { color: var(--water); }
-        .bg-wood { background: var(--wood); } .bg-fire { background: var(--fire); } .bg-earth { background: var(--earth); } .bg-metal { background: var(--metal); } .bg-water { background: var(--water); }
-
-        /* 대운/세운 카드 스크롤 */
-        .fortune-scroll { display: flex; overflow-x: auto; gap: 12px; padding-bottom: 16px; }
-        .f-card {
-            flex: 0 0 85px; background: var(--panel); border-radius: 10px; padding: 15px 5px;
-            text-align: center; display: flex; flex-direction: column; gap: 6px; border: 1px solid #111;
-        }
-        .f-head { font-size: 12px; color: var(--text-dim); }
-        .f-sip { font-size: 11px; color: var(--gold); }
-        .f-hz { font-size: 22px; font-family: 'Noto Serif KR', serif; }
-
-        .loading {
-            position: fixed; inset: 0; display: none; align-items: center; justify-content: center;
-            flex-direction: column; background: rgba(0,0,0,0.95); z-index: 999;
-        }
-        .spinner { width: 30px; height: 30px; border-radius: 50%; border: 2px solid #222; border-top-color: var(--gold); animation: spin 0.8s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* 섹션 타이틀 */
-        .section-title {
-            display: flex; justify-content: space-between; align-items: center;
-            margin: 40px 0 15px; padding-bottom: 8px; border-bottom: 1px solid #111;
-            font-size: 14px; color: var(--text-soft); font-weight: 500;
-        }
     
-        
-        .m-hanja { 
-            font-family: "Noto Serif KR", serif !important; 
-            font-size: 34px !important; 
-            font-weight: 200 !important; 
-            line-height: 1.1 !important; 
-        }
-        .hz-sub { 
-            font-family: "Noto Sans KR", sans-serif !important; 
-            font-size: 12px !important; 
-            font-weight: 300 !important; 
-            color: #888 !important; 
-        }
-        .f-hz { 
-            font-family: 'Noto Serif KR', serif !important; 
-            font-size: 22px !important; 
-            font-weight: 400 !important;
-        }
 
-    </style>
+    
 
-    <style>
-        .report-chapter { margin-bottom: 40px; }
-        .ch-title { color: var(--gold); border-bottom: 1px solid #333; padding-bottom: 8px; margin-bottom: 15px; font-family: 'Noto Serif KR', serif; font-weight: 300; font-size: 20px; }
-        .ch-text { font-size: 15px; line-height: 1.8; color: #eee; margin-bottom: 15px; text-align: justify; word-break: keep-all; }
-        .axe-advice { background: #111; padding: 18px; border-radius: 8px; border-left: 3px solid var(--gold); font-size: 14.5px; line-height: 1.6; color: #ddd; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(4px); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px; opacity: 0; transition: opacity 0.3s; }
-        .modal-overlay.active { display: flex; opacity: 1; }
-        .modal-card { background: #111; border: 1px solid var(--line-soft); border-radius: 12px; padding: 24px; width: 100%; max-width: 360px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
-        .modal-title { font-size: 16px; font-weight: 500; color: var(--gold); margin-bottom: 12px; }
-        .modal-body { font-size: 14px; line-height: 1.6; color: var(--text-soft); margin-bottom: 24px; word-break: keep-all; }
-        .modal-close { width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: none; border-radius: 6px; color: var(--text); cursor: pointer; }
 
-        .rel-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 10px; }
-        .rel-card { background: linear-gradient(135deg, #151515, #0a0a0a); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; align-items: center; }
-        .rel-nodes { display: flex; align-items: center; gap: 12px; }
-        .rel-char { width: 36px; height: 36px; border-radius: 50%; background: #222; display: flex; align-items: center; justify-content: center; font-size: 18px; }
-        .rel-link { flex: 1; height: 2px; background: var(--line); min-width: 20px; position: relative; }
-        .rel-badge { background: #2a2a2a; color: var(--gold); font-size: 13px; padding: 4px 12px; border-radius: 20px; margin-top: 8px; }
 
-        .help-icon { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border-radius: 50%; background: rgba(255,255,255,0.1); color: #aaa; font-size: 10px; cursor: pointer; margin-left: 6px; }
-    </style>
+
+
 
 
 <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;700;900&family=Noto+Serif+KR:wght@200;400;700;900&display=swap');
     
-    /* 마스터피스 수직 명식 디자인 (v2.9.1 및 점신 스타일 융합) */
-    .wonguk-container {
-        display: flex;
-        justify-content: space-between;
-        gap: 10px;
-        margin: 25px 0;
-    }
-    .pillar-card {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        background: #0a0a0a;
-        border-radius: 12px;
-        padding: 15px 5px;
-        border: 1px solid rgba(255,255,255,0.05);
-        position: relative;
-    }
-    .pillar-fate {
-        font-size: 10px;
-        color: #555;
-        font-weight: 800;
-        margin-bottom: 8px;
-        letter-spacing: 1px;
-    }
-    .p-sip-top {
-        font-size: 11px;
-        color: var(--gold);
-        margin-bottom: 5px;
-        font-weight: 700;
-    }
-    .p-char {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 12px 0;
-        border-radius: 8px;
-        margin-bottom: 4px;
-        transition: transform 0.2s;
-    }
-    .p-hz {
-        font-family: "Noto Serif KR", serif;
-        font-size: 32px;
-        font-weight: 400;
-        line-height: 1.1;
-    }
-    .p-ks {
-        font-size: 12px;
-        color: rgba(255,255,255,0.4);
-        margin-top: 4px;
-    }
-    .p-sip-btm {
-        font-size: 11px;
-        color: #888;
-        margin: 5px 0;
-    }
-    .p-hidden {
-        font-size: 9px;
-        color: #444;
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-    }
-    .p-unsung {
-        margin-top: 8px;
-        font-size: 11px;
-        color: var(--gold);
-        font-weight: 700;
-    }
-    .p-shinsal {
-        margin-top: 5px;
-        font-size: 10px;
-        color: #666;
+    :root {
+        --bg: #000;
+        --gold: #c7a76a;
+        --wood: #4CAF50;
+        --fire: #FF5252;
+        --earth: #FFC107;
+        --metal: #ffffff;
+        --water: #2196F3;
+        --text: #fff;
     }
 
-</style>
-
-
-<style>
-    /* 점신 스타일 헤더 상세 */
-    .info-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 15px;
-        background: #1a1a1a;
-        padding: 20px;
-        border-radius: 12px;
-        margin-bottom: 25px;
-        border: 1px solid #333;
-    }
-    .info-item { display: flex; flex-direction: column; }
-    .info-label { font-size: 11px; color: #666; margin-bottom: 5px; }
-    .info-val { font-size: 14px; font-weight: 700; color: #ddd; }
-
-    /* 만세력 기둥별 운세 라벨 */
-    .pillar-fate-label {
-        font-size: 10px;
-        color: #555;
-        margin-top: 5px;
-        font-weight: 700;
+    body { 
+        font-family: 'Noto Sans KR', sans-serif; 
+        background-color: #000; color: #fff; margin: 0; padding: 0;
     }
 
-    /* 십성/오행 상세 바 */
-    .analysis-section {
-        background: #111;
-        padding: 20px;
-        border-radius: 15px;
-        margin-bottom: 30px;
+    /* v2.9.1 Original Wonguk Grid */
+    .wonguk-container-v20 { 
+        display: grid; 
+        grid-template-columns: 60px 1fr 1fr 1fr 1fr; 
+        width: 100%; 
+        border: 1px solid #333; 
+        background: #050505; 
+        margin-top: 30px;
     }
-    .analysis-title {
-        font-size: 15px;
-        font-weight: 800;
-        color: var(--gold);
-        margin-bottom: 20px;
-        padding-left: 10px;
-        border-left: 4px solid var(--gold);
-    }
-
-    /* 대운/세운 탭 스타일 */
-    .luck-tabs {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 15px;
-    }
-    .luck-tab {
-        flex: 1;
-        padding: 10px;
+    .grid-item {
         text-align: center;
-        background: #1a1a1a;
-        border: 1px solid #333;
-        border-radius: 8px;
-        font-size: 13px;
-        color: #777;
-        cursor: pointer;
+        padding: 20px 0;
+        border-right: 1px solid #222;
+        border-bottom: 1px solid #222;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
     }
-    .luck-tab.active {
-        background: var(--gold);
-        color: #000;
-        font-weight: 800;
-        border-color: var(--gold);
+    .grid-item:nth-child(5n) { border-right: none; }
+    
+    .grid-row-label {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 11px;
+        font-weight: 700;
+        color: #444;
+        background: #0a0a0a;
+        border-right: 1px solid #222;
+        border-bottom: 1px solid #222;
+        letter-spacing: 0.2em;
+        writing-mode: vertical-lr;
+        text-orientation: upright;
     }
-</style>
 
-</head>
+    .pillar-name-top {
+        font-size: 13px;
+        font-weight: 700;
+        color: #555;
+        background: #0a0a0a;
+        padding: 12px 0 !important;
+    }
+
+    .hanja-character { 
+        font-size: 64px; font-weight: 100; line-height: 1; margin-bottom: 5px; 
+        display: block; font-family: 'Noto Sans KR', sans-serif; 
+    }
+    .hangeul-sub { 
+        font-size: 13px; font-weight: 300; color: #888; 
+        letter-spacing: 0.1em; display: block; 
+    }
+    .sipseong-text { 
+        font-size: 14px; font-weight: 400; color: #aaa; 
+        padding: 15px 0 !important;
+    }
+
+    .color-wood { color: var(--wood); }
+    .color-fire { color: var(--fire); }
+    .color-earth { color: var(--earth); }
+    .color-metal { color: var(--metal); }
+    .color-water { color: var(--water); }
+
+    /* Luck Cards */
+    .fortune-scroll { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; }
+    .f-card {
+        flex: 0 0 80px; background: #0a0a0a; border: 1px solid #222; padding: 15px 5px; text-align: center; border-radius: 4px;
+    }
+    .f-card.active { border-color: var(--gold); background: rgba(199, 167, 106, 0.05); }
+    .f-age { font-size: 12px; color: var(--gold); margin-bottom: 5px; }
+    .f-hz { font-size: 20px; font-weight: 200; }
+</style></head>
 <body>
 
 <div class="loading" id="loading">
@@ -658,78 +478,61 @@ function runAnalysis() {
 
 
 
+
 function renderDashboard(data) {
-    // 헤더 정보
+    // 헤더 및 기본 정보
     document.getElementById('av-name').innerText = data.name;
-    const elType = HAN_COLOR[data.dayStem];
-    document.getElementById('av-circle').className = 'avatar-circle ' + elType;
-    document.getElementById('av-desc').innerHTML = `<span style="color:var(--gold); font-weight:700; font-size:18px;">${data.animal}</span>`;
-    
-    // 생년월일 정보
-    let headerHtml = `
-        <div class="info-grid">
-            <div class="info-item"><div class="info-label">양력</div><div class="info-val">${data.solarDate}</div></div>
-            <div class="info-item"><div class="info-label">음력</div><div class="info-val">${data.lunarDate}</div></div>
-            <div class="info-item" style="grid-column: 1 / -1;"><div class="info-label">절기</div><div class="info-val">${data.solarTerm}</div></div>
-        </div>
+    document.getElementById('av-desc').innerHTML = `${data.animal}`;
+    document.getElementById('av-badges').innerHTML = `
+        <div class="badge" style="background:#444; border:none; padding:4px 10px; border-radius:20px; font-size:11px;">건강 ${data.healthScore}점</div>
+        <div class="badge" style="background:#444; border:none; padding:4px 10px; border-radius:20px; font-size:11px;">공망: ${data.gongmang}</div>
     `;
-    const existingInfo = document.getElementById('jeomsin-info');
-    if (existingInfo) existingInfo.remove();
-    const infoDiv = document.createElement('div');
-    infoDiv.id = 'jeomsin-info';
-    infoDiv.innerHTML = headerHtml;
-    document.querySelector('.avatar-header').insertBefore(infoDiv, document.getElementById('av-circle').nextSibling);
 
-    // 뱃지 리스트
-    let badgeHtml = `<div class="badge" style="background:#e74c3c; border:none; font-weight:800;">건강 ${data.healthScore}점</div>`;
-    badgeHtml += `<div class="badge" style="background:#444; border:none;">공망: ${data.gongmang}</div>`;
-    const allS = data.allShinsal || {};
-    const flatShinsal = [...new Set(Object.values(allS).flat())].filter(Boolean);
-    flatShinsal.slice(0, 3).forEach(s => { badgeHtml += `<div class="badge">${s}</div>`; });
-    document.getElementById('av-badges').innerHTML = badgeHtml;
-
-    // --- 수직 명식 카드 렌더링 ---
-    const fateLabels = ['말년운','장년운','청년운','초년운'];
-    let wHtml = '<div class="wonguk-container">';
-    data.pillars.forEach((p, idx) => {
-        const stemColor = HAN_COLOR[p.h[0]];
-        const branchColor = HAN_COLOR[p.h[1]];
-        const hidden = (BRANCH_HIDDEN[p.h[1]] || []).map(h => `<span class="${HAN_COLOR[h]}">${h}(${HAN_KOR[h]})</span>`).join(' ');
-        
-        wHtml += `
-            <div class="pillar-card">
-                <div class="pillar-fate">${fateLabels[idx]}</div>
-                <div class="p-sip-top">${p.n === '일주' ? '일원' : getSipseong(data.dayStem, p.h[0])}</div>
-                
-                <div class="p-char bg-${stemColor}">
-                    <div class="p-hz ${stemColor}">${p.h[0]}</div>
-                    <div class="p-ks">(${HAN_KOR[p.h[0]]})</div>
-                </div>
-                
-                <div class="p-char bg-${branchColor}">
-                    <div class="p-hz ${branchColor}">${p.h[1]}</div>
-                    <div class="p-ks">(${HAN_KOR[p.h[1]]})</div>
-                </div>
-
-                <div class="p-sip-btm">${getSipseong(data.dayStem, p.h[1])}</div>
-                <div class="p-hidden">${hidden}</div>
-                <div class="p-unsung">${UNSUNG_MAP[data.dayStem]?.[p.h[1]] || '-'}</div>
-                <div class="p-shinsal">${data.shinsal12[idx] || '-'}</div>
-            </div>
-        `;
-    });
-    wHtml += '</div>';
-    document.getElementById('manse-table').innerHTML = wHtml;
-
-    // 관계, 오행, 대운 등 나머지 렌더링 호출
-    renderLuckSection(data);
-    renderDetailedAnalysis(data);
+    // --- v2.9.1 Original Grid Layout ---
+    const fateLabels = ['시주','일주','월주','년주'];
+    let gHtml = '<div class="wonguk-container-v20">';
     
-    // 게이지 업데이트
-    const ratio = data.strengthRatio;
-    document.getElementById('gauge-path').style.strokeDashoffset = 251 - (ratio * 2.51);
-    document.getElementById('gauge-needle').style.transform = `rotate(${(ratio * 1.8) - 90}deg)`;
-    document.getElementById('strength-text').innerText = `${data.strengthText} (${Math.round(ratio)})`;
+    // Row 1: Labels
+    gHtml += '<div class="grid-label-col"></div>';
+    fateLabels.forEach(l => { gHtml += `<div class="grid-item pillar-name-top">${l}</div>`; });
+
+    // Row 2: Cheongan (Stem)
+    gHtml += '<div class="grid-row-label">천간</div>';
+    data.pillars.forEach(p => {
+        const color = 'color-' + (HAN_COLOR[p.h[0]] || 'metal');
+        gHtml += `
+            <div class="grid-item">
+                <span class="hanja-character ${color}">${p.h[0]}</span>
+                <span class="hangeul-sub">${HAN_KOR[p.h[0]]}</span>
+            </div>`;
+    });
+
+    // Row 3: Jiji (Branch)
+    gHtml += '<div class="grid-row-label">지지</div>';
+    data.pillars.forEach(p => {
+        const color = 'color-' + (HAN_COLOR[p.h[1]] || 'metal');
+        gHtml += `
+            <div class="grid-item">
+                <span class="hanja-character ${color}">${p.h[1]}</span>
+                <span class="hangeul-sub">${HAN_KOR[p.h[1]]}</span>
+            </div>`;
+    });
+
+    // Row 4: Sipseong
+    gHtml += '<div class="grid-row-label">십성</div>';
+    data.pillars.forEach(p => {
+        const sip = p.n === '일주' ? '본인' : getSipseong(data.dayStem, p.h[0]);
+        gHtml += `<div class="grid-item sipseong-text">${sip}</div>`;
+    });
+    
+    gHtml += '</div>';
+    document.getElementById('manse-table').innerHTML = gHtml;
+
+    // 대운/세운 렌더링
+    renderLuckSection(data);
+    
+    // 오행 게이지 등 나머지
+    renderDetailedAnalysis(data);
 }
 
 function renderLuckSection(data) {
