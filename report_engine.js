@@ -21,50 +21,35 @@ function getDBText(category, key, fallback) {
 }
 
 function generateDeepReport(dataInput) {
-    let dataArray = Array.isArray(dataInput) ? dataInput : [dataInput];
+    // 1인 전용으로 강제 고정
+    let data = Array.isArray(dataInput) ? dataInput[0] : dataInput;
     let html = '';
     
-    dataArray.forEach((data, idx) => {
-        // [인트로: X-FILE 기밀 보고서 헤더]
-        html += `<div style="border: 2px solid var(--gold); padding: 40px 20px; margin-bottom: 60px; border-radius: 0px; background: rgba(199, 167, 106, 0.05); text-align: center; position: relative;">
-            <div style="position: absolute; top: 10px; left: 10px; color: var(--gold); font-size: 10px; letter-spacing: 2px;">CLASSIFIED: LEVEL 1</div>
-            <h1 style="color: var(--gold); margin: 0; font-family: 'Noto Serif KR', serif; font-size: 28px; font-weight: 900; letter-spacing: 5px;">[ ${data.name} 님의 X-FILE ]</h1>
-            <div style="margin-top: 15px; color: #888; font-size: 13px;">발급번호: #${Math.random().toString(36).substr(2, 9).toUpperCase()}</div>
-        </div>`;
-        
-        // --- PART 1. 운명의 해부도 (원국 분석) ---
-        html += buildSectionHeader("PART 1. 운명의 해부도 (원국 분석)");
-        html += buildReportIntro(data);
-        html += buildChapter1_Full(data);
-        html += buildChapter2_Full(data);
-        html += buildChapter3_Full(data);
-        
-        // --- PART 2. 인생의 무대와 성취 ---
-        html += buildSectionHeader("PART 2. 인생의 무대와 성취");
-        html += buildChapter4_Full(data);
-        html += buildChapter5_Full(data);
-        html += buildChapter6_Full(data);
-        
-        // --- PART 3. 숨겨진 무기와 취약점 ---
-        html += buildSectionHeader("PART 3. 숨겨진 무기와 취약점");
-        html += buildChapter7_Full(data);
-        html += buildChapter8_Full(data);
-        html += buildChapter9_Full(data);
-
-        // --- PART 4. 대운/세운 (시간의 지배자) ---
-        html += buildSectionHeader("PART 4. 시간의 흐름 (대운과 세운)");
-        html += buildChapter10_Full(data);
-        
-        if (idx < dataArray.length - 1) {
-             html += '<div style="page-break-after: always; height: 100px; border-bottom: 1px dashed #333; margin-bottom: 100px;"></div>';
-        }
-    });
+    // [인트로: X-FILE 기밀 보고서 헤더]
+    html += `<div style="border: 2px solid var(--gold); padding: 40px 20px; margin-bottom: 60px; border-radius: 0px; background: rgba(199, 167, 106, 0.05); text-align: center; position: relative;">
+        <div style="position: absolute; top: 10px; left: 10px; color: var(--gold); font-size: 10px; letter-spacing: 2px;">CLASSIFIED: LEVEL 1</div>
+        <h1 style="color: var(--gold); margin: 0; font-family: 'Noto Serif KR', serif; font-size: 28px; font-weight: 900; letter-spacing: 5px;">[ ${data.name} 님의 X-FILE ]</h1>
+        <div style="margin-top: 15px; color: #888; font-size: 13px;">발급번호: #${Math.random().toString(36).substr(2, 9).toUpperCase()}</div>
+    </div>`;
     
-    // --- N:N 시너지 (궁합) ---
-    if (dataArray.length > 1) {
-        html += buildSectionHeader("SPECIAL PART. 운명적 시너지 (N:N 기밀 궁합)");
-        html += buildSynergySection(dataArray);
-    }
+    html += buildReportIntro(data);
+    html += buildSectionHeader("PART 1. 운명의 해부도 (원국 분석)");
+    html += buildChapter1_Full(data);
+    html += buildChapter2_Full(data);
+    html += buildChapter3_Full(data);
+    
+    html += buildSectionHeader("PART 2. 인생의 무대와 성취");
+    html += buildChapter4_Full(data);
+    html += buildChapter5_Full(data);
+    html += buildChapter6_Full(data);
+    
+    html += buildSectionHeader("PART 3. 숨겨진 무기와 취약점");
+    html += buildChapter7_Full(data);
+    html += buildChapter8_Full(data);
+    html += buildChapter9_Full(data);
+
+    html += buildSectionHeader("PART 4. 시간의 흐름 (대운과 세운)");
+    html += buildChapter10_Full(data);
     
     html += `<div id="pdf-btn-wrap" style="text-align: center; margin-top: 80px; padding-bottom: 100px; border-top: 1px solid #333; padding-top: 50px;">
         <button class="btn" style="background: var(--gold); color: #000; width: 100%; max-width: 450px; font-size: 20px; font-weight: 900; box-shadow: 0 4px 25px rgba(199, 167, 106, 0.5); border-radius: 0; padding: 25px;" onclick="window.print()">📄 X-FILE 기밀문서 PDF로 평생 소장하기</button>

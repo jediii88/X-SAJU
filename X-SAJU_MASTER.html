@@ -309,7 +309,7 @@
             </div>
         </div>
 
-        <button class="btn subtle" onclick="addUserForm()">+ 인원 추가 (최대 4인)</button>
+        <!-- <button class="btn subtle" onclick="addUserForm()">+ 인원 추가 (최대 4인)</button> -->
         <button class="btn" style="background:var(--gold); color:#000; font-weight:700; border:none;" onclick="runAnalysis()">만세력 결과 보기</button>
     </div>
 
@@ -548,44 +548,26 @@ function setNav(btn) {
 
 function runAnalysis() {
     window.globalSajuDataArray = [];
-    const mainDate = document.getElementById('birth-date').value;
-    if(mainDate.length < 8) return alert('생년월일을 입력하세요.');
+    const name = document.getElementById('user-name').value || '고객';
+    const birthDate = document.getElementById('birth-date').value;
+    const birthTime = document.getElementById('birth-time').value || '0000';
+    const gender = document.getElementById('gender').value;
+    const isSolar = document.getElementById('cal').value === 'S';
+    const isLeap = document.getElementById('leap').value === 'true';
+    const isUnknown = document.getElementById('no-time').checked;
+    const adjL = document.getElementById('adj-l').checked;
+
+    if(!birthDate || birthDate.length < 8) return alert('생년월일 8자리를 입력하세요.');
     
-    // User 1
-    window.globalSajuDataArray.push(calculateEightChar(
-        document.getElementById('user-name').value || '고객 1',
-        mainDate,
-        document.getElementById('birth-time').value || '0000',
-        document.getElementById('gender').value,
-        document.getElementById('cal').value === 'S',
-        document.getElementById('leap').value === 'true',
-        'KST',
-        document.getElementById('no-time').checked,
-        document.getElementById('adj-l').checked
-    ));
+    // 오직 1인 데이터만 생성
+    const soloData = calculateEightChar(name, birthDate, birthTime, gender, isSolar, isLeap, 'KST', isUnknown, adjL);
+    window.globalSajuDataArray.push(soloData);
     
-    // Others
-    for(let i=2; i<=4; i++) {
-        const dEl = document.getElementById('birth-date-' + i);
-        if(!dEl || !dEl.value || dEl.value.length < 8) continue;
-        window.globalSajuDataArray.push(calculateEightChar(
-            document.getElementById('name-' + i).value || '고객 ' + i,
-            dEl.value,
-            document.getElementById('birth-time-' + i).value || '0000',
-            document.getElementById('gender-' + i).value,
-            document.getElementById('cal-type-' + i).value === 'S',
-            document.getElementById('is-leap-' + i).value === 'true',
-            'KST', false, true
-        ));
-    }
-    
-    showLoading('운명을 정밀 계산 중입니다...', () => {
-        renderDashboard(window.globalSajuDataArray[0]);
+    showLoading('운명을 정밀 분석 중입니다...', () => {
+        renderDashboard(soloData);
         go(2);
     });
 }
-
-
 
 function renderDashboard(data) {
     document.getElementById('av-name').innerText = data.name + "님";
@@ -600,25 +582,9 @@ function renderDashboard(data) {
     flatShinsal.forEach(s => { badgeHtml += `<div class="badge">${s}</div>`; });
     document.getElementById('av-badges').innerHTML = badgeHtml;
     
-    // User Switcher (N인)
-    let switcher = '';
-    if (window.globalSajuDataArray.length > 1) {
-        switcher = `<div style="display:flex; justify-content:center; gap:10px; margin-bottom:20px; flex-wrap:wrap;">`;
-        window.globalSajuDataArray.forEach((u, i) => {
-            const isActive = u.name === data.name;
-            switcher += `<button class="btn subtle" style="padding:8px 15px; font-size:12px; border-radius:15px; ${isActive ? 'background:var(--gold); color:#000; border-color:var(--gold); font-weight:700;' : 'border:1px solid #333;'}" onclick="renderDashboard(window.globalSajuDataArray[${i}])">${u.name}</button>`;
-        });
-        switcher += `</div>`;
-    }
-    const avHeader = document.querySelector('.avatar-header');
+    // User Switcher 제거 (1인 전용이므로 필요 없음)
     const existingSw = document.getElementById('user-switcher');
     if (existingSw) existingSw.remove();
-    if (switcher) {
-        const swDiv = document.createElement('div');
-        swDiv.id = 'user-switcher';
-        swDiv.innerHTML = switcher;
-        avHeader.insertBefore(swDiv, document.getElementById('av-circle'));
-    }
     
     // Manse Table
     const labels = ['십성','천간','지지','십성','12운성'];
