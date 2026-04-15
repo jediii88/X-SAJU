@@ -31,7 +31,7 @@ async function runQA() {
     inject(dbJs);
     inject(engineJs);
 
-    let results = { A: 'FAIL', B: 'FAIL', C: 'FAIL', D: 'FAIL' };
+    let results = { A: 'FAIL', B: 'FAIL', C: 'FAIL', D: 'FAIL', E: 'FAIL' };
 
     try {
         // [Test D] Core Functions existence
@@ -84,8 +84,25 @@ async function runQA() {
         }
     } catch(e) { console.log("Test C Error:", e.message); }
 
+    try {
+        // [Test E] Leap Month UI
+        const calL = window.document.querySelector('button[data-val="L"]');
+        if (calL) {
+            calL.click();
+            const leapWrap = window.document.getElementById('leap-wrap');
+            if (leapWrap && leapWrap.style.display === 'block') {
+                results.E = 'PASS';
+                console.log("Test E: PASS (Leap month UI functionality)");
+            } else {
+                console.log("Test E: FAIL (Leap wrap not visible)");
+            }
+        } else {
+            console.log("Test E: FAIL (Lunar button not found)");
+        }
+    } catch(e) { console.log("Test E Error:", e.message); }
+
     console.log("FINAL RESULTS:", results);
-    if (results.A === 'PASS' && results.B === 'PASS' && results.D === 'PASS') {
+    if (results.A === 'PASS' && results.B === 'PASS' && results.D === 'PASS' && results.E === 'PASS') {
         console.log("QA STATUS: SUCCESS");
         process.exit(0);
     } else {

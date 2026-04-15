@@ -268,10 +268,20 @@
                 <input type="hidden" id="gender" value="F">
                 
                 <div class="btn-group" id="cal-group" style="margin-top:10px;">
-                    <button class="btn-toggle active" data-val="S" onclick="setToggle('cal-group', this)">양력</button>
-                    <button class="btn-toggle" data-val="L" onclick="setToggle('cal-group', this)">음력</button>
+                    <button class="btn-toggle active" data-val="S" onclick="setToggle('cal-group', this); toggleLeap(false)">양력</button>
+                    <button class="btn-toggle" data-val="L" onclick="setToggle('cal-group', this); toggleLeap(true)">음력</button>
                 </div>
-                <input type="hidden" id="cal-type" value="S">
+                <input type="hidden" id="cal" value="S">
+
+                <!-- 윤달 여부 -->
+                <div id="leap-wrap" style="display:none; margin-top:10px;">
+                    <label style="font-size:12px; color:#666;">윤달 여부</label>
+                    <div class="btn-group" id="leap-group">
+                        <button class="btn-toggle active" data-val="false" onclick="setToggle('leap-group', this)">평달</button>
+                        <button class="btn-toggle" data-val="true" onclick="setToggle('leap-group', this)">윤달</button>
+                    </div>
+                    <input type="hidden" id="leap" value="false">
+                </div>
             </div>
         </div>
 
@@ -347,6 +357,24 @@ function setToggle(groupId, btn) {
     document.getElementById(inputId).value = btn.getAttribute('data-val');
 }
 
+function toggleLeap(show, id) {
+    const wrap = id ? document.getElementById('leap-wrap-' + id) : document.getElementById('leap-wrap');
+    if (wrap) wrap.style.display = show ? 'block' : 'none';
+    if (!show) {
+        const inputId = id ? 'is-leap-' + id : 'is-leap';
+        const groupId = id ? 'leap-group-' + id : 'leap-group';
+        const hidden = document.getElementById(inputId);
+        if (hidden) hidden.value = 'false';
+        const parent = document.getElementById(groupId);
+        if (parent) {
+            parent.querySelectorAll('.btn-toggle').forEach(b => {
+                if(b.getAttribute('data-val') === 'false') b.classList.add('active');
+                else b.classList.remove('active');
+            });
+        }
+    }
+}
+
 function addUserForm() {
     if (window.userCount >= 4) return alert('최대 4인까지 가능합니다.');
     window.userCount++;
@@ -374,11 +402,19 @@ function addUserForm() {
         </div>
         <input type="hidden" id="gender-${window.userCount}" value="F">
         <input type="hidden" id="cal-type-${window.userCount}" value="S">
+        <input type="hidden" id="is-leap-${window.userCount}" value="false">
         <div class="btn-group" style="margin-top:10px;">
             <button class="btn-toggle active" onclick="setSubToggle(this, 'gender-${window.userCount}', 'F')">여성</button>
             <button class="btn-toggle" onclick="setSubToggle(this, 'gender-${window.userCount}', 'M')">남성</button>
-            <button class="btn-toggle active" onclick="setSubToggle(this, 'cal-type-${window.userCount}', 'S')">양력</button>
-            <button class="btn-toggle" onclick="setSubToggle(this, 'cal-type-${window.userCount}', 'L')">음력</button>
+            <button class="btn-toggle active" onclick="setSubToggle(this, 'cal-type-${window.userCount}', 'S'); toggleLeap(false, ${window.userCount})">양력</button>
+            <button class="btn-toggle" onclick="setSubToggle(this, 'cal-type-${window.userCount}', 'L'); toggleLeap(true, ${window.userCount})">음력</button>
+        </div>
+        <div id="leap-wrap-${window.userCount}" style="display:none; margin-top:10px;">
+            <label style="font-size:12px; color:#666;">윤달 여부</label>
+            <div class="btn-group" id="leap-group-${window.userCount}">
+                <button class="btn-toggle active" data-val="false" onclick="setSubToggle(this, 'is-leap-${window.userCount}', 'false')">평달</button>
+                <button class="btn-toggle" data-val="true" onclick="setSubToggle(this, 'is-leap-${window.userCount}', 'true')">윤달</button>
+            </div>
         </div>
     `;
     container.appendChild(div);
@@ -441,8 +477,9 @@ function runAnalysis() {
         mainDate,
         document.getElementById('birth-time').value || '0000',
         document.getElementById('gender').value,
-        document.getElementById('cal-type').value === 'S',
-        false, 'KST',
+        document.getElementById('cal').value === 'S',
+        document.getElementById('leap').value === 'true',
+        'KST',
         document.getElementById('no-time').checked,
         document.getElementById('adj-l').checked
     ));
@@ -457,7 +494,8 @@ function runAnalysis() {
             document.getElementById('birth-time-' + i).value || '0000',
             document.getElementById('gender-' + i).value,
             document.getElementById('cal-type-' + i).value === 'S',
-            false, 'KST', false, true
+            document.getElementById('is-leap-' + i).value === 'true',
+            'KST', false, true
         ));
     }
     
