@@ -59,7 +59,7 @@ function buildChapter1_Basic(data) {
 
     return `
         <div class="report-chapter">
-            <h3 class="ch-title">Chapter 1. 나의 본질과 영혼의 그릇</h3>
+            <h3 class="ch-title">Chapter 1. 나의 본질, 그리고 영혼의 바코드</h3>
             <div style="font-size: 18px; font-weight: bold; color: var(--gold); margin-bottom: 15px;">[${title}]</div>
             <p class="ch-text">${extra1}</p>
             <p class="ch-text">${core} ${weapon}</p>
@@ -70,7 +70,7 @@ function buildChapter1_Basic(data) {
 }
 
 function buildChapter3_Sipseong(data) {
-    let html = `<div class="report-chapter"><h3 class="ch-title">Chapter 3. 나를 움직이는 권력욕 (십성)</h3>`;
+    let html = `<div class="report-chapter"><h3 class="ch-title">Chapter 3. 무의식을 지배하는 운영체제 (십성 페르소나)</h3>`;
     let mainSip = "정재";
     if(data.sipseong && Object.keys(data.sipseong).length > 0) {
         mainSip = Object.keys(data.sipseong).reduce((a, b) => data.sipseong[a] > data.sipseong[b] ? a : b) || "정재";
@@ -95,7 +95,7 @@ function buildChapter3_Sipseong(data) {
 }
 
 function buildChapter4_Wealth(data) {
-    let html = `<div class="report-chapter"><h3 class="ch-title">Chapter 4. 부(富)의 스케일과 금고의 열쇠</h3>`;
+    let html = `<div class="report-chapter"><h3 class="ch-title">Chapter 4. 재물(財)의 그릇과 자본 레버리지</h3>`;
     let jaeCount = (data.sipseong && (data.sipseong['정재'] || 0) + (data.sipseong['편재'] || 0)) || 0;
     
     let wealthCore = "";
@@ -111,7 +111,7 @@ function buildChapter4_Wealth(data) {
         <p class="ch-text">${wealthCore}</p>
         <p class="ch-text">${extra2}</p>
         <div class="axe-advice" style="margin-top: 20px;">
-            <b>👉 나를 위한 부의 추월차선 전략:</b> 내 금고의 크기를 월급이라는 시스템 안에 가둬두지 마십시오. 당신의 뇌 구조는 이미 더 큰 레버리지를 다루도록 세팅되어 있습니다.
+            <b>👉 나를 위한 자산 증식 솔루션:</b> 내 금고의 크기를 월급이라는 시스템 안에 가둬두지 마십시오. 당신의 뇌 구조는 이미 더 큰 레버리지를 다루도록 세팅되어 있습니다.
         </div>
         </div>
     `;
@@ -129,7 +129,7 @@ function buildDaewunLoop(data) {
         daewuns.push({ age: startAge + (i * 10), name: dwName });
     }
 
-    let html = `<div class="report-chapter"><h3 class="ch-title">Chapter 10. 대운(大運) 80년 심층 해부</h3><div class="timeline">`;
+    let html = `<div class="report-chapter"><h3 class="ch-title">Chapter 10. 거대한 기후의 변화 : 80년 대운(大運) 시퀀스</h3><div class="timeline">`;
 
     daewuns.forEach((dw, idx) => {
         let eventText = window.SAJU_DB?.DAEWUN_EVENTS ? window.SAJU_DB.DAEWUN_EVENTS[idx % 60] : "거대한 환경의 변화가 찾아오는 시기입니다.";
@@ -146,7 +146,7 @@ function buildDaewunLoop(data) {
 
 function buildSewunLoop(data) {
     let currentYear = new Date().getFullYear();
-    let html = `<div class="report-chapter"><h3 class="ch-title">Chapter 11. 향후 10년 세운(歲運) 정밀 타격</h3>
+    let html = `<div class="report-chapter"><h3 class="ch-title">Chapter 11. 정밀 타격 : 향후 10년의 전술 시나리오</h3>
     <p class="ch-text" style="margin-bottom:30px;">대운이 10년의 기후라면, 세운(歲運)은 그해의 날씨입니다. 올해부터 향후 10년간 당신에게 어떤 비바람이 몰아치고 어떤 해가 뜰지 예측합니다. 매년 당신의 사주 원국 8글자가 그해의 기운과 충돌하며 만들어내는 구체적인 서사입니다.</p>`;
 
     const stems = ['갑','을','병','정','무','기','경','신','임','계'];
@@ -184,7 +184,7 @@ function buildSewunLoop(data) {
 }
 
 function buildWolunLoop(data) {
-    let html = `<div class="report-chapter"><h3 class="ch-title">Chapter 12. ${new Date().getFullYear()}년 12개월 작전 지도</h3>
+    let html = `<div class="report-chapter"><h3 class="ch-title">Chapter 12. 마이크로 전술 : ${new Date().getFullYear()}년 12개월 작전 지도</h3>
     <p class="ch-text" style="margin-bottom:25px;">올해 당신이 마주할 12개월의 상세한 기운 파동입니다. 언제 액셀을 밟고 언제 브레이크를 밟아야 할지 정확히 짚어드립니다.</p>
     <div style="display: flex; flex-direction: column; gap: 15px;">`;
     
@@ -229,7 +229,7 @@ function buildChapter5_Career(data) {
     }
 
     return `<div class="report-chapter">
-        <h3 class="ch-title">Chapter 5. 가장 빛나는 무대와 사회적 권력</h3>
+        <h3 class="ch-title">Chapter 5. 사회적 권력과 최적화된 무대 세팅</h3>
         <p class="ch-text">직업은 단순히 생계를 유지하는 수단이 아닙니다. 내 에너지를 가장 안정적이면서도 파괴적으로 발산할 수 있는 '전쟁터'를 선택하는 일입니다. 맞지 않는 옷을 억지로 입었을 때 찾아오던 그 지독한 무기력함은, 내 기운과 환경이 엇박자를 냈기 때문입니다.</p>
         <p class="ch-text">${careerCore}</p>
         <div class="axe-advice" style="margin-top: 15px; border-left-color: #3f51b5;">
