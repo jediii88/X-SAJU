@@ -588,14 +588,15 @@ function runAnalysis() {
 
 
 
+
 function renderDashboard(data) {
     document.getElementById('av-name').innerText = data.name + "님";
     const elType = HAN_COLOR[data.dayStem];
     document.getElementById('av-circle').className = 'avatar-circle ' + elType;
     document.getElementById('av-desc').innerText = `${data.dayStem}(${HAN_KOR[data.dayStem]})${data.dayBranch}(${HAN_KOR[data.dayBranch]}) ${COLOR_KR_MAP[elType]} 생명체`;
 
-    // Shinsal Badges
-    let badgeHtml = '';
+    // Health Score & Shinsal Summary
+    let badgeHtml = `<div class="badge" style="background:#e74c3c;">건강점수: ${data.healthScore}점</div>`;
     const allS = data.allShinsal || {};
     const flatShinsal = [...new Set(Object.values(allS).flat())].filter(Boolean);
     flatShinsal.forEach(s => { badgeHtml += `<div class="badge">${s}</div>`; });
@@ -621,15 +622,15 @@ function renderDashboard(data) {
         avHeader.insertBefore(swDiv, document.getElementById('av-circle'));
     }
     
-    // 1. Manse Table (확장: 지장간 추가)
-    const labels = ['십성','천간','지지','지장간','십성','12운성'];
+    // 1. Manse Table (Master-Level Density: 12신살, 지장간, 공망 포함)
+    const labels = ['십성','천간','지지','지장간','12운성','12신살'];
     const rows = [
         data.pillars.map(p => p.n === '일주' ? '일원' : getSipseong(data.dayStem, p.h[0])),
         data.pillars.map(p => p.h[0]),
         data.pillars.map(p => p.h[1]),
         data.pillars.map(p => (BRANCH_HIDDEN[p.h[1]] || []).join(',')),
-        data.pillars.map(p => getSipseong(data.dayStem, p.h[1])),
-        data.pillars.map(p => UNSUNG_MAP[data.dayStem]?.[p.h[1]] || '-')
+        data.pillars.map(p => UNSUNG_MAP[data.dayStem]?.[p.h[1]] || '-'),
+        data.shinsal12 || ['-','-','-','-']
     ];
     let mHtml = '<div class="manse-row"><div class="manse-label"></div><div class="manse-head">시</div><div class="manse-head">일</div><div class="manse-head">월</div><div class="manse-head">년</div></div>';
     labels.forEach((l, i) => {
@@ -645,7 +646,7 @@ function renderDashboard(data) {
     });
     document.getElementById('manse-table').innerHTML = mHtml;
 
-    // 2. Relation Grid 복구
+    // 2. Relation Grid
     const relGrid = document.getElementById('relation-grid');
     const relLines = buildRelationLines(data.pillars);
     relGrid.innerHTML = relLines.map(item => {
@@ -654,7 +655,7 @@ function renderDashboard(data) {
         return `<div class="rel-card"><div class="rel-nodes" style="margin-bottom:15px;">${nodesHtml}</div><div class="rel-badge">${item.label}</div></div>`;
     }).join('');
 
-    // 3. Wuxing & Sipseong Bars 복구
+    // 3. Wuxing & Sipseong Bars
     let wHtml = '';
     const totalW = Object.values(data.wuxing).reduce((a,b)=>a+b,0);
     WUXING_ORDER.forEach(k => {
@@ -678,20 +679,20 @@ function renderDashboard(data) {
     });
     document.getElementById('sipseong-bars').innerHTML = sHtml;
 
-    // 4. Strength Gauge 복구
+    // 4. Strength Gauge
     const ratio = data.strengthRatio;
     document.getElementById('gauge-path').style.strokeDashoffset = 251 - (ratio * 2.51);
     document.getElementById('gauge-needle').style.transform = `rotate(${(ratio * 1.8) - 90}deg)`;
     document.getElementById('strength-text').innerText = `${data.strengthText} (${Math.round(ratio)})`;
 
-    // 5. Daewun Table 복구 (실제 데이터 연동)
+    // 5. Daewun Table (확장: 12운성 추가)
     let dHtml = '<div class="fortune-scroll">';
     if (data.daewunList) {
         data.daewunList.forEach(dy => {
             dHtml += `<div class="f-card">
                 <div class="f-head">${dy.age}세</div>
                 <div class="f-hz">${dy.gan}${dy.zi}</div>
-                <div class="f-sip">${dy.sip}</div>
+                <div class="f-sip" style="font-size:10px;">${dy.sip.split(' / ')[0]}<br>${dy.sip.split(' / ')[1]}</div>
             </div>`;
         });
     }

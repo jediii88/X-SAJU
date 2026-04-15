@@ -48,7 +48,7 @@ function generateDeepReport(dataInput) {
         // --- PART 3. 숨겨진 무기와 취약점 ---
         html += buildSectionHeader("PART 3. 숨겨진 무기와 취약점");
         html += buildChapter7_Full(data);
-        html += buildChapter8_Full(data);
+        html += buildChapterHealth_Full(data);
         html += buildChapter9_Full(data);
 
         // --- PART 4. 대운/세운 (시간의 지배자) ---
@@ -252,3 +252,44 @@ function buildSynergySection(users) {
 }
 
 window.generateDeepReport = generateDeepReport;
+
+
+function buildChapterHealth_Full(data) {
+    const score = data.healthScore;
+    const wuxing = data.wuxing;
+    const total = Object.values(wuxing).reduce((a,b)=>a+b, 0);
+    
+    let weakEl = Object.keys(wuxing).reduce((a, b) => wuxing[a] < wuxing[b] ? a : b);
+    let strongEl = Object.keys(wuxing).reduce((a, b) => wuxing[a] > wuxing[b] ? a : b);
+    
+    const EL_HEALTH = {
+        "wood": "간, 담도계, 신경계, 시력",
+        "fire": "심장, 소장, 혈관, 시력",
+        "earth": "위장, 비장, 소화기계, 피부",
+        "metal": "폐, 대장, 호흡기계, 뼈",
+        "water": "신장, 방광, 생식기계, 호르몬"
+    };
+
+    let status = score > 80 ? "매우 양호" : (score > 60 ? "주의 요망" : "집중 관리 필요");
+    let remedy = "";
+    if(score < 70) {
+        remedy = `현재 당신의 오행 중 <b>${RELATION_LABELS[weakEl]}</b> 기운이 가장 취약하며, 이는 신체적으로 <b>${EL_HEALTH[weakEl]}</b> 부위의 약화로 이어질 수 있습니다. 반면 <b>${RELATION_LABELS[strongEl]}</b> 기운은 과다하여 해당 장기에 열이 쌓이기 쉬운 구조입니다.`;
+    } else {
+        remedy = "전반적인 오행의 균형이 잘 잡혀 있으나, 과로와 스트레스가 겹칠 때 가장 약한 고리부터 무너질 수 있으니 평소 꾸준한 관리가 필요합니다.";
+    }
+
+    return `
+    <div class="report-chapter">
+        <h3 class="ch-title">Chapter 8. 생명의 리듬 (건강과 오행의 밸런스)</h3>
+        <p class="ch-text">사주 명리학은 단순한 점술이 아니라, 우주의 기운이 내 몸의 장기와 어떻게 공명하는지를 보여주는 <b>고대 동양의 예방의학</b>이기도 합니다.</p>
+        <div style="background: #1a1a1a; padding: 25px; border-radius: 15px; border: 1px solid #333; margin: 20px 0;">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <span style="font-size: 14px; color: #888;">종합 건강 지수</span><br>
+                <span style="font-size: 42px; color: ${score < 50 ? '#e74c3c' : 'var(--gold)'}; font-weight: 900;">${score}점</span><br>
+                <span style="color: #aaa; font-size: 13px;">상태: ${status}</span>
+            </div>
+            <p class="ch-text" style="font-size: 14.5px; line-height: 1.8; color: #ddd;">${remedy}</p>
+        </div>
+        <p class="ch-text">"몸은 마음의 그릇입니다." 오행의 불균형을 다스리는 식이요법과 생활 습관이 당신의 운명을 바꾸는 가장 빠른 지름길임을 잊지 마십시오.</p>
+    </div>`;
+}

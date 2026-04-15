@@ -1,4 +1,50 @@
 
+
+function get12Shinsal(dayBranch, targetBranch) {
+    const table = {
+        "申": ["지살","연살","월살","망신","장성","반안","역마","육해","화개","겁살","재살","천살"],
+        "子": ["지살","연살","월살","망신","장성","반안","역마","육해","화개","겁살","재살","천살"],
+        "辰": ["지살","연살","월살","망신","장성","반안","역마","육해","화개","겁살","재살","천살"],
+        "亥": ["지살","연살","월살","망신","장성","반안","역마","육해","화개","겁살","재살","천살"],
+        "卯": ["지살","연살","월살","망신","장성","반안","역마","육해","화개","겁살","재살","천살"],
+        "未": ["지살","연살","월살","망신","장성","반안","역마","육해","화개","겁살","재살","천살"],
+        "寅": ["지살","연살","월살","망신","장성","반안","역마","육해","화개","겁살","재살","천살"],
+        "午": ["지살","연살","월살","망신","장성","반안","역마","육해","화개","겁살","재살","천살"],
+        "戌": ["지살","연살","월살","망신","장성","반안","역마","육해","화개","겁살","재살","천살"],
+        "巳": ["지살","연살","월살","망신","장성","반안","역마","육해","화개","겁살","재살","천살"],
+        "酉": ["지살","연살","월살","망신","장성","반안","역마","육해","화개","겁살","재살","천살"],
+        "丑": ["지살","연살","월살","망신","장성","반안","역마","육해","화개","겁살","재살","천살"]
+    };
+    // 실제 12신살 조견표 로직 (삼합 기준)
+    const samhap = {
+        "寅": "火", "午": "火", "戌": "火",
+        "申": "水", "子": "水", "辰": "水",
+        "巳": "金", "酉": "金", "丑": "金",
+        "亥": "木", "卯": "木", "未": "木"
+    };
+    const startIdx = { "火": "寅", "水": "申", "金": "巳", "木": "亥" };
+    const branches = ["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
+    const shinsalList = ["겁살","재살","천살","지살","연살","월살","망신","장성","반안","역마","육해","화개"];
+    
+    let base = samhap[dayBranch];
+    let startBranch = startIdx[base];
+    let offset = branches.indexOf(targetBranch) - branches.indexOf(startBranch);
+    if(offset < 0) offset += 12;
+    return shinsalList[offset];
+}
+
+
+function calculateHealthScore(wuxing) {
+    let score = 100;
+    const total = Object.values(wuxing).reduce((a,b)=>a+b, 0);
+    for(let k in wuxing) {
+        let per = (wuxing[k] / total) * 100;
+        if(per > 40) score -= (per - 40) * 2; // 태과(과다)
+        if(per < 5) score -= (10 - per) * 3;  // 고립(결핍)
+    }
+    return Math.max(0, Math.round(score));
+}
+
 function getShinsal(gz, ec) {
     const SHINSAL_LOGIC = {
         '천을귀인': (gz, ec) => {
@@ -65,106 +111,20 @@ function getSipseong(dayStem, target) {
 }
 
 function calculateEightChar(name, birthDate, birthTime, gender, isSolar, isLeap, calBase, isUnknown, adjL) {
-    if (!birthDate || birthDate.length < 8) return { name: name, error: 'invalid date' };
-    let y = parseInt(birthDate.slice(0,4));
-    let m = parseInt(birthDate.slice(4,6));
-    let d = parseInt(birthDate.slice(6,8));
-    let tVal = birthTime || '0000';
-    if (tVal.length < 4) tVal = tVal.padStart(4, '0');
-    let hr = parseInt(tVal.slice(0,2));
-    let mn = parseInt(tVal.slice(2,4));
-
-    let origY = y, origM = m, origD = d;
-    let lunarObj, solarObj;
-
-    if (isSolar) {
-        solarObj = Solar.fromYmdHms(y, m, d, hr, mn, 0);
-        lunarObj = solarObj.getLunar();
-    } else {
-        let lunarMonth = isLeap ? -m : m;
-        lunarObj = Lunar.fromYmdHms(y, lunarMonth, d, hr, mn, 0);
-        solarObj = lunarObj.getSolar();
-        if (calBase === 'KST') {
-            if (origY === 1988 && origM === 1 && origD === 24) solarObj = Solar.fromYmdHms(1988, 3, 12, hr, mn, 0);
-        }
-    }
-
-    if (adjL && !isUnknown) {
-        const dt = new Date(solarObj.getYear(), solarObj.getMonth() - 1, solarObj.getDay(), solarObj.getHour(), solarObj.getMinute());
-        dt.setMinutes(dt.getMinutes() - 32);
-        solarObj = Solar.fromYmdHms(dt.getFullYear(), dt.getMonth() + 1, dt.getDate(), dt.getHours(), dt.getMinutes(), 0);
-        lunarObj = solarObj.getLunar();
-    }
-
-    let masterEcObj = null;
-    if ((origY === 1988 && origM === 4 && origD === 27 && isSolar) ||
-        (origY === 1988 && origM === 1 && origD === 24 && !isSolar)) {
-        let mHr = hr, mMn = mn;
-        if (adjL && !isUnknown) {
-            const dt2 = new Date(1988, 3 - 1, 12, hr, mn);
-            dt2.setMinutes(dt2.getMinutes() - 32);
-            mHr = dt2.getHours(); mMn = dt2.getMinutes();
-        }
-        solarObj = Solar.fromYmdHms(1988, 3, 12, mHr, mMn, 0);
-        lunarObj = solarObj.getLunar();
-        masterEcObj = lunarObj.getEightChar();
-    }
-
-    const ec = masterEcObj || lunarObj.getEightChar();
-    const pillars = [
-        { n: '시주', h: isUnknown ? ['', ''] : ec.getTime() },
-        { n: '일주', h: ec.getDay() },
-        { n: '월주', h: ec.getMonth() },
-        { n: '년주', h: ec.getYear() }
-    ];
-    const dayStem = ec.getDay()[0];
-    const dayBranch = ec.getDay()[1];
-    
-    // Wuxing/Sipseong
-    let counts = {wood:0, fire:0, earth:0, metal:0, water:0};
-    pillars.forEach((p, idx) => {
-        let weight = (idx === 2) ? 2.0 : (idx === 1 ? 1.5 : 1.0);
-        if(p.h[0]) counts[HAN_COLOR[p.h[0]]] += weight;
-        if(p.h[1]) {
-            counts[HAN_COLOR[p.h[1]]] += weight;
-            let hidden = BRANCH_HIDDEN[p.h[1]];
-            if(hidden) hidden.forEach(h => counts[HAN_COLOR[h]] += weight * 0.3);
-        }
-    });
-
-    let sipCounts = {};
-    pillars.forEach(p => {
-        if(p.h[0]) { let s = getSipseong(dayStem, p.h[0]); sipCounts[s] = (sipCounts[s] || 0) + 1; }
-        if(p.h[1]) { let s = getSipseong(dayStem, p.h[1]); sipCounts[s] = (sipCounts[s] || 0) + 1; }
-    });
-
-    const myEl = HAN_COLOR[dayStem];
-    const mySupportEl = WUXING_ORDER[(WUXING_ORDER.indexOf(myEl) + 4) % 5];
-    let score = (counts[myEl] || 0) + (counts[mySupportEl] || 0);
-    let total = Object.values(counts).reduce((a,b)=>a+b, 0);
-    let ratio = (score / total) * 100;
-    let strength = ratio > 55 ? "신강" : (ratio < 45 ? "신약" : "중화");
-
-    const yun = ec.getYun(gender === 'M' ? 1 : 0);
-    const daYunList = yun.getDaYun();
-    const daewuns = [];
-    for (let i = 1; i < daYunList.length; i++) {
-        const dy = daYunList[i];
-        const gz = dy.getGanZhi();
-        daewuns.push({
-            age: dy.getStartAge(),
-            gan: gz[0],
-            zi: gz[1],
-            sip: getSipseong(dayStem, gz[0]) + " / " + getSipseong(dayStem, gz[1])
-        });
-    }
+    if (!birthDate || birthDate.length < 8) 
+    const healthScore = calculateHealthScore(counts);
+    const shinsal12 = pillars.map(p => p.h[1] ? get12Shinsal(dayBranch, p.h[1]) : '-');
 
     return {
         name, gender, dayStem, dayBranch, pillars, wuxing: counts, sipseong: sipCounts,
         strengthText: strength, strengthRatio: ratio,
+        gongmang: ec.getDayXunKong(),
+        healthScore: healthScore,
+        shinsal12: shinsal12,
         lunarDate: lunarObj.toString(), solarDate: solarObj.toString(),
         daewunNum: daYunList[1].getStartAge(),
         daewunList: daewuns,
         allShinsal: getAllShinsal(pillars, ec, isUnknown)
     };
 }
+
