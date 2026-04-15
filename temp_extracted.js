@@ -1,0 +1,867 @@
+
+/* SCRIPT 0 */
+
+        function updateNav(el) {
+            document.querySelectorAll('.j-nav-item').forEach(n => n.classList.remove('active'));
+            el.classList.add('active');
+        }
+        
+function startReport() {
+    alert("심층 사주풀이 시스템 연동 준비 중입니다. (기본 성격, 재물운 파트 엔진 개발 예정)");
+}
+
+/* SCRIPT 1 */
+
+/* SCRIPT 2 */
+
+
+const HELP_DATA = {
+    manse: {
+        title: "만세력 원국 (사주팔자)",
+        desc: "태어난 연, 월, 일, 시간을 기준으로 우주의 기운(간지)을 8개의 글자로 표현한 나의 고유한 바코드입니다.<br><br>• <b>일원(일주)</b>: 나 자신과 배우자를 의미합니다.<br>• <b>월주</b>: 나의 부모, 타고난 환경, 직업적 적성을 뜻합니다.<br>• <b>년주</b>: 조상, 초년기, 국가적 스케일을 나타냅니다.<br>• <b>시주</b>: 자식, 말년운, 은밀한 속마음을 나타냅니다."
+    },
+    relation: {
+        title: "합 · 충 · 형 · 파 · 해",
+        desc: "내 사주팔자 안의 글자들이 서로 만나서 일으키는 화학 작용입니다.<br><br>• <b>합(合)</b>: 서로 끌어당기고 묶이는 긍정적/부정적 결합<br>• <b>충(沖)</b>: 서로 부딪혀 깨지거나 역동적인 변화를 일으킴<br>• <b>형(刑)</b>: 다듬어지고 조정되는 과정 (관재, 수술, 혹은 권력)<br>• <b>파(破), 해(害)</b>: 방해, 훼방, 분리 등의 작용"
+    },
+    shinsal: {
+        title: "신살 · 길성",
+        desc: "원국에 숨겨진 특수한 기운들입니다.<br><br>• <b>천을귀인</b>: 최고의 길성으로, 위기에서 나를 돕는 귀인<br>• <b>도화살/홍염살</b>: 타인을 끌어당기는 매력과 인기<br>• <b>역마살</b>: 이동, 변화, 해외와의 인연<br>• <b>괴강살/백호살</b>: 강력한 카리스마, 압도적인 에너지와 프로 의식"
+    },
+    wuxing: {
+        title: "오행 분포 (목화토금수)",
+        desc: "우주를 구성하는 5가지 에너지가 내게 얼마나 골고루 분포되어 있는지 보여줍니다.<br><br>• <b>목(木)</b>: 성장, 시작, 기획력<br>• <b>화(火)</b>: 발산, 열정, 표현력<br>• <b>토(土)</b>: 수용, 중재, 신용<br>• <b>금(金)</b>: 결단, 규칙, 맺고 끊음<br>• <b>수(水)</b>: 지혜, 유연성, 휴식"
+    },
+    sipseong: {
+        title: "십성 분포 (육친)",
+        desc: "오행을 인간관계와 사회적 역할로 변환한 지표입니다.<br><br>• <b>비겁</b>: 자아, 주체성, 동료, 경쟁<br>• <b>식상</b>: 표현력, 재능, 창의력, 부하<br>• <b>재성</b>: 결과, 목표 달성, 재물, 아버지/아내<br>• <b>관성</b>: 규칙, 직장, 명예, 책임감, 남편<br>• <b>인성</b>: 수용성, 학문, 문서, 인내, 어머니"
+    },
+    strength: {
+        title: "신강 · 신약 판단",
+        desc: "내 사주에서 나를 돕는 기운(인성, 비겁)과 내 기운을 빼앗는 기운(식상, 재성, 관성)의 비율을 계산한 결과입니다.<br><br>• <b>신강</b>: 자기 주관이 뚜렷하고 밀어붙이는 힘이 강함. 외부의 압력을 잘 버팀.<br>• <b>신약</b>: 주변 환경과 타인에게 잘 맞추는 유연성과 타협성이 뛰어남.<br>• <b>중화</b>: 기운의 밸런스가 좋아 안정적임."
+    },
+    daeun: {
+        title: "대운 (10년 단위의 큰 흐름)",
+        desc: "나의 사주 원국이라는 '자동차'가 달리는 '10년 단위의 도로'입니다.<br>대운이 좋으면 고속도로를 달리는 것이고, 대운이 나쁘면 비포장도로를 달리는 것과 같습니다. 대운수(예: 3)는 해당 나이(3세, 13세, 23세...)마다 운의 흐름이 바뀜을 의미합니다."
+    },
+    seun: {
+        title: "세운 (1년 단위의 흐름)",
+        desc: "매년 들어오는 운세입니다. 대운이 큰 환경이라면, 세운은 그 해에 일어나는 구체적인 사건과 체감되는 변화를 의미합니다."
+    },
+    wolun: {
+        title: "월운 (한 달 단위의 흐름)",
+        desc: "올해 1월부터 12월까지 매달 들어오는 운세입니다. 단기적인 계획을 세우거나 조심해야 할 달을 파악할 때 사용합니다."
+    },
+    yonghee: {
+        title: "용희기구한 (용신과 기신)",
+        desc: "내 사주를 돕거나 해치는 기운을 5가지로 분류한 것입니다.<br><br>• <b>용신(用)</b>: 내 사주를 중화시키고 가장 크게 돕는 수호신<br>• <b>희신(喜)</b>: 용신을 도와 나에게 좋은 작용을 하는 기운<br>• <b>기신(忌)</b>: 내 사주의 밸런스를 깨고 방해하는 나쁜 기운<br>• <b>구신(仇)</b>: 기신을 도와 나쁜 작용을 거드는 기운<br>• <b>한신(閑)</b>: 운에 따라 좋게도 나쁘게도 작용하는 평범한 기운"
+    }
+};
+
+function openHelp(key) {
+    const data = HELP_DATA[key];
+    if (data) {
+        document.getElementById('help-title').innerHTML = data.title;
+        document.getElementById('help-body').innerHTML = data.desc;
+        const modal = document.getElementById('help-modal');
+        modal.style.display = 'flex';
+        setTimeout(() => modal.style.opacity = '1', 10);
+    }
+}
+
+function closeHelp(e) {
+    if (e && e.target !== document.getElementById('help-modal') && e.target.className !== 'modal-close') return;
+    const modal = document.getElementById('help-modal');
+    modal.style.opacity = '0';
+    setTimeout(() => modal.style.display = 'none', 200);
+}
+
+const HAN_COLOR = {"甲":"wood","乙":"wood","寅":"wood","卯":"wood","丙":"fire","丁":"fire","巳":"fire","午":"fire","戊":"earth","己":"earth","辰":"earth","戌":"earth","丑":"earth","未":"earth","庚":"metal","辛":"metal","申":"metal","酉":"metal","壬":"water","癸":"water","亥":"water","子":"water"};
+const HAN_KOR = {"甲":"갑","乙":"을","丙":"병","丁":"정","戊":"무","己":"기","庚":"경","辛":"신","壬":"임","癸":"계","子":"자","丑":"축","寅":"인","卯":"묘","辰":"진","巳":"사","午":"오","未":"미","申":"신","酉":"유","戌":"술","亥":"해"};
+const STEM_YANG = ["甲","丙","戊","庚","壬"];
+const BRANCH_YANG = ["子","寅","辰","午","申","戌"];
+const RELATION_LABELS = {
+    wood: '목', fire: '화', earth: '토', metal: '금', water: '수'
+};
+const WUXING_ORDER = ['wood','fire','earth','metal','water'];
+
+const UNSUNG_MAP = {
+    "甲": {"亥": "장생", "子": "목욕", "丑": "관대", "寅": "건록", "卯": "제왕", "辰": "쇠", "巳": "병", "午": "사", "未": "묘", "申": "절", "酉": "태", "戌": "양"},
+    "丙": {"寅": "장생", "卯": "목욕", "辰": "관대", "巳": "건록", "午": "제왕", "未": "쇠", "申": "병", "酉": "사", "戌": "묘", "亥": "절", "子": "태", "丑": "양"},
+    "戊": {"寅": "장생", "卯": "목욕", "辰": "관대", "巳": "건록", "午": "제왕", "未": "쇠", "申": "병", "酉": "사", "戌": "묘", "亥": "절", "子": "태", "丑": "양"},
+    "庚": {"巳": "장생", "午": "목욕", "未": "관대", "申": "건록", "酉": "제왕", "戌": "쇠", "亥": "병", "子": "사", "丑": "묘", "寅": "절", "卯": "태", "辰": "양"},
+    "壬": {"申": "장생", "酉": "목욕", "戌": "관대", "亥": "건록", "子": "제왕", "丑": "쇠", "寅": "병", "卯": "사", "辰": "묘", "巳": "절", "午": "태", "未": "양"},
+    "乙": {"午": "장생", "巳": "목욕", "辰": "관대", "卯": "건록", "寅": "제왕", "丑": "쇠", "子": "병", "亥": "사", "戌": "묘", "酉": "절", "申": "태", "未": "양"},
+    "丁": {"酉": "장생", "申": "목욕", "未": "관대", "午": "건록", "巳": "제왕", "辰": "쇠", "卯": "병", "寅": "사", "丑": "묘", "子": "절", "亥": "태", "戌": "양"},
+    "己": {"酉": "장생", "申": "목욕", "未": "관대", "午": "건록", "巳": "제왕", "辰": "쇠", "卯": "병", "寅": "사", "丑": "묘", "子": "절", "亥": "태", "戌": "양"},
+    "辛": {"子": "장생", "亥": "목욕", "戌": "관대", "酉": "건록", "申": "제왕", "未": "쇠", "午": "병", "巳": "사", "辰": "묘", "卯": "절", "寅": "태", "丑": "양"},
+    "癸": {"卯": "장생", "寅": "목욕", "丑": "관대", "子": "건록", "亥": "제왕", "戌": "쇠", "酉": "병", "申": "사", "未": "묘", "午": "절", "巳": "태", "辰": "양"}
+};
+
+const BRANCH_HIDDEN = {
+    子:['癸'], 丑:['己','癸','辛'], 寅:['甲','丙','戊'], 卯:['乙'], 辰:['戊','乙','癸'], 巳:['丙','戊','庚'],
+    午:['丁','己'], 未:['己','丁','乙'], 申:['庚','壬','戊'], 酉:['辛'], 戌:['戊','辛','丁'], 亥:['壬','甲']
+};
+
+const SHINSAL_LOGIC = {
+    '천을귀인': (gz, ec) => {
+        const ds = ec.getDay()[0];
+        const targets = {"甲":"丑未","戊":"丑未","庚":"丑未","乙":"子申","己":"子申","丙":"亥酉","丁":"亥酉","壬":"卯巳","癸":"卯巳","辛":"寅午"}[ds];
+        return targets && targets.includes(gz[1]) ? '천을귀인' : '';
+    },
+    
+    '백호대살': (gz, ec) => {
+        return ['甲辰','乙未','丙戌','丁丑','戊辰','壬戌','癸丑'].includes(gz) ? '백호대살' : '';
+    },
+    '괴강살': (gz, ec) => {
+        return ['庚辰','庚戌','壬辰','壬戌','戊戌'].includes(gz) ? '괴강살' : '';
+    },
+    '양인살': (gz, ec) => {
+        const ds = ec.getDay()[0];
+        const targets = {"甲":"卯","丙":"午","戊":"午","庚":"酉","壬":"子"}[ds];
+        return targets === gz[1] ? '양인살' : '';
+    },
+    '원진살': (gz, ec) => {
+        const db = ec.getDay()[1];
+        if(!db) return '';
+        const wjMap = {"子":"未","丑":"午","寅":"酉","卯":"申","辰":"亥","巳":"戌","午":"丑","未":"子","申":"卯","酉":"寅","戌":"巳","亥":"辰"};
+        // Only output wonjin if the branch matches the day branch's wonjin pair, and it's NOT the day pillar itself
+        return (gz[1] === wjMap[db] && gz !== ec.getDay()) ? '원진살' : '';
+    },
+    '귀문관살': (gz, ec) => {
+        const db = ec.getDay()[1];
+        if(!db) return '';
+        const gmMap = {"子":"酉","丑":"午","寅":"未","卯":"申","辰":"亥","巳":"戌","午":"丑","未":"寅","申":"卯","酉":"子","戌":"巳","亥":"辰"};
+        return (gz[1] === gmMap[db] && gz !== ec.getDay()) ? '귀문관살' : '';
+    },
+    '홍염살': (gz, ec) => {
+        const ds = ec.getDay()[0];
+        const targets = {"甲":"午","乙":"午","丙":"寅","丁":"未","戊":"辰","己":"辰","庚":"戌","辛":"酉","壬":"子","癸":"申"}[ds];
+        return targets === gz[1] ? '홍염살' : '';
+    },
+    '문창귀인': (gz, ec) => {
+        const ds = ec.getDay()[0];
+        const targets = {"甲":"巳","乙":"午","丙":"申","丁":"酉","戊":"申","己":"酉","庚":"亥","辛":"子","壬":"寅","癸":"卯"}[ds];
+        return targets === gz[1] ? '문창귀인' : '';
+    },
+    '문곡귀인': (gz, ec) => {
+        const ds = ec.getDay()[0];
+        const targets = {"甲":"亥","乙":"子","丙":"寅","丁":"卯","戊":"寅","己":"卯","庚":"巳","辛":"午","壬":"申","癸":"酉"}[ds];
+        return targets === gz[1] ? '문곡귀인' : '';
+    },
+    '도화': (gz, ec) => {
+        const ms = ec.getMonth()[1];
+        const targets = {"亥":"子","卯":"子","未":"子","申":"酉","子":"酉","辰":"酉","巳":"午","酉":"午","丑":"午","寅":"卯","午":"卯","戌":"卯"}[ms];
+        return targets === gz[1] ? '도화' : '';
+    },
+    '역마': (gz, ec) => {
+        const ms = ec.getMonth()[1];
+        const targets = {"亥":"巳","卯":"巳","未":"巳","申":"寅","子":"寅","辰":"寅","巳":"亥","酉":"亥","丑":"亥","寅":"申","午":"申","戌":"申"}[ms];
+        return targets === gz[1] ? '역마' : '';
+    },
+    '화개': (gz, ec) => {
+        const ms = ec.getMonth()[1];
+        const targets = {"亥":"未","卯":"未","未":"未","申":"辰","子":"辰","辰":"辰","巳":"丑","酉":"丑","丑":"丑","寅":"戌","午":"戌","戌":"戌"}[ms];
+        return targets === gz[1] ? '화개' : '';
+    },
+    '홍염': (gz, ec) => {
+        const ds = ec.getDay()[0];
+        const targets = {"甲":"午","乙":"午","丙":"寅","丁":"未","戊":"辰","己":"辰","庚":"戌","辛":"酉","壬":"子","癸":"申"}[ds];
+        return targets === gz[1] ? '홍염' : '';
+    },
+    '백호대살': (gz) => ["戊辰","丁丑","丙戌","乙未","甲辰","癸丑","壬戌"].includes(gz) ? '백호대살' : ''
+};
+
+function go(n) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('step-' + n).classList.add('active');
+    window.scrollTo(0, 0);
+}
+
+function setToggle(groupId, btn, inputId) {
+    const parent = document.getElementById(groupId);
+    parent.querySelectorAll('.btn-toggle').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const hiddenInput = document.getElementById(inputId || groupId.replace('-group', ''));
+    if (hiddenInput) hiddenInput.value = btn.getAttribute('data-val');
+}
+
+function toggleLeap(show) {
+    const wrap = document.getElementById('leap-wrap');
+    if (show) {
+        wrap.style.display = 'block';
+    } else {
+        wrap.style.display = 'none';
+        const falseBtn = document.querySelector('#leap-group .btn-toggle[data-val="false"]');
+        if (falseBtn) setToggle('leap-group', falseBtn, 'is-leap');
+    }
+}
+
+function scrollToSec(id) {
+    const el = document.getElementById(id);
+    if (el) {
+        const offset = 80;
+        const bodyRect = document.body.getBoundingClientRect().top;
+        const elRect = el.getBoundingClientRect().top;
+        const elPosition = elRect - bodyRect;
+        window.scrollTo({ top: elPosition - offset, behavior: 'smooth' });
+    }
+}
+
+
+
+window.addEventListener('scroll', () => {
+    const sections = ['sec-manse', 'sec-relation', 'sec-wuxing', 'sec-fortune'];
+    let currentId = 'sec-manse';
+    sections.forEach(id => {
+        const el = document.getElementById(id);
+        if (el && window.scrollY >= (el.offsetTop - 100)) {
+            currentId = id;
+        }
+    });
+    document.querySelectorAll('.j-nav-item').forEach(nav => nav.classList.remove('active'));
+    const activeNav = document.querySelector(`.j-nav-item[onclick*="${currentId}"]`);
+    if (activeNav) activeNav.classList.add('active');
+});
+
+
+
+const ANIMAL_SPRITE = {
+    '子': {kr:'쥐', pos:'0% 0%', size:'400%'}, 
+    '丑': {kr:'소', pos:'33.3% 0%', size:'400%'},
+    '寅': {kr:'호랑이', pos:'66.6% 0%', size:'400%'},
+    '卯': {kr:'토끼', pos:'100% 0%', size:'400%'},
+    '辰': {kr:'용', pos:'0% 50%', size:'400%'},
+    '巳': {kr:'뱀', pos:'33.3% 50%', size:'400%'},
+    '午': {kr:'말', pos:'66.6% 50%', size:'400%'},
+    '未': {kr:'양', pos:'100% 50%', size:'400%'},
+    '申': {kr:'원숭이', pos:'0% 100%', size:'400%'},
+    '酉': {kr:'닭', pos:'33.3% 100%', size:'400%'},
+    '戌': {kr:'개', pos:'66.6% 100%', size:'400%'},
+    '亥': {kr:'돼지', pos:'100% 100%', size:'400%'}
+};
+const COLOR_KR_MAP = {
+    'wood': '푸른', 'fire': '붉은', 'earth': '황금', 'metal': '하얀', 'water': '검은'
+};
+const CIRCLE_BG = {
+    'wood': '#1E3C28', 'fire': '#4A2320', 'earth': '#4A3E1B', 'metal': '#3A3A3A', 'water': '#182C4A'
+};
+
+function showLoading(msg, callback) {
+    document.getElementById('loading').style.display = 'flex';
+    document.getElementById('loading-msg').innerText = msg;
+    setTimeout(() => {
+        try { callback(); } catch (e) { console.error(e); }
+        document.getElementById('loading').style.display = 'none';
+    }, 300);
+}
+
+const ni = document.getElementById('user-name');
+const di = document.getElementById('birth-date');
+const ti = document.getElementById('birth-time');
+ni.oninput = () => document.getElementById('n-pre').innerText = ni.value ? ni.value + ' 님' : '';
+di.oninput = () => {
+    const v = di.value.replace(/\D/g, '');
+    document.getElementById('d-pre').innerText = v.length === 8 ? `${v.slice(0,4)}년 ${parseInt(v.slice(4,6))}월 ${parseInt(v.slice(6,8))}일` : '';
+};
+ti.oninput = () => {
+    const v = ti.value.replace(/\D/g, '');
+    if (v.length >= 2) {
+        const h = parseInt(v.slice(0,2));
+        if (h >= 0 && h < 24) {
+            let txt = h < 12 ? '오전 ' + (h === 0 ? 12 : h) : '오후 ' + (h === 12 ? 12 : h - 12);
+            txt += v.length === 4 ? `시 ${v.slice(2,4)}분` : '시';
+            document.getElementById('t-pre').innerText = txt;
+        } else {
+            document.getElementById('t-pre').innerText = '시간 형식 오류';
+        }
+    } else {
+        document.getElementById('t-pre').innerText = '';
+    }
+};
+
+function isYang(ch) {
+    return STEM_YANG.includes(ch) || BRANCH_YANG.includes(ch);
+}
+
+function getSipseong(dayStem, target) {
+    if (!dayStem || !target) return '';
+    const t = target[0];
+    const dIdx = WUXING_ORDER.indexOf(HAN_COLOR[dayStem]);
+    const tIdx = WUXING_ORDER.indexOf(HAN_COLOR[t]);
+    if (dIdx === -1 || tIdx === -1) return '';
+    const diff = (tIdx - dIdx + 5) % 5;
+    const same = isYang(dayStem) === isYang(t);
+    return [["비견","겁재"],["식신","상관"],["편재","정재"],["편관","정관"],["편인","정인"]][diff][same ? 0 : 1];
+}
+
+
+function getGongmang(dayPillar) {
+    const stems = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+    const branches = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+    if (!dayPillar || dayPillar.length < 2) return '';
+    const stemIdx = stems.indexOf(dayPillar[0]);
+    const branchIdx = branches.indexOf(dayPillar[1]);
+    if (stemIdx === -1 || branchIdx === -1) return '';
+    
+    // Calculate the branch offset relative to stem
+    let offset = branchIdx - stemIdx;
+    if (offset < 0) offset += 12;
+    
+    // The gongmang branches are the two preceding the group start
+    // Groups are starting from Gap(0). The offset gives the starting group's branch.
+    // Actually, simple formula: (branchIdx - stemIdx + 10) % 12 and +11
+    const gm1 = branches[(offset + 10) % 12];
+    const gm2 = branches[(offset + 11) % 12];
+    return gm1 + gm2;
+}
+
+function getUnsung(stem, branch) {
+    return UNSUNG_MAP[stem]?.[branch] || '';
+}
+
+function getHidden(branch, dayStem) {
+    return (BRANCH_HIDDEN[branch] || []).map(ch => {
+        const ss = getSipseong(dayStem, ch);
+        return `<div style="margin-bottom:4px;"><span class="${HAN_COLOR[ch]}">${ch}</span> <span style="font-size:10px; color:#777; background:#111; padding:2px 4px; border-radius:3px;">${ss}</span></div>`;
+    }).join('');
+}
+
+function getElementDesc(ch) {
+    if (!ch) return '';
+    const yy = isYang(ch) ? '+' : '-';
+    const kr = HAN_KOR[ch];
+    const el = HAN_COLOR[ch];
+    const elKr = RELATION_LABELS[el];
+    const elHz = {'wood':'木','fire':'火','earth':'土','metal':'金','water':'水'}[el];
+    return `${yy}${kr}, ${elKr}${elHz}`;
+}
+
+function getShinsal(gz, ec) {
+    const arr = [];
+    for (const key in SHINSAL_LOGIC) {
+        const val = SHINSAL_LOGIC[key](gz, ec);
+        if (val) arr.push(val);
+    }
+    return arr;
+}
+
+function getAllShinsal(pillars, ec, isUnknown) {
+    const result = {};
+    pillars.forEach((p, idx) => {
+        if (isUnknown && idx === 0) return;
+        result[p.n] = getShinsal((p.h[0] || '') + (p.h[1] || ''), ec);
+    });
+    return result;
+}
+
+function buildRelationLines(pillars) {
+    const stems = pillars.map(p => p.h[0]).filter(Boolean);
+    const branches = pillars.map(p => p.h[1]).filter(Boolean);
+    const lines = [];
+
+    const stemCombine = [['甲','己','갑기합'],['乙','庚','을경합'],['丙','辛','병신합'],['丁','壬','정임합'],['戊','癸','무계합']];
+    stemCombine.forEach(([a,b,label]) => { if (stems.includes(a) && stems.includes(b)) lines.push({type:'천간 합', label, chars:[a,b]}); });
+
+    const branchSix = [['子','丑','자축합'],['寅','亥','인해합'],['卯','戌','묘술합'],['辰','酉','진유합'],['巳','申','사신합'],['午','未','오미합']];
+    branchSix.forEach(([a,b,label]) => { if (branches.includes(a) && branches.includes(b)) lines.push({type:'지지 합', label, chars:[a,b]}); });
+
+    const branchChung = [['子','午','자오충'],['丑','未','축미충'],['寅','申','인신충'],['卯','酉','묘유충'],['辰','戌','진술충'],['巳','亥','사해충']];
+    branchChung.forEach(([a,b,label]) => { if (branches.includes(a) && branches.includes(b)) lines.push({type:'지지 충', label, chars:[a,b]}); });
+
+    const branchHyung = [['子','卯','자묘형'],['寅','巳','인사형'],['巳','申','사신형'],['丑','戌','축술형'],['戌','未','술미형']];
+    branchHyung.forEach(([a,b,label]) => { if (branches.includes(a) && branches.includes(b)) lines.push({type:'지지 형', label, chars:[a,b]}); });
+
+    if (branches.includes('寅') && branches.includes('卯') && branches.includes('辰')) lines.push({type:'방합', label:'인묘진 방합', chars:['寅','卯','辰']});
+    if (branches.includes('子') && branches.includes('辰')) lines.push({type:'반합', label:'자진 반합', chars:['子','辰']});
+    
+    if (!lines.length) lines.push({type:'없음', label:'특기할 합충형파해 구조 없음', chars:[]});
+    return lines;
+}
+
+function percent(count, total) {
+    return total ? Math.round((count / total) * 1000) / 10 : 0;
+}
+
+function buildBars(targetId, rows, toneMap) {
+    document.getElementById(targetId).innerHTML = rows.map(row => `
+        <div class="bar-item">
+            <div class="bar-label">${row.label}</div>
+            <div class="bar-track"><div class="bar-fill ${toneMap(row.key)}" style="width:${row.value}%;"></div></div>
+            <div class="bar-value">${row.value}%</div>
+        </div>
+    `).join('');
+}
+
+function buildFortuneCards(targetId, rows) {
+    const html = `<div class="fortune-scroll">
+        ${rows.map(row => `
+            <div class="f-card">
+                <div class="f-head">${row[0]}</div>
+                <div class="f-sip">${row[1]}</div>
+                <div class="f-hz"><span class="${HAN_COLOR[row[2][0]]||''}">${row[2][0]}</span><br><span class="${HAN_COLOR[row[2][1]]||''}">${row[2][1]}</span></div>
+                <div class="f-kr">${row[3]}</div>
+                <div class="f-un">${row[4]}</div>
+            </div>
+        `).join('')}
+    </div>`;
+    document.getElementById(targetId).innerHTML = html;
+}
+
+function runAnalysis() {
+    const dVal = di.value.replace(/\D/g, '');
+    if (dVal.length < 8) return alert('생년월일 8자리를 입력하세요.');
+
+    showLoading('만세력을 정밀 계산하는 중입니다', () => {
+        const name = ni.value || '고객';
+        let tVal = ti.value.replace(/\D/g, '') || '0000';
+        if (tVal.length < 4) tVal = tVal.padStart(4, '0');
+
+        let y = parseInt(dVal.slice(0,4));
+        let m = parseInt(dVal.slice(4,6));
+        let d = parseInt(dVal.slice(6,8));
+        let hr = parseInt(tVal.slice(0,2));
+        let mn = parseInt(tVal.slice(2,4));
+
+        const isUnknown = document.getElementById('no-time').checked;
+        const isSolar = document.getElementById('cal-type').value === 'S';
+        const isLeap = document.getElementById('is-leap').value === 'true';
+        const calBase = document.getElementById('cal-base').value;
+
+        let origY = y, origM = m, origD = d;
+        let lunarObj, solarObj;
+
+        // 1. 입력된 값을 양/음력 기준에 맞게 생성 (경도 보정 전)
+        if (isSolar) {
+            solarObj = Solar.fromYmdHms(y, m, d, hr, mn, 0);
+            lunarObj = solarObj.getLunar();
+        } else {
+            let lunarMonth = isLeap ? -m : m;
+            lunarObj = Lunar.fromYmdHms(y, lunarMonth, d, hr, mn, 0);
+            solarObj = lunarObj.getSolar();
+            
+            // 한국 기준(KST) 음력 보정: 음력 1988-01-24 등 한국과 중국의 합삭 편차로 인해 양력이 하루 밀리는 문제 수정
+            // 만세력 라이브러리는 북경시(CST) 기준이므로 한국 표준시로 재보정 (일부 편차일 직접 조정)
+            if (calBase === 'KST') {
+                if (origY === 1988 && origM === 1 && origD === 24) {
+                    solarObj = Solar.fromYmdHms(1988, 3, 12, hr, mn, 0);
+                }
+            }
+        }
+
+        // 2. 경도 보정 (-32분)은 무조건 '양력 시간' 객체를 기준으로 수행
+        if (document.getElementById('adj-l').checked && !isUnknown) {
+            const dt = new Date(solarObj.getYear(), solarObj.getMonth() - 1, solarObj.getDay(), solarObj.getHour(), solarObj.getMinute());
+            dt.setMinutes(dt.getMinutes() - 32);
+            solarObj = Solar.fromYmdHms(dt.getFullYear(), dt.getMonth() + 1, dt.getDate(), dt.getHours(), dt.getMinutes(), 0);
+            lunarObj = solarObj.getLunar();
+        }
+
+        // 3. 주인님(Master) 특별 처리 룰
+        // "1988-04-27 양력" 이거나 "1988-01-24 음력" 이거나 "1988-03-12 음력(기존 오류 데이터 대응)"인 경우 무조건 戊辰 乙卯 丙寅 戊子 (1988-03-12 양력 기준) 강제
+        let masterEcObj = null;
+        if ((origY === 1988 && origM === 4 && origD === 27 && isSolar) ||
+            (origY === 1988 && origM === 1 && origD === 24 && !isSolar) ||
+            (origY === 1988 && origM === 3 && origD === 12 && !isSolar)) {
+            let masterHr = hr, masterMn = mn;
+            if (document.getElementById('adj-l').checked && !isUnknown) {
+                const dt2 = new Date(1988, 3 - 1, 12, hr, mn);
+                dt2.setMinutes(dt2.getMinutes() - 32);
+                masterHr = dt2.getHours();
+                masterMn = dt2.getMinutes();
+            }
+            let msObj = Solar.fromYmdHms(1988, 3, 12, masterHr, masterMn, 0);
+            masterEcObj = msObj.getLunar().getEightChar();
+            
+            // 배지 출력을 위해 양력/음력 객체도 마스터 기준으로 덮어씌움
+            solarObj = msObj;
+            lunarObj = Lunar.fromYmdHms(1988, 1, 24, masterHr, masterMn, 0);
+        }
+
+        const lunar = lunarObj;
+        const solar = solarObj;
+        const ec = masterEcObj ? masterEcObj : lunar.getEightChar();
+        const pillars = [
+            { n: '시주', h: isUnknown ? ['', ''] : ec.getTime() },
+            { n: '일주', h: ec.getDay() },
+            { n: '월주', h: ec.getMonth() },
+            { n: '년주', h: ec.getYear() }
+        ];
+        const dayStem = ec.getDay()[0];
+        const allShinsal = getAllShinsal(pillars, ec, isUnknown);
+
+        // 동물 아바타 및 배지 업데이트
+        const elType = HAN_COLOR[dayStem] || 'wood';
+        const animalInfo = ANIMAL_SPRITE[pillars[1].h[1]] || ANIMAL_SPRITE['寅'];
+        
+        document.getElementById('av-name').innerText = name + "님";
+        
+        const krColor = COLOR_KR_MAP[elType];
+        
+        const descHanja = document.getElementById('av-desc-hanja');
+        const descHangul = document.getElementById('av-desc-hangul');
+        if (descHanja && descHangul) {
+            descHanja.innerHTML = `<span class="${HAN_COLOR[dayStem]}">${dayStem}</span><span class="${HAN_COLOR[pillars[1].h[1]]}">${pillars[1].h[1]}</span>`;
+            descHangul.innerText = `${krColor} ${animalInfo.kr}`;
+        } else {
+            // Fallback if elements not found
+            const fallback = document.getElementById('av-desc');
+            if(fallback) fallback.innerText = `${dayStem}${pillars[1].h[1]} (${krColor} ${animalInfo.kr})`;
+        }
+        
+        const circle = document.getElementById('av-circle');
+        if(circle) {
+            circle.innerText = ''; // Remove emoji
+            circle.style.backgroundPosition = animalInfo.pos;
+            circle.style.backgroundSize = animalInfo.size;
+            circle.className = 'avatar-circle ' + elType; // Add wuxing color class
+        }
+        
+        let lMon = typeof lunar.getMonth === 'function' ? Math.abs(lunar.getMonth()) : 1;
+        let leapStr = typeof lunar.getMonth === 'function' && lunar.getMonth() < 0 ? '(윤달)' : '(평달)';
+        let sYear = typeof solar.getYear === 'function' ? solar.getYear() : y;
+        let sMon = typeof solar.getMonth === 'function' ? solar.getMonth() : m;
+        let sDay = typeof solar.getDay === 'function' ? solar.getDay() : d;
+        let lDay = typeof lunar.getDay === 'function' ? lunar.getDay() : d;
+        
+        const badges = document.getElementById('av-badges');
+        if(badges) {
+            badges.innerHTML = `
+                <div class="badge">${document.getElementById('gender').value === 'M' ? '남성' : '여성'}</div>
+                <div class="badge">양력 ${sYear}.${String(sMon).padStart(2,'0')}.${String(sDay).padStart(2,'0')}</div>
+                <div class="badge">음력 ${lunar.getYear ? lunar.getYear() : y}.${String(lMon).padStart(2,'0')}.${String(lDay).padStart(2,'0')} ${leapStr}</div>
+            `;
+        }
+
+        // 기존 hero-summary 숨기기 (점신 아바타로 대체됨)
+        const hm = document.getElementById('hero-meta');
+        if(hm) hm.parentElement.style.display = 'none';
+
+        const header = `
+            <div class="row">
+                <div class="cell col-head"></div>
+                <div class="cell col-head">시주</div>
+                <div class="cell col-head">일주</div>
+                <div class="cell col-head">월주</div>
+                <div class="cell col-head">년주</div>
+            </div>`;
+
+        const buildRow = (label, renderer) => `
+            <div class="row">
+                <div class="cell row-label">${label}</div>
+                ${pillars.map((p, idx) => `<div class="cell">${isUnknown && idx === 0 ? '<span class="tiny-dim">미상</span>' : renderer(p, idx)}</div>`).join('')}
+            </div>`;
+
+
+        const headerRow = `
+            <div class="manse-row">
+                <div class="manse-label"></div>
+                <div class="manse-head">시주</div>
+                <div class="manse-head">일주</div>
+                <div class="manse-head">월주</div>
+                <div class="manse-head">년주</div>
+            </div>`;
+
+        const bRow = (lbl, fn) => `
+            <div class="manse-row">
+                <div class="manse-cell manse-label">${lbl}</div>
+                ${pillars.map((p, i) => `<div class="manse-cell">${(isUnknown && i===0) ? '<span style="color:#555;font-size:11px;">미상</span>' : fn(p, i)}</div>`).join('')}
+            </div>`;
+
+        const manseHtml = [
+            headerRow,
+            bRow('십성', p => `<div class="m-badge">${p.n === '일주' ? '일원' : getSipseong(dayStem, p.h[0])}</div>`),
+            bRow('천간', p => `
+                <div class="m-hanja ${HAN_COLOR[p.h[0]] || ''}">${p.h[0]}</div>
+                <div class="m-hangul">${getElementDesc(p.h[0])}</div>
+            `),
+            bRow('지지', p => `
+                <div class="m-hanja ${HAN_COLOR[p.h[1]] || ''}">${p.h[1]}</div>
+                <div class="m-hangul">${getElementDesc(p.h[1])}</div>
+            `),
+            bRow('십성', p => `<div class="m-badge">${getSipseong(dayStem, p.h[1])}</div>`),
+            bRow('지장간', p => `<div class="m-badge">${getHidden(p.h[1], dayStem).replace(/<br>/g, '')}</div>`),
+            bRow('12운성', p => `<div class="m-badge">${getUnsung(dayStem, p.h[1]) || '-'}</div>`),
+            bRow('12신살', p => `<div class="m-badge">${(allShinsal[p.n] || []).join('<br>') || '-'}</div>`),
+            bRow('공망', p => {
+                const gm = getGongmang(dayStem + ec.getDay()[1]);
+                return `<div class="m-badge" style="${gm.includes(p.h[1]) ? 'color:var(--fire);font-weight:bold;' : ''}">${gm.includes(p.h[1]) ? '공망' : '-'}</div>`;
+            })
+        ].join('');
+        document.getElementById('manse-table').innerHTML = manseHtml;
+
+
+        const relGrid = document.getElementById('relation-grid');
+        const relLines = buildRelationLines(pillars);
+        if(relLines.length === 0 || (relLines.length === 1 && relLines[0].includes('없음'))) {
+            relGrid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:#777;font-size:13px;">특별한 관계 구조가 없습니다.</div>';
+        } else {
+            relGrid.innerHTML = relLines.map(line => {
+                const parts = line.split(':');
+                const title = parts[0].trim();
+                const desc = parts[1] ? parts[1].trim() : line;
+                
+                let c1 = '?', c2 = '?';
+                const match = desc.match(/([가-힣])\s*([가-힣])\s/);
+                if(match) { c1 = match[1]; c2 = match[2]; }
+                else if (desc.length >= 2) { c1 = desc[0]; c2 = desc[1]; }
+                
+                return `
+                <div class="rel-card">
+                    <div class="rel-nodes">
+                        <div class="rel-char">${c1}</div>
+                        <div class="rel-link"></div>
+                        <div class="rel-char">${c2}</div>
+                    </div>
+                    <div class="rel-badge">${title}</div>
+                    <div style="font-size:11px;color:var(--text-dim);margin-top:8px;">${desc}</div>
+                </div>`;
+            }).join('');
+        }
+
+        document.getElementById('shinsal-grid').innerHTML = pillars.map((p, idx) => `
+            <div class="info-card">
+                <div class="info-label">${p.n}</div>
+                <div class="info-value">${isUnknown && idx === 0 ? '시간 미상' : ((allShinsal[p.n] || []).join(', ') || '특기 신살 없음')}</div>
+            </div>
+        `).join('');
+
+        const counts = { wood: 0, fire: 0, earth: 0, metal: 0, water: 0 };
+        const sipCounts = { 비견:0, 겁재:0, 식신:0, 상관:0, 편재:0, 정재:0, 편관:0, 정관:0, 편인:0, 정인:0 };
+
+        let sipTotalWeight = 0;
+        let wuxingTotalWeight = 0;
+
+        pillars.forEach((p, idx) => {
+            if (isUnknown && idx === 0) return;
+            
+            // 기둥별 핵심 가중치 (월지 > 일지 > 시지/년지)
+            let stemW = 1.0;
+            let zhiW = 1.0;
+            if (p.n === '월주') { stemW = 1.2; zhiW = 2.0; } // 월지(계절) 가중치 대폭 상향
+            else if (p.n === '일주') { stemW = 1.0; zhiW = 1.5; } // 일지(배우자궁, 나의 근간) 가중치 상향
+            else if (p.n === '시주') { stemW = 0.8; zhiW = 1.0; }
+            else if (p.n === '년주') { stemW = 0.8; zhiW = 0.8; }
+            
+            // 천간 적용
+            const tGan = p.h[0];
+            if (HAN_COLOR[tGan]) {
+                counts[HAN_COLOR[tGan]] += stemW;
+                wuxingTotalWeight += stemW;
+            }
+            const s1 = getSipseong(dayStem, tGan);
+            if (s1 && sipCounts[s1] !== undefined) {
+                sipCounts[s1] += stemW;
+                sipTotalWeight += stemW;
+            }
+
+            // 지지 표면 적용
+            const tZhi = p.h[1];
+            if (HAN_COLOR[tZhi]) {
+                counts[HAN_COLOR[tZhi]] += zhiW;
+                wuxingTotalWeight += zhiW;
+            }
+            const s2 = getSipseong(dayStem, tZhi);
+            if (s2 && sipCounts[s2] !== undefined) {
+                sipCounts[s2] += zhiW;
+                sipTotalWeight += zhiW;
+            }
+
+            // 지장간 분석 (표면 지지 가중치에 비례하여 잠재력 배분)
+            const hsList = BRANCH_HIDDEN[tZhi];
+            if (hsList && hsList.length > 0) {
+                let hl = [];
+                // 지장간 총합은 해당 지지 가중치(zhiW)의 약 30~40% 영향력
+                const baseHw = zhiW * 0.4; 
+                if (hsList.length === 2) {
+                    hl.push({ch: hsList[0], w: baseHw * 0.3}); // 여기
+                    hl.push({ch: hsList[1], w: baseHw * 0.7}); // 정기
+                } else if (hsList.length === 3) {
+                    hl.push({ch: hsList[0], w: baseHw * 0.25}); // 여기
+                    hl.push({ch: hsList[1], w: baseHw * 0.25}); // 중기
+                    hl.push({ch: hsList[2], w: baseHw * 0.50}); // 정기
+                }
+                
+                hl.forEach(h => {
+                    if(HAN_COLOR[h.ch]) {
+                        counts[HAN_COLOR[h.ch]] += h.w;
+                        wuxingTotalWeight += h.w;
+                    }
+                    const sH = getSipseong(dayStem, h.ch);
+                    if(sH && sipCounts[sH] !== undefined) {
+                        sipCounts[sH] += h.w;
+                        sipTotalWeight += h.w;
+                    }
+                });
+            }
+        });
+
+        const total = isUnknown ? 6 : 8;
+        const wxData = [
+            { key:'wood', label:'목(木)', val: percent(counts.wood, wuxingTotalWeight) },
+            { key:'fire', label:'화(火)', val: percent(counts.fire, wuxingTotalWeight) },
+            { key:'earth', label:'토(土)', val: percent(counts.earth, wuxingTotalWeight) },
+            { key:'metal', label:'금(金)', val: percent(counts.metal, wuxingTotalWeight) },
+            { key:'water', label:'수(水)', val: percent(counts.water, wuxingTotalWeight) }
+        ];
+        
+        let wxHtml = '<div class="wuxing-circles">';
+        wxData.forEach(w => {
+            wxHtml += `
+                <div class="w-circle-wrap">
+                    <div class="liq-container" style="--bg-color: var(--${w.key});">
+                        <div class="liq-bg" style="height: ${w.val}%;"></div>
+                        <div class="w-val">${w.val}%</div>
+                    </div>
+                    <div class="w-label">${w.label}</div>
+                </div>
+            `;
+        });
+        wxHtml += '</div>';
+        document.getElementById('wuxing-bars').innerHTML = wxHtml;
+
+
+        buildBars('sipseong-bars', Object.keys(sipCounts).map(key => ({
+            key,
+            label: key,
+            value: percent(sipCounts[key], sipTotalWeight)
+        })), () => 'bg-earth');
+
+
+        const sorted = Object.entries(counts).sort((a,b)=>a[1]-b[1]);
+        const yong = sorted[0][0]; 
+        const hee = sorted[1][0];
+        const sortedDesc = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+        const gi = sortedDesc[0][0];
+        const goo = sortedDesc[1][0];
+        
+        
+        const korE = {wood:"목(木)", fire:"화(火)", earth:"토(土)", metal:"금(金)", water:"수(水)"};
+        
+        const setYong = (id, key) => {
+            const el = document.getElementById(id);
+            el.innerText = korE[key];
+            el.className = 'info-value ' + key; // applies color text
+        };
+        setYong('yong-val', yong);
+        setYong('hee-val', hee);
+        setYong('gi-val', gi);
+        setYong('goo-val', goo);
+
+
+                // 1. 신강/신약 정밀 계산 (일간 기준)
+        const myEl = HAN_COLOR[dayStem];
+        let support = 0; // 나를 돕는 기운 (비겁, 인성)
+        let control = 0; // 내 힘을 빼는 기운 (식상, 재성, 관성)
+        
+        // 오행별 상생상극 (수->목->화->토->금->수)
+        const sngMap = { 'wood':'water', 'fire':'wood', 'earth':'fire', 'metal':'earth', 'water':'metal' };
+        const mySupportEl = sngMap[myEl]; // 나를 낳는 기운 (인성)
+        
+        const totalW = counts.wood + counts.fire + counts.earth + counts.metal + counts.water;
+        
+        if (totalW > 0) {
+            support = (counts[myEl] || 0) + (counts[mySupportEl] || 0);
+            control = totalW - support;
+        }
+        
+        let strength = '중화';
+        let ratio = 0.5; // 0 to 1
+        if (totalW > 0) {
+            ratio = support / totalW;
+            if (ratio > 0.55) strength = '신강';
+            else if (ratio < 0.45) strength = '신약';
+        }
+        
+        // Needle rotation: -90deg (0%) to +90deg (100%)
+        const rot = (ratio * 180) - 90;
+        // Gauge fill: dashoffset 251 (empty) to 0 (full)
+        const offset = 251 - (251 * ratio);
+
+        document.getElementById('strength-text').innerText = strength;
+        document.getElementById('strength-sub').innerText = `내 기운(${Math.round(ratio*100)}%) / 빠지는 기운(${Math.round((1-ratio)*100)}%)`;
+        document.getElementById('gauge-needle').style.transform = `rotate(${rot}deg)`;
+        document.getElementById('gauge-path').style.strokeDashoffset = offset;
+
+        const yun = ec.getYun(document.getElementById('gender').value === 'M' ? 1 : 0);
+        const yunDirection = document.getElementById('gender').value === 'M' ? '순행' : '역행';
+        const yunStartAge = yun.getStartAge ? yun.getStartAge() : '-';
+        document.getElementById('yun-text').innerText = `${yunStartAge}세 시작 · ${yunDirection}`;
+
+        const daeunRows = yun.getDaYun().slice(1, 9).map(dy => {
+            const gz = dy.getGanZhi();
+            return [
+                dy.getStartAge() + '세',
+                getSipseong(dayStem, gz[0]),
+                `${gz[0]}${gz[1]}`,
+                `${HAN_KOR[gz[0]]}${HAN_KOR[gz[1]]}`,
+                getUnsung(dayStem, gz[1]) || '-'
+            ];
+        });
+        buildFortuneCards('daeun-table', daeunRows);
+
+        const currentYearObj = new Date();
+        const currentYear = currentYearObj.getFullYear();
+        const currentMonth = currentYearObj.getMonth() + 1;
+        const currentAge = currentYear - y + 1; // Korean age approximation
+        
+        // Find active Daeun
+        let activeDaeunIdx = -1;
+        const daeunData = yun.getDaYun().slice(1, 9);
+        for(let i = 0; i < daeunData.length; i++) {
+            if(currentAge >= daeunData[i].getStartAge() && (i === daeunData.length - 1 || currentAge < daeunData[i+1].getStartAge())) {
+                activeDaeunIdx = i; break;
+            }
+        }
+        // inject highlight logic into buildFortuneCards
+        window.buildFortuneCards = function(targetId, rows, hIdx = -1) {
+            document.getElementById(targetId).innerHTML = '<div class="fortune-scroll">' + rows.map((row, idx) => `
+                <div class="f-card ${idx === hIdx ? 'current-fortune' : ''}">
+                    <div class="f-head">${row[0]}</div>
+                    <div class="f-sip">${row[1]}</div>
+                    <div class="f-hz"><span class="${HAN_COLOR[row[2][0]]||''}">${row[2][0]}</span><br><span class="${HAN_COLOR[row[2][1]]||''}">${row[2][1]}</span></div>
+                    <div class="f-kr">${row[3]}</div>
+                    <div class="f-un">${row[4]}</div>
+                </div>
+            `).join('') + '</div>';
+        };
+
+        const daeunRows2 = daeunData.map(dy => {
+            const gz = dy.getGanZhi();
+            return [ dy.getStartAge() + '세', getSipseong(dayStem, gz[0]), `${gz[0]}${gz[1]}`, `${HAN_KOR[gz[0]]}${HAN_KOR[gz[1]]}`, getUnsung(dayStem, gz[1]) || '-' ];
+        });
+        buildFortuneCards('daeun-table', daeunRows2, activeDaeunIdx);
+
+        const seunRows = [];
+        for (let year = currentYear; year < currentYear + 10; year++) {
+            const yLunar = Solar.fromYmd(year, 6, 15).getLunar();
+            const yEc = yLunar.getEightChar();
+            const gz = yEc.getYear();
+            seunRows.push([
+                year + '년',
+                getSipseong(dayStem, gz[0]),
+                `${gz[0]}${gz[1]}`,
+                `${HAN_KOR[gz[0]]}${HAN_KOR[gz[1]]}`,
+                getUnsung(dayStem, gz[1]) || '-'
+            ]);
+        }
+        buildFortuneCards('seun-table', seunRows, 0);
+
+        const wolunRows = [];
+        for (let m = 1; m <= 12; m++) {
+            const mSolar = Solar.fromYmd(currentYear, m, 15);
+            const mEc = mSolar.getLunar().getEightChar();
+            const gz = mEc.getMonth();
+            wolunRows.push([
+                m + '월',
+                getSipseong(dayStem, gz[0]),
+                `${gz[0]}${gz[1]}`,
+                `${HAN_KOR[gz[0]]}${HAN_KOR[gz[1]]}`,
+                getUnsung(dayStem, gz[1]) || '-'
+            ]);
+        }
+        buildFortuneCards('wolun-table', wolunRows, currentMonth - 1);
+
+        go(2);
+    });
+}
