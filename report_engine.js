@@ -53,10 +53,9 @@ function buildChapter1_Basic(data) {
     let core = dbEntry.core || "당신은 끊임없이 환경과 충돌하며 자신만의 영역을 개척하는 기질을 타고났습니다.";
     let weapon = dbEntry.weapon || "위기 상황에서 발휘되는 직관과 돌파력이 당신의 가장 큰 무기입니다.";
     
-    // 강제 볼륨 확장 (대가급 서사)
-    let extra1 = "명리학에서 일주(日柱)는 단순히 성격을 의미하는 것이 아니라, 당신이 평생 짊어지고 가야 할 영혼의 바코드이자 생존의 무기입니다. 많은 사람들이 사주를 볼 때 겉으로 드러난 화려함(사회적 가면)에 주목하지만, 당신을 진정으로 움직이는 것은 이 일주에 새겨진 내밀한 기질입니다.";
-    let extra2 = "당신의 에너지는 현재 <b>" + data.strengthText + "</b> 상태로 측정되었습니다. 이 힘은 외부의 억압을 견뎌내고 내면의 폭발력을 응축하는 원동력이 됩니다. 남들의 속도에 맞추려 하지 마십시오. 당신의 템포가 곧 정답입니다.";
-    let extra3 = "때로는 이 굽히지 않는 기질 때문에 불필요한 마찰을 겪기도 하지만, 결국 그 마찰열이 당신의 그릇을 한 단계 더 크게 빚어내는 용광로 역할을 하게 됩니다. 환경을 탓하지 마십시오. 당신은 그 환경을 지배하고 재편할 권리가 있습니다.";
+    let extra1 = "겉으로 보여지는 사회적 가면 뒤에, 평생을 관통하며 나를 은밀하게 움직이는 고유한 기질이 있습니다. 이것은 단순한 성격이 아니라, 인생의 결정적인 위기 상황이나 선택의 기로에서 무의식적으로 꺼내어 드는 '영혼의 바코드'이자 생존 무기입니다.";
+    let extra2 = "나의 에너지는 현재 <b>" + data.strengthText + "</b> 상태에 가깝습니다. 스스로도 온전히 설명하기 힘들었던 내면의 기복이나 굽히지 않는 고집들은, 바로 이 타고난 기질이 세상의 속도와 부딪히며 만들어내는 자연스러운 마찰열이었습니다.";
+    let extra3 = "남들의 템포에 억지로 나를 맞추려 할 때마다 원인 모를 답답함을 느꼈을 것입니다. 이제는 억지로 깎아내려 하지 마십시오. 그 마찰열이 결국 나의 그릇을 한 단계 더 크게 빚어내는 용광로가 됩니다.";
 
     return `
         <div class="report-chapter">
@@ -70,46 +69,17 @@ function buildChapter1_Basic(data) {
     `;
 }
 
-function buildChapter2_Wuxing(data) {
-    let html = `<div class="report-chapter"><h3 class="ch-title">Chapter 2. 오행의 세력과 절대적 무기</h3>`;
-    
-    let maxWuxing = 'earth';
-    if(data.wuxing && Object.keys(data.wuxing).length > 0) {
-        maxWuxing = Object.keys(data.wuxing).reduce((a, b) => data.wuxing[a] > data.wuxing[b] ? a : b);
-    }
-    let excessText = window.SAJU_DB?.WUXING_EXCESS?.[maxWuxing] || "기운이 한쪽으로 강하게 쏠려 있습니다.";
-    
-    let wuxingKor = {'wood':'목(木)','fire':'화(火)','earth':'토(土)','metal':'금(金)','water':'수(水)'}[maxWuxing] || maxWuxing;
-    
-    let extra1 = "사람들은 오행(목화토금수)이 골고루 섞여 있는 '중화(中和)'된 사주를 좋은 사주라고 말합니다. 평범하게 남들처럼 직장 다니며 큰 굴곡 없이 살기엔 중화가 최고일 수 있습니다. 하지만 한 시대를 풍미하고 자신만의 확고한 제국을 건설하는 거물들은 거의 예외 없이 오행이 극단적으로 쏠려 있습니다.";
-    let extra2 = "당신의 사주 원국을 해부해 본 결과, 당신의 절대적인 무기이자 동시에 아킬레스건은 바로 <b>" + wuxingKor + "</b>의 기운입니다. 이 거대한 기운이 당신의 뇌 구조, 판단력, 그리고 인간관계를 80% 이상 지배하고 있습니다.";
-    let extra3 = "이 편중된 에너지를 어떻게 다루느냐가 당신 인생의 스케일을 결정합니다. 이 에너지를 남들처럼 평범하게 억누르려 하면 속병이 나고 맙니다. 차라리 이 기운이 필요한 극한의 환경에 스스로를 던져넣어, 흉기(凶器)를 명검(名劍)으로 바꿔 쥐어야 합니다.";
-
-    html += `
-        <p class="ch-text">${extra1}</p>
-        <p class="ch-text">${extra2}</p>
-        <div style="background: #111; padding: 20px; border-left: 3px solid var(--gold); margin: 20px 0;">
-            <div style="color: #fff; font-weight: bold; margin-bottom: 10px;">[ ${wuxingKor} 기운 집중 분석 ]</div>
-            <div style="color: #ccc; font-size: 15px; line-height: 1.7;">${excessText}</div>
-        </div>
-        <p class="ch-text">${extra3}</p>
-        </div>
-    `;
-    return html;
-}
-
 function buildChapter3_Sipseong(data) {
-    let html = `<div class="report-chapter"><h3 class="ch-title">Chapter 3. 사회적 가면과 내면의 권력욕 (십성)</h3>`;
+    let html = `<div class="report-chapter"><h3 class="ch-title">Chapter 3. 나를 움직이는 권력욕 (십성)</h3>`;
     let mainSip = "정재";
     if(data.sipseong && Object.keys(data.sipseong).length > 0) {
         mainSip = Object.keys(data.sipseong).reduce((a, b) => data.sipseong[a] > data.sipseong[b] ? a : b) || "정재";
     }
     let sipText = window.SAJU_DB?.SIPSEONG?.[mainSip] || "사회의 규칙에 순응하기보다 주도적으로 판을 짜는 기질입니다.";
     
-    // 볼륨 확장
-    let extra1 = "오행이 당신의 '신체(H/W)'라면, 십성(육친)은 당신의 뇌에 깔린 '운영체제(S/W)'입니다. 당신이 사람을 대할 때, 돈을 벌 때, 상사와 부하직원을 대할 때 무의식적으로 튀어나오는 패턴이 바로 이 십성에서 비롯됩니다.";
-    let extra2 = "당신의 무의식을 지배하는 가장 강력한 운영체제는 바로 <b>[${mainSip}]</b>입니다. 이것이 당신의 '사회적 가면(페르소나)'입니다. 남들은 당신의 다양한 모습을 보겠지만, 결정적인 순간에 당신이 선택을 내리는 기준은 오직 이 기질 하나로 수렴됩니다.";
-    let extra3 = "이 [${mainSip}]의 기질은 양날의 검입니다. 이 능력을 당신의 통제 아래 두고 적재적소에 활용하면 남들이 평생 걸려도 얻지 못할 사회적 성취를 단기간에 쥐어냅니다. 하지만 반대로 이 기질에 질질 끌려다니면, 가장 믿었던 무기에 제 발등이 찍히는 꼴이 됩니다.";
+    let extra1 = "결정적인 순간에 나는 어떤 선택을 내리는가? 나를 움직이는 가장 강력한 내면의 동인(動因)은 바로 <b>[${mainSip}]</b>의 욕망입니다.";
+    let extra2 = "어떤 상황에서 무의식적으로 튀어나오는 행동 패턴, 사람을 대하고 돈을 쥐는 방식. 이 모든 것을 통제하는 내면의 '운영체제'가 바로 이것입니다. 세상이 나를 바라보는 매력 포인트이기도 하지만, 동시에 나만이 알고 있는 가장 지독한 권력욕의 실체이기도 합니다.";
+    let extra3 = "이 능력은 완벽히 내 통제 아래 두고 적재적소에 꺼내 쓸 때 가장 파괴적인 성취를 만들어냅니다. 반대로, 감정에 휩쓸려 이 기질에 질질 끌려다니면 가장 믿었던 무기에 내 발등이 찍히는 경험을 하게 됩니다.";
 
     html += `
         <p class="ch-text">${extra1}</p>
@@ -125,23 +95,23 @@ function buildChapter3_Sipseong(data) {
 }
 
 function buildChapter4_Wealth(data) {
-    let html = `<div class="report-chapter"><h3 class="ch-title">Chapter 4. 평생 재물운과 거대한 금고의 비밀</h3>`;
+    let html = `<div class="report-chapter"><h3 class="ch-title">Chapter 4. 부(富)의 스케일과 금고의 열쇠</h3>`;
     let jaeCount = (data.sipseong && (data.sipseong['정재'] || 0) + (data.sipseong['편재'] || 0)) || 0;
     
     let wealthCore = "";
-    if(jaeCount === 0) wealthCore = "당신의 사주 원국에는 표면적으로 드러난 '재성(돈)'의 글자가 약합니다. 이른바 무재(無財) 사주라 하여 돈과 인연이 없다고 단정 짓는 낡은 풀이가 많습니다. 이는 완전히 틀렸습니다. 당신은 돈을 직접 쫓으면 오히려 돈이 도망갑니다. 명예, 전문성, 독보적인 브랜드 등 '나 자신'의 가치를 미친 듯이 올려놓으면, 돈이 그림자처럼 폭발적으로 따라오는 구조입니다. 작은 푼돈에 연연하지 마십시오.";
-    else if(jaeCount > 2) wealthCore = "당신의 주변에는 늘 돈이 흐르고 기회가 널려 있습니다(재다). 돈 냄새를 맡는 감각이 천부적이라 어디서 어떻게 돈을 벌어야 할지 본능적으로 압니다. 하지만 사주에서 '재물이 많으면 내 몸(기운)이 약해진다'고 했습니다. 통제할 수 없는 너무 많은 기회는 오히려 당신을 갉아먹습니다. 10가지 기회 중 9가지를 쳐내고, 확실한 1가지에 모든 것을 걸어 파이프라인을 구축해야 자산을 지킵니다.";
-    else wealthCore = "당신의 재물운은 매우 안정적이고 밸런스가 좋습니다. 모 아니면 도 식의 극단적인 투기보다는, 한 단계씩 차곡차곡 자산을 불려 나가는 스노우볼 전략에 최적화되어 있습니다. 부동산이나 배당 수익 등 시간이 지날수록 가치가 우상향하는 '시스템 수익'을 구축하는 것이 관건입니다.";
+    if(jaeCount === 0) wealthCore = "나는 돈을 직접 쫓아가면 오히려 운이 도망가는 구조를 가졌습니다. 작은 푼돈에 연연하거나 타인의 수익을 곁눈질할 때 가장 큰 슬럼프가 옵니다. 명예, 전문성, 독보적인 브랜드 등 '나 자신'의 가치를 미친 듯이 올려놓으면, 그제야 돈이 그림자처럼 폭발적으로 따라붙습니다. 내 그릇은 단순한 통장 잔고가 아니라, 내 이름값이 곧 자본이 되는 무형의 가치에 있습니다.";
+    else if(jaeCount > 2) wealthCore = "어디서 돈 냄새가 나는지, 돈이 어떻게 흘러가는지 본능적으로 캐치하는 감각이 있습니다. 주변에 늘 기회가 널려 있는 듯 보입니다. 하지만 그 수많은 기회들이 오히려 내 에너지를 갉아먹고 집중력을 분산시킵니다. 10가지 유혹 중 9가지를 단호하게 쳐내고, 확실한 1가지에 모든 것을 걸어 파이프라인을 구축할 때 비로소 거대한 자산이 내 손에 남습니다.";
+    else wealthCore = "내 재물운은 매우 안정적이고 감각적인 밸런스를 유지하고 있습니다. 모 아니면 도 식의 극단적인 투기보다는, 한 단계씩 차곡차곡 영토를 넓혀가는 스노우볼 전략에 최적화되어 있습니다. 자산이 불어나는 구조를 눈으로 확인할 때 심리적 안정감이 극대화되며, 그것이 다시 새로운 부를 창출하는 선순환을 만듭니다.";
 
-    let extra1 = "재물(財)이란 단순히 통장 잔고의 액수가 아닙니다. 명리학에서 재성은 '내가 세상을 내 뜻대로 통제하고 다루는 힘'을 뜻합니다. 당신이 세상을 상대로 얼마나 넓은 영토를 지배할 수 있는지, 그 권력의 크기가 바로 당신의 재물운입니다.";
-    let extra2 = "당신의 재물 그릇을 분석해 보면, 현금을 손에 쥐고 있는 것보다는 '부동산, 주식, 지적재산권' 등 형태가 변환된 문서(인성) 형태로 자산을 묶어둘 때 가장 큰 시너지가 폭발합니다. 남의 돈을 굴리는 데 특화된 기질을 지녔으므로, 스케일을 작게 한정 짓지 마십시오.";
+    let extra1 = "부(富)란 단순히 현금의 액수가 아닙니다. 내 뜻대로 세상을 통제하고 다룰 수 있는 권력의 크기입니다.";
+    let extra2 = "나의 자산은 눈에 보이는 현금으로 쥐고 있을 때보다, 가치가 변환된 형태(부동산, 주식, 지적재산권, 시스템)로 묶어둘 때 가장 견고하게 증식됩니다. 내 능력과 타인의 자본(레버리지)이 결합되는 지점을 찾아내는 것. 그것이 내 금고를 여는 유일한 마스터키입니다.";
 
     html += `
         <p class="ch-text">${extra1}</p>
         <p class="ch-text">${wealthCore}</p>
         <p class="ch-text">${extra2}</p>
         <div class="axe-advice" style="margin-top: 20px;">
-            <b>👉 X-FILE 부의 추월차선 전략:</b> 당신의 금고는 평범한 직장인의 월급통장 사이즈가 아닙니다. 레버리지를 활용하십시오. 당신의 능력(식상)을 타인의 자본과 결합할 때, 비로소 당신의 진짜 금고가 열립니다.
+            <b>👉 X-FILE 부의 추월차선 전략:</b> 내 금고의 크기를 월급이라는 시스템 안에 가둬두지 마십시오. 당신의 뇌 구조는 이미 더 큰 레버리지를 다루도록 세팅되어 있습니다.
         </div>
         </div>
     `;
@@ -249,83 +219,23 @@ function buildChapter5_Career(data) {
     
     let careerCore = "";
     if(['식신', '상관'].includes(mainSip)) {
-        careerCore = "당신의 사회적 무대는 '창작과 표현'입니다. 남들이 만들어 놓은 시스템 안에서는 부품처럼 쓰이다가 빠르게 소진됩니다. 누군가의 지시를 받기보다는 당신의 아이디어와 목소리가 곧 돈이 되고 권력이 되는 프리랜서, 기획자, 예술가, 또는 자기 사업의 영역에서 압도적인 성취를 이룹니다.";
+        careerCore = "내 사회적 무대는 '창작과 표현'입니다. 남들이 짜놓은 딱딱한 시스템이나 관료주의 속에서는 숨이 막힙니다. 누군가의 지시를 앵무새처럼 따르기보다는, 내 아이디어와 목소리가 곧 결과물이 되는 프리랜서, 기획, 크리에이티브 영역에서 내 안의 야성이 가장 폭발적으로 깨어납니다.";
     } else if(['편관', '정관'].includes(mainSip)) {
-        careerCore = "조직 생활의 생리를 누구보다 잘 이해하며, 그 안에서 승진과 권력을 쟁취하는 데 천부적인 재능이 있습니다. 무에서 유를 창조하는 맨땅의 헤딩보다는, 이미 갖춰진 거대한 시스템 안에서 자신의 덩치를 키워가며 '완장'을 차는 것이 가장 효율적인 길입니다.";
+        careerCore = "조직의 생리를 꿰뚫어 보는 눈을 가졌습니다. 무에서 유를 창조하는 맨땅의 헤딩보다는, 이미 갖춰진 거대한 시스템 안에서 내 입지를 다지고 '완장(권력)'을 차는 데 천부적인 감각이 있습니다. 명분과 체면이 섰을 때 가장 큰 에너지가 나옵니다.";
     } else if(['편인', '정인'].includes(mainSip)) {
-        careerCore = "당신의 무기는 '지적재산권'과 '문서'입니다. 자격증, 학위, 혹은 남들이 쉽게 범접할 수 없는 특수한 기술력을 바탕으로 컨설턴트, 교육자, 연구자로서 독보적인 입지를 구축합니다. 몸을 쓰기보다 머리를 쓸 때 보상이 10배로 돌아옵니다.";
+        careerCore = "내 무기는 '대체 불가능한 전문성'입니다. 몸을 바쁘게 움직이는 것보다, 남들이 범접할 수 없는 지식, 자격, 특수 기술을 바탕으로 뒤에서 판을 읽는 컨설턴트나 기획자 역할을 할 때 그 가치가 빛을 발합니다.";
     } else {
-        careerCore = "남 밑에 있지 못하고 내 구역을 지켜내려는 야생성이 강합니다. 독고다이 기질이 강해 치열한 경쟁이 있는 영업, 스포츠, 독립적인 프로젝트 팀장 등에서 최고의 퍼포먼스를 냅니다.";
+        careerCore = "타인의 통제를 극도로 꺼리며 내 구역을 온전히 지켜내려는 독고다이 기질이 강합니다. 치열한 승부욕이 필요한 영업, 독립적인 프로젝트의 리더, 스포츠 등 내 성과가 내 몫으로 100% 직결되는 환경에서 최고의 퍼포먼스를 냅니다.";
     }
 
     return `<div class="report-chapter">
-        <h3 class="ch-title">Chapter 5. 최적의 직업과 사회적 권력</h3>
-        <p class="ch-text">직업은 단순히 돈을 버는 수단이 아닙니다. 사주 명리학에서 '직업운'은 내 에너지를 가장 안정적으로, 그리고 가장 파괴적으로 발산할 수 있는 '전쟁터의 종류'를 의미합니다. 물고기 사주를 타고났으면 바다로 가야지 산으로 올라가면 안 됩니다.</p>
+        <h3 class="ch-title">Chapter 5. 가장 빛나는 무대와 사회적 권력</h3>
+        <p class="ch-text">직업은 단순히 생계를 유지하는 수단이 아닙니다. 내 에너지를 가장 안정적이면서도 파괴적으로 발산할 수 있는 '전쟁터'를 선택하는 일입니다. 맞지 않는 옷을 억지로 입었을 때 찾아오던 그 지독한 무기력함은, 내 기운과 환경이 엇박자를 냈기 때문입니다.</p>
         <p class="ch-text">${careerCore}</p>
         <div class="axe-advice" style="margin-top: 15px; border-left-color: #3f51b5;">
-            <b>👉 X-FILE 무대 세팅:</b> "내 권한이 100% 보장되는가?" 이것이 당신이 직업을 선택할 때 최우선으로 고려해야 단 하나의 질문입니다.
+            <b>👉 X-FILE 무대 세팅:</b> "내 권한이 온전히 보장되는가?" 이 질문 하나가 내 무대를 결정짓는 가장 중요한 기준표가 되어야 합니다.
         </div>
     </div>`;
-}
-
-function buildChapter6_Love(data) {
-    let iljuKey = data.dayStem + data.dayBranch;
-    let dbEntry = window.SAJU_DB?.ILJU?.[iljuKey] || {};
-    let loveText = dbEntry.love || "당신의 템포를 묵묵히 맞춰주고 지지해 줄 수 있는 안정적인 인연이 닿습니다.";
-    
-    let extra1 = "사주에서 일지(日支)는 당신의 안방이자, 배우자의 자리입니다. 사회적 가면을 벗어던지고 가장 취약한 민낯을 드러냈을 때, 그것을 품어낼 수 있는 인연의 형태가 이 자리에 각인되어 있습니다.";
-    let extra2 = "당신은 매력적이지만 곁을 내어주기까지 상당히 까다로운 기준을 가지고 있습니다. 불타오르는 감정보다는 나와 결이 맞는 사람인지 수없이 테스트하는 과정을 거칩니다.";
-
-    return `<div class="report-chapter">
-        <h3 class="ch-title">Chapter 6. 닫힌 문을 여는 열쇠 (이성운과 인연)</h3>
-        <p class="ch-text">${extra1}</p>
-        <p class="ch-text">${extra2}</p>
-        <p class="ch-text" style="font-weight: 600; color: #fff;">[배우자궁 분석]</p>
-        <p class="ch-text">${loveText}</p>
-    </div>`;
-}
-
-function buildChapter7_Hidden(data) {
-    let branch = data.dayBranch;
-    let hiddenText = "겉으로 드러난 환경 아래에는 거대한 잠재력이 숨겨져 있습니다.";
-    if (window.SAJU_DB?.HIDDEN?.[branch]) {
-        hiddenText = window.SAJU_DB.HIDDEN[branch];
-    }
-    
-    let extra1 = "사람들은 원국에 드러난 8글자만으로 운명을 논합니다. 그러나 빙산의 일각처럼, 물 밑에 숨겨져 당신을 무의식적으로 조종하는 진짜 본능은 '지장간(地藏干)'에 숨어 있습니다. 지장간은 당신의 비상금이면서 동시에 내면에 억눌린 가장 솔직한 욕망입니다.";
-
-    return `<div class="report-chapter">
-        <h3 class="ch-title">Chapter 7. 빙산 아래의 욕망 (지장간 해부)</h3>
-        <p class="ch-text">${extra1}</p>
-        <div style="background: #111; padding: 20px; border-left: 3px solid var(--gold); margin: 20px 0;">
-            <div style="color: #fff; font-weight: bold; margin-bottom: 10px;">[ 태어난 날(${branch})에 숨겨진 지장간 ]</div>
-            <div style="color: #ccc; font-size: 15px; line-height: 1.7;">${hiddenText}</div>
-        </div>
-        <p class="ch-text">이 숨겨진 무기는 평소에는 작동하지 않다가 인생의 극적인 위기 상황이나 극한의 결핍 상황에 몰렸을 때 비로소 폭발하며 당신을 구원합니다.</p>
-    </div>`;
-}
-
-function buildChapter8_Health(data) {
-    let html = `<div class="report-chapter"><h3 class="ch-title">Chapter 8. 신체 취약점과 마지노선 (건강)</h3>`;
-    let maxWuxing = 'earth';
-    if(data.wuxing && Object.keys(data.wuxing).length > 0) {
-        maxWuxing = Object.keys(data.wuxing).reduce((a, b) => data.wuxing[a] > data.wuxing[b] ? a : b);
-    }
-    
-    let organ = {
-        'wood': '간, 담낭, 신경계',
-        'fire': '심장, 심혈관, 안구',
-        'earth': '위장, 비장, 소화기 계통',
-        'metal': '폐, 대장, 호흡기',
-        'water': '신장, 방광, 호르몬'
-    }[maxWuxing] || '위장';
-
-    html += `<p class="ch-text">사주 명리학은 결국 에너지(오행)의 분배와 편중을 다루는 학문이며, 이는 한의학의 오장육부와 직결됩니다. 당신의 사주에서 특정 에너지가 극도로 과부하 걸릴 때, 마음의 스트레스는 즉각적으로 해당 장기의 병변으로 나타납니다.</p>`;
-    html += `<p class="ch-text">당신의 원국에서 <b>${maxWuxing}</b>의 기운이 가장 강하게 편중되어 있으므로, 당신 인생의 건강 마지노선은 바로 <b>[${organ}]</b>입니다. 화가 나고 억눌릴 때 이곳부터 타격을 받습니다.</p>`;
-    html += `<div class="axe-advice" style="border-left-color: #d32f2f; margin-top: 15px;">
-        <b>🚨 X-FILE 생존 지침:</b> 성과를 내기 위해 몸을 연료로 태우지 마십시오. 당신은 멈춰야 할 때 멈추는 데 대단한 용기가 필요한 타입입니다.
-    </div></div>`;
-    return html;
 }
 
 function buildChapter9_Remedy(data) {
