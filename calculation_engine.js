@@ -145,11 +145,26 @@ function calculateEightChar(name, birthDate, birthTime, gender, isSolar, isLeap,
     let ratio = (score / total) * 100;
     let strength = ratio > 55 ? "신강" : (ratio < 45 ? "신약" : "중화");
 
+    const yun = ec.getYun(gender === 'M' ? 1 : 0);
+    const daYunList = yun.getDaYun();
+    const daewuns = [];
+    for (let i = 1; i < daYunList.length; i++) {
+        const dy = daYunList[i];
+        const gz = dy.getGanZi();
+        daewuns.push({
+            age: dy.getStartAge(),
+            gan: gz[0],
+            zi: gz[1],
+            sip: getSipseong(dayStem, gz[0]) + " / " + getSipseong(dayStem, gz[1])
+        });
+    }
+
     return {
         name, gender, dayStem, dayBranch, pillars, wuxing: counts, sipseong: sipCounts,
         strengthText: strength, strengthRatio: ratio,
         lunarDate: lunarObj.toString(), solarDate: solarObj.toString(),
-        daewunNum: ec.getYun(gender === 'M' ? 1 : 0).getDaYun()[1].getStartAge(),
+        daewunNum: daYunList[1].getStartAge(),
+        daewunList: daewuns,
         allShinsal: getAllShinsal(pillars, ec, isUnknown)
     };
 }
