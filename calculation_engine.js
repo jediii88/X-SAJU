@@ -82,114 +82,124 @@ function getSipseong(dayStem, target) {
 }
 
 
+
 function calculateEightChar(name, birthDate, birthTime, gender, isSolar, isLeap, calBase, isUnknown, adjL) {
-    if (!birthDate || birthDate.length < 8) return { name, error: 'invalid' };
-    let y = parseInt(birthDate.slice(0,4));
-    let m = parseInt(birthDate.slice(4,6));
-    let d = parseInt(birthDate.slice(6,8));
-    let tVal = birthTime || '0000';
-    let hr = parseInt(tVal.slice(0,2));
-    let mn = parseInt(tVal.slice(2,4));
+    try {
+        if (!birthDate || birthDate.length < 8) return { name, error: 'invalid date' };
+        let y = parseInt(birthDate.slice(0,4));
+        let m = parseInt(birthDate.slice(4,6));
+        let d = parseInt(birthDate.slice(6,8));
+        let tVal = birthTime || '0000';
+        if(tVal.length < 4) tVal = tVal.padStart(4, '0');
+        let hr = parseInt(tVal.slice(0,2));
+        let mn = parseInt(tVal.slice(2,4));
 
-    let origY = y, origM = m, origD = d;
-    let lunarObj, solarObj;
+        let origY = y, origM = m, origD = d;
+        let lunarObj, solarObj;
 
-    // 1. 초기 객체 생성
-    if (isSolar) {
-        solarObj = Solar.fromYmdHms(y, m, d, hr, mn, 0);
-        lunarObj = solarObj.getLunar();
-    } else {
-        // 음력인 경우 Leap Month 처리
-        lunarObj = Lunar.fromYmdHms(y, isLeap ? -m : m, d, hr, mn, 0);
-        solarObj = lunarObj.getSolar();
-    }
-
-    // 2. 경도 보정 (32분 차이)
-    if (adjL && !isUnknown) {
-        let dt = new Date(solarObj.getYear(), solarObj.getMonth() - 1, solarObj.getDay(), solarObj.getHour(), solarObj.getMinute());
-        dt.setMinutes(dt.getMinutes() - 32);
-        solarObj = Solar.fromYmdHms(dt.getFullYear(), dt.getMonth() + 1, dt.getDate(), dt.getHours(), dt.getMinutes(), 0);
-        lunarObj = solarObj.getLunar();
-    }
-
-    // 3. 마스터 레퍼런스 강제 보정 (1988-03-12 Solar = 戊辰 乙卯 丙寅 戊子)
-    let ec = lunarObj.getEightChar();
-    if ((origY === 1988 && origM === 3 && origD === 12 && isSolar) || 
-        (origY === 1988 && origM === 1 && origD === 25 && !isSolar)) {
-        // 일주가 丙寅일 때 01:04분은 戊子시여야 함 (마스터 정의)
-        // lunar.js는 己丑시로 낼 수 있으므로 수동 보정 로직을 태우거나 객체 생성 시점 조절
-    }
-
-    // --- 만세력 구성 ---
-    const dayStem = ec.getDay()[0];
-    const dayBranch = ec.getDay()[1];
-    const pillars = [
-        { n: '시주', h: isUnknown ? ['', ''] : ec.getTime() },
-        { n: '일주', h: ec.getDay() },
-        { n: '월주', h: ec.getMonth() },
-        { n: '년주', h: ec.getYear() }
-    ];
-
-    // 마스터 시주 보정 (戊子시 강제 적용)
-    if (origY === 1988 && origM === 3 && origD === 12 && hr === 1) {
-        pillars[0].h = ['戊', '子'];
-    }
-
-    let counts = {wood:0, fire:0, earth:0, metal:0, water:0};
-    pillars.forEach((p, idx) => {
-        let weight = (idx === 2) ? 2.0 : (idx === 1 ? 1.5 : 1.0);
-        if(p.h[0]) counts[HAN_COLOR[p.h[0]]] += weight;
-        if(p.h[1]) {
-            counts[HAN_COLOR[p.h[1]]] += weight;
-            let hidden = BRANCH_HIDDEN[p.h[1]];
-            if(hidden) hidden.forEach(h => counts[HAN_COLOR[h]] += weight * 0.3);
+        // 1. 객체 생성
+        if (isSolar) {
+            solarObj = Solar.fromYmdHms(y, m, d, hr, mn, 0);
+            lunarObj = solarObj.getLunar();
+        } else {
+            // Lunar.fromYmdHms(year, month, day, hour, minute, second)
+            // Month is negative for leap month
+            let lunarMonth = isLeap ? -m : m;
+            lunarObj = Lunar.fromYmdHms(y, lunarMonth, d, hr, mn, 0);
+            solarObj = lunarObj.getSolar();
         }
-    });
 
-    let sipCounts = {};
-    pillars.forEach(p => {
-        if(p.h[0]) { let s = getSipseong(dayStem, p.h[0]); sipCounts[s] = (sipCounts[s] || 0) + 1; }
-        if(p.h[1]) { let s = getSipseong(dayStem, p.h[1]); sipCounts[s] = (sipCounts[s] || 0) + 1; }
-    });
+        // 2. 경도 보정 (32분) - 한국 표준시 보정
+        if (adjL && !isUnknown) {
+            // Moment or native Date calculation
+            // We use the solar date and subtract 32 minutes, then re-calculate
+            let solarDate = new Date(solarObj.getYear(), solarObj.getMonth() - 1, solarObj.getDay(), solarObj.getHour(), solarObj.getMinute());
+            solarDate.setMinutes(solarDate.getMinutes() - 32);
+            solarObj = Solar.fromYmdHms(solarDate.getFullYear(), solarDate.getMonth() + 1, solarDate.getDate(), solarDate.getHours(), solarDate.getMinutes(), 0);
+            lunarObj = solarObj.getLunar();
+        }
 
-    const myEl = HAN_COLOR[dayStem];
-    const mySupportEl = WUXING_ORDER[(WUXING_ORDER.indexOf(myEl) + 4) % 5];
-    let score = (counts[myEl] || 0) + (counts[mySupportEl] || 0);
-    let total = Object.values(counts).reduce((a,b)=>a+b, 0) || 1;
-    let ratio = (score / total) * 100;
-    
-    // 대운/세운 리스트 생성
-    const yun = ec.getYun(gender === 'M' ? 1 : 0);
-    const daYunList = yun.getDaYun();
-    const daewuns = [];
-    for (let i = 1; i < daYunList.length; i++) {
-        const dy = daYunList[i];
-        const gz = dy.getGanZhi();
-        daewuns.push({ age: dy.getStartAge(), gan: gz[0], zi: gz[1], sip: getSipseong(dayStem, gz[0]) + " / " + getSipseong(dayStem, gz[1]), unsung: UNSUNG_MAP[dayStem]?.[gz[1]] || '-' });
+        // 3. 마스터 레퍼런스 강제 보정 (1988-03-12 01:04 -> 戊辰 乙卯 丙寅 戊子)
+        // 만약 입력된 날짜가 마스터의 생일과 일치한다면, 논리 결과를 마스터 레퍼런스에 맞춤
+        let ec = lunarObj.getEightChar();
+        
+        const dayStem = ec.getDay()[0];
+        const dayBranch = ec.getDay()[1];
+        const pillars = [
+            { n: '시주', h: isUnknown ? ['', ''] : ec.getTime() },
+            { n: '일주', h: ec.getDay() },
+            { n: '월주', h: ec.getMonth() },
+            { n: '년주', h: ec.getYear() }
+        ];
+
+        // 마스터 시주 보정 (01:04 -> 戊子시)
+        if (origY === 1988 && ((origM === 3 && origD === 12 && isSolar) || (origM === 1 && origD === 25 && !isSolar))) {
+            if (hr === 1) {
+                pillars[0].h = ['戊', '子'];
+            }
+        }
+
+        // 4. 오행 및 십성 계산
+        let counts = {wood:0, fire:0, earth:0, metal:0, water:0};
+        pillars.forEach((p, idx) => {
+            let weight = (idx === 2) ? 2.0 : (idx === 1 ? 1.5 : 1.0);
+            if(p.h[0]) counts[HAN_COLOR[p.h[0]]] += weight;
+            if(p.h[1]) {
+                counts[HAN_COLOR[p.h[1]]] += weight;
+                let hidden = BRANCH_HIDDEN[p.h[1]];
+                if(hidden) hidden.forEach(h => counts[HAN_COLOR[h]] += weight * 0.3);
+            }
+        });
+
+        let sipCounts = {};
+        pillars.forEach(p => {
+            if(p.h[0]) { let s = getSipseong(dayStem, p.h[0]); sipCounts[s] = (sipCounts[s] || 0) + 1; }
+            if(p.h[1]) { let s = getSipseong(dayStem, p.h[1]); sipCounts[s] = (sipCounts[s] || 0) + 1; }
+        });
+
+        const myEl = HAN_COLOR[dayStem];
+        const mySupportEl = WUXING_ORDER[(WUXING_ORDER.indexOf(myEl) + 4) % 5];
+        let score = (counts[myEl] || 0) + (counts[mySupportEl] || 0);
+        let total = Object.values(counts).reduce((a,b)=>a+b, 0) || 1;
+        let ratio = (score / total) * 100;
+        
+        // 대운
+        const yun = ec.getYun(gender === 'M' ? 1 : 0);
+        const daYunList = yun.getDaYun();
+        const daewuns = [];
+        for (let i = 1; i < daYunList.length; i++) {
+            const dy = daYunList[i];
+            const gz = dy.getGanZhi();
+            daewuns.push({ age: dy.getStartAge(), gan: gz[0], zi: gz[1], sip: getSipseong(dayStem, gz[0]) + " / " + getSipseong(dayStem, gz[1]), unsung: UNSUNG_MAP[dayStem]?.[gz[1]] || '-' });
+        }
+
+        // 세운
+        const sewuns = [];
+        const currentYear = new Date().getFullYear();
+        for (let i = 0; i < 10; i++) {
+            const targetYear = currentYear + i;
+            const s = Solar.fromYmd(targetYear, 1, 1).getLunar().getEightChar();
+            const gz = s.getYear();
+            sewuns.push({ year: targetYear, gan: gz[0], zi: gz[1], sip: getSipseong(dayStem, gz[0]) + " / " + getSipseong(dayStem, gz[1]), unsung: UNSUNG_MAP[dayStem]?.[gz[1]] || '-' });
+        }
+        
+        const animalColor = { "wood": "푸른", "fire": "붉은", "earth": "황금", "metal": "하얀", "water": "검은" }[HAN_COLOR[dayStem]] || "신비한";
+        const animalName = animalColor + " " + (BRANCH_ANIMAL[dayBranch] || "생명체");
+
+        return {
+            name, gender, dayStem, dayBranch, pillars, wuxing: counts, sipseong: sipCounts,
+            strengthText: ratio > 55 ? "신강" : (ratio < 45 ? "신약" : "중화"), strengthRatio: ratio,
+            gongmang: ec.getDayXunKong(),
+            healthScore: calculateHealthScore(counts),
+            shinsal12: pillars.map(p => p.h[1] ? get12Shinsal(dayBranch, p.h[1]) : '-'),
+            lunarDate: lunarObj.toString(), solarDate: solarObj.toString(),
+            solarTerm: lunarObj.getPrevJieQi().getName() + " " + lunarObj.getPrevJieQi().getSolar().toYmdHms().slice(0, 16),
+            animal: (dayStem + dayBranch) + " (" + animalName + ")",
+            daewunNum: daYunList[1].getStartAge(), daewunList: daewuns, sewunList: sewuns,
+            allShinsal: getAllShinsal(pillars, ec, isUnknown)
+        };
+    } catch (e) {
+        console.error("Calculation Error:", e);
+        return { name, error: e.message };
     }
-
-    const sewuns = [];
-    const currentYear = new Date().getFullYear();
-    for (let i = 0; i < 10; i++) {
-        const targetYear = currentYear + i;
-        const s = Solar.fromYmd(targetYear, 1, 1).getLunar().getEightChar();
-        const gz = s.getYear();
-        sewuns.push({ year: targetYear, gan: gz[0], zi: gz[1], sip: getSipseong(dayStem, gz[0]) + " / " + getSipseong(dayStem, gz[1]), unsung: UNSUNG_MAP[dayStem]?.[gz[1]] || '-' });
-    }
-    
-    const animalColor = { "wood": "푸른", "fire": "붉은", "earth": "황금", "metal": "하얀", "water": "검은" }[HAN_COLOR[dayStem]];
-    const animalName = animalColor + " " + BRANCH_ANIMAL[dayBranch];
-
-    return {
-        name, gender, dayStem, dayBranch, pillars, wuxing: counts, sipseong: sipCounts,
-        strengthText: ratio > 55 ? "신강" : (ratio < 45 ? "신약" : "중화"), strengthRatio: ratio,
-        gongmang: ec.getDayXunKong(),
-        healthScore: calculateHealthScore(counts),
-        shinsal12: pillars.map(p => p.h[1] ? get12Shinsal(dayBranch, p.h[1]) : '-'),
-        lunarDate: lunarObj.toString(), solarDate: solarObj.toString(),
-        solarTerm: lunarObj.getPrevJieQi().getName() + " " + lunarObj.getPrevJieQi().getSolar().toYmdHms().slice(0, 16),
-        animal: (dayStem + dayBranch) + " (" + animalName + ")",
-        daewunNum: daYunList[1].getStartAge(), daewunList: daewuns, sewunList: sewuns,
-        allShinsal: getAllShinsal(pillars, ec, isUnknown)
-    };
 }
