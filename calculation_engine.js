@@ -176,7 +176,7 @@ function calculateEightChar(name, birthDate, birthTime, gender, isSolar, isLeap,
         result.pillars = pillars;
         result.dayStem = pillars[1].h[0];
         result.dayBranch = pillars[1].h[1];
-        result.lunarDate = lunarObj.toString();
+        result.lunarDate = lunarObj.getYear() + "년 " + Math.abs(lunarObj.getMonth()) + "월 " + lunarObj.getDay() + "일" + (lunarObj.getMonth() < 0 ? " (윤달)" : "");
         result.solarDate = solarObj.toYmdHms().slice(0, 16);
         
         const prevJie = lunarObj.getPrevJieQi();

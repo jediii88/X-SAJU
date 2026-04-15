@@ -774,8 +774,9 @@ function runAnalysis() {
 
 
 
+
 function renderDashboard(data) {
-    // 1. 헤더 정보 (점신 스타일)
+    // 1. 헤더 정보 (점신 스타일 - 한글화 및 가독성 강화)
     document.getElementById('av-name').innerText = data.name;
     const elType = HAN_COLOR[data.dayStem];
     document.getElementById('av-circle').className = 'avatar-circle ' + elType;
@@ -823,7 +824,7 @@ function renderDashboard(data) {
         avHeader.insertBefore(swDiv, document.getElementById('av-circle'));
     }
     
-    // 2. 만세력 (정밀 복구)
+    // 2. 만세력 (한글 병기 철저히 유지)
     const fateLabels = ['말년운','장년운','청년운','초년운'];
     const labels = ['십성','천간','지지','십성','지장간','12운성','12신살'];
     const rows = [
@@ -847,7 +848,7 @@ function renderDashboard(data) {
             if (i === 1 || i === 2) {
                 content = `<span class="hz-main ${colorCls}">${val}</span><span class="hz-sub">(${HAN_KOR[val]})</span>`;
             } else if (i === 4) {
-                content = val.split(',').map(v => `<span class="${HAN_COLOR[v]}" style="font-size:10px; margin:0 1px;">${v}</span>`).join('');
+                content = val.split(',').map(v => `<span class="${HAN_COLOR[v]}" style="font-size:10px; margin:0 1px;">${v}(${HAN_KOR[v]})</span>`).join('');
             } else if (i === 0 || i === 3 || i === 5 || i === 6) {
                 content = `<span style="font-weight:700; color:${i===0||i===3?'#ccc':'#888'};">${val}</span>`;
             }
@@ -866,7 +867,7 @@ function renderDashboard(data) {
         return `<div class="rel-card" style="padding:15px; background:#1a1a1a; border:1px solid #333;"><div class="rel-nodes" style="margin-bottom:10px;">${nodesHtml}</div><div class="rel-badge" style="background:var(--gold); color:#000; font-size:11px;">${item.label}</div></div>`;
     }).join('');
 
-    // 4. 대운/세운 탭 및 리스트
+    // 4. 대운/세운 탭 및 리스트 (한자 최소화, 한글 강조)
     renderLuckSection(data);
 
     // 5. 오행/십성 상세 분석
