@@ -285,6 +285,10 @@ function buildChapter9_Remedy(data) {
             <li><b>재물을 부르는 숫자:</b> ${num}. 비밀번호나 계좌번호 등에 의식적으로 배치하십시오.</li>
             <li><b>행운의 마인드셋:</b> 완벽주의를 70%만 발휘하십시오. 30%의 빈틈이 있어야 돈과 사람이 들어옵니다.</li>
         </ul>
+        <div class="axe-advice" style="margin-top: 25px; border-left-color: #fbc02d; background: #1a1500;">
+            <b style="color: #ffd700;">🤝 바이럴 미션:</b> 
+            <span style="color: #ddd; font-size: 14px;">운명은 혼자서 개척하는 것이 아닙니다. 이 치밀한 분석이 내 소름을 돋게 했다면, <b>내 운명에 가장 큰 영향을 미치는 '내 곁의 사람(가족, 연인, 동업자)'</b>의 기밀문서도 해독해 보십시오. 두 사람의 톱니바퀴가 어떻게 맞물리는지 아는 자만이 진짜 판을 지배합니다.</span>
+        </div>
     </div>`;
 }
 
