@@ -2358,11 +2358,24 @@ const SHINSAL_LOGIC = {
     '백호대살': (gz) => ["戊辰","丁丑","丙戌","乙未","甲辰","癸丑","壬戌"].includes(gz) ? '백호대살' : ''
 };
 
+
+function scrollToSec(id) {
+    const el = document.getElementById(id);
+    if (el) {
+        const offset = 80;
+        const bodyRect = document.body.getBoundingClientRect().top;
+        const elRect = el.getBoundingClientRect().top;
+        const elPosition = elRect - bodyRect;
+        try { window.scrollTo({ top: elPosition - offset, behavior: 'smooth' }); } catch(e) { window.scrollTo(0, elPosition - offset); }
+    }
+}
 function go(n) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById('step-' + n).classList.add('active');
-    window.scrollTo(0, 0);
+    const step = document.getElementById('step-' + n);
+    if(step) step.classList.add('active');
+    try { window.scrollTo(0, 0); } catch(e){}
 }
+
 
 function setToggle(groupId, btn, inputId) {
     const parent = document.getElementById(groupId);
@@ -2383,6 +2396,7 @@ function toggleLeap(show) {
     }
 }
 
+
 function scrollToSec(id) {
     const el = document.getElementById(id);
     if (el) {
@@ -2390,9 +2404,16 @@ function scrollToSec(id) {
         const bodyRect = document.body.getBoundingClientRect().top;
         const elRect = el.getBoundingClientRect().top;
         const elPosition = elRect - bodyRect;
-        window.scrollTo({ top: elPosition - offset, behavior: 'smooth' });
+        try { window.scrollTo({ top: elPosition - offset, behavior: 'smooth' }); } catch(e) { window.scrollTo(0, elPosition - offset); }
     }
 }
+function go(n) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const step = document.getElementById('step-' + n);
+    if(step) step.classList.add('active');
+    try { window.scrollTo(0, 0); } catch(e){}
+}
+
 
 
 
