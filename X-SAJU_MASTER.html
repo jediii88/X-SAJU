@@ -1511,7 +1511,7 @@ function buildChapter4_Wealth(data) {
         <p class="ch-text">${wealthCore}</p>
         <p class="ch-text">${extra2}</p>
         <div class="axe-advice" style="margin-top: 20px;">
-            <b>👉 Axe의 부의 추월차선 전략:</b> 당신의 금고는 평범한 직장인의 월급통장 사이즈가 아닙니다. 레버리지를 활용하십시오. 당신의 능력(식상)을 타인의 자본과 결합할 때, 비로소 당신의 진짜 금고가 열립니다.
+            <b>👉 X의 부의 추월차선 전략:</b> 당신의 금고는 평범한 직장인의 월급통장 사이즈가 아닙니다. 레버리지를 활용하십시오. 당신의 능력(식상)을 타인의 자본과 결합할 때, 비로소 당신의 진짜 금고가 열립니다.
         </div>
         </div>
     `;
@@ -1573,7 +1573,7 @@ function buildSewunLoop(data) {
                     <b>[인간관계와 환경 변화]</b> 특히 올해의 지지 '${branches[(6+i)%12]}'는 당신의 원국과 맞물려 강력한 화학작용을 일으킵니다. <b>${evt}</b> 이 시기에는 내 뜻대로 상황을 통제하려 하기보다는, 외부에서 불어오는 변화의 바람에 유연하게 올라타는 것이 유리합니다.
                 </p>
                 <div style="background: #1a1a1a; padding: 15px; border-radius: 6px; border-left: 3px solid #d32f2f;">
-                    <span style="color: #ff6b6b; font-weight: bold; font-size: 14px;">🚨 Axe의 행동 지침:</span>
+                    <span style="color: #ff6b6b; font-weight: bold; font-size: 14px;">🚨 X의 행동 지침:</span>
                     <span style="color: #bbb; font-size: 14px; line-height: 1.6;"> ${i%2===0 ? "올해는 투자를 확장하거나 새로운 일을 벌이기보다는, 내실을 다지고 현금을 확보하는 방어적 태세가 당신을 살립니다." : "올해는 당신의 판입니다. 70%의 확신만 섰다면 뒤돌아보지 말고 즉시 실행하십시오. 머뭇거리면 기운을 뺏깁니다."}</span>
                 </div>
             </div>
@@ -1633,7 +1633,7 @@ function buildChapter5_Career(data) {
         <p class="ch-text">직업은 단순히 돈을 버는 수단이 아닙니다. 사주 명리학에서 '직업운'은 내 에너지를 가장 안정적으로, 그리고 가장 파괴적으로 발산할 수 있는 '전쟁터의 종류'를 의미합니다. 물고기 사주를 타고났으면 바다로 가야지 산으로 올라가면 안 됩니다.</p>
         <p class="ch-text">${careerCore}</p>
         <div class="axe-advice" style="margin-top: 15px; border-left-color: #3f51b5;">
-            <b>👉 Axe의 무대 세팅:</b> "내 권한이 100% 보장되는가?" 이것이 당신이 직업을 선택할 때 최우선으로 고려해야 단 하나의 질문입니다.
+            <b>👉 X의 무대 세팅:</b> "내 권한이 100% 보장되는가?" 이것이 당신이 직업을 선택할 때 최우선으로 고려해야 단 하나의 질문입니다.
         </div>
     </div>`;
 }
@@ -1693,7 +1693,7 @@ function buildChapter8_Health(data) {
     html += `<p class="ch-text">사주 명리학은 결국 에너지(오행)의 분배와 편중을 다루는 학문이며, 이는 한의학의 오장육부와 직결됩니다. 당신의 사주에서 특정 에너지가 극도로 과부하 걸릴 때, 마음의 스트레스는 즉각적으로 해당 장기의 병변으로 나타납니다.</p>`;
     html += `<p class="ch-text">당신의 원국에서 <b>${maxWuxing}</b>의 기운이 가장 강하게 편중되어 있으므로, 당신 인생의 건강 마지노선은 바로 <b>[${organ}]</b>입니다. 화가 나고 억눌릴 때 이곳부터 타격을 받습니다.</p>`;
     html += `<div class="axe-advice" style="border-left-color: #d32f2f; margin-top: 15px;">
-        <b>🚨 Axe의 생존 지침:</b> 성과를 내기 위해 몸을 연료로 태우지 마십시오. 당신은 멈춰야 할 때 멈추는 데 대단한 용기가 필요한 타입입니다.
+        <b>🚨 X의 생존 지침:</b> 성과를 내기 위해 몸을 연료로 태우지 마십시오. 당신은 멈춰야 할 때 멈추는 데 대단한 용기가 필요한 타입입니다.
     </div></div>`;
     return html;
 }
@@ -1712,7 +1712,7 @@ function buildChapter9_Remedy(data) {
     }
 
     return `<div class="report-chapter">
-        <h3 class="ch-title">Chapter 9. 운명을 비트는 레버리지 (Axe 개운법)</h3>
+        <h3 class="ch-title">Chapter 9. 운명을 비트는 레버리지 (X 개운법)</h3>
         <p class="ch-text">명리학은 정해진 불행을 넋 놓고 기다리라고 있는 학문이 아닙니다. 비가 올 것을 알았으면 우산을 쓰고 나가면 됩니다. 부족한 기운을 채우고 과도한 기운을 빼내는 생활 속의 '액션 플랜'을 처방합니다.</p>
         <ul style="color: #ccc; line-height: 2; font-size: 15px;">
             <li><b>행운의 컬러:</b> ${color}. 중요한 계약을 하거나 사람을 만날 때 이 색상의 넥타이, 지갑, 속옷을 활용하십시오. 무의식적인 기운을 보완합니다.</li>
