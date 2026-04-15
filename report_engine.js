@@ -120,19 +120,35 @@ function buildChapter4_Wealth(data) {
 
 function buildDaewunLoop(data) {
     let daewuns = [];
-    let startAge = 4;
+    let startAge = data.daewunNum || 4; 
+    
+    const yangStems = ['갑','병','무','경','임'];
+    let isYangYear = yangStems.includes(data.yearStem);
+    let isMale = data.gender === 'M' || data.gender === 'male' || data.gender === '남성';
+    
+    let isForward = (isYangYear && isMale) || (!isYangYear && !isMale);
+    
     const stems = ['갑','을','병','정','무','기','경','신','임','계'];
     const branches = ['자','축','인','묘','진','사','오','미','신','유','술','해'];
     
-    for(let i=0; i<8; i++) {
-        let dwName = stems[(i+3)%10] + branches[(i+5)%12];
-        daewuns.push({ age: startAge + (i * 10), name: dwName });
+    let wolStemIdx = stems.indexOf(data.monthStem);
+    let wolBranchIdx = branches.indexOf(data.monthBranch);
+
+    for(let i=1; i<=8; i++) {
+        let step = isForward ? i : -i;
+        let sIdx = (wolStemIdx + step) % 10;
+        if(sIdx < 0) sIdx += 10;
+        let bIdx = (wolBranchIdx + step) % 12;
+        if(bIdx < 0) bIdx += 12;
+        
+        let dwName = stems[sIdx] + branches[bIdx];
+        daewuns.push({ age: startAge + ((i-1) * 10), name: dwName });
     }
 
     let html = `<div class="report-chapter"><h3 class="ch-title">Chapter 10. 거대한 기후의 변화 : 80년 대운(大運) 시퀀스</h3><div class="timeline">`;
 
     daewuns.forEach((dw, idx) => {
-        let eventText = window.SAJU_DB?.DAEWUN_EVENTS ? window.SAJU_DB.DAEWUN_EVENTS[idx % 60] : "거대한 환경의 변화가 찾아오는 시기입니다.";
+        let eventText = window.SAJU_DB?.DAEWUN_EVENTS ? window.SAJU_DB.DAEWUN_EVENTS[idx % 60] : "나를 둘러싼 거대한 환경과 주파수가 바뀌는 시기입니다.";
         html += `
             <div class="timeline-item" style="margin-bottom: 25px; padding: 20px; background: #151515; border-left: 4px solid var(--gold); border-radius: 4px;">
                 <h4 style="color: var(--gold); margin-bottom: 12px; font-size: 18px;">${dw.age}세 ~ ${dw.age+9}세 : [${dw.name} 대운]</h4>
