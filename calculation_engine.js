@@ -37,7 +37,7 @@ function getAllShinsal(pillars, ec, isUnknown) {
         '문창귀인': {"甲":"巳","乙":"午","丙":"申","丁":"酉","戊":"申","己":"酉","庚":"亥","辛":"子","壬":"寅","癸":"卯"},
         '학당귀인': {"甲":"亥","乙":"午","丙":"寅","丁":"酉","戊":"寅","己":"酉","庚":"巳","辛":"子","壬":"申","癸":"卯"},
         '천복귀인': {"甲":"酉","乙":"申","丙":"子","丁":"亥","戊":"卯","己":"寅","庚":"午","辛":"巳","壬":"辰","癸":"미"},
-        '암록': {"甲":"亥","乙":"戌","丙":"申","丁":"未","戊":"申","己":"未","庚":"巳","辛":"辰","壬":"寅","癸":"丑"},
+        '암록': {"甲":"亥","乙":"戌","丙":"申","丁":"未","戊":"申","己":"미","庚":"巳","辛":"辰","壬":"寅","癸":"丑"},
         '태극귀인': {"甲":"子午","乙":"子午","丙":"卯酉","丁":"卯酉","戊":"辰戌丑未","己":"辰戌丑未","庚":"寅亥","辛":"寅亥","壬":"巳申","癸":"巳申"}
     };
     pillars.forEach((p, idx) => {
@@ -51,7 +51,7 @@ function getAllShinsal(pillars, ec, isUnknown) {
             let target = TARGETS[key][ds];
             if(target && target.includes(branch)) arr.push(key);
         }
-        const hong = {"甲":"午","乙":"午","丙":"寅","丁":"未","戊":"辰","己":"辰","庚":"戌","辛":"酉","壬":"申","癸":"申"}[ds];
+        const hong = {"甲":"午","乙":"午","丙":"寅","丁":"미","戊":"辰","己":"辰","庚":"戌","辛":"酉","壬":"申","癸":"申"}[ds];
         if(hong === branch) arr.push('홍염살');
         result[p.n] = arr;
     });
@@ -59,6 +59,7 @@ function getAllShinsal(pillars, ec, isUnknown) {
 }
 
 function getSipseong(dayStem, target) {
+    if(!target) return '-';
     const stems = ["甲","乙","丙","丁","戊","己","庚","辛","壬","癸"];
     const wuxing = {"甲":"wood","乙":"wood","丙":"fire","丁":"fire","戊":"earth","己":"earth","庚":"metal","辛":"metal","壬":"water","癸":"water","子":"water","丑":"earth","寅":"wood","卯":"wood","辰":"earth","巳":"fire","午":"fire","未":"earth","申":"metal","酉":"metal","戌":"earth","亥":"water"};
     let tW = wuxing[target];
@@ -138,13 +139,24 @@ function calculateEightChar(name, birthDate, birthTime, gender, isSolar, isLeap,
     let total = Object.values(counts).reduce((a,b)=>a+b, 0);
     let ratio = (score / total) * 100;
     
+    // Daewun
     const yun = ec.getYun(gender === 'M' ? 1 : 0);
     const daYunList = yun.getDaYun();
     const daewuns = [];
     for (let i = 1; i < daYunList.length; i++) {
         const dy = daYunList[i];
         const gz = dy.getGanZhi();
-        daewuns.push({ age: dy.getStartAge(), gan: gz[0], zi: gz[1], sip: getSipseong(dayStem, gz[0]) + " / " + getSipseong(dayStem, gz[1]) });
+        daewuns.push({ age: dy.getStartAge(), gan: gz[0], zi: gz[1], sip: getSipseong(dayStem, gz[0]) + " / " + getSipseong(dayStem, gz[1]), unsung: UNSUNG_MAP[dayStem]?.[gz[1]] || '-' });
+    }
+
+    // Sewun (Next 10 years)
+    const sewuns = [];
+    const currentYear = new Date().getFullYear();
+    for (let i = 0; i < 10; i++) {
+        const targetYear = currentYear + i;
+        const s = Solar.fromYmd(targetYear, 1, 1).getLunar().getEightChar();
+        const gz = s.getYear();
+        sewuns.push({ year: targetYear, gan: gz[0], zi: gz[1], sip: getSipseong(dayStem, gz[0]) + " / " + getSipseong(dayStem, gz[1]), unsung: UNSUNG_MAP[dayStem]?.[gz[1]] || '-' });
     }
 
     return {
@@ -154,7 +166,9 @@ function calculateEightChar(name, birthDate, birthTime, gender, isSolar, isLeap,
         healthScore: calculateHealthScore(counts),
         shinsal12: pillars.map(p => p.h[1] ? get12Shinsal(dayBranch, p.h[1]) : '-'),
         lunarDate: lunarObj.toString(), solarDate: solarObj.toString(),
-        daewunNum: daYunList[1].getStartAge(), daewunList: daewuns,
+        solarTerm: lunarObj.getPrevJieQi().getName() + " " + lunarObj.getPrevJieQi().getSolar().toYmdHms().slice(0, 16),
+        animal: ec.getDay() + " (" + BRANCH_ANIMAL[dayBranch] + ")",
+        daewunNum: daYunList[1].getStartAge(), daewunList: daewuns, sewunList: sewuns,
         allShinsal: getAllShinsal(pillars, ec, isUnknown)
     };
 }
