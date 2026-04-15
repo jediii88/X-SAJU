@@ -1,9 +1,9 @@
 
+
 function generateDeepReport(dataInput) {
     let data = Array.isArray(dataInput) ? dataInput[0] : dataInput;
     let html = '';
     
-    // [Intro: 압도적 몰입의 시작]
     html += `
     <div class="report-intro-luxury" style="padding: 60px 20px; text-align: center; border-bottom: 2px solid var(--gold); margin-bottom: 60px;">
         <div style="font-size: 12px; letter-spacing: 4px; color: var(--gold); margin-bottom: 20px;">PROJECT X-SAJU: TOP SECRET</div>
@@ -11,24 +11,21 @@ function generateDeepReport(dataInput) {
         <p style="color: #888; margin-top: 15px; font-size: 14px;">본 리포트는 귀하의 탄생 순간에 각인된 우주의 주파수를 해독한 기밀 문서입니다.</p>
     </div>`;
 
-    // [Step 1: 당신이라는 소우주 (본질 분석)]
     html += buildSectionHeader("SECTION 1. 자아의 원형과 설계값");
-    html += buildChapter_Persona(data); // 캐릭터성 부여
-    html += buildChapter_EnergyDensity(data); // 신강신약/오행
+    html += buildChapter_Persona(data);
+    html += buildChapter_EnergyDensity(data);
 
-    // [Step 2: 인생의 무기 (십성과 사회성)]
     html += buildSectionHeader("SECTION 2. 사회적 정글에서 사용하는 무기");
-    html += buildChapter_Weapons(data); // 십성/신살
+    html += buildChapter_Weapons(data);
+    html += buildChapter7_Full(data); // 지장간 해부 복구
 
-    // [Step 3: 운명적 파동 (재물과 성취)]
     html += buildSectionHeader("SECTION 3. 부와 성취의 메커니즘");
-    html += buildChapter_Wealth(data); // 재물운/직업운
+    html += buildChapter_Wealth(data);
+    html += buildChapter5_Full(data); // 직업운 서사 복구
 
-    // [Step 4: 생존과 보호 (건강과 위기관리)]
     html += buildSectionHeader("SECTION 4. 생존 전략과 리스크 관리");
-    html += buildChapter_HealthMaster(data); // 건강/개운법
+    html += buildChapter_HealthMaster(data);
 
-    // [Step 5: 시간의 지도 (대운/세운 흐름)]
     html += buildSectionHeader("SECTION 5. 시간의 흐름과 기회의 시기");
     html += buildChapter_TimeFlow(data); 
 
@@ -368,4 +365,60 @@ function buildChapterHealth_Full(data) {
         </div>
         <p class="ch-text">"몸은 마음의 그릇입니다." 오행의 불균형을 다스리는 식이요법과 생활 습관이 당신의 운명을 바꾸는 가장 빠른 지름길임을 잊지 마십시오.</p>
     </div>`;
+}
+
+function buildChapter_EnergyDensity(data) {
+    const mainEl = RELATION_LABELS[HAN_COLOR[data.dayStem]];
+    const ratio = Math.round(data.strengthRatio);
+    const strength = data.strengthText;
+    
+    let advice = "";
+    if(strength === "신강") advice = "당신은 거대한 댐과 같은 에너지를 가졌습니다. 스스로를 가두지 말고 흘려보낼 곳(식상, 재성)을 찾아야 성공합니다.";
+    else if(strength === "신약") advice = "당신은 섬세한 안테나와 같습니다. 주변의 자극을 차단하고 나를 지탱해줄 뿌리(인성, 비겁)를 단단히 내려야 합니다.";
+    else advice = "균형 잡힌 저울과 같은 상태입니다. 어떤 상황에서도 중도를 지키며 최선의 선택을 내릴 수 있는 강점이 있습니다.";
+
+    return `
+    <div class="report-chapter">
+        <h3 class="ch-title">02. 에너지 밀도: [${mainEl}]의 [${strength}]</h3>
+        <p class="ch-text">당신의 근본 자아는 <b>${mainEl}</b> 기운이며, 현재 <b>${ratio}%</b>의 밀도로 [${strength}] 상태를 유지하고 있습니다.</p>
+        <div class="axe-advice" style="border-left-color: #4e87d9; background: rgba(78, 135, 217, 0.05);">
+            ${advice}
+        </div>
+    </div>`;
+}
+
+function buildChapter_Wealth(data) {
+    const sip = data.sipseong;
+    const wealthPower = (sip['편재']||0) + (sip['정재']||0);
+    const outputPower = (sip['식신']||0) + (sip['상관']||0);
+    
+    let wealthNarrative = "";
+    if(wealthPower > 0 && outputPower > 0) wealthNarrative = "당신은 돈을 만드는 기술(식상)과 담는 그릇(재성)을 모두 가졌습니다. 성실함보다 '시스템'을 구축하는 데 집중하십시오.";
+    else if(wealthPower > 0) wealthNarrative = "결과물에 대한 집착과 실속은 뛰어나나, 그 과정에서의 추진력이 부족할 수 있습니다. 동업자나 기술력을 보충하십시오.";
+    else if(outputPower > 0) wealthNarrative = "재능은 넘치나 마무리가 약해 돈이 새어나갈 수 있습니다. 문서운(인성)을 활용해 자산을 묶어두는 전략이 필요합니다.";
+    else wealthNarrative = "재물에 대한 욕심보다 명예나 전문성을 쫓을 때 오히려 큰 부가 따라오는 '무재(無財)'의 역설을 활용해야 합니다.";
+
+    return `
+    <div class="report-chapter">
+        <h3 class="ch-title">03. 부의 설계: 재물 창출의 메커니즘</h3>
+        <p class="ch-text">재물운은 단순히 돈이 들어오는 운이 아니라, 내가 세상을 향해 뻗는 **'소유의 촉수'**가 얼마나 강한지를 보는 것입니다.</p>
+        <div class="axe-advice" style="border-left-color: #c7a76a; background: rgba(199, 167, 106, 0.05);">
+            ${wealthNarrative}
+        </div>
+    </div>`;
+}
+
+function buildChapter_HealthMaster(data) {
+    return buildChapterHealth_Full(data) + `
+    <div class="report-chapter" style="margin-top:20px;">
+        <h3 class="ch-title">04. 운명을 바꾸는 처방 (개운법)</h3>
+        <p class="ch-text">사주는 숙명이 아닙니다. 나의 부족한 기운을 환경과 습관으로 채울 때 운명의 항로가 바뀝니다.</p>
+        <div style="background:#111; padding:20px; border-radius:10px; border-left:4px solid var(--gold);">
+            <p class="ch-text" style="margin:0;"><b>추천 솔루션:</b> 당신의 부족한 기운을 보완하기 위해 <b>${data.strengthText === '신약' ? '학문과 휴식(인성)' : '사회적 활동과 봉사(식상)'}</b>를 삶의 우선순위에 두십시오.</p>
+        </div>
+    </div>`;
+}
+
+function buildChapter_TimeFlow(data) {
+    return buildChapter10_Full(data);
 }
