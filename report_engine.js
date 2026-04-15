@@ -36,6 +36,12 @@ function generateDeepReport(data) {
     html += buildSewunLoop(data);
     html += buildWolunLoop(data);
     
+    
+    html += `<div id="pdf-btn-wrap" style="text-align: center; margin-top: 50px; padding-bottom: 50px; border-top: 1px solid #333; padding-top: 30px;">
+        <button class="btn" style="background: var(--gold); color: #000; width: 100%; max-width: 400px; font-size: 18px; font-weight: 800; box-shadow: 0 4px 15px rgba(199, 167, 106, 0.4);" onclick="window.print()">📄 X-FILE 기밀문서 PDF 저장</button>
+        <p style="color: #aaa; font-size: 13px; margin-top: 15px;">※ 브라우저 인쇄 창에서 <b>'PDF로 저장'</b>을 선택하고, <b>'배경 그래픽(옵션)'</b>을 꼭 켜주세요.</p>
+    </div>`;
+    
     document.getElementById('report-container').innerHTML = html;
 }
 
