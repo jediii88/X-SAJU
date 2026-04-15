@@ -568,16 +568,35 @@ function closeHelp(e) {
     setTimeout(() => modal.style.display = 'none', 200);
 }
 
+
 function buildRelationLines(pillars) {
     const stems = pillars.map(p => p.h[0]).filter(Boolean);
     const branches = pillars.map(p => p.h[1]).filter(Boolean);
     const lines = [];
-    const stemCombine = [['甲','己','갑기합'],['乙','庚','을경합'],['丙','辛','병신합'],['丁','壬','정임합'],['戊','癸','무계합']];
-    stemCombine.forEach(([a,b,label]) => { if (stems.includes(a) && stems.includes(b)) lines.push({type:'천간 합', label, chars:[a,b]}); });
-    const branchSix = [['子','丑','자축합'],['寅','亥','인해합'],['卯','戌','묘술합'],['辰','酉','진유합'],['巳','申','사신합'],['午','未','오미합']];
-    branchSix.forEach(([a,b,label]) => { if (branches.includes(a) && branches.includes(b)) lines.push({type:'지지 합', label, chars:[a,b]}); });
-    const branchChung = [['子','午','자오충'],['丑','未','축미충'],['寅','申','인신충'],['卯','酉','묘유충'],['辰','戌','진술충'],['巳','亥','사해충']];
-    branchChung.forEach(([a,b,label]) => { if (branches.includes(a) && branches.includes(b)) lines.push({type:'지지 충', label, chars:[a,b]}); });
+    
+    // 천간 합
+    [['甲','己','갑기합'],['乙','庚','을경합'],['丙','辛','병신합'],['丁','壬','정임합'],['戊','癸','무계합']]
+    .forEach(([a,b,label]) => { if (stems.includes(a) && stems.includes(b)) lines.push({type:'천간 합', label, chars:[a,b]}); });
+    
+    // 지지 육합
+    [['子','丑','자축합'],['寅','亥','인해합'],['卯','戌','묘술합'],['辰','酉','진유합'],['巳','申','사신합'],['午','未','오미합']]
+    .forEach(([a,b,label]) => { if (branches.includes(a) && branches.includes(b)) lines.push({type:'육합', label, chars:[a,b]}); });
+    
+    // 지지 충
+    [['子','午','자오충'],['丑','未','축미충'],['寅','申','인신충'],['卯','酉','묘유충'],['辰','戌','진술충'],['巳','亥','사해충']]
+    .forEach(([a,b,label]) => { if (branches.includes(a) && branches.includes(b)) lines.push({type:'충', label, chars:[a,b]}); });
+
+    // 지지 형
+    [['寅','巳','인사형'],['巳','申','사신형'],['申','寅','신인형'],['丑','戌','축술형'],['戌','未','술미형'],['未','丑','미축형'],['子','卯','자묘형']]
+    .forEach(([a,b,label]) => { if (branches.includes(a) && branches.includes(b)) lines.push({type:'형', label, chars:[a,b]}); });
+
+    // 삼합/방합 (간략화)
+    [['亥','卯','未','해묘미삼합'],['寅','午','戌','인오술삼합'],['巳','酉','丑','사유축삼합'],['申','子','辰','신자진삼합']]
+    .forEach(([a,b,c,label]) => { if (branches.includes(a) && branches.includes(b) && branches.includes(c)) lines.push({type:'삼합', label, chars:[a,b,c]}); });
+    
+    [['寅','卯','辰','인묘진방합'],['巳','午','未','사오미방합'],['申','酉','戌','신유술방합'],['亥','子','丑','해자축방합']]
+    .forEach(([a,b,c,label]) => { if (branches.includes(a) && branches.includes(b) && branches.includes(c)) lines.push({type:'방합', label, chars:[a,b,c]}); });
+
     if (!lines.length) lines.push({type:'없음', label:'특기할 관계 없음', chars:[]});
     return lines;
 }
