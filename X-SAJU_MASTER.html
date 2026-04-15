@@ -22,11 +22,11 @@
     :root {
         --bg: #000;
         --gold: #c7a76a;
-        --wood: #4CAF50;
-        --fire: #FF5252;
-        --earth: #FFC107;
-        --metal: #ffffff;
-        --water: #2196F3;
+        --wood: #6bb076;
+        --fire: #e67e63;
+        --earth: #dcb372;
+        --metal: #a1aab5;
+        --water: #5d8ab9;
         --text: #fff;
     }
 
@@ -80,7 +80,7 @@
     }
 
     .hanja-character { 
-        font-size: 64px; font-weight: 100; line-height: 1; margin-bottom: 5px; 
+        font-size: 64px; font-weight: 200; line-height: 1; margin-bottom: 5px; 
         display: block; font-family: 'Noto Sans KR', sans-serif; 
     }
     .hangeul-sub { 
@@ -88,7 +88,7 @@
         letter-spacing: 0.1em; display: block; 
     }
     .sipseong-text { 
-        font-size: 14px; font-weight: 400; color: #aaa; 
+        font-size: 14px; font-weight: 300; color: #aaa; 
         padding: 15px 0 !important;
     }
 
@@ -97,6 +97,24 @@
     .color-earth { color: var(--earth); }
     .color-metal { color: var(--metal); }
     .color-water { color: var(--water); }
+
+    
+    .avatar-header {
+        text-align: center;
+        padding: 40px 20px;
+        background: radial-gradient(circle at 50% 0%, #15161d 0%, #000 100%);
+        border-bottom: 1px solid #333;
+    }
+    .avatar-circle {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        margin: 0 auto 15px;
+        border: 2px solid var(--gold);
+        box-shadow: 0 0 20px rgba(199, 167, 106, 0.2);
+    }
+    .avatar-name { font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 5px; }
+    .avatar-desc-wrap { font-size: 14px; color: var(--gold); font-weight: 500; letter-spacing: 1px; margin-bottom:15px; }
 
     /* Luck Cards */
     .fortune-scroll { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; }
@@ -479,16 +497,57 @@ function runAnalysis() {
 
 
 
-function renderDashboard(data) {
-    // 헤더 및 기본 정보
-    document.getElementById('av-name').innerText = data.name;
-    document.getElementById('av-desc').innerHTML = `${data.animal}`;
-    document.getElementById('av-badges').innerHTML = `
-        <div class="badge" style="background:#444; border:none; padding:4px 10px; border-radius:20px; font-size:11px;">건강 ${data.healthScore}점</div>
-        <div class="badge" style="background:#444; border:none; padding:4px 10px; border-radius:20px; font-size:11px;">공망: ${data.gongmang}</div>
-    `;
 
-    // --- v2.9.1 Original Grid Layout ---
+function renderDashboard(data) {
+    // 1. 헤더 및 기본 정보
+    document.getElementById('av-name').innerText = data.name;
+    document.getElementById('av-desc').innerHTML = `<span style="color:var(--gold); font-weight:700; font-size:18px;">${data.animal}</span>`;
+    
+    // 뱃지 리스트 복구 (건강, 공망, 주요 신살)
+    let badgeHtml = `<div class="badge" style="background:#e74c3c; border:none; padding:4px 10px; border-radius:20px; font-size:11px; margin-right:5px; display:inline-block;">건강 ${data.healthScore}점</div>`;
+    badgeHtml += `<div class="badge" style="background:#444; border:none; padding:4px 10px; border-radius:20px; font-size:11px; margin-right:5px; display:inline-block;">공망: ${data.gongmang}</div>`;
+    const allS = data.allShinsal || {};
+    const flatShinsal = [...new Set(Object.values(allS).flat())].filter(Boolean);
+    flatShinsal.slice(0, 3).forEach(s => { badgeHtml += `<div class="badge" style="background:#222; border:none; padding:4px 10px; border-radius:20px; font-size:11px; color:#aaa; margin-right:5px; display:inline-block;">${s}</div>`; });
+    document.getElementById('av-badges').innerHTML = badgeHtml;
+
+    const avHeader = document.querySelector('.avatar-header');
+
+    // 2. 다인용 스위처 (User Switcher) 복구
+    let switcher = '';
+    if (window.globalSajuDataArray && window.globalSajuDataArray.length > 1) {
+        switcher = `<div style="display:flex; justify-content:center; gap:8px; margin-bottom:20px; overflow-x:auto; padding:5px;">`;
+        window.globalSajuDataArray.forEach((u, i) => {
+            const isActive = u.name === data.name;
+            switcher += `<button class="btn subtle" style="flex:0 0 auto; padding:8px 20px; font-size:12px; border-radius:20px; ${isActive ? 'background:var(--gold); color:#000; border:none; font-weight:800;' : 'background:#1a1a1a; color:#888; border:1px solid #333;'}" onclick="renderDashboard(window.globalSajuDataArray[${i}])">${u.name}</button>`;
+        });
+        switcher += `</div>`;
+    }
+    const existingSw = document.getElementById('user-switcher');
+    if (existingSw) existingSw.remove();
+    if (switcher) {
+        const swDiv = document.createElement('div');
+        swDiv.id = 'user-switcher';
+        swDiv.innerHTML = switcher;
+        avHeader.insertBefore(swDiv, avHeader.firstChild);
+    }
+
+    // 3. 양력/음력 정보 그리드 복구 (Info Grid) - 삭제되었던 것을 다시 삽입
+    let headerHtml = `
+        <div class="info-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:15px; background:#1a1a1a; padding:20px; border-radius:12px; margin-top:25px; border:1px solid #333; text-align:left;">
+            <div class="info-item"><div class="info-label" style="font-size:11px; color:#666; margin-bottom:5px;">양력</div><div class="info-val" style="font-size:14px; font-weight:700; color:#ddd;">${data.solarDate}</div></div>
+            <div class="info-item"><div class="info-label" style="font-size:11px; color:#666; margin-bottom:5px;">음력</div><div class="info-val" style="font-size:14px; font-weight:700; color:#ddd;">${data.lunarDate}</div></div>
+            <div class="info-item" style="grid-column: 1 / -1;"><div class="info-label" style="font-size:11px; color:#666; margin-bottom:5px;">절기</div><div class="info-val" style="font-size:14px; font-weight:700; color:#ddd;">${data.solarTerm}</div></div>
+        </div>
+    `;
+    const existingInfo = document.getElementById('jeomsin-info');
+    if (existingInfo) existingInfo.remove();
+    const infoDiv = document.createElement('div');
+    infoDiv.id = 'jeomsin-info';
+    infoDiv.innerHTML = headerHtml;
+    avHeader.appendChild(infoDiv);
+
+    // 4. v2.9.1 Original Grid Layout (수직 5열 그리드)
     const fateLabels = ['시주','일주','월주','년주'];
     let gHtml = '<div class="wonguk-container-v20">';
     
@@ -533,6 +592,17 @@ function renderDashboard(data) {
     
     // 오행 게이지 등 나머지
     renderDetailedAnalysis(data);
+
+    // 5. 게이지 업데이트 복구 (삭제되었던 로직 복구)
+    const ratio = data.strengthRatio || 50;
+    const gaugePath = document.getElementById('gauge-path');
+    const gaugeNeedle = document.getElementById('gauge-needle');
+    const strengthText = document.getElementById('strength-text');
+    if (gaugePath && gaugeNeedle && strengthText) {
+        gaugePath.style.strokeDashoffset = 251 - (ratio * 2.51);
+        gaugeNeedle.style.transform = `rotate(${(ratio * 1.8) - 90}deg)`;
+        strengthText.innerText = `${data.strengthText} (${Math.round(ratio)})`;
+    }
 }
 
 function renderLuckSection(data) {
