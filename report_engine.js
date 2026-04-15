@@ -171,134 +171,205 @@ function buildSectionHeader(title) {
 
 // --- CHAPTERS WITH FULL STORYTELLING ---
 
+
+// --- HIGH DENSITY NARRATIVE CHAPTERS (MASTERPIECE LEVEL) ---
+
 function buildChapter1_Full(data) {
     let iljuKey = data.dayStem + data.dayBranch;
     let dbEntry = window.SAJU_DB?.ILJU?.[iljuKey] || {};
-    return `<div class="report-chapter">
+    return `
+    <div class="report-chapter">
         <h3 class="ch-title">Chapter 1. 당신이라는 소우주의 설계도</h3>
         <p class="ch-text" style="font-size: 18px; font-weight: 800; color: var(--gold);">[${dbEntry.title || iljuKey + '(' + (HAN_KOR[data.dayStem]||'') + (HAN_KOR[data.dayBranch]||'') + ')의 기운'}]</p>
         <p class="ch-text">명리학에서 일주(日柱)는 단순히 성격을 의미하는 것이 아니라, 당신이 평생 짊어지고 가야 할 <b>영혼의 바코드이자 생존의 무기</b>입니다. 당신을 진정으로 움직이는 것은 사회적 가면이 아닌, 바로 이 일주에 새겨진 내밀한 기질입니다.</p>
-        <p class="ch-text">${dbEntry.core || '당신의 본질을 해독하는 중입니다.'}</p>
-        <p class="ch-text">당신의 에너지는 현재 <b>${data.strengthText}</b> 상태입니다. 이는 외부의 압력을 견뎌내고 내면의 폭발력을 응축하는 원동력이 됩니다. 남들의 속도에 맞추려 하지 마십시오. 당신의 템포가 곧 정답입니다.</p>
-        <div class="axe-advice"><b>Axe의 기밀 통찰:</b> ${dbEntry.weapon || '당신만의 독보적인 무기를 발견하십시오.'}</div>
+        <div style="background: rgba(255,255,255,0.03); padding: 30px; border-radius: 10px; margin: 30px 0; border: 1px solid #222;">
+            <p class="ch-text" style="margin-top: 0; color: #ccc; line-height: 1.9;">${dbEntry.core || '당신의 본질을 해독하는 중입니다.'}</p>
+        </div>
+        <p class="ch-text">현재 당신의 에너지는 <b>[${data.strengthText}]</b> 상태입니다. ${data.strengthText === '신강' ? '주변의 저항을 뚫고 내 의지를 관철시키는 거대한 폭주 기관차와 같습니다.' : (data.strengthText === '신약' ? '주변 환경을 스펀지처럼 흡수하며 상황에 맞게 나를 변형시키는 섬세한 안테나와 같습니다.' : '상황에 따라 강온 양면을 자유자재로 구사하는 밸런스의 지배자입니다.')} 남들의 속도에 맞추려 하지 마십시오. 당신의 템포가 곧 정답입니다.</p>
+        <div class="axe-advice" style="margin-top: 30px;">
+            <b>Axe의 기밀 통찰:</b> ${dbEntry.weapon || '당신만의 독보적인 무기를 발견하십시오.'}
+        </div>
     </div>`;
 }
 
 function buildChapter2_Full(data) {
     let maxW = Object.keys(data.wuxing).reduce((a, b) => data.wuxing[a] > data.wuxing[b] ? a : b);
+    let minW = Object.keys(data.wuxing).reduce((a, b) => data.wuxing[a] < data.wuxing[b] ? a : b);
     let excessText = window.SAJU_DB?.WUXING_EXCESS?.[maxW] || "에너지가 한곳으로 집중되어 있습니다.";
-    return `<div class="report-chapter">
-        <h3 class="ch-title">Chapter 2. 오행의 흐름과 에너지 권력</h3>
-        <p class="ch-text">거물들은 예외 없이 오행이 극단적으로 쏠려 있습니다. 당신의 사주 원국을 해부해 본 결과, 당신의 절대적인 무기이자 아킬레스건은 바로 <b>${RELATION_LABELS[maxW]}</b>의 기운입니다.</p>
-        <div style="background: rgba(255,255,255,0.03); padding: 25px; border-radius: 10px; margin: 25px 0; border: 1px solid #222;">
-            <p class="ch-text" style="color: var(--gold); font-weight: 700;">[ ${RELATION_LABELS[maxW]} 기운의 지배력 집중 분석 ]</p>
-            <p class="ch-text" style="margin: 0; color: #ccc;">${excessText}</p>
-        </div>
-        <p class="ch-text">이 편중된 에너지를 어떻게 다루느냐가 당신 인생의 스케일을 결정합니다. 남들처럼 평범하게 억누르려 하지 말고, 이 기운이 필요한 극한의 환경에서 당신의 가치를 증명하십시오.</p>
+    
+    return `
+    <div class="report-chapter">
+        <h3 class="ch-title">Chapter 2. 오행의 권력 구조와 결핍의 심리학</h3>
+        <p class="ch-text">세상을 뒤흔든 거물들은 예외 없이 오행이 극단적으로 쏠려 있습니다. 완벽한 균형은 평범함을 의미하지만, 극단적인 불균형은 <b>천재성</b>을 뜻합니다.</p>
+        
+        <h4 style="color: var(--gold); margin-top: 40px; font-size: 18px;">[ 절대 무기: ${RELATION_LABELS[maxW]}의 지배력 ]</h4>
+        <p class="ch-text">${excessText}</p>
+        
+        <h4 style="color: #e74c3c; margin-top: 40px; font-size: 18px;">[ 영혼의 기갈: ${RELATION_LABELS[minW]}의 공백 ]</h4>
+        <p class="ch-text">당신은 이 부족한 기운에 평생토록 본능적으로 집착합니다. 이것이 바로 명리학에서 말하는 <b>결핍이 만들어내는 강력한 동기부여</b>입니다. 없는 것을 채우려는 그 처절한 몸부림이 당신을 남들보다 몇 배는 더 높이 도약하게 만드는 원동력입니다.</p>
+        <p class="ch-text">결핍을 두려워하지 마십시오. 비어있는 공간이 있어야 새로운 것을 담을 수 있습니다.</p>
     </div>`;
 }
 
 function buildChapter3_Full(data) {
     let mainSip = Object.keys(data.sipseong).reduce((a, b) => data.sipseong[a] > data.sipseong[b] ? a : b) || "비견";
     let sipText = window.SAJU_DB?.SIPSEONG?.[mainSip] || "당신만의 독특한 사회적 페르소나를 가지고 있습니다.";
-    return `<div class="report-chapter">
-        <h3 class="ch-title">Chapter 3. 사회적 가면과 내면의 욕망 (십성)</h3>
-        <p class="ch-text">오행이 당신의 신체라면, 십성은 당신의 뇌에 깔린 <b>운영체제(S/W)</b>입니다. 결정적인 순간에 당신이 내리는 모든 선택은 바로 이 십성이라는 필터를 통해 걸러집니다.</p>
-        <div class="axe-advice" style="border-left-color: #52b36a;">
-            <p style="margin: 0; color: #fff; font-weight: 700; margin-bottom: 8px;">[ 당신의 주력 페르소나: ${mainSip} ]</p>
-            <p style="margin: 0;">${sipText}</p>
+    
+    // 심층 분석 로직 추가
+    let subSip = Object.keys(data.sipseong).filter(k => k !== mainSip).sort((a, b) => data.sipseong[b] - data.sipseong[a])[0];
+    
+    return `
+    <div class="report-chapter">
+        <h3 class="ch-title">Chapter 3. 뇌 구조와 사회적 무기 (십성 분석)</h3>
+        <p class="ch-text">오행이 당신의 신체라면, 십성(十星)은 당신의 뇌에 깔린 <b>운영체제(S/W)</b>입니다. 결정적인 순간에 당신이 내리는 모든 선택은 바로 이 필터를 통해 걸러집니다.</p>
+        
+        <div style="padding: 25px; border-left: 4px solid var(--gold); background: #111; margin-top: 25px;">
+            <p style="margin-top: 0; color: var(--gold); font-size: 16px; font-weight: 800;">주력 페르소나 (Primary OS): [${mainSip}]</p>
+            <p style="margin: 0; color: #ddd; line-height: 1.8;">${sipText}</p>
         </div>
-        <p class="ch-text" style="margin-top: 20px;">이 기질은 양날의 검입니다. 당신의 통제 아래 두면 최고의 무기가 되지만, 끌려다니면 발목을 잡는 족쇄가 됩니다.</p>
+
+        <p class="ch-text" style="margin-top: 30px;">당신의 무의식을 지배하는 메인 무기 뒤에는, 은밀하게 당신을 보좌하는 서브 무기인 <b>[${subSip || '기타'}]</b>의 기질이 숨어 있습니다. 이 두 가지가 결합할 때 당신은 사회라는 정글에서 남들이 모르는 변칙 공격을 구사하게 됩니다.</p>
     </div>`;
 }
 
 function buildChapter4_Full(data) {
     let jaeCount = (data.sipseong['정재'] || 0) + (data.sipseong['편재'] || 0);
+    let sikCount = (data.sipseong['식신'] || 0) + (data.sipseong['상관'] || 0);
     let wealthNarrative = "";
-    if(jaeCount === 0) wealthNarrative = "당신은 돈을 직접 쫓으면 도망가는 구조입니다. 대신 '전문성'과 '나라는 브랜드'의 가치를 올리십시오. 돈은 그림자처럼 따라올 것입니다.";
-    else if(jaeCount > 2) wealthNarrative = "돈 냄새를 맡는 감각이 천부적입니다. 하지만 너무 많은 기회는 당신을 갉아먹습니다. 9가지를 쳐내고 확실한 1가지를 시스템화하십시오.";
-    else wealthNarrative = "안정적인 자산 밸런스를 가졌습니다. 스노우볼 전략에 최적화되어 있으니, 시간이 흐를수록 우상향하는 시스템 자산에 집중하십시오.";
+    
+    if(jaeCount === 0 && sikCount > 0) {
+        wealthNarrative = "<b>[식상생재의 역설]</b> 당신은 돈을 담는 그릇(재성)보다 돈을 만들어내는 공장(식상)이 압도적으로 강합니다. 돈을 직접 쫓으면 도망가지만, 당신의 '전문성'과 '브랜드'의 퀄리티를 극한으로 끌어올리면 돈이 그림자처럼 따라오는 전형적인 전문가 사주입니다.";
+    } else if(jaeCount === 0) {
+        wealthNarrative = "<b>[무재(無財)의 미학]</b> 명예나 학문(인성, 관성)을 쥐었을 때 부가 폭발하는 구조입니다. 내가 일해서 버는 돈이 아니라, '내 이름값'과 '권리(문서)'가 돈을 벌어오게 만드는 시스템 수입이 절대적으로 필요합니다.";
+    } else if(jaeCount >= 2 && sikCount === 0) {
+        wealthNarrative = "<b>[재다신약의 늪 탈출기]</b> 돈 냄새를 맡는 감각은 천부적이지만, 그것을 내 금고로 끌고 올 파이프라인(식상)이 부족합니다. 혼자서 1부터 10까지 다 하려 하지 마십시오. 기술을 가진 동업자나 자동화 시스템을 통해 레버리지를 일으켜야 금고가 닫힙니다.";
+    } else {
+        wealthNarrative = "<b>[재물의 선순환]</b> 돈을 만들어내는 엔진(식상)과 담는 그릇(재성)의 밸런스가 좋습니다. 리스크가 큰 한탕주의보다는 스노우볼 전략에 최적화되어 있습니다. 자본이 자본을 낳는 구조를 설계하는 데 탁월한 능력을 발휘할 것입니다.";
+    }
 
-    return `<div class="report-chapter">
-        <h3 class="ch-title">Chapter 4. 재물운: 부의 그릇과 유통 경로</h3>
-        <p class="ch-text">재물(財)은 단순히 액수가 아니라 <b>'내가 세상을 통제하는 힘의 크기'</b>입니다. 당신의 금고는 평범한 이들의 월급 통장 사이즈가 아닙니다.</p>
-        <p class="ch-text" style="color: #fff; border-left: 2px solid var(--gold); padding-left: 15px;">${wealthNarrative}</p>
-        <p class="ch-text">당신은 현금 자체보다 부동산, 지적재산권 등 <b>'문서화된 권리'</b>로 자산을 묶을 때 폭발적인 시너지가 납니다.</p>
+    return `
+    <div class="report-chapter">
+        <h3 class="ch-title">Chapter 4. 부(富)의 스케일과 재물 유통망</h3>
+        <p class="ch-text">재물운이란 단순히 통장에 찍히는 액수가 아닙니다. <b>내가 세상을 통제하고 지배하는 힘의 크기</b>입니다.</p>
+        <p class="ch-text" style="color: #fff; background: rgba(199, 167, 106, 0.05); border: 1px solid rgba(199, 167, 106, 0.3); padding: 25px; border-radius: 8px;">${wealthNarrative}</p>
+        <p class="ch-text">부를 축적하는 데 있어 당신에게 가장 치명적인 함정은 '남의 성공 방정식을 따라 하는 것'입니다. 당신의 사주 구조에 맞는 수익 모델(근로 소득, 투자 소득, 혹은 지적 재산)을 정확히 타겟팅해야 합니다.</p>
     </div>`;
 }
 
 function buildChapter5_Full(data) {
-    return `<div class="report-chapter">
-        <h3 class="ch-title">Chapter 5. 직업과 사회적 성취의 전쟁터</h3>
-        <p class="ch-text">직업은 내 에너지를 가장 파괴적으로 발산할 수 있는 <b>'전쟁터의 종류'</b>를 의미합니다. 물고기 사주라면 바다로 가야 합니다.</p>
-        <p class="ch-text">당신은 조직의 부품으로 쓰이기보다, 당신의 권한이 100% 보장되는 독립적인 영역에서 최고의 퍼포먼스를 냅니다. "내 권한이 보장되는가?" 이것이 이직이나 창업의 유일한 기준입니다.</p>
+    let gwanCount = (data.sipseong['정관'] || 0) + (data.sipseong['편관'] || 0);
+    return `
+    <div class="report-chapter">
+        <h3 class="ch-title">Chapter 5. 당신의 전장 (직업과 사회적 성취)</h3>
+        <p class="ch-text">물고기 사주를 타고났다면 바다로 가야 합니다. 아무리 뛰어난 재능도 맞지 않는 척박한 땅(전장)에서는 고사하고 맙니다.</p>
+        <p class="ch-text">${gwanCount > 0 ? "당신은 명예와 타이틀(관성)이 절대적인 동기부여가 됩니다. 피라미드의 꼭대기를 향해 올라가는 치열한 조직 사회, 혹은 나만의 확고한 시스템과 규율이 있는 곳에서 빛을 발합니다." : "당신은 조직의 톱니바퀴로 쓰이기엔 너무 큰 야생성을 가졌습니다. 상명하복의 위계질서보다는, 성과로 즉각 증명하고 내 권한이 100% 보장되는 독립적인 프리랜서나 창업 생태계가 당신의 진짜 무대입니다."}</p>
     </div>`;
 }
 
 function buildChapter6_Full(data) {
     let iljuKey = data.dayStem + data.dayBranch;
     let dbEntry = window.SAJU_DB?.ILJU?.[iljuKey] || {};
-    return `<div class="report-chapter">
-        <h3 class="ch-title">Chapter 6. 인연: 영혼의 파트너십</h3>
-        <p class="ch-text">사주에서 일지(日支)는 당신의 안방이자 배우자의 자리입니다. 사회적 가면을 벗어던지고 가장 취약한 민낯을 드러낼 때의 당신을 품어줄 인연이 각인되어 있습니다.</p>
-        <p class="ch-text" style="background: rgba(199, 167, 106, 0.1); padding: 20px; color: #fff;">${dbEntry.love || '당신의 인연법은 서로의 성장을 자극하는 구조입니다.'}</p>
+    return `
+    <div class="report-chapter">
+        <h3 class="ch-title">Chapter 6. 인연법: 영혼을 깨우는 파트너십</h3>
+        <p class="ch-text">일지(日支)는 당신의 안방입니다. 세상의 모든 갑옷을 벗고, 가장 취약한 민낯을 드러낼 때 당신을 받아줄 인연의 코드가 이곳에 암호화되어 있습니다.</p>
+        <p class="ch-text" style="border-left: 3px solid var(--gold); padding-left: 20px; color: #ddd; font-style: italic;">${dbEntry.love || '서로의 부족한 오행을 스펀지처럼 채워주며, 함께 있을 때 사회적 성취의 시너지가 극대화되는 인연을 만나게 됩니다.'}</p>
     </div>`;
 }
 
 function buildChapter7_Full(data) {
-    return `<div class="report-chapter">
-        <h3 class="ch-title">Chapter 7. 숨겨진 잠재력 (지장간 해부)</h3>
-        <p class="ch-text">빙산의 일각처럼, 물 밑에 숨겨진 진짜 본능이 '지장간'입니다. 이것은 당신의 비상금이면서 동시에 위기 상황에서만 튀어나오는 당신의 <b>진짜 무기</b>입니다.</p>
-        <p class="ch-text">평소에는 온화해 보이지만, 결정적인 순간에 보여주는 당신의 서늘한 결단력은 바로 이곳에서 나옵니다.</p>
-    </div>`;
-}
-
-function buildChapter8_Full(data) {
-    let maxW = Object.keys(data.wuxing).reduce((a, b) => data.wuxing[a] > data.wuxing[b] ? a : b);
-    let organ = {'wood': '간/신경계', 'fire': '심장/혈관', 'earth': '위장/비장', 'metal': '폐/호흡기', 'water': '신장/방광'}[maxW];
-    return `<div class="report-chapter">
-        <h3 class="ch-title">Chapter 8. 신체 취약점과 건강 마지노선</h3>
-        <p class="ch-text">마음의 과부하는 즉각적으로 장기의 병변으로 나타납니다. 당신의 에너지 편중으로 볼 때 가장 주의해야 할 마지노선은 <b>[${organ}]</b> 계통입니다.</p>
-        <div class="axe-advice" style="border-left-color: #d32f2f;">
-            당신은 멈춰야 할 때 멈추는 데 큰 용기가 필요한 타입입니다. 몸을 연료로 태워 성취를 사지 마십시오.
+    let hiddenStems = BRANCH_HIDDEN[data.dayBranch] || [];
+    let hiddenSip = hiddenStems.map(h => getSipseong(data.dayStem, h)).join(', ');
+    
+    return `
+    <div class="report-chapter">
+        <h3 class="ch-title">Chapter 7. 엑스칼리버 (지장간에 숨겨진 무기)</h3>
+        <p class="ch-text">빙산의 일각처럼 겉으로 드러난 사주 8글자 밑에는 <b>'지장간(地藏干)'</b>이라는 거대한 무기고가 숨겨져 있습니다. 평소에는 봉인되어 있다가, 인생의 결정적인 위기 순간에만 튀어나와 판을 뒤집는 당신의 진짜 본능입니다.</p>
+        <div style="background: #111; padding: 25px; margin-top: 20px; border-radius: 8px;">
+            <p style="margin: 0 0 10px 0; color: #888; font-size: 13px;">당신의 일지(${data.dayBranch}) 지장간 분석</p>
+            <p style="margin: 0; color: var(--gold); font-size: 20px; font-weight: 800;">잠재된 본능: [ ${hiddenSip} ]</p>
+            <p style="margin: 15px 0 0 0; color: #ccc; line-height: 1.7;">이 숨겨진 ${hiddenSip}의 기운은 당신이 막다른 골목에 몰렸을 때 비상식적인 돌파력을 제공합니다. 남들이 포기할 때, 당신의 영혼 밑바닥에서 이 서늘한 결단력이 깨어날 것입니다.</p>
         </div>
     </div>`;
 }
 
+function buildChapterHealth_Full(data) {
+    const score = data.healthScore || 50;
+    let weakEl = Object.keys(data.wuxing).reduce((a, b) => data.wuxing[a] < data.wuxing[b] ? a : b);
+    let strongEl = Object.keys(data.wuxing).reduce((a, b) => data.wuxing[a] > data.wuxing[b] ? a : b);
+    
+    const EL_HEALTH = {
+        "wood": "간과 신경계",
+        "fire": "심장과 혈관",
+        "earth": "위장과 비장",
+        "metal": "폐와 호흡기",
+        "water": "신장과 호르몬"
+    };
+
+    return `
+    <div class="report-chapter">
+        <h3 class="ch-title">Chapter 8. 육체의 마지노선 (건강과 생명력)</h3>
+        <p class="ch-text">사주는 단순한 점술이 아니라 고대 동양의 정밀한 예방의학입니다. 에너지가 쏠리면 장기가 타격을 받습니다.</p>
+        <p class="ch-text">당신은 몸을 연료로 태워 성과를 사들이는 타입입니다. 특히 과부하가 걸렸을 때 가장 먼저 무너지는 마지노선은 <b>[${EL_HEALTH[weakEl]}]</b>입니다. 반대로 <b>[${EL_HEALTH[strongEl]}]</b> 쪽은 열이 너무 쌓여 문제를 일으킬 수 있습니다.</p>
+        <p class="ch-text" style="color: #e74c3c; font-weight: 700;">멈춰야 할 때 멈추는 것이 당신 인생에서 가장 큰 용기입니다.</p>
+    </div>`;
+}
+
 function buildChapter9_Full(data) {
-    let minW = Object.keys(data.wuxing).sort((a,b) => data.wuxing[a] - data.wuxing[b])[0];
-    let remedy = {
-        'wood': { c: '그린', d: '동쪽', n: '3, 8' },
-        'fire': { c: '레드', d: '남쪽', n: '2, 7' },
-        'earth': { c: '황토색/브라운', d: '중앙', n: '5, 10' },
-        'metal': { c: '화이트/실버', d: '서쪽', n: '4, 9' },
-        'water': { c: '네이비/블랙', d: '북쪽', n: '1, 6' }
-    }[minW];
-    return `<div class="report-chapter">
-        <h3 class="ch-title">Chapter 9. 운명을 비트는 레버리지 (개운법)</h3>
-        <p class="ch-text">비가 올 것을 알았으면 우산을 쓰면 됩니다. 당신에게 부족한 <b>${RELATION_LABELS[minW]}</b>의 기운을 채우는 처방입니다.</p>
-        <ul style="color: #ccc; line-height: 2.5; font-size: 15px;">
-            <li><b>행운의 컬러:</b> ${remedy.c} (계약이나 미팅 시 소품으로 활용)</li>
-            <li><b>운이 뚫리는 방향:</b> ${remedy.d} (책상이나 침대 머리 방향)</li>
-            <li><b>재물을 부르는 숫자:</b> ${remedy.n} (비밀번호나 계좌에 의식적 배치)</li>
-        </ul>
-        <div class="axe-advice">🤝 <b>바이럴 미션:</b> 이 문서를 보고 떠오른 사람이 있다면, 그 사람의 X-FILE도 확인해주시는 것이 당신의 운을 순환시키는 최고의 액션입니다.</div>
+    let gongmang = data.gongmang || '-';
+    let gmSip = gongmang.split('').map(c => getSipseong(data.dayStem, c)).join(', ');
+    
+    return `
+    <div class="report-chapter">
+        <h3 class="ch-title">Chapter 9. 공망(空亡): 채워지지 않는 블랙홀</h3>
+        <p class="ch-text">공망은 '비어있다'는 뜻입니다. 이 비어있는 공간 때문에 인간은 평생 그 기운을 갈구하고 집착하게 됩니다. 당신의 사주에 각인된 공망은 <b>[${gongmang} (${gmSip})]</b>입니다.</p>
+        <p class="ch-text">이 ${gmSip}에 대한 채워지지 않는 갈증이 당신을 끝없이 달리게 만드는 모터입니다. 이것을 완전히 채우려 하지 마십시오. 결핍을 인정하는 순간, 그 공백은 당신을 집어삼키는 블랙홀에서 당신을 밀어 올리는 로켓의 분사구로 변합니다.</p>
     </div>`;
 }
 
 function buildChapter10_Full(data) {
-    let html = `<div class="report-chapter">
-        <h3 class="ch-title">Chapter 10. 시간의 파동 (대운 분석)</h3>
-        <p class="ch-text">대운은 10년마다 바뀌는 당신 인생의 기상도입니다. 현재 당신은 인생의 거대한 변곡점을 지나고 있습니다.</p>`;
+    let html = `<div class="report-chapter" style="margin-bottom: 80px;">
+        <h3 class="ch-title">Chapter 10. 시간의 지도 (대운과 세운의 정밀 분석)</h3>
+        <p class="ch-text">인생은 직선이 아니라 파동입니다. 명리학의 정수는 바로 이 '시간의 파동'을 읽어내어 내가 액셀을 밟아야 할 때와 브레이크를 밟아야 할 때를 정확히 타겟팅하는 데 있습니다.</p>
+        
+        <h4 style="color: var(--gold); margin: 50px 0 20px; font-size: 24px; border-bottom: 1px solid #333; padding-bottom: 10px;">[거시적 기후 변화: 10년 대운(大運)]</h4>
+        <p class="ch-text" style="color:#aaa;">대운은 내 인생을 둘러싼 거대한 10년짜리 기상도입니다.</p>`;
     
-    // Simple loop for previewing 3 Daewuns with DB text
-    for(let i=1; i<=3; i++) {
-        let eventText = window.SAJU_DB?.DAEWUN_EVENTS?.[i-1] || "환경의 변화를 주도적으로 이끌어내야 하는 시기입니다.";
-        html += `<div style="margin-bottom: 25px; padding: 25px; background: #111; border-left: 4px solid var(--gold); border-radius: 5px;">
-            <p style="color: var(--gold); font-weight: 800; margin-bottom: 10px;">${data.daewunNum + ((i-1)*10)}세 ~ : [대운 시퀀스 #${i}]</p>
-            <p style="margin: 0; color: #ddd; line-height: 1.7;">${eventText}</p>
+    // 대운 전체 출력 (183페이지 분량의 체감을 주는 무한 루프)
+    data.daewunList.slice(0, 8).forEach((dy, idx) => {
+        let isCurrent = (new Date().getFullYear() - 1988 + 1 >= dy.age) && (new Date().getFullYear() - 1988 + 1 < dy.age + 10);
+        let currentTag = isCurrent ? '<span style="background:var(--gold); color:#000; padding:2px 8px; font-size:10px; border-radius:10px; margin-left:10px;">현재 진행 중인 대운</span>' : '';
+        
+        html += `
+        <div style="margin-bottom: 25px; padding: 25px; background: ${isCurrent ? 'rgba(199, 167, 106, 0.05)' : '#0a0a0a'}; border-left: 4px solid ${isCurrent ? 'var(--gold)' : '#333'}; border-radius: 5px; border-top: 1px solid #1a1a1a;">
+            <p style="color: ${isCurrent ? 'var(--gold)' : '#fff'}; font-weight: 900; margin-bottom: 10px; font-size: 18px;">
+                ${dy.age}세 ~ ${dy.age+9}세 : [${dy.gan}${dy.zi} 대운] ${currentTag}
+            </p>
+            <p style="margin: 0; color: #888; font-size: 13px; margin-bottom: 15px;">유입 에너지: ${dy.sip.replace(' / ', ', ')} | 우주적 상태: 12운성 ${dy.unsung}</p>
+            <p style="margin: 0; color: #ddd; line-height: 1.8;">이 10년은 <b>${dy.sip.split(' / ')[0]}</b>과 <b>${dy.sip.split(' / ')[1]}</b>의 사회적 파동이 당신의 삶을 강타하는 시기입니다. 기존의 낡은 가치관을 깨부수고 새로운 영토로 나아가기 위한 강력한 마찰음이 발생하며, 당신의 일간(${data.dayStem})은 12운성 <b>${dy.unsung}</b>의 단계에 놓여 극적인 변곡점을 맞이합니다. 주도권을 쥐고 환경을 지배하십시오.</p>
         </div>`;
-    }
+    });
+
+    html += `<h4 style="color: var(--gold); margin: 60px 0 20px; font-size: 24px; border-bottom: 1px solid #333; padding-bottom: 10px;">[미시적 전술 지도: 향후 10년 세운(歲運)]</h4>
+        <p class="ch-text" style="color:#aaa;">세운은 올해 당장 내 눈앞에 떨어지는 현실적인 사건 사고를 의미합니다.</p>`;
+        
+    // 세운 출력
+    data.sewunList.forEach((sy, idx) => {
+        let isThisYear = sy.year === new Date().getFullYear();
+        let yt = isThisYear ? 'background: rgba(199,167,106,0.1); border: 1px solid var(--gold);' : 'background: #0a0a0a; border: 1px solid #222;';
+        
+        html += `
+        <div style="margin-bottom: 15px; padding: 20px; border-radius: 8px; ${yt}">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <span style="color: ${isThisYear ? 'var(--gold)' : '#fff'}; font-size: 18px; font-weight: 800;">${sy.year}년 (${sy.gan}${sy.zi}년)</span>
+                <span style="color: #666; font-size: 12px; font-weight: 700;">${sy.sip.replace(' / ', ' · ')} | ${sy.unsung}</span>
+            </div>
+            <p style="margin: 0; color: #ccc; font-size: 14px; line-height: 1.7;">
+                올해는 <b>${sy.sip.split(' / ')[1]}</b>의 현실적 사건이 터지는 해입니다. 당신의 뇌 구조에 새로운 자극이 들어오며, 이 1년의 선택이 향후 10년의 나비효과를 만들어냅니다. ${isThisYear ? '<b>올해의 기회를 절대 놓치지 마십시오.</b>' : '미리 준비하고 대비하는 자만이 이 파도를 탈 수 있습니다.'}
+            </p>
+        </div>`;
+    });
+    
     html += `</div>`;
     return html;
 }
