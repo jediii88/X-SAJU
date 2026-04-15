@@ -82,82 +82,9 @@ function getSipseong(dayStem, target) {
 }
 
 function calculateEightChar(name, birthDate, birthTime, gender, isSolar, isLeap, calBase, isUnknown, adjL) {
-    if (!birthDate || birthDate.length < 8) return { name, error: 'invalid' };
-    let y = parseInt(birthDate.slice(0,4));
-    let m = parseInt(birthDate.slice(4,6));
-    let d = parseInt(birthDate.slice(6,8));
-    let tVal = birthTime || '0000';
-    let hr = parseInt(tVal.slice(0,2));
-    let mn = parseInt(tVal.slice(2,4));
-
-    let lunarObj, solarObj;
-    if (isSolar) {
-        solarObj = Solar.fromYmdHms(y, m, d, hr, mn, 0);
-        lunarObj = solarObj.getLunar();
-    } else {
-        lunarObj = Lunar.fromYmdHms(y, isLeap ? -m : m, d, hr, mn, 0);
-        solarObj = lunarObj.getSolar();
-    }
-
-    if (adjL && !isUnknown) {
-        const dt = new Date(solarObj.getYear(), solarObj.getMonth() - 1, solarObj.getDay(), solarObj.getHour(), solarObj.getMinute());
-        dt.setMinutes(dt.getMinutes() - 32);
-        solarObj = Solar.fromYmdHms(dt.getFullYear(), dt.getMonth() + 1, dt.getDate(), dt.getHours(), dt.getMinutes(), 0);
-        lunarObj = solarObj.getLunar();
-    }
-
-    const ec = lunarObj.getEightChar();
-    const dayStem = ec.getDay()[0];
-    const dayBranch = ec.getDay()[1];
-    const pillars = [
-        { n: '시주', h: isUnknown ? ['', ''] : ec.getTime() },
-        { n: '일주', h: ec.getDay() },
-        { n: '월주', h: ec.getMonth() },
-        { n: '년주', h: ec.getYear() }
-    ];
-
-    let counts = {wood:0, fire:0, earth:0, metal:0, water:0};
-    pillars.forEach((p, idx) => {
-        let weight = (idx === 2) ? 2.0 : (idx === 1 ? 1.5 : 1.0);
-        if(p.h[0]) counts[HAN_COLOR[p.h[0]]] += weight;
-        if(p.h[1]) {
-            counts[HAN_COLOR[p.h[1]]] += weight;
-            let hidden = BRANCH_HIDDEN[p.h[1]];
-            if(hidden) hidden.forEach(h => counts[HAN_COLOR[h]] += weight * 0.3);
-        }
-    });
-
-    let sipCounts = {};
-    pillars.forEach(p => {
-        if(p.h[0]) { let s = getSipseong(dayStem, p.h[0]); sipCounts[s] = (sipCounts[s] || 0) + 1; }
-        if(p.h[1]) { let s = getSipseong(dayStem, p.h[1]); sipCounts[s] = (sipCounts[s] || 0) + 1; }
-    });
-
-    const myEl = HAN_COLOR[dayStem];
-    const mySupportEl = WUXING_ORDER[(WUXING_ORDER.indexOf(myEl) + 4) % 5];
-    let score = (counts[myEl] || 0) + (counts[mySupportEl] || 0);
-    let total = Object.values(counts).reduce((a,b)=>a+b, 0);
-    let ratio = (score / total) * 100;
-    
-    // Daewun
-    const yun = ec.getYun(gender === 'M' ? 1 : 0);
-    const daYunList = yun.getDaYun();
-    const daewuns = [];
-    for (let i = 1; i < daYunList.length; i++) {
-        const dy = daYunList[i];
-        const gz = dy.getGanZhi();
-        daewuns.push({ age: dy.getStartAge(), gan: gz[0], zi: gz[1], sip: getSipseong(dayStem, gz[0]) + " / " + getSipseong(dayStem, gz[1]), unsung: UNSUNG_MAP[dayStem]?.[gz[1]] || '-' });
-    }
-
-    // Sewun (Next 10 years)
-    const sewuns = [];
-    const currentYear = new Date().getFullYear();
-    for (let i = 0; i < 10; i++) {
-        const targetYear = currentYear + i;
-        const s = Solar.fromYmd(targetYear, 1, 1).getLunar().getEightChar();
-        const gz = s.getYear();
-        sewuns.push({ year: targetYear, gan: gz[0], zi: gz[1], sip: getSipseong(dayStem, gz[0]) + " / " + getSipseong(dayStem, gz[1]), unsung: UNSUNG_MAP[dayStem]?.[gz[1]] || '-' });
-    }
+    if (!birthDate || birthDate.length < 8) 
+    const animalColor = { "wood": "푸른", "fire": "붉은", "earth": "황금", "metal": "하얀", "water": "검은" }[HAN_COLOR[dayStem]];
+    const animalName = animalColor + " " + BRANCH_ANIMAL[dayBranch];
 
     return {
         name, gender, dayStem, dayBranch, pillars, wuxing: counts, sipseong: sipCounts,
@@ -167,8 +94,9 @@ function calculateEightChar(name, birthDate, birthTime, gender, isSolar, isLeap,
         shinsal12: pillars.map(p => p.h[1] ? get12Shinsal(dayBranch, p.h[1]) : '-'),
         lunarDate: lunarObj.toString(), solarDate: solarObj.toString(),
         solarTerm: lunarObj.getPrevJieQi().getName() + " " + lunarObj.getPrevJieQi().getSolar().toYmdHms().slice(0, 16),
-        animal: ec.getDay() + " (" + BRANCH_ANIMAL[dayBranch] + ")",
+        animal: (dayStem + dayBranch) + " (" + animalName + ")",
         daewunNum: daYunList[1].getStartAge(), daewunList: daewuns, sewunList: sewuns,
         allShinsal: getAllShinsal(pillars, ec, isUnknown)
     };
 }
+
