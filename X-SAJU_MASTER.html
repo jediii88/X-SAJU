@@ -1836,8 +1836,10 @@ function calculateEightChar(name, birthDate, birthTime, gender, isSolar, isLeap,
     let y = parseInt(birthDate.slice(0,4));
     let m = parseInt(birthDate.slice(4,6));
     let d = parseInt(birthDate.slice(6,8));
-    let hr = parseInt(birthTime.slice(0,2));
-    let mn = parseInt(birthTime.slice(2,4));
+    let tVal = birthTime || '0000';
+    if (tVal.length < 4) tVal = tVal.padStart(4, '0');
+    let hr = parseInt(tVal.slice(0,2));
+    let mn = parseInt(tVal.slice(2,4));
 
     let origY = y, origM = m, origD = d;
     let lunarObj, solarObj;
@@ -1903,7 +1905,11 @@ function calculateEightChar(name, birthDate, birthTime, gender, isSolar, isLeap,
         if(p.h[1]) { let s = getSipseong(dayStem, p.h[1]); sipCounts[s] = (sipCounts[s] || 0) + 1; }
     });
 
-    let score = (counts[HAN_COLOR[dayStem]] || 0) + (counts[HAN_COLOR[getMutual(dayStem, '인성')]] || 0);
+    
+    const myEl = HAN_COLOR[dayStem];
+    const mySupportEl = WUXING_ORDER[(WUXING_ORDER.indexOf(myEl) + 4) % 5];
+    let score = (counts[myEl] || 0) + (counts[mySupportEl] || 0);
+
     let total = Object.values(counts).reduce((a,b)=>a+b, 0);
     let ratio = (score / total) * 100;
     let strength = ratio > 55 ? "신강" : (ratio < 45 ? "신약" : "중화");
@@ -1912,7 +1918,7 @@ function calculateEightChar(name, birthDate, birthTime, gender, isSolar, isLeap,
         name, gender, dayStem, pillars, allShinsal, wuxing: counts, sipseong: sipCounts,
         strengthText: strength, strengthRatio: ratio,
         lunarDate: lunarObj.toString(), solarDate: solarObj.toString(),
-        daewunNum: ec.getLunar().getEightChar().getShiShen(), // fallback
+        daewunNum: ec.getYun(gender === 'M' ? 1 : 0).getDaYun()[1].getStartAge(),
         ec: ec // store for report engine if needed
     };
 }
@@ -1981,7 +1987,7 @@ function addUserForm() {
     }
     userCount++;
     
-    const container = document.getElementById('input-container');
+    const container = document.getElementById('step-1');
     const newForm = document.createElement('div');
     newForm.className = 'input-group';
     newForm.id = 'user-form-' + userCount;
@@ -2589,6 +2595,141 @@ function buildFortuneCards(targetId, rows) {
 }
 
 
+
+
+function renderDashboard(data) {
+    if(!data) return;
+    const { name, gender, dayStem, pillars, allShinsal, wuxing, sipseong, strengthText, strengthRatio, solarDate, lunarDate, ec } = data;
+    const isUnknown = pillars[0].h[0] === '';
+
+    const elType = HAN_COLOR[dayStem] || 'wood';
+    const animalInfo = ANIMAL_SPRITE[pillars[1].h[1]] || ANIMAL_SPRITE['寅'];
+    document.getElementById('av-name').innerText = name + "님";
+    const krColor = COLOR_KR_MAP[elType];
+    const descHanja = document.getElementById('av-desc-hanja');
+    const descHangul = document.getElementById('av-desc-hangul');
+    if (descHanja && descHangul) {
+        descHanja.innerHTML = `<span class="${HAN_COLOR[dayStem]}">${dayStem}</span><span class="${HAN_COLOR[pillars[1].h[1]]}">${pillars[1].h[1]}</span>`;
+        descHangul.innerText = `${krColor} ${animalInfo.kr}`;
+    }
+    const circle = document.getElementById('av-circle');
+    if(circle) {
+        circle.innerText = '';
+        circle.style.backgroundPosition = animalInfo.pos;
+        circle.style.backgroundSize = animalInfo.size;
+        circle.className = 'avatar-circle ' + elType;
+    }
+    
+    let switcher = '';
+    if (globalSajuDataArray.length > 1) {
+        switcher = `<div style="display:flex; justify-content:center; gap:10px; margin-bottom:20px; flex-wrap:wrap;">`;
+        globalSajuDataArray.forEach((u, i) => {
+            const isActive = u.name === name;
+            switcher += `<button class="btn subtle" style="padding:8px 15px; font-size:12px; ${isActive ? 'background:var(--gold); color:#000; border-color:var(--gold);' : ''}" onclick="renderDashboard(globalSajuDataArray[${i}])">${u.name}</button>`;
+        });
+        switcher += `</div>`;
+    }
+    const nav = document.querySelector('.jeomsin-nav');
+    if (nav) {
+        const existing = document.getElementById('user-switcher');
+        if (existing) existing.remove();
+        const sw = document.createElement('div');
+        sw.id = 'user-switcher';
+        sw.innerHTML = switcher;
+        nav.parentElement.insertBefore(sw, nav);
+    }
+
+    const badges = document.getElementById('av-badges');
+    if(badges) {
+        badges.innerHTML = `
+            <div class="badge">${gender === 'M' ? '남성' : '여성'}</div>
+            <div class="badge">양력 ${solarDate.split(' ')[0]}</div>
+            <div class="badge">음력 ${lunarDate.split(' ')[0]}</div>
+        `;
+    }
+
+    const headerRow = `
+        <div class="manse-row">
+            <div class="manse-label"></div>
+            <div class="manse-head">시주</div><div class="manse-head">일주</div><div class="manse-head">월주</div><div class="manse-head">년주</div>
+        </div>`;
+    const bRow = (lbl, fn) => `
+        <div class="manse-row">
+            <div class="manse-cell manse-label">${lbl}</div>
+            ${pillars.map((p, i) => `<div class="manse-cell">${(isUnknown && i===0) ? '<span style="color:#555;font-size:11px;">미상</span>' : fn(p, i)}</div>`).join('')}
+        </div>`;
+    const manseHtml = [
+        headerRow,
+        bRow('십성', p => `<div class="m-badge">${p.n === '일주' ? '일원' : getSipseong(dayStem, p.h[0])}</div>`),
+        bRow('천간', p => `<div class="m-hanja ${HAN_COLOR[p.h[0]] || ''}">${p.h[0]}</div><div class="m-hangul">${HAN_KOR[p.h[0]] || ''}</div>`),
+        bRow('지지', p => `<div class="m-hanja ${HAN_COLOR[p.h[1]] || ''}">${p.h[1]}</div><div class="m-hangul">${HAN_KOR[p.h[1]] || ''}</div>`),
+        bRow('십성', p => `<div class="m-badge">${getSipseong(dayStem, p.h[1])}</div>`),
+        bRow('지장간', p => `<div class="m-badge">${getHidden(p.h[1], dayStem).replace(/<br>/g, '')}</div>`),
+        bRow('12운성', p => `<div class="m-badge">${getUnsung(dayStem, p.h[1]) || '-'}</div>`),
+        bRow('12신살', p => `<div class="m-badge">${(allShinsal[p.n] || []).join('<br>') || '-'}</div>`),
+        bRow('공망', p => {
+            const gm = getGongmang(dayStem + pillars[1].h[1]);
+            return `<div class="m-badge" style="${gm.includes(p.h[1]) ? 'color:var(--fire);font-weight:bold;' : ''}">${gm.includes(p.h[1]) ? '공망' : '-'}</div>`;
+        })
+    ].join('');
+    document.getElementById('manse-table').innerHTML = manseHtml;
+
+    const relGrid = document.getElementById('relation-grid');
+    const relLines = buildRelationLines(pillars);
+    if(relLines.length === 0 || (relLines.length === 1 && relLines[0].type === '없음')) {
+        relGrid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:#777;font-size:13px;">특별한 관계 구조가 없습니다.</div>';
+    } else {
+        relGrid.innerHTML = relLines.map(item => {
+            let nodesHtml = item.chars.map(c => `
+                <div class="rel-char" style="display:flex;flex-direction:column;align-items:center;">
+                    <span class="${HAN_COLOR[c]}" style="font-family:'Noto Serif KR', serif; font-weight:300;">${c}</span>
+                    <span style="font-size:10px; color:#888; margin-top:2px; font-weight:400;">${HAN_KOR[c] || ''}</span>
+                </div>`).join('<div class="rel-link"></div>');
+            return `<div class="rel-card"><div class="rel-nodes">${nodesHtml}</div><div class="rel-badge" style="margin-top:10px; margin-bottom:5px;">${item.type}</div><div class="rel-desc" style="font-size:11px;color:var(--text-dim);">${item.label}</div></div>`;
+        }).join('');
+    }
+
+    const wBar = document.getElementById('wuxing-bars');
+    const totalW = Object.values(wuxing).reduce((a,b)=>a+b, 0);
+    wBar.innerHTML = WUXING_ORDER.map(k => {
+        const val = wuxing[k] || 0;
+        const per = totalW > 0 ? Math.round((val/totalW)*100) : 0;
+        return `<div class="bar-row"><div class="bar-label">${RELATION_LABELS[k]}</div><div class="bar-bg"><div class="bar-fill ${k}" style="width:${per}%"></div></div><div class="bar-val">${per}%</div></div>`;
+    }).join('');
+
+    const sBar = document.getElementById('sipseong-bars');
+    const totalS = Object.values(sipseong).reduce((a,b)=>a+b, 0);
+    const sipKeys = ['비견','겁재','식신','상관','편재','정재','편관','정관','편인','정인'];
+    sBar.innerHTML = sipKeys.map(k => {
+        const val = sipseong[k] || 0;
+        const per = totalS > 0 ? Math.round((val/totalS)*100) : 0;
+        return `<div class="bar-row"><div class="bar-label">${k}</div><div class="bar-bg"><div class="bar-fill" style="width:${per}%; background:var(--gold);"></div></div><div class="bar-val">${per}%</div></div>`;
+    }).join('');
+
+    const gaugePath = document.getElementById('gauge-path');
+    const needle = document.getElementById('gauge-needle');
+    const text = document.getElementById('strength-text');
+    const sub = document.getElementById('strength-sub');
+    if(gaugePath && needle && text) {
+        const offset = 251 - (strengthRatio * 2.51);
+        gaugePath.style.strokeDashoffset = offset;
+        needle.style.transform = `rotate(${(strengthRatio * 1.8) - 90}deg)`;
+        text.innerText = strengthText + " (" + Math.round(strengthRatio) + ")";
+        sub.innerText = "에너지 강도 지표";
+    }
+
+    const daewunNum = data.daewunNum;
+    document.getElementById('yun-text').innerText = `대운수: ${daewunNum}`;
+    
+    const dwList = ec.getYun(gender === 'M' ? 1 : 0);
+    const dwRows = [];
+    for(let i=1; i<=8; i++) {
+        const d = dwList.getDaYun()[i-1];
+        const gz = d.getGanZhi();
+        dwRows.push([d.getStartAge() + '세', getSipseong(dayStem, gz[0]), gz, HAN_KOR[gz[0]]+HAN_KOR[gz[1]], getUnsung(dayStem, gz[1]) || '-']);
+    }
+    buildFortuneCards('daeun-table', dwRows);
+}
 
 function runAnalysis() {
     globalSajuDataArray = [];
