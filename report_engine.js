@@ -52,6 +52,7 @@ function buildSectionHeader(title) {
 }
 
 
+
 function buildChapter1_Basic(data) {
     let iljuKey = data.dayStem + data.dayBranch;
     let dbEntry = window.SAJU_DB?.ILJU?.[iljuKey] || {};
@@ -59,13 +60,13 @@ function buildChapter1_Basic(data) {
     let core = dbEntry.core || "당신은 끊임없이 환경과 충돌하며 자신만의 영역을 개척하는 기질을 타고났습니다.";
     let weapon = dbEntry.weapon || "위기 상황에서 발휘되는 직관과 돌파력이 당신의 가장 큰 무기입니다.";
     
-    let extra1 = "겉으로 보여지는 사회적 가면 뒤에, 평생을 관통하며 나를 은밀하게 움직이는 고유한 기질이 있습니다. 이것은 단순한 성격이 아니라, 인생의 결정적인 위기 상황이나 선택의 기로에서 무의식적으로 꺼내어 드는 '영혼의 바코드'이자 생존 무기입니다.";
+    let extra1 = "이 문서는 외부로 유출되어서는 안 되는, 오직 나만을 위해 해독된 1급 기밀(X-FILE)입니다. 겉으로 보여지는 사회적 가면 뒤에, 평생을 관통하며 나를 은밀하게 조종해 온 고유한 기질이 여기 낱낱이 해부되어 있습니다. 이것은 단순한 성격 분석이 아니라, 인생의 결정적인 위기 상황이나 선택의 기로에서 무의식적으로 꺼내어 드는 '영혼의 바코드'이자 생존 무기입니다.";
     let extra2 = "나의 에너지는 현재 <b>" + data.strengthText + "</b> 상태에 가깝습니다. 스스로도 온전히 설명하기 힘들었던 내면의 기복이나 굽히지 않는 고집들은, 바로 이 타고난 기질이 세상의 속도와 부딪히며 만들어내는 자연스러운 마찰열이었습니다.";
-    let extra3 = "남들의 템포에 억지로 나를 맞추려 할 때마다 원인 모를 답답함을 느꼈을 것입니다. 이제는 억지로 깎아내려 하지 마십시오. 그 마찰열이 결국 나의 그릇을 한 단계 더 크게 빚어내는 용광로가 됩니다.";
+    let extra3 = "남들의 템포에 억지로 나를 맞추려 할 때마다 원인 모를 답답함을 느꼈을 것입니다. 이제는 이 기밀문서를 통해 나의 진짜 무기를 확인했으니 억지로 깎아내려 하지 마십시오. 그 마찰열이 결국 나의 그릇을 한 단계 더 크게 빚어내는 용광로가 됩니다.";
 
     return `
         <div class="report-chapter">
-            <h3 class="ch-title">Chapter 1. 나의 본질, 그리고 영혼의 바코드</h3>
+            <h3 class="ch-title">Chapter 1. 1급 기밀 : 나의 본질, 그리고 영혼의 바코드</h3>
             <div style="font-size: 18px; font-weight: bold; color: var(--gold); margin-bottom: 15px;">[${title}]</div>
             <p class="ch-text">${extra1}</p>
             <p class="ch-text">${core} ${weapon}</p>
@@ -73,31 +74,6 @@ function buildChapter1_Basic(data) {
             <p class="ch-text">${extra3}</p>
         </div>
     `;
-}
-
-function buildChapter3_Sipseong(data) {
-    let html = `<div class="report-chapter"><h3 class="ch-title">Chapter 3. 무의식을 지배하는 운영체제 (십성 페르소나)</h3>`;
-    let mainSip = "정재";
-    if(data.sipseong && Object.keys(data.sipseong).length > 0) {
-        mainSip = Object.keys(data.sipseong).reduce((a, b) => data.sipseong[a] > data.sipseong[b] ? a : b) || "정재";
-    }
-    let sipText = window.SAJU_DB?.SIPSEONG?.[mainSip] || "사회의 규칙에 순응하기보다 주도적으로 판을 짜는 기질입니다.";
-    
-    let extra1 = "결정적인 순간에 나는 어떤 선택을 내리는가? 나를 움직이는 가장 강력한 내면의 동인(動因)은 바로 <b>[${mainSip}]</b>의 욕망입니다.";
-    let extra2 = "어떤 상황에서 무의식적으로 튀어나오는 행동 패턴, 사람을 대하고 돈을 쥐는 방식. 이 모든 것을 통제하는 내면의 '운영체제'가 바로 이것입니다. 세상이 나를 바라보는 매력 포인트이기도 하지만, 동시에 나만이 알고 있는 가장 지독한 권력욕의 실체이기도 합니다.";
-    let extra3 = "이 능력은 완벽히 내 통제 아래 두고 적재적소에 꺼내 쓸 때 가장 파괴적인 성취를 만들어냅니다. 반대로, 감정에 휩쓸려 이 기질에 질질 끌려다니면 가장 믿었던 무기에 내 발등이 찍히는 경험을 하게 됩니다.";
-
-    html += `
-        <p class="ch-text">${extra1}</p>
-        <p class="ch-text">${extra2}</p>
-        <div style="background: #111; padding: 20px; border-left: 3px solid var(--gold); margin: 20px 0;">
-            <div style="color: #fff; font-weight: bold; margin-bottom: 10px;">[ ${mainSip} 집중 분석 ]</div>
-            <div style="color: #ccc; font-size: 15px; line-height: 1.7;">${sipText}</div>
-        </div>
-        <p class="ch-text">${extra3}</p>
-        </div>
-    `;
-    return html;
 }
 
 function buildChapter4_Wealth(data) {
