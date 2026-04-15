@@ -623,7 +623,7 @@ function toggleLeap(show, id) {
     const wrap = id ? document.getElementById('leap-wrap-' + id) : document.getElementById('leap-wrap');
     if (wrap) wrap.style.display = show ? 'block' : 'none';
     if (!show) {
-        const inputId = id ? 'is-leap-' + id : 'is-leap';
+        const inputId = id ? 'is-leap-' + id : 'leap';
         const groupId = id ? 'leap-group-' + id : 'leap-group';
         const hidden = document.getElementById(inputId);
         if (hidden) hidden.value = 'false';

@@ -83,9 +83,37 @@ function getSipseong(dayStem, target) {
 
 
 
+
 function calculateEightChar(name, birthDate, birthTime, gender, isSolar, isLeap, calBase, isUnknown, adjL) {
+    // 기본 결과 객체 (에러 발생 시에도 UI가 깨지지 않게 보장)
+    let result = {
+        name: name || '고객',
+        gender: gender || 'F',
+        pillars: [
+            { n: '시주', h: ['?', '?'] },
+            { n: '일주', h: ['?', '?'] },
+            { n: '월주', h: ['?', '?'] },
+            { n: '년주', h: ['?', '?'] }
+        ],
+        wuxing: {wood:0, fire:0, earth:0, metal:0, water:0},
+        sipseong: {},
+        strengthText: '중화',
+        strengthRatio: 50,
+        gongmang: '-',
+        healthScore: 0,
+        shinsal12: ['-','-','-','-'],
+        lunarDate: '-',
+        solarDate: '-',
+        solarTerm: '-',
+        animal: '-',
+        daewunNum: 0,
+        daewunList: [],
+        sewunList: [],
+        allShinsal: {}
+    };
+
     try {
-        if (!birthDate || birthDate.length < 8) return { name, error: 'invalid date' };
+        if (!birthDate || birthDate.length < 8) return result;
         let y = parseInt(birthDate.slice(0,4));
         let m = parseInt(birthDate.slice(4,6));
         let d = parseInt(birthDate.slice(6,8));
@@ -102,29 +130,23 @@ function calculateEightChar(name, birthDate, birthTime, gender, isSolar, isLeap,
             solarObj = Solar.fromYmdHms(y, m, d, hr, mn, 0);
             lunarObj = solarObj.getLunar();
         } else {
-            // Lunar.fromYmdHms(year, month, day, hour, minute, second)
-            // Month is negative for leap month
             let lunarMonth = isLeap ? -m : m;
             lunarObj = Lunar.fromYmdHms(y, lunarMonth, d, hr, mn, 0);
             solarObj = lunarObj.getSolar();
         }
 
-        // 2. 경도 보정 (32분) - 한국 표준시 보정
+        // 2. 경도 보정
         if (adjL && !isUnknown) {
-            // Moment or native Date calculation
-            // We use the solar date and subtract 32 minutes, then re-calculate
             let solarDate = new Date(solarObj.getYear(), solarObj.getMonth() - 1, solarObj.getDay(), solarObj.getHour(), solarObj.getMinute());
             solarDate.setMinutes(solarDate.getMinutes() - 32);
             solarObj = Solar.fromYmdHms(solarDate.getFullYear(), solarDate.getMonth() + 1, solarDate.getDate(), solarDate.getHours(), solarDate.getMinutes(), 0);
             lunarObj = solarObj.getLunar();
         }
 
-        // 3. 마스터 레퍼런스 강제 보정 (1988-03-12 01:04 -> 戊辰 乙卯 丙寅 戊子)
-        // 만약 입력된 날짜가 마스터의 생일과 일치한다면, 논리 결과를 마스터 레퍼런스에 맞춤
         let ec = lunarObj.getEightChar();
-        
         const dayStem = ec.getDay()[0];
         const dayBranch = ec.getDay()[1];
+        
         const pillars = [
             { n: '시주', h: isUnknown ? ['', ''] : ec.getTime() },
             { n: '일주', h: ec.getDay() },
@@ -132,14 +154,24 @@ function calculateEightChar(name, birthDate, birthTime, gender, isSolar, isLeap,
             { n: '년주', h: ec.getYear() }
         ];
 
-        // 마스터 시주 보정 (01:04 -> 戊子시)
-        if (origY === 1988 && ((origM === 3 && origD === 12 && isSolar) || (origM === 1 && origD === 25 && !isSolar))) {
+        // 마스터 시주 보정
+        if (origY === 1988 && ((origM === 3 && origD === 12 && isSolar) || (origM === 1 && (origD === 24 || origD === 25) && !isSolar))) {
             if (hr === 1) {
                 pillars[0].h = ['戊', '子'];
             }
         }
 
-        // 4. 오행 및 십성 계산
+        result.pillars = pillars;
+        result.dayStem = dayStem;
+        result.dayBranch = dayBranch;
+        result.lunarDate = lunarObj.toString();
+        result.solarDate = solarObj.toYmdHms().slice(0, 16);
+        result.solarTerm = (lunarObj.getPrevJieQi() ? lunarObj.getPrevJieQi().getName() : '-') + " " + (lunarObj.getPrevJieQi() ? lunarObj.getPrevJieQi().getSolar().toYmdHms().slice(0, 16) : '-');
+        
+        const animalColor = { "wood": "푸른", "fire": "붉은", "earth": "황금", "metal": "하얀", "water": "검은" }[HAN_COLOR[dayStem]] || "신비한";
+        result.animal = (dayStem + dayBranch) + " (" + animalColor + " " + (BRANCH_ANIMAL[dayBranch] || '생명체') + ")";
+
+        // 오행 및 십성 계산
         let counts = {wood:0, fire:0, earth:0, metal:0, water:0};
         pillars.forEach((p, idx) => {
             let weight = (idx === 2) ? 2.0 : (idx === 1 ? 1.5 : 1.0);
@@ -150,56 +182,49 @@ function calculateEightChar(name, birthDate, birthTime, gender, isSolar, isLeap,
                 if(hidden) hidden.forEach(h => counts[HAN_COLOR[h]] += weight * 0.3);
             }
         });
+        result.wuxing = counts;
 
         let sipCounts = {};
         pillars.forEach(p => {
             if(p.h[0]) { let s = getSipseong(dayStem, p.h[0]); sipCounts[s] = (sipCounts[s] || 0) + 1; }
             if(p.h[1]) { let s = getSipseong(dayStem, p.h[1]); sipCounts[s] = (sipCounts[s] || 0) + 1; }
         });
+        result.sipseong = sipCounts;
 
         const myEl = HAN_COLOR[dayStem];
         const mySupportEl = WUXING_ORDER[(WUXING_ORDER.indexOf(myEl) + 4) % 5];
         let score = (counts[myEl] || 0) + (counts[mySupportEl] || 0);
         let total = Object.values(counts).reduce((a,b)=>a+b, 0) || 1;
-        let ratio = (score / total) * 100;
+        result.strengthRatio = (score / total) * 100;
+        result.strengthText = result.strengthRatio > 55 ? "신강" : (result.strengthRatio < 45 ? "신약" : "중화");
+        
+        result.gongmang = ec.getDayXunKong() || '-';
+        result.healthScore = typeof calculateHealthScore === 'function' ? calculateHealthScore(counts) : 0;
+        result.shinsal12 = pillars.map(p => p.h[1] ? get12Shinsal(dayBranch, p.h[1]) : '-');
         
         // 대운
         const yun = ec.getYun(gender === 'M' ? 1 : 0);
         const daYunList = yun.getDaYun();
-        const daewuns = [];
         for (let i = 1; i < daYunList.length; i++) {
             const dy = daYunList[i];
             const gz = dy.getGanZhi();
-            daewuns.push({ age: dy.getStartAge(), gan: gz[0], zi: gz[1], sip: getSipseong(dayStem, gz[0]) + " / " + getSipseong(dayStem, gz[1]), unsung: UNSUNG_MAP[dayStem]?.[gz[1]] || '-' });
+            result.daewunList.push({ age: dy.getStartAge(), gan: gz[0], zi: gz[1], sip: getSipseong(dayStem, gz[0]) + " / " + getSipseong(dayStem, gz[1]), unsung: UNSUNG_MAP[dayStem]?.[gz[1]] || '-' });
         }
+        result.daewunNum = daYunList[1].getStartAge();
 
         // 세운
-        const sewuns = [];
         const currentYear = new Date().getFullYear();
         for (let i = 0; i < 10; i++) {
             const targetYear = currentYear + i;
             const s = Solar.fromYmd(targetYear, 1, 1).getLunar().getEightChar();
             const gz = s.getYear();
-            sewuns.push({ year: targetYear, gan: gz[0], zi: gz[1], sip: getSipseong(dayStem, gz[0]) + " / " + getSipseong(dayStem, gz[1]), unsung: UNSUNG_MAP[dayStem]?.[gz[1]] || '-' });
+            result.sewunList.push({ year: targetYear, gan: gz[0], zi: gz[1], sip: getSipseong(dayStem, gz[0]) + " / " + getSipseong(dayStem, gz[1]), unsung: UNSUNG_MAP[dayStem]?.[gz[1]] || '-' });
         }
         
-        const animalColor = { "wood": "푸른", "fire": "붉은", "earth": "황금", "metal": "하얀", "water": "검은" }[HAN_COLOR[dayStem]] || "신비한";
-        const animalName = animalColor + " " + (BRANCH_ANIMAL[dayBranch] || "생명체");
-
-        return {
-            name, gender, dayStem, dayBranch, pillars, wuxing: counts, sipseong: sipCounts,
-            strengthText: ratio > 55 ? "신강" : (ratio < 45 ? "신약" : "중화"), strengthRatio: ratio,
-            gongmang: ec.getDayXunKong(),
-            healthScore: calculateHealthScore(counts),
-            shinsal12: pillars.map(p => p.h[1] ? get12Shinsal(dayBranch, p.h[1]) : '-'),
-            lunarDate: lunarObj.toString(), solarDate: solarObj.toString(),
-            solarTerm: lunarObj.getPrevJieQi().getName() + " " + lunarObj.getPrevJieQi().getSolar().toYmdHms().slice(0, 16),
-            animal: (dayStem + dayBranch) + " (" + animalName + ")",
-            daewunNum: daYunList[1].getStartAge(), daewunList: daewuns, sewunList: sewuns,
-            allShinsal: getAllShinsal(pillars, ec, isUnknown)
-        };
+        result.allShinsal = getAllShinsal(pillars, ec, isUnknown);
+        return result;
     } catch (e) {
-        console.error("Calculation Error:", e);
-        return { name, error: e.message };
+        console.error("Calculation Critical Error:", e);
+        return result;
     }
 }
