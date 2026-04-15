@@ -38,8 +38,8 @@ function generateDeepReport(data) {
     
     
     html += `<div id="pdf-btn-wrap" style="text-align: center; margin-top: 50px; padding-bottom: 50px; border-top: 1px solid #333; padding-top: 30px;">
-        <button class="btn" style="background: var(--gold); color: #000; width: 100%; max-width: 400px; font-size: 18px; font-weight: 800; box-shadow: 0 4px 15px rgba(199, 167, 106, 0.4);" onclick="window.print()">📄 X-FILE 기밀문서 PDF 저장</button>
-        <p style="color: #aaa; font-size: 13px; margin-top: 15px;">※ 브라우저 인쇄 창에서 <b>'PDF로 저장'</b>을 선택하고, <b>'배경 그래픽(옵션)'</b>을 꼭 켜주세요.</p>
+        <button class="btn" style="background: var(--gold); color: #000; width: 100%; max-width: 400px; font-size: 18px; font-weight: 800; box-shadow: 0 4px 15px rgba(199, 167, 106, 0.4);" onclick="window.print()">📄 고객 전송용 PDF 추출 (Master Only)</button>
+        <p style="color: #aaa; font-size: 13px; margin-top: 15px;">※ <b>관리자 전용:</b> 인쇄 대화창에서 대상을 <b>'PDF로 저장'</b>으로 맞추고, <b>'배경 그래픽'</b>을 켠 상태로 저장하여 고객에게 발송하십시오.</p>
     </div>`;
     
     document.getElementById('report-container').innerHTML = html;
