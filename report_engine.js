@@ -134,18 +134,34 @@ function buildChapter9_Remedy(data) {
 
 function buildSynergySection(users) {
     let html = '<div class="report-chapter">';
+    const branchHap = {"子":"丑","丑":"子","寅":"亥","亥":"寅","卯":"戌","戌":"卯","辰":"酉","酉":"辰","巳":"申","申":"巳","午":"未","未":"午"};
+    const branchChung = {"子":"午","午":"子","丑":"未","未":"丑","寅":"申","申":"寅","卯":"酉","酉":"卯","辰":"戌","戌":"辰","巳":"亥","亥":"巳"};
+    const branchWonjin = {"子":"未","未":"子","丑":"午","午":"丑","寅":"酉","酉":"寅","卯":"申","申":"卯","辰":"亥","亥":"辰","巳":"戌","戌":"巳"};
+
     for (let i = 0; i < users.length; i++) {
         for (let j = i + 1; j < users.length; j++) {
             html += `<div style="margin-bottom: 30px; border-bottom: 1px dashed #444; padding-bottom: 20px;">
                 <h4 style="color: var(--gold); margin-bottom: 10px;">🛡️ ${users[i].name} ↔ ${users[j].name} 의 시너지 분석</h4>`;
             
-            let u1Min = Object.keys(users[i].wuxing).sort((a,b)=>users[i].wuxing[a]-users[i].wuxing[b])[0];
-            let u2Max = Object.keys(users[j].wuxing).sort((a,b)=>users[j].wuxing[b]-users[j].wuxing[a])[0];
+            let u1 = users[i], u2 = users[j];
+            let b1 = u1.dayBranch, b2 = u2.dayBranch;
+
+            if (branchHap[b1] === b2) {
+                html += `<p class="ch-text"><b>[운명적 인력]</b> 두 분은 지지 육합(六合)의 관계입니다. 첫눈에 강하게 끌리거나, 설명할 수 없는 깊은 유대감을 느끼는 소울메이트 구조입니다.</p>`;
+            } else if (branchChung[b1] === b2) {
+                html += `<p class="ch-text"><b>[역동적 마찰]</b> 지지 충(沖)의 관계입니다. 서로의 가치관이 정반대에 있어 사사건건 충돌할 수 있으나, 이를 건설적으로 풀면 서로를 크게 성장시키는 관계가 됩니다.</p>`;
+            } else if (branchWonjin[b1] === b2) {
+                html += `<p class="ch-text"><b>[감정적 애증]</b> 원진(怨嗔)의 기운이 흐릅니다. 서로를 그리워하면서도 만나면 사소한 일로 원망하게 되는 복잡한 감정선이 존재하니 정서적 배려가 필수입니다.</p>`;
+            } else {
+                html += `<p class="ch-text"><b>[담백한 존중]</b> 특별한 형충파해 없이 서로의 영역을 존중하며 담백하게 이어지는 관계입니다.</p>`;
+            }
+
+            // Wuxing balance
+            let u1Min = Object.keys(u1.wuxing).sort((a,b)=>u1.wuxing[a]-u1.wuxing[b])[0];
+            let u2Max = Object.keys(u2.wuxing).sort((a,b)=>u2.wuxing[b]-u2.wuxing[a])[0];
             
             if (u1Min === u2Max) {
-                html += `<p class="ch-text"><b>최상의 오행 보완:</b> 서로의 부족함을 완벽하게 채워주는 궁합입니다.</p>`;
-            } else {
-                html += `<p class="ch-text"><b>사회적 협력 구조:</b> 목표 지향적인 만남이 어울리는 구조입니다.</p>`;
+                html += `<p class="ch-text"><b>[오행 보완]</b> ${u1.name}님에게 부족한 ${RELATION_LABELS[u1Min]||u1Min} 기운을 ${u2.name}님이 압도적으로 채워주고 있습니다. 함께 있을 때 정서적 안정이 극대화됩니다.</p>`;
             }
             html += `</div>`;
         }

@@ -356,15 +356,21 @@ function addUserForm() {
     div.className = 'input-group';
     div.style.borderTop = '1px solid #222';
     div.style.paddingTop = '20px';
+    
+    // Tier labeling based on userCount
+    let tierTag = "";
+    if (window.userCount === 2) tierTag = '<span style="color:var(--gold); font-size:11px; margin-left:10px;">[DOUBLE TIER]</span>';
+    if (window.userCount >= 3) tierTag = '<span style="color:#ff6b6b; font-size:11px; margin-left:10px;">[FAMILY TIER]</span>';
+
     div.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-            <label style="color:var(--gold);">인원 ${window.userCount} 정보</label>
+            <label style="color:var(--gold);">인원 ${window.userCount} 정보 ${tierTag}</label>
             <button onclick="removeUser(${window.userCount})" style="background:none; border:none; color:#555; cursor:pointer;">✕ 삭제</button>
         </div>
         <div class="input-wrapper"><input type="text" id="name-${window.userCount}" placeholder="이름"></div>
         <div style="display:flex; gap:10px; margin-top:10px;">
-            <input type="text" id="birth-date-${window.userCount}" placeholder="생년월일" style="flex:1; background:transparent; border:none; border-bottom:1px solid #333; color:#fff; font-size:18px; padding:5px 0;">
-            <input type="text" id="birth-time-${window.userCount}" placeholder="시간" style="flex:0.6; background:transparent; border:none; border-bottom:1px solid #333; color:#fff; font-size:18px; padding:5px 0;">
+            <input type="text" id="birth-date-${window.userCount}" placeholder="생년월일(8자리)" maxlength="8" style="flex:1; background:transparent; border:none; border-bottom:1px solid #333; color:#fff; font-size:18px; padding:5px 0;">
+            <input type="text" id="birth-time-${window.userCount}" placeholder="시간(4자리)" maxlength="4" style="flex:0.6; background:transparent; border:none; border-bottom:1px solid #333; color:#fff; font-size:18px; padding:5px 0;">
         </div>
         <input type="hidden" id="gender-${window.userCount}" value="F">
         <input type="hidden" id="cal-type-${window.userCount}" value="S">
@@ -376,6 +382,14 @@ function addUserForm() {
         </div>
     `;
     container.appendChild(div);
+    updateMainButton();
+}
+
+function updateMainButton() {
+    const btn = document.querySelector('button[onclick="runAnalysis()"]');
+    if (window.userCount === 1) btn.innerHTML = '만세력 결과 보기 [BASIC]';
+    else if (window.userCount === 2) btn.innerHTML = '만세력 결과 보기 [DOUBLE]';
+    else btn.innerHTML = '만세력 결과 보기 [FAMILY]';
 }
 
 function setSubToggle(btn, inputId, val) {
@@ -397,6 +411,7 @@ function setSubToggle(btn, inputId, val) {
 function removeUser(id) {
     document.getElementById('user-form-' + id).remove();
     window.userCount--;
+    updateMainButton();
 }
 
 function showLoading(msg, cb) {
@@ -454,9 +469,38 @@ function runAnalysis() {
 
 function renderDashboard(data) {
     document.getElementById('av-name').innerText = data.name + "님";
-    const el = HAN_COLOR[data.dayStem];
-    document.getElementById('av-circle').className = 'avatar-circle ' + el;
-    document.getElementById('av-desc').innerText = `${data.dayStem}${data.dayBranch} ${COLOR_KR_MAP[el]} 생명체`;
+    const elType = HAN_COLOR[data.dayStem];
+    document.getElementById('av-circle').className = 'avatar-circle ' + elType;
+    document.getElementById('av-desc').innerText = `${data.dayStem}${data.dayBranch} ${COLOR_KR_MAP[elType]} 생명체`;
+
+    // Shinsal Badges
+    let badgeHtml = '';
+    const allS = data.allShinsal || {};
+    const flatShinsal = [...new Set(Object.values(allS).flat())].filter(Boolean);
+    flatShinsal.forEach(s => {
+        badgeHtml += `<div class="badge">${s}</div>`;
+    });
+    document.getElementById('av-badges').innerHTML = badgeHtml;
+    
+    // User Switcher (for N인)
+    let switcher = '';
+    if (window.globalSajuDataArray.length > 1) {
+        switcher = `<div style="display:flex; justify-content:center; gap:10px; margin-bottom:20px; flex-wrap:wrap;">`;
+        window.globalSajuDataArray.forEach((u, i) => {
+            const isActive = u.name === data.name;
+            switcher += `<button class="btn subtle" style="padding:8px 15px; font-size:12px; border-radius:15px; ${isActive ? 'background:var(--gold); color:#000; border-color:var(--gold); font-weight:700;' : 'border:1px solid #333;'}" onclick="renderDashboard(window.globalSajuDataArray[${i}])">${u.name}</button>`;
+        });
+        switcher += `</div>`;
+    }
+    const avHeader = document.querySelector('.avatar-header');
+    const existingSw = document.getElementById('user-switcher');
+    if (existingSw) existingSw.remove();
+    if (switcher) {
+        const swDiv = document.createElement('div');
+        swDiv.id = 'user-switcher';
+        swDiv.innerHTML = switcher;
+        avHeader.insertBefore(swDiv, document.getElementById('av-circle'));
+    }
     
     // Manse Table
     const labels = ['십성','천간','지지','십성'];
@@ -486,6 +530,9 @@ function renderDashboard(data) {
         wHtml += `<div class="bar-row"><div class="bar-label">${RELATION_LABELS[k]}</div><div class="bar-bg"><div class="bar-fill bg-${k}" style="width:${per}%"></div></div><div class="bar-val">${per}%</div></div>`;
     });
     document.getElementById('wuxing-bars').innerHTML = wHtml;
+
+    // Daewun/Fortune (Simple for Dashboard)
+    // You can add more dashboard-specific rendering here
 }
 
 function startReport() {
