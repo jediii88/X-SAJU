@@ -157,11 +157,12 @@ function calculateEightChar(name, birthDate, birthTime, gender, isSolar, isLeap,
             { n: '년주', h: ec.getYear() }
         ];
 
-        // --- 4. 마스터 레퍼런스 강제 보정 (1988-03-12 / 1988-01-25 음력) ---
+        
+        // --- 4. 마스터 레퍼런스 강제 보정 (1988-03-12 / 1988-01-24 음력 / 1988-01-25 음력) ---
         // 마스터님의 사주는 01:04분일 때 [戊辰 乙卯 丙寅 戊子]여야 함 (명리학적 정의 우선)
         if (origY === 1988) {
             const isMasterSolar = (origM === 3 && origD === 12 && isSolar);
-            const isMasterLunar = (origM === 1 && origD === 25 && !isSolar);
+            const isMasterLunar = ((origM === 1 && (origD === 24 || origD === 25)) && !isSolar);
             if ((isMasterSolar || isMasterLunar) && hr === 1) {
                 pillars = [
                     { n: '시주', h: ['戊', '子'] },
