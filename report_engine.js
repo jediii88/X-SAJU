@@ -1,4 +1,80 @@
 
+function generateDeepReport(dataInput) {
+    let data = Array.isArray(dataInput) ? dataInput[0] : dataInput;
+    let html = '';
+    
+    // [Intro: 압도적 몰입의 시작]
+    html += `
+    <div class="report-intro-luxury" style="padding: 60px 20px; text-align: center; border-bottom: 2px solid var(--gold); margin-bottom: 60px;">
+        <div style="font-size: 12px; letter-spacing: 4px; color: var(--gold); margin-bottom: 20px;">PROJECT X-SAJU: TOP SECRET</div>
+        <h1 style="font-family: 'Noto Serif KR', serif; font-size: 32px; font-weight: 900; color: var(--gold); margin: 0; letter-spacing: -1px;">${data.name} 님의 운명 설계도</h1>
+        <p style="color: #888; margin-top: 15px; font-size: 14px;">본 리포트는 귀하의 탄생 순간에 각인된 우주의 주파수를 해독한 기밀 문서입니다.</p>
+    </div>`;
+
+    // [Step 1: 당신이라는 소우주 (본질 분석)]
+    html += buildSectionHeader("SECTION 1. 자아의 원형과 설계값");
+    html += buildChapter_Persona(data); // 캐릭터성 부여
+    html += buildChapter_EnergyDensity(data); // 신강신약/오행
+
+    // [Step 2: 인생의 무기 (십성과 사회성)]
+    html += buildSectionHeader("SECTION 2. 사회적 정글에서 사용하는 무기");
+    html += buildChapter_Weapons(data); // 십성/신살
+
+    // [Step 3: 운명적 파동 (재물과 성취)]
+    html += buildSectionHeader("SECTION 3. 부와 성취의 메커니즘");
+    html += buildChapter_Wealth(data); // 재물운/직업운
+
+    // [Step 4: 생존과 보호 (건강과 위기관리)]
+    html += buildSectionHeader("SECTION 4. 생존 전략과 리스크 관리");
+    html += buildChapter_HealthMaster(data); // 건강/개운법
+
+    // [Step 5: 시간의 지도 (대운/세운 흐름)]
+    html += buildSectionHeader("SECTION 5. 시간의 흐름과 기회의 시기");
+    html += buildChapter_TimeFlow(data); 
+
+    html += `
+    <div style="text-align: center; margin-top: 100px; padding: 40px; border: 1px solid #333; background: #111;">
+        <p style="color: var(--gold); font-weight: 800;">"운명은 결정된 것이 아니라, 설계도를 이해한 자에 의해 재구성되는 것입니다."</p>
+        <button class="btn" style="margin-top: 20px; width: 100%; max-width: 300px;" onclick="window.print()">보고서 PDF 소장하기</button>
+    </div>`;
+
+    document.getElementById('report-container').innerHTML = html;
+}
+
+// 1. 페르소나 챕터 (몰입 유도: "당신은 ~한 사람입니다")
+function buildChapter_Persona(data) {
+    const animal = data.animal.split('(')[1].replace(')','');
+    return `
+    <div class="report-chapter">
+        <h3 class="ch-title">01. 당신의 고유 페르소나: [${animal}]</h3>
+        <p class="ch-text">당신은 단순한 인간이 아닙니다. 우주의 관점에서 당신은 <b>${animal}</b>의 기질을 품고 태어난 특별한 에너지체입니다. ${data.dayStem}(${HAN_KOR[data.dayStem]})의 태양 같은 열정과 ${data.dayBranch}(${HAN_KOR[data.dayBranch]})의 지혜가 결합되어 당신만의 독특한 아우라를 형성합니다.</p>
+        <div class="axe-advice">
+            남들이 당신을 차갑게 보더라도, 당신의 내면에는 꺼지지 않는 화로(火)가 있습니다. 그 화로를 언제, 누구를 위해 태울지가 당신 인생의 전반전을 결정합니다.
+        </div>
+    </div>`;
+}
+
+// 2. 무기 챕터 (정보 전달: "당신은 이런 무기를 가졌습니다")
+function buildChapter_Weapons(data) {
+    const mainSip = Object.keys(data.sipseong).reduce((a, b) => data.sipseong[a] > data.sipseong[b] ? a : b);
+    return `
+    <div class="report-chapter">
+        <h3 class="ch-title">02. 사회적 무기: [${mainSip}]의 힘</h3>
+        <p class="ch-text">사회라는 전쟁터에서 당신이 가장 잘 휘두르는 칼날은 바로 <b>${mainSip}(${data.sipseong[mainSip]}개 보유)</b>입니다. 이는 당신이 타인과 소통하고 성과를 내는 근본적인 방식입니다.</p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0;">
+            <div style="background: #1a1a1a; padding: 15px; border-radius: 8px; border-top: 3px solid #52b36a;">
+                <div style="font-size: 11px; color: #666;">공격 무기 (천간)</div>
+                <div style="font-size: 16px; font-weight: 800; color: #ddd;">${data.pillars[1].h[0]}의 카리스마</div>
+            </div>
+            <div style="background: #1a1a1a; padding: 15px; border-radius: 8px; border-top: 3px solid #e74c3c;">
+                <div style="font-size: 11px; color: #666;">방어 무기 (지장간)</div>
+                <div style="font-size: 16px; font-weight: 800; color: #ddd;">숨겨진 ${BRANCH_HIDDEN[data.dayBranch][0]}의 지혜</div>
+            </div>
+        </div>
+    </div>`;
+}
+
+
 function buildReportIntro(data) {
     return `
     <div class="report-chapter" style="text-align: center; border-bottom: 1px solid #333; padding-bottom: 40px; margin-bottom: 50px;">
