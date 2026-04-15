@@ -586,11 +586,12 @@ function runAnalysis() {
 }
 
 
+
 function renderDashboard(data) {
     document.getElementById('av-name').innerText = data.name + "님";
     const elType = HAN_COLOR[data.dayStem];
     document.getElementById('av-circle').className = 'avatar-circle ' + elType;
-    document.getElementById('av-desc').innerText = `${data.dayStem}${data.dayBranch} ${COLOR_KR_MAP[elType]} 생명체`;
+    document.getElementById('av-desc').innerText = `${data.dayStem}(${HAN_KOR[data.dayStem]})${data.dayBranch}(${HAN_KOR[data.dayBranch]}) ${COLOR_KR_MAP[elType]} 생명체`;
 
     // Shinsal Badges
     let badgeHtml = '';
@@ -633,7 +634,8 @@ function renderDashboard(data) {
         mHtml += `<div class="manse-row"><div class="manse-cell manse-label">${l}</div>`;
         rows[i].forEach(val => {
             const cls = HAN_COLOR[val] || HAN_COLOR[val[0]] || '';
-            mHtml += `<div class="manse-cell ${cls}" style="font-size:${i===1||i===2?'30px':'12px'}">${val}</div>`;
+            const displayVal = (i === 1 || i === 2) ? `${val}<br><span style="font-size:12px; opacity:0.8;">(${HAN_KOR[val]})</span>` : val;
+            mHtml += `<div class="manse-cell ${cls}" style="font-size:${i===1||i===2?'24px':'12px'}">${displayVal}</div>`;
         });
         mHtml += `</div>`;
     });
@@ -644,8 +646,8 @@ function renderDashboard(data) {
     const relLines = buildRelationLines(data.pillars);
     relGrid.innerHTML = relLines.map(item => {
         if(item.type === '없음') return '<div style="grid-column:1/-1; color:#555; font-size:12px; text-align:center;">특이 관계 없음</div>';
-        let nodesHtml = item.chars.map(c => `<div class="rel-char ${HAN_COLOR[c]}">${c}</div>`).join('<div class="rel-link"></div>');
-        return `<div class="rel-card"><div class="rel-nodes">${nodesHtml}</div><div class="rel-badge">${item.label}</div></div>`;
+        let nodesHtml = item.chars.map(c => `<div class="rel-char ${HAN_COLOR[c]}">${c}<span style="font-size:9px; position:absolute; bottom:-12px; color:#aaa;">(${HAN_KOR[c]})</span></div>`).join('<div class="rel-link"></div>');
+        return `<div class="rel-card"><div class="rel-nodes" style="margin-bottom:15px;">${nodesHtml}</div><div class="rel-badge">${item.label}</div></div>`;
     }).join('');
 
     // Wuxing Bars

@@ -77,7 +77,7 @@ function buildChapter1_Full(data) {
     let dbEntry = window.SAJU_DB?.ILJU?.[iljuKey] || {};
     return `<div class="report-chapter">
         <h3 class="ch-title">Chapter 1. 당신이라는 소우주의 설계도</h3>
-        <p class="ch-text" style="font-size: 18px; font-weight: 800; color: var(--gold);">[${dbEntry.title || iljuKey + '의 기운'}]</p>
+        <p class="ch-text" style="font-size: 18px; font-weight: 800; color: var(--gold);">[${dbEntry.title || iljuKey + '(' + (HAN_KOR[data.dayStem]||'') + (HAN_KOR[data.dayBranch]||'') + ')의 기운'}]</p>
         <p class="ch-text">명리학에서 일주(日柱)는 단순히 성격을 의미하는 것이 아니라, 당신이 평생 짊어지고 가야 할 <b>영혼의 바코드이자 생존의 무기</b>입니다. 당신을 진정으로 움직이는 것은 사회적 가면이 아닌, 바로 이 일주에 새겨진 내밀한 기질입니다.</p>
         <p class="ch-text">${dbEntry.core || '당신의 본질을 해독하는 중입니다.'}</p>
         <p class="ch-text">당신의 에너지는 현재 <b>${data.strengthText}</b> 상태입니다. 이는 외부의 압력을 견뎌내고 내면의 폭발력을 응축하는 원동력이 됩니다. 남들의 속도에 맞추려 하지 마십시오. 당신의 템포가 곧 정답입니다.</p>
@@ -213,7 +213,7 @@ function buildSynergySection(users) {
     for (let i = 0; i < users.length; i++) {
         for (let j = i + 1; j < users.length; j++) {
             html += `<div style="margin-bottom: 40px; border-bottom: 1px dashed #444; padding-bottom: 30px;">
-                <h4 style="color: var(--gold); margin-bottom: 15px; font-size: 20px;">🛡️ ${users[i].name} ↔ ${users[j].name} 의 시너지 분석</h4>`;
+                <h4 style="color: var(--gold); margin-bottom: 15px; font-size: 20px;">🛡️ ${users[i].name}(${users[i].dayStem}${users[i].dayBranch}) ↔ ${users[j].name}(${users[j].dayStem}${users[j].dayBranch}) 의 시너지 분석</h4>`;
             
             let u1 = users[i], u2 = users[j];
             let b1 = u1.dayBranch, b2 = u2.dayBranch;
