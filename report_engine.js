@@ -1,42 +1,58 @@
 
-
 function generateDeepReport(dataInput) {
     let data = Array.isArray(dataInput) ? dataInput[0] : dataInput;
+    if(!data || !data.dayStem) return;
+
     let html = '';
     
+    // 럭셔리 인트로
     html += `
     <div class="report-intro-luxury" style="padding: 60px 20px; text-align: center; border-bottom: 2px solid var(--gold); margin-bottom: 60px;">
-        <div style="font-size: 12px; letter-spacing: 4px; color: var(--gold); margin-bottom: 20px;">PROJECT X-SAJU: TOP SECRET</div>
-        <h1 style="font-family: 'Noto Serif KR', serif; font-size: 32px; font-weight: 900; color: var(--gold); margin: 0; letter-spacing: -1px;">${data.name} 님의 운명 설계도</h1>
-        <p style="color: #888; margin-top: 15px; font-size: 14px;">본 리포트는 귀하의 탄생 순간에 각인된 우주의 주파수를 해독한 기밀 문서입니다.</p>
+        <div style="font-size: 11px; letter-spacing: 4px; color: var(--gold); margin-bottom: 20px; font-weight: 700;">PROJECT X-SAJU: TOP SECRET</div>
+        <h1 style="font-family: 'Noto Serif KR', serif; font-size: 32px; font-weight: 700; color: var(--gold); margin: 0; letter-spacing: -1px;">${data.name} 님의 운명 설계도</h1>
+        <p style="color: #888; margin-top: 15px; font-size: 14px; line-height: 1.6;">본 리포트는 귀하의 탄생 순간에 각인된 우주의 주파수를 해독한 기밀 문서입니다.<br>기존의 단순한 운세 풀이를 넘어, 마스터의 시각으로 귀하의 근본 자아와 시간의 흐름을 해부합니다.</p>
     </div>`;
 
+    // SECTION 1. 자아의 원형 (페르소나, 에너지 밀도)
     html += buildSectionHeader("SECTION 1. 자아의 원형과 설계값");
     html += buildChapter_Persona(data);
-    html += buildChapter_EnergyDensity(data);
+    if(typeof buildChapter_EnergyDensity === 'function') html += buildChapter_EnergyDensity(data);
 
+    // SECTION 2. 사회적 무기 (십성, 지장간)
     html += buildSectionHeader("SECTION 2. 사회적 정글에서 사용하는 무기");
     html += buildChapter_Weapons(data);
-    html += buildChapter7_Full(data); // 지장간 해부 복구
+    if(typeof buildChapter7_Full === 'function') html += buildChapter7_Full(data);
 
+    // SECTION 3. 성취의 메커니즘 (재물, 직업)
     html += buildSectionHeader("SECTION 3. 부와 성취의 메커니즘");
-    html += buildChapter_Wealth(data);
-    html += buildChapter5_Full(data); // 직업운 서사 복구
+    if(typeof buildChapter_Wealth === 'function') html += buildChapter_Wealth(data);
+    if(typeof buildChapter5_Full === 'function') html += buildChapter5_Full(data);
 
+    // SECTION 4. 리스크 관리 (건강, 개운법)
     html += buildSectionHeader("SECTION 4. 생존 전략과 리스크 관리");
-    html += buildChapter_HealthMaster(data);
+    if(typeof buildChapter_HealthMaster === 'function') html += buildChapter_HealthMaster(data);
 
+    // SECTION 5. 시간의 흐름 (대운, 세운)
     html += buildSectionHeader("SECTION 5. 시간의 흐름과 기회의 시기");
-    html += buildChapter_TimeFlow(data); 
+    if(typeof buildChapter10_Full === 'function') html += buildChapter10_Full(data);
 
+    // 아웃트로
     html += `
-    <div style="text-align: center; margin-top: 100px; padding: 40px; border: 1px solid #333; background: #111;">
-        <p style="color: var(--gold); font-weight: 800;">"운명은 결정된 것이 아니라, 설계도를 이해한 자에 의해 재구성되는 것입니다."</p>
-        <button class="btn" style="margin-top: 20px; width: 100%; max-width: 300px;" onclick="window.print()">보고서 PDF 소장하기</button>
+    <div style="text-align: center; margin-top: 100px; padding: 60px 40px; border: 1px solid #222; background: #0a0a0a; border-radius: 15px;">
+        <p style="color: var(--gold); font-weight: 700; font-size: 18px; margin-bottom: 20px;">"운명은 결정된 것이 아니라, 설계도를 이해한 자에 의해 재구성되는 것입니다."</p>
+        <div style="font-size: 13px; color: #555; margin-bottom: 30px;">Copyright 2026. X-SAJU MASTER All rights reserved.</div>
+        <button class="btn" style="width: 100%; max-width: 320px; background: var(--gold); color: #000; font-weight: 800; padding: 15px;" onclick="window.print()">보고서 PDF로 소장하기</button>
     </div>`;
 
-    document.getElementById('report-container').innerHTML = html;
+    const container = document.getElementById('report-container');
+    if(container) {
+        container.innerHTML = html;
+        // 스크롤을 리포트 시작 지점으로 이동
+        container.scrollIntoView({ behavior: 'smooth' });
+    }
 }
+
+
 
 // 1. 페르소나 챕터 (몰입 유도: "당신은 ~한 사람입니다")
 function buildChapter_Persona(data) {
