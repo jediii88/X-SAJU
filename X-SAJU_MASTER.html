@@ -899,8 +899,9 @@
         @page { size: A4; margin: 12mm; }
         body { background: #0a0a0a !important; color: #f5f5f5 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
         .page { display: none !important; }
-        #step-3 { display: block !important; position: static !important; width: 100% !important; height: auto !important; overflow: visible !important; }
-        .btn, .btn-toggle, #pdf-btn-wrap { display: none !important; }
+        #step-2, #step-3 { display: block !important; position: static !important; width: 100% !important; height: auto !important; overflow: visible !important; }
+        #step-2 { page-break-after: always; padding-top: 10px !important; }
+        .btn, .btn-toggle, #pdf-btn-wrap, #nav-scroll, #sec-report, .help-icon { display: none !important; }
         .report-chapter { page-break-inside: avoid; page-break-after: auto; border-bottom: 1px solid #333; padding-bottom: 20px; }
         .timeline-item { page-break-inside: avoid; }
         .container { width: 100% !important; max-width: 100% !important; padding: 0 !important; margin: 0 !important; box-shadow: none !important; }
