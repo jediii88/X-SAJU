@@ -177,21 +177,53 @@ function buildSectionHeader(title) {
 function buildChapter1_Full(data) {
     let iljuKey = data.dayStem + data.dayBranch;
     let dbEntry = window.SAJU_DB?.ILJU?.[iljuKey] || {};
+    
+    // 년, 월, 일, 시의 한자/한글 데이터
+    const yH = data.pillars[3].h; 
+    const mH = data.pillars[2].h; 
+    const dH = data.pillars[1].h; 
+    const tH = data.pillars[0].h; 
+    
     return `
     <div class="report-chapter">
-        <h3 class="ch-title">Chapter 1. 당신이라는 소우주의 설계도</h3>
-        <p class="ch-text" style="font-size: 18px; font-weight: 800; color: var(--gold);">[${dbEntry.title || iljuKey + '(' + (HAN_KOR[data.dayStem]||'') + (HAN_KOR[data.dayBranch]||'') + ')의 기운'}]</p>
-        <p class="ch-text">명리학에서 일주(日柱)는 단순히 성격을 의미하는 것이 아니라, 당신이 평생 짊어지고 가야 할 <b>영혼의 바코드이자 생존의 무기</b>입니다. 당신을 진정으로 움직이는 것은 사회적 가면이 아닌, 바로 이 일주에 새겨진 내밀한 기질입니다.</p>
-        <div style="background: rgba(255,255,255,0.03); padding: 30px; border-radius: 10px; margin: 30px 0; border: 1px solid #222;">
-            <p class="ch-text" style="margin-top: 0; color: #ccc; line-height: 1.9;">${dbEntry.core || '당신의 본질을 해독하는 중입니다.'}</p>
+        <h3 class="ch-title">Chapter 1. 당신의 소우주: 8글자의 논리적 해부</h3>
+        <p class="ch-text">사주(四柱)란 당신이 태어난 연, 월, 일, 시의 4개의 기둥을 의미하며, 각 기둥은 위(천간)와 아래(지지) 두 글자로 이루어져 총 8글자(팔자)가 됩니다. 이 8글자는 단순한 점괘가 아니라, 당신의 기질과 환경을 설계한 <b>정밀한 우주적 설계도</b>입니다.</p>
+        
+        <div style="background: rgba(255,255,255,0.02); padding: 25px; border-radius: 10px; border: 1px solid #333; margin: 30px 0;">
+            <p style="color: var(--gold); font-size: 16px; font-weight: 800; margin-top: 0;">[ ${data.name} 님의 사주 원국 8글자 ]</p>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; text-align: center; margin-top: 20px;">
+                <div style="border: 1px solid #444; padding: 15px; border-radius: 5px;">
+                    <div style="font-size: 12px; color: #888; margin-bottom: 10px;">시주(말년/무기)</div>
+                    <div style="font-size: 24px; font-weight: 900; color: ${HAN_COLOR[tH[0]]}">${tH[0]}<span style="font-size:12px; color:#aaa;">(${HAN_KOR[tH[0]]})</span></div>
+                    <div style="font-size: 24px; font-weight: 900; color: ${HAN_COLOR[tH[1]]}; margin-top: 5px;">${tH[1]}<span style="font-size:12px; color:#aaa;">(${HAN_KOR[tH[1]]})</span></div>
+                </div>
+                <div style="border: 1px solid #444; padding: 15px; border-radius: 5px; background: rgba(199,167,106,0.1); border-color: var(--gold);">
+                    <div style="font-size: 12px; color: var(--gold); margin-bottom: 10px;">일주(본질/안방)</div>
+                    <div style="font-size: 24px; font-weight: 900; color: ${HAN_COLOR[dH[0]]}">${dH[0]}<span style="font-size:12px; color:#aaa;">(${HAN_KOR[dH[0]]})</span></div>
+                    <div style="font-size: 24px; font-weight: 900; color: ${HAN_COLOR[dH[1]]}; margin-top: 5px;">${dH[1]}<span style="font-size:12px; color:#aaa;">(${HAN_KOR[dH[1]]})</span></div>
+                </div>
+                <div style="border: 1px solid #444; padding: 15px; border-radius: 5px;">
+                    <div style="font-size: 12px; color: #888; margin-bottom: 10px;">월주(환경/직업)</div>
+                    <div style="font-size: 24px; font-weight: 900; color: ${HAN_COLOR[mH[0]]}">${mH[0]}<span style="font-size:12px; color:#aaa;">(${HAN_KOR[mH[0]]})</span></div>
+                    <div style="font-size: 24px; font-weight: 900; color: ${HAN_COLOR[mH[1]]}; margin-top: 5px;">${mH[1]}<span style="font-size:12px; color:#aaa;">(${HAN_KOR[mH[1]]})</span></div>
+                </div>
+                <div style="border: 1px solid #444; padding: 15px; border-radius: 5px;">
+                    <div style="font-size: 12px; color: #888; margin-bottom: 10px;">년주(조상/초년)</div>
+                    <div style="font-size: 24px; font-weight: 900; color: ${HAN_COLOR[yH[0]]}">${yH[0]}<span style="font-size:12px; color:#aaa;">(${HAN_KOR[yH[0]]})</span></div>
+                    <div style="font-size: 24px; font-weight: 900; color: ${HAN_COLOR[yH[1]]}; margin-top: 5px;">${yH[1]}<span style="font-size:12px; color:#aaa;">(${HAN_KOR[yH[1]]})</span></div>
+                </div>
+            </div>
         </div>
-        <p class="ch-text">현재 당신의 에너지는 <b>[${data.strengthText}]</b> 상태입니다. ${data.strengthText === '신강' ? '주변의 저항을 뚫고 내 의지를 관철시키는 거대한 폭주 기관차와 같습니다.' : (data.strengthText === '신약' ? '주변 환경을 스펀지처럼 흡수하며 상황에 맞게 나를 변형시키는 섬세한 안테나와 같습니다.' : '상황에 따라 강온 양면을 자유자재로 구사하는 밸런스의 지배자입니다.')} 남들의 속도에 맞추려 하지 마십시오. 당신의 템포가 곧 정답입니다.</p>
-        <div class="axe-advice" style="margin-top: 30px;">
-            <b>Axe의 기밀 통찰:</b> ${dbEntry.weapon || '당신만의 독보적인 무기를 발견하십시오.'}
+
+        <p class="ch-text">가장 중심이 되는 글자는 일주의 윗글자, 즉 <b>일간(日干) ${data.dayStem}(${HAN_KOR[data.dayStem]})</b>입니다. 이 글자가 곧 당신의 '영혼의 본체'입니다. 당신은 우주적으로 ${RELATION_LABELS[HAN_COLOR[data.dayStem]]}의 기운을 띠고 태어났으며, 일지(아랫글자)인 ${data.dayBranch}(${HAN_KOR[data.dayBranch]})를 깔고 앉아 있습니다.</p>
+        <p class="ch-text">월주 ${mH[0]}${mH[1]}(${HAN_KOR[mH[0]]}${HAN_KOR[mH[1]]})는 당신이 태어난 계절적 환경을 의미하며, 직업과 사회성을 지배합니다. 당신의 ${data.dayStem}(${HAN_KOR[data.dayStem]}) 본체는 이 월주의 환경 속에서 주변 글자들과 밀고 당기며(생극제화) 당신만의 고유한 성향을 만들어냅니다.</p>
+
+        <div style="background: rgba(199,167,106,0.05); padding: 25px; border-left: 3px solid var(--gold); margin-top: 30px;">
+            <p style="color: var(--gold); font-size: 15px; font-weight: 700; margin-top: 0;">[일주 ${iljuKey}(${HAN_KOR[data.dayStem]}${HAN_KOR[data.dayBranch]})의 본질]</p>
+            <p style="margin: 0; color: #ccc; line-height: 1.8;">${dbEntry.core || '본질 해독 중입니다.'}</p>
         </div>
     </div>`;
 }
-
 function buildChapter2_Full(data) {
     let maxW = Object.keys(data.wuxing).reduce((a, b) => data.wuxing[a] > data.wuxing[b] ? a : b);
     let minW = Object.keys(data.wuxing).reduce((a, b) => data.wuxing[a] < data.wuxing[b] ? a : b);
@@ -215,23 +247,27 @@ function buildChapter3_Full(data) {
     let mainSip = Object.keys(data.sipseong).reduce((a, b) => data.sipseong[a] > data.sipseong[b] ? a : b) || "비견";
     let sipText = window.SAJU_DB?.SIPSEONG?.[mainSip] || "당신만의 독특한 사회적 페르소나를 가지고 있습니다.";
     
-    // 심층 분석 로직 추가
-    let subSip = Object.keys(data.sipseong).filter(k => k !== mainSip).sort((a, b) => data.sipseong[b] - data.sipseong[a])[0];
-    
     return `
     <div class="report-chapter">
-        <h3 class="ch-title">Chapter 3. 뇌 구조와 사회적 무기 (십성 분석)</h3>
-        <p class="ch-text">오행이 당신의 신체라면, 십성(十星)은 당신의 뇌에 깔린 <b>운영체제(S/W)</b>입니다. 결정적인 순간에 당신이 내리는 모든 선택은 바로 이 필터를 통해 걸러집니다.</p>
+        <h3 class="ch-title">Chapter 3. 십성(十星)의 원리와 사회적 무기</h3>
+        <p class="ch-text">사주에서 <b>십성(十星)</b>이란, 내 본체인 일간(${data.dayStem})을 기준으로 나머지 7개의 글자가 나와 어떤 관계를 맺고 있는지를 10가지 역할로 분류한 시스템입니다. 이것이 바로 당신이 세상을 바라보고 대응하는 '뇌의 운영체제(S/W)'가 됩니다.</p>
+        
+        <ul style="color: #bbb; line-height: 2.0; font-size: 15px; margin-bottom: 30px; background: rgba(255,255,255,0.02); padding: 20px 40px; border-radius: 8px;">
+            <li><b>식상(식신/상관):</b> 내가 에너지를 빼내어 낳는 기운 (표현력, 기술, 아이디어)</li>
+            <li><b>재성(정재/편재):</b> 내가 극(통제)하여 쟁취하는 기운 (결과물, 목표, 재물)</li>
+            <li><b>관성(정관/편관):</b> 나를 극(통제)하여 억누르는 기운 (규율, 명예, 직장)</li>
+            <li><b>인성(정인/편인):</b> 나를 돕고 생(生)해주는 기운 (학문, 인정, 문서)</li>
+            <li><b>비겁(비견/겁재):</b> 나와 같은 기운 (경쟁자, 자아, 독립심)</li>
+        </ul>
+
+        <p class="ch-text">당신의 원국 8글자를 이 원리로 분석했을 때, 가장 압도적인 비율을 차지하는 주력 운영체제는 <b>[${mainSip}]</b>입니다.</p>
         
         <div style="padding: 25px; border-left: 4px solid var(--gold); background: #111; margin-top: 25px;">
             <p style="margin-top: 0; color: var(--gold); font-size: 16px; font-weight: 800;">주력 페르소나 (Primary OS): [${mainSip}]</p>
             <p style="margin: 0; color: #ddd; line-height: 1.8;">${sipText}</p>
         </div>
-
-        <p class="ch-text" style="margin-top: 30px;">당신의 무의식을 지배하는 메인 무기 뒤에는, 은밀하게 당신을 보좌하는 서브 무기인 <b>[${subSip || '기타'}]</b>의 기질이 숨어 있습니다. 이 두 가지가 결합할 때 당신은 사회라는 정글에서 남들이 모르는 변칙 공격을 구사하게 됩니다.</p>
     </div>`;
 }
-
 function buildChapter4_Full(data) {
     let jaeCount = (data.sipseong['정재'] || 0) + (data.sipseong['편재'] || 0);
     let sikCount = (data.sipseong['식신'] || 0) + (data.sipseong['상관'] || 0);
@@ -317,21 +353,30 @@ function buildChapterHealth_Full(data) {
 
 function buildChapter9_Full(data) {
     let gongmang = data.gongmang || '-';
-    let gmSip = gongmang.split('').map(c => getSipseong(data.dayStem, c)).join(', ');
+    let gmSip = gongmang.split('').map(c => typeof getSipseong === 'function' ? getSipseong(data.dayStem, c) : '').join(', ');
     
     return `
     <div class="report-chapter">
-        <h3 class="ch-title">Chapter 9. 공망(空亡): 채워지지 않는 블랙홀</h3>
-        <p class="ch-text">공망은 '비어있다'는 뜻입니다. 이 비어있는 공간 때문에 인간은 평생 그 기운을 갈구하고 집착하게 됩니다. 당신의 사주에 각인된 공망은 <b>[${gongmang} (${gmSip})]</b>입니다.</p>
-        <p class="ch-text">이 ${gmSip}에 대한 채워지지 않는 갈증이 당신을 끝없이 달리게 만드는 모터입니다. 이것을 완전히 채우려 하지 마십시오. 결핍을 인정하는 순간, 그 공백은 당신을 집어삼키는 블랙홀에서 당신을 밀어 올리는 로켓의 분사구로 변합니다.</p>
+        <h3 class="ch-title">Chapter 9. 공망(空亡): 결핍의 원리와 역발상</h3>
+        <p class="ch-text">명리학에서 <b>공망(空亡)</b>은 하늘이 비어있다는 뜻입니다. 천간(하늘의 기운)은 10개인데 지지(땅의 기운)는 12개입니다. 이들을 순서대로 짝짓다 보면 필연적으로 2개의 지지가 짝을 찾지 못하고 남게 되는데, 이를 공망이라 부릅니다.</p>
+        <p class="ch-text">당신의 일주(${data.dayStem}${data.dayBranch})를 기준으로 짝을 맞추어 보면, <b>[${gongmang}]</b> 두 글자가 짝이 없는 공망의 상태가 됩니다. 이 두 글자에 해당하는 십성이 바로 <b>[${gmSip}]</b>입니다.</p>
+        <p class="ch-text">과거에는 이를 흉살로 보았으나, 현대 명리학에서는 이를 <b>'평생을 관통하는 갈증과 동기부여'</b>로 해석합니다. 채워지지 않기에 끝없이 갈구하고, 그 갈구하는 힘이 당신을 남들보다 높은 곳으로 밀어 올리는 로켓의 분사구가 됩니다.</p>
+        <div class="axe-advice" style="border-left-color: #9b59b6;">
+            이 결핍(${gmSip})을 완벽하게 채우려 집착하지 마십시오. 비어있기 때문에 새로운 것을 담을 수 있는 당신만의 무한한 공간입니다.
+        </div>
     </div>`;
 }
-
 function buildChapter10_Full(data) {
     let html = `<div class="report-chapter" style="margin-bottom: 80px;">
-        <h3 class="ch-title">Chapter 10. 시간의 지도 (대운과 세운의 정밀 분석)</h3>
-        <p class="ch-text">인생은 직선이 아니라 파동입니다. 명리학의 정수는 바로 이 '시간의 파동'을 읽어내어 내가 액셀을 밟아야 할 때와 브레이크를 밟아야 할 때를 정확히 타겟팅하는 데 있습니다.</p>
+        <h3 class="ch-title">Chapter 10. 시간의 파동 (대운, 세운, 그리고 원국의 충돌)</h3>
+        <p class="ch-text">사주 팔자(8글자)가 당신이 태어날 때 지어진 '집'이라면, <b>운(運)</b>은 밖에서 불어오는 '날씨와 바람'입니다. 대운(10년), 세운(1년), 월운(1개월)이라는 우주의 시간이 흘러오면서 당신의 원국 8글자와 부딪치고(충), 섞이고(합), 깨지면서(파) 인생의 다양한 사건 사고가 발생합니다.</p>
         
+        <ul style="color: #bbb; line-height: 2.0; font-size: 15px; margin-bottom: 30px; background: rgba(255,255,255,0.02); padding: 20px 40px; border-radius: 8px;">
+            <li><b>대운(大運):</b> 10년마다 바뀌는 거대한 기후 변화. 내 인생의 무대 전체가 봄에서 여름으로 바뀌는 것과 같은 환경적 셋업.</li>
+            <li><b>세운(歲運):</b> 매년 들어오는 1년짜리 기상청 예보. 올해 당장 내게 떨어지는 구체적이고 현실적인 체감 사건.</li>
+            <li><b>작용 원리:</b> 운에서 들어오는 글자가 내 원국의 글자와 만나 <b>합(合)</b>을 하면 사람/돈/문서가 묶이거나 들어오고, <b>충(沖)</b>을 하면 기존의 것이 깨지거나 강력한 이동/변화가 일어납니다.</li>
+        </ul>
+
         <h4 style="color: var(--gold); margin: 50px 0 20px; font-size: 24px; border-bottom: 1px solid #333; padding-bottom: 10px;">[거시적 기후 변화: 10년 대운(大運)]</h4>
         <p class="ch-text" style="color:#aaa;">대운은 내 인생을 둘러싼 거대한 10년짜리 기상도입니다.</p>`;
     
@@ -346,11 +391,11 @@ function buildChapter10_Full(data) {
                 ${dy.age}세 ~ ${dy.age+9}세 : [${dy.gan}${dy.zi} 대운] ${currentTag}
             </p>
             <p style="margin: 0; color: #888; font-size: 13px; margin-bottom: 15px;">유입 에너지: ${dy.sip.replace(' / ', ', ')} | 우주적 상태: 12운성 ${dy.unsung}</p>
-            <p style="margin: 0; color: #ddd; line-height: 1.8;">이 10년은 <b>${dy.sip.split(' / ')[0]}</b>과 <b>${dy.sip.split(' / ')[1]}</b>의 사회적 파동이 당신의 삶을 강타하는 시기입니다. 기존의 낡은 가치관을 깨부수고 새로운 영토로 나아가기 위한 강력한 마찰음이 발생하며, 당신의 일간(${data.dayStem})은 12운성 <b>${dy.unsung}</b>의 단계에 놓여 극적인 변곡점을 맞이합니다. 주도권을 쥐고 환경을 지배하십시오.</p>
+            <p style="margin: 0; color: #ddd; line-height: 1.8;">이 10년은 밖에서 불어오는 <b>${dy.sip.split(' / ')[0]}</b>(천간)과 <b>${dy.sip.split(' / ')[1]}</b>(지지)의 에너지가 당신의 원국(${data.dayStem}${data.dayBranch})과 격렬하게 반응하는 시기입니다. 당신의 영혼(일간 ${data.dayStem})은 12운성 <b>${dy.unsung}</b>의 단계에 놓이게 되며, 외부 환경의 압력을 어떻게 내 무기로 흡수하느냐가 이 10년의 성패를 가릅니다.</p>
         </div>`;
     });
 
-    html += `<h4 style="color: var(--gold); margin: 60px 0 20px; font-size: 24px; border-bottom: 1px solid #333; padding-bottom: 10px;">[미시적 전술 지도: 향후 10년 세운(歲運)]</h4>
+    html += `<h4 style="color: var(--gold); margin: 60px 0 20px; font-size: 24px; border-bottom: 1px solid #333; padding-bottom: 10px;">[미시적 전술 지도: 향후 10년 세운(歲運)과 합충 분석]</h4>
         <p class="ch-text" style="color:#aaa;">세운은 올해 당장 내 눈앞에 떨어지는 현실적인 사건 사고를 의미합니다.</p>`;
         
     // 세운 출력
@@ -358,21 +403,29 @@ function buildChapter10_Full(data) {
         let isThisYear = sy.year === new Date().getFullYear();
         let yt = isThisYear ? 'background: rgba(199,167,106,0.1); border: 1px solid var(--gold);' : 'background: #0a0a0a; border: 1px solid #222;';
         
+        // 간단한 충(沖) 원리 표시 
+        let hasChung = false;
+        let branchChung = {"子":"午","午":"子","丑":"未","未":"丑","寅":"申","申":"寅","卯":"酉","酉":"卯","辰":"戌","戌":"辰","巳":"亥","亥":"巳"};
+        if(branchChung[data.dayBranch] === sy.zi) hasChung = true;
+
+        let actionText = hasChung 
+            ? `올해 들어오는 <b>${sy.zi}(${HAN_KOR[sy.zi]||''})</b>의 기운이 당신의 일지 <b>${data.dayBranch}(${HAN_KOR[data.dayBranch]})</b>와 정면으로 충돌(沖)합니다. 안방이나 직장에 강한 변동성(이동, 이직, 이별 등)이 발생할 수 있는 역동적인 해입니다.`
+            : `올해는 <b>${sy.sip.split(' / ')[1]}</b>의 기운이 지배적입니다. 이 에너지가 당신의 원국에 안착하면서 해당 십성(결과물, 명예, 활동력 등)에 관련된 현실적 사건이 터집니다.`;
+
         html += `
         <div style="margin-bottom: 15px; padding: 20px; border-radius: 8px; ${yt}">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                 <span style="color: ${isThisYear ? 'var(--gold)' : '#fff'}; font-size: 18px; font-weight: 800;">${sy.year}년 (${sy.gan}${sy.zi}년)</span>
                 <span style="color: #666; font-size: 12px; font-weight: 700;">${sy.sip.replace(' / ', ' · ')} | ${sy.unsung}</span>
             </div>
-            <p style="margin: 0; color: #ccc; font-size: 14px; line-height: 1.7;">
-                올해는 <b>${sy.sip.split(' / ')[1]}</b>의 현실적 사건이 터지는 해입니다. 당신의 뇌 구조에 새로운 자극이 들어오며, 이 1년의 선택이 향후 10년의 나비효과를 만들어냅니다. ${isThisYear ? '<b>올해의 기회를 절대 놓치지 마십시오.</b>' : '미리 준비하고 대비하는 자만이 이 파도를 탈 수 있습니다.'}
-            </p>
+            <p style="margin: 0; color: #ccc; font-size: 14px; line-height: 1.7;">${actionText}</p>
         </div>`;
     });
     
     html += `</div>`;
     return html;
 }
+
 
 function buildSynergySection(users) {
     let html = '<div class="report-chapter">';
