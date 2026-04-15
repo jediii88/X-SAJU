@@ -217,6 +217,30 @@
             font-size: 14px; color: var(--text-soft); font-weight: 500;
         }
     </style>
+
+    <style>
+        .report-chapter { margin-bottom: 40px; }
+        .ch-title { color: var(--gold); border-bottom: 1px solid #333; padding-bottom: 8px; margin-bottom: 15px; font-family: 'Noto Serif KR', serif; font-weight: 300; font-size: 20px; }
+        .ch-text { font-size: 15px; line-height: 1.8; color: #eee; margin-bottom: 15px; text-align: justify; word-break: keep-all; }
+        .axe-advice { background: #111; padding: 18px; border-radius: 8px; border-left: 3px solid var(--gold); font-size: 14.5px; line-height: 1.6; color: #ddd; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(4px); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px; opacity: 0; transition: opacity 0.3s; }
+        .modal-overlay.active { display: flex; opacity: 1; }
+        .modal-card { background: #111; border: 1px solid var(--line-soft); border-radius: 12px; padding: 24px; width: 100%; max-width: 360px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
+        .modal-title { font-size: 16px; font-weight: 500; color: var(--gold); margin-bottom: 12px; }
+        .modal-body { font-size: 14px; line-height: 1.6; color: var(--text-soft); margin-bottom: 24px; word-break: keep-all; }
+        .modal-close { width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: none; border-radius: 6px; color: var(--text); cursor: pointer; }
+
+        .rel-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 10px; }
+        .rel-card { background: linear-gradient(135deg, #151515, #0a0a0a); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; align-items: center; }
+        .rel-nodes { display: flex; align-items: center; gap: 12px; }
+        .rel-char { width: 36px; height: 36px; border-radius: 50%; background: #222; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .rel-link { flex: 1; height: 2px; background: var(--line); min-width: 20px; position: relative; }
+        .rel-badge { background: #2a2a2a; color: var(--gold); font-size: 13px; padding: 4px 12px; border-radius: 20px; margin-top: 8px; }
+
+        .help-icon { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border-radius: 50%; background: rgba(255,255,255,0.1); color: #aaa; font-size: 10px; cursor: pointer; margin-left: 6px; }
+    </style>
+
 </head>
 <body>
 
@@ -300,27 +324,42 @@
 
         <div class="jeomsin-nav">
             <div class="j-nav-item active" onclick="scrollToSec('sec-manse'); setNav(this)">원국</div>
+            <div class="j-nav-item" onclick="scrollToSec('sec-relation'); setNav(this)">관계</div>
             <div class="j-nav-item" onclick="scrollToSec('sec-wuxing'); setNav(this)">오행</div>
             <div class="j-nav-item" onclick="scrollToSec('sec-fortune'); setNav(this)">대운</div>
         </div>
 
         <div id="sec-manse" class="section">
-            <div class="section-title"><span>사주 원국 (팔자)</span></div>
+            <div class="section-title"><div class="title-left"><span>사주 원국 (팔자)</span><span class="help-icon" onclick="openHelp('manse')">?</span></div></div>
             <div class="manse-table" id="manse-table"></div>
         </div>
 
+        <div id="sec-relation" class="section">
+            <div class="section-title"><div class="title-left"><span>합 · 충 · 형 · 파 · 해</span><span class="help-icon" onclick="openHelp('relation')">?</span></div></div>
+            <div class="rel-grid" id="relation-grid"></div>
+        </div>
+
         <div id="sec-wuxing" class="section">
-            <div class="section-title"><span>오행 및 십성 에너지</span></div>
+            <div class="section-title"><div class="title-left"><span>오행 및 십성 에너지</span><span class="help-icon" onclick="openHelp('wuxing')">?</span></div></div>
             <div class="bar-group" id="wuxing-bars"></div>
-            <div class="bar-group" id="sipseong-bars"></div>
+            <div class="bar-group" id="sipseong-bars" style="margin-top:20px;"></div>
         </div>
 
         <div id="sec-fortune" class="section">
-            <div class="section-title"><span>대운의 흐름 (10년 단위)</span></div>
+            <div class="section-title"><div class="title-left"><span>신강 · 신약 및 대운</span><span class="help-icon" onclick="openHelp('strength')">?</span></div></div>
+            <div class="gauge-wrap" id="strength-gauge" style="display:flex; flex-direction:column; align-items:center; padding:20px 0;">
+                <div style="position:relative; width:200px; height:110px; display:flex; justify-content:center;">
+                    <svg viewBox="0 0 200 100" style="width:200px; height:100px;">
+                        <path d="M 20 90 A 80 80 0 0 1 180 90" fill="none" stroke="#222" stroke-width="14" stroke-linecap="round" />
+                        <path id="gauge-path" d="M 20 90 A 80 80 0 0 1 180 90" fill="none" stroke="var(--gold)" stroke-width="14" stroke-linecap="round" stroke-dasharray="251" stroke-dashoffset="251" style="transition:1s;" />
+                    </svg>
+                    <div id="gauge-needle" style="width:4px; height:70px; background:#fff; position:absolute; bottom:20px; left:calc(50% - 2px); transform-origin:bottom center; transform:rotate(-90deg); transition:1s;"></div>
+                </div>
+                <div id="strength-text" style="font-size:24px; color:var(--gold); font-weight:800; margin-top:10px;">-</div>
+            </div>
             <div id="daeun-table"></div>
         </div>
-
-        <button class="btn" style="background:var(--gold); color:#000; font-weight:800;" onclick="startReport()">심층 사주풀이 (X-FILE) 열람</button>
+<button class="btn" style="background:var(--gold); color:#000; font-weight:800;" onclick="startReport()">심층 사주풀이 (X-FILE) 열람</button>
         <button class="btn subtle" onclick="go(1)">정보 수정하기</button>
     </div>
 
@@ -339,6 +378,47 @@
 <script src="report_engine.js"></script>
 
 <script>
+
+const HELP_DATA = {
+    manse: { title: "만세력 원국 (사주팔자)", desc: "태어난 연, 월, 일, 시간을 기준으로 우주의 기운(간지)을 8개의 글자로 표현한 나의 고유한 바코드입니다." },
+    relation: { title: "합 · 충 · 형 · 파 · 해", desc: "내 사주팔자 안의 글자들이 서로 만나서 일으키는 화학 작용입니다." },
+    shinsal: { title: "신살 · 길성", desc: "원국에 숨겨진 특수한 기운들입니다." },
+    wuxing: { title: "오행 분포 (목화토금수)", desc: "우주를 구성하는 5가지 에너지가 내게 얼마나 골고루 분포되어 있는지 보여줍니다." },
+    sipseong: { title: "십성 분포 (육친)", desc: "오행을 인간관계와 사회적 역할로 변환한 지표입니다." },
+    strength: { title: "신강 · 신약 판단", desc: "내 사주에서 나를 돕는 기운(인성, 비겁)과 내 기운을 빼앗는 기운(식상, 재성, 관성)의 비율을 계산한 결과입니다." },
+    daeun: { title: "대운 (10년 단위의 큰 흐름)", desc: "나의 사주 원국이라는 '자동차'가 달리는 '10년 단위의 도로'입니다." }
+};
+function openHelp(key) {
+    const data = HELP_DATA[key];
+    if (data) {
+        document.getElementById('help-title').innerHTML = data.title;
+        document.getElementById('help-body').innerHTML = data.desc;
+        const modal = document.getElementById('help-modal');
+        modal.style.display = 'flex';
+        setTimeout(() => modal.style.opacity = '1', 10);
+    }
+}
+function closeHelp(e) {
+    if (e && e.target !== document.getElementById('help-modal') && e.target.className !== 'modal-close') return;
+    const modal = document.getElementById('help-modal');
+    modal.style.opacity = '0';
+    setTimeout(() => modal.style.display = 'none', 200);
+}
+
+function buildRelationLines(pillars) {
+    const stems = pillars.map(p => p.h[0]).filter(Boolean);
+    const branches = pillars.map(p => p.h[1]).filter(Boolean);
+    const lines = [];
+    const stemCombine = [['甲','己','갑기합'],['乙','庚','을경합'],['丙','辛','병신합'],['丁','壬','정임합'],['戊','癸','무계합']];
+    stemCombine.forEach(([a,b,label]) => { if (stems.includes(a) && stems.includes(b)) lines.push({type:'천간 합', label, chars:[a,b]}); });
+    const branchSix = [['子','丑','자축합'],['寅','亥','인해합'],['卯','戌','묘술합'],['辰','酉','진유합'],['巳','申','사신합'],['午','未','오미합']];
+    branchSix.forEach(([a,b,label]) => { if (branches.includes(a) && branches.includes(b)) lines.push({type:'지지 합', label, chars:[a,b]}); });
+    const branchChung = [['子','午','자오충'],['丑','未','축미충'],['寅','申','인신충'],['卯','酉','묘유충'],['辰','戌','진술충'],['巳','亥','사해충']];
+    branchChung.forEach(([a,b,label]) => { if (branches.includes(a) && branches.includes(b)) lines.push({type:'지지 충', label, chars:[a,b]}); });
+    if (!lines.length) lines.push({type:'없음', label:'특기할 관계 없음', chars:[]});
+    return lines;
+}
+
 // --- UI INTERACTION LOGIC ---
 window.globalSajuDataArray = [];
 window.userCount = 1;
@@ -505,6 +585,7 @@ function runAnalysis() {
     });
 }
 
+
 function renderDashboard(data) {
     document.getElementById('av-name').innerText = data.name + "님";
     const elType = HAN_COLOR[data.dayStem];
@@ -515,12 +596,10 @@ function renderDashboard(data) {
     let badgeHtml = '';
     const allS = data.allShinsal || {};
     const flatShinsal = [...new Set(Object.values(allS).flat())].filter(Boolean);
-    flatShinsal.forEach(s => {
-        badgeHtml += `<div class="badge">${s}</div>`;
-    });
+    flatShinsal.forEach(s => { badgeHtml += `<div class="badge">${s}</div>`; });
     document.getElementById('av-badges').innerHTML = badgeHtml;
     
-    // User Switcher (for N인)
+    // User Switcher (N인)
     let switcher = '';
     if (window.globalSajuDataArray.length > 1) {
         switcher = `<div style="display:flex; justify-content:center; gap:10px; margin-bottom:20px; flex-wrap:wrap;">`;
@@ -541,36 +620,48 @@ function renderDashboard(data) {
     }
     
     // Manse Table
-    const labels = ['십성','천간','지지','십성'];
+    const labels = ['십성','천간','지지','십성','12운성'];
     const rows = [
-        data.pillars.map(p => getSipseong(data.dayStem, p.h[0])),
+        data.pillars.map(p => p.n === '일주' ? '일원' : getSipseong(data.dayStem, p.h[0])),
         data.pillars.map(p => p.h[0]),
         data.pillars.map(p => p.h[1]),
-        data.pillars.map(p => getSipseong(data.dayStem, p.h[1]))
+        data.pillars.map(p => getSipseong(data.dayStem, p.h[1])),
+        data.pillars.map(p => UNSUNG_MAP[data.dayStem]?.[p.h[1]] || '-')
     ];
-    
-    let html = '<div class="manse-row"><div class="manse-label"></div><div class="manse-head">시</div><div class="manse-head">일</div><div class="manse-head">월</div><div class="manse-head">년</div></div>';
+    let mHtml = '<div class="manse-row"><div class="manse-label"></div><div class="manse-head">시</div><div class="manse-head">일</div><div class="manse-head">월</div><div class="manse-head">년</div></div>';
     labels.forEach((l, i) => {
-        html += `<div class="manse-row"><div class="manse-cell manse-label">${l}</div>`;
+        mHtml += `<div class="manse-row"><div class="manse-cell manse-label">${l}</div>`;
         rows[i].forEach(val => {
             const cls = HAN_COLOR[val] || HAN_COLOR[val[0]] || '';
-            html += `<div class="manse-cell ${cls}" style="font-size:${i===1||i===2?'30px':'12px'}">${val}</div>`;
+            mHtml += `<div class="manse-cell ${cls}" style="font-size:${i===1||i===2?'30px':'12px'}">${val}</div>`;
         });
-        html += `</div>`;
+        mHtml += `</div>`;
     });
-    document.getElementById('manse-table').innerHTML = html;
-    
+    document.getElementById('manse-table').innerHTML = mHtml;
+
+    // Relation Grid
+    const relGrid = document.getElementById('relation-grid');
+    const relLines = buildRelationLines(data.pillars);
+    relGrid.innerHTML = relLines.map(item => {
+        if(item.type === '없음') return '<div style="grid-column:1/-1; color:#555; font-size:12px; text-align:center;">특이 관계 없음</div>';
+        let nodesHtml = item.chars.map(c => `<div class="rel-char ${HAN_COLOR[c]}">${c}</div>`).join('<div class="rel-link"></div>');
+        return `<div class="rel-card"><div class="rel-nodes">${nodesHtml}</div><div class="rel-badge">${item.label}</div></div>`;
+    }).join('');
+
     // Wuxing Bars
     let wHtml = '';
-    const total = Object.values(data.wuxing).reduce((a,b)=>a+b,0);
+    const totalW = Object.values(data.wuxing).reduce((a,b)=>a+b,0);
     WUXING_ORDER.forEach(k => {
-        const per = Math.round((data.wuxing[k]/total)*100);
+        const per = Math.round((data.wuxing[k]/totalW)*100);
         wHtml += `<div class="bar-row"><div class="bar-label">${RELATION_LABELS[k]}</div><div class="bar-bg"><div class="bar-fill bg-${k}" style="width:${per}%"></div></div><div class="bar-val">${per}%</div></div>`;
     });
     document.getElementById('wuxing-bars').innerHTML = wHtml;
 
-    // Daewun/Fortune (Simple for Dashboard)
-    // You can add more dashboard-specific rendering here
+    // Strength Gauge
+    const ratio = data.strengthRatio;
+    document.getElementById('gauge-path').style.strokeDashoffset = 251 - (ratio * 2.51);
+    document.getElementById('gauge-needle').style.transform = `rotate(${(ratio * 1.8) - 90}deg)`;
+    document.getElementById('strength-text').innerText = `${data.strengthText} (${Math.round(ratio)})`;
 }
 
 function startReport() {
@@ -582,5 +673,13 @@ function startReport() {
 
 const COLOR_KR_MAP = {'wood':'푸른','fire':'붉은','earth':'황금','metal':'하얀','water':'검은'};
 </script>
+
+<div class="modal-overlay" id="help-modal" onclick="closeHelp(event)">
+    <div class="modal-card" onclick="event.stopPropagation()">
+        <div class="modal-title" id="help-title">도움말</div>
+        <div class="modal-body" id="help-body">내용이 들어갑니다.</div>
+        <button class="modal-close" onclick="closeHelp()">닫기</button>
+    </div>
+</div>
 </body>
 </html>
