@@ -111,7 +111,7 @@ function buildChapter4_Wealth(data) {
         <p class="ch-text">${wealthCore}</p>
         <p class="ch-text">${extra2}</p>
         <div class="axe-advice" style="margin-top: 20px;">
-            <b>👉 X-FILE 부의 추월차선 전략:</b> 내 금고의 크기를 월급이라는 시스템 안에 가둬두지 마십시오. 당신의 뇌 구조는 이미 더 큰 레버리지를 다루도록 세팅되어 있습니다.
+            <b>👉 나를 위한 부의 추월차선 전략:</b> 내 금고의 크기를 월급이라는 시스템 안에 가둬두지 마십시오. 당신의 뇌 구조는 이미 더 큰 레버리지를 다루도록 세팅되어 있습니다.
         </div>
         </div>
     `;
@@ -173,7 +173,7 @@ function buildSewunLoop(data) {
                     <b>[인간관계와 환경 변화]</b> 특히 올해의 지지 '${branches[(6+i)%12]}'는 당신의 원국과 맞물려 강력한 화학작용을 일으킵니다. <b>${evt}</b> 이 시기에는 내 뜻대로 상황을 통제하려 하기보다는, 외부에서 불어오는 변화의 바람에 유연하게 올라타는 것이 유리합니다.
                 </p>
                 <div style="background: #1a1a1a; padding: 15px; border-radius: 6px; border-left: 3px solid #d32f2f;">
-                    <span style="color: #ff6b6b; font-weight: bold; font-size: 14px;">🚨 X-FILE 행동 지침:</span>
+                    <span style="color: #ff6b6b; font-weight: bold; font-size: 14px;">🚨 나를 위한 행동 지침:</span>
                     <span style="color: #bbb; font-size: 14px; line-height: 1.6;"> ${i%2===0 ? "올해는 투자를 확장하거나 새로운 일을 벌이기보다는, 내실을 다지고 현금을 확보하는 방어적 태세가 당신을 살립니다." : "올해는 당신의 판입니다. 70%의 확신만 섰다면 뒤돌아보지 말고 즉시 실행하십시오. 머뭇거리면 기운을 뺏깁니다."}</span>
                 </div>
             </div>
@@ -233,7 +233,7 @@ function buildChapter5_Career(data) {
         <p class="ch-text">직업은 단순히 생계를 유지하는 수단이 아닙니다. 내 에너지를 가장 안정적이면서도 파괴적으로 발산할 수 있는 '전쟁터'를 선택하는 일입니다. 맞지 않는 옷을 억지로 입었을 때 찾아오던 그 지독한 무기력함은, 내 기운과 환경이 엇박자를 냈기 때문입니다.</p>
         <p class="ch-text">${careerCore}</p>
         <div class="axe-advice" style="margin-top: 15px; border-left-color: #3f51b5;">
-            <b>👉 X-FILE 무대 세팅:</b> "내 권한이 온전히 보장되는가?" 이 질문 하나가 내 무대를 결정짓는 가장 중요한 기준표가 되어야 합니다.
+            <b>👉 나를 위한 무대 세팅:</b> "내 권한이 온전히 보장되는가?" 이 질문 하나가 내 무대를 결정짓는 가장 중요한 기준표가 되어야 합니다.
         </div>
     </div>`;
 }
@@ -252,7 +252,7 @@ function buildChapter9_Remedy(data) {
     }
 
     return `<div class="report-chapter">
-        <h3 class="ch-title">Chapter 9. 운명을 비트는 레버리지 (X-FILE 기밀 개운법)</h3>
+        <h3 class="ch-title">Chapter 9. 운명을 비트는 레버리지 (나를 위한 기밀 개운법)</h3>
         <p class="ch-text">명리학은 정해진 불행을 넋 놓고 기다리라고 있는 학문이 아닙니다. 비가 올 것을 알았으면 우산을 쓰고 나가면 됩니다. 부족한 기운을 채우고 과도한 기운을 빼내는 생활 속의 '액션 플랜'을 처방합니다.</p>
         <ul style="color: #ccc; line-height: 2; font-size: 15px;">
             <li><b>행운의 컬러:</b> ${color}. 중요한 계약을 하거나 사람을 만날 때 이 색상의 넥타이, 지갑, 속옷을 활용하십시오. 무의식적인 기운을 보완합니다.</li>
