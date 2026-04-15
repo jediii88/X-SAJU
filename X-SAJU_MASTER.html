@@ -141,94 +141,83 @@
 
 
 <style>
-    /* 점신 스타일 만세력 그리드 */
-    .manse-table {
+    
+    /* 마스터피스 수직 명식 디자인 (v2.9.1 및 점신 스타일 융합) */
+    .wonguk-container {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        margin: 25px 0;
+    }
+    .pillar-card {
+        flex: 1;
         display: flex;
         flex-direction: column;
-        background: #1a1a1a;
-        border-radius: 12px;
-        overflow: hidden;
-        border: 1px solid #333;
-        margin-bottom: 30px;
-    }
-    .manse-row {
-        display: grid;
-        grid-template-columns: 60px 1fr 1fr 1fr 1fr;
-        border-bottom: 1px solid #222;
-    }
-    .manse-row:last-child { border-bottom: none; }
-    .manse-cell {
-        padding: 15px 5px;
-        text-align: center;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
         align-items: center;
-        min-height: 50px;
-        font-size: 13px;
-    }
-    .manse-label {
-        background: #111;
-        color: #777;
-        font-weight: 700;
-        font-size: 11px;
-        border-right: 1px solid #222;
-    }
-    .manse-head {
-        background: #111;
-        color: #aaa;
-        font-weight: 800;
-        font-size: 12px;
-        padding: 8px 0;
-        border-bottom: 1px solid #222;
-    }
-    
-    /* 천간/지지 강조 */
-    .hz-main {  font-size: 34px; font-weight: 400; }
-    .hz-sub {
-        font-size: 12px;
-        opacity: 0.8;
-    }
-    
-    /* 오행 색상 (점신 스타일) */
-    .wood { color: #52b36a; }
-    .fire { color: #e74c3c; }
-    .earth { color: #c7a76a; }
-    .metal { color: #f1f1f1; }
-    .water { color: #4e87d9; }
-    
-    /* 배경색 (지지의 경우 박스형) */
-    .bg-wood { background: rgba(82, 179, 106, 0.1); }
-    .bg-fire { background: rgba(231, 76, 60, 0.1); }
-    .bg-earth { background: rgba(199, 167, 106, 0.1); }
-    .bg-metal { background: rgba(241, 241, 241, 0.05); }
-    .bg-water { background: rgba(78, 135, 217, 0.1); }
-
-    /* 대운 스크롤 (점신 스타일 가로 카드) */
-    .fortune-scroll {
-        display: flex;
-        gap: 12px;
-        overflow-x: auto;
-        padding: 10px 0 20px 0;
-        -webkit-overflow-scrolling: touch;
-    }
-    .fortune-scroll::-webkit-scrollbar { display: none; }
-    .f-card {
-        flex: 0 0 85px;
-        background: #1a1a1a;
-        border: 1px solid #333;
-        border-radius: 10px;
+        background: #0a0a0a;
+        border-radius: 12px;
         padding: 15px 5px;
-        text-align: center;
+        border: 1px solid rgba(255,255,255,0.05);
+        position: relative;
+    }
+    .pillar-fate {
+        font-size: 10px;
+        color: #555;
+        font-weight: 800;
+        margin-bottom: 8px;
+        letter-spacing: 1px;
+    }
+    .p-sip-top {
+        font-size: 11px;
+        color: var(--gold);
+        margin-bottom: 5px;
+        font-weight: 700;
+    }
+    .p-char {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 12px 0;
+        border-radius: 8px;
+        margin-bottom: 4px;
         transition: transform 0.2s;
     }
-    .f-card.active {
-        border-color: var(--gold);
-        background: rgba(199, 167, 106, 0.05);
+    .p-hz {
+        font-family: "Noto Serif KR", serif;
+        font-size: 32px;
+        font-weight: 400;
+        line-height: 1.1;
     }
-    .f-age { font-size: 14px;  color: var(--gold); margin-bottom: 8px; }
-    .f-gz { font-size: 18px; font-weight: 800; margin-bottom: 5px; }
-    .f-sip { font-size: 10px; color: #888; line-height: 1.3; }
+    .p-ks {
+        font-size: 12px;
+        color: rgba(255,255,255,0.4);
+        margin-top: 4px;
+    }
+    .p-sip-btm {
+        font-size: 11px;
+        color: #888;
+        margin: 5px 0;
+    }
+    .p-hidden {
+        font-size: 9px;
+        color: #444;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+    .p-unsung {
+        margin-top: 8px;
+        font-size: 11px;
+        color: var(--gold);
+        font-weight: 700;
+    }
+    .p-shinsal {
+        margin-top: 5px;
+        font-size: 10px;
+        color: #666;
+    }
+
 </style>
 
 
@@ -668,13 +657,15 @@ function runAnalysis() {
 
 
 
+
 function renderDashboard(data) {
-    // 1. 헤더 정보 (점신 스타일 - 한글화 및 가독성 강화)
+    // 헤더 정보
     document.getElementById('av-name').innerText = data.name;
     const elType = HAN_COLOR[data.dayStem];
     document.getElementById('av-circle').className = 'avatar-circle ' + elType;
-    document.getElementById('av-desc').innerHTML = `<span style="color:var(--gold); font-weight:900; font-size:18px;">${data.animal}</span>`;
+    document.getElementById('av-desc').innerHTML = `<span style="color:var(--gold); font-weight:700; font-size:18px;">${data.animal}</span>`;
     
+    // 생년월일 정보
     let headerHtml = `
         <div class="info-grid">
             <div class="info-item"><div class="info-label">양력</div><div class="info-val">${data.solarDate}</div></div>
@@ -682,97 +673,64 @@ function renderDashboard(data) {
             <div class="info-item" style="grid-column: 1 / -1;"><div class="info-label">절기</div><div class="info-val">${data.solarTerm}</div></div>
         </div>
     `;
-    const avHeader = document.querySelector('.avatar-header');
     const existingInfo = document.getElementById('jeomsin-info');
     if (existingInfo) existingInfo.remove();
     const infoDiv = document.createElement('div');
     infoDiv.id = 'jeomsin-info';
     infoDiv.innerHTML = headerHtml;
-    avHeader.insertBefore(infoDiv, document.getElementById('av-circle').nextSibling);
+    document.querySelector('.avatar-header').insertBefore(infoDiv, document.getElementById('av-circle').nextSibling);
 
-    // Badges
+    // 뱃지 리스트
     let badgeHtml = `<div class="badge" style="background:#e74c3c; border:none; font-weight:800;">건강 ${data.healthScore}점</div>`;
     badgeHtml += `<div class="badge" style="background:#444; border:none;">공망: ${data.gongmang}</div>`;
     const allS = data.allShinsal || {};
     const flatShinsal = [...new Set(Object.values(allS).flat())].filter(Boolean);
     flatShinsal.slice(0, 3).forEach(s => { badgeHtml += `<div class="badge">${s}</div>`; });
     document.getElementById('av-badges').innerHTML = badgeHtml;
-    
-    // User Switcher
-    let switcher = '';
-    if (window.globalSajuDataArray.length > 1) {
-        switcher = `<div style="display:flex; justify-content:center; gap:8px; margin:20px 0; overflow-x:auto; padding:5px;">`;
-        window.globalSajuDataArray.forEach((u, i) => {
-            const isActive = u.name === data.name;
-            switcher += `<button class="btn subtle" style="flex:0 0 auto; padding:8px 20px; font-size:12px; border-radius:20px; ${isActive ? 'background:var(--gold); color:#000; border:none; font-weight:800;' : 'background:#1a1a1a; color:#888; border:1px solid #333;'}" onclick="renderDashboard(window.globalSajuDataArray[${i}])">${u.name}</button>`;
-        });
-        switcher += `</div>`;
-    }
-    const existingSw = document.getElementById('user-switcher');
-    if (existingSw) existingSw.remove();
-    if (switcher) {
-        const swDiv = document.createElement('div');
-        swDiv.id = 'user-switcher';
-        swDiv.innerHTML = switcher;
-        avHeader.insertBefore(swDiv, document.getElementById('av-circle'));
-    }
-    
-    // 2. 만세력 (한글 병기 철저히 유지)
+
+    // --- 수직 명식 카드 렌더링 ---
     const fateLabels = ['말년운','장년운','청년운','초년운'];
-    const labels = ['십성','천간','지지','십성','지장간','12운성','12신살'];
-    const rows = [
-        data.pillars.map(p => p.n === '일주' ? '일원' : getSipseong(data.dayStem, p.h[0])),
-        data.pillars.map(p => p.h[0]),
-        data.pillars.map(p => p.h[1]),
-        data.pillars.map(p => getSipseong(data.dayStem, p.h[1])),
-        data.pillars.map(p => (BRANCH_HIDDEN[p.h[1]] || []).join(',')),
-        data.pillars.map(p => UNSUNG_MAP[data.dayStem]?.[p.h[1]] || '-'),
-        data.shinsal12 || ['-','-','-','-']
-    ];
-    
-    let mHtml = '<div class="manse-row"><div class="manse-label"></div>' + fateLabels.map(fl => `<div class="manse-head">${fl}</div>`).join('') + '</div>';
-    labels.forEach((l, i) => {
-        mHtml += `<div class="manse-row"><div class="manse-cell manse-label">${l}</div>`;
-        rows[i].forEach((val, idx) => {
-            const colorCls = HAN_COLOR[val] || HAN_COLOR[val[0]] || '';
-            const bgCls = (i === 2) ? 'bg-' + colorCls : '';
-            let content = val;
-            
-            if (i === 1 || i === 2) {
-                content = `<span class="hz-main ${colorCls}">${val}</span><span class="hz-sub">(${HAN_KOR[val]})</span>`;
-            } else if (i === 4) {
-                content = val.split(',').map(v => `<span class="${HAN_COLOR[v]}" style="font-size:10px; margin:0 1px;">${v}(${HAN_KOR[v]})</span>`).join('');
-            } else if (i === 0 || i === 3 || i === 5 || i === 6) {
-                content = `<span style="font-weight:700; color:${i===0||i===3?'#ccc':'#888'};">${val}</span>`;
-            }
-            mHtml += `<div class="manse-cell ${bgCls}">${content}</div>`;
-        });
-        mHtml += `</div>`;
+    let wHtml = '<div class="wonguk-container">';
+    data.pillars.forEach((p, idx) => {
+        const stemColor = HAN_COLOR[p.h[0]];
+        const branchColor = HAN_COLOR[p.h[1]];
+        const hidden = (BRANCH_HIDDEN[p.h[1]] || []).map(h => `<span class="${HAN_COLOR[h]}">${h}(${HAN_KOR[h]})</span>`).join(' ');
+        
+        wHtml += `
+            <div class="pillar-card">
+                <div class="pillar-fate">${fateLabels[idx]}</div>
+                <div class="p-sip-top">${p.n === '일주' ? '일원' : getSipseong(data.dayStem, p.h[0])}</div>
+                
+                <div class="p-char bg-${stemColor}">
+                    <div class="p-hz ${stemColor}">${p.h[0]}</div>
+                    <div class="p-ks">(${HAN_KOR[p.h[0]]})</div>
+                </div>
+                
+                <div class="p-char bg-${branchColor}">
+                    <div class="p-hz ${branchColor}">${p.h[1]}</div>
+                    <div class="p-ks">(${HAN_KOR[p.h[1]]})</div>
+                </div>
+
+                <div class="p-sip-btm">${getSipseong(data.dayStem, p.h[1])}</div>
+                <div class="p-hidden">${hidden}</div>
+                <div class="p-unsung">${UNSUNG_MAP[data.dayStem]?.[p.h[1]] || '-'}</div>
+                <div class="p-shinsal">${data.shinsal12[idx] || '-'}</div>
+            </div>
+        `;
     });
-    document.getElementById('manse-table').innerHTML = mHtml;
+    wHtml += '</div>';
+    document.getElementById('manse-table').innerHTML = wHtml;
 
-    // 3. 관계 그리드
-    const relGrid = document.getElementById('relation-grid');
-    const relLines = buildRelationLines(data.pillars);
-    relGrid.innerHTML = relLines.map(item => {
-        if(item.type === '없음') return '';
-        let nodesHtml = item.chars.map(c => `<div class="rel-char ${HAN_COLOR[c]}" style="width:35px; height:35px; font-size:16px;">${c}</div>`).join('<div class="rel-link" style="width:15px;"></div>');
-        return `<div class="rel-card" style="padding:15px; background:#1a1a1a; border:1px solid #333;"><div class="rel-nodes" style="margin-bottom:10px;">${nodesHtml}</div><div class="rel-badge" style="background:var(--gold); color:#000; font-size:11px;">${item.label}</div></div>`;
-    }).join('');
-
-    // 4. 대운/세운 탭 및 리스트 (한자 최소화, 한글 강조)
+    // 관계, 오행, 대운 등 나머지 렌더링 호출
     renderLuckSection(data);
-
-    // 5. 오행/십성 상세 분석
     renderDetailedAnalysis(data);
     
-    // 6. 신강신약 게이지
+    // 게이지 업데이트
     const ratio = data.strengthRatio;
     document.getElementById('gauge-path').style.strokeDashoffset = 251 - (ratio * 2.51);
     document.getElementById('gauge-needle').style.transform = `rotate(${(ratio * 1.8) - 90}deg)`;
     document.getElementById('strength-text').innerText = `${data.strengthText} (${Math.round(ratio)})`;
 }
-
 
 function renderLuckSection(data) {
     let html = `
