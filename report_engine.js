@@ -1,4 +1,8 @@
 
+const RELATION_LABELS = {
+    wood: '목', fire: '화', earth: '토', metal: '금', water: '수'
+};
+
 // --- X-SAJU DEEP REPORT GENERATOR ENGINE (V4 - REAL DB INTEGRATION) ---
 
 function getDBText(category, key, fallback) {
@@ -12,38 +16,80 @@ function getDBText(category, key, fallback) {
     return fallback || "이 시기에는 잠재력을 발휘해야 합니다.";
 }
 
-function generateDeepReport(data) {
-    if(!data.dayStem) return;
-    
+
+function generateDeepReport(dataInput) {
+    let dataArray = Array.isArray(dataInput) ? dataInput : [dataInput];
     let html = '';
-    html += buildSectionHeader("PART 1. 운명의 해부도 (원국 분석)");
-    html += buildChapter1_Basic(data);
-    html += buildChapter2_Wuxing(data);
-    html += buildChapter3_Sipseong(data);
     
-    html += buildSectionHeader("PART 2. 인생의 무대와 성취");
-    html += buildChapter4_Wealth(data);
-    html += buildChapter5_Career(data);
-    html += buildChapter6_Love(data);
+    dataArray.forEach((data, idx) => {
+        html += `<div style="border: 2px solid var(--gold); padding: 20px; margin-bottom: 40px; border-radius: 10px; background: rgba(199, 167, 106, 0.05);">
+            <h1 style="text-align: center; color: var(--gold); margin-bottom: 20px;">[ ${data.name} 님의 X-FILE ]</h1>
+        </div>`;
+        
+        html += buildSectionHeader("PART 1. 운명의 해부도 (원국 분석)");
+        html += buildChapter1_Basic(data);
+        html += buildChapter2_Wuxing(data);
+        html += buildChapter3_Sipseong(data);
+        
+        html += buildSectionHeader("PART 2. 인생의 무대와 성취");
+        html += buildChapter4_Wealth(data);
+        html += buildChapter5_Career(data);
+        html += buildChapter6_Love(data);
+        
+        html += buildSectionHeader("PART 3. 숨겨진 무기와 취약점");
+        html += buildChapter7_Hidden(data);
+        html += buildChapter8_Health(data);
+        html += buildChapter9_Remedy(data);
+        
+        if (idx < dataArray.length - 1) {
+             html += '<div style="page-break-after: always; height: 100px;"></div>';
+        }
+    });
     
-    html += buildSectionHeader("PART 3. 숨겨진 무기와 취약점");
-    html += buildChapter7_Hidden(data); // 지장간
-    html += buildChapter8_Health(data);
-    html += buildChapter9_Remedy(data);
-    
-    html += buildSectionHeader("PART 4. 시간의 지배자 (대운과 세운)");
-    html += buildDaewunLoop(data);
-    html += buildSewunLoop(data);
-    html += buildWolunLoop(data);
-    
+    if (dataArray.length > 1) {
+        html += buildSectionHeader("PART 4. 운명적 시너지 (N:N 기밀 궁합)");
+        html += buildSynergySection(dataArray);
+    }
     
     html += `<div id="pdf-btn-wrap" style="text-align: center; margin-top: 50px; padding-bottom: 50px; border-top: 1px solid #333; padding-top: 30px;">
         <button class="btn" style="background: var(--gold); color: #000; width: 100%; max-width: 400px; font-size: 18px; font-weight: 800; box-shadow: 0 4px 15px rgba(199, 167, 106, 0.4);" onclick="window.print()">📄 X-FILE 기밀문서 PDF 저장</button>
-        <p style="color: #aaa; font-size: 13px; margin-top: 15px;">※ 브라우저 인쇄 창에서 <b>'PDF로 저장'</b>을 선택하고, <b>'배경 그래픽(옵션)'</b>을 꼭 켜주세요.</p>
     </div>`;
     
     document.getElementById('report-container').innerHTML = html;
 }
+
+function buildSynergySection(users) {
+    let html = '<div class="report-chapter">';
+    for (let i = 0; i < users.length; i++) {
+        for (let j = i + 1; j < users.length; j++) {
+            html += `<div style="margin-bottom: 30px; border-bottom: 1px dashed #444; padding-bottom: 20px;">
+                <h4 style="color: var(--gold); margin-bottom: 10px;">🛡️ ${users[i].name} ↔ ${users[j].name} 의 시너지 분석</h4>`;
+            
+            let u1 = users[i];
+            let u2 = users[j];
+            
+            // Basic logic: Wuxing balance
+            let u1Min = Object.keys(u1.wuxing).sort((a,b)=>u1.wuxing[a]-u1.wuxing[b])[0];
+            let u2Max = Object.keys(u2.wuxing).sort((a,b)=>u2.wuxing[b]-u2.wuxing[a])[0];
+            
+            if (u1Min === u2Max) {
+                html += `<p class="ch-text"><b>최상의 오행 보완:</b> ${u1.name}님에게 가장 부족한 ${RELATION_LABELS[u1Min] || u1Min} 기운을 ${u2.name}님이 압도적으로 채워주고 있습니다. 함께 있을 때 정서적 안정이 극대화됩니다.</p>`;
+            } else {
+                html += `<p class="ch-text"><b>사회적 협력 구조:</b> 두 분은 감정적인 보완보다는 각자의 영역을 존중하며 목표를 향해 나아갈 때 큰 성과를 거두는 구조입니다.</p>`;
+            }
+            
+            // Hap/Chung check
+            let b1 = u1.pillars[1].h[1];
+            let b2 = u2.pillars[1].h[1];
+            if (b1 === b2) html += `<p class="ch-text"><b>동질성:</b> 같은 일지를 공유하고 있어 가치관과 삶의 태도가 매우 유사합니다.</p>`;
+            
+            html += `</div>`;
+        }
+    }
+    html += '</div>';
+    return html;
+}
+
 
 function buildSectionHeader(title) {
     return `<div style="margin: 60px 0 30px 0; padding-bottom: 15px; border-bottom: 2px solid var(--gold);">

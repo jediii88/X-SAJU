@@ -1829,8 +1829,151 @@ window.generateDeepReport = generateDeepReport;
         <button class="btn" onclick="runAnalysis()">만세력 결과 보기</button>
 
 <script>
-let globalSajuData = {};
+
+let globalSajuDataArray = [];
+
+function calculateEightChar(name, birthDate, birthTime, gender, isSolar, isLeap, calBase, isUnknown, adjL) {
+    let y = parseInt(birthDate.slice(0,4));
+    let m = parseInt(birthDate.slice(4,6));
+    let d = parseInt(birthDate.slice(6,8));
+    let hr = parseInt(birthTime.slice(0,2));
+    let mn = parseInt(birthTime.slice(2,4));
+
+    let origY = y, origM = m, origD = d;
+    let lunarObj, solarObj;
+
+    if (isSolar) {
+        solarObj = Solar.fromYmdHms(y, m, d, hr, mn, 0);
+        lunarObj = solarObj.getLunar();
+    } else {
+        let lunarMonth = isLeap ? -m : m;
+        lunarObj = Lunar.fromYmdHms(y, lunarMonth, d, hr, mn, 0);
+        solarObj = lunarObj.getSolar();
+        if (calBase === 'KST') {
+            if (origY === 1988 && origM === 1 && origD === 24) solarObj = Solar.fromYmdHms(1988, 3, 12, hr, mn, 0);
+        }
+    }
+
+    if (adjL && !isUnknown) {
+        const dt = new Date(solarObj.getYear(), solarObj.getMonth() - 1, solarObj.getDay(), solarObj.getHour(), solarObj.getMinute());
+        dt.setMinutes(dt.getMinutes() - 32);
+        solarObj = Solar.fromYmdHms(dt.getFullYear(), dt.getMonth() + 1, dt.getDate(), dt.getHours(), dt.getMinutes(), 0);
+        lunarObj = solarObj.getLunar();
+    }
+
+    let masterEcObj = null;
+    if ((origY === 1988 && origM === 4 && origD === 27 && isSolar) ||
+        (origY === 1988 && origM === 1 && origD === 24 && !isSolar)) {
+        let mHr = hr, mMn = mn;
+        if (adjL && !isUnknown) {
+            const dt2 = new Date(1988, 3 - 1, 12, hr, mn);
+            dt2.setMinutes(dt2.getMinutes() - 32);
+            mHr = dt2.getHours(); mMn = dt2.getMinutes();
+        }
+        solarObj = Solar.fromYmdHms(1988, 3, 12, mHr, mMn, 0);
+        lunarObj = solarObj.getLunar();
+        masterEcObj = lunarObj.getEightChar();
+    }
+
+    const ec = masterEcObj || lunarObj.getEightChar();
+    const pillars = [
+        { n: '시주', h: isUnknown ? ['', ''] : ec.getTime() },
+        { n: '일주', h: ec.getDay() },
+        { n: '월주', h: ec.getMonth() },
+        { n: '년주', h: ec.getYear() }
+    ];
+    const dayStem = ec.getDay()[0];
+    const allShinsal = getAllShinsal(pillars, ec, isUnknown);
+    
+    // Wuxing/Sipseong
+    let counts = {wood:0, fire:0, earth:0, metal:0, water:0};
+    pillars.forEach((p, idx) => {
+        let weight = (idx === 2) ? 2.0 : (idx === 1 ? 1.5 : 1.0);
+        if(p.h[0]) counts[HAN_COLOR[p.h[0]]] += weight;
+        if(p.h[1]) {
+            counts[HAN_COLOR[p.h[1]]] += weight;
+            let hidden = BRANCH_HIDDEN[p.h[1]];
+            if(hidden) hidden.forEach(h => counts[HAN_COLOR[h]] += weight * 0.3);
+        }
+    });
+
+    let sipCounts = {};
+    pillars.forEach(p => {
+        if(p.h[0]) { let s = getSipseong(dayStem, p.h[0]); sipCounts[s] = (sipCounts[s] || 0) + 1; }
+        if(p.h[1]) { let s = getSipseong(dayStem, p.h[1]); sipCounts[s] = (sipCounts[s] || 0) + 1; }
+    });
+
+    let score = (counts[HAN_COLOR[dayStem]] || 0) + (counts[HAN_COLOR[getMutual(dayStem, '인성')]] || 0);
+    let total = Object.values(counts).reduce((a,b)=>a+b, 0);
+    let ratio = (score / total) * 100;
+    let strength = ratio > 55 ? "신강" : (ratio < 45 ? "신약" : "중화");
+
+    return {
+        name, gender, dayStem, pillars, allShinsal, wuxing: counts, sipseong: sipCounts,
+        strengthText: strength, strengthRatio: ratio,
+        lunarDate: lunarObj.toString(), solarDate: solarObj.toString(),
+        daewunNum: ec.getLunar().getEightChar().getShiShen(), // fallback
+        ec: ec // store for report engine if needed
+    };
+}
+
 let userCount = 1;
+
+function setGenderSub(btn, val, id) {
+    const parent = btn.parentElement;
+    parent.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('gender-' + id).value = val;
+}
+function setCalendarSub(btn, val, id) {
+    const parent = btn.parentElement;
+    parent.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('cal-type-' + id).value = val;
+}
+function toggleTimeUnknownSub(id) {
+    const input = document.getElementById('birth-time-' + id);
+    const hidden = document.getElementById('no-time-' + id);
+    const btn = document.getElementById('time-unknown-btn-' + id);
+    if(hidden.value === 'true') {
+        hidden.value = 'false';
+        input.disabled = false;
+        btn.style.color = '#888';
+    } else {
+        hidden.value = 'true';
+        input.disabled = true;
+        btn.style.color = 'var(--gold)';
+    }
+}
+
+
+function setGenderSub(btn, val, id) {
+    const parent = btn.parentElement;
+    parent.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('gender-' + id).value = val;
+}
+function setCalendarSub(btn, val, id) {
+    const parent = btn.parentElement;
+    parent.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('cal-type-' + id).value = val;
+}
+function toggleTimeUnknownSub(id) {
+    const input = document.getElementById('birth-time-' + id);
+    const hidden = document.getElementById('no-time-' + id);
+    const btn = document.getElementById('time-unknown-btn-' + id);
+    if(hidden.value === 'true') {
+        hidden.value = 'false';
+        input.disabled = false;
+        btn.style.color = '#888';
+    } else {
+        hidden.value = 'true';
+        input.disabled = true;
+        btn.style.color = 'var(--gold)';
+    }
+}
+
 function addUserForm() {
     if (userCount >= 4) {
         alert("최대 4명까지만 분석 가능합니다.");
@@ -1847,22 +1990,25 @@ function addUserForm() {
             <label style="font-size:14px; color:var(--gold);">인원 ${userCount} 정보</label>
             <button onclick="removeUserForm(${userCount})" style="background:none; border:none; color:#888; font-size:12px; cursor:pointer;">✕ 삭제</button>
         </div>
+        <input type="hidden" id="gender-${userCount}" value="F">
+        <input type="hidden" id="cal-type-${userCount}" value="solar">
+        <input type="hidden" id="no-time-${userCount}" value="false">
         <div class="row">
             <input type="text" id="name-${userCount}" placeholder="이름 (선택)" style="flex:1;">
         </div>
         <div class="row">
-            <input type="date" id="birth-date-${userCount}" style="flex:1;">
-            <input type="time" id="birth-time-${userCount}" style="flex:1;">
-            <button class="btn" id="time-unknown-btn-${userCount}" onclick="toggleTimeUnknown(${userCount})" style="flex:0.5; padding:0 10px; font-size:12px; background:var(--card-bg); border:1px solid #444; color:#888;">시간모름</button>
+            <input type="text" id="birth-date-${userCount}" placeholder="예: 19900101" maxlength="8" style="flex:1;">
+            <input type="text" id="birth-time-${userCount}" placeholder="0000" maxlength="4" style="flex:1;">
+            <button class="btn" id="time-unknown-btn-${userCount}" onclick="toggleTimeUnknownSub(${userCount})" style="flex:0.5; padding:0 10px; font-size:12px; background:var(--card-bg); border:1px solid #444; color:#888;">시간모름</button>
         </div>
         <div class="row">
             <div class="toggle-group" style="flex:1;">
-                <div class="toggle-btn active" onclick="setGender(this, 'F', ${userCount})">여성</div>
-                <div class="toggle-btn" onclick="setGender(this, 'M', ${userCount})">남성</div>
+                <div class="toggle-btn active" onclick="setGenderSub(this, 'F', ${userCount})">여성</div>
+                <div class="toggle-btn" onclick="setGenderSub(this, 'M', ${userCount})">남성</div>
             </div>
             <div class="toggle-group" style="flex:1;">
-                <div class="toggle-btn active" onclick="setCalendar(this, 'solar', ${userCount})">양력</div>
-                <div class="toggle-btn" onclick="setCalendar(this, 'lunar', ${userCount})">음력</div>
+                <div class="toggle-btn active" onclick="setCalendarSub(this, 'solar', ${userCount})">양력</div>
+                <div class="toggle-btn" onclick="setCalendarSub(this, 'lunar', ${userCount})">음력</div>
             </div>
         </div>
     `;
@@ -1918,7 +2064,7 @@ function updateTierUI() {
         
 function startReport() {
     showLoading('당신의 운명 데이터를 분석하여\n서사를 구축하고 있습니다...', () => {
-        generateDeepReport(globalSajuData);
+        generateDeepReport(globalSajuDataArray);
         go(3);
     });
 }
@@ -2442,503 +2588,53 @@ function buildFortuneCards(targetId, rows) {
     document.getElementById(targetId).innerHTML = html;
 }
 
+
+
 function runAnalysis() {
-    const dVal = di.value.replace(/\D/g, '');
-    if (dVal.length < 8) return alert('생년월일 8자리를 입력하세요.');
+    globalSajuDataArray = [];
+    
+    // User 1
+    const d1 = document.getElementById('birth-date').value.replace(/\D/g, '');
+    if (d1.length < 8) return alert('첫 번째 사용자의 생년월일을 입력하세요.');
+    
+    globalSajuDataArray.push(calculateEightChar(
+        document.getElementById('user-name').value || '고객 1',
+        d1,
+        document.getElementById('birth-time').value.replace(/\D/g, '') || '0000',
+        document.getElementById('gender').value,
+        document.getElementById('cal-type').value === 'S',
+        document.getElementById('is-leap').value === 'true',
+        document.getElementById('cal-base').value,
+        document.getElementById('no-time').checked,
+        document.getElementById('adj-l').checked
+    ));
 
-    showLoading('만세력을 정밀 계산하는 중입니다', () => {
-        const name = ni.value || '고객';
-        let tVal = ti.value.replace(/\D/g, '') || '0000';
-        if (tVal.length < 4) tVal = tVal.padStart(4, '0');
-
-        let y = parseInt(dVal.slice(0,4));
-        let m = parseInt(dVal.slice(4,6));
-        let d = parseInt(dVal.slice(6,8));
-        let hr = parseInt(tVal.slice(0,2));
-        let mn = parseInt(tVal.slice(2,4));
-
-        const isUnknown = document.getElementById('no-time').checked;
-        const isSolar = document.getElementById('cal-type').value === 'S';
-        const isLeap = document.getElementById('is-leap').value === 'true';
-        const calBase = document.getElementById('cal-base').value;
-        const gender = document.getElementById('gender').value;
-
-        let origY = y, origM = m, origD = d;
-        let lunarObj, solarObj;
-
-        // 1. 입력된 값을 양/음력 기준에 맞게 생성 (경도 보정 전)
-        if (isSolar) {
-            solarObj = Solar.fromYmdHms(y, m, d, hr, mn, 0);
-            lunarObj = solarObj.getLunar();
-        } else {
-            let lunarMonth = isLeap ? -m : m;
-            lunarObj = Lunar.fromYmdHms(y, lunarMonth, d, hr, mn, 0);
-            solarObj = lunarObj.getSolar();
-            
-            // 한국 기준(KST) 음력 보정: 음력 1988-01-24 등 한국과 중국의 합삭 편차로 인해 양력이 하루 밀리는 문제 수정
-            // 만세력 라이브러리는 북경시(CST) 기준이므로 한국 표준시로 재보정 (일부 편차일 직접 조정)
-            if (calBase === 'KST') {
-                if (origY === 1988 && origM === 1 && origD === 24) {
-                    solarObj = Solar.fromYmdHms(1988, 3, 12, hr, mn, 0);
-                }
-            }
-        }
-
-        // 2. 경도 보정 (-32분)은 무조건 '양력 시간' 객체를 기준으로 수행
-        if (document.getElementById('adj-l').checked && !isUnknown) {
-            const dt = new Date(solarObj.getYear(), solarObj.getMonth() - 1, solarObj.getDay(), solarObj.getHour(), solarObj.getMinute());
-            dt.setMinutes(dt.getMinutes() - 32);
-            solarObj = Solar.fromYmdHms(dt.getFullYear(), dt.getMonth() + 1, dt.getDate(), dt.getHours(), dt.getMinutes(), 0);
-            lunarObj = solarObj.getLunar();
-        }
-
-        // 3. 주인님(Master) 특별 처리 룰
-        // "1988-04-27 양력" 이거나 "1988-01-24 음력" 이거나 "1988-03-12 음력(기존 오류 데이터 대응)"인 경우 무조건 戊辰 乙卯 丙寅 戊子 (1988-03-12 양력 기준) 강제
-        let masterEcObj = null;
-        if ((origY === 1988 && origM === 4 && origD === 27 && isSolar) ||
-            (origY === 1988 && origM === 1 && origD === 24 && !isSolar) ||
-            (origY === 1988 && origM === 3 && origD === 12 && !isSolar)) {
-            let masterHr = hr, masterMn = mn;
-            if (document.getElementById('adj-l').checked && !isUnknown) {
-                const dt2 = new Date(1988, 3 - 1, 12, hr, mn);
-                dt2.setMinutes(dt2.getMinutes() - 32);
-                masterHr = dt2.getHours();
-                masterMn = dt2.getMinutes();
-            }
-            let msObj = Solar.fromYmdHms(1988, 3, 12, masterHr, masterMn, 0);
-            masterEcObj = msObj.getLunar().getEightChar();
-            
-            // 배지 출력을 위해 양력/음력 객체도 마스터 기준으로 덮어씌움
-            solarObj = msObj;
-            lunarObj = Lunar.fromYmdHms(1988, 1, 24, masterHr, masterMn, 0);
-        }
-
-        const lunar = lunarObj;
-        const solar = solarObj;
-        const ec = masterEcObj ? masterEcObj : lunar.getEightChar();
-        const pillars = [
-            { n: '시주', h: isUnknown ? ['', ''] : ec.getTime() },
-            { n: '일주', h: ec.getDay() },
-            { n: '월주', h: ec.getMonth() },
-            { n: '년주', h: ec.getYear() }
-        ];
-        const dayStem = ec.getDay()[0];
-        const allShinsal = getAllShinsal(pillars, ec, isUnknown);
-
-        // 동물 아바타 및 배지 업데이트
-        const elType = HAN_COLOR[dayStem] || 'wood';
-        const animalInfo = ANIMAL_SPRITE[pillars[1].h[1]] || ANIMAL_SPRITE['寅'];
+    // Others
+    for(let i=2; i<=4; i++) {
+        const dInput = document.getElementById('birth-date-' + i);
+        if(!dInput) continue;
+        const bDate = dInput.value.replace(/\D/g, '');
+        if(bDate.length < 8) continue;
         
-        document.getElementById('av-name').innerText = name + "님";
-        
-        const krColor = COLOR_KR_MAP[elType];
-        
-        const descHanja = document.getElementById('av-desc-hanja');
-        const descHangul = document.getElementById('av-desc-hangul');
-        if (descHanja && descHangul) {
-            descHanja.innerHTML = `<span class="${HAN_COLOR[dayStem]}">${dayStem}</span><span class="${HAN_COLOR[pillars[1].h[1]]}">${pillars[1].h[1]}</span>`;
-            descHangul.innerText = `${krColor} ${animalInfo.kr}`;
-        } else {
-            // Fallback if elements not found
-            const fallback = document.getElementById('av-desc');
-            if(fallback) fallback.innerText = `${dayStem}${pillars[1].h[1]} (${krColor} ${animalInfo.kr})`;
-        }
-        
-        const circle = document.getElementById('av-circle');
-        if(circle) {
-            circle.innerText = ''; // Remove emoji
-            circle.style.backgroundPosition = animalInfo.pos;
-            circle.style.backgroundSize = animalInfo.size;
-            circle.className = 'avatar-circle ' + elType; // Add wuxing color class
-        }
-        
-        let lMon = typeof lunar.getMonth === 'function' ? Math.abs(lunar.getMonth()) : 1;
-        let leapStr = typeof lunar.getMonth === 'function' && lunar.getMonth() < 0 ? '(윤달)' : '(평달)';
-        let sYear = typeof solar.getYear === 'function' ? solar.getYear() : y;
-        let sMon = typeof solar.getMonth === 'function' ? solar.getMonth() : m;
-        let sDay = typeof solar.getDay === 'function' ? solar.getDay() : d;
-        let lDay = typeof lunar.getDay === 'function' ? lunar.getDay() : d;
-        
-        const badges = document.getElementById('av-badges');
-        if(badges) {
-            badges.innerHTML = `
-                <div class="badge">${document.getElementById('gender').value === 'M' ? '남성' : '여성'}</div>
-                <div class="badge">양력 ${sYear}.${String(sMon).padStart(2,'0')}.${String(sDay).padStart(2,'0')}</div>
-                <div class="badge">음력 ${lunar.getYear ? lunar.getYear() : y}.${String(lMon).padStart(2,'0')}.${String(lDay).padStart(2,'0')} ${leapStr}</div>
-            `;
-        }
+        globalSajuDataArray.push(calculateEightChar(
+            document.getElementById('name-' + i).value || '고객 ' + i,
+            bDate,
+            document.getElementById('birth-time-' + i).value.replace(/\D/g, '') || '0000',
+            document.getElementById('gender-' + i).value,
+            document.getElementById('cal-type-' + i).value === 'solar',
+            false, 'KST',
+            document.getElementById('no-time-' + i).value === 'true',
+            true
+        ));
+    }
 
-        // 기존 hero-summary 숨기기 (점신 아바타로 대체됨)
-        const hm = document.getElementById('hero-meta');
-        if(hm) hm.parentElement.style.display = 'none';
-
-        const header = `
-            <div class="row">
-                <div class="cell col-head"></div>
-                <div class="cell col-head">시주</div>
-                <div class="cell col-head">일주</div>
-                <div class="cell col-head">월주</div>
-                <div class="cell col-head">년주</div>
-            </div>`;
-
-        const buildRow = (label, renderer) => `
-            <div class="row">
-                <div class="cell row-label">${label}</div>
-                ${pillars.map((p, idx) => `<div class="cell">${isUnknown && idx === 0 ? '<span class="tiny-dim">미상</span>' : renderer(p, idx)}</div>`).join('')}
-            </div>`;
-
-
-        const headerRow = `
-            <div class="manse-row">
-                <div class="manse-label"></div>
-                <div class="manse-head">시주</div>
-                <div class="manse-head">일주</div>
-                <div class="manse-head">월주</div>
-                <div class="manse-head">년주</div>
-            </div>`;
-
-        const bRow = (lbl, fn) => `
-            <div class="manse-row">
-                <div class="manse-cell manse-label">${lbl}</div>
-                ${pillars.map((p, i) => `<div class="manse-cell">${(isUnknown && i===0) ? '<span style="color:#555;font-size:11px;">미상</span>' : fn(p, i)}</div>`).join('')}
-            </div>`;
-
-        const manseHtml = [
-            headerRow,
-            bRow('십성', p => `<div class="m-badge">${p.n === '일주' ? '일원' : getSipseong(dayStem, p.h[0])}</div>`),
-            bRow('천간', p => `
-                <div class="m-hanja ${HAN_COLOR[p.h[0]] || ''}">${p.h[0]}</div>
-                <div class="m-hangul">${getElementDesc(p.h[0])}</div>
-            `),
-            bRow('지지', p => `
-                <div class="m-hanja ${HAN_COLOR[p.h[1]] || ''}">${p.h[1]}</div>
-                <div class="m-hangul">${getElementDesc(p.h[1])}</div>
-            `),
-            bRow('십성', p => `<div class="m-badge">${getSipseong(dayStem, p.h[1])}</div>`),
-            bRow('지장간', p => `<div class="m-badge">${getHidden(p.h[1], dayStem).replace(/<br>/g, '')}</div>`),
-            bRow('12운성', p => `<div class="m-badge">${getUnsung(dayStem, p.h[1]) || '-'}</div>`),
-            bRow('12신살', p => `<div class="m-badge">${(allShinsal[p.n] || []).join('<br>') || '-'}</div>`),
-            bRow('공망', p => {
-                const gm = getGongmang(dayStem + ec.getDay()[1]);
-                return `<div class="m-badge" style="${gm.includes(p.h[1]) ? 'color:var(--fire);font-weight:bold;' : ''}">${gm.includes(p.h[1]) ? '공망' : '-'}</div>`;
-            })
-        ].join('');
-        document.getElementById('manse-table').innerHTML = manseHtml;
-
-
-
-        const relGrid = document.getElementById('relation-grid');
-        const relLines = buildRelationLines(pillars);
-        if(relLines.length === 0 || (relLines.length === 1 && relLines[0].type === '없음')) {
-            relGrid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:#777;font-size:13px;">특별한 관계 구조가 없습니다.</div>';
-        } else {
-            relGrid.innerHTML = relLines.map(item => {
-                let nodesHtml = '';
-                if (item.chars.length === 2) {
-                    nodesHtml = `
-                        <div class="rel-char" style="display:flex;flex-direction:column;align-items:center;">
-                            <span class="${HAN_COLOR[item.chars[0]]}" style="font-family:'Noto Serif KR', serif; font-weight:300;">${item.chars[0]}</span>
-                            <span style="font-size:10px; color:#888; margin-top:2px; font-weight:400;">${HAN_KOR[item.chars[0]] || ''}</span>
-                        </div>
-                        <div class="rel-link"></div>
-                        <div class="rel-char" style="display:flex;flex-direction:column;align-items:center;">
-                            <span class="${HAN_COLOR[item.chars[1]]}" style="font-family:'Noto Serif KR', serif; font-weight:300;">${item.chars[1]}</span>
-                            <span style="font-size:10px; color:#888; margin-top:2px; font-weight:400;">${HAN_KOR[item.chars[1]] || ''}</span>
-                        </div>
-                    `;
-                } else if (item.chars.length === 3) {
-                    nodesHtml = `
-                        <div class="rel-char" style="display:flex;flex-direction:column;align-items:center;">
-                            <span class="${HAN_COLOR[item.chars[0]]}" style="font-family:'Noto Serif KR', serif; font-weight:300;">${item.chars[0]}</span>
-                            <span style="font-size:10px; color:#888; margin-top:2px; font-weight:400;">${HAN_KOR[item.chars[0]] || ''}</span>
-                        </div>
-                        <div class="rel-link"></div>
-                        <div class="rel-char" style="display:flex;flex-direction:column;align-items:center;">
-                            <span class="${HAN_COLOR[item.chars[1]]}" style="font-family:'Noto Serif KR', serif; font-weight:300;">${item.chars[1]}</span>
-                            <span style="font-size:10px; color:#888; margin-top:2px; font-weight:400;">${HAN_KOR[item.chars[1]] || ''}</span>
-                        </div>
-                        <div class="rel-link"></div>
-                        <div class="rel-char" style="display:flex;flex-direction:column;align-items:center;">
-                            <span class="${HAN_COLOR[item.chars[2]]}" style="font-family:'Noto Serif KR', serif; font-weight:300;">${item.chars[2]}</span>
-                            <span style="font-size:10px; color:#888; margin-top:2px; font-weight:400;">${HAN_KOR[item.chars[2]] || ''}</span>
-                        </div>
-                    `;
-                }
-                
-                return `
-                <div class="rel-card">
-                    <div class="rel-nodes">${nodesHtml}</div>
-                    <div class="rel-badge" style="margin-top:10px; margin-bottom:5px;">${item.type}</div>
-                    <div class="rel-desc" style="font-size:11px;color:var(--text-dim);">${item.label}</div>
-                </div>`;
-            }).join('');
-        }
-
-        document.getElementById('shinsal-grid').innerHTML = pillars.map((p, idx) => `
-            <div class="info-card">
-                <div class="info-label">${p.n}</div>
-                <div class="info-value">${isUnknown && idx === 0 ? '시간 미상' : ((allShinsal[p.n] || []).join(', ') || '특기 신살 없음')}</div>
-            </div>
-        `).join('');
-
-        const counts = { wood: 0, fire: 0, earth: 0, metal: 0, water: 0 };
-        const sipCounts = { 비견:0, 겁재:0, 식신:0, 상관:0, 편재:0, 정재:0, 편관:0, 정관:0, 편인:0, 정인:0 };
-
-        let sipTotalWeight = 0;
-        let wuxingTotalWeight = 0;
-
-        pillars.forEach((p, idx) => {
-            if (isUnknown && idx === 0) return;
-            
-            // 기둥별 핵심 가중치 (월지 > 일지 > 시지/년지)
-            let stemW = 1.0;
-            let zhiW = 1.0;
-            if (p.n === '월주') { stemW = 1.2; zhiW = 2.0; } // 월지(계절) 가중치 대폭 상향
-            else if (p.n === '일주') { stemW = 1.0; zhiW = 1.5; } // 일지(배우자궁, 나의 근간) 가중치 상향
-            else if (p.n === '시주') { stemW = 0.8; zhiW = 1.0; }
-            else if (p.n === '년주') { stemW = 0.8; zhiW = 0.8; }
-            
-            // 천간 적용
-            const tGan = p.h[0];
-            if (HAN_COLOR[tGan]) {
-                counts[HAN_COLOR[tGan]] += stemW;
-                wuxingTotalWeight += stemW;
-            }
-            const s1 = getSipseong(dayStem, tGan);
-            if (s1 && sipCounts[s1] !== undefined) {
-                sipCounts[s1] += stemW;
-                sipTotalWeight += stemW;
-            }
-
-            // 지지 표면 적용
-            const tZhi = p.h[1];
-            if (HAN_COLOR[tZhi]) {
-                counts[HAN_COLOR[tZhi]] += zhiW;
-                wuxingTotalWeight += zhiW;
-            }
-            const s2 = getSipseong(dayStem, tZhi);
-            if (s2 && sipCounts[s2] !== undefined) {
-                sipCounts[s2] += zhiW;
-                sipTotalWeight += zhiW;
-            }
-
-            // 지장간 분석 (표면 지지 가중치에 비례하여 잠재력 배분)
-            const hsList = BRANCH_HIDDEN[tZhi];
-            if (hsList && hsList.length > 0) {
-                let hl = [];
-                // 지장간 총합은 해당 지지 가중치(zhiW)의 약 30~40% 영향력
-                const baseHw = zhiW * 0.4; 
-                if (hsList.length === 2) {
-                    hl.push({ch: hsList[0], w: baseHw * 0.3}); // 여기
-                    hl.push({ch: hsList[1], w: baseHw * 0.7}); // 정기
-                } else if (hsList.length === 3) {
-                    hl.push({ch: hsList[0], w: baseHw * 0.25}); // 여기
-                    hl.push({ch: hsList[1], w: baseHw * 0.25}); // 중기
-                    hl.push({ch: hsList[2], w: baseHw * 0.50}); // 정기
-                }
-                
-                hl.forEach(h => {
-                    if(HAN_COLOR[h.ch]) {
-                        counts[HAN_COLOR[h.ch]] += h.w;
-                        wuxingTotalWeight += h.w;
-                    }
-                    const sH = getSipseong(dayStem, h.ch);
-                    if(sH && sipCounts[sH] !== undefined) {
-                        sipCounts[sH] += h.w;
-                        sipTotalWeight += h.w;
-                    }
-                });
-            }
-        });
-
-        const total = isUnknown ? 6 : 8;
-        const wxData = [
-            { key:'wood', label:'목(木)', val: percent(counts.wood, wuxingTotalWeight) },
-            { key:'fire', label:'화(火)', val: percent(counts.fire, wuxingTotalWeight) },
-            { key:'earth', label:'토(土)', val: percent(counts.earth, wuxingTotalWeight) },
-            { key:'metal', label:'금(金)', val: percent(counts.metal, wuxingTotalWeight) },
-            { key:'water', label:'수(水)', val: percent(counts.water, wuxingTotalWeight) }
-        ];
-        
-        let wxHtml = '<div class="wuxing-circles">';
-        wxData.forEach(w => {
-            wxHtml += `
-                <div class="w-circle-wrap">
-                    <div class="liq-container" style="--bg-color: var(--${w.key});">
-                        <div class="liq-bg" style="height: ${w.val}%;"></div>
-                        <div class="w-val">${w.val}%</div>
-                    </div>
-                    <div class="w-label">${w.label}</div>
-                </div>
-            `;
-        });
-        wxHtml += '</div>';
-        document.getElementById('wuxing-bars').innerHTML = wxHtml;
-
-
-        buildBars('sipseong-bars', Object.keys(sipCounts).map(key => ({
-            key,
-            label: key,
-            value: percent(sipCounts[key], sipTotalWeight)
-        })), () => 'bg-earth');
-
-
-        const sorted = Object.entries(counts).sort((a,b)=>a[1]-b[1]);
-        const yong = sorted[0][0]; 
-        const hee = sorted[1][0];
-        const sortedDesc = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
-        const gi = sortedDesc[0][0];
-        const goo = sortedDesc[1][0];
-        
-        
-        const korE = {wood:"목(木)", fire:"화(火)", earth:"토(土)", metal:"금(金)", water:"수(水)"};
-        
-        const setYong = (id, key) => {
-            const el = document.getElementById(id);
-            el.innerText = korE[key];
-            el.className = 'info-value ' + key; // applies color text
-        };
-        setYong('yong-val', yong);
-        setYong('hee-val', hee);
-        setYong('gi-val', gi);
-        setYong('goo-val', goo);
-
-
-                // 1. 신강/신약 정밀 계산 (일간 기준)
-        const myEl = HAN_COLOR[dayStem];
-        let support = 0; // 나를 돕는 기운 (비겁, 인성)
-        let control = 0; // 내 힘을 빼는 기운 (식상, 재성, 관성)
-        
-        // 오행별 상생상극 (수->목->화->토->금->수)
-        const sngMap = { 'wood':'water', 'fire':'wood', 'earth':'fire', 'metal':'earth', 'water':'metal' };
-        const mySupportEl = sngMap[myEl]; // 나를 낳는 기운 (인성)
-        
-        const totalW = counts.wood + counts.fire + counts.earth + counts.metal + counts.water;
-        
-        if (totalW > 0) {
-            support = (counts[myEl] || 0) + (counts[mySupportEl] || 0);
-            control = totalW - support;
-        }
-        
-        let strength = '중화';
-        let ratio = 0.5; // 0 to 1
-        if (totalW > 0) {
-            ratio = support / totalW;
-            if (ratio > 0.55) strength = '신강';
-            else if (ratio < 0.45) strength = '신약';
-        }
-        
-        // Needle rotation: -90deg (0%) to +90deg (100%)
-        const rot = (ratio * 180) - 90;
-        // Gauge fill: dashoffset 251 (empty) to 0 (full)
-        const offset = 251 - (251 * ratio);
-
-        document.getElementById('strength-text').innerText = strength;
-        document.getElementById('strength-sub').innerText = `내 기운(${Math.round(ratio*100)}%) / 빠지는 기운(${Math.round((1-ratio)*100)}%)`;
-        document.getElementById('gauge-needle').style.transform = `rotate(${rot}deg)`;
-        document.getElementById('gauge-path').style.strokeDashoffset = offset;
-
-        const yun = ec.getYun(document.getElementById('gender').value === 'M' ? 1 : 0);
-        const yunDirection = document.getElementById('gender').value === 'M' ? '순행' : '역행';
-        const yunStartAge = yun.getStartAge ? yun.getStartAge() : '-';
-        document.getElementById('yun-text').innerText = `${yunStartAge}세 시작 · ${yunDirection}`;
-
-        const daeunRows = yun.getDaYun().slice(1, 9).map(dy => {
-            const gz = dy.getGanZhi();
-            return [
-                dy.getStartAge() + '세',
-                getSipseong(dayStem, gz[0]),
-                `${gz[0]}${gz[1]}`,
-                `${HAN_KOR[gz[0]]}${HAN_KOR[gz[1]]}`,
-                getUnsung(dayStem, gz[1]) || '-'
-            ];
-        });
-        buildFortuneCards('daeun-table', daeunRows);
-
-        const currentYearObj = new Date();
-        const currentYear = currentYearObj.getFullYear();
-        const currentMonth = currentYearObj.getMonth() + 1;
-        const currentAge = currentYear - y + 1; // Korean age approximation
-        
-        // Find active Daeun
-        let activeDaeunIdx = -1;
-        const daeunData = yun.getDaYun().slice(1, 9);
-        for(let i = 0; i < daeunData.length; i++) {
-            if(currentAge >= daeunData[i].getStartAge() && (i === daeunData.length - 1 || currentAge < daeunData[i+1].getStartAge())) {
-                activeDaeunIdx = i; break;
-            }
-        }
-        // inject highlight logic into buildFortuneCards
-        window.buildFortuneCards = function(targetId, rows, hIdx = -1) {
-            document.getElementById(targetId).innerHTML = '<div class="fortune-scroll">' + rows.map((row, idx) => `
-                <div class="f-card ${idx === hIdx ? 'current-fortune' : ''}">
-                    <div class="f-head">${row[0]}</div>
-                    <div class="f-sip">${row[1]}</div>
-                    <div class="f-hz"><span class="${HAN_COLOR[row[2][0]]||''}">${row[2][0]}</span><br><span class="${HAN_COLOR[row[2][1]]||''}">${row[2][1]}</span></div>
-                    <div class="f-kr">${row[3]}</div>
-                    <div class="f-un">${row[4]}</div>
-                </div>
-            `).join('') + '</div>';
-        };
-
-        const daeunRows2 = daeunData.map(dy => {
-            const gz = dy.getGanZhi();
-            return [ dy.getStartAge() + '세', getSipseong(dayStem, gz[0]), `${gz[0]}${gz[1]}`, `${HAN_KOR[gz[0]]}${HAN_KOR[gz[1]]}`, getUnsung(dayStem, gz[1]) || '-' ];
-        });
-        buildFortuneCards('daeun-table', daeunRows2, activeDaeunIdx);
-
-        const seunRows = [];
-        for (let year = currentYear; year < currentYear + 10; year++) {
-            const yLunar = Solar.fromYmd(year, 6, 15).getLunar();
-            const yEc = yLunar.getEightChar();
-            const gz = yEc.getYear();
-            seunRows.push([
-                year + '년',
-                getSipseong(dayStem, gz[0]),
-                `${gz[0]}${gz[1]}`,
-                `${HAN_KOR[gz[0]]}${HAN_KOR[gz[1]]}`,
-                getUnsung(dayStem, gz[1]) || '-'
-            ]);
-        }
-        buildFortuneCards('seun-table', seunRows, 0);
-
-        const wolunRows = [];
-        for (let m = 1; m <= 12; m++) {
-            const mSolar = Solar.fromYmd(currentYear, m, 15);
-            const mEc = mSolar.getLunar().getEightChar();
-            const gz = mEc.getMonth();
-            wolunRows.push([
-                m + '월',
-                getSipseong(dayStem, gz[0]),
-                `${gz[0]}${gz[1]}`,
-                `${HAN_KOR[gz[0]]}${HAN_KOR[gz[1]]}`,
-                getUnsung(dayStem, gz[1]) || '-'
-            ]);
-        }
-        buildFortuneCards('wolun-table', wolunRows, currentMonth - 1);
-
-        let dData = yun.getDaYun();
-        let daewunNum = dData.length > 1 ? dData[1].getStartAge() : 4;
-
-        globalSajuData = {
-            name: name,
-            gender: gender,
-            yearStem: pillars[3].h[0],
-            monthStem: pillars[2].h[0],
-            dayStem: dayStem,
-            dayBranch: pillars[1].h[1],
-            monthBranch: pillars[2].h[1],
-            pillars: pillars,
-            strengthText: strength,
-            allShinsal: allShinsal,
-            wuxing: counts,
-            sipseong: sipCounts,
-            daewunNum: daewunNum
-        };
-
+    showLoading('모든 인원의 만세력을 계산 중입니다...', () => {
+        renderDashboard(globalSajuDataArray[0]);
         go(2);
     });
 }
+
+
 </script>
 
 
