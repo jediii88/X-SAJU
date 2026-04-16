@@ -307,6 +307,89 @@
 
         @keyframes spin { to { transform: rotate(360deg); } }
     
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+        .modal-card {
+            background: #111;
+            border: 1px solid var(--line-soft);
+            border-radius: 12px;
+            padding: 24px;
+            width: 100%;
+            max-width: 360px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            transform: translateY(10px);
+            transition: transform 0.3s;
+        }
+        .modal-overlay.active .modal-card {
+            transform: translateY(0);
+        }
+        .modal-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--gold);
+            margin-bottom: 12px;
+        }
+        .modal-body {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-soft);
+            font-weight: 300;
+            margin-bottom: 24px;
+            word-break: keep-all;
+        }
+        .modal-close {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255,255,255,0.05);
+            border: none;
+            border-radius: 6px;
+            color: var(--text);
+            font-size: 14px;
+            font-weight: 400;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .modal-close:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+
+        .report-chapter { margin-bottom: 40px; }
+        .ch-title { color: var(--gold); border-bottom: 1px solid #333; padding-bottom: 8px; margin-bottom: 15px; font-family: 'Noto Serif KR', serif; font-weight: 300; font-size: 20px; }
+        .ch-text { font-size: 15px; line-height: 1.8; color: #eee; margin-bottom: 15px; text-align: justify; word-break: keep-all; }
+        .axe-advice { background: #111; padding: 18px; border-radius: 8px; border-left: 3px solid var(--gold); font-size: 14.5px; line-height: 1.6; color: #ddd; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(4px); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px; opacity: 0; transition: opacity 0.3s; }
+        .modal-overlay.active { display: flex; opacity: 1; }
+        .modal-card { background: #111; border: 1px solid var(--line-soft); border-radius: 12px; padding: 24px; width: 100%; max-width: 360px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
+        .modal-title { font-size: 16px; font-weight: 500; color: var(--gold); margin-bottom: 12px; }
+        .modal-body { font-size: 14px; line-height: 1.6; color: var(--text-soft); margin-bottom: 24px; word-break: keep-all; }
+        .modal-close { width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: none; border-radius: 6px; color: var(--text); cursor: pointer; }
+
+        .rel-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 10px; }
+        .rel-card { background: linear-gradient(135deg, #151515, #0a0a0a); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; align-items: center; }
+        .rel-nodes { display: flex; align-items: center; gap: 12px; }
+        .rel-char { width: 36px; height: 36px; border-radius: 50%; background: #222; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .rel-link { flex: 1; height: 2px; background: var(--line); min-width: 20px; position: relative; }
+        .rel-badge { background: #2a2a2a; color: var(--gold); font-size: 13px; padding: 4px 12px; border-radius: 20px; margin-top: 8px; }
+
+        .help-icon { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border-radius: 50%; background: rgba(255,255,255,0.1); color: #aaa; font-size: 10px; cursor: pointer; margin-left: 6px; }
+    
 </style></head>
 <body>
 
