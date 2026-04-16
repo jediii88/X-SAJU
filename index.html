@@ -2310,21 +2310,21 @@ const ANIMAL_SPRITE = {
 };
 // 일간(天干) 오행 → 동물 색상 (CSS filter로 흰색 실루엣에 색 입히기)
 const ANIMAL_COLOR = {
-    // 木 - 초록 #2ecc71
-    '甲': {filter:'brightness(0) saturate(100%) invert(1) sepia(1) saturate(4) hue-rotate(100deg) brightness(1.1)', bg:'#0d2016', label:'푸른'},
-    '乙': {filter:'brightness(0) saturate(100%) invert(1) sepia(1) saturate(4) hue-rotate(100deg) brightness(1.1)', bg:'#0d2016', label:'푸른'},
-    // 火 - 빨강 #e74c3c
-    '丙': {filter:'brightness(0) saturate(100%) invert(1) sepia(1) saturate(5) hue-rotate(330deg) brightness(1.1)', bg:'#2e0d0d', label:'붉은'},
-    '丁': {filter:'brightness(0) saturate(100%) invert(1) sepia(1) saturate(5) hue-rotate(330deg) brightness(1.1)', bg:'#2e0d0d', label:'붉은'},
-    // 土 - 황금 #d4a017
-    '戊': {filter:'brightness(0) saturate(100%) invert(1) sepia(1) saturate(4) hue-rotate(20deg) brightness(1.1)',  bg:'#2a2008', label:'황금'},
-    '己': {filter:'brightness(0) saturate(100%) invert(1) sepia(1) saturate(4) hue-rotate(20deg) brightness(1.1)',  bg:'#2a2008', label:'황금'},
-    // 金 - 흰색 (이미 흰색이므로 그대로)
-    '庚': {filter:'brightness(1.0)',                                                                                  bg:'#2a2a2a', label:'하얀'},
-    '辛': {filter:'brightness(1.0)',                                                                                  bg:'#2a2a2a', label:'하얀'},
+    // 木 - 초록
+    '甲': {filter:'brightness(0) saturate(100%) invert(58%) sepia(49%) saturate(445%) hue-rotate(103deg) brightness(101%)', bg:'#0d2016', label:'푸른'},
+    '乙': {filter:'brightness(0) saturate(100%) invert(58%) sepia(49%) saturate(445%) hue-rotate(103deg) brightness(101%)', bg:'#0d2016', label:'푸른'},
+    // 火 - 빨강
+    '丙': {filter:'brightness(0) saturate(100%) invert(33%) sepia(95%) saturate(750%) hue-rotate(333deg) brightness(103%)', bg:'#2e0d0d', label:'붉은'},
+    '丁': {filter:'brightness(0) saturate(100%) invert(33%) sepia(95%) saturate(750%) hue-rotate(333deg) brightness(103%)', bg:'#2e0d0d', label:'붉은'},
+    // 土 - 황금
+    '戊': {filter:'brightness(0) saturate(100%) invert(64%) sepia(70%) saturate(600%) hue-rotate(5deg) brightness(95%)',   bg:'#2a2008', label:'황금'},
+    '己': {filter:'brightness(0) saturate(100%) invert(64%) sepia(70%) saturate(600%) hue-rotate(5deg) brightness(95%)',   bg:'#2a2008', label:'황금'},
+    // 金 - 흰색
+    '庚': {filter:'brightness(10)',                                                                                          bg:'#1e1e1e', label:'하얀'},
+    '辛': {filter:'brightness(10)',                                                                                          bg:'#1e1e1e', label:'하얀'},
     // 水 - 검정 (밝은배경)
-    '壬': {filter:'brightness(0)',                                                                                     bg:'#d8d8d8', label:'검은'},
-    '癸': {filter:'brightness(0)',                                                                                     bg:'#d8d8d8', label:'검은'},
+    '壬': {filter:'brightness(0)',                                                                                           bg:'#d0d0d0', label:'검은'},
+    '癸': {filter:'brightness(0)',                                                                                           bg:'#d0d0d0', label:'검은'},
 };
 const COLOR_KR_MAP = {
     'wood': '푸른', 'fire': '붉은', 'earth': '황금', 'metal': '하얀', 'water': '검은'
@@ -2589,7 +2589,7 @@ function runAnalysis() {
             circle.style.display = 'flex';
             circle.style.alignItems = 'center';
             circle.style.justifyContent = 'center';
-            circle.innerHTML = `<img src="zodiac/${animalInfo.file}.png" style="width:82%;height:82%;object-fit:contain;filter:${colorInfo.filter};" alt="${animalInfo.kr}">`;
+            circle.innerHTML = `<img src="zodiac/${animalInfo.file}.png" style="width:86%;height:86%;object-fit:contain;object-position:center center;display:block;margin:auto;filter:${colorInfo.filter};" alt="${animalInfo.kr}">`;
             circle.className = 'avatar-circle';
             // 색상 라벨 업데이트
             if(descHangul) descHangul.innerText = `${colorInfo.label} ${animalInfo.kr}`;
