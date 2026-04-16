@@ -1768,8 +1768,8 @@ window.generateDeepReport = generateDeepReport;
             <input type="hidden" id="cal-type" value="S">
         </div>
 
-        <div class="input-group" id="cal-base-wrap">
-            <label>음력/절기 표준시 기준</label>
+        <div class="input-group" id="cal-base-wrap" style="display:none;">
+            <label>음력 변환 기준</label>
             <div class="btn-group" id="cal-base-group">
                 <button class="btn-toggle active" data-val="KST" onclick="setToggle('cal-base-group', this, 'cal-base')">한국 기준(KST)</button>
                 <button class="btn-toggle" data-val="CST" onclick="setToggle('cal-base-group', this, 'cal-base')">중국 기준(CST)</button>
@@ -2216,10 +2216,15 @@ function setToggle(groupId, btn, inputId) {
 
 function toggleLeap(show) {
     const wrap = document.getElementById('leap-wrap');
+    const baseWrap = document.getElementById('cal-base-wrap');
     if (show) {
         wrap.style.display = 'block';
+        // 음력 선택 시 한국/중국 기준 옵션 표시
+        if (baseWrap) baseWrap.style.display = 'block';
     } else {
         wrap.style.display = 'none';
+        // 양력 선택 시 한국/중국 기준 옵션 숨김 (양력은 구분 불필요)
+        if (baseWrap) baseWrap.style.display = 'none';
         const falseBtn = document.querySelector('#leap-group .btn-toggle[data-val="false"]');
         if (falseBtn) setToggle('leap-group', falseBtn, 'is-leap');
     }
@@ -2464,17 +2469,23 @@ function runAnalysis() {
             solarObj = Solar.fromYmdHms(y, m, d, hr, mn, 0);
             lunarObj = solarObj.getLunar();
         } else {
-            // 음력 입력: KLC(KASI 기준)로 음력 → 양력 변환 후 lunar.js에 넣어 팔자 계산
-            const klcInst = new KoreanLunarCalendar();
-            const ok = klcInst.setLunarDate(y, m, d, isLeap);
-            if (!ok) {
-                alert('잘못된 음력 날짜입니다. 다시 확인해주세요.');
-                return;
+            if (calBase === 'KST') {
+                // 한국 기준: KLC(KASI 한국천문연구원) 기준 음→양 변환
+                const klcInst = new KoreanLunarCalendar();
+                const ok = klcInst.setLunarDate(y, m, d, isLeap);
+                if (!ok) {
+                    alert('잘못된 음력 날짜입니다. (한국 기준)\n다시 확인해주세요.');
+                    return;
+                }
+                const klcSolar = klcInst.getSolarCalendar();
+                solarObj = Solar.fromYmdHms(klcSolar.year, klcSolar.month, klcSolar.day, hr, mn, 0);
+                lunarObj = solarObj.getLunar();
+            } else {
+                // 중국 기준(CST): lunar.js 내장 음력 변환 사용 (북경시 기준)
+                let lunarMonth = isLeap ? -m : m;
+                lunarObj = Lunar.fromYmdHms(y, lunarMonth, d, hr, mn, 0);
+                solarObj = lunarObj.getSolar();
             }
-            const klcSolar = klcInst.getSolarCalendar();
-            // KLC로 변환된 양력 날짜로 lunar.js 객체 생성
-            solarObj = Solar.fromYmdHms(klcSolar.year, klcSolar.month, klcSolar.day, hr, mn, 0);
-            lunarObj = solarObj.getLunar();
         }
 
         // 2. 경도 보정 (-32분)은 무조건 '양력 시간' 객체를 기준으로 수행
