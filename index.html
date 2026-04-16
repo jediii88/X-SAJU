@@ -2780,26 +2780,26 @@ function runAnalysis() {
         let wxHtml = '<div class="wuxing-circles">';
         wxData.forEach(w => {
             const col = WX_COLORS[w.key] || { fill: '#555', wave: '#444' };
-            // 웨이브 SVG: 각 웨이브는 200% 너비로 폄시해서 translate로 흐름
-            // 웨이브 위로 긍없이 부드럽게: path가 컴테이너 높이를 넘도록 viewBox를 충분히 크게
+            // 웨이브 SVG: SVG animateTransform으로 부드럽게 출렁임
             const fillH = Math.max(w.val, 0);
+            const waterY = 100 - fillH;
+            const amp = 9;
+            const wp1 = `M-100,${waterY} C-75,${waterY-amp} -50,${waterY+amp} -25,${waterY} C0,${waterY-amp} 25,${waterY+amp} 50,${waterY} C75,${waterY-amp} 100,${waterY+amp} 125,${waterY} C150,${waterY-amp} 175,${waterY+amp} 200,${waterY} L200,100 L-100,100 Z`;
+            const wp2 = `M-100,${waterY+3} C-70,${waterY-amp+5} -40,${waterY+amp-3} -10,${waterY+3} C20,${waterY-amp+5} 50,${waterY+amp-3} 80,${waterY+3} C110,${waterY-amp+5} 140,${waterY+amp-3} 170,${waterY+3} C200,${waterY-amp+5} 230,${waterY+amp-3} 260,${waterY+3} L260,100 L-100,100 Z`;
             wxHtml += `
                 <div class="w-circle-wrap">
                     <div class="liq-container">
-                        <!-- 속 칄우기 레이어 (선 없이 스일로 채움) -->
-                        <div style="position:absolute;bottom:0;left:0;width:100%;height:${fillH}%;background:${col.fill};z-index:0;"></div>
-                        <!-- 웨이브 1 -->
-                        <div style="position:absolute;bottom:${fillH}%;left:0;width:100%;height:16px;margin-bottom:-14px;z-index:1;overflow:hidden;">
-                            <svg viewBox="0 0 200 16" preserveAspectRatio="none" style="width:200%;height:16px;position:absolute;bottom:0;left:0;animation:waveMove1 2.5s linear infinite;">
-                                <path d="M0,8 C25,0 50,16 75,8 C100,0 125,16 150,8 C175,0 200,16 225,8 L225,16 L0,16 Z" fill="${col.fill}"/>
-                            </svg>
-                        </div>
-                        <!-- 웨이브 2 -->
-                        <div style="position:absolute;bottom:${fillH}%;left:0;width:100%;height:16px;margin-bottom:-12px;z-index:2;overflow:hidden;opacity:0.6;">
-                            <svg viewBox="0 0 200 16" preserveAspectRatio="none" style="width:200%;height:16px;position:absolute;bottom:0;left:0;animation:waveMove2 3.5s linear infinite;">
-                                <path d="M0,10 C30,2 60,18 90,10 C120,2 150,18 180,10 C210,2 240,18 270,10 L270,16 L0,16 Z" fill="${col.wave}"/>
-                            </svg>
-                        </div>
+                        <svg viewBox="0 0 100 100" preserveAspectRatio="none"
+                             style="position:absolute;inset:0;width:100%;height:100%;z-index:1;">
+                            <path d="${wp1}" fill="${col.fill}" opacity="0.92">
+                                <animateTransform attributeName="transform" type="translate"
+                                    from="0,0" to="100,0" dur="2.5s" repeatCount="indefinite"/>
+                            </path>
+                            <path d="${wp2}" fill="${col.wave}" opacity="0.55">
+                                <animateTransform attributeName="transform" type="translate"
+                                    from="100,0" to="0,0" dur="3.5s" repeatCount="indefinite"/>
+                            </path>
+                        </svg>
                         <div class="w-val" style="z-index:10;">${w.val}%</div>
                     </div>
                     <div class="w-label">${w.label}</div>
