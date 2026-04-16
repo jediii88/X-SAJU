@@ -746,16 +746,13 @@
             opacity: 0.5;
             bottom: -4px;
         }
-        @keyframes waveMove1 {
-            0% { transform: translateX(0); }
+        @keyframes waveScroll1 {
+            0%   { transform: translateX(0); }
             100% { transform: translateX(-50%); }
         }
-        @keyframes waveMove2 {
-            0% { transform: translateX(-50%); }
+        @keyframes waveScroll2 {
+            0%   { transform: translateX(-50%); }
             100% { transform: translateX(0); }
-        }
-        @keyframes slowSpin {
-            100% { transform: rotate(360deg); }
         }
         .w-val {
             position: absolute;
@@ -2774,28 +2771,39 @@ function runAnalysis() {
         let wxHtml = '<div class="wuxing-circles">';
         wxData.forEach(w => {
             const col = WX_COLORS[w.key] || { fill: '#555', wave: '#444' };
-            // 웨이브 SVG: 잔잔하고 끊김없는 루프
-            // path 1주기 = 50단위, from=0 to=50 으로 정확히 맞춤
+            // 웨이브: 200% 너비 SVG를 CSS translateX로 흘림 → seamless
             const fillH = Math.max(w.val, 0);
             const waterY = 100 - fillH;
-            const amp = 4; // 잔잔한 파동
-            // 0~100 구간에 정확히 2주기 (50단위 반복) → to="50,0"으로 seamless loop
-            const wp1 = `M0,${waterY} C12.5,${waterY-amp} 25,${waterY+amp} 37.5,${waterY} C50,${waterY-amp} 62.5,${waterY+amp} 75,${waterY} C87.5,${waterY-amp} 100,${waterY+amp} 112.5,${waterY} C125,${waterY-amp} 137.5,${waterY+amp} 150,${waterY} L150,100 L0,100 Z`;
-            const wp2 = `M0,${waterY+2} C12.5,${waterY-amp+3} 25,${waterY+amp-1} 37.5,${waterY+2} C50,${waterY-amp+3} 62.5,${waterY+amp-1} 75,${waterY+2} C87.5,${waterY-amp+3} 100,${waterY+amp-1} 112.5,${waterY+2} C125,${waterY-amp+3} 137.5,${waterY+amp-1} 150,${waterY+2} L150,100 L0,100 Z`;
+            const amp = 3; // 매우 잔잔
+            // 4주기 path (각 주기=25) → 200% 너비로 1주기 이동 = seamless
+            const mkWave = (dy, a) => {
+                let d = `M0,${waterY+dy}`;
+                for(let i=0;i<8;i++){
+                    const x0=i*25, x1=x0+12.5, x2=x0+25;
+                    const y1 = (i%2===0) ? waterY+dy-a : waterY+dy+a;
+                    d += ` C${x0+6},${y1} ${x1-6},${y1} ${x1},${waterY+dy}`;
+                    const y2 = (i%2===0) ? waterY+dy+a : waterY+dy-a;
+                    d += ` C${x1+6},${y2} ${x2-6},${y2} ${x2},${waterY+dy}`;
+                }
+                d += ` L200,100 L0,100 Z`;
+                return d;
+            };
             wxHtml += `
                 <div class="w-circle-wrap">
                     <div class="liq-container">
-                        <svg viewBox="0 0 100 100" preserveAspectRatio="none"
-                             style="position:absolute;inset:0;width:100%;height:100%;z-index:1;">
-                            <path d="${wp1}" fill="${col.fill}" opacity="0.92">
-                                <animateTransform attributeName="transform" type="translate"
-                                    from="0,0" to="50,0" dur="5s" repeatCount="indefinite"/>
-                            </path>
-                            <path d="${wp2}" fill="${col.wave}" opacity="0.5">
-                                <animateTransform attributeName="transform" type="translate"
-                                    from="50,0" to="0,0" dur="7s" repeatCount="indefinite"/>
-                            </path>
-                        </svg>
+                        <!-- 배경 채우기 -->
+                        <div style="position:absolute;bottom:0;left:0;width:100%;height:${fillH}%;background:${col.fill};z-index:0;"></div>
+                        <!-- 웨이브 레이어 (200% 너비 SVG → CSS animation으로 흘림) -->
+                        <div style="position:absolute;bottom:0;left:0;width:200%;height:100%;z-index:1;animation:waveScroll1 6s linear infinite;">
+                            <svg viewBox="0 0 200 100" preserveAspectRatio="none" style="width:100%;height:100%;">
+                                <path d="${mkWave(0, amp)}" fill="${col.fill}" opacity="0.95"/>
+                            </svg>
+                        </div>
+                        <div style="position:absolute;bottom:0;left:0;width:200%;height:100%;z-index:2;animation:waveScroll2 9s linear infinite;opacity:0.45;">
+                            <svg viewBox="0 0 200 100" preserveAspectRatio="none" style="width:100%;height:100%;">
+                                <path d="${mkWave(2, amp-1)}" fill="${col.wave}" opacity="1"/>
+                            </svg>
+                        </div>
                         <div class="w-val" style="z-index:10;">${w.val}%</div>
                     </div>
                     <div class="w-label">${w.label}</div>
