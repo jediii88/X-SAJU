@@ -407,12 +407,6 @@
             background: #111;
         }
 
-        /* 전역 한자 폰트 통일: Noto Serif KR */
-        .wood, .fire, .earth, .metal, .water,
-        .m-hanja, .hanja-main, .f-hz, .rel-char-circle span,
-        [class*="hanja"], .f-head {
-            font-family: 'Noto Serif KR', serif !important;
-        }
         .hanja-main {
             font-size: 38px;
             line-height: 1.1;
@@ -658,7 +652,7 @@
         .m-hanja {
             font-size: 34px;
             font-weight: 200;
-            font-family: 'Noto Serif KR', serif;
+            font-family: 'Noto Sans KR', sans-serif;
             line-height: 1.1;
             margin-bottom: 2px;
         }
@@ -1954,7 +1948,7 @@ function startReport() {
 </script>
             <div class="avatar-name" id="av-name">장경현</div>
             <div class="avatar-desc-wrap" style="display:flex; flex-direction:column; align-items:center; margin-bottom:12px;">
-                <div id="av-desc-hanja" style="font-family:'Noto Serif KR', serif; font-weight:300; font-size:26px; line-height:1; margin-bottom:4px; letter-spacing:4px;">丙寅</div>
+                <div id="av-desc-hanja" style="font-family:'Noto Sans KR', sans-serif; font-weight:300; font-size:26px; line-height:1; margin-bottom:4px; letter-spacing:4px;">丙寅</div>
                 <div id="av-desc-hangul" style="font-size:14px; color:var(--gold); font-weight:400;">붉은 호랑이</div>
             </div>
             <div class="avatar-badges" id="av-badges">
@@ -2654,7 +2648,7 @@ function runAnalysis() {
                 const mkRelChar = (ch) => `
                     <div class="rel-char">
                         <div class="rel-char-circle">
-                            <span class="${HAN_COLOR[ch]}" style="font-family:'Noto Serif KR',serif;font-weight:400;">${ch}</span>
+                            <span class="${HAN_COLOR[ch]}" style="font-family:'Noto Sans KR',sans-serif;font-weight:400;">${ch}</span>
                         </div>
                         <span class="rel-char-kr">${HAN_KOR[ch] || ''}</span>
                     </div>`;
