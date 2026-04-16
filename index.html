@@ -2585,7 +2585,7 @@ function runAnalysis() {
         if(circle) {
             const colorInfo = ANIMAL_COLOR[dayStem] || ANIMAL_COLOR['丙'];
             circle.style.cssText = `background:${colorInfo.bg}; border-radius:50%; overflow:hidden; display:flex; align-items:center; justify-content:center; width:80px; height:80px; border:2px solid var(--gold); box-shadow:inset 0 0 15px rgba(0,0,0,0.8),0 4px 10px rgba(0,0,0,0.5); margin:0 auto 10px;`;
-            circle.innerHTML = `<img src="zodiac/${animalInfo.file}.png" style="width:74%;height:74%;object-fit:contain;display:block;filter:${colorInfo.filter};" alt="${animalInfo.kr}">`;
+            circle.innerHTML = `<img src="zodiac/${animalInfo.file}.png" style="width:62%;height:62%;object-fit:contain;display:block;filter:${colorInfo.filter};" alt="${animalInfo.kr}">`;
             circle.className = 'avatar-circle';
             // 색상 라벨 업데이트
             if(descHangul) descHangul.innerText = `${colorInfo.label} ${animalInfo.kr}`;
