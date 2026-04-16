@@ -117,7 +117,7 @@ function generateDeepReport(dataInput) {
         // [인트로: X-FILE 기밀 보고서 헤더]
         html += `<div style="border: 2px solid var(--gold); padding: 40px 20px; margin-bottom: 60px; border-radius: 0px; background: rgba(199, 167, 106, 0.05); text-align: center; position: relative;">
             <div style="position: absolute; top: 10px; left: 10px; color: var(--gold); font-size: 10px; letter-spacing: 2px;">CLASSIFIED: LEVEL 1</div>
-            <h1 style="color: var(--gold); margin: 0; font-family: 'Noto Serif KR', serif; font-size: 28px; font-weight: 900; letter-spacing: 5px;">[ ${data.name} 님의 X-FILE ]</h1>
+            <h1 style="color: var(--gold); margin: 0; font-family: 'Noto Serif KR', serif; font-size: 28px; font-weight: 500; letter-spacing: 5px;">[ ${data.name} 님의 X-FILE ]</h1>
             <div style="margin-top: 15px; color: #888; font-size: 13px;">발급번호: #${Math.random().toString(36).substr(2, 9).toUpperCase()}</div>
         </div>`;
         
@@ -156,7 +156,7 @@ function generateDeepReport(dataInput) {
     }
     
     html += `<div id="pdf-btn-wrap" style="text-align: center; margin-top: 80px; padding-bottom: 100px; border-top: 1px solid #333; padding-top: 50px;">
-        <button class="btn" style="background: var(--gold); color: #000; width: 100%; max-width: 450px; font-size: 20px; font-weight: 900; box-shadow: 0 4px 25px rgba(199, 167, 106, 0.5); border-radius: 0; padding: 25px;" onclick="window.print()">📄 X-FILE 기밀문서 PDF로 평생 소장하기</button>
+        <button class="btn" style="background: var(--gold); color: #000; width: 100%; max-width: 450px; font-size: 20px; font-weight: 500; box-shadow: 0 4px 25px rgba(199, 167, 106, 0.5); border-radius: 0; padding: 25px;" onclick="window.print()">📄 X-FILE 기밀문서 PDF로 평생 소장하기</button>
     </div>`;
     
     document.getElementById('report-container').innerHTML = html;
@@ -194,23 +194,23 @@ function buildChapter1_Full(data) {
             <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; text-align: center; margin-top: 20px;">
                 <div style="border: 1px solid #444; padding: 15px; border-radius: 5px;">
                     <div style="font-size: 12px; color: #888; margin-bottom: 10px;">시주(말년/무기)</div>
-                    <div style="font-size: 24px; font-weight: 900; color: ${HAN_COLOR[tH[0]]}">${tH[0]}<span style="font-size:12px; color:#aaa;">(${HAN_KOR[tH[0]]})</span></div>
-                    <div style="font-size: 24px; font-weight: 900; color: ${HAN_COLOR[tH[1]]}; margin-top: 5px;">${tH[1]}<span style="font-size:12px; color:#aaa;">(${HAN_KOR[tH[1]]})</span></div>
+                    <div style="font-size: 24px; font-weight: 500; color: ${HAN_COLOR[tH[0]]}">${tH[0]}<span style="font-size:12px; color:#aaa;">(${HAN_KOR[tH[0]]})</span></div>
+                    <div style="font-size: 24px; font-weight: 500; color: ${HAN_COLOR[tH[1]]}; margin-top: 5px;">${tH[1]}<span style="font-size:12px; color:#aaa;">(${HAN_KOR[tH[1]]})</span></div>
                 </div>
                 <div style="border: 1px solid #444; padding: 15px; border-radius: 5px; background: rgba(199,167,106,0.1); border-color: var(--gold);">
                     <div style="font-size: 12px; color: var(--gold); margin-bottom: 10px;">일주(본질/안방)</div>
-                    <div style="font-size: 24px; font-weight: 900; color: ${HAN_COLOR[dH[0]]}">${dH[0]}<span style="font-size:12px; color:#aaa;">(${HAN_KOR[dH[0]]})</span></div>
-                    <div style="font-size: 24px; font-weight: 900; color: ${HAN_COLOR[dH[1]]}; margin-top: 5px;">${dH[1]}<span style="font-size:12px; color:#aaa;">(${HAN_KOR[dH[1]]})</span></div>
+                    <div style="font-size: 24px; font-weight: 500; color: ${HAN_COLOR[dH[0]]}">${dH[0]}<span style="font-size:12px; color:#aaa;">(${HAN_KOR[dH[0]]})</span></div>
+                    <div style="font-size: 24px; font-weight: 500; color: ${HAN_COLOR[dH[1]]}; margin-top: 5px;">${dH[1]}<span style="font-size:12px; color:#aaa;">(${HAN_KOR[dH[1]]})</span></div>
                 </div>
                 <div style="border: 1px solid #444; padding: 15px; border-radius: 5px;">
                     <div style="font-size: 12px; color: #888; margin-bottom: 10px;">월주(환경/직업)</div>
-                    <div style="font-size: 24px; font-weight: 900; color: ${HAN_COLOR[mH[0]]}">${mH[0]}<span style="font-size:12px; color:#aaa;">(${HAN_KOR[mH[0]]})</span></div>
-                    <div style="font-size: 24px; font-weight: 900; color: ${HAN_COLOR[mH[1]]}; margin-top: 5px;">${mH[1]}<span style="font-size:12px; color:#aaa;">(${HAN_KOR[mH[1]]})</span></div>
+                    <div style="font-size: 24px; font-weight: 500; color: ${HAN_COLOR[mH[0]]}">${mH[0]}<span style="font-size:12px; color:#aaa;">(${HAN_KOR[mH[0]]})</span></div>
+                    <div style="font-size: 24px; font-weight: 500; color: ${HAN_COLOR[mH[1]]}; margin-top: 5px;">${mH[1]}<span style="font-size:12px; color:#aaa;">(${HAN_KOR[mH[1]]})</span></div>
                 </div>
                 <div style="border: 1px solid #444; padding: 15px; border-radius: 5px;">
                     <div style="font-size: 12px; color: #888; margin-bottom: 10px;">년주(조상/초년)</div>
-                    <div style="font-size: 24px; font-weight: 900; color: ${HAN_COLOR[yH[0]]}">${yH[0]}<span style="font-size:12px; color:#aaa;">(${HAN_KOR[yH[0]]})</span></div>
-                    <div style="font-size: 24px; font-weight: 900; color: ${HAN_COLOR[yH[1]]}; margin-top: 5px;">${yH[1]}<span style="font-size:12px; color:#aaa;">(${HAN_KOR[yH[1]]})</span></div>
+                    <div style="font-size: 24px; font-weight: 500; color: ${HAN_COLOR[yH[0]]}">${yH[0]}<span style="font-size:12px; color:#aaa;">(${HAN_KOR[yH[0]]})</span></div>
+                    <div style="font-size: 24px; font-weight: 500; color: ${HAN_COLOR[yH[1]]}; margin-top: 5px;">${yH[1]}<span style="font-size:12px; color:#aaa;">(${HAN_KOR[yH[1]]})</span></div>
                 </div>
             </div>
         </div>
@@ -387,7 +387,7 @@ function buildChapter10_Full(data) {
         
         html += `
         <div style="margin-bottom: 25px; padding: 25px; background: ${isCurrent ? 'rgba(199, 167, 106, 0.05)' : '#0a0a0a'}; border-left: 4px solid ${isCurrent ? 'var(--gold)' : '#333'}; border-radius: 5px; border-top: 1px solid #1a1a1a;">
-            <p style="color: ${isCurrent ? 'var(--gold)' : '#fff'}; font-weight: 900; margin-bottom: 10px; font-size: 18px;">
+            <p style="color: ${isCurrent ? 'var(--gold)' : '#fff'}; font-weight: 500; margin-bottom: 10px; font-size: 18px;">
                 ${dy.age}세 ~ ${dy.age+9}세 : [${dy.gan}${dy.zi} 대운] ${currentTag}
             </p>
             <p style="margin: 0; color: #888; font-size: 13px; margin-bottom: 15px;">유입 에너지: ${dy.sip.replace(' / ', ', ')} | 우주적 상태: 12운성 ${dy.unsung}</p>
@@ -498,7 +498,7 @@ function buildChapterHealth_Full(data) {
         <div style="background: #1a1a1a; padding: 25px; border-radius: 15px; border: 1px solid #333; margin: 20px 0;">
             <div style="text-align: center; margin-bottom: 20px;">
                 <span style="font-size: 14px; color: #888;">종합 건강 지수</span><br>
-                <span style="font-size: 42px; color: ${score < 50 ? '#e74c3c' : 'var(--gold)'}; font-weight: 900;">${score}점</span><br>
+                <span style="font-size: 42px; color: ${score < 50 ? '#e74c3c' : 'var(--gold)'}; font-weight: 500;">${score}점</span><br>
                 <span style="color: #aaa; font-size: 13px;">상태: ${status}</span>
             </div>
             <p class="ch-text" style="font-size: 14.5px; line-height: 1.8; color: #ddd;">${remedy}</p>
