@@ -2771,19 +2771,18 @@ function runAnalysis() {
         let wxHtml = '<div class="wuxing-circles">';
         wxData.forEach(w => {
             const col = WX_COLORS[w.key] || { fill: '#555', wave: '#444' };
-            // 웨이브: 200% 너비 SVG를 CSS translateX로 흘림 → seamless
+            // 웨이브: viewBox 전체(0~100)를 쓰고, waterY 기준으로 물결 그림
+            // 원 자체가 overflow:hidden이라 자동으로 클리핑됨
             const fillH = Math.max(w.val, 0);
-            const waterY = 100 - fillH;
-            const amp = 3; // 매우 잔잔
-            // 4주기 path (각 주기=25) → 200% 너비로 1주기 이동 = seamless
-            const mkWave = (dy, a) => {
-                let d = `M0,${waterY+dy}`;
+            const waterY = 100 - fillH; // 물 시작 Y (SVG 좌표, 위=0)
+            const amp = 3;
+            // 200단위 너비 path → translateX(-100) 이동 = 정확히 seamless
+            const mkPath = (offsetY, a) => {
+                // 8주기 × 25단위 = 200 너비
+                let d = `M0,${waterY+offsetY}`;
                 for(let i=0;i<8;i++){
-                    const x0=i*25, x1=x0+12.5, x2=x0+25;
-                    const y1 = (i%2===0) ? waterY+dy-a : waterY+dy+a;
-                    d += ` C${x0+6},${y1} ${x1-6},${y1} ${x1},${waterY+dy}`;
-                    const y2 = (i%2===0) ? waterY+dy+a : waterY+dy-a;
-                    d += ` C${x1+6},${y2} ${x2-6},${y2} ${x2},${waterY+dy}`;
+                    const x=i*25;
+                    d += ` C${x+6},${waterY+offsetY-(i%2===0?a:-a)} ${x+19},${waterY+offsetY-(i%2===0?a:-a)} ${x+25},${waterY+offsetY}`;
                 }
                 d += ` L200,100 L0,100 Z`;
                 return d;
@@ -2791,19 +2790,21 @@ function runAnalysis() {
             wxHtml += `
                 <div class="w-circle-wrap">
                     <div class="liq-container">
-                        <!-- 배경 채우기 -->
-                        <div style="position:absolute;bottom:0;left:0;width:100%;height:${fillH}%;background:${col.fill};z-index:0;"></div>
-                        <!-- 웨이브 레이어 (200% 너비 SVG → CSS animation으로 흘림) -->
-                        <div style="position:absolute;bottom:0;left:0;width:200%;height:100%;z-index:1;animation:waveScroll1 6s linear infinite;">
-                            <svg viewBox="0 0 200 100" preserveAspectRatio="none" style="width:100%;height:100%;">
-                                <path d="${mkWave(0, amp)}" fill="${col.fill}" opacity="0.95"/>
-                            </svg>
-                        </div>
-                        <div style="position:absolute;bottom:0;left:0;width:200%;height:100%;z-index:2;animation:waveScroll2 9s linear infinite;opacity:0.45;">
-                            <svg viewBox="0 0 200 100" preserveAspectRatio="none" style="width:100%;height:100%;">
-                                <path d="${mkWave(2, amp-1)}" fill="${col.wave}" opacity="1"/>
-                            </svg>
-                        </div>
+                        <svg viewBox="0 0 100 100" preserveAspectRatio="none"
+                             style="position:absolute;inset:0;width:100%;height:100%;z-index:1;overflow:visible;">
+                            <!-- 물 본체 (웨이브 아래 채우기) -->
+                            <rect x="0" y="${waterY}" width="100" height="${fillH}" fill="${col.fill}" opacity="0.7"/>
+                            <!-- 웨이브 1: 200 너비 path를 translateX로 흘림 -->
+                            <g style="animation:waveScroll1 6s linear infinite">
+                                <path d="${mkPath(0, amp)}" fill="${col.fill}" opacity="0.95"
+                                      transform="translate(-100,0)"/>
+                            </g>
+                            <!-- 웨이브 2: 반대 방향 -->
+                            <g style="animation:waveScroll2 9s linear infinite">
+                                <path d="${mkPath(1, amp-1)}" fill="${col.wave}" opacity="0.5"
+                                      transform="translate(0,0)"/>
+                            </g>
+                        </svg>
                         <div class="w-val" style="z-index:10;">${w.val}%</div>
                     </div>
                     <div class="w-label">${w.label}</div>
