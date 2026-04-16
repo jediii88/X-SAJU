@@ -128,7 +128,8 @@
     
     /* === CORE APP LAYOUT === */
     .container {
-        max-width: 600px;
+        width: 100%;
+        max-width: 1200px;
         margin: 0 auto;
         padding-bottom: 50px;
     }
@@ -140,54 +141,63 @@
     }
     /* ======================= */
 
+    
     /* === X-SAJU LUXURY EDITORIAL LAYOUT === */
     #report-container {
-        font-family: 'Noto Sans KR', sans-serif;
-        line-height: 1.8;
-        color: #ddd;
-        max-width: 800px;
+        font-family: 'Noto Serif KR', serif;
+        line-height: 2.0;
+        color: #eee;
+        max-width: 850px;
         margin: 0 auto;
-        padding: 40px 20px;
+        padding: 60px 40px;
+        background: #050505;
+        border: 1px solid #222;
+        box-shadow: 0 0 40px rgba(0,0,0,0.8);
     }
     .report-chapter {
-        margin-bottom: 80px;
+        margin-bottom: 100px;
         position: relative;
+        padding-top: 40px;
+        border-top: 1px solid rgba(199, 167, 106, 0.2);
     }
     .ch-title {
         font-family: 'Noto Serif KR', serif;
-        font-size: 26px;
-        font-weight: 700;
+        font-size: 32px;
+        font-weight: 900;
         color: var(--gold);
-        margin-bottom: 25px;
-        letter-spacing: -0.5px;
-        border-bottom: 1px solid rgba(199, 167, 106, 0.3);
-        padding-bottom: 15px;
+        margin-bottom: 35px;
+        letter-spacing: -1px;
+        line-height: 1.3;
     }
     .ch-text {
-        font-size: 15px;
-        line-height: 1.9;
-        margin-bottom: 20px;
-        color: #ccc;
+        font-family: 'Noto Sans KR', sans-serif;
+        font-size: 16px;
+        line-height: 2.0;
+        margin-bottom: 25px;
+        color: #ddd;
         word-break: keep-all;
+        text-align: justify;
     }
     .axe-advice {
-        background: rgba(199, 167, 106, 0.05);
+        background: linear-gradient(135deg, rgba(199, 167, 106, 0.1) 0%, rgba(0,0,0,0) 100%);
         border-left: 4px solid var(--gold);
-        padding: 25px 30px;
-        margin: 40px 0;
-        font-size: 15px;
-        color: #eee;
-        line-height: 1.8;
-        border-radius: 0 8px 8px 0;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        padding: 30px 40px;
+        margin: 50px 0;
+        font-size: 16px;
+        font-family: 'Noto Serif KR', serif;
+        color: #fff;
+        line-height: 1.9;
+        box-shadow: inset 0 0 20px rgba(199, 167, 106, 0.05);
     }
     .report-intro-luxury {
-        padding: 80px 20px !important;
-        background: radial-gradient(circle at center, rgba(199,167,106,0.1) 0%, transparent 70%);
-        border: 1px solid rgba(199, 167, 106, 0.2) !important;
-        border-radius: 12px;
+        padding: 100px 40px !important;
+        background: radial-gradient(circle at center, rgba(199,167,106,0.15) 0%, #000 80%);
+        border: 1px solid rgba(199, 167, 106, 0.3) !important;
+        border-radius: 0;
+        margin-bottom: 80px;
     }
     /* ======================================= */
+
 </style></head>
 <body>
 
@@ -321,8 +331,8 @@
 <script src="lunar.js"></script>
 <script src="constants.js"></script>
 <script src="calculation_engine.js"></script>
-<script src="saju_database.js"></script>
-<script src="report_engine.js"></script>
+<script src="saju_database_v6.js"></script>
+<script src="report_engine_v6.js"></script>
 
 <script>
 
