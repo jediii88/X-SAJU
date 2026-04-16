@@ -2039,6 +2039,8 @@ function startReport() {
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/lunar-javascript/lunar.js"></script>
+    <!-- KLC: KASI 기준 한국 음양력 변환 (음력 입력 시 사용) -->
+    <script src="klc.min.js"></script>
 <script>
 
 const HELP_DATA = {
@@ -2462,17 +2464,17 @@ function runAnalysis() {
             solarObj = Solar.fromYmdHms(y, m, d, hr, mn, 0);
             lunarObj = solarObj.getLunar();
         } else {
-            let lunarMonth = isLeap ? -m : m;
-            lunarObj = Lunar.fromYmdHms(y, lunarMonth, d, hr, mn, 0);
-            solarObj = lunarObj.getSolar();
-            
-            // 한국 기준(KST) 음력 보정: 음력 1988-01-24 등 한국과 중국의 합삭 편차로 인해 양력이 하루 밀리는 문제 수정
-            // 만세력 라이브러리는 북경시(CST) 기준이므로 한국 표준시로 재보정 (일부 편차일 직접 조정)
-            if (calBase === 'KST') {
-                if (origY === 1988 && origM === 1 && origD === 24) {
-                    solarObj = Solar.fromYmdHms(1988, 3, 12, hr, mn, 0);
-                }
+            // 음력 입력: KLC(KASI 기준)로 음력 → 양력 변환 후 lunar.js에 넣어 팔자 계산
+            const klcInst = new KoreanLunarCalendar();
+            const ok = klcInst.setLunarDate(y, m, d, isLeap);
+            if (!ok) {
+                alert('잘못된 음력 날짜입니다. 다시 확인해주세요.');
+                return;
             }
+            const klcSolar = klcInst.getSolarCalendar();
+            // KLC로 변환된 양력 날짜로 lunar.js 객체 생성
+            solarObj = Solar.fromYmdHms(klcSolar.year, klcSolar.month, klcSolar.day, hr, mn, 0);
+            lunarObj = solarObj.getLunar();
         }
 
         // 2. 경도 보정 (-32분)은 무조건 '양력 시간' 객체를 기준으로 수행
@@ -2483,30 +2485,9 @@ function runAnalysis() {
             lunarObj = solarObj.getLunar();
         }
 
-        // 3. 주인님(Master) 특별 처리 룰
-        // "1988-04-27 양력" 이거나 "1988-01-24 음력" 이거나 "1988-03-12 음력(기존 오류 데이터 대응)"인 경우 무조건 戊辰 乙卯 丙寅 戊子 (1988-03-12 양력 기준) 강제
-        let masterEcObj = null;
-        if ((origY === 1988 && origM === 4 && origD === 27 && isSolar) ||
-            (origY === 1988 && origM === 1 && origD === 24 && !isSolar) ||
-            (origY === 1988 && origM === 3 && origD === 12 && !isSolar)) {
-            let masterHr = hr, masterMn = mn;
-            if (document.getElementById('adj-l').checked && !isUnknown) {
-                const dt2 = new Date(1988, 3 - 1, 12, hr, mn);
-                dt2.setMinutes(dt2.getMinutes() - 32);
-                masterHr = dt2.getHours();
-                masterMn = dt2.getMinutes();
-            }
-            let msObj = Solar.fromYmdHms(1988, 3, 12, masterHr, masterMn, 0);
-            masterEcObj = msObj.getLunar().getEightChar();
-            
-            // 배지 출력을 위해 양력/음력 객체도 마스터 기준으로 덮어씌움
-            solarObj = msObj;
-            lunarObj = Lunar.fromYmdHms(1988, 1, 24, masterHr, masterMn, 0);
-        }
-
         const lunar = lunarObj;
         const solar = solarObj;
-        const ec = masterEcObj ? masterEcObj : lunar.getEightChar();
+        const ec = lunar.getEightChar();
         const pillars = [
             { n: '시주', h: isUnknown ? ['', ''] : ec.getTime() },
             { n: '일주', h: ec.getDay() },
