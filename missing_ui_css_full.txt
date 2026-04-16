@@ -1,0 +1,101 @@
+39:        .brand {
+40-            padding: 20px 0 34px;
+41-            text-align: center;
+42-            font-size: 15px;
+43-            font-weight: 300;
+44-            letter-spacing: 0.35em;
+45-            color: rgba(255,255,255,0.88);
+46-        }
+47-
+48-        .page { display: none; }
+49-        .page.active { display: block; }
+50-
+51-        /* --- 입력 폼 (점신 스타일) --- */
+52-        .input-group {
+53-            margin-bottom: 32px;
+54-        }
+55-        .input-group label {
+56-            display: block;
+57-            font-size: 13px;
+58-            color: #888;
+59-            margin-bottom: 8px;
+60-            font-weight: 400;
+61-        }
+62-        .input-wrapper {
+63-            position: relative;
+64-        }
+65-        .input-wrapper input {
+66-            width: 100%;
+67-            border: none;
+68-            border-bottom: 1px solid #333;
+69-            background: transparent;
+70-            color: var(--text);
+71-            padding: 8px 0;
+72-            font-size: 20px;
+73-            font-weight: 700;
+74-            outline: none;
+75-        }
+76-        .input-wrapper input::placeholder { color: #444; font-weight: 300; }
+77-        
+78-        /* 쭈욱~ 애니메이션 밑줄 */
+79-        .input-wrapper input:focus { border-bottom-color: transparent; }
+80-        .underline {
+81-            position: absolute;
+82-            bottom: 0; left: 0;
+83-            width: 0; height: 2px;
+84-            background-color: #fff;
+85-            transition: width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+86-        }
+87-        .input-wrapper input:focus ~ .underline { width: 100%; }
+88-
+89-        /* 버튼류 (성별, 달력) */
+90-        .btn-group {
+91-            display: flex; gap: 12px; margin-top: 8px;
+92-        }
+93-        .btn-toggle {
+94-            flex: 1; padding: 14px;
+95-            border-radius: 12px; border: none;
+96-            background: #1a1a1a; color: #666;
+97-            font-size: 15px; font-weight: 400;
+98-            cursor: pointer; transition: 0.2s;
+99-        }
+100-        .btn-toggle.active {
+101-            background: #fff; color: #000; font-weight: 700;
+102-        }
+103-
+104-        .toggle-row {
+105-            display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px;
+106-        }
+107-        .toggle {
+108-            display: inline-flex; align-items: center; gap: 7px;
+109-            color: var(--text-dim); font-size: 13px; font-weight: 300; cursor: pointer;
+110-        }
+111-        .toggle input { width: 16px; height: 16px; accent-color: #fff; cursor: pointer; }
+112-
+113-        /* 네비게이션 스티키 탭 */
+114-        .sticky-nav {
+115-            position: sticky;
+116-            top: 0;
+117-            background: rgba(0,0,0,0.85);
+118-            backdrop-filter: blur(8px);
+119-            z-index: 100;
+120-            display: flex;
+121-            overflow-x: auto;
+122-            white-space: nowrap;
+123-            border-bottom: 1px solid #222;
+124-            margin: -28px -18px 24px;
+125-            padding: 0 18px;
+126-        }
+127-        .sticky-nav::-webkit-scrollbar { display: none; }
+128-        .nav-item {
+129-            padding: 16px 14px;
+130-            color: #888;
+131-            font-size: 15px;
+132-            font-weight: 400;
+133-            cursor: pointer;
+134-            position: relative;
+135-        }
+136-        .nav-item.active {
+137-            color: #fff;
+138-            font-weight: 700;
+139-        }

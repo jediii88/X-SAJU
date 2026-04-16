@@ -26,10 +26,21 @@ async function runQA() {
     }
 
     inject(lunarJs);
-    inject(constantsJs);
+    // constants.js and saju_database.js are already embedded in X-SAJU_MASTER.html
+    // Injecting them again causes "already declared" errors with const.
+    // Only inject calc engine and report engine which are NOT in the HTML.
     inject(calcJs);
-    inject(dbJs);
     inject(engineJs);
+    // Expose let-scoped globals to window for QA inspection
+    // (JSDOM does not expose let/const to window, only var does)
+    inject(`
+        // Override showLoading to run synchronously in test environment
+        function showLoading(msg, cb) {
+            try { cb(); } catch(e) { window.__qaError = e.message; }
+        }
+        // Proxy globalSajuData assignment to window
+        Object.defineProperty(window, '__getSajuData', { get: function() { return globalSajuData; } });
+    `);
 
     let results = { A: 'FAIL', B: 'FAIL', C: 'FAIL', D: 'FAIL', E: 'FAIL' };
 
@@ -46,7 +57,9 @@ async function runQA() {
     try {
         // [Test B] Add User
         window.addUserForm();
-        if (window.userCount === 2 && window.document.getElementById('user-form-2')) {
+        // userCount is declared with let inside a script block, not exposed on window in JSDOM
+        // So we check for the DOM element instead
+        if (window.document.getElementById('user-form-2')) {
             results.B = 'PASS';
             console.log("Test B: PASS (Add user success)");
         }
@@ -61,25 +74,28 @@ async function runQA() {
         // Wait for analysis setTimeout
         await new Promise(r => setTimeout(r, 1000));
         
-        if (window.globalSajuDataArray && window.globalSajuDataArray.length > 0) {
-            const res = window.globalSajuDataArray[0];
-            if (res.dayStem === '丙') {
-                results.A = 'PASS';
-                console.log("Test A: PASS (Calculation success)");
-            } else {
-                console.log("Test A: FAIL (Wrong result)", res.dayStem);
-            }
+        // globalSajuData is declared with let, use proxy accessor
+        const res = window.__getSajuData;
+        if (res && res.dayStem === '丙') {
+            results.A = 'PASS';
+            console.log("Test A: PASS (Calculation success)");
+        } else if (res && res.dayStem) {
+            console.log("Test A: FAIL (Wrong dayStem)", res.dayStem);
+        } else {
+            console.log("Test A: FAIL (globalSajuData empty)", window.__qaError || 'no error captured');
         }
     } catch(e) { console.log("Test A Error:", e.message); }
 
     try {
         // [Test C] Report
         if (results.A === 'PASS') {
-            window.generateDeepReport(window.globalSajuDataArray);
+            window.generateDeepReport(window.__getSajuData);
             const content = window.document.getElementById('report-container').innerHTML;
             if (content.length > 100) {
                 results.C = 'PASS';
                 console.log("Test C: PASS (Report success)");
+            } else {
+                console.log("Test C: FAIL (Report content too short)", content.length);
             }
         }
     } catch(e) { console.log("Test C Error:", e.message); }

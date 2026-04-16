@@ -381,7 +381,8 @@ function buildChapter10_Full(data) {
         <p class="ch-text" style="color:#aaa;">대운은 내 인생을 둘러싼 거대한 10년짜리 기상도입니다.</p>`;
     
     // 대운 전체 출력 (183페이지 분량의 체감을 주는 무한 루프)
-    data.daewunList.slice(0, 8).forEach((dy, idx) => {
+    const daewunList = data.daewunList || [];
+    daewunList.slice(0, 8).forEach((dy, idx) => {
         let isCurrent = (new Date().getFullYear() - 1988 + 1 >= dy.age) && (new Date().getFullYear() - 1988 + 1 < dy.age + 10);
         let currentTag = isCurrent ? '<span style="background:var(--gold); color:#000; padding:2px 8px; font-size:10px; border-radius:10px; margin-left:10px;">현재 진행 중인 대운</span>' : '';
         
@@ -399,7 +400,8 @@ function buildChapter10_Full(data) {
         <p class="ch-text" style="color:#aaa;">세운은 올해 당장 내 눈앞에 떨어지는 현실적인 사건 사고를 의미합니다.</p>`;
         
     // 세운 출력
-    data.sewunList.forEach((sy, idx) => {
+    const sewunList = data.sewunList || [];
+    sewunList.forEach((sy, idx) => {
         let isThisYear = sy.year === new Date().getFullYear();
         let yt = isThisYear ? 'background: rgba(199,167,106,0.1); border: 1px solid var(--gold);' : 'background: #0a0a0a; border: 1px solid #222;';
         

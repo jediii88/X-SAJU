@@ -1825,7 +1825,7 @@ function addUserForm() {
     }
     userCount++;
     
-    const container = document.getElementById('step-1');
+    const container = document.getElementById('input-container');
     const newForm = document.createElement('div');
     newForm.className = 'input-group';
     newForm.id = 'user-form-' + userCount;
@@ -1855,12 +1855,7 @@ function addUserForm() {
     `;
     
     // 버튼 앞에 삽입
-    const addBtn = document.querySelector('button[onclick="addUserForm()"]');
-    if (addBtn && container.contains(addBtn)) {
-        container.insertBefore(newForm, addBtn);
-    } else {
-        container.appendChild(newForm);
-    }
+    container.insertBefore(newForm, document.querySelector('button[onclick="addUserForm()"]'));
     
     updateTierUI();
 }
