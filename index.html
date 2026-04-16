@@ -2774,12 +2774,14 @@ function runAnalysis() {
         let wxHtml = '<div class="wuxing-circles">';
         wxData.forEach(w => {
             const col = WX_COLORS[w.key] || { fill: '#555', wave: '#444' };
-            // 웨이브 SVG: SVG animateTransform으로 부드럽게 출렁임
+            // 웨이브 SVG: 잔잔하고 끊김없는 루프
+            // path 1주기 = 50단위, from=0 to=50 으로 정확히 맞춤
             const fillH = Math.max(w.val, 0);
             const waterY = 100 - fillH;
-            const amp = 9;
-            const wp1 = `M-100,${waterY} C-75,${waterY-amp} -50,${waterY+amp} -25,${waterY} C0,${waterY-amp} 25,${waterY+amp} 50,${waterY} C75,${waterY-amp} 100,${waterY+amp} 125,${waterY} C150,${waterY-amp} 175,${waterY+amp} 200,${waterY} L200,100 L-100,100 Z`;
-            const wp2 = `M-100,${waterY+3} C-70,${waterY-amp+5} -40,${waterY+amp-3} -10,${waterY+3} C20,${waterY-amp+5} 50,${waterY+amp-3} 80,${waterY+3} C110,${waterY-amp+5} 140,${waterY+amp-3} 170,${waterY+3} C200,${waterY-amp+5} 230,${waterY+amp-3} 260,${waterY+3} L260,100 L-100,100 Z`;
+            const amp = 4; // 잔잔한 파동
+            // 0~100 구간에 정확히 2주기 (50단위 반복) → to="50,0"으로 seamless loop
+            const wp1 = `M0,${waterY} C12.5,${waterY-amp} 25,${waterY+amp} 37.5,${waterY} C50,${waterY-amp} 62.5,${waterY+amp} 75,${waterY} C87.5,${waterY-amp} 100,${waterY+amp} 112.5,${waterY} C125,${waterY-amp} 137.5,${waterY+amp} 150,${waterY} L150,100 L0,100 Z`;
+            const wp2 = `M0,${waterY+2} C12.5,${waterY-amp+3} 25,${waterY+amp-1} 37.5,${waterY+2} C50,${waterY-amp+3} 62.5,${waterY+amp-1} 75,${waterY+2} C87.5,${waterY-amp+3} 100,${waterY+amp-1} 112.5,${waterY+2} C125,${waterY-amp+3} 137.5,${waterY+amp-1} 150,${waterY+2} L150,100 L0,100 Z`;
             wxHtml += `
                 <div class="w-circle-wrap">
                     <div class="liq-container">
@@ -2787,11 +2789,11 @@ function runAnalysis() {
                              style="position:absolute;inset:0;width:100%;height:100%;z-index:1;">
                             <path d="${wp1}" fill="${col.fill}" opacity="0.92">
                                 <animateTransform attributeName="transform" type="translate"
-                                    from="0,0" to="100,0" dur="2.5s" repeatCount="indefinite"/>
+                                    from="0,0" to="50,0" dur="5s" repeatCount="indefinite"/>
                             </path>
-                            <path d="${wp2}" fill="${col.wave}" opacity="0.55">
+                            <path d="${wp2}" fill="${col.wave}" opacity="0.5">
                                 <animateTransform attributeName="transform" type="translate"
-                                    from="100,0" to="0,0" dur="3.5s" repeatCount="indefinite"/>
+                                    from="50,0" to="0,0" dur="7s" repeatCount="indefinite"/>
                             </path>
                         </svg>
                         <div class="w-val" style="z-index:10;">${w.val}%</div>
