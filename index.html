@@ -2295,18 +2295,31 @@ window.addEventListener('scroll', () => {
 
 
 const ANIMAL_SPRITE = {
-    '子': {kr:'쥐', pos:'0% 0%', size:'400%'}, 
-    '丑': {kr:'소', pos:'33.3% 0%', size:'400%'},
-    '寅': {kr:'호랑이', pos:'66.6% 0%', size:'400%'},
-    '卯': {kr:'토끼', pos:'100% 0%', size:'400%'},
-    '辰': {kr:'용', pos:'0% 50%', size:'400%'},
-    '巳': {kr:'뱀', pos:'33.3% 50%', size:'400%'},
-    '午': {kr:'말', pos:'66.6% 50%', size:'400%'},
-    '未': {kr:'양', pos:'100% 50%', size:'400%'},
-    '申': {kr:'원숭이', pos:'0% 100%', size:'400%'},
-    '酉': {kr:'닭', pos:'33.3% 100%', size:'400%'},
-    '戌': {kr:'개', pos:'66.6% 100%', size:'400%'},
-    '亥': {kr:'돼지', pos:'100% 100%', size:'400%'}
+    '子': {kr:'쥐',     file:'rat'},
+    '丑': {kr:'소',     file:'ox'},
+    '寅': {kr:'호랑이', file:'tiger'},
+    '卯': {kr:'토끼',   file:'rabbit'},
+    '辰': {kr:'용',     file:'dragon'},
+    '巳': {kr:'뱀',     file:'snake'},
+    '午': {kr:'말',     file:'horse'},
+    '未': {kr:'양',     file:'goat'},
+    '申': {kr:'원숭이', file:'monkey'},
+    '酉': {kr:'닭',     file:'rooster'},
+    '戌': {kr:'개',     file:'dog'},
+    '亥': {kr:'돼지',   file:'pig'}
+};
+// 일간(天干) 오행 → 동물 색상 (CSS filter로 흰색 실루엣에 색 입히기)
+const ANIMAL_COLOR = {
+    '甲': {filter:'invert(56%) sepia(60%) saturate(400%) hue-rotate(95deg) brightness(0.9)',  bg:'#1a2e1a', label:'푸른'},
+    '乙': {filter:'invert(56%) sepia(60%) saturate(400%) hue-rotate(95deg) brightness(0.9)',  bg:'#1a2e1a', label:'푸른'},
+    '丙': {filter:'invert(25%) sepia(90%) saturate(600%) hue-rotate(340deg) brightness(1.1)', bg:'#2e1a1a', label:'붉은'},
+    '丁': {filter:'invert(25%) sepia(90%) saturate(600%) hue-rotate(340deg) brightness(1.1)', bg:'#2e1a1a', label:'붉은'},
+    '戊': {filter:'invert(65%) sepia(80%) saturate(500%) hue-rotate(15deg) brightness(0.9)',  bg:'#2e2a10', label:'황금'},
+    '己': {filter:'invert(65%) sepia(80%) saturate(500%) hue-rotate(15deg) brightness(0.9)',  bg:'#2e2a10', label:'황금'},
+    '庚': {filter:'invert(100%) brightness(1.0)',                                               bg:'#2a2a2a', label:'하얀'},
+    '辛': {filter:'invert(100%) brightness(1.0)',                                               bg:'#2a2a2a', label:'하얀'},
+    '壬': {filter:'brightness(0) saturate(100%)',                                               bg:'#d8d8d8', label:'검은'},
+    '癸': {filter:'brightness(0) saturate(100%)',                                               bg:'#d8d8d8', label:'검은'},
 };
 const COLOR_KR_MAP = {
     'wood': '푸른', 'fire': '붉은', 'earth': '황금', 'metal': '하얀', 'water': '검은'
@@ -2564,10 +2577,17 @@ function runAnalysis() {
         
         const circle = document.getElementById('av-circle');
         if(circle) {
-            circle.innerText = ''; // Remove emoji
-            circle.style.backgroundPosition = animalInfo.pos;
-            circle.style.backgroundSize = animalInfo.size;
-            circle.className = 'avatar-circle ' + elType; // Add wuxing color class
+            const colorInfo = ANIMAL_COLOR[dayStem] || ANIMAL_COLOR['丙'];
+            circle.style.background = colorInfo.bg;
+            circle.style.borderRadius = '50%';
+            circle.style.overflow = 'hidden';
+            circle.style.display = 'flex';
+            circle.style.alignItems = 'center';
+            circle.style.justifyContent = 'center';
+            circle.innerHTML = `<img src="zodiac/${animalInfo.file}.png" style="width:82%;height:82%;object-fit:contain;filter:${colorInfo.filter};" alt="${animalInfo.kr}">`;
+            circle.className = 'avatar-circle';
+            // 색상 라벨 업데이트
+            if(descHangul) descHangul.innerText = `${colorInfo.label} ${animalInfo.kr}`;
         }
         
         let lMon = typeof lunar.getMonth === 'function' ? Math.abs(lunar.getMonth()) : 1;
