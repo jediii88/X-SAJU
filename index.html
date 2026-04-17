@@ -2950,8 +2950,10 @@ function runAnalysis() {
             '중화': '기운의 밸런스가 뛰어납니다. 다양한 환경에서 안정적으로 성과를 냅니다.'
         };
         document.getElementById('strength-sub').innerHTML = `<span style="color:var(--text-soft);font-size:12px;">내 기운 ${Math.round(ratio*100)}% &nbsp;·&nbsp; ${strengthAdvice[strength] || ''}</span>`;
-        document.getElementById('gauge-needle').style.transform = `rotate(${rot}deg)`;
-        document.getElementById('gauge-path').style.strokeDashoffset = offset;
+        const needleEl = document.getElementById('gauge-needle');
+        if(needleEl) needleEl.style.transform = `rotate(${rot}deg)`;
+        const gaugePathEl = document.getElementById('gauge-path');
+        if(gaugePathEl) gaugePathEl.style.strokeDashoffset = offset;
 
         const yun = ec.getYun(document.getElementById('gender').value === 'M' ? 1 : 0);
         const yunDirection = document.getElementById('gender').value === 'M' ? '순행' : '역행';
