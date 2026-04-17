@@ -113,10 +113,23 @@
             display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px;
         }
         .toggle {
-            display: inline-flex; align-items: center; gap: 7px;
-            color: var(--text-dim); font-size: 13px; font-weight: 300; cursor: pointer;
+            display: inline-flex; align-items: center; gap: 8px;
+            color: var(--text-soft); font-size: 13px; font-weight: 400; cursor: pointer;
+            user-select: none;
         }
-        .toggle input { width: 16px; height: 16px; accent-color: #fff; cursor: pointer; }
+        .toggle input[type=checkbox] { display: none; }
+        .toggle-switch {
+            width: 36px; height: 20px; background: #333; border-radius: 10px;
+            position: relative; transition: background 0.2s; flex-shrink: 0;
+        }
+        .toggle-switch::after {
+            content: ''; position: absolute; top: 3px; left: 3px;
+            width: 14px; height: 14px; background: #666; border-radius: 50%;
+            transition: all 0.2s;
+        }
+        .toggle input:checked ~ .toggle-switch { background: var(--gold); }
+        .toggle input:checked ~ .toggle-switch::after { left: 19px; background: #000; }
+        .toggle input:checked ~ .toggle-text { color: var(--gold); font-weight: 600; }
 
         /* 네비게이션 스티키 탭 */
         .sticky-nav {
@@ -1848,8 +1861,8 @@ window.generateDeepReport = generateDeepReport;
             </div>
             <div class="sub-preview" id="t-pre"></div>
             <div class="toggle-row">
-                <label class="toggle"><input type="checkbox" id="no-time"> 태어난 시간 모름</label>
-                <label class="toggle"><input type="checkbox" id="adj-l" checked> 경도 보정(-32분)</label>
+                <label class="toggle"><input type="checkbox" id="no-time"><span class="toggle-switch"></span><span class="toggle-text">태어난 시간 모름</span></label>
+                <label class="toggle"><input type="checkbox" id="adj-l" checked><span class="toggle-switch"></span><span class="toggle-text">경도 보정(-32분)</span></label>
             </div>
         </div>
 
