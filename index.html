@@ -2583,9 +2583,10 @@ function runAnalysis() {
             const colorInfo = ANIMAL_COLOR[dayStem] || ANIMAL_COLOR['丙'];
             // flaticon 팔각형 이미지 그대로 사용 (원형 프레임 없음)
             circle.style.cssText = `background:transparent; border:none; box-shadow:none; width:110px; height:110px; margin:0 auto 10px; display:flex; align-items:center; justify-content:center;`;
-            const iljuKey = dayStem + pillars[1].h[1];
-            const iljuEncoded = encodeURIComponent(iljuKey);
-            circle.innerHTML = `<img src="zodiac60/${iljuEncoded}.png" style="width:100%;height:100%;object-fit:contain;display:block;" alt="${animalInfo.kr}">`;
+            const STEM_EN = {"甲":"jia","乙":"yi","丙":"bing","丁":"ding","戊":"wu","己":"ji","庚":"geng","辛":"xin","壬":"ren","癸":"gui"};
+            const BRANCH_EN = {"子":"zi","丑":"chou","寅":"yin","卯":"mao","辰":"chen","巳":"si","午":"wu","未":"wei","申":"shen","酉":"you","戌":"xu","亥":"hai"};
+            const enName = (STEM_EN[dayStem]||'bing') + '_' + (BRANCH_EN[pillars[1].h[1]]||'yin');
+            circle.innerHTML = `<img src="zodiac_en/${enName}.png" style="width:100%;height:100%;object-fit:contain;display:block;" alt="${animalInfo.kr}">`;
             circle.className = 'avatar-circle';
             // 색상 라벨 업데이트
             if(descHangul) descHangul.innerText = `${colorInfo.label} ${animalInfo.kr}`;
