@@ -491,6 +491,9 @@
 
         .bar-item { display: grid; grid-template-columns: 70px 1fr 46px; gap: 12px; align-items: center; }
         .bar-label { font-size: 14px; color: var(--text-soft); font-weight: 400; }
+        .bar-label-wrap { display: flex; flex-direction: column; min-width: 52px; }
+        .bar-label-main { font-size: 13px; color: var(--text); font-weight: 600; line-height: 1.2; }
+        .bar-label-sub { font-size: 10px; color: var(--gold); font-weight: 400; line-height: 1.3; opacity: 0.85; }
         .bar-track { height: 4px; background: rgba(255,255,255,0.08); position: relative; border-radius: 2px; }
         .bar-fill { height: 4px; position: absolute; left: 0; top: 0; border-radius: 2px; }
         .bar-value { text-align: right; font-size: 13px; color: var(--text); font-weight: 400; }
@@ -1923,7 +1926,16 @@ function updateTierUI() {
         
         <!-- 동물 이미지 헤더 프로필 -->
         <div class="avatar-header">
+            <div class="avatar-name" id="av-name">장경현</div>
             <div class="avatar-circle" id="av-circle">🐯</div>
+            <div class="avatar-desc-wrap" style="display:flex; flex-direction:column; align-items:center; margin-bottom:12px;">
+                <div id="av-desc-hanja" style="font-family:'Noto Sans KR', sans-serif; font-weight:300; font-size:26px; line-height:1; margin-bottom:4px; letter-spacing:4px;">丙寅</div>
+                <div id="av-desc-hangul" style="font-size:14px; color:var(--gold); font-weight:400;">붉은 호랑이</div>
+            </div>
+            <div class="avatar-badges" id="av-badges">
+                <!-- 태그 동적 주입 -->
+            </div>
+        </div>
 
         <div class="jeomsin-nav">
             <div class="j-nav-item active" onclick="scrollToSec('sec-manse'); updateNav(this);">사주원국</div>
@@ -1936,26 +1948,14 @@ function updateTierUI() {
             document.querySelectorAll('.j-nav-item').forEach(n => n.classList.remove('active'));
             el.classList.add('active');
         }
-        
 function startReport() {
     showLoading('당신의 운명 데이터를 분석하여\n서사를 구축하고 있습니다...', () => {
         generateDeepReport(globalSajuData);
         go(3);
     });
 }
-
 // generateDeepReport is now imported from report_engine.js
-
 </script>
-            <div class="avatar-name" id="av-name">장경현</div>
-            <div class="avatar-desc-wrap" style="display:flex; flex-direction:column; align-items:center; margin-bottom:12px;">
-                <div id="av-desc-hanja" style="font-family:'Noto Sans KR', sans-serif; font-weight:300; font-size:26px; line-height:1; margin-bottom:4px; letter-spacing:4px;">丙寅</div>
-                <div id="av-desc-hangul" style="font-size:14px; color:var(--gold); font-weight:400;">붉은 호랑이</div>
-            </div>
-            <div class="avatar-badges" id="av-badges">
-                <!-- 태그 동적 주입 -->
-            </div>
-        </div>
 
         <div class="section" id="sec-manse" style="margin-top:0;">
             <div class="section-title"><div class="title-left"><span>만세력 원국</span><span class="help-icon" onclick="openHelp('manse')">?</span></div><span>나의 8글자 사주 원본</span></div>
@@ -2470,7 +2470,10 @@ function percent(count, total) {
 function buildBars(targetId, rows, toneMap) {
     document.getElementById(targetId).innerHTML = rows.map(row => `
         <div class="bar-item">
-            <div class="bar-label">${row.label}</div>
+            <div class="bar-label-wrap">
+                <span class="bar-label-main">${row.labelMain || row.label}</span>
+                ${row.labelSub ? `<span class="bar-label-sub">${row.labelSub}</span>` : ''}
+            </div>
             <div class="bar-track"><div class="bar-fill ${toneMap(row.key)}" style="width:${row.value}%;"></div></div>
             <div class="bar-value">${row.value}%</div>
         </div>
@@ -2856,9 +2859,11 @@ function runAnalysis() {
 
 
         const SIP_LABEL = {
-            비견:'비견(나·동료)', 겁재:'겁재(경쟁자)', 식신:'식신(재능·표현)', 상관:'상관(자유·창의)',
-            편재:'편재(사업·활동재)', 정재:'정재(안정·월급)', 편관:'편관(도전·위기)', 정관:'정관(명예·직업)',
-            편인:'편인(영감·편법)', 정인:'정인(학문·배움)'
+            비견:{main:'비견', sub:'나·동료'}, 겁재:{main:'겁재', sub:'경쟁자'},
+            식신:{main:'식신', sub:'재능·표현'}, 상관:{main:'상관', sub:'자유·창의'},
+            편재:{main:'편재', sub:'사업·활동재'}, 정재:{main:'정재', sub:'안정·월급'},
+            편관:{main:'편관', sub:'도전·위기'}, 정관:{main:'정관', sub:'명예·직업'},
+            편인:{main:'편인', sub:'영감·편법'}, 정인:{main:'정인', sub:'학문·배움'}
         };
         const sipDom = Object.entries(sipCounts).sort((a,b)=>b[1]-a[1]);
         const sipSummaryLines = sipDom.filter(e=>e[1]>0).slice(0,3).map(e=>`<b>${e[0]}</b>`).join(' · ');
@@ -2875,7 +2880,9 @@ function runAnalysis() {
         }
         buildBars('sipseong-bars', Object.keys(sipCounts).map(key => ({
             key,
-            label: SIP_LABEL[key] || key,
+            label: (SIP_LABEL[key]?.main) || key,
+            labelMain: (SIP_LABEL[key]?.main) || key,
+            labelSub: SIP_LABEL[key]?.sub || '',
             value: percent(sipCounts[key], sipTotalWeight)
         })), () => 'bg-earth');
 
