@@ -2584,10 +2584,9 @@ function runAnalysis() {
         const circle = document.getElementById('av-circle');
         if(circle) {
             const colorInfo = ANIMAL_COLOR[dayStem] || ANIMAL_COLOR['丙'];
-            // 일주에서 천간+지지 추출하여 zodiac60 이미지 사용
-            const ilju = dayStem + pillars[1].h[1]; // 일간+일지 예: 丙寅
-            circle.style.cssText = `background:${colorInfo.bg}; border-radius:50%; overflow:hidden; display:flex; align-items:center; justify-content:center; width:110px; height:110px; border:3px solid #c8941c; box-shadow:0 0 0 1px rgba(200,148,28,0.4), inset 0 0 15px rgba(0,0,0,0.8), 0 4px 10px rgba(0,0,0,0.5); margin:0 auto 10px; box-sizing:border-box;`;
-            circle.innerHTML = `<img src="zodiac60/${ilju}.png" style="width:100%;height:100%;object-fit:cover;display:block;" alt="${animalInfo.kr}">`;
+            // flaticon 팔각형 이미지 그대로 사용 (원형 프레임 없음)
+            circle.style.cssText = `background:transparent; border:none; box-shadow:none; width:110px; height:110px; margin:0 auto 10px; display:flex; align-items:center; justify-content:center;`;
+            circle.innerHTML = `<img src="zodiac_flaticon/${animalInfo.file}.png" style="width:100%;height:100%;object-fit:contain;display:block;" alt="${animalInfo.kr}">`;
             circle.className = 'avatar-circle';
             // 색상 라벨 업데이트
             if(descHangul) descHangul.innerText = `${colorInfo.label} ${animalInfo.kr}`;
