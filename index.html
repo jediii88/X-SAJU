@@ -1015,6 +1015,42 @@
     <style>
         .cat-section { display: block !important; margin-bottom: 20px; }
 
+
+        /* 섹션 내 해석 박스 */
+        .section-interp {
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.07);
+        }
+        .inline-interp {
+            padding: 20px;
+            background: rgba(199,167,106,0.05);
+            border-radius: 10px;
+            margin-bottom: 4px;
+        }
+        .ii-label {
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--gold);
+            margin-bottom: 8px;
+        }
+        .ii-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #fff;
+            font-family: 'Noto Serif KR', serif;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+        .ii-text {
+            font-size: 14px;
+            line-height: 1.9;
+            color: #ccc;
+            word-break: keep-all;
+        }
+        .ii-text p { margin-bottom: 12px; }
+        .ii-text b { color: var(--gold); }
+
         /* 분야별 운세 카드 */
         .cat-header { display:flex; align-items:center; gap:10px; margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.08); }
         .cat-icon { font-size:22px; }
@@ -1600,9 +1636,20 @@ function generateDeepReport(data) {
     // ── 각 만세력 섹션 아래에 직접 주입 ──
     injectSectionInterpretations(data);
     
-    // ── 하단 심층 리포트 (대운/세운/월운 + 개운법) ──
+    // ── 하단 심층 리포트: 성격 + 원국 통합 해석 + 대운/세운/월운 ──
     let bottomHtml = '';
     bottomHtml += buildChapterPersonality(data);
+    bottomHtml += buildSectionHeader('원국 종합 해석');
+    bottomHtml += buildChapter1_Basic(data);
+    bottomHtml += buildChapter2_Wuxing(data);
+    bottomHtml += buildChapter3_Sipseong(data);
+    bottomHtml += buildSectionHeader('재물 · 직업 · 애정 · 건강');
+    bottomHtml += buildChapter4_Wealth(data);
+    bottomHtml += buildChapter5_Career(data);
+    bottomHtml += buildChapter6_Love(data);
+    bottomHtml += buildChapter7_Hidden(data);
+    bottomHtml += buildChapter8_Health(data);
+    bottomHtml += buildChapter9_Remedy(data);
     bottomHtml += buildSectionHeader("대운(大運) · 세운(歲運) · 월운 심층 해부");
     bottomHtml += buildDaewunLoop(data);
     bottomHtml += buildSewunLoop(data);
@@ -2584,28 +2631,28 @@ function startReport() {
         <div class="section" id="sec-manse" style="margin-top:0;">
             <div class="section-title"><div class="title-left"><span>만세력 원국</span><span class="help-icon" onclick="openHelp('manse')">?</span></div><span>나의 8글자 사주 원본</span></div>
             <div class="manse-table" id="manse-table"></div>
+            <div id="manse-inline-summary" class="section-interp" style="display:none;"></div>
         </div>
 
-                <div id="manse-inline-summary" style="display:none; margin:0 0 8px 0;"></div>
         <div class="section" id="sec-relation">
             <div class="section-title"><div class="title-left"><span>합 · 충 · 형 · 파 · 해</span><span class="help-icon" onclick="openHelp('relation')">?</span></div><span>글자끼리의 충돌과 결합</span></div>
             <div class="rel-grid" id="relation-grid"></div>
+            <div id="relation-inline-summary" class="section-interp" style="display:none;"></div>
         </div>
 
-        <div id="relation-inline-summary" style="display:none; margin:0 0 8px 0;"></div>
         <div class="section" id="sec-shinsal">
             <div class="section-title"><div class="title-left"><span>신살 · 길성</span><span class="help-icon" onclick="openHelp('shinsal')">?</span></div><span>숨겨진 특수 기운</span></div>
             <div class="pill-grid" id="shinsal-grid"></div>
+            <div id="shinsal-inline-summary" class="section-interp" style="display:none;"></div>
         </div>
 
         <div class="section" id="sec-wuxing">
             <div class="section-title"><div class="title-left"><span>오행 분포</span><span class="help-icon" onclick="openHelp('wuxing')">?</span></div><span>5가지 에너지 비율</span></div>
             <div id="wuxing-summary" style="font-size:12px;color:var(--text-soft);margin-bottom:12px;padding:8px 12px;background:#111;border-radius:8px;border-left:3px solid var(--gold);line-height:1.6;"></div>
             <div class="bar-group" id="wuxing-bars"></div>
+            <div id="wuxing-inline-summary" class="section-interp" style="display:none;"></div>
         </div>
 
-        <div id="shinsal-inline-summary" style="display:none; margin:0 0 8px 0;"></div>
-        <div id="wuxing-inline-summary" style="display:none; margin:0 0 8px 0;"></div>
         <div class="section">
             <div class="section-title"><div class="title-left"><span>십성 분포</span><span class="help-icon" onclick="openHelp('sipseong')">?</span></div><span>사회적 역할과 관계 패턴</span></div>
             <div id="sipseong-summary" style="font-size:12px;color:var(--text-soft);margin-bottom:12px;padding:8px 12px;background:#111;border-radius:8px;border-left:3px solid #8a9bb5;line-height:1.6;"></div>
@@ -2613,7 +2660,6 @@ function startReport() {
         </div>
 
 
-        <div id="sipseong-inline-summary" style="display:none; margin:0 0 8px 0;"></div>
         <div class="section" id="sec-yonghee">
             <div class="section-title"><div class="title-left"><span>나의 수호 기운</span><span class="help-icon" onclick="openHelp('yonghee')">?</span></div><span>나를 돕는 기운 vs 방해하는 기운</span></div>
             <div class="pill-grid" id="yonghee-grid">
@@ -2624,8 +2670,7 @@ function startReport() {
             </div>
         </div>
 
-                <div id="yong-inline-summary" style="display:none; margin:0 0 8px 0;"></div>
-        <div class="section" id="sec-fortune">
+                <div class="section" id="sec-fortune">
             <div class="section-title"><div class="title-left"><span>신강 · 신약</span><span class="help-icon" onclick="openHelp('strength')">?</span></div><span>내 기운의 강약 판정</span></div>
             <div class="gauge-wrap" id="strength-gauge">
                 <div style="position:relative; width:200px; height:110px; display:flex; justify-content:center;">
@@ -2693,7 +2738,6 @@ function startReport() {
 
         <!-- 카테고리별 심층 분석 -->
         <!-- 분야별 운세: 탭 제거, 섹션으로 펼침 (PDF 완전 출력) -->
-        <div id="lifecycle-inline-summary" style="display:none; margin:0 0 8px 0;"></div>
         <div class="section" id="sec-category">
             <div class="section-title"><div class="title-left"><span id="toc-anchor-cat">분야별 심층 운세</span></div><span>건강 · 재물 · 직업 · 애정</span></div>
             <div id="cat-health" class="cat-content cat-section"></div>
