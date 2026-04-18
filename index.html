@@ -1802,81 +1802,123 @@ function buildSectionHeader(title) {
 
 
 function buildChapter1_Basic(data) {
-    let iljuKey = data.dayStem + data.dayBranch;
-    let dbEntry = window.SAJU_DB?.ILJU?.[iljuKey] || {};
-    let title = dbEntry.title || "거대한 대지의 기운";
-    let core = dbEntry.core || "당신은 끊임없이 환경과 충돌하며 자신만의 영역을 개척하는 기질을 타고났습니다.";
-    let weapon = dbEntry.weapon || "위기 상황에서 발휘되는 직관과 돌파력이 당신의 가장 큰 무기입니다.";
-    
-    // 강제 볼륨 확장 (대가급 서사)
-    let extra1 = "명리학에서 日柱(일주)는 단순히 성격을 의미하는 것이 아니라, 당신이 평생 짊어지고 가야 할 영혼의 바코드이자 생존의 무기입니다. 많은 사람들이 사주를 볼 때 겉으로 드러난 화려함(사회적 가면)에 주목하지만, 당신을 진정으로 움직이는 것은 이 일주에 새겨진 내밀한 기질입니다.";
-    let extra2 = "당신의 에너지는 현재 <b>" + data.strengthText + "</b> 상태로 측정되었습니다. 이 힘은 외부의 억압을 견뎌내고 내면의 폭발력을 응축하는 원동력이 됩니다. 남들의 속도에 맞추려 하지 마십시오. 당신의 템포가 곧 정답입니다.";
-    let extra3 = "때로는 이 굽히지 않는 기질 때문에 불필요한 마찰을 겪기도 하지만, 결국 그 마찰열이 당신의 그릇을 한 단계 더 크게 빚어내는 용광로 역할을 하게 됩니다. 환경을 탓하지 마십시오. 당신은 그 환경을 지배하고 재편할 권리가 있습니다.";
-
-    return `
-        <div class="report-chapter">
-            <h3 class="ch-title">Chapter 1. 나의 본질과 영혼의 그릇</h3>
-            <div style="font-size: 18px; font-weight: bold; color: var(--gold); margin-bottom: 15px;">[${title}]</div>
-            <p class="ch-text">${extra1}</p>
-            <p class="ch-text">${core} ${weapon}</p>
-            <p class="ch-text">${extra2}</p>
-            <p class="ch-text">${extra3}</p>
+    const iljuKey = (data.dayStem||'') + (data.dayBranch||'');
+    const dbEntry = window.SAJU_DB?.ILJU?.[iljuKey] || {};
+    const title = dbEntry.title || (iljuKey + ' 일주의 기운');
+    const core = dbEntry.core || '당신은 끊임없이 환경과 충돌하며 자신만의 영역을 개척하는 기질을 타고났습니다.';
+    const weapon = dbEntry.weapon || '위기 상황에서 발휘되는 직관과 돌파력이 당신의 가장 큰 무기입니다.';
+    const stemEl = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'}[data.dayStem] || 'earth';
+    const isStrong = data.strengthText && (data.strengthText.includes('신강') || data.strengthText.includes('강'));
+    const stemMeaning = {wood:'甲·乙목 — 봄을 여는 나무의 기운. 끝없는 성장 본능과 개척 정신이 DNA에 새겨져 있습니다. 멈춰 있으면 내면이 갑갑해지고, 새로운 것을 향해 나아가는 것이 생존 방식입니다.',fire:'丙·丁화 — 세상을 밝히는 불꽃의 기운. 열정, 카리스마, 폭발적 표현력이 핵심 자산입니다. 어디서든 자연스럽게 주목받고 영향력을 발휘합니다.',earth:'戊·己토 — 모든 것을 품는 대지의 기운. 묵직한 포용력과 신뢰감이 당신의 가장 큰 자산입니다. 사람들이 자연스럽게 기대고 의지합니다.',metal:'庚·辛금 — 단련된 금속의 기운. 결단력, 원칙, 완성도가 삶을 이끕니다. 압박이 올수록 더욱 날카로워지는 기질입니다.',water:'壬·癸수 — 깊은 바다의 지혜. 통찰력, 유연성, 무한한 잠재력이 내면에 잠들어 있습니다. 복잡한 상황일수록 본질을 꿰뚫는 감각이 발동합니다.'}[stemEl] || '';
+    const branchMeaning = {'子':'자(子)는 겨울 한복판의 극도 집중과 내면의 힘을 품은 지지입니다.','丑':'축(丑)은 혹독한 겨울을 버텨내는 인내와 저력의 지지입니다.','寅':'인(寅)은 봄을 여는 호랑이의 기운, 개척과 도전의 지지입니다.','卯':'묘(卯)는 봄의 절정, 생명력과 관계 에너지가 폭발하는 지지입니다.','辰':'진(辰)은 용이 잠든 봄의 대지, 거대한 잠재력이 응축된 지지입니다.','巳':'사(巳)는 뱀의 예리함과 여름 폭발력을 품은 변신의 지지입니다.','午':'오(午)는 한여름 정오의 태양, 사회적 성취 에너지가 극에 달한 지지입니다.','未':'미(未)는 여름의 관록, 경험이 지혜로 숙성되는 지지입니다.','申':'신(申)은 가을의 결단, 불필요한 것을 쳐내는 날카로운 지지입니다.','酉':'유(酉)는 가을의 정밀 수확, 완성도와 보상의 지지입니다.','戌':'술(戌)은 가을 황혼의 중후함, 깊은 통찰과 신뢰의 지지입니다.','亥':'해(亥)는 겨울 바다의 심연, 무한한 가능성을 저장한 지지입니다.'}[data.dayBranch] || '';
+    const strengthDesc = isStrong
+        ? '당신의 일간 에너지는 <b>身强(신강)</b> 상태입니다. 기운이 충만한 만큼 남에게 끌려다니기보다 내가 판을 짜야 제 능력이 발현됩니다. 조직 안에 갇혀 있으면 에너지가 억눌려 오히려 역효과가 납니다. 창업, 프리랜서, 전문직처럼 자율권이 보장된 환경에서 폭발적인 능력이 드러납니다.'
+        : '당신의 일간 에너지는 <b>身弱(신약)</b> 상태입니다. 혼자 모든 것을 짊어지기보다 훌륭한 파트너와 팀을 구성할 때 1+1이 10이 되는 시너지를 경험합니다. 좋은 귀인을 곁에 두고 협력하는 것이 인생 전략의 핵심입니다.';
+    return `<div class="report-chapter">
+        <h3 class="ch-title">Chapter 1. 나의 본질과 영혼의 그릇 — 日柱(일주) 완전 해부</h3>
+        <p class="ch-text">명리학에서 日柱(일주)는 단순히 성격을 의미하는 것이 아닙니다. 당신이 평생 짊어지고 가야 할 영혼의 바코드이자 생존의 무기입니다. 年柱(연주)가 가문과 조상의 기운을, 月柱(월주)가 사회적 환경과 부모의 기운을 담고 있다면, 日柱(일주)는 오직 당신 자신만의 본질을 담고 있습니다.</p>
+        <p class="ch-text">많은 사람들이 사주를 볼 때 겉으로 드러난 성취와 재물에만 주목합니다. 하지만 그 성취들을 만들어내는 근본 에너지, 당신을 진정으로 움직이는 내밀한 기질은 이 일주에 새겨져 있습니다. 이것을 모르면 아무리 열심히 살아도 남의 방식으로 사는 것과 다름없습니다.</p>
+        <div style="background:rgba(199,167,106,0.07);border-radius:12px;padding:20px;margin:20px 0;">
+            <div style="font-size:22px;font-weight:800;color:var(--gold);font-family:'Noto Serif KR',serif;margin-bottom:14px;">[${title}]</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;">
+                <div style="padding:12px;background:rgba(0,0,0,0.3);border-radius:8px;"><div style="font-size:10px;color:var(--text-dim);margin-bottom:6px;letter-spacing:1px;">天干(천간) 분석</div><div style="font-size:13px;color:#ddd;line-height:1.75;">${stemMeaning}</div></div>
+                <div style="padding:12px;background:rgba(0,0,0,0.3);border-radius:8px;"><div style="font-size:10px;color:var(--text-dim);margin-bottom:6px;letter-spacing:1px;">地支(지지) 분석</div><div style="font-size:13px;color:#ddd;line-height:1.75;">${branchMeaning}</div></div>
+            </div>
+            <p style="font-size:14.5px;color:#ddd;line-height:1.9;margin:0;">${core}</p>
         </div>
-    `;
+        <p class="ch-text"><b style="color:var(--gold);">[핵심 무기]</b> ${weapon}</p>
+        <p class="ch-text">${strengthDesc}</p>
+        <p class="ch-text">때로는 이 기질 때문에 불필요한 마찰을 겪기도 합니다. 하지만 그 마찰열이 당신의 그릇을 한 단계 더 크게 빚어내는 용광로 역할을 합니다. 환경을 탓하지 마십시오. 당신은 그 환경을 이해하고, 재편하고, 지배할 수 있는 기질을 가지고 태어났습니다.</p>
+    </div>`;
 }
 
 function buildChapter2_Wuxing(data) {
-    let html = `<div class="report-chapter"><h3 class="ch-title">Chapter 2. 오행의 세력과 절대적 무기</h3>`;
-    
-    let maxWuxing = 'earth';
-    if(data.wuxing && Object.keys(data.wuxing).length > 0) {
-        maxWuxing = Object.keys(data.wuxing).reduce((a, b) => data.wuxing[a] > data.wuxing[b] ? a : b);
+    const wuxing = data.wuxing || {};
+    const OHKR2 = {wood:'목(木)',fire:'화(火)',earth:'토(土)',metal:'금(金)',water:'수(水)'};
+    let maxW = 'earth', minW = 'water';
+    if(Object.keys(wuxing).length > 0) {
+        maxW = Object.keys(wuxing).reduce((a,b) => wuxing[a]>wuxing[b]?a:b);
+        minW = Object.keys(wuxing).reduce((a,b) => wuxing[a]<wuxing[b]?a:b);
     }
-    let excessText = window.SAJU_DB?.WUXING_EXCESS?.[maxWuxing] || "기운이 한쪽으로 강하게 쏠려 있습니다.";
-    
-    let wuxingKor = {'wood':'목(木)','fire':'화(火)','earth':'토(土)','metal':'금(金)','water':'수(水)'}[maxWuxing] || maxWuxing;
-    
-    let extra1 = "사람들은 오행(목화토금수)이 골고루 섞여 있는 '中和(중화)'된 사주를 좋은 사주라고 말합니다. 평범하게 남들처럼 직장 다니며 큰 굴곡 없이 살기엔 중화가 최고일 수 있습니다. 하지만 한 시대를 풍미하고 자신만의 확고한 제국을 건설하는 거물들은 거의 예외 없이 오행이 극단적으로 쏠려 있습니다.";
-    let extra2 = "당신의 사주 원국을 해부해 본 결과, 당신의 절대적인 무기이자 동시에 아킬레스건은 바로 <b>" + wuxingKor + "</b>의 기운입니다. 이 거대한 기운이 당신의 뇌 구조, 판단력, 그리고 인간관계를 80% 이상 지배하고 있습니다.";
-    let extra3 = "이 편중된 에너지를 어떻게 다루느냐가 당신 인생의 스케일을 결정합니다. 이 에너지를 남들처럼 평범하게 억누르려 하면 속병이 나고 맙니다. 차라리 이 기운이 필요한 극한의 환경에 스스로를 던져넣어, 凶器(흉기)를 名劍(명검)으로 바꿔 쥐어야 합니다.";
-
-    html += `
-        <p class="ch-text">${extra1}</p>
-        <p class="ch-text">${extra2}</p>
-        <div style="background: rgba(255,255,255,0.04); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); padding: 20px; border-left: 3px solid var(--gold); margin: 20px 0;">
-            <div style="color: #fff; font-weight: bold; margin-bottom: 10px;">[ ${wuxingKor} 기운 집중 분석 ]</div>
-            <div style="color: #ccc; font-size: 15px; line-height: 1.7;">${excessText}</div>
+    const excessText = window.SAJU_DB?.WUXING_EXCESS?.[maxW] || '기운이 한쪽으로 강하게 쏠려 있습니다.';
+    const maxKr = OHKR2[maxW]||maxW; const minKr = OHKR2[minW]||minW;
+    const excessPer = {wood:'목(木) 기운이 지배적인 당신은 끝없이 성장하고 확장하려는 본능이 강합니다. 멈춰 있으면 내면이 갑갑해집니다. 새로운 프로젝트, 새로운 관계, 새로운 목표를 향해 끊임없이 나아가는 것이 당신의 생존 방식입니다. 이 에너지는 창업가, 개척자, 선도자에게 가장 어울립니다. 단 지속력보다 시작력이 강한 편이므로 마무리를 의식적으로 챙기는 훈련이 필요합니다.',
+        fire:'화(火) 기운이 지배적인 당신은 어디서든 주목받고 영향력을 발휘하는 천부적 재능이 있습니다. 열정이 넘치고 표현력이 폭발적이며 주변 에너지를 끌어올리는 능력이 탁월합니다. 단 이 뜨거운 에너지는 제어하지 않으면 번아웃을 유발하거나 주변과의 충돌로 이어집니다. 냉각 시간을 의도적으로 갖는 것이 지속 가능한 성취의 열쇠입니다.',
+        earth:'토(土) 기운이 지배적인 당신은 묵직한 안정감과 신뢰감이 가장 큰 자산입니다. 사람들이 자연스럽게 의지합니다. 이 중후함이 리더십의 기반이 되며 어떤 환경에서도 흔들리지 않는 중심축이 됩니다. 다만 변화에 대한 저항이 강해 새로운 기회를 놓치는 경우가 생깁니다. 의도적인 변화 수용이 필요합니다.',
+        metal:'금(金) 기운이 지배적인 당신은 불필요한 것을 과감히 쳐내는 결단력이 탁월합니다. 원칙과 기준이 명확하여 어떤 압박에도 흔들리지 않습니다. 이 냉철함이 전문성과 결합할 때 분야 최고 권위자가 됩니다. 단 감정 표현이 부족하여 가까운 사람들과의 관계에서 오해를 받을 수 있습니다.',
+        water:'수(水) 기운이 지배적인 당신은 깊은 통찰력과 유연성을 가지고 있습니다. 복잡한 상황을 꿰뚫어보고 남들이 보지 못하는 본질을 파악합니다. 전략가, 분석가, 기획자로서의 천재적 능력으로 발현됩니다. 단 결정을 미루고 지나치게 분석하는 경향이 기회를 놓치게 만들기도 합니다.'
+    }[maxW] || '';
+    const lackDesc = {wood:'목(木) 기운이 부족합니다. 새로운 도전에 대한 두려움이 잠재됩니다. 의도적으로 새로운 것에 뛰어드는 경험 확장이 잠재된 능력을 깨웁니다.',
+        fire:'화(火) 기운이 부족합니다. 열정과 표현력이 내면으로 향하는 경향이 있습니다. 생각과 감정을 세상에 드러내는 연습이 잠재 능력을 깨우는 열쇠입니다.',
+        earth:'토(土) 기운이 부족합니다. 안정감보다 변화를 선호하는 경향이 있습니다. 한 곳에서 꾸준히 성장하는 것이 가장 큰 도전이자 기회입니다.',
+        metal:'금(金) 기운이 부족합니다. 결단을 내리고 마무리하는 것이 어렵습니다. 시작한 일을 끝맺고 불필요한 것을 버리는 용기가 인생을 도약시킵니다.',
+        water:'수(水) 기운이 부족합니다. 행동이 판단보다 앞서는 경향이 있습니다. 결정 전 충분히 생각하고 전략을 세우는 습관이 실수를 줄이고 성과를 극대화합니다.'
+    }[minW] || '';
+    const balanceRows = Object.entries(wuxing).sort((a,b)=>b[1]-a[1]).map(([k,v]) => {
+        const pct = Math.round(v); const isMax = k===maxW; const isMin = k===minW;
+        const col = isMax ? 'var(--gold)' : isMin ? '#666' : '#aaa';
+        const ohChar = {wood:'木',fire:'火',earth:'土',metal:'金',water:'水'}[k]||k;
+        return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;"><div style="width:44px;text-align:right;font-size:13px;color:${col};">${ohChar} ${OHKR2[k]}</div><div style="flex:1;background:rgba(255,255,255,0.07);border-radius:4px;height:8px;overflow:hidden;"><div style="width:${Math.min(pct,100)}%;height:100%;background:${col};border-radius:4px;"></div></div><div style="width:36px;font-size:13px;color:${col};">${pct}%</div></div>`;
+    }).join('');
+    return `<div class="report-chapter">
+        <h3 class="ch-title">Chapter 2. 五行(오행)의 세력 — 절대적 무기와 아킬레스건</h3>
+        <p class="ch-text">사람들은 오행(목화토금수)이 골고루 섞인 中和(중화)된 사주를 좋은 사주라고 말합니다. 평범하게 큰 굴곡 없이 살기엔 중화가 최고일 수 있습니다. 하지만 한 시대를 풍미하는 사람들은 거의 예외 없이 오행이 극단적으로 쏠려 있습니다. 편중이 클수록 그 에너지가 인생을 더 강렬하게 조각합니다.</p>
+        <div style="background:rgba(255,255,255,0.04);border-radius:12px;padding:18px;margin:20px 0;">
+            <div style="font-size:11px;color:var(--text-dim);margin-bottom:14px;letter-spacing:1px;">오행 에너지 분포</div>
+            ${balanceRows}
         </div>
-        <p class="ch-text">${extra3}</p>
+        <p class="ch-text">당신의 사주를 해부한 결과, 절대적 무기이자 아킬레스건은 <b style="color:var(--gold);">${maxKr}</b>의 기운입니다. 이 기운이 당신의 뇌 구조, 판단 방식, 인간관계 패턴의 80% 이상을 지배합니다.</p>
+        <div style="background:rgba(199,167,106,0.07);border-left:3px solid var(--gold);padding:16px 18px;border-radius:0 8px 8px 0;margin:16px 0;">
+            <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;letter-spacing:1px;">${maxKr} 기운 집중 분석</div>
+            <p style="font-size:14.5px;color:#ddd;line-height:1.9;margin:0 0 12px;">${excessText}</p>
+            <p style="font-size:14px;color:#ccc;line-height:1.85;margin:0;">${excessPer}</p>
         </div>
-    `;
-    return html;
+        <p class="ch-text">반대로 가장 부족한 <b>${minKr}</b> 기운은 당신이 무의식적으로 갈망하는 결핍의 영역입니다. ${lackDesc}</p>
+        <p class="ch-text">이 편중된 에너지를 억누르거나 부끄러워하지 마십시오. 당신의 과제는 이 에너지를 흉기에서 명검으로 전환하는 것입니다. 用神(용신) 기운을 적극 활용하고 忌神(기신) 기운을 경계하는 것이 인생 전략의 핵심입니다.</p>
+    </div>`;
 }
 
 function buildChapter3_Sipseong(data) {
-    let html = `<div class="report-chapter"><h3 class="ch-title">Chapter 3. 사회적 가면과 내면의 권력욕 (십성)</h3>`;
-    let mainSip = "정재";
-    if(data.sipseong && Object.keys(data.sipseong).length > 0) {
-        mainSip = Object.keys(data.sipseong).reduce((a, b) => data.sipseong[a] > data.sipseong[b] ? a : b) || "정재";
-    }
-    let sipText = window.SAJU_DB?.SIPSEONG?.[mainSip] || "사회의 규칙에 순응하기보다 주도적으로 판을 짜는 기질입니다.";
-    
-    // 볼륨 확장
-    let extra1 = "오행이 당신의 '신체(H/W)'라면, 십성(육친)은 당신의 뇌에 깔린 '운영체제(S/W)'입니다. 당신이 사람을 대할 때, 돈을 벌 때, 상사와 부하직원을 대할 때 무의식적으로 튀어나오는 패턴이 바로 이 십성에서 비롯됩니다.";
-    let extra2 = `당신의 무의식을 지배하는 가장 강력한 운영체제는 바로 <b>[${mainSip}]</b>입니다. 이것이 당신의 '사회적 가면(페르소나)'입니다. 남들은 당신의 다양한 모습을 보겠지만, 결정적인 순간에 당신이 선택을 내리는 기준은 오직 이 기질 하나로 수렴됩니다.`;
-    let extra3 = `이 [${mainSip}]의 기질은 양날의 검입니다. 이 능력을 당신의 통제 아래 두고 적재적소에 활용하면 남들이 평생 걸려도 얻지 못할 사회적 성취를 단기간에 쥐어냅니다. 하지만 반대로 이 기질에 질질 끌려다니면, 가장 믿었던 무기에 제 발등이 찍히는 꼴이 됩니다.`;
-
-    html += `
-        <p class="ch-text">${extra1}</p>
-        <p class="ch-text">${extra2}</p>
-        <div style="background: rgba(255,255,255,0.04); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); padding: 20px; border-left: 3px solid var(--gold); margin: 20px 0;">
-            <div style="color: #fff; font-weight: bold; margin-bottom: 10px;">[ ${mainSip} 집중 분석 ]</div>
-            <div style="color: #ccc; font-size: 15px; line-height: 1.7;">${sipText}</div>
+    const sipseong = data.sipseong || {};
+    const sorted = Object.entries(sipseong).sort((a,b)=>b[1]-a[1]);
+    const mainSip = sorted.length>0 ? sorted[0][0] : '정재';
+    const secondSip = sorted.length>1 ? sorted[1][0] : '';
+    const sipText = window.SAJU_DB?.SIPSEONG?.[mainSip] || '주도적으로 판을 짜는 기질입니다.';
+    const total = Math.max(Object.values(sipseong).reduce((a,b)=>a+b,0),1);
+    const sipDB = {
+        '비견':'比肩(비견)이 강한 당신은 독립심과 경쟁심이 강합니다. 남에게 지는 것을 극도로 싫어하며 자기 방식으로 일하는 것을 선호합니다. 동업·파트너십에서 주도권 다툼이 생길 수 있으니 역할 분담을 명확히 해야 합니다. 이 강한 자아는 독립 사업·스포츠·경쟁 치열한 분야에서 폭발적 힘을 발휘합니다.',
+        '겁재':'劫財(겁재)가 강한 당신은 경쟁과 도전이 삶의 동력입니다. 극한 상황에서 진가를 발휘하며 승부욕이 탁월합니다. 재물 관리에서 충동적 결정을 조심하고, 이 강렬한 에너지를 협상·투자·위기 대응의 무기로 활용하십시오.',
+        '식신':'食神(식신)이 강한 당신은 천부적 창의력과 표현력을 가지고 있습니다. 먹고 즐기고 창조하는 것에서 진정한 행복을 느끼며, 이 재능이 돈이 되는 구조를 만들면 최상의 인생이 펼쳐집니다. 요리·예술·교육·엔터테인먼트·창업에서 빛을 발합니다.',
+        '상관':'傷官(상관)이 강한 당신은 기존 틀을 깨는 혁신가입니다. 규칙과 권위에 도전하며 새로운 방식으로 세상을 바라봅니다. 예술·기획·컨설팅·기술혁신 분야에서 폭발적 성과를 냅니다. 조직보다 자율적 환경이 맞습니다.',
+        '편재':'偏財(편재)가 강한 당신은 돈 냄새를 맡는 감각이 탁월합니다. 다양한 수입원을 동시에 운영하는 능력이 있으며 사업 기회 포착이 뛰어납니다. 고정 수입보다 유동적이고 큰 돈의 흐름에서 에너지를 얻습니다.',
+        '정재':'正財(정재)가 강한 당신은 안정적이고 꾸준하게 자산을 쌓아가는 능력이 있습니다. 성실함과 신뢰가 재물의 기반입니다. 부동산·저축·안정적 투자에서 최상의 결과를 냅니다. 화려한 한 방보다 꾸준한 복리가 당신의 재물 공식입니다.',
+        '편관':'偏官(편관)이 강한 당신은 강렬한 승부욕과 강인한 결단력을 가지고 있습니다. 압박이 클수록 더욱 강해지는 기질로 군인·경찰·스포츠·위기관리에 적합합니다. 이 에너지를 사회적으로 인정받는 방향으로 표출하는 것이 핵심입니다.',
+        '정관':'正官(정관)이 강한 당신은 조직과 규칙을 중시하며 사회적 명예와 신뢰를 삶의 핵심 가치로 여깁니다. 공직·대기업·전문직에서 꾸준히 올라가는 안정적 성공 구조입니다. 명예를 지키는 것이 재물과 직결됩니다.',
+        '편인':'偏印(편인)이 강한 당신은 특수 분야의 전문 지식과 직관이 뛰어납니다. 자기만의 방식으로 체득한 지식이 강점이며 독특한 전문성이 경쟁력이 됩니다. 남들이 가지 않는 길에서 독보적 위치를 만들 수 있습니다.',
+        '정인':'正印(정인)이 강한 당신은 학문·교육·문서·귀인의 도움이 삶을 이끌어갑니다. 배움을 멈추지 않으면 나이가 들수록 더욱 빛나는 인생이 펼쳐집니다. 전문 자격증과 공인된 지식이 사회적 신뢰와 재물을 동시에 가져옵니다.'
+    };
+    const sipPersonality = sipDB[mainSip] || sipText;
+    const sipRows = sorted.slice(0,6).map(([k,v]) => {
+        const pct = Math.round(v/total*100); const isMain = k===mainSip;
+        const col = isMain ? 'var(--gold)' : '#777';
+        return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;"><div style="width:52px;text-align:right;font-size:12px;color:${col};">${k}</div><div style="flex:1;background:rgba(255,255,255,0.07);border-radius:4px;height:7px;overflow:hidden;"><div style="width:${pct}%;height:100%;background:${col};border-radius:4px;"></div></div><div style="width:36px;font-size:12px;color:${col};">${pct}%</div></div>`;
+    }).join('');
+    return `<div class="report-chapter">
+        <h3 class="ch-title">Chapter 3. 十星(십성) — 사회적 페르소나와 내면의 욕망</h3>
+        <p class="ch-text">五行(오행)이 당신의 하드웨어라면, 十星(십성)은 당신의 뇌에 깔린 운영체제입니다. 사람을 대할 때, 돈을 벌 때, 상사와 부하를 대할 때 무의식적으로 튀어나오는 패턴이 바로 이 십성에서 비롯됩니다. 당신은 10가지 유형 중 어떤 운영체제로 세상과 상호작용하고 있습니까?</p>
+        <div style="background:rgba(255,255,255,0.04);border-radius:12px;padding:18px;margin:20px 0;">
+            <div style="font-size:11px;color:var(--text-dim);margin-bottom:14px;letter-spacing:1px;">十星(십성) 분포</div>
+            ${sipRows}
         </div>
-        <p class="ch-text">${extra3}</p>
+        <p class="ch-text">당신의 무의식을 지배하는 가장 강력한 운영체제는 <b style="color:var(--gold);">[${mainSip}]</b>입니다. 결정적인 순간에 당신이 선택을 내리는 기준은 오직 이 기질 하나로 수렴됩니다.</p>
+        <div style="background:rgba(199,167,106,0.07);border-left:3px solid var(--gold);padding:16px 18px;border-radius:0 8px 8px 0;margin:16px 0;">
+            <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;letter-spacing:1px;">${mainSip} 심층 분석</div>
+            <p style="font-size:14.5px;color:#ddd;line-height:1.9;margin:0 0 10px;">${sipText}</p>
+            <p style="font-size:14px;color:#ccc;line-height:1.85;margin:0;">${sipPersonality}</p>
         </div>
-    `;
-    return html;
+        ${secondSip ? `<p class="ch-text">두 번째로 강한 기운은 <b>[${secondSip}]</b>입니다. 이 기운은 주력 운영체제가 작동하지 않을 때 보조 시스템으로 발동하며, 당신의 다면적인 모습을 만들어냅니다.</p>` : ''}
+        <p class="ch-text">이 기질을 당신의 통제 아래 두고 적재적소에 활용하면 남들이 평생 걸려도 얻지 못할 성취를 단기간에 쥐어냅니다. 그러나 이 기질에 끌려다니면 가장 믿었던 무기에 제 발등이 찍히는 꼴이 됩니다.</p>
+    </div>`;
 }
 
 function buildChapter4_Wealth(data) {
@@ -2119,29 +2161,44 @@ function buildWolunLoop(data) {
 
 
 function buildChapter5_Career(data) {
-    let mainSip = "정관";
-    if(data.sipseong && Object.keys(data.sipseong).length > 0) {
-        mainSip = Object.keys(data.sipseong).reduce((a, b) => data.sipseong[a] > data.sipseong[b] ? a : b);
-    }
-    
-    let careerCore = "";
-    if(['식신', '상관'].includes(mainSip)) {
-        careerCore = "당신의 사회적 무대는 '창작과 표현'입니다. 남들이 만들어 놓은 시스템 안에서는 부품처럼 쓰이다가 빠르게 소진됩니다. 누군가의 지시를 받기보다는 당신의 아이디어와 목소리가 곧 돈이 되고 권력이 되는 프리랜서, 기획자, 예술가, 또는 자기 사업의 영역에서 압도적인 성취를 이룹니다.";
-    } else if(['편관', '정관'].includes(mainSip)) {
-        careerCore = "조직 생활의 생리를 누구보다 잘 이해하며, 그 안에서 승진과 권력을 쟁취하는 데 천부적인 재능이 있습니다. 무에서 유를 창조하는 맨땅의 헤딩보다는, 이미 갖춰진 거대한 시스템 안에서 자신의 덩치를 키워가며 '완장'을 차는 것이 가장 효율적인 길입니다.";
-    } else if(['편인', '정인'].includes(mainSip)) {
-        careerCore = "당신의 무기는 '지적재산권'과 '문서'입니다. 자격증, 학위, 혹은 남들이 쉽게 범접할 수 없는 특수한 기술력을 바탕으로 컨설턴트, 교육자, 연구자로서 독보적인 입지를 구축합니다. 몸을 쓰기보다 머리를 쓸 때 보상이 10배로 돌아옵니다.";
-    } else {
-        careerCore = "남 밑에 있지 못하고 내 구역을 지켜내려는 야생성이 강합니다. 독고다이 기질이 강해 치열한 경쟁이 있는 영업, 스포츠, 독립적인 프로젝트 팀장 등에서 최고의 퍼포먼스를 냅니다.";
-    }
-
+    const sipseong = data.sipseong || {};
+    const gwanC = (sipseong['정관']||0)+(sipseong['편관']||0);
+    const sikC = (sipseong['식신']||0)+(sipseong['상관']||0);
+    const inC = (sipseong['정인']||0)+(sipseong['편인']||0);
+    const jaeC = (sipseong['정재']||0)+(sipseong['편재']||0);
+    const total = Math.max(Object.values(sipseong).reduce((a,b)=>a+b,0),1);
+    const careerType = gwanC/total>0.2?'officer':sikC/total>0.2?'creator':inC/total>0.2?'expert':'independent';
+    const careerDB = {
+        officer:{label:'관리형 — 조직과 명예', desc:'官星(관성)이 강한 당신은 조직 생활의 생리를 본능적으로 이해합니다. 규칙과 위계, 책임과 권한이 명확한 환경에서 두각을 드러내며 승진과 사회적 지위를 꾸준히 쌓아올리는 것이 최적 경로입니다. 공직·대기업·금융·법조계·공기업에서 탁월한 성과를 냅니다. 이 기질을 가진 사람이 인정받는 조직에 들어가면 지속적으로 올라갑니다.', jobs:'공무원·대기업 임원·금융·법조·의료·경찰·군인'},
+        creator:{label:'창조형 — 재능과 표현', desc:'食傷(식상)이 강한 당신의 무대는 창작과 표현입니다. 남이 설계한 시스템 안에서는 부품처럼 쓰이다 소진됩니다. 당신의 아이디어와 목소리가 곧 돈이 되는 구조 — 프리랜서·기획자·크리에이터·교육자·강사·예술가·개발자 — 여기서 폭발적 성취를 이룹니다.', jobs:'크리에이터·강사·작가·디자이너·마케터·기획자·개발자'},
+        expert:{label:'전문가형 — 지식과 자격', desc:'印星(인성)이 강한 당신의 경쟁력은 지식과 자격증입니다. 남들이 쉽게 따라올 수 없는 전문성이 평생 자산입니다. 의사·변호사·회계사·컨설턴트·연구자·교수 등 전문직에서 독보적 권위를 쌓을 수 있습니다. 배움을 멈추지 않는 한 나이가 들수록 더욱 강해집니다.', jobs:'의사·변호사·회계사·컨설턴트·연구원·교수·약사'},
+        independent:{label:'독립형 — 자율과 경쟁', desc:'독립적 기운이 강한 당신은 남 밑에 있으면 에너지가 억눌립니다. 내 영역을 스스로 개척하는 독립 사업·영업·스포츠·투자 등 치열한 경쟁 구도에서 진가를 발휘합니다. 자율권이 100% 보장된 환경에서만 진짜 능력이 폭발합니다.', jobs:'사업가·영업·스포츠·부동산·트레이더·자영업'}
+    };
+    const cd = careerDB[careerType];
+    const wealthLink = jaeC/total>0.25
+        ? '재성(財星)이 강해 돈을 끌어당기는 본능이 탁월합니다. 월급보다 사업소득·투자소득이 더 잘 맞는 구조입니다.'
+        : jaeC===0
+        ? '재성이 없는 구조입니다. 돈을 직접 쫓기보다 명예·전문성·브랜드 가치를 올릴 때 돈이 그림자처럼 따라옵니다.'
+        : '재성이 적정 수준입니다. 안정적 수입 기반 위에 전문성을 쌓는 것이 재물 성장의 핵심입니다.';
     return `<div class="report-chapter">
-        <h3 class="ch-title">Chapter 5. 최적의 직업과 사회적 권력</h3>
-        <p class="ch-text">직업은 단순히 돈을 버는 수단이 아닙니다. 사주 명리학에서 '직업운'은 내 에너지를 가장 안정적으로, 그리고 가장 파괴적으로 발산할 수 있는 '전쟁터의 종류'를 의미합니다. 물고기 사주를 타고났으면 바다로 가야지 산으로 올라가면 안 됩니다.</p>
-        <p class="ch-text">${careerCore}</p>
-        <div class="axe-advice" style="margin-top: 15px; border-left-color: #3f51b5;">
-            "내 권한이 100% 보장되는가?" 이것이 당신이 직업을 선택할 때 최우선으로 고려해야 단 하나의 질문입니다.
+        <h3 class="ch-title">Chapter 5. 직업운 — 나만의 무대를 찾아라</h3>
+        <p class="ch-text">사주에서 직업운은 단순히 어떤 직종이 잘 맞나를 말하는 것이 아닙니다. 어떤 환경에서 내 능력이 최대치로 발현되는가를 파악하는 것입니다. 같은 능력을 가졌어도 맞지 않는 환경에 있으면 절반도 발휘하지 못합니다.</p>
+        <div style="background:rgba(199,167,106,0.07);border-radius:12px;padding:20px;margin:20px 0;">
+            <div style="font-size:11px;color:var(--text-dim);margin-bottom:10px;letter-spacing:1px;">직업 성향 분석 결과</div>
+            <div style="font-size:16px;font-weight:700;color:var(--gold);margin-bottom:12px;">${cd.label}</div>
+            <p style="font-size:14.5px;color:#ddd;line-height:1.9;margin:0;">${cd.desc}</p>
         </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0;">
+            <div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:14px;">
+                <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;letter-spacing:1px;">최적 직업군</div>
+                <div style="font-size:13px;color:#ddd;line-height:1.8;">${cd.jobs}</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:14px;">
+                <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;letter-spacing:1px;">재물과의 연결</div>
+                <div style="font-size:13px;color:#ddd;line-height:1.8;">${wealthLink}</div>
+            </div>
+        </div>
+        <p class="ch-text">직업 선택의 핵심 기준은 하나입니다. "내 권한이 100% 보장되는가?" 이 질문에 Yes가 나오는 자리에서만 당신의 진짜 능력이 폭발합니다. 환경이 당신을 만드는 것이 아니라 당신이 환경을 선택하는 것입니다.</p>
     </div>`;
 }
 
@@ -2278,27 +2335,55 @@ function buildChapter8_Health(data) {
 }
 
 function buildChapter9_Remedy(data) {
-    let ds = data.dayStem;
-    let color = "블랙과 네이비";
-    let dir = "북쪽";
-    let num = "1, 6";
-    if (['갑', '을', '병', '정'].includes(ds)) {
-        color = "화이트와 실버 메탈릭"; dir = "서쪽"; num = "4, 9";
-    } else if (['무', '기'].includes(ds)) {
-        color = "레드와 강렬한 오렌지"; dir = "남쪽"; num = "2, 7";
-    } else {
-        color = "차분한 옐로우와 베이지"; dir = "중앙"; num = "5, 10";
-    }
+    const stemEl = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'}[data.dayStem] || 'earth';
+    const yong = data.yong || stemEl;
+    const ohKr = {wood:'목(木)',fire:'화(火)',earth:'토(土)',metal:'금(金)',water:'수(水)'};
+    const yongKr = ohKr[yong] || ohKr[stemEl];
+    const colorDB = {
+        wood:{good:'초록·청색·청록·연두',bad:'흰색·금색·은색',dir:'동쪽·동남쪽',num:'3, 8',gem:'에메랄드·옥(翠玉)·공작석·녹마노',food:'신맛 음식 — 레몬·식초·매실·키위·녹차',time:'봄(3~5월), 이른 아침 시간대',guien:'수(水) 기운 일간(壬·癸)을 가진 사람'},
+        fire:{good:'빨강·주황·분홍·보라',bad:'검정·짙은 파랑',dir:'남쪽·동남쪽',num:'2, 7',gem:'루비·가넷·레드코랄·레드재스퍼',food:'쓴맛 음식 — 녹차·여주·쑥·아메리카노',time:'여름(6~8월), 오전~정오 시간대',guien:'목(木) 기운 일간(甲·乙)을 가진 사람'},
+        earth:{good:'노랑·황토·베이지·오렌지',bad:'파랑·청록',dir:'중앙·북동·남서',num:'5, 10',gem:'황수정·호박(琥珀)·타이거아이·황철석',food:'단맛 음식 — 꿀·고구마·호박·옥수수·대추',time:'환절기, 오후 시간대',guien:'화(火) 기운 일간(丙·丁)을 가진 사람'},
+        metal:{good:'흰색·금색·은색·회색',bad:'빨강·주황·분홍',dir:'서쪽·북서쪽',num:'4, 9',gem:'백수정·문스톤·다이아몬드·플루오라이트',food:'매운맛 음식 — 생강·마늘·고추·도라지·무',time:'가을(9~11월), 저녁 시간대',guien:'토(土) 기운 일간(戊·己)을 가진 사람'},
+        water:{good:'검정·파랑·감색·보라·남색',bad:'노랑·황토·갈색',dir:'북쪽',num:'1, 6',gem:'흑요석·사파이어·아쿠아마린·청금석',food:'짠맛 음식 — 된장·미역·검은콩·블루베리·흑임자',time:'겨울(12~2월), 밤~새벽 시간대',guien:'금(金) 기운 일간(庚·辛)을 가진 사람'}
+    }[yong] || {good:'흰색',bad:'검정',dir:'서쪽',num:'4, 9',gem:'백수정',food:'매운맛',time:'가을',guien:'토(土) 기운 일간'};
 
     return `<div class="report-chapter">
-        <h3 class="ch-title">Chapter 9. 운명을 비트는 레버리지 (Axe 개운법)</h3>
-        <p class="ch-text">명리학은 정해진 불행을 넋 놓고 기다리라고 있는 학문이 아닙니다. 비가 올 것을 알았으면 우산을 쓰고 나가면 됩니다. 부족한 기운을 채우고 과도한 기운을 빼내는 생활 속의 '액션 플랜'을 처방합니다.</p>
-        <ul style="color: #ccc; line-height: 2; font-size: 15px;">
-            <li><b>행운의 컬러:</b> ${color}. 중요한 계약을 하거나 사람을 만날 때 이 색상의 넥타이, 지갑, 속옷을 활용하십시오. 무의식적인 기운을 보완합니다.</li>
-            <li><b>운이 뚫리는 방향:</b> ${dir}. 책상이나 침대 머리맡을 이 방향으로 두십시오. 일이 안 풀릴 때 이 방향으로 여행을 다녀오는 것도 기운을 씻어내는 방법입니다.</li>
-            <li><b>재물을 부르는 숫자:</b> ${num}. 비밀번호나 계좌번호 등에 의식적으로 배치하십시오.</li>
-            <li><b>행운의 마인드셋:</b> 완벽주의를 70%만 발휘하십시오. 30%의 빈틈이 있어야 돈과 사람이 들어옵니다.</li>
-        </ul>
+        <h3 class="ch-title">Chapter 9. 開運法(개운법) — 운명을 바꾸는 실전 처방</h3>
+        <p class="ch-text">사주는 운명의 지도입니다. 지도가 있다면 그 지형에 맞게 전략을 바꿀 수 있습니다. 用神(용신)인 <b style="color:var(--gold);">${yongKr}</b> 기운을 생활 속에 쌓아가는 것이 당신 인생의 가장 강력한 개운법입니다. 큰 의식이나 특별한 노력이 필요한 것이 아닙니다. 매일의 선택 — 색깔, 방향, 음식, 인연 — 이 쌓이면 운의 흐름이 바뀝니다.</p>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0;">
+            <div style="background:rgba(0,200,83,0.06);border-radius:10px;padding:16px;">
+                <div style="font-size:11px;color:#00C853;margin-bottom:10px;letter-spacing:1px;">✦ 행운의 색상 (적극 활용)</div>
+                <div style="font-size:14px;color:#ddd;line-height:1.7;">${colorDB.good}<br><span style="font-size:12px;color:#888;margin-top:4px;display:block;">옷·인테리어·소품에 의식적으로 사용하십시오</span></div>
+            </div>
+            <div style="background:rgba(231,76,60,0.06);border-radius:10px;padding:16px;">
+                <div style="font-size:11px;color:#e74c3c;margin-bottom:10px;letter-spacing:1px;">✗ 주의 색상 (최소화)</div>
+                <div style="font-size:14px;color:#ddd;line-height:1.7;">${colorDB.bad}<br><span style="font-size:12px;color:#888;margin-top:4px;display:block;">기신(忌神) 기운을 자극하는 색상입니다</span></div>
+            </div>
+            <div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:16px;">
+                <div style="font-size:11px;color:var(--text-dim);margin-bottom:10px;letter-spacing:1px;">행운 방위 · 숫자</div>
+                <div style="font-size:13px;color:#ddd;line-height:1.7;">${colorDB.dir}<br>${colorDB.num}이 포함된 날짜·번호가 당신에게 우호적입니다</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:16px;">
+                <div style="font-size:11px;color:var(--text-dim);margin-bottom:10px;letter-spacing:1px;">행운 보석 · 광물</div>
+                <div style="font-size:13px;color:#ddd;line-height:1.7;">${colorDB.gem}<br><span style="font-size:12px;color:#888;margin-top:4px;display:block;">항상 지니거나 가까이 두는 것이 좋습니다</span></div>
+            </div>
+        </div>
+
+        <div style="background:rgba(199,167,106,0.06);border-radius:10px;padding:16px;margin-bottom:14px;">
+            <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;letter-spacing:1px;">🥗 식이 개운법</div>
+            <p style="font-size:13.5px;color:#ddd;line-height:1.8;margin:0;">${colorDB.food} — 이 맛과 음식이 당신의 用神(용신) 에너지를 보충합니다. 일상의 식단에 의식적으로 포함시키십시오. 忌神(기신) 기운의 음식은 특별히 피할 필요는 없지만, 과다 섭취는 피하는 것이 좋습니다.</p>
+        </div>
+
+        <div style="background:rgba(199,167,106,0.06);border-radius:10px;padding:16px;margin-bottom:14px;">
+            <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;letter-spacing:1px;">⏰ 최적 활동 시간대</div>
+            <p style="font-size:13.5px;color:#ddd;line-height:1.8;margin:0;">${colorDB.time} — 이 시간대에 중요한 결정·계약·창의적 작업을 배치하면 용신 에너지를 최대로 활용할 수 있습니다. 중요한 미팅이나 발표를 이 시간대에 잡으십시오.</p>
+        </div>
+
+        <div style="background:rgba(199,167,106,0.06);border-radius:10px;padding:16px;">
+            <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;letter-spacing:1px;">💑 귀인의 조건</div>
+            <p style="font-size:13.5px;color:#ddd;line-height:1.8;margin:0;">${colorDB.guien}이 당신에게 가장 강력한 귀인 에너지를 줍니다. 이 일간을 가진 사람들과의 협력과 동업은 용신 보충의 가장 빠른 지름길입니다. 주변에 이런 기운을 가진 사람이 있다면 적극적으로 가까이 하십시오.</p>
+        </div>
     </div>`;
 }
 
