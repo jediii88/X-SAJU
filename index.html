@@ -2146,63 +2146,135 @@ function buildChapter5_Career(data) {
 }
 
 function buildChapter6_Love(data) {
-    let iljuKey = data.dayStem + data.dayBranch;
-    let dbEntry = window.SAJU_DB?.ILJU?.[iljuKey] || {};
-    let loveText = dbEntry.love || "당신의 템포를 묵묵히 맞춰주고 지지해 줄 수 있는 안정적인 인연이 닿습니다.";
-    
-    let extra1 = "사주에서 日支(일지)는 당신의 안방이자, 배우자의 자리입니다. 사회적 가면을 벗어던지고 가장 취약한 민낯을 드러냈을 때, 그것을 품어낼 수 있는 인연의 형태가 이 자리에 각인되어 있습니다.";
-    let extra2 = "당신은 매력적이지만 곁을 내어주기까지 상당히 까다로운 기준을 가지고 있습니다. 불타오르는 감정보다는 나와 결이 맞는 사람인지 수없이 테스트하는 과정을 거칩니다.";
+    const iljuKey = (data.dayStem||'') + (data.dayBranch||'');
+    const dbEntry = window.SAJU_DB?.ILJU?.[iljuKey] || {};
+    const loveText = dbEntry.love || "당신의 템포를 묵묵히 맞춰주고 지지해줄 수 있는 안정적인 인연이 닿습니다.";
+    const sipseong = data.sipseong || {};
+    const gwanC = (sipseong['정관']||0) + (sipseong['편관']||0);
+    const inC = (sipseong['정인']||0) + (sipseong['편인']||0);
+    const sipTotal = Math.max(Object.values(sipseong).reduce((a,b)=>a+b,0), 1);
+
+    const loveStyle = gwanC / sipTotal > 0.2
+        ? '官星(관성)이 강한 당신의 연애 스타일은 주도적이고 책임감이 강합니다. 상대방을 이끌고 보호하는 역할을 자연스럽게 맡게 되며, 이 리더십이 상대에게는 든든한 안정감으로 느껴집니다. 다만 이 강한 주도성이 때로는 상대의 자율성을 침해하는 방식으로 표현되기도 합니다. 관계에서 "내가 옳다"는 확신을 잠시 내려놓는 연습이 필요합니다.'
+        : inC / sipTotal > 0.2
+        ? '印星(인성)이 강한 당신은 연애에서 헌신적이고 감성적입니다. 상대방에게 모든 것을 주고 싶은 충동을 느끼며 관계에 깊이 몰입합니다. 그러나 이 헌신이 상대에게 부담이 되거나, 자신이 원하는 방식의 사랑을 강요하는 형태로 변질될 위험이 있습니다. 자기 자신을 먼저 사랑하는 연습이 역설적으로 가장 건강한 사랑을 만들어냅니다.'
+        : '당신의 연애는 독립적이고 자유로운 기운이 지배합니다. 서로의 공간과 자율성을 존중하는 파트너십 형태의 관계에서 가장 편안함을 느낍니다. 상대에게 지나치게 의존하거나 의존당하는 것을 불편해하므로, 각자의 삶을 충실히 살면서 함께하는 형태가 가장 이상적입니다.';
+
+    const meetTiming = '用神(용신) 기운이 강한 해와 월에 인연의 문이 열립니다. 특히 대운의 천간과 지지가 당신의 일주와 합(合)을 이루는 시기에 결정적인 인연이 찾아오는 경우가 많습니다. 기다리는 것보다 그 시기에 사회적 활동 반경을 의도적으로 넓히고, 새로운 모임과 커뮤니티에 적극적으로 참여하는 것이 실질적인 전략입니다.';
 
     return `<div class="report-chapter">
-        <h3 class="ch-title">Chapter 6. 닫힌 문을 여는 열쇠 (이성운과 인연)</h3>
-        <p class="ch-text">${extra1}</p>
-        <p class="ch-text">${extra2}</p>
-        <p class="ch-text" style="font-weight: 600; color: #fff;">[배우자궁 분석]</p>
-        <p class="ch-text">${loveText}</p>
+        <h3 class="ch-title">Chapter 6. 닫힌 문을 여는 열쇠 — 이성운과 인연</h3>
+        <p class="ch-text">사주에서 日支(일지)는 당신의 안방이자 배우자의 자리입니다. 사회적 가면을 벗어던지고 가장 취약한 민낯을 드러냈을 때, 그것을 품어낼 수 있는 인연의 형태가 이 자리에 각인되어 있습니다. 겉으로 드러나는 사교적 면모와 달리, 실제 당신이 원하는 사랑의 방식은 이 일지에 새겨진 기운과 훨씬 가깝습니다.</p>
+        <p class="ch-text">많은 사람들이 사주에서 이성운을 논할 때 단순히 "좋은 사람을 만난다" "이별이 있다"는 수준에서 그칩니다. 그러나 진짜 이성운의 핵심은 내가 어떤 방식으로 사랑하고, 어떤 유형의 사람과 에너지가 맞으며, 내 연애 패턴의 가장 큰 함정이 무엇인지를 파악하는 데 있습니다.</p>
+        <div style="background:rgba(199,167,106,0.07);border-left:3px solid var(--gold);padding:16px 18px;border-radius:0 8px 8px 0;margin:20px 0;">
+            <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;letter-spacing:1px;">日支(일지) 배우자궁 분석</div>
+            <p style="font-size:14.5px;color:#ddd;line-height:1.9;margin:0;">${loveText}</p>
+        </div>
+        <p class="ch-text">${loveStyle}</p>
+        <p class="ch-text">${meetTiming}</p>
+        <div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:18px;margin-top:16px;">
+            <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;letter-spacing:1px;">인연 활성화 전략</div>
+            <p style="font-size:13.5px;color:#bbb;line-height:1.9;margin:0;">당신에게 맞는 사람은 완벽한 사람이 아니라 당신의 에너지를 가장 잘 보완해주는 사람입니다. 당신이 부족한 오행 기운을 일간(日干)으로 가진 상대와 만날 때 가장 강력한 에너지 보완이 이루어집니다. 또한 일지(日支)가 서로 합(合)을 이루는 상대와는 특별한 유대감과 편안함을 느낍니다.</p>
+        </div>
     </div>`;
 }
 
 function buildChapter7_Hidden(data) {
-    let branch = data.dayBranch;
+    const branch = data.dayBranch || '';
+    const allPillars = data.pillars || [];
     let hiddenText = "겉으로 드러난 환경 아래에는 거대한 잠재력이 숨겨져 있습니다.";
     if (window.SAJU_DB?.HIDDEN?.[branch]) {
         hiddenText = window.SAJU_DB.HIDDEN[branch];
     }
-    
-    let extra1 = "사람들은 원국에 드러난 8글자만으로 운명을 논합니다. 그러나 빙산의 일각처럼, 물 밑에 숨겨져 당신을 무의식적으로 조종하는 진짜 본능은 '地藏干(지장간)'에 숨어 있습니다. 지장간은 당신의 비상금이면서 동시에 내면에 억눌린 가장 솔직한 욕망입니다.";
+    const hiddenAll = allPillars.map(p => {
+        const b = p.h ? p.h[1] : '';
+        const hd = window.SAJU_DB?.HIDDEN?.[b] || '';
+        const pillarName = ['연주','월주','일주','시주'][allPillars.indexOf(p)] || '';
+        return b ? `<div style="margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,0.06);"><div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;"><b style="color:var(--gold);font-size:15px;">${b}</b><span style="font-size:11px;color:var(--text-dim);">${pillarName} 지지</span></div><span style="font-size:13.5px;color:#ccc;line-height:1.8;">${hd||'해당 지지의 지장간 정보가 준비 중입니다.'}</span></div>` : '';
+    }).filter(Boolean).join('');
 
     return `<div class="report-chapter">
-        <h3 class="ch-title">Chapter 7. 빙산 아래의 욕망 (지장간 해부)</h3>
-        <p class="ch-text">${extra1}</p>
-        <div style="background: rgba(255,255,255,0.04); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); padding: 20px; border-left: 3px solid var(--gold); margin: 20px 0;">
-            <div style="color: #fff; font-weight: bold; margin-bottom: 10px;">[ 태어난 날(${branch})에 숨겨진 지장간 ]</div>
-            <div style="color: #ccc; font-size: 15px; line-height: 1.7;">${hiddenText}</div>
+        <h3 class="ch-title">Chapter 7. 빙산 아래의 욕망 — 地藏干(지장간) 해부</h3>
+        <p class="ch-text">사람들은 원국에 드러난 8글자만으로 운명을 논합니다. 그러나 빙산의 일각처럼, 수면 아래에 숨겨져 당신을 무의식적으로 조종하는 진짜 본능은 地藏干(지장간)에 있습니다. 지장간은 각 지지(地支) 안에 감춰진 하늘의 기운으로, 평소에는 드러나지 않다가 특정 대운이나 세운의 기운과 만날 때 비로소 발동합니다.</p>
+        <p class="ch-text">특히 일지(日支) — 배우자궁이자 내면의 자아가 자리한 곳 — 의 지장간은 당신이 평생 무의식적으로 추구하는 욕망의 원형(原型)입니다. 표면적인 성격과 완전히 다른 이 내면의 본능을 아는 것이 자기 이해의 가장 깊은 출발점입니다.</p>
+        <div style="background:rgba(255,255,255,0.04);border-left:3px solid var(--gold);padding:18px 20px;border-radius:0 10px 10px 0;margin:20px 0;">
+            <div style="font-size:11px;color:var(--text-dim);margin-bottom:12px;letter-spacing:1px;">日支(일지) ${branch} — 숨겨진 지장간 심층 분석</div>
+            <p style="font-size:14.5px;color:#ddd;line-height:1.9;margin:0;">${hiddenText}</p>
         </div>
-        <p class="ch-text">이 숨겨진 무기는 평소에는 작동하지 않다가 인생의 극적인 위기 상황이나 극한의 결핍 상황에 몰렸을 때 비로소 폭발하며 당신을 구원합니다.</p>
+        ${hiddenAll ? `<div style="background:rgba(255,255,255,0.03);border-radius:10px;padding:18px;margin-top:16px;"><div style="font-size:11px;color:var(--text-dim);margin-bottom:14px;letter-spacing:1px;">원국 전체 지지(地支) 지장간 일람</div>${hiddenAll}</div>` : ''}
+        <p class="ch-text" style="margin-top:16px;">이 숨겨진 기운은 평소에는 작동하지 않습니다. 인생의 극적인 위기나 결핍에 몰렸을 때, 혹은 해당 기운을 가진 대운과 세운이 들어올 때 비로소 폭발하며 당신을 전혀 다른 수준으로 끌어올립니다. 지장간의 발동 시점을 파악하면, 인생의 결정적 전환점이 언제 오는지 미리 알 수 있습니다.</p>
     </div>`;
 }
 
 function buildChapter8_Health(data) {
-    let html = `<div class="report-chapter"><h3 class="ch-title">Chapter 8. 신체 취약점과 마지노선 (건강)</h3>`;
     let maxWuxing = 'earth';
     if(data.wuxing && Object.keys(data.wuxing).length > 0) {
-        maxWuxing = Object.keys(data.wuxing).reduce((a, b) => data.wuxing[a] > data.wuxing[b] ? a : b);
+        maxWuxing = Object.keys(data.wuxing).reduce((a,b) => data.wuxing[a] > data.wuxing[b] ? a : b);
     }
-    
-    let organ = {
-        'wood': '간, 담낭, 신경계',
-        'fire': '심장, 심혈관, 안구',
-        'earth': '위장, 비장, 소화기 계통',
-        'metal': '폐, 대장, 호흡기',
-        'water': '신장, 방광, 호르몬'
-    }[maxWuxing] || '위장';
+    const ohKr = {wood:'목(木)',fire:'화(火)',earth:'토(土)',metal:'금(金)',water:'수(水)'}[maxWuxing] || '토(土)';
+    const organ = {wood:'간(肝)·담낭·신경계',fire:'심장(心)·심혈관·소장',earth:'비장(脾)·위장·소화기',metal:'폐(肺)·대장·호흡기',water:'신장(腎)·방광·호르몬'}[maxWuxing] || '위장·소화기';
+    const emotion = {wood:'분노와 억울함',fire:'과도한 흥분과 불안',earth:'지나친 걱정과 생각',metal:'슬픔과 우울감',water:'두려움과 공포'}[maxWuxing] || '스트레스';
+    const season = {wood:'봄(3~5월), 寅(인)·卯(묘)월',fire:'여름(6~8월), 巳(사)·午(오)월',earth:'환절기, 辰(진)·戌(술)·丑(축)·未(미)월',metal:'가을(9~11월), 申(신)·酉(유)월',water:'겨울(12~2월), 亥(해)·子(자)월'}[maxWuxing] || '환절기';
+    const foodAdvice = {
+        wood:'신맛(레몬, 식초, 매실)을 섭취하고 녹황색 채소를 충분히 드십시오. 브로콜리, 시금치, 깻잎 등 녹색 채소가 간 기능 보호에 탁월합니다. 알코올은 간에 직접 부담을 주므로 최대한 줄이거나 끊는 것이 건강 수명을 결정합니다.',
+        fire:'쓴맛(녹차, 여주, 쑥)을 적당히 즐기고 심장을 진정시키는 산사, 연자육 등을 활용하십시오. 카페인과 에너지드링크는 심박수를 불규칙하게 만들므로 자제하십시오. 혈압을 정기적으로 체크하는 습관이 생명을 지킵니다.',
+        earth:'단맛(천연 과일, 고구마)을 적당히 섭취하고 노란 음식(호박, 옥수수, 생강)이 위장을 보강합니다. 규칙적인 식사 시간이 위장 보호의 핵심입니다. 폭식, 야식, 자극적인 음식이 위장의 가장 큰 적입니다.',
+        metal:'매운맛(생강, 도라지, 무)을 적절히 활용하고 흰 음식(배, 연근, 마)이 폐를 보강합니다. 유산소 운동으로 폐활량을 키우는 것이 중요하며, 미세먼지가 심한 날은 외출 시 반드시 마스크를 착용하십시오.',
+        water:'짠맛(천연소금, 된장, 미역)을 적절히 섭취하고 검은 음식(흑임자, 검은콩, 블루베리)이 신장을 보강합니다. 충분한 수분 섭취(하루 2L)와 규칙적인 수면이 신장 건강의 절대적 기준입니다.'
+    }[maxWuxing] || '균형 잡힌 식단을 유지하십시오.';
+    const exerciseAdvice = {
+        wood:'걷기·조깅·수영 등 규칙적인 유산소 운동을 권장합니다. 과도한 경쟁적 스포츠보다 명상, 요가, 스트레칭으로 신경계를 안정시키는 것이 간 기능 보호에 효과적입니다. 주 3회 30분 이상의 유산소 운동을 목표로 하십시오.',
+        fire:'심박수를 안정시키는 요가·태극권·수영을 권장합니다. 격렬한 운동보다 지속적이고 안정적인 운동이 심혈관 건강에 유리합니다. 운동 전후 혈압과 맥박을 체크하는 습관을 기르십시오.',
+        earth:'규칙적인 걷기 운동이 소화기를 활성화합니다. 식후 30분 가벼운 산책이 위장 건강의 핵심입니다. 앉아있는 시간이 길면 소화 기능이 저하되므로 1시간에 한 번씩 일어나 가볍게 몸을 움직이십시오.',
+        metal:'폐활량을 키우는 수영과 유산소 운동을 권장합니다. 깊은 호흡을 연습하는 복식호흡이 폐 기능 향상에 탁월합니다. 실내보다 맑은 공기 속에서 하는 야외 운동이 더 효과적입니다.',
+        water:'가벼운 스트레칭과 수영으로 신장 기능을 활성화하십시오. 무리한 운동보다 충분한 휴식이 더 중요합니다. 과로와 수면 부족이 신장 에너지를 가장 빠르게 고갈시킵니다.'
+    }[maxWuxing] || '규칙적인 운동을 유지하십시오.';
+    const checkupAdvice = {
+        wood:'간 기능 검사(GOT, GPT), 담낭 초음파, 갑상선 검사를 연 1회 이상 받으십시오.',
+        fire:'심전도, 혈압·콜레스테롤 검사, 심장 초음파를 정기적으로 받으십시오.',
+        earth:'위내시경, 대장내시경, 혈당 검사를 정기적으로 받으십시오. 소화기 이상 신호는 절대 참고 방치하지 마십시오.',
+        metal:'흉부 X선, 폐 기능 검사, 비염·천식 관련 검사를 정기적으로 받으십시오.',
+        water:'신장 기능 검사(크레아티닌, BUN), 호르몬 검사, 방광 초음파를 정기적으로 받으십시오.'
+    }[maxWuxing] || '전반적인 건강 검진을 연 1회 이상 받으십시오.';
 
-    html += `<p class="ch-text">사주 명리학은 결국 에너지(오행)의 분배와 편중을 다루는 학문이며, 이는 한의학의 오장육부와 직결됩니다. 당신의 사주에서 특정 에너지가 극도로 과부하 걸릴 때, 마음의 스트레스는 즉각적으로 해당 장기의 병변으로 나타납니다.</p>`;
-    html += `<p class="ch-text">당신의 원국에서 <b>${maxWuxing}</b>의 기운이 가장 강하게 편중되어 있으므로, 당신 인생의 건강 마지노선은 바로 <b>[${organ}]</b>입니다. 화가 나고 억눌릴 때 이곳부터 타격을 받습니다.</p>`;
-    html += `<div class="axe-advice" style="border-left-color: #d32f2f; margin-top: 15px;">
-        성과를 내기 위해 몸을 연료로 태우지 마십시오. 당신은 멈춰야 할 때 멈추는 데 대단한 용기가 필요한 타입입니다.
-    </div></div>`;
-    return html;
+    return `<div class="report-chapter">
+        <h3 class="ch-title">Chapter 8. 신체 취약점과 마지노선 — 건강운 완전 분석</h3>
+        <p class="ch-text">사주 명리학은 에너지(오행)의 분배와 편중을 다루는 학문이며, 이는 한의학의 오장육부와 직결됩니다. 당신의 사주에서 특정 에너지가 극도로 과부하 걸릴 때, 마음의 스트레스는 즉각적으로 해당 장기의 병변으로 나타납니다. 수천 년의 임상 데이터가 증명하는 이 법칙을 아는 것이 당신 인생에서 가장 강력한 건강 보험입니다.</p>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0;">
+            <div style="background:rgba(231,76,60,0.07);border-radius:10px;padding:16px;">
+                <div style="font-size:11px;color:rgba(255,120,120,0.8);margin-bottom:8px;letter-spacing:1px;">⚠ 평생 주요 취약 장기</div>
+                <div style="font-size:17px;font-weight:700;color:#ff8a80;margin-bottom:6px;">${organ}</div>
+                <div style="font-size:13px;color:#bbb;line-height:1.7;">${ohKr} 기운 과부하 시 가장 먼저 타격받습니다.</div>
+            </div>
+            <div style="background:rgba(255,165,0,0.07);border-radius:10px;padding:16px;">
+                <div style="font-size:11px;color:rgba(255,200,100,0.8);margin-bottom:8px;letter-spacing:1px;">감정 → 신체 연결고리</div>
+                <div style="font-size:17px;font-weight:700;color:#ffcc80;margin-bottom:6px;">${emotion}</div>
+                <div style="font-size:13px;color:#bbb;line-height:1.7;">이 감정이 쌓일 때 해당 장기가 가장 먼저 반응합니다.</div>
+            </div>
+        </div>
+
+        <p class="ch-text">당신의 원국에서 <b>${ohKr}</b>의 기운이 가장 강하게 편중되어 있습니다. 이 기운이 담당하는 장기는 평생 특별히 관리해야 합니다. 특히 <b>${season}</b>에 해당 장기의 이상 신호가 집중적으로 나타나므로, 이 시기를 전후해 정기 검진을 받는 것을 강력히 권장합니다.</p>
+
+        <p class="ch-text">동시에 忌神(기신) 기운이 강해지는 대운과 세운에는 해당 장기의 면역력이 급격히 떨어집니다. 이 시기에는 평소보다 더 세심한 건강 관리가 필요하며, 수면 부족과 과로가 겹칠 경우 큰 병으로 이어지는 경우가 많습니다. 신체 이상 신호를 무시하거나 참는 것은 당신 인생의 가장 비싼 실수가 될 수 있습니다.</p>
+
+        <div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:18px;margin:16px 0;">
+            <div style="font-size:12px;color:var(--gold);margin-bottom:10px;letter-spacing:1px;">🥗 맞춤 식이 처방</div>
+            <p style="font-size:13.5px;color:#ddd;line-height:1.9;margin:0;">${foodAdvice}</p>
+        </div>
+
+        <div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:18px;margin-bottom:16px;">
+            <div style="font-size:12px;color:var(--gold);margin-bottom:10px;letter-spacing:1px;">🏃 맞춤 운동 처방</div>
+            <p style="font-size:13.5px;color:#ddd;line-height:1.9;margin:0;">${exerciseAdvice}</p>
+        </div>
+
+        <div style="background:rgba(231,76,60,0.06);border-radius:10px;padding:18px;">
+            <div style="font-size:12px;color:rgba(255,120,120,0.8);margin-bottom:10px;letter-spacing:1px;">🏥 권장 정기 검진</div>
+            <p style="font-size:13.5px;color:#ddd;line-height:1.9;margin:0;">${checkupAdvice}</p>
+        </div>
+
+        <p class="ch-text" style="margin-top:16px;">성과를 내기 위해 몸을 연료로 태우지 마십시오. 인생이라는 마라톤에서 가장 강력한 무기는 컨디션 관리입니다. 당신은 멈춰야 할 때 멈추는 것에 큰 용기가 필요한 타입입니다. 그 용기를 내는 것이 장기 레이스의 진정한 승자가 되는 첫 번째 조건입니다.</p>
+    </div>`;
 }
 
 function buildChapter9_Remedy(data) {
