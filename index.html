@@ -117,32 +117,54 @@
             border: 1px solid #2a2a2a;
             border-radius: 10px;
             padding: 12px 14px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
+        }
+        .toggle-label {
+            display: flex; align-items: center; gap: 12px; cursor: pointer;
+            user-select: none; margin-bottom: 0;
+        }
+        .toggle-label .t-knob {
+            display: inline-block;
+            width: 50px; height: 28px;
+            background: #333;
+            border-radius: 14px;
+            position: relative;
+            flex-shrink: 0;
+            transition: background 0.25s;
+            border: 2px solid #555;
+        }
+        .toggle-label .t-knob::after {
+            content: '';
+            position: absolute;
+            top: 3px; left: 3px;
+            width: 18px; height: 18px;
+            background: #888;
+            border-radius: 50%;
+            transition: all 0.25s;
+        }
+        .toggle-label .t-text {
+            font-size: 14px; font-weight: 500; color: #ccc;
+        }
+        .toggle-label.on .t-knob {
+            background: var(--gold);
+            border-color: var(--gold);
+        }
+        .toggle-label.on .t-knob::after {
+            left: 25px;
+            background: #000;
+        }
+        .toggle-label.on .t-text {
+            color: var(--gold);
+            font-weight: 700;
         }
         .toggle-desc {
-            font-size: 12px; color: var(--text-dim); line-height: 1.6; margin-left: 56px;
+            font-size: 12px; color: var(--text-dim); line-height: 1.6;
+            margin-top: 7px; margin-left: 62px;
         }
-        .toggle {
-            display: inline-flex; align-items: center; gap: 10px;
-            color: #ccc; font-size: 14px; font-weight: 500; cursor: pointer;
-            user-select: none;
-        }
+        /* 구버전 호환 */
+        .toggle { display: inline-flex; align-items: center; gap: 10px; cursor: pointer; user-select: none; }
         .toggle input[type=checkbox] { display: none; }
-        .toggle-switch {
-            width: 48px; height: 28px; background: #2a2a2a; border-radius: 14px;
-            position: relative; transition: background 0.25s; flex-shrink: 0;
-            border: 2px solid #444;
-        }
-        .toggle-switch::after {
-            content: ''; position: absolute; top: 3px; left: 3px;
-            width: 18px; height: 18px; background: #666; border-radius: 50%;
-            transition: all 0.25s; box-shadow: 0 1px 4px rgba(0,0,0,0.5);
-        }
-        .toggle input:checked ~ .toggle-switch { background: var(--gold); border-color: var(--gold); }
-        .toggle input:checked ~ .toggle-switch::after { left: 23px; background: #000; }
-        .toggle input:checked ~ .toggle-text { color: var(--gold); font-weight: 700; }
+        .toggle-switch { display: none; }
+        .toggle-text { font-size: 14px; color: #ccc; }
 
         /* 네비게이션 스티키 탭 */
         .sticky-nav {
@@ -2081,20 +2103,36 @@ window.generateDeepReport = generateDeepReport;
             <div class="sub-preview" id="t-pre"></div>
             <div class="toggle-row">
                 <div class="toggle-item">
-                    <label class="toggle"><input type="checkbox" id="no-time"><span class="toggle-switch"></span><span class="toggle-text">태어난 시간 모름</span></label>
+                    <div class="toggle-label" id="tlabel-no-time" onclick="toggleSwitch('no-time','tlabel-no-time')">
+                        <span class="t-knob"></span>
+                        <span class="t-text">태어난 시간 모름</span>
+                    </div>
+                    <input type="checkbox" id="no-time" style="display:none">
                     <div class="toggle-desc">시간을 모를 경우 정오(正午, 12:00)로 자동 설정됩니다. 시간을 알면 정확히 입력하세요.</div>
                 </div>
                 <div class="toggle-item">
-                    <label class="toggle"><input type="checkbox" id="adj-l" checked><span class="toggle-switch"></span><span class="toggle-text">서울 표준시 보정</span></label>
+                    <div class="toggle-label on" id="tlabel-adj-l" onclick="toggleSwitch('adj-l','tlabel-adj-l')">
+                        <span class="t-knob"></span>
+                        <span class="t-text">서울 표준시 보정</span>
+                    </div>
+                    <input type="checkbox" id="adj-l" checked style="display:none">
                     <div class="toggle-desc">한국은 동경(135°) 기준 시간을 쓰지만, 실제 서울(동경 126.9°)은 약 32분 느립니다.<br>전통 명리학에서는 이 32분을 보정하는 방식을 선호합니다. (기본 켜짐)</div>
                 </div>
             </div>
+
         </div>
 
         <button class="btn subtle" onclick="addUserForm()" style="margin-bottom:15px; border:1px dashed var(--gold); color:var(--gold);">+ 인원 추가 (최대 4인)</button>
         <button class="btn" onclick="runAnalysis()">만세력 결과 보기</button>
 
 <script>
+function toggleSwitch(cbId, labelId) {
+    var cb = document.getElementById(cbId);
+    var lbl = document.getElementById(labelId);
+    cb.checked = !cb.checked;
+    if(cb.checked) lbl.classList.add('on');
+    else lbl.classList.remove('on');
+}
 let globalSajuData = {};
 let userCount = 1;
 function addUserForm() {
