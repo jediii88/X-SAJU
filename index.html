@@ -19,7 +19,7 @@
             --gold: #c7a76a;
             --gold-glow: rgba(199,167,106,0.25);
             --glass-bg: rgba(255,255,255,0.03);
-            --glass-border: rgba(255,255,255,0.09);
+            --glass-border: transparent;
             --glass-hover: rgba(255,255,255,0.06);
             --wood: #52b36a;
             --fire: #d45a52;
@@ -150,7 +150,7 @@
         }
         .toggle-label.on .t-knob {
             background: var(--gold);
-            border-color: var(--gold);
+            box-shadow: 0 2px 12px rgba(199,167,106,0.3), inset 0 1px 0 rgba(255,255,255,0.10);
         }
         .toggle-label.on .t-knob::after {
             left: 25px;
@@ -265,12 +265,13 @@
             width: 100%;
             padding: 18px 16px;
             margin-top: 20px;
-            border: 1px solid var(--glass-border);
-            background: var(--glass-bg);
+            border: none;
+            background: rgba(255,255,255,0.05);
             backdrop-filter: blur(6px);
             -webkit-backdrop-filter: blur(6px);
             color: var(--text);
             font-size: 15px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.10);
             font-weight: 300;
             letter-spacing: 0.08em;
             cursor: pointer;
@@ -1012,16 +1013,17 @@
 </style>
 
     <style>
-        .report-chapter { margin-bottom: 40px; background: rgba(255,255,255,0.025); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 24px; }
+        .report-chapter { margin-bottom: 40px; background: rgba(255,255,255,0.04); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); border: none; border-radius: 16px; padding: 24px; box-shadow: 0 4px 32px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.08); }
         
         /* 인라인 해석 박스 */
         .inline-interp {
             background: rgba(199,167,106,0.06);
             backdrop-filter: blur(6px);
             -webkit-backdrop-filter: blur(6px);
-            border: 1px solid rgba(199,167,106,0.15);
+            border: none;
             border-left: 3px solid var(--gold);
             border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06);
             padding: 20px 22px;
             margin: 8px 0 16px;
         }
@@ -1095,7 +1097,7 @@
         }
         .ch-title { color: var(--gold); border-bottom: 1px solid #333; padding-bottom: 8px; margin-bottom: 15px; font-family: 'Noto Serif KR', serif; font-weight: 300; font-size: 20px; }
         .ch-text { font-size: 15px; line-height: 1.8; color: #eee; margin-bottom: 15px; text-align: justify; word-break: keep-all; }
-        .axe-advice { background: rgba(255,255,255,0.04); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); padding: 18px; border-radius: 8px; border-left: 3px solid var(--gold); font-size: 14.5px; line-height: 1.6; color: #ddd; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .axe-advice { background: rgba(255,255,255,0.04); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); padding: 18px; border-radius: 8px; border-left: 3px solid var(--gold); box-shadow: 0 4px 24px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06); font-size: 14.5px; line-height: 1.6; color: #ddd; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
     </style>
 
     <style>
