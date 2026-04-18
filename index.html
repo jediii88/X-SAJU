@@ -8,15 +8,19 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #000;
-            --panel: #0a0a0a;
-            --panel-2: #050505;
-            --line: rgba(255,255,255,0.08);
-            --line-soft: rgba(255,255,255,0.04);
+            --bg: #04040f;
+            --panel: rgba(255,255,255,0.04);
+            --panel-2: rgba(255,255,255,0.02);
+            --line: rgba(255,255,255,0.10);
+            --line-soft: rgba(255,255,255,0.05);
             --text: rgba(255,255,255,0.96);
             --text-soft: rgba(255,255,255,0.70);
             --text-dim: rgba(255,255,255,0.42);
             --gold: #c7a76a;
+            --gold-glow: rgba(199,167,106,0.25);
+            --glass-bg: rgba(255,255,255,0.05);
+            --glass-border: rgba(255,255,255,0.12);
+            --glass-hover: rgba(255,255,255,0.08);
             --wood: #52b36a;
             --fire: #d45a52;
             --earth: #c9a24c;
@@ -28,7 +32,8 @@
         html, body {
             margin: 0;
             padding: 0;
-            background: var(--bg);
+            background: radial-gradient(ellipse at 30% 20%, #0d0620 0%, #04040f 60%) fixed;
+            background-color: #04040f;
             color: var(--text);
             font-family: 'Noto Sans KR', sans-serif;
             -webkit-font-smoothing: antialiased;
@@ -101,7 +106,7 @@
         .btn-toggle {
             flex: 1; padding: 14px;
             border-radius: 12px; border: none;
-            background: #1a1a1a; color: #666;
+            background: rgba(255,255,255,0.05); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); color: #666;
             font-size: 15px; font-weight: 400;
             cursor: pointer; transition: 0.2s;
         }
@@ -113,7 +118,7 @@
             display: flex; flex-direction: column; gap: 12px; margin-top: 14px;
         }
         .toggle-item {
-            background: #111;
+            background: rgba(255,255,255,0.04); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
             border: 1px solid #2a2a2a;
             border-radius: 10px;
             padding: 12px 14px;
@@ -261,18 +266,27 @@
             width: 100%;
             padding: 18px 16px;
             margin-top: 20px;
-            border: 1px solid rgba(255,255,255,0.16);
-            background: transparent;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             color: var(--text);
             font-size: 15px;
             font-weight: 300;
             letter-spacing: 0.08em;
             cursor: pointer;
+            border-radius: 12px;
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+        .btn:hover {
+            background: var(--glass-hover);
+            box-shadow: 0 4px 24px rgba(199,167,106,0.15);
         }
 
         .btn.subtle {
             margin-top: 10px;
             border-color: transparent;
+            background: transparent;
             color: var(--text-dim);
             font-size: 13px;
             letter-spacing: 0.04em;
@@ -300,6 +314,19 @@
         .section {
             padding-top: 60px; /* offset for sticky nav */
             margin-top: -22px;
+        }
+        /* 글라스 카드 래퍼 */
+        .section > *:not(.section-title) {
+            position: relative;
+        }
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 12px;
         }
 
         .section-title {
@@ -364,7 +391,7 @@
             opacity: 1;
         }
         .modal-card {
-            background: #111;
+            background: rgba(255,255,255,0.04); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
             border: 1px solid var(--line-soft);
             border-radius: 12px;
             padding: 24px;
@@ -443,14 +470,14 @@
             color: #999;
             font-size: 12px;
             font-weight: 500;
-            background: #111;
+            background: rgba(255,255,255,0.04); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
         }
 
         .col-head {
             font-size: 13px;
             color: #aaa;
             font-weight: 500;
-            background: #111;
+            background: rgba(255,255,255,0.04); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
             justify-content: center;
             align-items: center;
             text-align: center;
@@ -473,7 +500,7 @@
         }
 
         .badge-ss {
-            background: #1a1a1a;
+            background: rgba(255,255,255,0.05); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
             border: 1px solid #333;
             border-radius: 4px;
             padding: 3px 6px;
@@ -764,7 +791,7 @@
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            background: #111;
+            background: rgba(255,255,255,0.04); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
             position: relative;
             overflow: hidden;
         }
@@ -858,7 +885,7 @@
             width: 42px;
             height: 42px;
             border-radius: 50%;
-            background: #1e1e1e;
+            background: rgba(255,255,255,0.05); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -986,14 +1013,16 @@
 </style>
 
     <style>
-        .report-chapter { margin-bottom: 40px; }
+        .report-chapter { margin-bottom: 40px; background: var(--glass-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid var(--glass-border); border-radius: 16px; padding: 24px; }
         
         /* 인라인 해석 박스 */
         .inline-interp {
-            background: linear-gradient(135deg, #0d0d1a 0%, #12121f 100%);
-            border: 1px solid rgba(199,167,106,0.3);
+            background: rgba(199,167,106,0.06);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(199,167,106,0.2);
             border-left: 3px solid var(--gold);
-            border-radius: 8px;
+            border-radius: 12px;
             padding: 20px 22px;
             margin: 8px 0 16px;
         }
@@ -1067,7 +1096,7 @@
         }
         .ch-title { color: var(--gold); border-bottom: 1px solid #333; padding-bottom: 8px; margin-bottom: 15px; font-family: 'Noto Serif KR', serif; font-weight: 300; font-size: 20px; }
         .ch-text { font-size: 15px; line-height: 1.8; color: #eee; margin-bottom: 15px; text-align: justify; word-break: keep-all; }
-        .axe-advice { background: #111; padding: 18px; border-radius: 8px; border-left: 3px solid var(--gold); font-size: 14.5px; line-height: 1.6; color: #ddd; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .axe-advice { background: rgba(255,255,255,0.04); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 18px; border-radius: 8px; border-left: 3px solid var(--gold); font-size: 14.5px; line-height: 1.6; color: #ddd; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
     </style>
 
     <style>
@@ -1676,7 +1705,7 @@ function buildChapter2_Wuxing(data) {
     html += `
         <p class="ch-text">${extra1}</p>
         <p class="ch-text">${extra2}</p>
-        <div style="background: #111; padding: 20px; border-left: 3px solid var(--gold); margin: 20px 0;">
+        <div style="background: rgba(255,255,255,0.04); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 20px; border-left: 3px solid var(--gold); margin: 20px 0;">
             <div style="color: #fff; font-weight: bold; margin-bottom: 10px;">[ ${wuxingKor} 기운 집중 분석 ]</div>
             <div style="color: #ccc; font-size: 15px; line-height: 1.7;">${excessText}</div>
         </div>
@@ -1702,7 +1731,7 @@ function buildChapter3_Sipseong(data) {
     html += `
         <p class="ch-text">${extra1}</p>
         <p class="ch-text">${extra2}</p>
-        <div style="background: #111; padding: 20px; border-left: 3px solid var(--gold); margin: 20px 0;">
+        <div style="background: rgba(255,255,255,0.04); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 20px; border-left: 3px solid var(--gold); margin: 20px 0;">
             <div style="color: #fff; font-weight: bold; margin-bottom: 10px;">[ ${mainSip} 집중 분석 ]</div>
             <div style="color: #ccc; font-size: 15px; line-height: 1.7;">${sipText}</div>
         </div>
@@ -1779,7 +1808,7 @@ function buildDaewunLoop(data) {
             : `중화운으로 큰 부침 없이 안정적인 흐름을 유지합니다. 특별한 행운도 재난도 아닌, 실력대로 평가받는 시기입니다.`;
         
         html += `
-            <div class="timeline-item" style="margin-bottom: 25px; padding: 20px; background: #151515; border-left: 4px solid ${borderColor}; border-radius: 4px;">
+            <div class="timeline-item" style="margin-bottom: 25px; padding: 20px; background: rgba(255,255,255,0.04); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-left: 4px solid ${borderColor}; border-radius: 4px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                     <h4 style="color: ${borderColor}; font-size: 18px; margin:0;">${dw.age}세 ~ ${dw.age+9}세 : [${dw.name}]</h4>
                     <span style="font-size:12px; color:${borderColor}; font-weight:700;">${label}</span>
@@ -1824,7 +1853,7 @@ function buildSewunLoop(data) {
                 <p style="color: #ddd; font-size: 15px; line-height: 1.8; margin-bottom: 15px;">
                     <b>[인간관계와 환경 변화]</b> 특히 올해의 지지 '${branches[(6+i)%12]}'는 당신의 원국과 맞물려 강력한 화학작용을 일으킵니다. <b>${evt}</b> 이 시기에는 내 뜻대로 상황을 통제하려 하기보다는, 외부에서 불어오는 변화의 바람에 유연하게 올라타는 것이 유리합니다.
                 </p>
-                <div style="background: #1a1a1a; padding: 15px; border-radius: 6px; border-left: 3px solid #d32f2f;">
+                <div style="background: rgba(255,255,255,0.05); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 15px; border-radius: 6px; border-left: 3px solid #d32f2f;">
                     <span style="color: #ff6b6b; font-weight: bold; font-size: 14px;">🚨 Axe의 행동 지침:</span>
                     <span style="color: #bbb; font-size: 14px; line-height: 1.6;"> ${i%2===0 ? "올해는 투자를 확장하거나 새로운 일을 벌이기보다는, 내실을 다지고 현금을 확보하는 방어적 태세가 당신을 살립니다." : "올해는 당신의 판입니다. 70%의 확신만 섰다면 뒤돌아보지 말고 즉시 실행하십시오. 머뭇거리면 기운을 뺏깁니다."}</span>
                 </div>
@@ -1851,7 +1880,7 @@ function buildWolunLoop(data) {
     for(let m=1; m<=12; m++) {
         let theme = monthThemes[m % 5];
         html += `
-            <div style="background: #111; padding: 20px; border-radius: 8px; border-left: 4px solid ${m%3===0 ? '#d32f2f' : 'var(--gold)'}; display:flex; flex-direction:column;">
+            <div style="background: rgba(255,255,255,0.04); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 20px; border-radius: 8px; border-left: 4px solid ${m%3===0 ? '#d32f2f' : 'var(--gold)'}; display:flex; flex-direction:column;">
                 <div style="color:#fff; font-weight:800; font-size: 18px; margin-bottom: 8px;">${m}월의 기운</div>
                 <div style="color:#ddd; font-size:15px; line-height: 1.6; margin-bottom: 8px;">${theme}</div>
                 <div style="color:#888; font-size:13px;"><b>Focus:</b> ${m%3===0 ? '리스크 관리 및 건강 체크' : '적극적인 인맥 확장 및 성과 창출'}</div>
@@ -1919,7 +1948,7 @@ function buildChapter7_Hidden(data) {
     return `<div class="report-chapter">
         <h3 class="ch-title">Chapter 7. 빙산 아래의 욕망 (지장간 해부)</h3>
         <p class="ch-text">${extra1}</p>
-        <div style="background: #111; padding: 20px; border-left: 3px solid var(--gold); margin: 20px 0;">
+        <div style="background: rgba(255,255,255,0.04); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 20px; border-left: 3px solid var(--gold); margin: 20px 0;">
             <div style="color: #fff; font-weight: bold; margin-bottom: 10px;">[ 태어난 날(${branch})에 숨겨진 지장간 ]</div>
             <div style="color: #ccc; font-size: 15px; line-height: 1.7;">${hiddenText}</div>
         </div>
