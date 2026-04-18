@@ -1597,32 +1597,106 @@ function getDBText(category, key, fallback) {
 function generateDeepReport(data) {
     if(!data.dayStem) return;
     
-    let html = '';
-    html += buildSectionHeader("PART 1. 운명의 해부도 (원국 분석)");
-    html += buildChapter1_Basic(data);
-    html += buildChapter2_Wuxing(data);
-    html += buildChapter3_Sipseong(data);
+    // ── 각 만세력 섹션 아래에 직접 주입 ──
+    injectSectionInterpretations(data);
     
-    html += buildSectionHeader("PART 2. 인생의 무대와 성취");
-    html += buildChapter4_Wealth(data);
-    html += buildChapter5_Career(data);
-    html += buildChapter6_Love(data);
+    // ── 하단 심층 리포트 (대운/세운/월운 + 개운법) ──
+    let bottomHtml = '';
+    bottomHtml += buildSectionHeader("대운(大運) · 세운(歲運) · 월운 심층 해부");
+    bottomHtml += buildDaewunLoop(data);
+    bottomHtml += buildSewunLoop(data);
+    bottomHtml += buildWolunLoop(data);
+    bottomHtml += buildChapter9_Remedy(data);
     
-    html += buildSectionHeader("PART 3. 숨겨진 무기와 취약점");
-    html += buildChapter7_Hidden(data); // 지장간
-    html += buildChapter8_Health(data);
-    html += buildChapter9_Remedy(data);
+    document.getElementById('report-container').innerHTML = bottomHtml;
+}
+
+function injectSectionInterpretations(data) {
+    // 1. 사주원국 아래 → Chapter 1 (일주 본질)
+    const ch1 = buildChapter1_Basic(data);
+    injectBelow('manse-inline-summary', ch1);
     
-    html += buildSectionHeader("PART 4. 시간의 지배자 (대운과 세운)");
-    html += buildDaewunLoop(data);
-    html += buildSewunLoop(data);
-    html += buildWolunLoop(data);
+    // 2. 합충형파해 아래 → 관계 해석
+    const relEl = document.getElementById('relation-inline-summary');
+    if(relEl) {
+        relEl.innerHTML = buildRelationSummary(data);
+        relEl.style.display = 'block';
+    }
     
-    // 메인 리포트 컨테이너에 전체 내용 주입
-    document.getElementById('report-container').innerHTML = html;
+    // 3. 신살 아래 → 신살 해석
+    const shinsalEl = document.getElementById('shinsal-inline-summary');
+    if(shinsalEl) {
+        shinsalEl.innerHTML = buildShinsalSummary(data);
+        shinsalEl.style.display = 'block';
+    }
     
-    // 각 만세력 섹션 아래 인라인 풀이 주입
-    injectInlineSummaries(data);
+    // 4. 오행 아래 → Chapter 2 (오행)
+    const ch2 = buildChapter2_Wuxing(data);
+    injectBelow('wuxing-inline-summary', ch2);
+    
+    // 5. 십성 아래 → Chapter 3 (십성)
+    const sipEl = document.getElementById('sipseong-inline-summary');
+    if(sipEl) {
+        sipEl.innerHTML = buildChapter3_Sipseong(data);
+        sipEl.style.display = 'block';
+    }
+    
+    // 6. 신강신약 아래 → 강약 해석
+    const ch_str = buildStrengthSummary(data);
+    injectBelow('strength-inline-summary', ch_str);
+    
+    // 7. 용신 아래 → Chapter 7 (지장간) + 개운 힌트
+    const yongEl = document.getElementById('yong-inline-summary');
+    if(yongEl) {
+        yongEl.innerHTML = buildChapter7_Hidden(data);
+        yongEl.style.display = 'block';
+    }
+    
+    // 8. 인생시기 아래 → Chapter 4~6 (재물/직업/애정 요약)
+    const lifeEl = document.getElementById('lifecycle-inline-summary');
+    if(lifeEl) {
+        lifeEl.innerHTML = buildChapter4_Wealth(data) + buildChapter5_Career(data) + buildChapter6_Love(data);
+        lifeEl.style.display = 'block';
+    }
+}
+
+function injectBelow(id, html_content) {
+    const el = document.getElementById(id);
+    if(el) { el.innerHTML = html_content; el.style.display = 'block'; }
+}
+
+function buildRelationSummary(data) {
+    const interactions = data.interactions || [];
+    if(!interactions || interactions.length === 0) {
+        return '<div class="inline-interp"><div class="ii-label">✦ 합·충·형·파·해 해석</div><div class="ii-text">원국 내 특별한 합충 관계가 감지되지 않았습니다. 안정적인 원국 구조입니다.</div></div>';
+    }
+    let rows = interactions.map(rel => {
+        const desc = window.SAJU_DB?.INTERACTION?.[rel.type] || rel.type + ' 관계가 작용합니다.';
+        return `<div style="margin-bottom:10px;"><b style="color:var(--gold);">${rel.chars} — ${rel.type}</b><br><span style="font-size:13px;color:#ccc;">${desc}</span></div>`;
+    }).join('');
+    return `<div class="inline-interp"><div class="ii-label">✦ 합·충·형·파·해 해석</div><div class="ii-title">원국의 충돌과 결합이 만드는 당신의 운명 코드</div><div class="ii-text">${rows}<p style="margin-top:12px;color:#bbb;font-size:13px;">이 관계들은 당신이 살면서 반복적으로 경험하는 패턴의 원형(原形)입니다. 좋고 나쁨이 아닌, 당신이 어떻게 이 에너지를 다루느냐가 결과를 결정합니다.</p></div></div>`;
+}
+
+function buildShinsalSummary(data) {
+    const shinsal = data.allShinsal || [];
+    if(!shinsal || shinsal.length === 0) {
+        return '<div class="inline-interp"><div class="ii-label">✦ 신살·길성 해석</div><div class="ii-text">특별한 신살이 감지되지 않았습니다. 안정적인 원국 구조입니다.</div></div>';
+    }
+    const goodSals = ['천을귀인','문창귀인','학당귀인','월덕귀인','복성귀인'];
+    const good = shinsal.filter(s => goodSals.some(g => s.includes(g)));
+    const risk = shinsal.filter(s => !goodSals.some(g => s.includes(g)));
+    let content = '';
+    if(good.length > 0) content += `<p style="margin-bottom:10px;"><b style="color:#00C853;">✦ 길성(吉星):</b> ${good.join(', ')} — 하늘이 내린 재능과 귀인의 기운이 당신을 보호합니다.</p>`;
+    if(risk.length > 0) content += `<p><b style="color:#e74c3c;">⚠ 신살(神殺):</b> ${risk.join(', ')}<br><span style="font-size:13px;color:#bbb;">이 기운들은 흉이 아니라 당신을 단련시키는 도전의 코드입니다. 제대로 다루면 가장 강력한 무기가 됩니다.</span></p>`;
+    return `<div class="inline-interp"><div class="ii-label">✦ 신살·길성 해석</div><div class="ii-title">하늘이 새긴 특수 기운</div><div class="ii-text">${content}</div></div>`;
+}
+
+function buildStrengthSummary(data) {
+    const isStrong = data.strengthText && (data.strengthText.includes('신강') || data.strengthText.includes('강'));
+    const text = isStrong
+        ? '기운이 충만한 당신은 주도적으로 세상을 이끌어가는 자리에 있어야 진정한 능력을 발휘합니다. 남의 지시를 받기보다 내 판을 직접 짜는 창업, 프리랜서, 전문직에서 빛을 발합니다. 강한 기운을 억누르려 하면 오히려 역효과가 납니다. 이 에너지를 쏟아부을 적합한 무대를 찾는 것이 인생의 핵심 과제입니다.'
+        : '기운이 다소 약한 사주는 혼자 모든 것을 짊어지기보다 훌륭한 파트너와 팀을 구성할 때 폭발적인 시너지를 경험합니다. 좋은 귀인을 곁에 두는 것이 인생 전략의 핵심입니다. 用神(용신) 기운이 들어오는 대운에서 가장 크게 도약합니다.';
+    return `<div class="inline-interp"><div class="ii-label">✦ 신강·신약 해석</div><div class="ii-title">${data.strengthText || ''}</div><div class="ii-text">${text}</div></div>`;
 }
 
 function injectInlineSummaries(data) {
@@ -1774,7 +1848,7 @@ function buildChapter4_Wealth(data) {
         <p class="ch-text">${wealthCore}</p>
         <p class="ch-text">${extra2}</p>
         <div class="axe-advice" style="margin-top: 20px;">
-            <b>👉 Axe의 부의 추월차선 전략:</b> 당신의 금고는 평범한 직장인의 월급통장 사이즈가 아닙니다. 레버리지를 활용하십시오. 당신의 능력(식상)을 타인의 자본과 결합할 때, 비로소 당신의 진짜 금고가 열립니다.
+            당신의 진짜 금고는 월급통장 사이즈가 아닙니다. 食傷(식상)의 능력을 타인의 자본과 결합하는 레버리지 — 그것이 당신의 금고를 여는 열쇠입니다.
         </div>
         </div>
     `;
@@ -1930,7 +2004,7 @@ function buildChapter5_Career(data) {
         <p class="ch-text">직업은 단순히 돈을 버는 수단이 아닙니다. 사주 명리학에서 '직업운'은 내 에너지를 가장 안정적으로, 그리고 가장 파괴적으로 발산할 수 있는 '전쟁터의 종류'를 의미합니다. 물고기 사주를 타고났으면 바다로 가야지 산으로 올라가면 안 됩니다.</p>
         <p class="ch-text">${careerCore}</p>
         <div class="axe-advice" style="margin-top: 15px; border-left-color: #3f51b5;">
-            <b>👉 Axe의 무대 세팅:</b> "내 권한이 100% 보장되는가?" 이것이 당신이 직업을 선택할 때 최우선으로 고려해야 단 하나의 질문입니다.
+            "내 권한이 100% 보장되는가?" 이것이 당신이 직업을 선택할 때 최우선으로 고려해야 단 하나의 질문입니다.
         </div>
     </div>`;
 }
@@ -1990,7 +2064,7 @@ function buildChapter8_Health(data) {
     html += `<p class="ch-text">사주 명리학은 결국 에너지(오행)의 분배와 편중을 다루는 학문이며, 이는 한의학의 오장육부와 직결됩니다. 당신의 사주에서 특정 에너지가 극도로 과부하 걸릴 때, 마음의 스트레스는 즉각적으로 해당 장기의 병변으로 나타납니다.</p>`;
     html += `<p class="ch-text">당신의 원국에서 <b>${maxWuxing}</b>의 기운이 가장 강하게 편중되어 있으므로, 당신 인생의 건강 마지노선은 바로 <b>[${organ}]</b>입니다. 화가 나고 억눌릴 때 이곳부터 타격을 받습니다.</p>`;
     html += `<div class="axe-advice" style="border-left-color: #d32f2f; margin-top: 15px;">
-        <b>🚨 Axe의 생존 지침:</b> 성과를 내기 위해 몸을 연료로 태우지 마십시오. 당신은 멈춰야 할 때 멈추는 데 대단한 용기가 필요한 타입입니다.
+        성과를 내기 위해 몸을 연료로 태우지 마십시오. 당신은 멈춰야 할 때 멈추는 데 대단한 용기가 필요한 타입입니다.
     </div></div>`;
     return html;
 }
@@ -2354,6 +2428,7 @@ function startReport() {
             <div class="rel-grid" id="relation-grid"></div>
         </div>
 
+        <div id="relation-inline-summary" style="display:none; margin:0 0 8px 0;"></div>
         <div class="section" id="sec-shinsal">
             <div class="section-title"><div class="title-left"><span>신살 · 길성</span><span class="help-icon" onclick="openHelp('shinsal')">?</span></div><span>숨겨진 특수 기운</span></div>
             <div class="pill-grid" id="shinsal-grid"></div>
@@ -2365,6 +2440,7 @@ function startReport() {
             <div class="bar-group" id="wuxing-bars"></div>
         </div>
 
+        <div id="shinsal-inline-summary" style="display:none; margin:0 0 8px 0;"></div>
         <div id="wuxing-inline-summary" style="display:none; margin:0 0 8px 0;"></div>
         <div class="section">
             <div class="section-title"><div class="title-left"><span>십성 분포</span><span class="help-icon" onclick="openHelp('sipseong')">?</span></div><span>사회적 역할과 관계 패턴</span></div>
@@ -2373,6 +2449,7 @@ function startReport() {
         </div>
 
 
+        <div id="sipseong-inline-summary" style="display:none; margin:0 0 8px 0;"></div>
         <div class="section" id="sec-yonghee">
             <div class="section-title"><div class="title-left"><span>나의 수호 기운</span><span class="help-icon" onclick="openHelp('yonghee')">?</span></div><span>나를 돕는 기운 vs 방해하는 기운</span></div>
             <div class="pill-grid" id="yonghee-grid">
@@ -2383,7 +2460,8 @@ function startReport() {
             </div>
         </div>
 
-                <div class="section" id="sec-fortune">
+                <div id="yong-inline-summary" style="display:none; margin:0 0 8px 0;"></div>
+        <div class="section" id="sec-fortune">
             <div class="section-title"><div class="title-left"><span>신강 · 신약</span><span class="help-icon" onclick="openHelp('strength')">?</span></div><span>내 기운의 강약 판정</span></div>
             <div class="gauge-wrap" id="strength-gauge">
                 <div style="position:relative; width:200px; height:110px; display:flex; justify-content:center;">
@@ -2451,6 +2529,7 @@ function startReport() {
 
         <!-- 카테고리별 심층 분석 -->
         <!-- 분야별 운세: 탭 제거, 섹션으로 펼침 (PDF 완전 출력) -->
+        <div id="lifecycle-inline-summary" style="display:none; margin:0 0 8px 0;"></div>
         <div class="section" id="sec-category">
             <div class="section-title"><div class="title-left"><span id="toc-anchor-cat">분야별 심층 운세</span></div><span>건강 · 재물 · 직업 · 애정</span></div>
             <div id="cat-health" class="cat-content cat-section"></div>
@@ -3580,7 +3659,7 @@ function runAnalysis() {
                     <p class="cat-text">${healthOverall}</p>
                     <div class="cat-highlight">${healthDetail}</div>
                     <div class="cat-advice">
-                        <b>💡 Axe 건강 처방:</b> 몸이 보내는 신호를 무시하지 마십시오. 당신은 버티는 능력이 탁월하지만, 그 능력이 때로는 병을 키웁니다. 년 1회 정기검진을 빠짐없이 이행하는 것이 가장 강력한 건강 보험입니다.
+                        몸이 보내는 신호를 무시하지 마십시오. 버티는 능력이 탁월한 만큼, 그 능력이 때로는 병을 키웁니다. 연 1회 정기검진을 빠짐없이 이행하는 것이 가장 강력한 건강 보험입니다.
                     </div>
                 </div>`;
 
@@ -3608,7 +3687,7 @@ function runAnalysis() {
                     <p class="cat-text">${wealthMain}</p>
                     <div class="cat-highlight">${wealthStrategy}</div>
                     <div class="cat-advice">
-                        <b>💡 Axe 부의 추월차선:</b> 당신의 금고는 월급통장 사이즈가 아닙니다. 用神(용신) 기운을 가진 사람과의 협업, 그것이 당신 재물운의 숨겨진 가속 페달입니다.
+                        당신의 금고는 월급통장 사이즈가 아닙니다. 用神(용신) 기운을 가진 사람과의 협업 — 그것이 재물운의 숨겨진 가속 페달입니다.
                     </div>
                 </div>`;
 
@@ -3636,7 +3715,7 @@ function runAnalysis() {
                         <b>🎯 최적 직업 환경:</b> ${{officer:'조직 내 리더십 포지션 (부서장, 팀장, 임원 트랙)', creator:'자기 브랜드 기반의 1인 또는 소수 정예 팀', expert:'전문 자격 기반의 독립 컨설팅 또는 파트너십', independent:'완전한 자율과 성과로 평가받는 독립 영역'}[careerType]}
                     </div>
                     <div class="cat-advice">
-                        <b>💡 Axe 커리어 설계:</b> "내 권한이 100% 보장되는가?" — 이것이 직업 선택의 단 하나의 기준입니다. 이 질문에 Yes가 나오는 자리에서만 당신의 진짜 능력이 폭발합니다.
+                        "내 권한이 100% 보장되는가?" — 이것이 직업 선택의 단 하나의 기준입니다. 이 질문에 Yes가 나오는 자리에서만 진짜 능력이 폭발합니다.
                     </div>
                 </div>`;
 
@@ -3659,7 +3738,7 @@ function runAnalysis() {
                         <b>💑 배우자궁(日支) 분석:</b><br>${loveText2}
                     </div>
                     <div class="cat-advice">
-                        <b>💡 Axe 연애 전략:</b> 당신에게 맞는 인연은 당신의 용신 오행을 일간으로 가진 사람입니다. 궁합은 천간(天干)보다 일지(日支)의 합충 관계가 평생 에너지를 좌우합니다.
+                        당신에게 맞는 인연은 용신 오행을 일간으로 가진 사람입니다. 궁합은 天干(천간)보다 日支(일지)의 합충 관계가 평생 에너지를 좌우합니다.
                     </div>
                 </div>`;
 
