@@ -1808,8 +1808,53 @@ function injectSectionInterpretations(data) {
     setEl('sipseong-inline-summary', buildChapter3_Sipseong(data));
     // 6. 신강신약 아래
     setEl('strength-inline-summary', buildStrengthSummary(data));
-    // 7. 용신/희신 아래
-    setEl('yong-inline-summary', buildChapter7_Hidden(data));
+    // 7. 용신/희신 아래 — 동적 풀이
+    const OH_YG = {wood:'목',fire:'화',earth:'토',metal:'금',water:'수'};
+    const yongKr = OH_YG[data.yong]||data.yong||'';
+    const heeKr = OH_YG[data.hee]||data.hee||'';
+    const giKr = OH_YG[data.gi]||data.gi||'';
+    const gooKr = OH_YG[data.goo]||data.goo||'';
+    const isStrongYG = (data.strengthText||'').includes('신강');
+    const yongDetail = {
+        wood: '목 기운이 용신입니다. 성장과 도전의 에너지가 당신을 살립니다. 목 기운이 강해지는 봄(2~4월), 갑/을년·갑/을 대운이 인생의 전성기입니다. 동쪽 방위, 초록색, 나무·식물 관련 업종이 길합니다. 간·담낭·신경계를 챙기십시오.',
+        fire: '화 기운이 용신입니다. 열정과 표현의 에너지가 당신을 살립니다. 여름(5~7월), 병/정년·병/정 대운이 전성기입니다. 남쪽 방위, 붉은색, 열정·에너지가 넘치는 분야가 길합니다. 심장·혈관 건강을 챙기십시오.',
+        earth: '토 기운이 용신입니다. 안정과 신뢰의 에너지가 당신을 살립니다. 환절기(3·6·9·12월), 무/기년이 길한 시기입니다. 중앙, 황금색, 부동산·농업·음식 관련이 길합니다.',
+        metal: '금 기운이 용신입니다. 결단과 완성의 에너지가 당신을 살립니다. 가을(8~10월), 경/신년·경/신 대운이 전성기입니다. 서쪽 방위, 흰색·금색, 금속·IT·의료·법 관련 분야가 길합니다.',
+        water: '수 기운이 용신입니다. 지혜와 유연성의 에너지가 당신을 살립니다. 겨울(11~1월), 임/계년·임/계 대운이 전성기입니다. 북쪽 방위, 검은색·남색, 물·여행·무역·지식 산업이 길합니다.'
+    };
+    setEl('yong-inline-summary', `<div class="inline-interp">
+        <div class="ii-label">\u2756 용신·희신·기신 해석</div>
+        <div class="ii-title">나를 돕는 기운 vs 방해하는 기운 — 인생 전략의 핵심</div>
+        <div class="ii-text">
+            <p style="font-size:13.5px;color:#bbb;line-height:1.85;margin-bottom:16px;">용신은 당신의 사주를 균형 잡아주는 가장 중요한 기운입니다. 용신 기운이 강해지는 대운·세운에서 인생이 크게 도약하고, 기신 기운이 들어오는 시기에는 수비적 전략이 필요합니다.</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+                <div style="background:rgba(199,167,106,0.08);border-radius:10px;padding:14px;border:1px solid var(--gold);">
+                    <div style="font-size:11px;color:var(--gold);margin-bottom:6px;">✦ 용신 — 나의 수호신</div>
+                    <div style="font-size:18px;font-weight:800;color:var(--gold);">${yongKr}</div>
+                    <p style="font-size:12px;color:#bbb;margin:8px 0 0;line-height:1.7;">${yongDetail[data.yong]||yongKr+' 기운이 당신의 수호신입니다.'}</p>
+                </div>
+                <div style="background:rgba(74,158,106,0.08);border-radius:10px;padding:14px;border:1px solid rgba(74,158,106,0.4);">
+                    <div style="font-size:11px;color:#4a9e6a;margin-bottom:6px;">✦ 희신 — 나를 돕는 기운</div>
+                    <div style="font-size:18px;font-weight:800;color:#4a9e6a;">${heeKr}</div>
+                    <p style="font-size:12px;color:#bbb;margin:8px 0 0;line-height:1.7;">${heeKr} 기운이 강해지는 시기는 용신을 보조하여 더 큰 성과를 만들어냅니다.</p>
+                </div>
+                <div style="background:rgba(231,76,60,0.06);border-radius:10px;padding:14px;border:1px solid rgba(231,76,60,0.3);">
+                    <div style="font-size:11px;color:#e74c3c;margin-bottom:6px;">⚠ 기신 — 나를 방해하는 기운</div>
+                    <div style="font-size:18px;font-weight:800;color:#e74c3c;">${giKr}</div>
+                    <p style="font-size:12px;color:#bbb;margin:8px 0 0;line-height:1.7;">${giKr} 기운이 강한 시기에는 수비적 전략이 최선입니다. 큰 결정과 투자를 자제하십시오.</p>
+                </div>
+                <div style="background:rgba(255,152,0,0.05);border-radius:10px;padding:14px;border:1px solid rgba(255,152,0,0.3);">
+                    <div style="font-size:11px;color:#ff9800;margin-bottom:6px;">⚠ 구신 — 기신을 돕는 기운</div>
+                    <div style="font-size:18px;font-weight:800;color:#ff9800;">${gooKr}</div>
+                    <p style="font-size:12px;color:#bbb;margin:8px 0 0;line-height:1.7;">${gooKr} 기운도 주의하십시오. 기신과 함께 들어오면 더 강한 역풍이 됩니다.</p>
+                </div>
+            </div>
+            <div style="background:rgba(199,167,106,0.05);border-radius:10px;padding:14px 16px;border-left:3px solid var(--gold);">
+                <div style="font-size:11px;color:var(--gold);margin-bottom:8px;">✦ 개운(운을 여는) 실천법</div>
+                <p style="font-size:13px;color:#ddd;line-height:1.85;margin:0;">용신 색상과 방위를 생활에 적용하고, 용신 오행을 일간으로 가진 사람을 파트너·귀인으로 선택하십시오. 용신 기운이 강해지는 대운·세운에 인생에서 가장 중요한 결정을 실행하십시오. 이것이 개운의 핵심 원리입니다.</p>
+            </div>
+        </div>
+    </div>`);
     // 8. 인생 시기별 아래 → 재물+직업+애정
     setEl('lifecycle-inline-summary', buildChapter4_Wealth(data) + buildChapter5_Career(data) + buildChapter6_Love(data) + buildChapter8_Health(data) + buildChapter9_Remedy(data));
 }
