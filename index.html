@@ -1161,6 +1161,131 @@
 
 <script>
 
+
+// ── 신살(神殺) 상세 설명 DB ──
+const SHINSAL_DESC = {
+    '천을귀인(天乙貴人)': {
+        cat: '길성(吉星)', color: '#c7a76a',
+        short: '최고의 귀인성. 위기 때마다 구원자가 나타난다.',
+        detail: '일생에서 가장 귀하게 여기는 신살(神殺)입니다. 천을귀인이 있는 사람은 위기와 역경이 찾아올 때마다 반드시 도와주는 귀인(貴人)이 나타납니다. 대인관계가 원만하고 어떤 환경에서도 구원의 손길이 닿는 복력(福力)을 타고났습니다.'
+    },
+    '문창귀인(文昌貴人)': {
+        cat: '길성(吉星)', color: '#c7a76a',
+        short: '학문·기획·글쓰기에서 두각. 시험운이 강하다.',
+        detail: '학문과 예술, 기획 능력이 뛰어납니다. 시험이나 자격증 취득에 유리하며 글쓰기와 언어 능력이 탁월합니다. 지적 능력으로 사회적 성공을 이루는 별입니다.'
+    },
+    '문곡귀인(文曲貴人)': {
+        cat: '길성(吉星)', color: '#c7a76a',
+        short: '문학·예술적 재능. 창의적 표현력이 강하다.',
+        detail: '문창귀인과 함께 있으면 학문적 성취가 배가됩니다. 특히 문학, 예술, 음악 등 감성적 창작 분야에서 두각을 나타냅니다. 직관과 영감이 뛰어납니다.'
+    },
+    '문창귀인(文昌貴人)': {
+        cat: '길성(吉星)', color: '#c7a76a',
+        short: '학문·기획·글쓰기에서 두각. 시험운 강함.',
+        detail: '시험운이 강하고 학문적 성취와 연관됩니다.'
+    },
+    '천관귀인(天官貴人)': {
+        cat: '길성(吉星)', color: '#c7a76a',
+        short: '관직·직책 운이 강하다. 승진·명예에 유리.',
+        detail: '관직과 직책 운이 뛰어납니다. 조직 내에서 빠른 승진과 명예를 얻을 수 있으며, 권위 있는 자리에 오르는 힘을 가진 귀인성입니다.'
+    },
+    '천덕귀인(天德貴人)': {
+        cat: '길성(吉星)', color: '#c7a76a',
+        short: '하늘의 덕. 액운을 막고 귀인의 도움을 받는다.',
+        detail: '하늘의 덕스러운 기운으로 액운(厄運)을 막아주는 강력한 보호막입니다. 어떤 흉살이 있어도 천덕귀인이 있으면 그 흉함이 크게 감소합니다.'
+    },
+    '월덕귀인(月德貴人)': {
+        cat: '길성(吉星)', color: '#c7a76a',
+        short: '달의 덕성. 재물운과 건강운을 보호한다.',
+        detail: '달의 덕스러운 기운으로 재물과 건강을 지켜줍니다. 특히 여성에게 이로우며, 흉살의 흉함을 완화하는 보호 기운입니다.'
+    },
+    '천의성(天醫星)': {
+        cat: '길성(吉星)', color: '#c7a76a',
+        short: '의료·치유·상담 재능. 사람을 살리는 별.',
+        detail: '의학, 치유, 상담, 종교 분야에서 특별한 재능을 발휘합니다. 이 별이 있는 사람은 타인을 치유하고 돕는 직업에서 큰 보람을 느끼며 사회적으로도 존경받습니다.'
+    },
+    '학당귀인(學堂貴人)': {
+        cat: '길성(吉星)', color: '#c7a76a',
+        short: '학업·교육 환경이 따른다. 스승·멘토를 만난다.',
+        detail: '배움의 기운이 강한 별입니다. 좋은 스승을 만나고 교육 환경이 잘 갖춰집니다. 공부가 재물과 명예로 이어지는 구조입니다.'
+    },
+    '역마살(驛馬殺)': {
+        cat: '동살(動殺)', color: '#4e87d9',
+        short: '이동·여행·변동이 많다. 해외 인연이 강하다.',
+        detail: '항상 움직이고 변화하는 기운입니다. 한 곳에 정착하기 어렵고 이동과 여행이 많습니다. 해외 인연이나 타 지역으로의 이동에서 기회를 잡습니다. 운수업, 무역, 해외 관련 직종에 유리합니다.'
+    },
+    '도화살(桃花殺)': {
+        cat: '도화(桃花)', color: '#e879a0',
+        short: '매력·인기·이성 인연이 강하다. 예술적 감각.',
+        detail: '복숭아꽃처럼 사람을 끌어당기는 매력과 인기를 상징합니다. 이성 인연이 강하고 사람들이 자연스럽게 모여듭니다. 예술, 연예, 서비스 분야에서 강점을 발휘합니다. 단, 이성 문제로 인한 구설을 조심해야 합니다.'
+    },
+    '화개살(華蓋殺)': {
+        cat: '고독살(孤獨殺)', color: '#8b7ca8',
+        short: '예술·종교·철학 재능. 고독을 즐기는 기운.',
+        detail: '화려한 덮개라는 뜻으로, 예술적 재능과 종교적 감수성이 뛰어납니다. 고독 속에서 깊은 사색을 즐기며 창작 활동에서 두각을 나타냅니다. 중년 이후 종교나 철학에 깊이 빠질 수 있습니다.'
+    },
+    '양인살(羊刃殺)': {
+        cat: '흉살(凶殺)', color: '#e74c3c',
+        short: '날카로운 의지력. 과감하지만 충동적 행동 주의.',
+        detail: '양(羊)의 날카로운 뿔과 같은 기운입니다. 강한 의지력과 추진력을 가지고 있지만, 충동적이고 과격한 행동으로 인한 사고나 다툼을 조심해야 합니다. 군인, 경찰, 의사, 요리사 등 날카로운 도구를 다루는 직업에 유리합니다.'
+    },
+    '겁살(劫殺)': {
+        cat: '흉살(凶殺)', color: '#e74c3c',
+        short: '강탈·손재수. 재물과 건강의 갑작스런 손실.',
+        detail: '갑작스러운 손실과 위기를 의미합니다. 재물의 손실, 건강 문제, 인간관계의 갑작스러운 단절이 발생할 수 있습니다. 이 살이 있는 해에는 충동적인 투자와 보증을 특히 조심해야 합니다.'
+    },
+    '망신살(亡身殺)': {
+        cat: '흉살(凶殺)', color: '#e74c3c',
+        short: '체면·명예 손상. 구설수·망신의 위험.',
+        detail: '몸을 망치는 살(殺)입니다. 체면이 깎이거나 구설수에 오르는 일이 생깁니다. 비밀 누설, 불륜, 사기 등으로 인한 사회적 명예 손상을 주의해야 합니다.'
+    },
+    '천살(天殺)': {
+        cat: '흉살(凶殺)', color: '#e74c3c',
+        short: '하늘의 재앙. 예측 불가능한 재난.',
+        detail: '하늘로부터 오는 재앙을 의미합니다. 자연재해, 사고, 갑작스러운 질병 등 예측하기 어려운 재난을 상징합니다. 이 살이 강한 시기에는 안전에 특히 주의해야 합니다.'
+    },
+    '지살(地殺)': {
+        cat: '흉살(凶殺)', color: '#e74c3c',
+        short: '땅의 재앙. 이동·이사 시 문제 발생.',
+        detail: '땅으로부터 오는 재앙으로, 이동과 이사에서 문제가 생길 수 있습니다. 부동산 투자나 이사 계획 시 신중하게 검토해야 합니다.'
+    },
+    '백호대살(白虎大殺)': {
+        cat: '흉살(凶殺)', color: '#e74c3c',
+        short: '피·수술·사고. 강렬한 에너지이지만 위험도 높다.',
+        detail: '백호(白虎)는 서방의 맹수로, 강력하고 위험한 에너지를 상징합니다. 피를 보는 사고, 수술, 폭력적인 사건과 연관됩니다. 그러나 이 살을 가진 사람은 동시에 강인한 생명력과 투지를 가집니다. 의사, 군인, 경찰 등에서 두각을 나타내기도 합니다.'
+    },
+    '괴강살(魁罡殺)': {
+        cat: '강살(强殺)', color: '#e67e22',
+        short: '강력한 개성과 카리스마. 극단적인 기질.',
+        detail: '괴강살은 극단적인 강함을 상징합니다. 이 살이 있는 사람은 카리스마와 강렬한 개성이 있지만, 감정 기복이 크고 타협을 싫어합니다. 성공하면 크게 성공하고, 실패하면 크게 실패하는 극단적인 기질을 가집니다.'
+    },
+    '원진살(怨嗔殺)': {
+        cat: '관계살(關係殺)', color: '#8b7ca8',
+        short: '인연의 원한. 가까운 사람과 갈등·반목.',
+        detail: '원한과 다툼을 부르는 살입니다. 가장 가까운 사람들과 오해와 갈등이 생기기 쉽습니다. 특히 부부·동업자·직장 상하관계에서 반목이 발생할 수 있습니다. 의사소통에 각별한 주의가 필요합니다.'
+    },
+    '귀문관살(鬼門關殺)': {
+        cat: '관계살(關係殺)', color: '#8b7ca8',
+        short: '귀신문. 신경질환·예민함·신비로운 직감.',
+        detail: '귀신의 문이라는 뜻으로, 신경질환이나 심리적 불안과 연관됩니다. 그러나 동시에 초감각적 직관력과 예술적 영감을 줍니다. 무속인, 종교인, 심리상담사에게서 자주 발견됩니다.'
+    },
+    '홍염살(紅艶殺)': {
+        cat: '도화(桃花)', color: '#e879a0',
+        short: '강렬한 이성 매력. 색정·바람기 주의.',
+        detail: '붉은 불꽃처럼 강렬한 이성적 매력을 발산합니다. 이성에게 인기가 많지만 색정적 문제가 발생할 수 있습니다. 연예인, 예술가에게 자주 나타납니다.'
+    },
+    '고신살(孤辰殺)': {
+        cat: '고독살(孤獨殺)', color: '#8b7ca8',
+        short: '외로움·독립심. 혼자 있는 시간이 필요하다.',
+        detail: '홀로 서는 기운입니다. 가족과 인연이 멀거나 혼자 지내는 시간이 많습니다. 그러나 이 고독함이 오히려 강한 독립심과 자기 계발의 원동력이 됩니다.'
+    },
+    '과숙살(寡宿殺)': {
+        cat: '고독살(孤獨殺)', color: '#8b7ca8',
+        short: '여성의 고독살. 배우자와의 인연이 박하다.',
+        detail: '주로 여성에게 적용되는 고독살입니다. 배우자와의 인연이 늦거나 박하고 혼자 지내는 시간이 많습니다. 그러나 강한 내면의 힘을 키우는 기운이기도 합니다.'
+    }
+};
+
 const SAJU_DB = {
     ILJU: {
     "갑자": {
@@ -1728,15 +1853,40 @@ function buildRelationSummary(data) {
 function buildShinsalSummary(data) {
     const shinsal = data.allShinsal || [];
     if(!shinsal || shinsal.length === 0) {
-        return '<div class="inline-interp"><div class="ii-label">✦ 신살·길성 해석</div><div class="ii-text">특별한 신살이 감지되지 않았습니다. 안정적인 원국 구조입니다.</div></div>';
+        return '<div class="inline-interp"><div class="ii-label">✦ 신살·길성 분석</div><div class="ii-text">원국에서 특별한 신살이 검출되지 않았습니다. 안정적인 원국 구조입니다.</div></div>';
     }
-    const goodSals = ['천을귀인','문창귀인','학당귀인','월덕귀인','복성귀인'];
-    const good = shinsal.filter(s => goodSals.some(g => s.includes(g)));
-    const risk = shinsal.filter(s => !goodSals.some(g => s.includes(g)));
-    let content = '';
-    if(good.length > 0) content += `<p style="margin-bottom:10px;"><b style="color:#00C853;">✦ 길성(吉星):</b> ${good.join(', ')} — 하늘이 내린 재능과 귀인의 기운이 당신을 보호합니다.</p>`;
-    if(risk.length > 0) content += `<p><b style="color:#e74c3c;">⚠ 신살(神殺):</b> ${risk.join(', ')}<br><span style="font-size:13px;color:#bbb;">이 기운들은 흉이 아니라 당신을 단련시키는 도전의 코드입니다. 제대로 다루면 가장 강력한 무기가 됩니다.</span></p>`;
-    return `<div class="inline-interp"><div class="ii-label">✦ 신살·길성 해석</div><div class="ii-title">하늘이 새긴 특수 기운</div><div class="ii-text">${content}</div></div>`;
+    const goodCats = ['길성(吉星)'];
+    const rows = shinsal.map(s => {
+        const info = window.SHINSAL_DESC?.[s] || {cat:'신살', color:'#aaa', short:s, detail:''};
+        const catColor = goodCats.includes(info.cat) ? '#c7a76a' : info.color || '#e74c3c';
+        return `<div style="background:rgba(255,255,255,0.03);border-radius:8px;padding:14px 16px;margin-bottom:10px;border-left:3px solid ${catColor};">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;">
+                <div>
+                    <span style="font-size:14px;font-weight:700;color:${catColor};">${s}</span>
+                    <span style="margin-left:8px;font-size:11px;color:rgba(255,255,255,0.4);background:rgba(255,255,255,0.07);padding:2px 8px;border-radius:10px;">${info.cat}</span>
+                </div>
+                <span style="font-size:12px;color:#999;font-style:italic;">${info.short}</span>
+            </div>
+            ${info.detail ? `<p style="font-size:13px;color:#bbb;line-height:1.8;margin:8px 0 0;">${info.detail}</p>` : ''}
+        </div>`;
+    }).join('');
+
+    const goodList = shinsal.filter(s => {
+        const info = window.SHINSAL_DESC?.[s] || {};
+        return info.cat === '길성(吉星)';
+    });
+    const badList = shinsal.filter(s => {
+        const info = window.SHINSAL_DESC?.[s] || {};
+        return info.cat !== '길성(吉星)';
+    });
+
+    return `<div class="inline-interp">
+        <div class="ii-label">✦ 신살(神殺) · 길성(吉星) 상세 분석</div>
+        <div class="ii-title">하늘이 새긴 특수 기운 — 총 ${shinsal.length}개 검출</div>
+        ${goodList.length > 0 ? `<div style="margin-bottom:6px;padding:10px 14px;background:rgba(199,167,106,0.07);border-radius:8px;"><span style="font-size:12px;color:var(--gold);">✦ 길성(吉星) ${goodList.length}개:</span> <span style="font-size:13px;color:#ddd;">${goodList.join(' · ')}</span></div>` : ''}
+        ${badList.length > 0 ? `<div style="margin-bottom:14px;padding:10px 14px;background:rgba(231,76,60,0.06);border-radius:8px;"><span style="font-size:12px;color:#e74c3c;">⚠ 신살 ${badList.length}개:</span> <span style="font-size:13px;color:#ddd;">${badList.join(' · ')}</span><p style="font-size:12px;color:#999;margin:6px 0 0;">신살은 흉이 아닙니다. 당신을 단련시키는 도전의 코드이며, 제대로 다루면 가장 강력한 무기가 됩니다.</p></div>` : ''}
+        <div class="ii-text">${rows}</div>
+    </div>`;
 }
 
 function buildStrengthSummary(data) {
@@ -1802,33 +1952,116 @@ function buildSectionHeader(title) {
 
 
 function buildChapter1_Basic(data) {
+    const pillars = data.pillars || [];
+    const pillarNames = ['연주(年柱)','월주(月柱)','일주(日柱)','시주(時柱)'];
+    const pillarDesc = ['조상·가문·초년 환경','부모·청년기·직업 환경','나 자신·배우자 자리','자녀·말년·내면의 소망'];
+
+    // 천간 설명
+    const stemDesc = {
+        '甲':'갑(甲) — 봄을 여는 큰 나무. 강한 생명력과 개척 정신.',
+        '乙':'을(乙) — 바람에 휘어지는 풀. 유연하고 섬세한 적응력.',
+        '丙':'병(丙) — 태양. 밝고 열정적이며 표현력이 강함.',
+        '丁':'정(丁) — 촛불. 따뜻하고 세밀하며 헌신적임.',
+        '戊':'무(戊) — 광활한 대지. 중후하고 포용력이 강함.',
+        '己':'기(己) — 기름진 밭. 실용적이고 꼼꼼하며 성실함.',
+        '庚':'경(庚) — 단련된 금속. 결단력·원칙·강인함.',
+        '辛':'신(辛) — 귀한 보석. 예민하고 완벽주의적.',
+        '壬':'임(壬) — 큰 강·바다. 깊은 지혜와 포용력.',
+        '癸':'계(癸) — 이슬·빗물. 섬세하고 총명하며 직관력 강함.'
+    };
+    // 지지 설명
+    const branchDesc = {
+        '子':'자(子) — 겨울 한복판. 지혜·집중·내면의 힘.',
+        '丑':'축(丑) — 얼어붙은 땅. 인내·저력·꾸준함.',
+        '寅':'인(寅) — 이른 봄 호랑이. 개척·용기·도전.',
+        '卯':'묘(卯) — 봄의 절정. 생명력·관계·표현력.',
+        '辰':'진(辰) — 봄 대지의 용. 잠재력·변화·신비.',
+        '巳':'사(巳) — 뱀. 예리한 지혜·변신·집중력.',
+        '午':'오(午) — 한여름 태양. 열정·성취·카리스마.',
+        '未':'미(未) — 여름 황혼. 풍요·감성·예술.',
+        '申':'신(申) — 가을 원숭이. 기지·결단·민첩함.',
+        '酉':'유(酉) — 가을 수확. 완성도·심미안·보상.',
+        '戌':'술(戌) — 가을 황혼 개. 충성·신뢰·통찰.',
+        '亥':'해(亥) — 깊은 겨울 바다. 지혜·무한함·잠재력.'
+    };
+    // 공망
+    const gongmangBranches = data.gongmang || [];
+    // 지장간 간략 설명
+    const hiddenDesc = {
+        '子':'계(癸) — 수(水) 단독. 지혜와 통찰의 순수 에너지.',
+        '丑':'계(癸)·신(辛)·기(己) — 수(水)·금(金)·토(土). 인내 속에 숨은 복합 재능.',
+        '寅':'무(戊)·병(丙)·갑(甲) — 토(土)·화(火)·목(木). 폭발적 성장 잠재력.',
+        '卯':'갑(甲)·을(乙) — 목(木) 집중. 강한 추진력과 예술성.',
+        '辰':'을(乙)·계(癸)·무(戊) — 목(木)·수(水)·토(土). 숨겨진 능력의 창고.',
+        '巳':'무(戊)·경(庚)·병(丙) — 토(土)·금(金)·화(火). 예리한 결단력.',
+        '午':'병(丙)·기(己)·정(丁) — 화(火)·토(土). 강렬한 열정과 표현력.',
+        '未':'정(丁)·을(乙)·기(己) — 화(火)·목(木)·토(土). 감성과 창의력.',
+        '申':'무(戊)·임(壬)·경(庚) — 토(土)·수(水)·금(金). 날카로운 지략.',
+        '酉':'경(庚)·신(辛) — 금(金) 집중. 정밀함과 완성도.',
+        '戌':'신(辛)·정(丁)·무(戊) — 금(金)·화(火)·토(土). 깊은 통찰과 신뢰.',
+        '亥':'무(戊)·갑(甲)·임(壬) — 토(土)·목(木)·수(水). 무한한 잠재력.'
+    };
+
     const iljuKey = (data.dayStem||'') + (data.dayBranch||'');
     const dbEntry = window.SAJU_DB?.ILJU?.[iljuKey] || {};
-    const title = dbEntry.title || (iljuKey + ' 일주의 기운');
-    const core = dbEntry.core || '당신은 끊임없이 환경과 충돌하며 자신만의 영역을 개척하는 기질을 타고났습니다.';
-    const weapon = dbEntry.weapon || '위기 상황에서 발휘되는 직관과 돌파력이 당신의 가장 큰 무기입니다.';
-    const stemEl = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'}[data.dayStem] || 'earth';
     const isStrong = data.strengthText && (data.strengthText.includes('신강') || data.strengthText.includes('강'));
-    const stemMeaning = {wood:'甲·乙목 — 봄을 여는 나무의 기운. 끝없는 성장 본능과 개척 정신이 DNA에 새겨져 있습니다. 멈춰 있으면 내면이 갑갑해지고, 새로운 것을 향해 나아가는 것이 생존 방식입니다.',fire:'丙·丁화 — 세상을 밝히는 불꽃의 기운. 열정, 카리스마, 폭발적 표현력이 핵심 자산입니다. 어디서든 자연스럽게 주목받고 영향력을 발휘합니다.',earth:'戊·己토 — 모든 것을 품는 대지의 기운. 묵직한 포용력과 신뢰감이 당신의 가장 큰 자산입니다. 사람들이 자연스럽게 기대고 의지합니다.',metal:'庚·辛금 — 단련된 금속의 기운. 결단력, 원칙, 완성도가 삶을 이끕니다. 압박이 올수록 더욱 날카로워지는 기질입니다.',water:'壬·癸수 — 깊은 바다의 지혜. 통찰력, 유연성, 무한한 잠재력이 내면에 잠들어 있습니다. 복잡한 상황일수록 본질을 꿰뚫는 감각이 발동합니다.'}[stemEl] || '';
-    const branchMeaning = {'子':'자(子)는 겨울 한복판의 극도 집중과 내면의 힘을 품은 지지입니다.','丑':'축(丑)은 혹독한 겨울을 버텨내는 인내와 저력의 지지입니다.','寅':'인(寅)은 봄을 여는 호랑이의 기운, 개척과 도전의 지지입니다.','卯':'묘(卯)는 봄의 절정, 생명력과 관계 에너지가 폭발하는 지지입니다.','辰':'진(辰)은 용이 잠든 봄의 대지, 거대한 잠재력이 응축된 지지입니다.','巳':'사(巳)는 뱀의 예리함과 여름 폭발력을 품은 변신의 지지입니다.','午':'오(午)는 한여름 정오의 태양, 사회적 성취 에너지가 극에 달한 지지입니다.','未':'미(未)는 여름의 관록, 경험이 지혜로 숙성되는 지지입니다.','申':'신(申)은 가을의 결단, 불필요한 것을 쳐내는 날카로운 지지입니다.','酉':'유(酉)는 가을의 정밀 수확, 완성도와 보상의 지지입니다.','戌':'술(戌)은 가을 황혼의 중후함, 깊은 통찰과 신뢰의 지지입니다.','亥':'해(亥)는 겨울 바다의 심연, 무한한 가능성을 저장한 지지입니다.'}[data.dayBranch] || '';
-    const strengthDesc = isStrong
-        ? '당신의 일간 에너지는 <b>身强(신강)</b> 상태입니다. 기운이 충만한 만큼 남에게 끌려다니기보다 내가 판을 짜야 제 능력이 발현됩니다. 조직 안에 갇혀 있으면 에너지가 억눌려 오히려 역효과가 납니다. 창업, 프리랜서, 전문직처럼 자율권이 보장된 환경에서 폭발적인 능력이 드러납니다.'
-        : '당신의 일간 에너지는 <b>身弱(신약)</b> 상태입니다. 혼자 모든 것을 짊어지기보다 훌륭한 파트너와 팀을 구성할 때 1+1이 10이 되는 시너지를 경험합니다. 좋은 귀인을 곁에 두고 협력하는 것이 인생 전략의 핵심입니다.';
-    return `<div class="report-chapter">
-        <h3 class="ch-title">Chapter 1. 나의 본질과 영혼의 그릇 — 日柱(일주) 완전 해부</h3>
-        <p class="ch-text">명리학에서 日柱(일주)는 단순히 성격을 의미하는 것이 아닙니다. 당신이 평생 짊어지고 가야 할 영혼의 바코드이자 생존의 무기입니다. 年柱(연주)가 가문과 조상의 기운을, 月柱(월주)가 사회적 환경과 부모의 기운을 담고 있다면, 日柱(일주)는 오직 당신 자신만의 본질을 담고 있습니다.</p>
-        <p class="ch-text">많은 사람들이 사주를 볼 때 겉으로 드러난 성취와 재물에만 주목합니다. 하지만 그 성취들을 만들어내는 근본 에너지, 당신을 진정으로 움직이는 내밀한 기질은 이 일주에 새겨져 있습니다. 이것을 모르면 아무리 열심히 살아도 남의 방식으로 사는 것과 다름없습니다.</p>
-        <div style="background:rgba(199,167,106,0.07);border-radius:12px;padding:20px;margin:20px 0;">
-            <div style="font-size:22px;font-weight:800;color:var(--gold);font-family:'Noto Serif KR',serif;margin-bottom:14px;">[${title}]</div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;">
-                <div style="padding:12px;background:rgba(0,0,0,0.3);border-radius:8px;"><div style="font-size:10px;color:var(--text-dim);margin-bottom:6px;letter-spacing:1px;">天干(천간) 분석</div><div style="font-size:13px;color:#ddd;line-height:1.75;">${stemMeaning}</div></div>
-                <div style="padding:12px;background:rgba(0,0,0,0.3);border-radius:8px;"><div style="font-size:10px;color:var(--text-dim);margin-bottom:6px;letter-spacing:1px;">地支(지지) 분석</div><div style="font-size:13px;color:#ddd;line-height:1.75;">${branchMeaning}</div></div>
+
+    // 4주 박스 생성
+    const pillarBoxes = pillars.map((p, idx) => {
+        const hanja = p.h ? p.h.join('') : '';
+        const stem = p.h ? p.h[0] : '';
+        const branch = p.h ? p.h[1] : '';
+        const sipseongVal = (data.pillars_sipseong || [])[idx] || '';
+        const unseong = (data.pillars && window.UNSUNG_MAP?.[data.dayStem]?.[branch]) || '';
+        const isGongmang = gongmangBranches.includes(branch);
+        const boxColor = idx===2 ? 'rgba(199,167,106,0.1)' : 'rgba(255,255,255,0.03)';
+        const borderColor = idx===2 ? 'var(--gold)' : 'rgba(255,255,255,0.1)';
+
+        return `<div style="background:${boxColor};border:1px solid ${borderColor};border-radius:12px;padding:18px;break-inside:avoid;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                <div>
+                    <span style="font-size:11px;color:var(--text-dim);letter-spacing:1px;">${pillarNames[idx]}</span>
+                    <div style="font-size:22px;font-weight:800;color:${idx===2?'var(--gold)':'#ddd'};font-family:'Noto Serif KR',serif;margin-top:2px;">${hanja}</div>
+                </div>
+                <div style="text-align:right;font-size:12px;color:#888;">${pillarDesc[idx]}${isGongmang?'<br><span style="color:#e74c3c;font-weight:700;">공망(空亡)</span>':''}</div>
             </div>
-            <p style="font-size:14.5px;color:#ddd;line-height:1.9;margin:0;">${core}</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+                <div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;">
+                    <div style="font-size:10px;color:var(--text-dim);margin-bottom:4px;letter-spacing:1px;">천간(天干)</div>
+                    <div style="font-size:12px;color:#ddd;line-height:1.6;">${stemDesc[stem] || stem}</div>
+                </div>
+                <div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;">
+                    <div style="font-size:10px;color:var(--text-dim);margin-bottom:4px;letter-spacing:1px;">지지(地支)</div>
+                    <div style="font-size:12px;color:#ddd;line-height:1.6;">${branchDesc[branch] || branch}</div>
+                </div>
+                <div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;">
+                    <div style="font-size:10px;color:var(--text-dim);margin-bottom:4px;letter-spacing:1px;">지장간(地藏干)</div>
+                    <div style="font-size:12px;color:#bbb;line-height:1.6;">${hiddenDesc[branch] || '-'}</div>
+                </div>
+                <div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;">
+                    <div style="font-size:10px;color:var(--text-dim);margin-bottom:4px;letter-spacing:1px;">12운성(運星)</div>
+                    <div style="font-size:14px;font-weight:700;color:var(--gold);">${unseong || '-'}</div>
+                </div>
+            </div>
+            ${sipseongVal ? `<div style="font-size:11px;color:rgba(199,167,106,0.7);padding:6px 10px;background:rgba(199,167,106,0.05);border-radius:6px;">십성(十星): <b>${sipseongVal}</b></div>` : ''}
+        </div>`;
+    }).join('');
+
+    const strengthDesc = isStrong
+        ? '身强(신강) — 기운이 충만. 자율권이 보장된 환경에서 폭발적 능력 발휘.'
+        : '身弱(신약) — 기운이 분산. 좋은 파트너와 협력할 때 1+1이 10이 됨.';
+
+    return `<div class="report-chapter">
+        <h3 class="ch-title">사주 원국(四柱 原局) 전체 해설</h3>
+        <p class="ch-text">사주 8자(여덟 글자)는 단순한 기호가 아닙니다. 각 글자마다 고유한 에너지와 의미를 담고 있으며, 이 글자들의 조합이 당신 인생의 고유한 설계도를 만들어냅니다.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:20px 0;">
+            ${pillarBoxes}
         </div>
-        <p class="ch-text"><b style="color:var(--gold);">[핵심 무기]</b> ${weapon}</p>
-        <p class="ch-text">${strengthDesc}</p>
-        <p class="ch-text">때로는 이 기질 때문에 불필요한 마찰을 겪기도 합니다. 하지만 그 마찰열이 당신의 그릇을 한 단계 더 크게 빚어내는 용광로 역할을 합니다. 환경을 탓하지 마십시오. 당신은 그 환경을 이해하고, 재편하고, 지배할 수 있는 기질을 가지고 태어났습니다.</p>
+        <div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:14px;margin-top:4px;">
+            <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px;letter-spacing:1px;">일간 강약 판정</div>
+            <p style="font-size:13.5px;color:#ddd;line-height:1.8;margin:0;">${strengthDesc}</p>
+        </div>
+        ${dbEntry.core ? `<div style="background:rgba(199,167,106,0.07);border-left:3px solid var(--gold);padding:14px 16px;border-radius:0 8px 8px 0;margin-top:14px;"><div style="font-size:11px;color:var(--text-dim);margin-bottom:6px;letter-spacing:1px;">일주(日柱) 핵심 분석</div><p style="font-size:14px;color:#ddd;line-height:1.9;margin:0;">${dbEntry.core}</p></div>` : ''}
     </div>`;
 }
 
@@ -3052,72 +3285,152 @@ const BRANCH_HIDDEN = {
 };
 
 const SHINSAL_LOGIC = {
+    // ── 1. 천을귀인(天乙貴人) — 일간 기준, 축·미·자·신·해·유·묘·사·인·오 ──
     '천을귀인': (gz, ec) => {
         const ds = ec.getDay()[0];
-        const targets = {"甲":"丑未","戊":"丑未","庚":"丑未","乙":"子申","己":"子申","丙":"亥酉","丁":"亥酉","壬":"卯巳","癸":"卯巳","辛":"寅午"}[ds];
-        return targets && targets.includes(gz[1]) ? '천을귀인' : '';
+        const map = {"甲":"丑未","戊":"丑未","庚":"丑未","乙":"子申","己":"子申","丙":"亥酉","丁":"亥酉","壬":"卯巳","癸":"卯巳","辛":"寅午"};
+        const targets = map[ds] || '';
+        return targets.includes(gz[1]) ? '천을귀인(天乙貴人)' : '';
     },
-    
-    '백호대살': (gz, ec) => {
-        return ['甲辰','乙未','丙戌','丁丑','戊辰','壬戌','癸丑'].includes(gz) ? '백호대살' : '';
-    },
-    '괴강살': (gz, ec) => {
-        return ['庚辰','庚戌','壬辰','壬戌','戊戌'].includes(gz) ? '괴강살' : '';
-    },
-    '양인살': (gz, ec) => {
-        const ds = ec.getDay()[0];
-        const targets = {"甲":"卯","丙":"午","戊":"午","庚":"酉","壬":"子"}[ds];
-        return targets === gz[1] ? '양인살' : '';
-    },
-    '원진살': (gz, ec) => {
-        const db = ec.getDay()[1];
-        if(!db) return '';
-        const wjMap = {"子":"未","丑":"午","寅":"酉","卯":"申","辰":"亥","巳":"戌","午":"丑","未":"子","申":"卯","酉":"寅","戌":"巳","亥":"辰"};
-        // Only output wonjin if the branch matches the day branch's wonjin pair, and it's NOT the day pillar itself
-        return (gz[1] === wjMap[db] && gz !== ec.getDay()) ? '원진살' : '';
-    },
-    '귀문관살': (gz, ec) => {
-        const db = ec.getDay()[1];
-        if(!db) return '';
-        const gmMap = {"子":"酉","丑":"午","寅":"未","卯":"申","辰":"亥","巳":"戌","午":"丑","未":"寅","申":"卯","酉":"子","戌":"巳","亥":"辰"};
-        return (gz[1] === gmMap[db] && gz !== ec.getDay()) ? '귀문관살' : '';
-    },
-    '홍염살': (gz, ec) => {
-        const ds = ec.getDay()[0];
-        const targets = {"甲":"午","乙":"午","丙":"寅","丁":"未","戊":"辰","己":"辰","庚":"戌","辛":"酉","壬":"子","癸":"申"}[ds];
-        return targets === gz[1] ? '홍염살' : '';
-    },
+    // ── 2. 문창귀인(文昌貴人) — 일간 기준 ──
     '문창귀인': (gz, ec) => {
         const ds = ec.getDay()[0];
-        const targets = {"甲":"巳","乙":"午","丙":"申","丁":"酉","戊":"申","己":"酉","庚":"亥","辛":"子","壬":"寅","癸":"卯"}[ds];
-        return targets === gz[1] ? '문창귀인' : '';
+        const map = {"甲":"巳","乙":"午","丙":"申","丁":"酉","戊":"申","己":"酉","庚":"亥","辛":"子","壬":"寅","癸":"卯"};
+        return map[ds] === gz[1] ? '문창귀인(文昌貴人)' : '';
     },
+    // ── 3. 문곡귀인(文曲貴人) — 일간 기준 ──
     '문곡귀인': (gz, ec) => {
         const ds = ec.getDay()[0];
-        const targets = {"甲":"亥","乙":"子","丙":"寅","丁":"卯","戊":"寅","己":"卯","庚":"巳","辛":"午","壬":"申","癸":"酉"}[ds];
-        return targets === gz[1] ? '문곡귀인' : '';
+        const map = {"甲":"亥","乙":"子","丙":"寅","丁":"卯","戊":"寅","己":"卯","庚":"巳","辛":"午","壬":"申","癸":"酉"};
+        return map[ds] === gz[1] ? '문곡귀인(文曲貴人)' : '';
     },
-    '도화': (gz, ec) => {
-        const ms = ec.getMonth()[1];
-        const targets = {"亥":"子","卯":"子","未":"子","申":"酉","子":"酉","辰":"酉","巳":"午","酉":"午","丑":"午","寅":"卯","午":"卯","戌":"卯"}[ms];
-        return targets === gz[1] ? '도화' : '';
-    },
-    '역마': (gz, ec) => {
-        const ms = ec.getMonth()[1];
-        const targets = {"亥":"巳","卯":"巳","未":"巳","申":"寅","子":"寅","辰":"寅","巳":"亥","酉":"亥","丑":"亥","寅":"申","午":"申","戌":"申"}[ms];
-        return targets === gz[1] ? '역마' : '';
-    },
-    '화개': (gz, ec) => {
-        const ms = ec.getMonth()[1];
-        const targets = {"亥":"未","卯":"未","未":"未","申":"辰","子":"辰","辰":"辰","巳":"丑","酉":"丑","丑":"丑","寅":"戌","午":"戌","戌":"戌"}[ms];
-        return targets === gz[1] ? '화개' : '';
-    },
-    '홍염': (gz, ec) => {
+    // ── 4. 양인살(羊刃殺) — 일간 기준 ──
+    '양인살': (gz, ec) => {
         const ds = ec.getDay()[0];
-        const targets = {"甲":"午","乙":"午","丙":"寅","丁":"未","戊":"辰","己":"辰","庚":"戌","辛":"酉","壬":"子","癸":"申"}[ds];
-        return targets === gz[1] ? '홍염' : '';
+        const map = {"甲":"卯","丙":"午","戊":"午","庚":"酉","壬":"子"};
+        return map[ds] === gz[1] ? '양인살(羊刃殺)' : '';
     },
-    '백호대살': (gz) => ["戊辰","丁丑","丙戌","乙未","甲辰","癸丑","壬戌"].includes(gz) ? '백호대살' : ''
+    // ── 5. 역마살(驛馬殺) — 연지·일지 기준 ──
+    '역마살': (gz, ec) => {
+        const yb = ec.getYear()[1]; const db = ec.getDay()[1];
+        const map = {"亥":"巳","卯":"巳","未":"巳","申":"寅","子":"寅","辰":"寅","巳":"亥","酉":"亥","丑":"亥","寅":"申","午":"申","戌":"申"};
+        return (map[yb]===gz[1] || map[db]===gz[1]) ? '역마살(驛馬殺)' : '';
+    },
+    // ── 6. 도화살(桃花殺) — 연지·일지 기준 ──
+    '도화살': (gz, ec) => {
+        const yb = ec.getYear()[1]; const db = ec.getDay()[1];
+        const map = {"亥":"子","卯":"子","未":"子","申":"酉","子":"酉","辰":"酉","巳":"午","酉":"午","丑":"午","寅":"卯","午":"卯","戌":"卯"};
+        return (map[yb]===gz[1] || map[db]===gz[1]) ? '도화살(桃花殺)' : '';
+    },
+    // ── 7. 화개살(華蓋殺) — 연지·일지 기준 ──
+    '화개살': (gz, ec) => {
+        const yb = ec.getYear()[1]; const db = ec.getDay()[1];
+        const map = {"亥":"未","卯":"未","未":"未","申":"辰","子":"辰","辰":"辰","巳":"丑","酉":"丑","丑":"丑","寅":"戌","午":"戌","戌":"戌"};
+        return (map[yb]===gz[1] || map[db]===gz[1]) ? '화개살(華蓋殺)' : '';
+    },
+    // ── 8. 겁살(劫殺) — 연지·일지 기준 ──
+    '겁살': (gz, ec) => {
+        const yb = ec.getYear()[1]; const db = ec.getDay()[1];
+        const map = {"申":"巳","子":"巳","辰":"巳","亥":"申","卯":"申","未":"申","寅":"亥","午":"亥","戌":"亥","巳":"寅","酉":"寅","丑":"寅"};
+        return (map[yb]===gz[1] || map[db]===gz[1]) ? '겁살(劫殺)' : '';
+    },
+    // ── 9. 망신살(亡身殺) — 연지·일지 기준 ──
+    '망신살': (gz, ec) => {
+        const yb = ec.getYear()[1]; const db = ec.getDay()[1];
+        const map = {"申":"亥","子":"卯","辰":"未","亥":"寅","卯":"午","未":"戌","寅":"巳","午":"酉","戌":"丑","巳":"申","酉":"子","丑":"辰"};
+        return (map[yb]===gz[1] || map[db]===gz[1]) ? '망신살(亡身殺)' : '';
+    },
+    // ── 10. 지살(地殺) — 연지·일지 기준 ──
+    '지살': (gz, ec) => {
+        const yb = ec.getYear()[1]; const db = ec.getDay()[1];
+        const map = {"申":"申","子":"子","辰":"辰","亥":"亥","卯":"卯","未":"未","寅":"寅","午":"午","戌":"戌","巳":"巳","酉":"酉","丑":"丑"};
+        // 지살 = 삼합 첫번째 지지와 같은 자리
+        const gsMap = {"申":"寅","子":"申","辰":"子","亥":"巳","卯":"亥","未":"卯","寅":"申","午":"寅","戌":"午","巳":"亥","酉":"巳","丑":"酉"};
+        return (gsMap[yb]===gz[1] || gsMap[db]===gz[1]) ? '지살(地殺)' : '';
+    },
+    // ── 11. 천살(天殺) — 연지·일지 기준 ──
+    '천살': (gz, ec) => {
+        const yb = ec.getYear()[1]; const db = ec.getDay()[1];
+        const map = {"申":"辰","子":"辰","辰":"辰","亥":"未","卯":"未","未":"未","寅":"戌","午":"戌","戌":"戌","巳":"丑","酉":"丑","丑":"丑"};
+        return (map[yb]===gz[1] || map[db]===gz[1]) ? '천살(天殺)' : '';
+    },
+    // ── 12. 년살(年殺) — 연지·일지 기준 (목욕지) ──
+    '년살': (gz, ec) => {
+        const yb = ec.getYear()[1]; const db = ec.getDay()[1];
+        const map = {"申":"酉","子":"卯","辰":"卯","亥":"子","卯":"子","未":"子","寅":"卯","午":"午","戌":"午","巳":"午","酉":"酉","丑":"酉"};
+        // 년살 = 도화와 같은 기준 위치
+        return false; // 도화와 중복 방지 — 도화살로 통합
+    },
+    // ── 13. 백호대살(白虎大殺) — 간지 조합 ──
+    '백호대살': (gz, ec) => {
+        return ['甲辰','乙未','丙戌','丁丑','戊辰','壬戌','癸丑'].includes(gz) ? '백호대살(白虎大殺)' : '';
+    },
+    // ── 14. 괴강살(魁罡殺) — 간지 조합 ──
+    '괴강살': (gz, ec) => {
+        return ['庚辰','庚戌','壬辰','壬戌','戊戌'].includes(gz) ? '괴강살(魁罡殺)' : '';
+    },
+    // ── 15. 원진살(怨嗔殺) — 일지 기준 ──
+    '원진살': (gz, ec) => {
+        const db = ec.getDay()[1];
+        if(!db || gz === ec.getDay()) return '';
+        const map = {"子":"未","丑":"午","寅":"酉","卯":"申","辰":"亥","巳":"戌","午":"丑","未":"子","申":"卯","酉":"寅","戌":"巳","亥":"辰"};
+        return gz[1] === map[db] ? '원진살(怨嗔殺)' : '';
+    },
+    // ── 16. 귀문관살(鬼門關殺) — 일지 기준 ──
+    '귀문관살': (gz, ec) => {
+        const db = ec.getDay()[1];
+        if(!db || gz === ec.getDay()) return '';
+        const map = {"子":"酉","丑":"午","寅":"未","卯":"申","辰":"亥","巳":"戌","午":"丑","未":"寅","申":"卯","酉":"子","戌":"巳","亥":"辰"};
+        return gz[1] === map[db] ? '귀문관살(鬼門關殺)' : '';
+    },
+    // ── 17. 홍염살(紅艶殺) — 일간 기준 ──
+    '홍염살': (gz, ec) => {
+        const ds = ec.getDay()[0];
+        const map = {"甲":"午","乙":"午","丙":"寅","丁":"未","戊":"辰","己":"辰","庚":"戌","辛":"酉","壬":"子","癸":"申"};
+        return map[ds] === gz[1] ? '홍염살(紅艶殺)' : '';
+    },
+    // ── 18. 고신살(孤辰殺) — 연지 기준 (남성) ──
+    '고신살': (gz, ec) => {
+        const yb = ec.getYear()[1];
+        const map = {"寅":"巳","卯":"巳","辰":"巳","巳":"申","午":"申","未":"申","申":"亥","酉":"亥","戌":"亥","亥":"寅","子":"寅","丑":"寅"};
+        return map[yb] === gz[1] ? '고신살(孤辰殺)' : '';
+    },
+    // ── 19. 과숙살(寡宿殺) — 연지 기준 (여성) ──
+    '과숙살': (gz, ec) => {
+        const yb = ec.getYear()[1];
+        const map = {"寅":"丑","卯":"丑","辰":"丑","巳":"辰","午":"辰","未":"辰","申":"未","酉":"未","戌":"未","亥":"戌","子":"戌","丑":"戌"};
+        return map[yb] === gz[1] ? '과숙살(寡宿殺)' : '';
+    },
+    // ── 20. 천의성(天醫星) — 월지 기준 ──
+    '천의성': (gz, ec) => {
+        const mb = ec.getMonth()[1];
+        const prev = {"子":"亥","丑":"子","寅":"丑","卯":"寅","辰":"卯","巳":"辰","午":"巳","未":"午","申":"未","酉":"申","戌":"酉","亥":"戌"};
+        return prev[mb] === gz[1] ? '천의성(天醫星)' : '';
+    },
+    // ── 21. 학당귀인(學堂貴人) — 일간 기준 ──
+    '학당귀인': (gz, ec) => {
+        const ds = ec.getDay()[0];
+        const map = {"甲":"亥","乙":"午","丙":"寅","丁":"酉","戊":"申","己":"卯","庚":"巳","辛":"子","壬":"申","癸":"卯"};
+        return map[ds] === gz[1] ? '학당귀인(學堂貴人)' : '';
+    },
+    // ── 22. 천관귀인(天官貴人) — 일간 기준 ──
+    '천관귀인': (gz, ec) => {
+        const ds = ec.getDay()[0];
+        const map = {"甲":"未","乙":"辰","丙":"酉","丁":"亥","戊":"丑","己":"子","庚":"丑","辛":"寅","壬":"卯","癸":"巳"};
+        return map[ds] === gz[1] ? '천관귀인(天官貴人)' : '';
+    },
+    // ── 23. 천덕귀인(天德貴人) — 월지 기준 ──
+    '천덕귀인': (gz, ec) => {
+        const mb = ec.getMonth()[1];
+        const map = {"寅":"丁","卯":"申","辰":"壬","巳":"辛","午":"亥","未":"甲","申":"癸","酉":"寅","戌":"丙","亥":"乙","子":"巳","丑":"庚"};
+        return map[mb] === gz[0] ? '천덕귀인(天德貴人)' : '';
+    },
+    // ── 24. 월덕귀인(月德貴人) — 월지 기준 ──
+    '월덕귀인': (gz, ec) => {
+        const mb = ec.getMonth()[1];
+        const map = {"寅":"甲","卯":"壬","辰":"壬","巳":"丙","午":"甲","未":"甲","申":"壬","酉":"丙","戌":"丙","亥":"甲","子":"壬","丑":"丙"};
+        return map[mb] === gz[0] ? '월덕귀인(月德貴人)' : '';
+    }
 };
 
 function go(n) {
@@ -4178,12 +4491,41 @@ function runAnalysis() {
             const gz = dy.getGanZhi();
             return { age: dy.getStartAge(), name: gz[0]+gz[1], gz: [gz[0], gz[1]] };
         });
+        // 각 주별 십성 계산 (일간 기준)
+        const SIP_MAP = {
+            wood: {wood:'비견',fire:'식신',earth:'편재',metal:'편관',water:'편인'},
+            fire: {fire:'비견',earth:'식신',metal:'편재',water:'편관',wood:'편인'},
+            earth: {earth:'비견',metal:'식신',water:'편재',wood:'편관',fire:'편인'},
+            metal: {metal:'비견',water:'식신',wood:'편재',fire:'편관',earth:'편인'},
+            water: {water:'비견',wood:'식신',fire:'편재',earth:'편관',metal:'편인'}
+        };
+        const STEM_OH = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
+        const dayOh = STEM_OH[dayStem] || 'earth';
+        const dayStemYin = ['乙','丁','己','辛','癸'].includes(dayStem);
+        const pillars_sipseong = (pillars||[]).map((p,pi) => {
+            if(!p || !p.h) return '';
+            const st = p.h[0]; const oh = STEM_OH[st] || 'earth';
+            const base = (SIP_MAP[dayOh]||{})[oh] || '';
+            const stYin = ['乙','丁','己','辛','癸'].includes(st);
+            if(!base) return '';
+            // 음양 동일 = 비견/식신/편재/편관/편인, 음양 다름 = 겁재/상관/정재/정관/정인
+            if(pi === 2) return '(일주)'; // 일주는 자기 자신
+            const yinDiff = (dayStemYin !== stYin);
+            if(base==='비견') return yinDiff ? '겁재' : '비견';
+            if(base==='식신') return yinDiff ? '상관' : '식신';
+            if(base==='편재') return yinDiff ? '정재' : '편재';
+            if(base==='편관') return yinDiff ? '정관' : '편관';
+            if(base==='편인') return yinDiff ? '정인' : '편인';
+            return base;
+        });
+        // 공망 계산 (이전 globalSajuData에서 가져오거나 빈 배열)
         globalSajuData = {
             name: name,
             dayStem: dayStem,
             dayBranch: pillars[1].h[1],
             monthBranch: pillars[2].h[1],
             pillars: pillars,
+            pillars_sipseong: pillars_sipseong,
             strengthText: strength,
             allShinsal: allShinsal,
             wuxing: counts,
