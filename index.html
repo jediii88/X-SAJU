@@ -1978,8 +1978,8 @@ function buildCurrentPeriodSummary(data) {
     const daeunRows = data.daeunRows || [];
     const aIdx = data.activeDaeunIdx || 0;
     const curDaeun = daeunRows[aIdx];
-    const OH = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
-    const JO = {'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','辛':'metal','酉':'metal','戌':'earth','亥':'water'};
+    const OH = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','申':'metal','壬':'water','癸':'water'};
+    const JO = {'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'};
     const KN = {wood:'목(木)',fire:'화(火)',earth:'토(土)',metal:'금(金)',water:'수(水)'};
     const sc = {}; sc[data.yong]=2;sc[data.hee]=1;sc[data.gi]=-2;sc[data.goo]=-1;
     function gs(g,j){return (sc[OH[g]]||0)+(sc[JO[j]]||0);}
@@ -2069,7 +2069,7 @@ function buildMasterFullReading(data) {
     const hasBien = (sip['비견']||0)+(sip['겡재']||0) > 2;
     const hasGwan = (sip['정관']||0)+(sip['편관']||0) > 0;
     const hasJae = (sip['정재']||0)+(sip['편재']||0) > 0;
-    const OH = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
+    const OH = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','申':'metal','壬':'water','癸':'water'};
     const dayOh = OH[ds]||'fire';
 
     const CHAR_MAP = {
@@ -2135,7 +2135,7 @@ function buildChapter1_Basic(data) {
         '巳':'사(사) — 뱀. 예리한 지혜·변신·집중력.',
         '午':'오(오) — 한여름 태양. 열정·성취·카리스마.',
         '未':'미(미) — 여름 황혼. 풍요·감성·예술.',
-        '辛':'신(신) — 가을 원숭이. 기지·결단·민첩함.',
+        '申':'신(신) — 가을 원숭이. 기지·결단·민첩함.',
         '酉':'유(유) — 가을 수확. 완성도·심미안·보상.',
         '戌':'술(술) — 가을 황혼 개. 충성·신뢰·통찰.',
         '亥':'해(해) — 깊은 겨울 바다. 지혜·무한함·잠재력.'
@@ -2316,7 +2316,7 @@ function buildChapter4_Wealth(data) {
     const sikC = (sipseong['식신']||0) + (sipseong['상관']||0);
     const gwanC = (sipseong['정관']||0) + (sipseong['편관']||0);
     const total = Math.max(Object.values(sipseong).reduce((a,b)=>a+b,0), 1);
-    const stemEl = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'}[data.dayStem] || 'earth';
+    const stemEl = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','申':'metal','壬':'water','癸':'water'}[data.dayStem] || 'earth';
     const isStrong = data.strengthText && (data.strengthText.includes('신강') || data.strengthText.includes('강'));
 
     // 재물 유형 판정
@@ -2487,8 +2487,8 @@ function buildSewunLoop(data) {
     };
 
     // 용신/기신 기반 연도 평가
-    const STEM_OH = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
-    const BRANCH_OH = {'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','辛':'metal','酉':'metal','戌':'earth','亥':'water'};
+    const STEM_OH = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','申':'metal','壬':'water','癸':'water'};
+    const BRANCH_OH = {'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'};
     const yong = data.yong || ''; const hee = data.hee || ''; const gi = data.gi || ''; const goo = data.goo || '';
     
     function scoreYear(stem, branch) {
@@ -2570,8 +2570,8 @@ function buildWolunLoop(data) {
     ];
 
     // 용신/기신 기반 월 평가
-    const BRANCH_OH = {'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','辛':'metal','酉':'metal','戌':'earth','亥':'water'};
-    const STEM_OH = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
+    const BRANCH_OH = {'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'};
+    const STEM_OH = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','申':'metal','壬':'water','癸':'water'};
     const yong=data.yong||''; const hee=data.hee||''; const gi=data.gi||''; const goo=data.goo||'';
     function mScore(mGan, mJi) {
         let s=0;
@@ -2794,7 +2794,7 @@ function buildChapter8_Health(data) {
 }
 
 function buildChapter9_Remedy(data) {
-    const stemEl = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'}[data.dayStem] || 'earth';
+    const stemEl = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','申':'metal','壬':'water','癸':'water'}[data.dayStem] || 'earth';
     const yong = data.yong || stemEl;
     const ohKr = {wood:'목(木)',fire:'화(火)',earth:'토(土)',metal:'금(金)',water:'수(水)'};
     const yongKr = ohKr[yong] || ohKr[stemEl];
@@ -2847,7 +2847,7 @@ function buildChapter9_Remedy(data) {
 }
 
 function buildChapterPersonality(data) {
-    const stemEl = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'}[data.dayStem] || 'earth';
+    const stemEl = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','申':'metal','壬':'water','癸':'water'}[data.dayStem] || 'earth';
     const iljuKey = (data.dayStem || '') + (data.dayBranch || '');
     const dbEntry = window.SAJU_DB && window.SAJU_DB.ILJU && window.SAJU_DB.ILJU[iljuKey] ? window.SAJU_DB.ILJU[iljuKey] : {};
 
@@ -3595,8 +3595,8 @@ function closeHelp(e) {
     setTimeout(() => modal.style.display = 'none', 200);
 }
 
-const HAN_COLOR = {"甲":"wood","乙":"wood","寅":"wood","卯":"wood","丙":"fire","丁":"fire","巳":"fire","午":"fire","戊":"earth","己":"earth","辰":"earth","戌":"earth","丑":"earth","未":"earth","庚":"metal","辛":"metal","辛":"metal","酉":"metal","壬":"water","癸":"water","亥":"water","子":"water"};
-const HAN_KOR = {"甲":"갑","乙":"을","丙":"병","丁":"정","戊":"무","己":"기","庚":"경","辛":"신","壬":"임","癸":"계","子":"자","丑":"축","寅":"인","卯":"묘","辰":"진","巳":"사","午":"오","未":"미","辛":"신","酉":"유","戌":"술","亥":"해"};
+const HAN_COLOR = {"甲":"wood","乙":"wood","寅":"wood","卯":"wood","丙":"fire","丁":"fire","巳":"fire","午":"fire","戊":"earth","己":"earth","辰":"earth","戌":"earth","丑":"earth","未":"earth","庚":"metal","辛":"metal","申":"metal","酉":"metal","壬":"water","癸":"water","亥":"water","子":"water"};
+const HAN_KOR = {"甲":"갑","乙":"을","丙":"병","丁":"정","戊":"무","己":"기","庚":"경","辛":"신","壬":"임","癸":"계","子":"자","丑":"축","寅":"인","卯":"묘","辰":"진","巳":"사","午":"오","未":"미","申":"신","酉":"유","戌":"술","亥":"해"};
 const STEM_YANG = ["갑","병","무","경","임"];
 const BRANCH_YANG = ["자","인","진","오","신","술"];
 const RELATION_LABELS = {
@@ -3839,7 +3839,7 @@ const ANIMAL_SPRITE = {
     '巳': {kr:'뱀',     file:'snake'},
     '午': {kr:'말',     file:'horse'},
     '未': {kr:'양',     file:'goat'},
-    '辛': {kr:'원숭이', file:'monkey'},
+    '申': {kr:'원숭이', file:'monkey'},
     '酉': {kr:'닭',     file:'rooster'},
     '戌': {kr:'개',     file:'dog'},
     '亥': {kr:'돼지',   file:'pig'}
@@ -3875,7 +3875,11 @@ function showLoading(msg, callback) {
     if(loadEl) loadEl.style.display = 'flex';
     if(msgEl) msgEl.innerText = '사주를 분석하는 중입니다...';
     setTimeout(() => {
-        try { callback(); } catch(e) { console.error('분석 오류:', e); }
+        try { callback(); } catch(e) {
+            console.error('분석 오류:', e);
+            if(loadEl) loadEl.style.display = 'none';
+            alert('분석 중 오류가 발생했습니다:\n' + e.message + '\n\n' + (e.stack||'').split('\n').slice(0,3).join('\n'));
+        }
         if(loadEl) loadEl.style.display = 'none';
     }, 100);
 }
@@ -4130,7 +4134,7 @@ function runAnalysis() {
             // flaticon 팔각형 이미지 그대로 사용 (원형 프레임 없음)
             circle.style.cssText = `background:transparent; border:none; box-shadow:none; width:110px; height:110px; margin:0 auto 10px; display:flex; align-items:center; justify-content:center;`;
             const STEM_EN = {"甲":"jia","乙":"yi","丙":"bing","丁":"ding","戊":"wu","己":"ji","庚":"geng","辛":"xin","壬":"ren","癸":"gui"};
-            const BRANCH_EN = {"子":"zi","丑":"chou","寅":"yin","卯":"mao","辰":"chen","巳":"si","午":"wu","未":"wei","辛":"shen","酉":"you","戌":"xu","亥":"hai"};
+            const BRANCH_EN = {"子":"zi","丑":"chou","寅":"yin","卯":"mao","辰":"chen","巳":"si","午":"wu","未":"wei","申":"shen","酉":"you","戌":"xu","亥":"hai"};
             const enName = (STEM_EN[dayStem]||'bing') + '_' + (BRANCH_EN[pillars[1].h[1]]||'yin');
             circle.innerHTML = `<img src="zodiac_en/${enName}.png" style="width:100%;height:100%;object-fit:contain;display:block;" alt="${animalInfo.kr}">`;
             circle.className = 'avatar-circle';
@@ -4546,8 +4550,8 @@ function runAnalysis() {
         buildFortuneCards('daeun-table', daeunRows2, activeDaeunIdx);
         // ===== 대운 표 아래 풀이 주입 =====
         (function(){
-            var OH={'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
-            var JO={'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','辛':'metal','酉':'metal','戌':'earth','亥':'water'};
+            var OH={'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','申':'metal','壬':'water','癸':'water'};
+            var JO={'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'};
             var GAN_T={'甲':'갑목 — 봄의 새싹처럼 뚫고 나오는 에너지. 새로운 시작과 도전이 이 기운과 공명합니다. 사업 시작, 이직, 이사, 학업 착수에 최적입니다.','乙':'을목 — 덩굴처럼 유연하게 목표를 향해 나아갑니다. 인간관계와 네트워크가 최고의 자산. 귀인이 결정적 역할을 합니다.','丙':'병화 — 태양처럼 모든 것이 드러나는 시기. 사회적 인정과 명성이 따릅니다. 자신을 드러내는 강의·발표·브랜딩 활동을 적극적으로 하십시오.','丁':'정화 — 촛불처럼 한 분야를 깊이 파는 전문성의 시기. 장인정신, 전문직, 심층 연구가 빛을 발합니다.','戊':'무토 — 거대한 산처럼 묵직하고 안정적. 부동산·자산 축적·신뢰 구축 등 10년 후를 내다보는 투자의 시기입니다.','己':'기토 — 비옥한 농토처럼 이전에 뿌린 씨앗이 결실로 돌아옵니다. 꼼꼼한 관리와 내실 운영이 강점이 됩니다.','庚':'경금 — 도끼처럼 과감하게 쳐내는 혁신의 에너지. 불필요한 구조를 제거하고 새 기준을 세울 때입니다.','辛':'신금 — 보석 세공처럼 정밀하게 완성도를 높이는 시기. 디테일과 품질에 집중하면 최고의 결과물이 나옵니다.','壬':'임수 — 큰 강처럼 인맥과 기회가 사방으로 확산됩니다. 핵심 목표를 유지하며 자연스러운 흐름을 타십시오.','癸':'계수 — 지하수처럼 내면에서 에너지가 축적되는 시기. 학습·연구·내공 쌓기로 채우면 다음 대운에서 폭발적으로 터집니다.'};
             var JI_T={'子':'자(자) — 지혜와 집중력이 극대화됩니다. 계획 수립·자격증·학업에 유리합니다.','丑':'축(축) — 눈에 보이지 않는 내공이 쌓이는 시기. 조급함 없이 장기적으로 자신을 단련하십시오.','寅':'인(인) — 이동·변화·새 출발의 에너지가 강합니다. 이 시기에 시작한 일이 오래도록 뿌리를 내립니다.','卯':'묘(묘) — 인맥이 넓어지고 협력 기회가 풍부합니다. 혼자보다 함께할 때 성과가 배가됩니다.','辰':'진(진) — 잠재력이 폭발하는 변화의 기운. 예상치 못한 전환점이 찾아옵니다.','巳':'사(사) — 오래 고민해온 문제의 답이 명확해집니다. 과감한 선택이 이후 10년을 결정합니다.','午':'오(오) — 성취와 인정의 기운. 쌓아온 노력이 드러나고 인정받습니다. 적극적으로 승부하십시오.','未':'미(미) — 인간관계가 깊어지고 감성·창작 활동에서 빛을 발합니다.','辛':'신(신) — 판단력과 실행력의 기운. 기회를 민첩하게 포착하고 즉시 실행해야 합니다.','酉':'유(유) — 완성과 보상의 기운. 전문성이 인정받고 노력에 정당한 대가가 돌아옵니다.','戌':'술(술) — 통찰과 마무리. 불필요한 것을 정리하고 핵심에 집중하게 됩니다.','亥':'해(해) — 잠복과 준비의 기운. 가장 어두운 밤이 새벽 직전임을 기억하십시오.'};
             var sc={}; sc[yong]=2;sc[hee]=1;sc[gi]=-2;sc[goo]=-1;
@@ -4585,7 +4589,7 @@ function runAnalysis() {
             const rows = daeunData;
             const n = rows.length;
             if(n === 0) return;
-            const OHMAP = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
+            const OHMAP = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','申':'metal','壬':'water','癸':'water'};
             const sc = {};
             sc[yong]=2; sc[hee]=1; sc[gi]=-2; sc[goo]=-1;
             const scores = rows.map(dy=>{const gz=dy.getGanZhi(); return (sc[OHMAP[gz[0]]]||0)+(sc[OHMAP[gz[1]]]||0);});
@@ -4664,7 +4668,7 @@ function runAnalysis() {
         (function() {
             const el = document.getElementById('lifecycle-cards');
             if(!el) return;
-            const OHMAP2 = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
+            const OHMAP2 = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','申':'metal','壬':'water','癸':'water'};
             const sc2 = {}; sc2[yong]=2; sc2[hee]=1; sc2[gi]=-2; sc2[goo]=-1;
             const OHKR = {wood:'목(木)',fire:'화(火)',earth:'토(土)',metal:'금(金)',water:'수(水)'};
             const hmap = {wood:'간담·신경계',fire:'심장·혈관',earth:'위장·소화기',metal:'폐·대장',water:'신장·호르몬'};
@@ -4687,7 +4691,7 @@ function runAnalysis() {
 
         // ===== 카테고리별 분석 =====
         (function() {
-            const OHMAP3 = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
+            const OHMAP3 = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','申':'metal','壬':'water','癸':'water'};
             const stemEl = OHMAP3[dayStem]||'earth';
             const jaeC = (sipCounts['정재']||0)+(sipCounts['편재']||0);
             const gwanC = (sipCounts['정관']||0)+(sipCounts['편관']||0);
@@ -4844,8 +4848,8 @@ function runAnalysis() {
         buildFortuneCards('seun-table', seunRows, 0);
         // ===== 세운 표 아래 풀이 주입 =====
         (function(){
-            var OH={'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
-            var JO={'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','辛':'metal','酉':'metal','戌':'earth','亥':'water'};
+            var OH={'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','申':'metal','壬':'water','癸':'water'};
+            var JO={'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'};
             var KN={wood:'목(木)',fire:'화(火)',earth:'토(土)',metal:'금(金)',water:'수(水)'};
             var sc={}; sc[yong]=2;sc[hee]=1;sc[gi]=-2;sc[goo]=-1;
             function gs(g,j){return (sc[OH[g]]||0)+(sc[JO[j]]||0);}
@@ -4903,8 +4907,8 @@ function runAnalysis() {
         buildFortuneCards('wolun-table', wolunRows, wolunCurrentIdx);
         // ===== 월운 표 아래 풀이 주입 =====
         (function(){
-            var OH={'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
-            var JO={'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','辛':'metal','酉':'metal','戌':'earth','亥':'water'};
+            var OH={'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','申':'metal','壬':'water','癸':'water'};
+            var JO={'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'};
             var KN={wood:'목(木)',fire:'화(火)',earth:'토(土)',metal:'금(金)',water:'수(水)'};
             var WL={'寅':'인(인)월 — 봄의 시작. 새로운 계획·프로젝트 착수·인맥 확장에 최적입니다. 머뭇거리지 말고 이달에 첫발을 내딛으십시오.','卯':'묘(묘)월 — 성장과 확장의 기운. 인맥을 넓히고 협업 제안에 적극 응하세요. 이달의 만남이 중요한 장기 인연이 됩니다.','辰':'진(진)월 — 변화와 전환의 기운. 예상치 못한 기회가 찾아올 수 있으니 유연하게 대응하십시오.','巳':'사(사)월 — 집중력이 최고조. 중요한 결정을 내리고 실행에 집중하십시오. 이달의 결단이 하반기를 좌우합니다.','午':'오(오)월 — 에너지와 활력이 넘칩니다. 사회적 활동·발표·영업에 최적. 적극적으로 나서면 인정받습니다.','未':'미(미)월 — 관계와 감성이 풍부해집니다. 인간관계를 돌보고 협력을 강화하십시오.','辛':'신(신)월 — 결단과 실행력이 요구됩니다. 판단한 것을 즉시 행동으로 옮기십시오.','酉':'유(유)월 — 마무리와 완성의 기운. 진행 중인 일을 깔끔하게 마무리하십시오.','戌':'술(술)월 — 성찰과 정리의 달. 불필요한 것을 정리하고 중요한 것에만 집중하십시오.','亥':'해(해)월 — 준비와 내공의 달. 학습·자기 성찰에 집중하면 내년에 큰 도약이 찾아옵니다.','子':'자(자)월 — 지혜와 집중의 달. 복잡한 문제를 분석하고 장기 계획을 수립하기에 최적입니다.','丑':'축(축)월 — 인내와 축적의 달. 결과를 서두르지 말고 착실하게 실력을 쌓는 것이 전략입니다.'};
             var sc={}; sc[yong]=2;sc[hee]=1;sc[gi]=-2;sc[goo]=-1;
@@ -4950,7 +4954,7 @@ function runAnalysis() {
             metal: {metal:'비견',water:'식신',wood:'편재',fire:'편관',earth:'편인'},
             water: {water:'비견',wood:'식신',fire:'편재',earth:'편관',metal:'편인'}
         };
-        const STEM_OH = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
+        const STEM_OH = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','申':'metal','壬':'water','癸':'water'};
         const dayOh = STEM_OH[dayStem] || 'earth';
         const dayStemYin = ['을','정','기','신','계'].includes(dayStem);
         const pillars_sipseong = (pillars||[]).map((p,pi) => {
@@ -4989,7 +4993,7 @@ function runAnalysis() {
 
         // ─── 인생 전반 서술 (만세력 아래) ───
         (function(){
-            var OH={'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
+            var OH={'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','申':'metal','壬':'water','癸':'water'};
             var JO={'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'};
             var KN={wood:'목(木)',fire:'화(火)',earth:'토(土)',metal:'금(金)',water:'수(水)'};
             var STEM_CHAR={
@@ -5047,7 +5051,7 @@ function runAnalysis() {
                 var ganKn=KN[ganOh]||'';var jiKn=KN[jiOh]||'';
                 var ganDesc=STEM_CHAR[gan]||gan+'의 기운이 이 기둥을 이끕니다.';
                 var jiDesc=BRANCH_DESC[ji]||ji+'의 기운이 이 기둥의 바탕을 이룹니다.';
-                var sipVal=(data.pillars_sipseong&&data.pillars_sipseong[orderMap[nm]])||'';
+                var sipVal=(globalSajuData&&globalSajuData.pillars_sipseong&&globalSajuData.pillars_sipseong[orderMap[nm]])||'';
                 var isBorderGold = nm==='일주';
                 lc+='<div style="margin:16px 0;padding:20px;background:rgba(255,255,255,'+(isBorderGold?'0.05':'0.03')+');border-left:4px solid '+(isBorderGold?'var(--gold)':'rgba(199,167,106,0.4)')+';border-radius:0 10px 10px 0;">';
                 lc+='<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;flex-wrap:wrap;gap:8px;">';
@@ -5072,8 +5076,8 @@ function runAnalysis() {
 
         // ─── 대운 상세 풀이 ───
         (function(){
-            var OH={'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
-            var JO={'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','辛':'metal','酉':'metal','戌':'earth','亥':'water'};
+            var OH={'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','申':'metal','壬':'water','癸':'water'};
+            var JO={'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'};
             var GAN_T={'甲':'갑목의 기운이 지배하는 이 시기는 새로운 시작과 도전의 계절입니다. 봄에 처음 땅을 뚫고 나오는 새싹처럼 강인하고 직진하는 에너지가 넘칩니다. 두려움 없이 앞으로 나아가는 것이 핵심 전략입니다. 새로운 사업, 이직, 이사, 학업 시작 등 도전적 행보가 이 에너지와 정확히 공명합니다.','乙':'을목은 덩굴처럼 유연하게 뻗어나가는 기운입니다. 인간관계와 네트워크가 이 시기 최고의 자산입니다. 직접 밀어붙이기보다 옆으로 돌아가는 유연한 전략이 큰 성과를 냅니다.','丙':'병화는 태양처럼 모든 것을 밝게 드러내는 기운입니다. 숨겨왔던 재능과 성과가 세상에 드러나는 시기입니다. 강의, 출판, 브랜딩, 발표 등 자신을 드러내는 모든 활동이 극대화됩니다.','丁':'정화는 촛불처럼 집중적이고 섬세한 기운입니다. 한 분야를 깊이 파고드는 전문성의 시기입니다. 장인정신, 전문직, 심층 연구가 이 기운과 가장 잘 맞습니다.','戊':'무토는 거대한 산처럼 묵직하고 안정적인 기운입니다. 부동산, 자산 축적, 사업 기반 확장 등 10년 후를 내다보는 투자가 이 에너지를 극대화합니다.','己':'기토는 비옥한 농토처럼 실용적이고 섬세한 기운입니다. 이전에 뿌린 씨앗들이 실질적인 결과물로 돌아오는 시기입니다. 꼼꼼한 관리와 내실 있는 운영이 빛을 발합니다.','庚':'경금은 날카로운 도끼처럼 불필요한 것을 과감히 쳐내는 기운입니다. 혁신과 개혁의 에너지가 강합니다. 과감한 결단과 구조 개혁이 필요하며 망설임이 가장 큰 적입니다.','辛':'신금은 보석을 세공하듯 정밀하게 완성도를 높이는 기운입니다. 디테일에 집중하고 품질을 극대화할 때 최고의 결과물이 나옵니다.','壬':'임수는 큰 강처럼 에너지가 넓게 확산되는 기운입니다. 인맥이 폭발적으로 확장되고 새로운 기회가 사방에서 찾아오는 시기입니다.','癸':'계수는 깊은 지하수처럼 보이지 않는 곳에서 힘을 키우는 기운입니다. 이 시기를 분석·연구·학습으로 채운 사람과 허비한 사람의 차이는 다음 대운에서 극명하게 드러납니다.'};
             var JI_T={'子':'자(자) 지지는 지혜와 집중력의 기운입니다. 분석력이 극대화되는 시기로 계획 수립, 자격증 취득, 학업에 유리합니다.','丑':'축(축) 지지는 인내와 저력의 기운입니다. 눈에 보이는 성과보다 내공이 쌓이는 시기입니다. 이 기간을 묵묵히 견디며 쌓은 실력이 이후 운에서 폭발적 결과로 이어집니다.','寅':'인(인) 지지는 강렬한 활동과 변화의 기운입니다. 이동, 변화, 새로운 출발의 에너지가 강하게 발동합니다. 이 시기에 시작한 일이 오래도록 지속됩니다.','卯':'묘(묘) 지지는 성장과 관계의 기운입니다. 인맥이 넓어지고 협력 기회가 풍부해집니다. 혼자보다 함께할 때 성과가 배가됩니다.','辰':'진(진) 지지는 잠재력이 폭발하는 변화의 기운입니다. 예상치 못한 변수가 많지만 유연하게 대응하면 인생의 전환점이 됩니다.','巳':'사(사) 지지는 내면의 결단력이 요구됩니다. 오래 고민해온 문제의 답이 이 시기에 명확해집니다. 과감한 선택이 이후 10년의 방향을 결정합니다.','午':'오(오) 지지는 성취와 인정의 기운입니다. 쌓아온 노력이 사회적으로 드러나고 인정받습니다. 이 기세를 타고 더 큰 목표로 나아가야 합니다.','未':'미(미) 지지는 풍요로운 감성과 창작의 기운입니다. 인간적인 관계가 깊어지고 예술·교육 활동에서 빛을 발합니다.','辛':'신(신) 지지는 판단력과 실행력의 기운입니다. 기회가 빠르게 스쳐 지나가므로 민첩하게 포착하고 즉시 실행해야 합니다.','酉':'유(유) 지지는 완성과 보상의 기운입니다. 쌓아온 전문성이 인정받고 노력에 대한 정당한 대가가 돌아옵니다.','戌':'술(술) 지지는 통찰과 마무리의 기운입니다. 불필요한 것을 정리하고 핵심 가치에 집중하게 됩니다.','亥':'해(해) 지지는 잠복과 준비의 기운입니다. 표면적으로는 정체처럼 보이지만 내면에서 엄청난 에너지가 축적됩니다.'};
             var sc={}; sc[yong]=2;sc[hee]=1;sc[gi]=-2;sc[goo]=-1;
@@ -5099,8 +5103,8 @@ function runAnalysis() {
 
         // ─── 세운 10년 상세 풀이 ───
         (function(){
-            var OH={'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
-            var JO={'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','辛':'metal','酉':'metal','戌':'earth','亥':'water'};
+            var OH={'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','申':'metal','壬':'water','癸':'water'};
+            var JO={'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'};
             var KN={wood:'목(木)',fire:'화(火)',earth:'토(土)',metal:'금(金)',water:'수(水)'};
             var sc={}; sc[yong]=2;sc[hee]=1;sc[gi]=-2;sc[goo]=-1;
             function gs(g,j){return (sc[OH[g]]||0)+(sc[JO[j]]||0);}
@@ -5127,8 +5131,8 @@ function runAnalysis() {
 
         // ─── 월운 12개월 상세 풀이 ───
         (function(){
-            var OH={'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
-            var JO={'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','辛':'metal','酉':'metal','戌':'earth','亥':'water'};
+            var OH={'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','申':'metal','壬':'water','癸':'water'};
+            var JO={'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'};
             var KN={wood:'목(木)',fire:'화(火)',earth:'토(土)',metal:'금(金)',water:'수(水)'};
             var WL={'寅':'인(인)월 — 봄의 시작, 새로운 기운이 발동합니다. 새로운 계획, 프로젝트 착수, 인맥 확장에 최적입니다. 머뭇거리지 말고 이달에 첫발을 내딛으십시오.','卯':'묘(묘)월 — 성장과 확장의 기운입니다. 인맥을 넓히고 협업 제안에 적극 응하세요. 이달의 만남이 중요한 장기 인연이 됩니다.','辰':'진(진)월 — 변화와 전환의 기운입니다. 예상치 못한 기회가 찾아올 수 있으니 유연하게 대응하십시오.','巳':'사(사)월 — 집중력이 최고조인 달입니다. 중요한 결정을 내리고 실행에 집중하십시오. 이달의 결단이 하반기를 좌우합니다.','午':'오(오)월 — 에너지와 활력이 넘칩니다. 사회적 활동, 발표, 영업에 최적입니다. 적극적으로 나서면 인정받습니다.','未':'미(미)월 — 관계와 감성이 풍부해집니다. 인간관계를 돌보고 협력을 강화하십시오.','辛':'신(신)월 — 결단과 실행력이 요구됩니다. 판단한 것을 즉시 행동으로 옮기십시오.','酉':'유(유)월 — 마무리와 완성의 기운입니다. 진행 중인 일을 깔끔하게 마무리하십시오.','戌':'술(술)월 — 성찰과 정리의 달입니다. 불필요한 것을 정리하고 중요한 것에만 집중하십시오.','亥':'해(해)월 — 준비와 내공의 달입니다. 학습, 자기 성찰에 집중하면 내년에 큰 도약이 찾아옵니다.','子':'자(자)월 — 지혜와 집중의 달입니다. 복잡한 문제를 분석하고 장기 계획을 수립하기에 최적입니다.','丑':'축(축)월 — 인내와 축적의 달입니다. 결과를 서두르지 말고 착실하게 실력을 쌓는 것이 이달의 전략입니다.'};
             var sc={}; sc[yong]=2;sc[hee]=1;sc[gi]=-2;sc[goo]=-1;
