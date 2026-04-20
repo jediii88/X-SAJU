@@ -1845,14 +1845,43 @@ function injectBelow(id, html_content) {
 
 function buildRelationSummary(data) {
     const interactions = data.interactions || [];
+    
+    const typeDesc = {
+        '합':'합(合) — 두 기운이 결합하여 새로운 에너지를 만들어냅니다. 인연, 계약, 협력이 이루어지는 긍정적 신호입니다.',
+        '충':'충(沖) — 두 기운이 정면 충돌합니다. 변화, 이동, 갈등의 에너지입니다. 위기이자 기회 — 어떻게 대응하느냐가 결과를 결정합니다.',
+        '형':'형(刑) — 서로를 손상시키는 기운입니다. 법적 문제, 인간관계 마찰, 건강 이상에 주의가 필요합니다.',
+        '파':'파(破) — 기운이 깨지고 분열됩니다. 관계나 계획의 균열. 세심한 점검이 필요합니다.',
+        '해':'해(害) — 서로를 방해하고 해치는 기운입니다. 배신, 방해, 엇갈림이 발생할 수 있습니다.'
+    };
+    
     if(!interactions || interactions.length === 0) {
-        return '<div class="inline-interp"><div class="ii-label">✦ 합·충·형·파·해 해석</div><div class="ii-text">원국 내 특별한 합충 관계가 감지되지 않았습니다. 안정적인 원국 구조입니다.</div></div>';
+        return `<div class="inline-interp">
+            <div class="ii-label">✦ 합·충·형·파·해 해석</div>
+            <div class="ii-title">안정적인 원국 구조</div>
+            <div class="ii-text">
+                <p>원국 내 충돌하는 특별한 합충형파해가 감지되지 않았습니다. 이는 비교적 안정적이고 예측 가능한 에너지 흐름을 가진 원국입니다.</p>
+                <p style="margin-top:10px;color:#999;">합충형파해는 좋고 나쁨의 문제가 아닙니다. 충(沖)이 없으면 변화도 없고, 합(合)이 없으면 인연도 없습니다. 이 에너지들이 어떻게 작동하느냐가 인생의 서사를 만듭니다.</p>
+            </div>
+        </div>`;
     }
-    let rows = interactions.map(rel => {
-        const desc = window.SAJU_DB?.INTERACTION?.[rel.type] || rel.type + ' 관계가 작용합니다.';
-        return `<div style="margin-bottom:10px;"><b style="color:var(--gold);">${rel.chars} — ${rel.type}</b><br><span style="font-size:13px;color:#ccc;">${desc}</span></div>`;
+    
+    const rows = interactions.map(rel => {
+        const typeKey = Object.keys(typeDesc).find(k => rel.type && rel.type.includes(k)) || '';
+        const desc = window.SAJU_DB?.INTERACTION?.[rel.type] || typeDesc[typeKey] || (rel.type + ' 관계가 작용합니다.');
+        return `<div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:12px 14px;margin-bottom:10px;">
+            <div style="font-size:14px;font-weight:700;color:var(--gold);margin-bottom:6px;">${rel.chars||''} · ${rel.type||''}</div>
+            <p style="font-size:13px;color:#ccc;line-height:1.75;margin:0;">${desc}</p>
+        </div>`;
     }).join('');
-    return `<div class="inline-interp"><div class="ii-label">✦ 합·충·형·파·해 해석</div><div class="ii-title">원국의 충돌과 결합이 만드는 당신의 운명 코드</div><div class="ii-text">${rows}<p style="margin-top:12px;color:#bbb;font-size:13px;">이 관계들은 당신이 살면서 반복적으로 경험하는 패턴의 원형(原形)입니다. 좋고 나쁨이 아닌, 당신이 어떻게 이 에너지를 다루느냐가 결과를 결정합니다.</p></div></div>`;
+    
+    return `<div class="inline-interp">
+        <div class="ii-label">✦ 합·충·형·파·해 해석</div>
+        <div class="ii-title">원국의 충돌과 결합 — 운명의 코드</div>
+        <div class="ii-text">
+            ${rows}
+            <p style="margin-top:12px;color:#999;font-size:13px;line-height:1.75;">이 관계들은 당신이 살면서 반복적으로 경험하는 패턴의 원형입니다. 합(合)이 있는 기운과의 인연은 쉽게 맺어지고, 충(沖)이 있는 기운과는 긴장 관계가 형성됩니다. 이것을 알면 인간관계와 중요 결정에서 한발 앞서 대응할 수 있습니다.</p>
+        </div>
+    </div>`;
 }
 
 function buildShinsalSummary(data) {
@@ -1896,10 +1925,21 @@ function buildShinsalSummary(data) {
 
 function buildStrengthSummary(data) {
     const isStrong = data.strengthText && (data.strengthText.includes('신강') || data.strengthText.includes('강'));
+    const strengthTitle = isStrong ? '身强(신강) — 에너지가 넘치는 능동형 기질' : '身弱(신약) — 협력과 귀인을 통해 빛나는 기질';
     const text = isStrong
-        ? '기운이 충만한 당신은 주도적으로 세상을 이끌어가는 자리에 있어야 진정한 능력을 발휘합니다. 남의 지시를 받기보다 내 판을 직접 짜는 창업, 프리랜서, 전문직에서 빛을 발합니다. 강한 기운을 억누르려 하면 오히려 역효과가 납니다. 이 에너지를 쏟아부을 적합한 무대를 찾는 것이 인생의 핵심 과제입니다.'
-        : '기운이 다소 약한 사주는 혼자 모든 것을 짊어지기보다 훌륭한 파트너와 팀을 구성할 때 폭발적인 시너지를 경험합니다. 좋은 귀인을 곁에 두는 것이 인생 전략의 핵심입니다. 用神(용신) 기운이 들어오는 대운에서 가장 크게 도약합니다.';
-    return `<div class="inline-interp"><div class="ii-label">✦ 신강·신약 해석</div><div class="ii-title">${data.strengthText || ''}</div><div class="ii-text">${text}</div></div>`;
+        ? '기운이 충만한 당신은 주도적으로 세상을 이끌어가는 자리에 있어야 진정한 능력이 발현됩니다. 남의 지시를 받기보다 내 판을 직접 짜는 창업·프리랜서·전문직에서 빛을 발합니다. 강한 기운을 억누르려 하면 오히려 내부에서 폭발합니다. 이 에너지를 쏟아부을 적합한 무대를 찾는 것이 인생의 핵심 과제입니다.'
+        : '기운이 분산된 사주는 혼자 모든 것을 짊어지면 무너집니다. 훌륭한 파트너·팀·귀인과 함께할 때 1+1이 10이 되는 폭발적 시너지를 경험합니다. 좋은 사람을 알아보고 협력하는 능력이 인생 전략의 핵심입니다.';
+    const advice = isStrong
+        ? '⚠ 주의사항: 독단적인 결정과 과잉 에너지로 인한 인간관계 마찰을 조심하십시오. 강한 기운을 사회적으로 인정받는 방향으로 분출해야 합니다.'
+        : '✦ 전략: 용신(用神) 기운이 강해지는 대운과 세운에서 가장 크게 도약합니다. 용신 기운을 가진 귀인과의 만남을 적극적으로 만들어가십시오.';
+    return `<div class="inline-interp">
+        <div class="ii-label">✦ 신강·신약(身强·身弱) 해석</div>
+        <div class="ii-title">${strengthTitle}</div>
+        <div class="ii-text">
+            <p style="margin-bottom:12px;">${text}</p>
+            <div style="background:rgba(199,167,106,0.07);border-radius:8px;padding:12px 14px;font-size:13px;color:#bbb;line-height:1.75;">${advice}</div>
+        </div>
+    </div>`;
 }
 
 function injectInlineSummaries(data) {
@@ -2160,27 +2200,51 @@ function buildChapter3_Sipseong(data) {
 }
 
 function buildChapter4_Wealth(data) {
-    let html = `<div class="report-chapter"><h3 class="ch-title">Chapter 4. 평생 재물운과 거대한 금고의 비밀</h3>`;
-    let jaeCount = (data.sipseong && (data.sipseong['정재'] || 0) + (data.sipseong['편재'] || 0)) || 0;
-    
-    let wealthCore = "";
-    if(jaeCount === 0) wealthCore = "당신의 사주 원국에는 표면적으로 드러난 '財星(재성, 돈)'의 글자가 약합니다. 이른바 無財(무재) 사주라 하여 돈과 인연이 없다고 단정 짓는 낡은 풀이가 많습니다. 이는 완전히 틀렸습니다. 당신은 돈을 직접 쫓으면 오히려 돈이 도망갑니다. 명예, 전문성, 독보적인 브랜드 등 '나 자신'의 가치를 미친 듯이 올려놓으면, 돈이 그림자처럼 폭발적으로 따라오는 구조입니다. 작은 푼돈에 연연하지 마십시오.";
-    else if(jaeCount > 2) wealthCore = "당신의 주변에는 늘 돈이 흐르고 기회가 널려 있습니다(재다). 돈 냄새를 맡는 감각이 천부적이라 어디서 어떻게 돈을 벌어야 할지 본능적으로 압니다. 하지만 사주에서 '재물이 많으면 내 몸(기운)이 약해진다'고 했습니다. 통제할 수 없는 너무 많은 기회는 오히려 당신을 갉아먹습니다. 10가지 기회 중 9가지를 쳐내고, 확실한 1가지에 모든 것을 걸어 파이프라인을 구축해야 자산을 지킵니다.";
-    else wealthCore = "당신의 재물운은 매우 안정적이고 밸런스가 좋습니다. 모 아니면 도 식의 극단적인 투기보다는, 한 단계씩 차곡차곡 자산을 불려 나가는 스노우볼 전략에 최적화되어 있습니다. 부동산이나 배당 수익 등 시간이 지날수록 가치가 우상향하는 '시스템 수익'을 구축하는 것이 관건입니다.";
+    const sipseong = data.sipseong || {};
+    const jaeC = (sipseong['정재']||0) + (sipseong['편재']||0);
+    const sikC = (sipseong['식신']||0) + (sipseong['상관']||0);
+    const gwanC = (sipseong['정관']||0) + (sipseong['편관']||0);
+    const total = Math.max(Object.values(sipseong).reduce((a,b)=>a+b,0), 1);
+    const stemEl = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'}[data.dayStem] || 'earth';
+    const isStrong = data.strengthText && (data.strengthText.includes('신강') || data.strengthText.includes('강'));
 
-    let extra1 = "財(재물)이란 단순히 통장 잔고의 액수가 아닙니다. 명리학에서 재성은 '내가 세상을 내 뜻대로 통제하고 다루는 힘'을 뜻합니다. 당신이 세상을 상대로 얼마나 넓은 영토를 지배할 수 있는지, 그 권력의 크기가 바로 당신의 재물운입니다.";
-    let extra2 = "당신의 재물 그릇을 분석해 보면, 현금을 손에 쥐고 있는 것보다는 '부동산, 주식, 지적재산권' 등 형태가 변환된 문서(인성) 형태로 자산을 묶어둘 때 가장 큰 시너지가 폭발합니다. 남의 돈을 굴리는 데 특화된 기질을 지녔으므로, 스케일을 작게 한정 짓지 마십시오.";
+    // 재물 유형 판정
+    const wealthType = jaeC/total > 0.25 ? 'rich' : jaeC === 0 ? 'none' : 'balance';
+    const wealthCore = {
+        rich: '편재(偏財)·정재(正財)가 강한 당신의 사주는 돈 냄새를 맡는 감각이 천부적입니다. 어디서 어떻게 돈을 벌어야 할지 본능적으로 압니다. 그러나 재성(財星)이 너무 강하면 일간의 기운을 고갈시켜 "돈은 있는데 건강과 인간관계가 무너지는" 구조가 됩니다. 10가지 기회 중 9가지를 냉정하게 쳐내고, 확실한 1가지에 올인하는 집중력이 당신의 재물 전략입니다. 분산 투자보다 검증된 한 우물을 깊이 파십시오.',
+        none: '당신의 원국에 재성(財星)이 약하거나 없습니다. 이른바 무재(無財) 사주라 돈과 인연이 없다고 단정하는 풀이는 완전히 틀렸습니다. 역사적으로 무재 사주에서 큰 부자가 많이 나왔습니다. 이 구조의 비밀은 간단합니다 — 돈을 직접 쫓으면 도망가고, 명예·전문성·브랜드 가치를 올릴 때 돈이 그림자처럼 따라옵니다. 당신은 "나 자신이 상품"이 되는 전략으로 재물을 모아야 합니다.',
+        balance: '재성(財星)이 적정 수준으로 균형 잡혀 있습니다. 극단적인 투기보다 꾸준한 복리와 시스템 수익이 당신의 재물 공식입니다. 한 단계씩 차곡차곡 자산을 불려 나가는 스노우볼 전략 — 부동산, 배당수익, 안정적 투자 등 시간이 지날수록 가치가 우상향하는 자산에 집중하십시오.'
+    }[wealthType];
 
-    html += `
-        <p class="ch-text">${extra1}</p>
-        <p class="ch-text">${wealthCore}</p>
-        <p class="ch-text">${extra2}</p>
-        <div class="axe-advice" style="margin-top: 20px;">
-            당신의 진짜 금고는 월급통장 사이즈가 아닙니다. 食傷(식상)의 능력을 타인의 자본과 결합하는 레버리지 — 그것이 당신의 금고를 여는 열쇠입니다.
+    // 재물 획득 루트
+    const wealthRoute = sikC/total > 0.2
+        ? '당신의 재물 획득 루트는 食傷(식상)입니다. 재능·창의력·표현력이 돈이 됩니다. 콘텐츠 창작, 교육, 컨설팅, 기획, 예술 등 "내 능력을 파는" 방식으로 수익을 만들어야 합니다. 이 루트로 들어온 돈이 가장 크고 오래 갑니다.'
+        : gwanC/total > 0.2
+        ? '당신의 재물 획득 루트는 官星(관성)입니다. 조직과 직위, 사회적 신뢰가 돈으로 연결됩니다. 승진·직함·인증·자격증이 수입을 올리는 가장 확실한 루트입니다. 명예가 재물을 끌어옵니다.'
+        : '당신의 재물 획득 루트는 비견(比肩)과 독립 사업입니다. 남 밑에 있으면 실력의 절반도 발휘하지 못합니다. 직접 판을 짜고 내 사업 영역을 만들 때 재물이 폭발적으로 증가합니다.';
+
+    // 신강신약 × 재물
+    const strengthWealth = isStrong
+        ? '身强(신강) 사주의 재물은 공격적입니다. 에너지가 넘쳐서 여러 일을 동시에 추진하려는 본능이 있지만, 집중 없는 분산은 재물을 흩뜨립니다. 한 가지에 몰입하는 선택과 집중이 핵심 전략입니다.'
+        : '身弱(신약) 사주의 재물은 수비가 중요합니다. 혼자 욕심내다 무너지는 것보다, 든든한 파트너·귀인과 함께 리스크를 분산하며 안정적으로 쌓는 방식이 재물을 지키는 열쇠입니다.';
+
+    return `<div class="report-chapter">
+        <h3 class="ch-title">Chapter 4. 평생 재물운 — 나만의 금고를 여는 열쇠</h3>
+        <p class="ch-text">명리학에서 재성(財星)은 단순히 통장 잔고의 액수가 아닙니다. "내가 세상을 내 뜻대로 통제하고 다루는 힘"입니다. 당신이 세상을 상대로 얼마나 넓은 영토를 지배할 수 있는지, 그 권력의 크기가 바로 당신의 재물운입니다.</p>
+        <div style="background:rgba(199,167,106,0.07);border-left:3px solid var(--gold);padding:16px 18px;border-radius:0 8px 8px 0;margin:20px 0;">
+            <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;letter-spacing:1px;">재물 구조 분석</div>
+            <p style="font-size:14.5px;color:#ddd;line-height:1.9;margin:0;">${wealthCore}</p>
         </div>
+        <div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:16px;margin:14px 0;">
+            <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;letter-spacing:1px;">재물 획득 최적 루트</div>
+            <p style="font-size:13.5px;color:#ddd;line-height:1.85;margin:0;">${wealthRoute}</p>
         </div>
-    `;
-    return html;
+        <div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:16px;margin:14px 0;">
+            <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;letter-spacing:1px;">신강·신약(身强·身弱)과 재물 전략</div>
+            <p style="font-size:13.5px;color:#ddd;line-height:1.85;margin:0;">${strengthWealth}</p>
+        </div>
+        <p class="ch-text">재물의 그릇은 고정된 것이 아닙니다. 用神(용신) 기운이 강해지는 대운에서 그릇이 커지고, 忌神(기신) 기운의 대운에서는 방어가 중요합니다. 재물의 크기를 결정하는 것은 타고난 사주가 아니라, 그 사주의 기운을 얼마나 정확하게 활용하느냐입니다. 당신의 진짜 금고는 아직 열리지 않았습니다.</p>
+    </div>`;
 }
 
 function buildDaewunLoop(data) {
@@ -2332,69 +2396,168 @@ function buildDaewunLoop(data) {
 }
 
 function buildSewunLoop(data) {
-    let currentYear = new Date().getFullYear();
-    let html = `<div class="report-chapter"><h3 class="ch-title">Chapter 11. 향후 10년 歲運(세운) 정밀 타격</h3>
-    <p class="ch-text" style="margin-bottom:30px;">대운이 10년의 기후라면, 歲運(세운)은 그해의 날씨입니다. 올해부터 향후 10년간 당신에게 어떤 비바람이 몰아치고 어떤 해가 뜰지 예측합니다. 매년 당신의 사주 원국 8글자가 그해의 기운과 충돌하며 만들어내는 구체적인 서사입니다.</p>`;
+    const currentYear = new Date().getFullYear();
+    const GAN = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+    const JI = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+    const GAN_KR = {'甲':'갑(甲)','乙':'을(乙)','丙':'병(丙)','丁':'정(丁)','戊':'무(戊)','己':'기(己)','庚':'경(庚)','辛':'신(辛)','壬':'임(壬)','癸':'계(癸)'};
+    const JI_KR = {'子':'자(子)','丑':'축(丑)','寅':'인(寅)','卯':'묘(卯)','辰':'진(辰)','巳':'사(巳)','午':'오(午)','未':'미(未)','申':'신(申)','酉':'유(酉)','戌':'술(戌)','亥':'해(亥)'};
+    const GAN_DESC = {
+        '甲':'새로운 시작과 성장. 사업 확장, 새 프로젝트 출발, 계획 수립에 유리.',
+        '乙':'유연한 적응. 관계 구축, 협상, 네트워킹에 강한 기운.',
+        '丙':'강렬한 열정과 표현. 자신을 알리고 드러내는 시기. 홍보·마케팅 유리.',
+        '丁':'세밀한 집중. 내실을 다지고 깊이 파고드는 시기. 전문성 강화.',
+        '戊':'묵직한 중심. 안정·신뢰 구축. 장기 투자와 부동산 관련 기운.',
+        '己':'실용적 마무리. 기존 프로젝트 정리, 실속 챙기기. 꼼꼼한 관리.',
+        '庚':'결단과 쇄신. 불필요한 것을 쳐내고 새 기준을 세우는 시기.',
+        '辛':'정밀한 완성. 디테일에 집중하고 품질을 높이는 시기.',
+        '壬':'흐름과 확산. 인맥 확장, 유동적 투자, 여행·이동 기운.',
+        '癸':'내면 충전. 분석·연구·학습. 조용히 내공을 쌓는 시기.'
+    };
+    const JI_DESC = {
+        '子':'지혜와 집중. 아이디어가 넘치는 시기. 문서·계약에 유리.',
+        '丑':'인내와 저력. 눈에 띄지 않는 성실함이 미래 토대를 쌓음.',
+        '寅':'활동과 도전. 새로운 출발, 이동, 변화의 기운이 강함.',
+        '卯':'관계와 성장. 인맥이 확장되고 협력 기회가 생김.',
+        '辰':'잠재력 발동. 예상치 못한 기회와 변수가 공존. 신중히 대응.',
+        '巳':'집중과 변신. 결단력이 필요한 시기. 큰 변화의 전조.',
+        '午':'성취와 인정. 사회적 성과가 드러나는 화려한 시기.',
+        '未':'감성과 풍요. 창작·문화·예술 분야에서 결실을 맺음.',
+        '申':'판단과 결단. 빠른 결정이 필요. 민첩한 대응이 성패 가름.',
+        '酉':'완성과 보상. 그동안의 노력이 결실로 돌아오는 시기.',
+        '戌':'통찰과 마무리. 깊은 성찰과 정리가 필요한 마무리 국면.',
+        '亥':'잠복과 준비. 표면적 침체지만 내면의 힘이 충전되는 시기.'
+    };
 
-    const stems = ['갑','을','병','정','무','기','경','신','임','계'];
-    const branches = ['자','축','인','묘','진','사','오','미','신','유','술','해'];
+    // 용신/기신 기반 연도 평가
+    const STEM_OH = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
+    const BRANCH_OH = {'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'};
+    const yong = data.yong || ''; const hee = data.hee || ''; const gi = data.gi || ''; const goo = data.goo || '';
     
-    const sip_list = ["비견(나의 세력 확장)", "겁재(치열한 경쟁과 쟁탈)", "식신(재능 발현과 생산)", "상관(틀을 깨는 혁신)", "편재(큰 돈의 흐름)", "정재(안정적 수익)", "편관(강한 압박과 명예)", "정관(안정된 직장과 승진)", "편인(특수한 자격과 직관)", "정인(문서와 귀인의 도움)"];
-    const event_list = ["새로운 귀인과의 합(合)이 들어와 막혔던 일이 풀립니다.", "기존의 환경을 박살내는 충(沖)이 발생하여 이직이나 이사가 필연적입니다.", "스스로 깎고 다듬어야 하는 형(刑)살이 발동하여 법적 문서나 건강을 챙겨야 합니다.", "알 수 없는 오해와 갈등이 생기는 원진(怨嗔)이 작용하니 인간관계에 거리를 두어야 합니다."];
+    function scoreYear(stem, branch) {
+        const sOh = STEM_OH[stem]; const bOh = BRANCH_OH[branch];
+        let score = 0;
+        if(sOh===yong||sOh===hee) score+=2; if(sOh===gi||sOh===goo) score-=2;
+        if(bOh===yong||bOh===hee) score+=2; if(bOh===gi||bOh===goo) score-=2;
+        return score;
+    }
+    function scoreLabel(s) { return s>=3?'대길(大吉)':s>=1?'길(吉)':s===0?'평(平)':s>=-2?'주의(注意)':'흉(凶)'; }
+    function scoreColor(s) { return s>=3?'#c7a76a':s>=1?'#00C853':s===0?'#888':s>=-2?'#ff9800':'#e74c3c'; }
 
+    let rows = '';
     for(let i=0; i<10; i++) {
-        let y = currentYear + i;
-        let sb = stems[(2+i)%10] + branches[(6+i)%12];
-        
-        let sip = sip_list[i % 10];
-        let evt = event_list[(i*3) % 4];
-        
-        html += `
-            <div style="margin-bottom: 35px; border-bottom: 1px solid #333; padding-bottom: 25px;">
-                <div style="font-weight: 800; color: var(--gold); font-size: 20px; margin-bottom: 12px;">${y}년 (${sb}년) : ${sip}의 해</div>
-                
-                <p style="color: #eee; font-size: 15px; line-height: 1.8; margin-bottom: 12px;">
-                    <b>[사회적 무대와 재물]</b> 올해 천간으로 들어오는 '${stems[(2+i)%10]}'의 기운은 당신에게 <b>${sip}</b>의 작용을 일으킵니다. 이는 사회적으로 당신의 역할이 크게 변동함을 암시합니다. 당신이 그동안 준비해왔던 것들이 세상의 평가를 받게 되며, 재물의 흐름 역시 이 십성의 특성에 따라 요동치게 됩니다.
-                </p>
-                <p style="color: #ddd; font-size: 15px; line-height: 1.8; margin-bottom: 15px;">
-                    <b>[인간관계와 환경 변화]</b> 특히 올해의 지지 '${branches[(6+i)%12]}'는 당신의 원국과 맞물려 강력한 화학작용을 일으킵니다. <b>${evt}</b> 이 시기에는 내 뜻대로 상황을 통제하려 하기보다는, 외부에서 불어오는 변화의 바람에 유연하게 올라타는 것이 유리합니다.
-                </p>
-                <div style="background:rgba(255,255,255,0.04);border-left:3px solid ${i%2===0?'#e74c3c':'#00C853'};padding:14px 16px;border-radius:0 8px 8px 0;margin-top:4px;">
-                    <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px;letter-spacing:1px;">올해의 핵심 전략</div>
-                    <p style="color:#ddd;font-size:13.5px;line-height:1.85;margin:0;">${i%2===0 ? "올해는 속도보다 방향이 중요합니다. 새로운 것을 벌이기보다 현재의 것을 견고히 하고 현금 흐름을 안정시키는 데 집중하십시오. 내실을 다진 자가 다음 기회를 온전히 수확합니다." : "올해는 당신의 판입니다. 70% 확신이 섰다면 즉시 실행하십시오. 머뭇거리면 기운은 다른 곳으로 흘러갑니다. 이 한 해의 담대한 결단이 앞으로 수년의 궤도를 바꿉니다."}</p>
+        const yr = currentYear + i;
+        const ganIdx = ((yr - 4) % 10 + 10) % 10;
+        const jiIdx = ((yr - 4) % 12 + 12) % 12;
+        const stem = GAN[ganIdx]; const branch = JI[jiIdx];
+        const hanja = stem + branch;
+        const score = scoreYear(stem, branch);
+        const label = scoreLabel(score); const col = scoreColor(score);
+        const isNow = i===0;
+
+        rows += `<div style="background:rgba(255,255,255,${isNow?'0.07':'0.03'});border-radius:10px;padding:16px;border:1px solid ${isNow?'var(--gold)':'rgba(255,255,255,0.07)'};break-inside:avoid;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <span style="font-size:22px;font-weight:800;color:var(--gold);font-family:'Noto Serif KR',serif;">${hanja}</span>
+                    <span style="font-size:13px;color:#aaa;">${yr}년 ${GAN_KR[stem]} ${JI_KR[branch]}년</span>
+                    ${isNow?'<span style="font-size:11px;background:var(--gold);color:#000;padding:2px 8px;border-radius:10px;font-weight:700;">올해</span>':''}
+                </div>
+                <span style="font-size:13px;font-weight:700;color:${col};padding:4px 12px;border-radius:20px;background:rgba(255,255,255,0.05);">${label}</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+                <div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;">
+                    <div style="font-size:10px;color:var(--text-dim);margin-bottom:4px;">천간(天干) ${stem}</div>
+                    <div style="font-size:12px;color:#ddd;line-height:1.65;">${GAN_DESC[stem]||''}</div>
+                </div>
+                <div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;">
+                    <div style="font-size:10px;color:var(--text-dim);margin-bottom:4px;">지지(地支) ${branch}</div>
+                    <div style="font-size:12px;color:#ddd;line-height:1.65;">${JI_DESC[branch]||''}</div>
                 </div>
             </div>
-        `;
+        </div>`;
     }
-    html += `</div>`;
-    return html;
+
+    return `<div class="report-chapter">
+        <h3 class="ch-title">Chapter 11. 향후 10년 세운(歲運) 정밀 타격</h3>
+        <p class="ch-text">대운(大運)이 10년의 기후라면, 세운(歲運)은 그해의 날씨입니다. 올해부터 향후 10년간 당신에게 어떤 바람이 불고 어떤 해가 뜰지 예측합니다. 매년 당신의 원국 기운이 그해의 기운과 충돌하며 만들어내는 서사입니다. 용신(用神) 기운이 들어오는 해는 집중 공략하고, 기신(忌神) 기운의 해는 수비에 집중하십시오.</p>
+        <div style="display:flex;flex-direction:column;gap:12px;">${rows}</div>
+    </div>`;
 }
 
 function buildWolunLoop(data) {
-    let html = `<div class="report-chapter"><h3 class="ch-title">Chapter 12. ${new Date().getFullYear()}년 12개월 작전 지도</h3>
-    <p class="ch-text" style="margin-bottom:25px;">올해 당신이 마주할 12개월의 상세한 기운 파동입니다. 언제 액셀을 밟고 언제 브레이크를 밟아야 할지 정확히 짚어드립니다.</p>
-    <div style="display: flex; flex-direction: column; gap: 15px;">`;
-    
-    const monthThemes = [
-        "새로운 프로젝트를 기획하고 씨앗을 뿌리기에 최적의 달입니다. 귀인의 도움이 있습니다.",
-        "감정 기복이 심해지고 예상치 못한 지출이 발생합니다. 충동구매와 투자를 절대 피하십시오.",
-        "직장이나 소속된 단체에서 능력을 인정받습니다. 다만 과로로 인한 위장장애를 조심해야 합니다.",
-        "대인관계에서 꼬임이 발생합니다. 오해가 생기기 쉬우니 중요한 계약이나 서류 서명은 다음 달로 미루십시오.",
-        "나의 매력과 재능이 폭발하는 시기입니다. 이성운이 상승하며, 영업이나 발표에서 큰 성과를 냅니다."
+    const yr = new Date().getFullYear();
+    const GAN = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+    const JI = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+    const JI_KR = {'子':'자(子)','丑':'축(丑)','寅':'인(寅)','卯':'묘(卯)','辰':'진(辰)','巳':'사(巳)','午':'오(午)','未':'미(未)','申':'신(申)','酉':'유(酉)','戌':'술(戌)','亥':'해(亥)'};
+    const MONTH_NAME = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+    // 월건 지지: 인월(1월)부터
+    const MONTH_JI_BASE = ['寅','卯','辰','巳','午','未','申','酉','戌','亥','子','丑'];
+    // 월건 천간: 연간에 따라 결정
+    const YR_GAN_IDX = ((yr - 4) % 10 + 10) % 10;
+    // 월천간 기준: 甲·己년 = 丙寅月부터, 乙·庚 = 戊寅月, 丙·辛 = 庚寅月, 丁·壬 = 壬寅月, 戊·癸 = 甲寅月
+    const MONTH_GAN_START = [2,4,6,8,0][YR_GAN_IDX % 5]; // 인월 천간 인덱스
+
+    const MONTH_THEME = [
+        {key:'인(寅)월 — 봄의 시작', advice:'새로운 프로젝트를 기획하고 씨앗을 뿌리기에 최적의 달. 귀인의 도움과 새 출발의 기운이 강합니다. 이 달에 시작한 일은 가속도가 붙습니다.', action:'새 계획 수립, 인맥 확장, 첫 행동'},
+        {key:'묘(卯)월 — 봄의 성장', advice:'관계와 협력이 꽃피는 달. 주변 사람들과 시너지를 만들고, 숨어있던 기회가 수면 위로 올라옵니다. 의사소통을 적극적으로 하십시오.', action:'협업 제안, 미팅, 네트워킹'},
+        {key:'진(辰)월 — 봄의 결실', advice:'예상치 못한 기회와 변수가 공존하는 달. 신중하게 대응하되, 숨겨진 잠재력이 발동할 수 있습니다. 큰 결정은 신중하게.', action:'점검, 조율, 변수 대응'},
+        {key:'사(巳)월 — 여름의 문', advice:'결단력이 필요한 달. 오래 미뤄온 결정을 내려야 할 시점입니다. 큰 변화의 전조가 있으며, 에너지가 폭발적으로 활성화됩니다.', action:'중요 결정, 계약, 변화 실행'},
+        {key:'오(午)월 — 여름의 절정', advice:'사회적 성과가 드러나는 화려한 달. 그동안의 노력이 인정받고 주목받는 시기입니다. 자신을 적극적으로 알리십시오.', action:'발표, 홍보, 성과 공유'},
+        {key:'미(未)월 — 여름의 마무리', advice:'감성과 창의력이 풍부해지는 달. 창작 활동과 문화적 활동에서 결실을 맺습니다. 너무 무리하지 말고 컨디션 관리에 유의.', action:'창작, 휴식, 내실 다지기'},
+        {key:'신(申)월 — 가을의 시작', advice:'판단력과 결단력이 요구되는 달. 빠른 결정이 성패를 가릅니다. 민첩하게 대응하되 충동적 결정은 피하십시오.', action:'신속한 의사결정, 기회 포착'},
+        {key:'유(酉)월 — 가을의 성숙', advice:'그동안의 노력에 대한 보상이 돌아오는 달. 완성도를 높이고 마무리 작업에 집중하십시오. 수확의 기운이 강합니다.', action:'마무리, 정리, 보상 수취'},
+        {key:'술(戌)월 — 가을의 황혼', advice:'깊은 성찰과 정리가 필요한 달. 불필요한 것을 버리고 핵심에 집중하는 시기. 내면의 목소리에 귀를 기울이십시오.', action:'정리, 성찰, 인간관계 재정비'},
+        {key:'해(亥)월 — 겨울의 시작', advice:'표면적으로 침체처럼 보이지만 내면의 힘이 충전되는 달. 무리한 행동보다 에너지 축적에 집중. 내공을 쌓는 시기.', action:'학습, 연구, 준비'},
+        {key:'자(子)월 — 겨울의 절정', advice:'지혜와 집중력이 극대화되는 달. 아이디어가 폭발적으로 나오는 시기. 문서, 계약, 기획에 유리합니다.', action:'기획, 문서 작업, 전략 수립'},
+        {key:'축(丑)월 — 겨울의 마무리', advice:'인내와 저력의 달. 눈에 띄지 않는 성실함이 미래의 토대를 쌓습니다. 조급해하지 말고 꾸준히 나아가십시오.', action:'꾸준한 실행, 기반 다지기'}
     ];
 
-    for(let m=1; m<=12; m++) {
-        let theme = monthThemes[m % 5];
-        html += `
-            <div style="background: rgba(255,255,255,0.04); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); padding: 20px; border-radius: 8px; border-left: 4px solid ${m%3===0 ? '#d32f2f' : 'var(--gold)'}; display:flex; flex-direction:column;">
-                <div style="color:#fff; font-weight:800; font-size: 18px; margin-bottom: 8px;">${m}월의 기운</div>
-                <div style="color:#ddd; font-size:15px; line-height: 1.6; margin-bottom: 8px;">${theme}</div>
-                <div style="color:#888; font-size:13px;"><b>Focus:</b> ${m%3===0 ? '리스크 관리 및 건강 체크' : '적극적인 인맥 확장 및 성과 창출'}</div>
-            </div>
-        `;
+    // 용신/기신 기반 월 평가
+    const BRANCH_OH = {'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'};
+    const STEM_OH = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
+    const yong=data.yong||''; const hee=data.hee||''; const gi=data.gi||''; const goo=data.goo||'';
+    function mScore(mGan, mJi) {
+        let s=0;
+        const gOh=STEM_OH[mGan]; const jOh=BRANCH_OH[mJi];
+        if(gOh===yong||gOh===hee)s+=2; if(gOh===gi||gOh===goo)s-=2;
+        if(jOh===yong||jOh===hee)s+=2; if(jOh===gi||jOh===goo)s-=2;
+        return s;
     }
-    html += `</div></div>`;
-    return html;
+    function mLabel(s){return s>=3?'대길':'길(吉)'; }
+    function mColor(s){return s>=3?'#c7a76a':s>=1?'#00C853':s===0?'#888':s>=-2?'#ff9800':'#e74c3c';}
+    function mBadge(s){return s>=3?'🌟':s>=1?'✦':s===0?'—':s>=-2?'⚠':'❌';}
+
+    const curMonth = new Date().getMonth(); // 0-based
+    // 이번 연도 인월부터 12개월
+    const rows = Array.from({length:12}).map((_,i)=>{
+        const mJi = MONTH_JI_BASE[i];
+        const mGanIdx = (MONTH_GAN_START + i) % 10;
+        const mGan = GAN[mGanIdx];
+        const hanja = mGan + mJi;
+        const score = mScore(mGan, mJi);
+        const col = mColor(score); const badge = mBadge(score);
+        const isNow = i === curMonth;
+        const theme = MONTH_THEME[i];
+        return `<div style="background:rgba(255,255,255,${isNow?'0.07':'0.03'});border-radius:10px;padding:14px 16px;border-left:3px solid ${col};break-inside:avoid;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <span style="font-size:20px;font-weight:800;color:var(--gold);font-family:'Noto Serif KR',serif;">${hanja}</span>
+                    <span style="font-size:12px;color:#aaa;">${MONTH_NAME[i]} · ${theme.key}</span>
+                    ${isNow?'<span style="font-size:10px;background:var(--gold);color:#000;padding:1px 7px;border-radius:8px;font-weight:700;">이번달</span>':''}
+                </div>
+                <span style="font-size:16px;">${badge}</span>
+            </div>
+            <p style="font-size:13px;color:#ccc;line-height:1.75;margin:0 0 6px;">${theme.advice}</p>
+            <div style="font-size:11px;color:${col};">추천 행동: ${theme.action}</div>
+        </div>`;
+    }).join('');
+
+    return `<div class="report-chapter">
+        <h3 class="ch-title">Chapter 12. ${yr}년 12개월 작전 지도 — 월운(月運)</h3>
+        <p class="ch-text">세운(歲運)이 한 해의 날씨라면, 월운(月運)은 그날의 시간별 일기예보입니다. 언제 액셀을 밟고 언제 브레이크를 밟아야 하는지 — 12개월 전략 지도를 활용하십시오. 용신(用神) 기운의 달에는 중요한 결정과 행동을, 기신(忌神) 기운의 달에는 수비와 내공 축적에 집중하십시오.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            ${rows}
+        </div>
+    </div>`;
 }
 
 
