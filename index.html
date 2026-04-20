@@ -3617,149 +3617,149 @@ window.UNSUNG_MAP = {
 };
 
 const BRANCH_HIDDEN = {
-    자:['계'], 축:['기','계','신'], 인:['갑','병','무'], 묘:['을'], 진:['무','을','계'], 사:['병','무','경'],
-    오:['정','기'], 미:['기','정','을'], 신:['경','임','무'], 유:['신'], 술:['무','신','정'], 해:['임','갑']
+    '子':['癸'], '丑':['己','癸','辛'], '寅':['甲','丙','戊'], '卯':['乙'], '辰':['戊','乙','癸'], '巳':['丙','戊','庚'],
+    '午':['丁','己'], '未':['己','丁','乙'], '申':['庚','壬','戊'], '酉':['辛'], '戌':['戊','辛','丁'], '亥':['壬','甲']
 };
 
 const SHINSAL_LOGIC = {
     // ── 1. 천을귀인 — 일간 기준, 축·미·자·신·해·유·묘·사·인·오 ──
     '천을귀인': (gz, ec) => {
         const ds = ec.getDay()[0];
-        const map = {"甲":"축미","戊":"축미","庚":"축미","乙":"자신","己":"자신","丙":"해유","丁":"해유","壬":"묘사","癸":"묘사","辛":"인오"};
+        const map = {"甲":"丑未","戊":"丑未","庚":"丑未","乙":"子申","己":"子申","丙":"亥酉","丁":"亥酉","壬":"卯巳","癸":"卯巳","辛":"寅午"};
         const targets = map[ds] || '';
         return targets.includes(gz[1]) ? '천을귀인' : '';
     },
     // ── 2. 문창귀인 — 일간 기준 ──
     '문창귀인': (gz, ec) => {
         const ds = ec.getDay()[0];
-        const map = {"甲":"사","乙":"오","丙":"신","丁":"유","戊":"신","己":"유","庚":"해","辛":"자","壬":"인","癸":"묘"};
+        const map = {"甲":"巳","乙":"午","丙":"申","丁":"酉","戊":"申","己":"酉","庚":"亥","辛":"子","壬":"寅","癸":"卯"};
         return map[ds] === gz[1] ? '문창귀인' : '';
     },
     // ── 3. 문곡귀인 — 일간 기준 ──
     '문곡귀인': (gz, ec) => {
         const ds = ec.getDay()[0];
-        const map = {"甲":"해","乙":"자","丙":"인","丁":"묘","戊":"인","己":"묘","庚":"사","辛":"오","壬":"신","癸":"유"};
+        const map = {"甲":"亥","乙":"子","丙":"寅","丁":"卯","戊":"寅","己":"卯","庚":"巳","辛":"午","壬":"申","癸":"酉"};
         return map[ds] === gz[1] ? '문곡귀인' : '';
     },
     // ── 4. 양인살 — 일간 기준 ──
     '양인살': (gz, ec) => {
         const ds = ec.getDay()[0];
-        const map = {"甲":"묘","丙":"오","戊":"오","庚":"유","壬":"자"};
+        const map = {"甲":"卯","丙":"午","戊":"午","庚":"酉","壬":"子"};
         return map[ds] === gz[1] ? '양인살' : '';
     },
     // ── 5. 역마살 — 연지·일지 기준 ──
     '역마살': (gz, ec) => {
         const yb = ec.getYear()[1]; const db = ec.getDay()[1];
-        const map = {"亥":"사","卯":"사","未":"사","辛":"인","子":"인","辰":"인","巳":"해","酉":"해","丑":"해","寅":"신","午":"신","戌":"신"};
+        const map = {"亥":"巳","卯":"巳","未":"巳","辛":"寅","子":"寅","辰":"寅","巳":"亥","酉":"亥","丑":"亥","寅":"申","午":"申","戌":"申"};
         return (map[yb]===gz[1] || map[db]===gz[1]) ? '역마살' : '';
     },
     // ── 6. 도화살 — 연지·일지 기준 ──
     '도화살': (gz, ec) => {
         const yb = ec.getYear()[1]; const db = ec.getDay()[1];
-        const map = {"亥":"자","卯":"자","未":"자","辛":"유","子":"유","辰":"유","巳":"오","酉":"오","丑":"오","寅":"묘","午":"묘","戌":"묘"};
+        const map = {"亥":"子","卯":"子","未":"子","辛":"酉","子":"酉","辰":"酉","巳":"午","酉":"午","丑":"午","寅":"卯","午":"卯","戌":"卯"};
         return (map[yb]===gz[1] || map[db]===gz[1]) ? '도화살' : '';
     },
     // ── 7. 화개살 — 연지·일지 기준 ──
     '화개살': (gz, ec) => {
         const yb = ec.getYear()[1]; const db = ec.getDay()[1];
-        const map = {"亥":"미","卯":"미","未":"미","辛":"진","子":"진","辰":"진","巳":"축","酉":"축","丑":"축","寅":"술","午":"술","戌":"술"};
+        const map = {"亥":"未","卯":"未","未":"未","辛":"辰","子":"辰","辰":"辰","巳":"丑","酉":"丑","丑":"丑","寅":"戌","午":"戌","戌":"戌"};
         return (map[yb]===gz[1] || map[db]===gz[1]) ? '화개살' : '';
     },
     // ── 8. 겁살 — 연지·일지 기준 ──
     '겁살': (gz, ec) => {
         const yb = ec.getYear()[1]; const db = ec.getDay()[1];
-        const map = {"辛":"사","子":"사","辰":"사","亥":"신","卯":"신","未":"신","寅":"해","午":"해","戌":"해","巳":"인","酉":"인","丑":"인"};
+        const map = {"辛":"巳","子":"巳","辰":"巳","亥":"申","卯":"申","未":"申","寅":"亥","午":"亥","戌":"亥","巳":"寅","酉":"寅","丑":"寅"};
         return (map[yb]===gz[1] || map[db]===gz[1]) ? '겁살' : '';
     },
     // ── 9. 망신살 — 연지·일지 기준 ──
     '망신살': (gz, ec) => {
         const yb = ec.getYear()[1]; const db = ec.getDay()[1];
-        const map = {"辛":"해","子":"묘","辰":"미","亥":"인","卯":"오","未":"술","寅":"사","午":"유","戌":"축","巳":"신","酉":"자","丑":"진"};
+        const map = {"辛":"亥","子":"卯","辰":"未","亥":"寅","卯":"午","未":"戌","寅":"巳","午":"酉","戌":"丑","巳":"申","酉":"子","丑":"辰"};
         return (map[yb]===gz[1] || map[db]===gz[1]) ? '망신살' : '';
     },
     // ── 10. 지살 — 연지·일지 기준 ──
     '지살': (gz, ec) => {
         const yb = ec.getYear()[1]; const db = ec.getDay()[1];
-        const map = {"辛":"신","子":"자","辰":"진","亥":"해","卯":"묘","未":"미","寅":"인","午":"오","戌":"술","巳":"사","酉":"유","丑":"축"};
+        const map = {"辛":"申","子":"子","辰":"辰","亥":"亥","卯":"卯","未":"未","寅":"寅","午":"午","戌":"戌","巳":"巳","酉":"酉","丑":"丑"};
         // 지살 = 삼합 첫번째 지지와 같은 자리
-        const gsMap = {"辛":"인","子":"신","辰":"자","亥":"사","卯":"해","未":"묘","寅":"신","午":"인","戌":"오","巳":"해","酉":"사","丑":"유"};
+        const gsMap = {"辛":"寅","子":"申","辰":"子","亥":"巳","卯":"亥","未":"卯","寅":"申","午":"寅","戌":"午","巳":"亥","酉":"巳","丑":"酉"};
         return (gsMap[yb]===gz[1] || gsMap[db]===gz[1]) ? '지살' : '';
     },
     // ── 11. 천살 — 연지·일지 기준 ──
     '천살': (gz, ec) => {
         const yb = ec.getYear()[1]; const db = ec.getDay()[1];
-        const map = {"辛":"진","子":"진","辰":"진","亥":"미","卯":"미","未":"미","寅":"술","午":"술","戌":"술","巳":"축","酉":"축","丑":"축"};
+        const map = {"辛":"辰","子":"辰","辰":"辰","亥":"未","卯":"未","未":"未","寅":"戌","午":"戌","戌":"戌","巳":"丑","酉":"丑","丑":"丑"};
         return (map[yb]===gz[1] || map[db]===gz[1]) ? '천살' : '';
     },
     // ── 12. 년살 — 연지·일지 기준 (목욕지) ──
     '년살': (gz, ec) => {
         const yb = ec.getYear()[1]; const db = ec.getDay()[1];
-        const map = {"辛":"유","子":"묘","辰":"묘","亥":"자","卯":"자","未":"자","寅":"묘","午":"오","戌":"오","巳":"오","酉":"유","丑":"유"};
+        const map = {"辛":"酉","子":"卯","辰":"卯","亥":"子","卯":"子","未":"子","寅":"卯","午":"午","戌":"午","巳":"午","酉":"酉","丑":"酉"};
         // 년살 = 도화와 같은 기준 위치
         return false; // 도화와 중복 방지 — 도화살로 통합
     },
     // ── 13. 백호대살 — 간지 조합 ──
     '백호대살': (gz, ec) => {
-        return ['갑진','을미','병술','정축','무진','임술','계축'].includes(gz) ? '백호대살' : '';
+        return ['甲辰','乙未','丙戌','丁丑','戊辰','壬戌','癸丑'].includes(gz) ? '백호대살' : '';
     },
     // ── 14. 괴강살 — 간지 조합 ──
     '괴강살': (gz, ec) => {
-        return ['경진','경술','임진','임술','무술'].includes(gz) ? '괴강살' : '';
+        return ['庚辰','庚戌','壬辰','壬戌','戊戌'].includes(gz) ? '괴강살' : '';
     },
     // ── 15. 원진살 — 일지 기준 ──
     '원진살': (gz, ec) => {
         const db = ec.getDay()[1];
         if(!db || gz === ec.getDay()) return '';
-        const map = {"子":"미","丑":"오","寅":"유","卯":"신","辰":"해","巳":"술","午":"축","未":"자","辛":"묘","酉":"인","戌":"사","亥":"진"};
+        const map = {"子":"未","丑":"午","寅":"酉","卯":"申","辰":"亥","巳":"戌","午":"丑","未":"子","辛":"卯","酉":"寅","戌":"巳","亥":"辰"};
         return gz[1] === map[db] ? '원진살' : '';
     },
     // ── 16. 귀문관살 — 일지 기준 ──
     '귀문관살': (gz, ec) => {
         const db = ec.getDay()[1];
         if(!db || gz === ec.getDay()) return '';
-        const map = {"子":"유","丑":"오","寅":"미","卯":"신","辰":"해","巳":"술","午":"축","未":"인","辛":"묘","酉":"자","戌":"사","亥":"진"};
+        const map = {"子":"酉","丑":"午","寅":"未","卯":"申","辰":"亥","巳":"戌","午":"丑","未":"寅","辛":"卯","酉":"子","戌":"巳","亥":"辰"};
         return gz[1] === map[db] ? '귀문관살' : '';
     },
     // ── 17. 홍염살 — 일간 기준 ──
     '홍염살': (gz, ec) => {
         const ds = ec.getDay()[0];
-        const map = {"甲":"오","乙":"오","丙":"인","丁":"미","戊":"진","己":"진","庚":"술","辛":"유","壬":"자","癸":"신"};
+        const map = {"甲":"午","乙":"午","丙":"寅","丁":"未","戊":"辰","己":"辰","庚":"戌","辛":"酉","壬":"子","癸":"申"};
         return map[ds] === gz[1] ? '홍염살' : '';
     },
     // ── 18. 고신살 — 연지 기준 (남성) ──
     '고신살': (gz, ec) => {
         const yb = ec.getYear()[1];
-        const map = {"寅":"사","卯":"사","辰":"사","巳":"신","午":"신","未":"신","辛":"해","酉":"해","戌":"해","亥":"인","子":"인","丑":"인"};
+        const map = {"寅":"巳","卯":"巳","辰":"巳","巳":"申","午":"申","未":"申","辛":"亥","酉":"亥","戌":"亥","亥":"寅","子":"寅","丑":"寅"};
         return map[yb] === gz[1] ? '고신살' : '';
     },
     // ── 19. 과숙살 — 연지 기준 (여성) ──
     '과숙살': (gz, ec) => {
         const yb = ec.getYear()[1];
-        const map = {"寅":"축","卯":"축","辰":"축","巳":"진","午":"진","未":"진","辛":"미","酉":"미","戌":"미","亥":"술","子":"술","丑":"술"};
+        const map = {"寅":"丑","卯":"丑","辰":"丑","巳":"辰","午":"辰","未":"辰","辛":"未","酉":"未","戌":"未","亥":"戌","子":"戌","丑":"戌"};
         return map[yb] === gz[1] ? '과숙살' : '';
     },
     // ── 20. 천의성 — 월지 기준 ──
     '천의성': (gz, ec) => {
         const mb = ec.getMonth()[1];
-        const prev = {"子":"해","丑":"자","寅":"축","卯":"인","辰":"묘","巳":"진","午":"사","未":"오","辛":"미","酉":"신","戌":"유","亥":"술"};
+        const prev = {"子":"亥","丑":"子","寅":"丑","卯":"寅","辰":"卯","巳":"辰","午":"巳","未":"午","辛":"未","酉":"申","戌":"酉","亥":"戌"};
         return prev[mb] === gz[1] ? '천의성' : '';
     },
     // ── 21. 학당귀인 — 일간 기준 ──
     '학당귀인': (gz, ec) => {
         const ds = ec.getDay()[0];
-        const map = {"甲":"해","乙":"오","丙":"인","丁":"유","戊":"신","己":"묘","庚":"사","辛":"자","壬":"신","癸":"묘"};
+        const map = {"甲":"亥","乙":"午","丙":"寅","丁":"酉","戊":"申","己":"卯","庚":"巳","辛":"子","壬":"申","癸":"卯"};
         return map[ds] === gz[1] ? '학당귀인' : '';
     },
     // ── 22. 천관귀인 — 일간 기준 ──
     '천관귀인': (gz, ec) => {
         const ds = ec.getDay()[0];
-        const map = {"甲":"미","乙":"진","丙":"유","丁":"해","戊":"축","己":"자","庚":"축","辛":"인","壬":"묘","癸":"사"};
+        const map = {"甲":"未","乙":"辰","丙":"酉","丁":"亥","戊":"丑","己":"子","庚":"丑","辛":"寅","壬":"卯","癸":"巳"};
         return map[ds] === gz[1] ? '천관귀인' : '';
     },
     // ── 23. 천덕귀인 — 월지 기준 ──
     '천덕귀인': (gz, ec) => {
         const mb = ec.getMonth()[1];
-        const map = {"寅":"정","卯":"신","辰":"임","巳":"신","午":"해","未":"갑","辛":"계","酉":"인","戌":"병","亥":"을","子":"사","丑":"경"};
+        const map = {"寅":"정","卯":"申","辰":"임","巳":"申","午":"亥","未":"갑","辛":"계","酉":"寅","戌":"병","亥":"을","子":"巳","丑":"경"};
         return map[mb] === gz[0] ? '천덕귀인' : '';
     },
     // ── 24. 월덕귀인 — 월지 기준 ──
@@ -3983,20 +3983,23 @@ function buildRelationLines(pillars) {
     const branches = pillars.map(p => p.h[1]).filter(Boolean);
     const lines = [];
 
-    const stemCombine = [['갑','기','갑기합'],['을','경','을경합'],['병','신','병신합'],['정','임','정임합'],['무','계','무계합']];
+    const stemCombine = [['甲','己','갑기합'],['乙','庚','을경합'],['丙','辛','병신합'],['丁','壬','정임합'],['戊','癸','무계합']];
     stemCombine.forEach(([a,b,label]) => { if (stems.includes(a) && stems.includes(b)) lines.push({type:'천간 합', label, chars:[a,b]}); });
 
-    const branchSix = [['자','축','자축합'],['인','해','인해합'],['묘','술','묘술합'],['진','유','진유합'],['사','신','사신합'],['오','미','오미합']];
+    const branchSix = [['子','丑','자축합'],['寅','亥','인해합'],['卯','戌','묘술합'],['辰','酉','진유합'],['巳','申','사신합'],['午','未','오미합']];
     branchSix.forEach(([a,b,label]) => { if (branches.includes(a) && branches.includes(b)) lines.push({type:'지지 합', label, chars:[a,b]}); });
 
-    const branchChung = [['자','오','자오충'],['축','미','축미충'],['인','신','인신충'],['묘','유','묘유충'],['진','술','진술충'],['사','해','사해충']];
+    const branchChung = [['子','午','자오충'],['丑','未','축미충'],['寅','申','인신충'],['卯','酉','묘유충'],['辰','戌','진술충'],['巳','亥','사해충']];
     branchChung.forEach(([a,b,label]) => { if (branches.includes(a) && branches.includes(b)) lines.push({type:'지지 충', label, chars:[a,b]}); });
 
-    const branchHyung = [['자','묘','자묘형'],['인','사','인사형'],['사','신','사신형'],['축','술','축술형'],['술','미','술미형']];
+    const branchHyung = [['子','卯','자묘형'],['寅','巳','인사형'],['巳','申','사신형'],['丑','戌','축술형'],['戌','未','술미형']];
     branchHyung.forEach(([a,b,label]) => { if (branches.includes(a) && branches.includes(b)) lines.push({type:'지지 형', label, chars:[a,b]}); });
 
-    if (branches.includes('인') && branches.includes('묘') && branches.includes('진')) lines.push({type:'방합', label:'인묘진 방합', chars:['인','묘','진']});
-    if (branches.includes('자') && branches.includes('진')) lines.push({type:'반합', label:'자진 반합', chars:['자','진']});
+    if (branches.includes('寅') && branches.includes('卯') && branches.includes('辰')) lines.push({type:'방합', label:'인묘진 방합', chars:['寅','卯','辰']});
+    if (branches.includes('巳') && branches.includes('午') && branches.includes('未')) lines.push({type:'방합', label:'사오미 방합', chars:['巳','午','未']});
+    if (branches.includes('申') && branches.includes('酉') && branches.includes('戌')) lines.push({type:'방합', label:'신유술 방합', chars:['申','酉','戌']});
+    if (branches.includes('亥') && branches.includes('子') && branches.includes('丑')) lines.push({type:'방합', label:'해자축 방합', chars:['亥','子','丑']});
+    if (branches.includes('子') && branches.includes('辰')) lines.push({type:'반합', label:'자진 반합', chars:['子','辰']});
     
     if (!lines.length) lines.push({type:'없음', label:'특기할 합충형파해 구조 없음', chars:[]});
     return lines;
@@ -4495,7 +4498,9 @@ function runAnalysis() {
         const yunStartAge = yun.getStartAge ? yun.getStartAge() : '-';
         document.getElementById('yun-text').innerText = `${yunStartAge}세 시작 · ${yunDirection}`;
 
-        const daeunRows = yun.getDaYun().slice(1, 9).map(dy => {
+        // 120세까지 대운 전체 (대운 시작 나이가 120 이하인 것만)
+        const allDaYun = yun.getDaYun().slice(1).filter(dy => dy.getStartAge() <= 120);
+        const daeunRows = allDaYun.map(dy => {
             const gz = dy.getGanZhi();
             return [
                 dy.getStartAge() + '세',
@@ -4514,7 +4519,7 @@ function runAnalysis() {
         
         // Find active Daeun
         let activeDaeunIdx = -1;
-        const daeunData = yun.getDaYun().slice(1, 9);
+        const daeunData = allDaYun;
         for(let i = 0; i < daeunData.length; i++) {
             if(currentAge >= daeunData[i].getStartAge() && (i === daeunData.length - 1 || currentAge < daeunData[i+1].getStartAge())) {
                 activeDaeunIdx = i; break;
@@ -4876,20 +4881,25 @@ function runAnalysis() {
             seunSummaryEl.innerHTML = `올해 ${currentYear}년 세운 : <b style="color:var(--gold);">${thisYear[2]}(${thisYear[3]})</b> &nbsp;·&nbsp; 십성 <b>${thisYear[1]}</b> · 12운성 <b>${thisYear[4]}</b>의 기운이 한 해를 이끕니다.`;
         }
 
+        // 월운: 현재 달부터 12개월
         const wolunRows = [];
-        for (let m = 1; m <= 12; m++) {
-            const mSolar = Solar.fromYmd(currentYear, m, 15);
+        let wolunCurrentIdx = 0;
+        for (let i = 0; i < 12; i++) {
+            const wYear = currentMonth + i > 12 ? currentYear + 1 : currentYear;
+            const wMonth = ((currentMonth - 1 + i) % 12) + 1;
+            if(i === 0) wolunCurrentIdx = 0; // 첫 번째가 현재 달
+            const mSolar = Solar.fromYmd(wYear, wMonth, 15);
             const mEc = mSolar.getLunar().getEightChar();
             const gz = mEc.getMonth();
             wolunRows.push([
-                m + '월',
+                wYear + '.' + wMonth + '월',
                 getSipseong(dayStem, gz[0]),
                 `${gz[0]}${gz[1]}`,
                 `${HAN_KOR[gz[0]]}${HAN_KOR[gz[1]]}`,
                 getUnsung(dayStem, gz[1]) || '-'
             ]);
         }
-        buildFortuneCards('wolun-table', wolunRows, currentMonth - 1);
+        buildFortuneCards('wolun-table', wolunRows, wolunCurrentIdx);
         // ===== 월운 표 아래 풀이 주입 =====
         (function(){
             var OH={'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
@@ -4905,17 +4915,19 @@ function runAnalysis() {
             if(!wrap) return;
             var detDiv=document.createElement('div');
             detDiv.style.cssText='margin-top:12px;display:flex;flex-direction:column;gap:8px;';
-            for(var m=1;m<=12;m++){
-                var mS=Solar.fromYmd(curY,m,15);
+            for(var i=0;i<12;i++){
+                var wY=((curM-1+i)>=12)?curY+1:curY;
+                var m=((curM-1+i)%12)+1;
+                var mS=Solar.fromYmd(wY,m,15);
                 var gz=mS.getLunar().getEightChar().getMonth();var g=gz[0];var j=gz[1];
-                var s=gs(g,j);var col=gc(s);var isThis=(m===curM);
+                var s=gs(g,j);var col=gc(s);var isThis=(i===0);
                 var wlDesc=WL[j]||j+'월의 기운이 이달을 이끕니다.';
                 var advm=s>=2?'이달은 적극적으로 행동하십시오. 용신 기운이 강해 중요한 시작·만남·결정이 좋은 결실로 이어집니다.':s>=0?'안정적인 달입니다. 꾸준히 나아가는 것이 최선의 전략입니다.':'이달은 수비가 최선. 큰 결정과 투자는 다음 달로 미루고 조용히 내공을 쌓으십시오.';
                 var d=document.createElement('div');
                 d.style.cssText='padding:11px;background:rgba(255,255,255,'+(isThis?'0.07':'0.02')+');border:1px solid '+(isThis?'var(--gold)':'rgba(255,255,255,0.06)')+';border-radius:8px;';
                 d.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;">'+
                     '<div style="display:flex;align-items:center;gap:6px;"><span style="font-size:16px;font-weight:900;color:var(--gold);font-family:Noto Serif KR,serif;">'+g+j+'</span>'+
-                    '<span style="font-size:12px;color:#bbb;">'+m+'월'+(isThis?' <span style="font-size:10px;background:var(--gold);color:#000;padding:1px 5px;border-radius:5px;font-weight:700;">이달</span>':'')+'</span></div>'+
+                    '<span style="font-size:12px;color:#bbb;">'+wY+'.'+m+'월'+(isThis?' <span style="font-size:10px;background:var(--gold);color:#000;padding:1px 5px;border-radius:5px;font-weight:700;">이달</span>':'')+'</span></div>'+
                     '<span style="font-size:11px;font-weight:700;color:'+col+';">'+gb(s)+'</span></div>'+
                     '<p style="font-size:12px;color:#ddd;line-height:1.7;margin:0 0 6px;">'+wlDesc+'</p>'+
                     '<div style="background:rgba(199,167,106,0.04);border-radius:5px;padding:7px 9px;border-left:2px solid '+col+';"><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">'+advm+'</p></div>';
