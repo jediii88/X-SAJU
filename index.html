@@ -1924,7 +1924,9 @@ function buildRelationSummary(data) {
 }
 
 function buildShinsalSummary(data) {
-    const shinsal = data.allShinsal || [];
+    // allShinsal은 {시주:[...], 일주:[...], ...} 형태의 객체 — 배열로 펼침
+    const raw = data.allShinsal || {};
+    const shinsal = Array.isArray(raw) ? raw : Object.values(raw).reduce((acc, arr) => acc.concat(Array.isArray(arr) ? arr : []), []);
     const goodCats = ['길성'];
     if(!shinsal || shinsal.length === 0) {
         return '<div class="inline-interp"><div class="ii-label">\u2756 신살\u00b7길성 분석</div><div class="ii-title">특별한 신살이 없는 순수한 원국</div><div class="ii-text"><p style="font-size:13.5px;color:#bbb;line-height:1.85;">당신의 원국에는 특별한 신살이 검출되지 않았습니다. 신살이 없다는 것은 흉한 것이 아닙니다. 오히려 복잡한 에너지의 간섭 없이 일간의 본래 기질이 가장 맑고 순수하게 발현됩니다. 당신의 삶은 특별한 충격이나 사건보다 꾸준함과 본인의 의지로 설계됩니다.</p></div></div>';
@@ -2292,17 +2294,17 @@ function buildChapter1_Basic(data) {
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
                 <div>
                     <span style="font-size:11px;color:var(--text-dim);letter-spacing:1px;">${pillarNames[idx]} (${pillarPeriod[idx]})</span>
-                    <div style="font-size:24px;font-weight:800;color:${idx===2?'var(--gold)':'#ddd'};font-family:'Noto Serif KR',serif;margin-top:2px;">${hanja}</div>
+                    <div style="font-size:24px;font-weight:800;color:${idx===2?'var(--gold)':'#ddd'};font-family:'Noto Serif KR',serif;margin-top:2px;">${(HAN_KOR&&stem?HAN_KOR[stem]||stem:stem)+(HAN_KOR&&branch?HAN_KOR[branch]||branch:branch)} <span style="font-size:14px;font-weight:400;color:#666;letter-spacing:1px;">(${hanja})</span></div>
                 </div>
                 <div style="text-align:right;font-size:12px;color:#888;">${pillarDesc[idx]}${isGongmang?'<br><span style="color:#e74c3c;font-weight:700;">⚠ 공망</span>':''}</div>
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
                 <div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;">
-                    <div style="font-size:10px;color:var(--text-dim);margin-bottom:4px;letter-spacing:1px;">천간 ${stem}</div>
+                    <div style="font-size:10px;color:var(--text-dim);margin-bottom:4px;letter-spacing:1px;">천간 ${stem}(${(HAN_KOR&&HAN_KOR[stem])||stem})</div>
                     <div style="font-size:11.5px;color:#ddd;line-height:1.6;">${stemDesc[stem] || stem}</div>
                 </div>
                 <div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;">
-                    <div style="font-size:10px;color:var(--text-dim);margin-bottom:4px;letter-spacing:1px;">지지 ${branch}</div>
+                    <div style="font-size:10px;color:var(--text-dim);margin-bottom:4px;letter-spacing:1px;">지지 ${branch}(${(HAN_KOR&&HAN_KOR[branch])||branch})</div>
                     <div style="font-size:11.5px;color:#ddd;line-height:1.6;">${branchDesc[branch] || branch}</div>
                 </div>
                 <div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;">
