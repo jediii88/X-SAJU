@@ -2236,7 +2236,7 @@ function buildChapter1_Basic(data) {
 
     // 4주 박스 생성
     const pillarBoxes = pillars.map((p, idx) => {
-        const hanja = p.h ? p.h.join('') : '';
+        const hanja = p.h ? (Array.isArray(p.h) ? p.h.join('') : String(p.h)) : '';
         const stem = p.h ? p.h[0] : '';
         const branch = p.h ? p.h[1] : '';
         const sipseongVal = (data.pillars_sipseong || [])[idx] || '';
