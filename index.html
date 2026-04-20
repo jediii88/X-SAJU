@@ -1168,12 +1168,12 @@
 <script>
 
 
-// ── 신살(神殺) 상세 설명 DB ──
+// ── 신살(神殺(신살)) 상세 설명 DB ──
 window.SHINSAL_DESC = {
     '천을귀인': {
         cat: '길성', color: '#c7a76a',
         short: '최고의 귀인성. 위기 때마다 구원자가 나타난다.',
-        detail: '일생에서 가장 귀하게 여기는 신살입니다. 천을귀인이 있는 사람은 위기와 역경이 찾아올 때마다 반드시 도와주는 귀인(貴人)이 나타납니다. 대인관계가 원만하고 어떤 환경에서도 구원의 손길이 닿는 복력(福力)을 타고났습니다.'
+        detail: '일생에서 가장 귀하게 여기는 신살입니다. 천을귀인이 있는 사람은 위기와 역경이 찾아올 때마다 반드시 도와주는 귀인(貴人(귀인))이 나타납니다. 대인관계가 원만하고 어떤 환경에서도 구원의 손길이 닿는 복력(福力(복력))을 타고났습니다.'
     },
     '문창귀인': {
         cat: '길성', color: '#c7a76a',
@@ -1198,7 +1198,7 @@ window.SHINSAL_DESC = {
     '천덕귀인': {
         cat: '길성', color: '#c7a76a',
         short: '하늘의 덕. 액운을 막고 귀인의 도움을 받는다.',
-        detail: '하늘의 덕스러운 기운으로 액운(厄運)을 막아주는 강력한 보호막입니다. 어떤 흉살이 있어도 천덕귀인이 있으면 그 흉함이 크게 감소합니다.'
+        detail: '하늘의 덕스러운 기운으로 액운(厄運(액운))을 막아주는 강력한 보호막입니다. 어떤 흉살이 있어도 천덕귀인이 있으면 그 흉함이 크게 감소합니다.'
     },
     '월덕귀인': {
         cat: '길성', color: '#c7a76a',
@@ -1258,7 +1258,7 @@ window.SHINSAL_DESC = {
     '백호대살': {
         cat: '흉살', color: '#e74c3c',
         short: '피·수술·사고. 강렬한 에너지이지만 위험도 높다.',
-        detail: '백호(白虎)는 서방의 맹수로, 강력하고 위험한 에너지를 상징합니다. 피를 보는 사고, 수술, 폭력적인 사건과 연관됩니다. 그러나 이 살을 가진 사람은 동시에 강인한 생명력과 투지를 가집니다. 의사, 군인, 경찰 등에서 두각을 나타내기도 합니다.'
+        detail: '백호(白虎(백호))는 서방의 맹수로, 강력하고 위험한 에너지를 상징합니다. 피를 보는 사고, 수술, 폭력적인 사건과 연관됩니다. 그러나 이 살을 가진 사람은 동시에 강인한 생명력과 투지를 가집니다. 의사, 군인, 경찰 등에서 두각을 나타내기도 합니다.'
     },
     '괴강살': {
         cat: '강살', color: '#e67e22',
@@ -1781,7 +1781,7 @@ function generateDeepReport(data) {
     bottomHtml += buildChapter7_Hidden(data);
     bottomHtml += buildChapter8_Health(data);
     bottomHtml += buildChapter9_Remedy(data);
-    bottomHtml += buildSectionHeader("대운(大運) · 세운(歲運) · 월운 심층 해부");
+    bottomHtml += buildSectionHeader("대운(大運(대운)) · 세운(歲運(세운)) · 월운 심층 해부");
     bottomHtml += buildDaewunLoop(data);
     bottomHtml += buildSewunLoop(data);
     bottomHtml += buildWolunLoop(data);
@@ -1796,8 +1796,8 @@ function injectSectionInterpretations(data) {
         if(el) { el.innerHTML = content; }
         else console.warn('inject: #'+id+' not found');
     }
-    // 1. 만세력 원국 아래 → 4주 전체 해설
-    setEl('manse-inline-summary', buildChapter1_Basic(data));
+    // 1. 만세력 원국 아래 → 4주 전체 해설 + 현재 시기 요약 + 전체 심층 풀이
+    setEl('manse-inline-summary', buildChapter1_Basic(data) + buildCurrentPeriodSummary(data) + buildMasterFullReading(data));
     // 2. 합충형파해 아래
     setEl('relation-inline-summary', buildRelationSummary(data));
     // 3. 신살 아래
@@ -1908,9 +1908,9 @@ function buildStrengthSummary(data) {
         : '기운이 분산된 사주는 혼자 모든 것을 짊어지면 무너집니다. 훌륭한 파트너·팀·귀인과 함께할 때 1+1이 10이 되는 폭발적 시너지를 경험합니다. 좋은 사람을 알아보고 협력하는 능력이 인생 전략의 핵심입니다.';
     const advice = isStrong
         ? '⚠ 주의사항: 독단적인 결정과 과잉 에너지로 인한 인간관계 마찰을 조심하십시오. 강한 기운을 사회적으로 인정받는 방향으로 분출해야 합니다.'
-        : '✦ 전략: 용신(用神) 기운이 강해지는 대운과 세운에서 가장 크게 도약합니다. 용신 기운을 가진 귀인과의 만남을 적극적으로 만들어가십시오.';
+        : '✦ 전략: 용신(用神(용신)) 기운이 강해지는 대운과 세운에서 가장 크게 도약합니다. 용신 기운을 가진 귀인과의 만남을 적극적으로 만들어가십시오.';
     return `<div class="inline-interp">
-        <div class="ii-label">✦ 신강·신약(身强·身弱) 해석</div>
+        <div class="ii-label">✦ 신강·신약(身强(신강)·身弱(신약)) 해석</div>
         <div class="ii-title">${strengthTitle}</div>
         <div class="ii-text">
             <p style="margin-bottom:12px;">${text}</p>
@@ -1973,9 +1973,132 @@ function buildSectionHeader(title) {
 }
 
 
-function buildChapter1_Basic(data) {
+// ─── 현재 대운 + 올해 세운 + 이달 월운 요약 ───
+function buildCurrentPeriodSummary(data) {
+    const daeunRows = data.daeunRows || [];
+    const aIdx = data.activeDaeunIdx || 0;
+    const curDaeun = daeunRows[aIdx];
+    const OH = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
+    const JO = {'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'};
+    const KN = {wood:'목(木)',fire:'화(火)',earth:'토(土)',metal:'금(金)',water:'수(水)'};
+    const sc = {}; sc[data.yong]=2;sc[data.hee]=1;sc[data.gi]=-2;sc[data.goo]=-1;
+    function gs(g,j){return (sc[OH[g]]||0)+(sc[JO[j]]||0);}
+    function gc(s){return s>=3?'#c7a76a':s>=1?'#00C853':s===0?'#888':s>=-2?'#ff9800':'#e74c3c';}
+    function gb(s){return s>=3?'🌟 대길':s>=1?'✦ 길':s===0?'— 평':s>=-2?'⚠ 주의':'❌ 흉';}
+
+    // 현재 대운
+    let daeunHtml = '';
+    if(curDaeun) {
+        const dg = curDaeun.gz ? curDaeun.gz[0] : (curDaeun.gan||'');
+        const dj = curDaeun.gz ? curDaeun.gz[1] : (curDaeun.ji||'');
+        const ds = gs(dg,dj);
+        const dcol = gc(ds);
+        const dOh = OH[dg]||'earth'; const djOh = JO[dj]||'earth';
+        const dStrat = ds>=2?'이 대운은 용신에너지가 강한 길한 시기입니다. 재물: 적극적 투자와 수입로 확대가 가능합니다. 직업: 새로운 기회를 잡고 사회적 영향력이 커집니다. 애정: 인연이 풍부하고 중요한 만남이 시작될 수 있습니다. 건강: 전체적으로 활력이 맘치는 시기입니다.':ds>=0?'안정적인 대운입니다. 재물: 급격한 변화보다 꾸준한 축적이 유리합니다. 직업: 현 위치를 지키면서 실력을 쌓는 시기입니다. 애정: 화려한 인연보다 깨은 신뢰가 더 중요합니다. 건강: 특별한 주의 사항 없이 안정적입니다.':'기신 기운이 강한 주의 시기입니다. 재물: 큰 추가 투자는 자제하고 현상 유지에 집중하십시오. 직업: 가능하면 현 위치 유지가 유리하며, 시작보다 마무리에 집중하십시오. 애정: 갈등이 생기는 시기이니 인내와 소통이 핵심입니다. 건강: 체력 관리와 소진한 외출을 주의하십시오.';
+        daeunHtml = `<div style="margin-bottom:12px;padding:14px;background:rgba(199,167,106,0.06);border:1px solid var(--gold);border-radius:10px;">
+            <div style="font-size:11px;color:var(--gold);font-weight:700;margin-bottom:8px;letter-spacing:1px;">▶ 현재 대운(大運) — ${curDaeun.age}세 구간</div>
+            <div style="font-size:22px;font-weight:900;color:var(--gold);font-family:Noto Serif KR,serif;margin-bottom:6px;">${dg}${dj} <span style="font-size:13px;color:#bbb;font-weight:400;">${KN[dOh]||''} + ${KN[djOh]||''} 기운</span></div>
+            <p style="font-size:13px;color:#ddd;line-height:1.8;margin:0 0 8px;">${dStrat}</p>
+            <span style="font-size:12px;font-weight:700;color:${dcol};">${gb(ds)}</span>
+        </div>`;
+    }
+
+    // 올해 세운
+    let sewunHtml = '';
+    try {
+        const curY = new Date().getFullYear();
+        const yL = Solar.fromYmd(curY,6,15).getLunar();
+        const gz = yL.getEightChar().getYear();
+        const sg = gz[0]; const sj = gz[1];
+        const ss = gs(sg,sj); const scol = gc(ss);
+        const sOh = OH[sg]||'earth'; const sjOh = JO[sj]||'earth';
+        const sAdv = ss>=2?'올해는 용신에너지가 강한 장사의 해입니다. 재물: 신규 수입 창출와 투자 기회에 적극 나서십시오. 직업: 승진·독립·신규 시작 모두 흙신이 있습니다. 애정: 중요한 인연이 시작되거나 관계가 선명해집니다. 건강: 활력이 넘치는 해로 얼마든지 단마카를 지크십시오.':ss>=0?'안정적인 한 해입니다. 재물: 투기보다 복리 저축이 유리합니다. 직업: 맡햤 맄를 프로젝트의 햴인보다 관리에 집중하십시오. 애정: 신뢰와 지속성이 인연의 핵심입니다.':'주의가 필요한 한 해입니다. 재물: 미수금은 졌공하는 해로, 신규 투자는 연내하십시오. 직업: 직장 내 갈등이 생길 수 있으니 놔라운 고리를 낮추십시오. 애정: 코업리터는 현주소를 지키는 날로 닫습니다.';
+        sewunHtml = `<div style="margin-bottom:12px;padding:14px;background:rgba(74,158,106,0.05);border:1px solid rgba(74,158,106,0.3);border-radius:10px;">
+            <div style="font-size:11px;color:#4a9e6a;font-weight:700;margin-bottom:8px;letter-spacing:1px;">▶ 올해 ${curY}년 세운(歲運)</div>
+            <div style="font-size:20px;font-weight:900;color:#4a9e6a;font-family:Noto Serif KR,serif;margin-bottom:6px;">${sg}${sj} <span style="font-size:13px;color:#bbb;font-weight:400;">${KN[sOh]||''} + ${KN[sjOh]||''} 기운</span></div>
+            <p style="font-size:13px;color:#ddd;line-height:1.8;margin:0 0 8px;">${sAdv}</p>
+            <span style="font-size:12px;font-weight:700;color:${scol};">${gb(ss)}</span>
+        </div>`;
+    } catch(e) {}
+
+    // 이달 월운
+    let wolunHtml = '';
+    try {
+        const curY2 = new Date().getFullYear();
+        const curM2 = new Date().getMonth()+1;
+        const mS = Solar.fromYmd(curY2,curM2,15);
+        const gz2 = mS.getLunar().getEightChar().getMonth();
+        const mg = gz2[0]; const mj = gz2[1];
+        const ms = gs(mg,mj); const mcol = gc(ms);
+        const mOh = OH[mg]||'earth'; const mjOh = JO[mj]||'earth';
+        const WL = {'寅':'인월 — 봄의 시작. 새로운 시작과 인맥 확장에 최적입니다.','卯':'묘월 — 성장과 협업의 기운. 파트너십과 환동에 유리합니다.','辰':'진월 — 변화와 전환의 달. 유연한 대응이 핵심입니다.','巳':'사월 — 결단의 달. 오래 미룠 일을 실행에 옥기십시오.','午':'오월 — 활력이 넘치는 달. 적극적 대외 활동에 최적입니다.','未':'미월 — 관계와 감성의 달. 사람에게 집중하십시오.','申':'신월 — 실행력의 달. 결정을 즉시 행동으로 옥기십시오.','酉':'유월 — 마무리의 달. 진행 중인 일을 마무리하십시오.','戌':'술월 — 정리의 달. 뺈어낼 것을 뺈어내십시오.','亥':'해월 — 준비의 달. 내공과 학습에 집중하십시오.','子':'자월 — 지혜의 달. 로직과 분석이 휴리하는 달입니다.','丑':'축월 — 인내의 달. 천정히 쳐나가는 것이 이달의 항로입니다.'};
+        const mAdv = ms>=2?`이달은 용신에너지가 강한 달입니다. 재물직업에서 중요한 행동을 주저없이 실행하십시오.`:ms>=0?`평온한 달입니다. 꾸준한 뤄률을 유지하는 것이 최선입니다.`:`주의가 필요한 달입니다. 큰 실행보다 준비와 방어에 집중하십시오.`;
+        wolunHtml = `<div style="padding:14px;background:rgba(74,114,198,0.05);border:1px solid rgba(74,114,198,0.3);border-radius:10px;">
+            <div style="font-size:11px;color:#5b7fc4;font-weight:700;margin-bottom:8px;letter-spacing:1px;">▶ 이달 ${curM2}월 월운(月運)</div>
+            <div style="font-size:18px;font-weight:900;color:#5b7fc4;font-family:Noto Serif KR,serif;margin-bottom:6px;">${mg}${mj} <span style="font-size:13px;color:#bbb;font-weight:400;">${KN[mOh]||''} + ${KN[mjOh]||''} 기운</span></div>
+            <p style="font-size:13px;color:#ddd;line-height:1.8;margin:0 0 6px;">${WL[mj]||'이달의 기운입니다.'}</p>
+            <p style="font-size:12.5px;color:#bbb;line-height:1.75;margin:0 0 8px;">${mAdv}</p>
+            <span style="font-size:12px;font-weight:700;color:${mcol};">${gb(ms)}</span>
+        </div>`;
+    } catch(e) {}
+
+    if(!daeunHtml && !sewunHtml && !wolunHtml) return '';
+    return `<div class="report-chapter">
+        <h3 class="ch-title">▶ 현재 시기 핑실 요약 — 지금 이 순간의 대운·세운·월운</h3>
+        <p class="ch-text">대운(인생의 기후)·세운(지금 한 해의 날씨)·월운(이달의 날씨)이 한꿈에 폼쳐집니다. 당신의 원국 에너지가 지금 이 시기와 어떻게 마는지 확인하십시오.</p>
+        ${daeunHtml}${sewunHtml}${wolunHtml}
+    </div>`;
+}
+
+// ─── 대가 수준 전체 심층 풀이 (원국 아래 종합연) ───
+function buildMasterFullReading(data) {
+    const ds = data.dayStem||'丙'; const db = data.dayBranch||'寅';
+    const isStrong = (data.strengthText||'').includes('신강')||(data.strengthText||'').includes('강');
+    const yong = data.yong||'water'; const gi = data.gi||'wood';
+    const sip = data.sipseong||{};
+    const hasBien = (sip['비견']||0)+(sip['겡재']||0) > 2;
+    const hasGwan = (sip['정관']||0)+(sip['편관']||0) > 0;
+    const hasJae = (sip['정재']||0)+(sip['편재']||0) > 0;
+    const OH = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
+    const dayOh = OH[ds]||'fire';
+
+    const CHAR_MAP = {
+        wood: '목(木) 일간의 당신은 끊임없이 성장하려는 본능이 강합니다. 멈춰 있으면 내면이 갑갑해집니다. 새로운 시작과 개척에 천부적 재능이 있으며, 리더십보다 선구자 기질이 강합니다. 단, 마무리보다 시작이 강한 편이라 완성까지 끝을 보는 훈련이 필요합니다.',
+        fire: '화(火) 일간의 당신은 어디서든 존재감을 발휘하는 타고난 스타 기질이 있습니다. 열정이 폭발적이고 표현력이 탁월하며 주변 에너지를 끌어올리는 능력이 있습니다. 단 감정 기복과 번아웃을 주의해야 합니다.',
+        earth: '토(土) 일간의 당신은 묵직한 신뢰감과 안정감이 최고의 자산입니다. 급변하는 상황에도 중심을 잡는 능력이 탁월하며 사람들이 자연스럽게 의지합니다. 변화에 대한 저항이 강해 새로운 기회를 의식적으로 열어두는 것이 중요합니다.',
+        metal: '금(金) 일간의 당신은 원칙과 기준이 명확하고 불필요한 것을 과감히 쳐내는 결단력이 탁월합니다. 냉철함이 전문성과 결합할 때 분야 최고 권위자가 됩니다. 단 감정 표현이 부족해 주변의 오해를 받을 수 있으니 따뜻함을 의식적으로 표현하십시오.',
+        water: '수(水) 일간의 당신은 복잡한 상황을 꿰뚫어 보는 깊은 통찰력이 있습니다. 전략가·분석가로서 천재적 능력이 있으며 어떤 환경에서도 유연하게 적응합니다. 단 지나친 분석으로 결정을 미루는 경향이 있어 실행력을 키우는 것이 관건입니다.'
+    };
+    const charText = CHAR_MAP[dayOh] || '당신의 일간이 가진 고유한 기질이 인생 전반을 이끌어 갑니다.';
+    const jaeText = hasJae ? '재성(財星)이 있는 사주로, 돈을 다루는 감각과 현실 감각이 뛰어납니다. 적극적인 재테크와 사업에서 강점을 발휘합니다.' : '재성(財星)이 약한 무재(無財) 사주입니다. 직접적 수익보다 전문성·명성을 먼저 쌓으면 자연스럽게 재물이 따라오는 구조입니다.';
+    const gwanText = hasGwan ? '관성(官星)이 있어 사회적 성취욕이 강하고 조직에서 인정받는 능력이 탁월합니다. 명예와 직업적 안정을 중요하게 여깁니다.' : '관성(官星)이 약한 사주로 조직보다 자유로운 환경에서 더 뛰어난 능력을 발휘합니다. 창업·프리랜서·전문직이 더 적합합니다.';
+    const strongText = isStrong ? '신강(身强) 사주로 에너지가 강합니다. 자율성이 보장된 환경에서 능력이 폭발적으로 발현됩니다. 다른 사람의 통제를 받으면 극심한 스트레스를 받습니다.' : '신약(身弱) 사주로 에너지가 분산되어 있습니다. 혼자보다 신뢰할 수 있는 파트너와 협력할 때 1+1이 10이 됩니다. 용신(用神) 오행의 사람을 곁에 두십시오.';
+
+    return `<div class="report-chapter">
+        <h3 class="ch-title">📖 원국 종합 통변 — 성격·재물·직업·애정·건강 전체 개관</h3>
+        <p class="ch-text">사주 원국 8자가 말하는 당신 인생의 설계도를 대가의 시선으로 통바로 풀어드립니다.</p>
+        <div style="background:rgba(255,255,255,0.03);border-radius:10px;padding:16px;margin-bottom:12px;border-left:3px solid var(--gold);">
+            <div style="font-size:11px;color:var(--gold);letter-spacing:1px;margin-bottom:6px;">「성격·기질 」 일간(日干) 통변</div>
+            <p style="font-size:13.5px;color:#ddd;line-height:1.85;margin:0;">${charText}</p>
+        </div>
+        <div style="background:rgba(255,255,255,0.03);border-radius:10px;padding:16px;margin-bottom:12px;border-left:3px solid #c7a76a;">
+            <div style="font-size:11px;color:#c7a76a;letter-spacing:1px;margin-bottom:6px;">「신강신약 」 일간 강약 판단</div>
+            <p style="font-size:13.5px;color:#ddd;line-height:1.85;margin:0;">${strongText}</p>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div style="background:rgba(255,255,255,0.03);border-radius:8px;padding:14px;">
+                <div style="font-size:11px;color:#00C853;letter-spacing:1px;margin-bottom:6px;">「재물운 」</div>
+                <p style="font-size:12.5px;color:#ddd;line-height:1.8;margin:0;">${jaeText}</p>
+            </div>
+            <div style="background:rgba(255,255,255,0.03);border-radius:8px;padding:14px;">
+                <div style="font-size:11px;color:#4a9e6a;letter-spacing:1px;margin-bottom:6px;">「직업운 」</div>
+                <p style="font-size:12.5px;color:#ddd;line-height:1.8;margin:0;">${gwanText}</p>
+            </div>
+        </div>
+    </div>`;
+}
     const pillars = data.pillars || [];
-    const pillarNames = ['시주(時柱)','일주(日柱)','월주(月柱)','연주(年柱)'];
+    const pillarNames = ['시주(時柱(시주))','일주(日柱(일주))','월주(月柱(월주))','연주(年柱(년주))'];
     const pillarDesc = ['자녀·말년·내면의 소망','나 자신·배우자 자리','부모·청년기·직업 환경','조상·가문·초년 환경'];
 
     // 천간 설명
@@ -2045,27 +2168,27 @@ function buildChapter1_Basic(data) {
                     <span style="font-size:11px;color:var(--text-dim);letter-spacing:1px;">${pillarNames[idx]}</span>
                     <div style="font-size:22px;font-weight:800;color:${idx===2?'var(--gold)':'#ddd'};font-family:'Noto Serif KR',serif;margin-top:2px;">${hanja}</div>
                 </div>
-                <div style="text-align:right;font-size:12px;color:#888;">${pillarDesc[idx]}${isGongmang?'<br><span style="color:#e74c3c;font-weight:700;">공망(空亡)</span>':''}</div>
+                <div style="text-align:right;font-size:12px;color:#888;">${pillarDesc[idx]}${isGongmang?'<br><span style="color:#e74c3c;font-weight:700;">공망(空亡(공망))</span>':''}</div>
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
                 <div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;">
-                    <div style="font-size:10px;color:var(--text-dim);margin-bottom:4px;letter-spacing:1px;">천간(天干)</div>
+                    <div style="font-size:10px;color:var(--text-dim);margin-bottom:4px;letter-spacing:1px;">천간(天干(천간))</div>
                     <div style="font-size:12px;color:#ddd;line-height:1.6;">${stemDesc[stem] || stem}</div>
                 </div>
                 <div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;">
-                    <div style="font-size:10px;color:var(--text-dim);margin-bottom:4px;letter-spacing:1px;">지지(地支)</div>
+                    <div style="font-size:10px;color:var(--text-dim);margin-bottom:4px;letter-spacing:1px;">지지(地支(지지))</div>
                     <div style="font-size:12px;color:#ddd;line-height:1.6;">${branchDesc[branch] || branch}</div>
                 </div>
                 <div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;">
-                    <div style="font-size:10px;color:var(--text-dim);margin-bottom:4px;letter-spacing:1px;">지장간(地藏干)</div>
+                    <div style="font-size:10px;color:var(--text-dim);margin-bottom:4px;letter-spacing:1px;">지장간(地藏干(지장간))</div>
                     <div style="font-size:12px;color:#bbb;line-height:1.6;">${hiddenDesc[branch] || '-'}</div>
                 </div>
                 <div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;">
-                    <div style="font-size:10px;color:var(--text-dim);margin-bottom:4px;letter-spacing:1px;">12운성(運星)</div>
+                    <div style="font-size:10px;color:var(--text-dim);margin-bottom:4px;letter-spacing:1px;">12운성(運星(운성))</div>
                     <div style="font-size:14px;font-weight:700;color:var(--gold);">${unseong || '-'}</div>
                 </div>
             </div>
-            ${sipseongVal ? `<div style="font-size:11px;color:rgba(199,167,106,0.7);padding:6px 10px;background:rgba(199,167,106,0.05);border-radius:6px;">십성(十星): <b>${sipseongVal}</b></div>` : ''}
+            ${sipseongVal ? `<div style="font-size:11px;color:rgba(199,167,106,0.7);padding:6px 10px;background:rgba(199,167,106,0.05);border-radius:6px;">십성(十星(십성)): <b>${sipseongVal}</b></div>` : ''}
         </div>`;
     }).join('');
 
@@ -2074,7 +2197,7 @@ function buildChapter1_Basic(data) {
         : '身弱(신약) — 기운이 분산. 좋은 파트너와 협력할 때 1+1이 10이 됨.';
 
     return `<div class="report-chapter">
-        <h3 class="ch-title">사주 원국(四柱 原局) 전체 해설</h3>
+        <h3 class="ch-title">사주 원국(四柱(사주) 原局(원국)) 전체 해설</h3>
         <p class="ch-text">사주 8자(여덟 글자)는 단순한 기호가 아닙니다. 각 글자마다 고유한 에너지와 의미를 담고 있으며, 이 글자들의 조합이 당신 인생의 고유한 설계도를 만들어냅니다.</p>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:20px 0;">
             ${pillarBoxes}
@@ -2083,7 +2206,7 @@ function buildChapter1_Basic(data) {
             <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px;letter-spacing:1px;">일간 강약 판정</div>
             <p style="font-size:13.5px;color:#ddd;line-height:1.8;margin:0;">${strengthDesc}</p>
         </div>
-        ${dbEntry.core ? `<div style="background:rgba(199,167,106,0.07);border-left:3px solid var(--gold);padding:14px 16px;border-radius:0 8px 8px 0;margin-top:14px;"><div style="font-size:11px;color:var(--text-dim);margin-bottom:6px;letter-spacing:1px;">일주(日柱) 핵심 분석</div><p style="font-size:14px;color:#ddd;line-height:1.9;margin:0;">${dbEntry.core}</p></div>` : ''}
+        ${dbEntry.core ? `<div style="background:rgba(199,167,106,0.07);border-left:3px solid var(--gold);padding:14px 16px;border-radius:0 8px 8px 0;margin-top:14px;"><div style="font-size:11px;color:var(--text-dim);margin-bottom:6px;letter-spacing:1px;">일주(日柱(일주)) 핵심 분석</div><p style="font-size:14px;color:#ddd;line-height:1.9;margin:0;">${dbEntry.core}</p></div>` : ''}
     </div>`;
 }
 
@@ -2188,9 +2311,9 @@ function buildChapter4_Wealth(data) {
     // 재물 유형 판정
     const wealthType = jaeC/total > 0.25 ? 'rich' : jaeC === 0 ? 'none' : 'balance';
     const wealthCore = {
-        rich: '편재(偏財)·정재(正財)가 강한 당신의 사주는 돈 냄새를 맡는 감각이 천부적입니다. 어디서 어떻게 돈을 벌어야 할지 본능적으로 압니다. 그러나 재성(財星)이 너무 강하면 일간의 기운을 고갈시켜 "돈은 있는데 건강과 인간관계가 무너지는" 구조가 됩니다. 10가지 기회 중 9가지를 냉정하게 쳐내고, 확실한 1가지에 올인하는 집중력이 당신의 재물 전략입니다. 분산 투자보다 검증된 한 우물을 깊이 파십시오.',
-        none: '당신의 원국에 재성(財星)이 약하거나 없습니다. 이른바 무재(無財) 사주라 돈과 인연이 없다고 단정하는 풀이는 완전히 틀렸습니다. 역사적으로 무재 사주에서 큰 부자가 많이 나왔습니다. 이 구조의 비밀은 간단합니다 — 돈을 직접 쫓으면 도망가고, 명예·전문성·브랜드 가치를 올릴 때 돈이 그림자처럼 따라옵니다. 당신은 "나 자신이 상품"이 되는 전략으로 재물을 모아야 합니다.',
-        balance: '재성(財星)이 적정 수준으로 균형 잡혀 있습니다. 극단적인 투기보다 꾸준한 복리와 시스템 수익이 당신의 재물 공식입니다. 한 단계씩 차곡차곡 자산을 불려 나가는 스노우볼 전략 — 부동산, 배당수익, 안정적 투자 등 시간이 지날수록 가치가 우상향하는 자산에 집중하십시오.'
+        rich: '편재(偏財(편재))·정재(正財(정재))가 강한 당신의 사주는 돈 냄새를 맡는 감각이 천부적입니다. 어디서 어떻게 돈을 벌어야 할지 본능적으로 압니다. 그러나 재성(財星(재성))이 너무 강하면 일간의 기운을 고갈시켜 "돈은 있는데 건강과 인간관계가 무너지는" 구조가 됩니다. 10가지 기회 중 9가지를 냉정하게 쳐내고, 확실한 1가지에 올인하는 집중력이 당신의 재물 전략입니다. 분산 투자보다 검증된 한 우물을 깊이 파십시오.',
+        none: '당신의 원국에 재성(財星(재성))이 약하거나 없습니다. 이른바 무재(無財(무재)) 사주라 돈과 인연이 없다고 단정하는 풀이는 완전히 틀렸습니다. 역사적으로 무재 사주에서 큰 부자가 많이 나왔습니다. 이 구조의 비밀은 간단합니다 — 돈을 직접 쫓으면 도망가고, 명예·전문성·브랜드 가치를 올릴 때 돈이 그림자처럼 따라옵니다. 당신은 "나 자신이 상품"이 되는 전략으로 재물을 모아야 합니다.',
+        balance: '재성(財星(재성))이 적정 수준으로 균형 잡혀 있습니다. 극단적인 투기보다 꾸준한 복리와 시스템 수익이 당신의 재물 공식입니다. 한 단계씩 차곡차곡 자산을 불려 나가는 스노우볼 전략 — 부동산, 배당수익, 안정적 투자 등 시간이 지날수록 가치가 우상향하는 자산에 집중하십시오.'
     }[wealthType];
 
     // 재물 획득 루트
@@ -2198,7 +2321,7 @@ function buildChapter4_Wealth(data) {
         ? '당신의 재물 획득 루트는 食傷(식상)입니다. 재능·창의력·표현력이 돈이 됩니다. 콘텐츠 창작, 교육, 컨설팅, 기획, 예술 등 "내 능력을 파는" 방식으로 수익을 만들어야 합니다. 이 루트로 들어온 돈이 가장 크고 오래 갑니다.'
         : gwanC/total > 0.2
         ? '당신의 재물 획득 루트는 官星(관성)입니다. 조직과 직위, 사회적 신뢰가 돈으로 연결됩니다. 승진·직함·인증·자격증이 수입을 올리는 가장 확실한 루트입니다. 명예가 재물을 끌어옵니다.'
-        : '당신의 재물 획득 루트는 비견(比肩)과 독립 사업입니다. 남 밑에 있으면 실력의 절반도 발휘하지 못합니다. 직접 판을 짜고 내 사업 영역을 만들 때 재물이 폭발적으로 증가합니다.';
+        : '당신의 재물 획득 루트는 비견(比肩(비견))과 독립 사업입니다. 남 밑에 있으면 실력의 절반도 발휘하지 못합니다. 직접 판을 짜고 내 사업 영역을 만들 때 재물이 폭발적으로 증가합니다.';
 
     // 신강신약 × 재물
     const strengthWealth = isStrong
@@ -2207,7 +2330,7 @@ function buildChapter4_Wealth(data) {
 
     return `<div class="report-chapter">
         <h3 class="ch-title">Chapter 4. 평생 재물운 — 나만의 금고를 여는 열쇠</h3>
-        <p class="ch-text">명리학에서 재성(財星)은 단순히 통장 잔고의 액수가 아닙니다. "내가 세상을 내 뜻대로 통제하고 다루는 힘"입니다. 당신이 세상을 상대로 얼마나 넓은 영토를 지배할 수 있는지, 그 권력의 크기가 바로 당신의 재물운입니다.</p>
+        <p class="ch-text">명리학에서 재성(財星(재성))은 단순히 통장 잔고의 액수가 아닙니다. "내가 세상을 내 뜻대로 통제하고 다루는 힘"입니다. 당신이 세상을 상대로 얼마나 넓은 영토를 지배할 수 있는지, 그 권력의 크기가 바로 당신의 재물운입니다.</p>
         <div style="background:rgba(199,167,106,0.07);border-left:3px solid var(--gold);padding:16px 18px;border-radius:0 8px 8px 0;margin:20px 0;">
             <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;letter-spacing:1px;">재물 구조 분석</div>
             <p style="font-size:14.5px;color:#ddd;line-height:1.9;margin:0;">${wealthCore}</p>
@@ -2217,7 +2340,7 @@ function buildChapter4_Wealth(data) {
             <p style="font-size:13.5px;color:#ddd;line-height:1.85;margin:0;">${wealthRoute}</p>
         </div>
         <div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:16px;margin:14px 0;">
-            <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;letter-spacing:1px;">신강·신약(身强·身弱)과 재물 전략</div>
+            <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;letter-spacing:1px;">신강·신약(身强(신강)·身弱(신약))과 재물 전략</div>
             <p style="font-size:13.5px;color:#ddd;line-height:1.85;margin:0;">${strengthWealth}</p>
         </div>
         <p class="ch-text">재물의 그릇은 고정된 것이 아닙니다. 用神(용신) 기운이 강해지는 대운에서 그릇이 커지고, 忌神(기신) 기운의 대운에서는 방어가 중요합니다. 재물의 크기를 결정하는 것은 타고난 사주가 아니라, 그 사주의 기운을 얼마나 정확하게 활용하느냐입니다. 당신의 진짜 금고는 아직 열리지 않았습니다.</p>
@@ -2231,16 +2354,16 @@ function buildDaewunLoop(data) {
     const OH = {'甲':'목','乙':'목','丙':'화','丁':'화','戊':'토','己':'토','庚':'금','辛':'금','壬':'수','癸':'수'};
     const JI_OH = {'子':'수','丑':'토','寅':'목','卯':'목','辰':'토','巳':'화','午':'화','未':'토','申':'금','酉':'금','戌':'토','亥':'수'};
     const GAN_DESC = {
-        '甲':'갑목(甲木)의 해는 새로운 시작과 도전의 기운입니다. 이 시기는 마치 봄에 새싹이 힘차게 돋아나듯, 새로운 프로젝트와 관계가 시작되는 시기입니다. 두려움 없이 앞으로 나아가야 하며, 첫발을 내딛는 용기가 이 시기의 핵심 덕목입니다.',
-        '乙':'을목(乙木)의 기운은 유연한 적응력입니다. 강한 바람에도 꺾이지 않는 덩굴처럼, 상황에 따라 방향을 바꾸면서도 목표를 향해 나아가는 전략이 필요합니다. 인간관계와 네트워크가 이 시기의 핵심 자산입니다.',
-        '丙':'병화(丙火)의 대운은 태양처럼 모든 것을 밝히는 시기입니다. 사회적 인정과 명성이 따르며, 오랫동안 준비해온 것이 세상에 드러납니다. 자신을 적극적으로 알리고 표현하는 것이 이 시기를 극대화하는 방법입니다.',
-        '丁':'정화(丁火)의 기운은 촛불처럼 집중적이고 세밀합니다. 화려한 외면보다 깊이 있는 내실을 다지는 시기입니다. 한 분야에 집중하여 전문성을 높이면 이 시기의 에너지가 폭발적으로 활성화됩니다.',
-        '戊':'무토(戊土)의 대운은 묵직한 산처럼 안정적인 기반을 만드는 시기입니다. 장기적인 투자와 부동산, 사업 기반 확장에 유리합니다. 성급함을 버리고 10년 후를 내다보는 안목으로 뿌리를 내려야 합니다.',
-        '己':'기토(己土)의 기운은 비옥한 농토처럼 실용적입니다. 이전에 뿌린 씨앗들이 실질적인 결과물로 돌아오는 시기입니다. 꼼꼼한 관리와 내실 있는 운영이 이 시기를 빛나게 합니다.',
-        '庚':'경금(庚金)의 대운은 도끼처럼 불필요한 것을 쳐내고 핵심에 집중하는 시기입니다. 과감한 결단과 구조 개혁이 필요합니다. 오래된 관습과 비효율을 제거하고 새로운 기준을 세울 때 이 에너지가 빛을 발합니다.',
-        '辛':'신금(辛金)의 기운은 보석을 세공하듯 정밀하게 완성도를 높이는 시기입니다. 디테일에 집중하고 품질을 극대화할 때 최고의 결과물이 나옵니다. 이 시기에 완성된 작업이 오래도록 가치를 인정받습니다.',
-        '壬':'임수(壬水)의 대운은 큰 강처럼 에너지가 넓게 확산되는 시기입니다. 인맥이 폭발적으로 확장되고 새로운 기회가 사방에서 찾아옵니다. 다만 너무 많은 방향으로 분산되지 않도록 핵심 목표를 명확히 유지해야 합니다.',
-        '癸':'계수(癸水)의 기운은 깊은 지하수처럼 내면을 충전하는 시기입니다. 외부 활동보다 내공을 쌓고, 분석하고 연구하는 것이 이 시기의 핵심입니다. 조용히 준비한 것들이 다음 대운에서 폭발적으로 발현됩니다.'
+        '甲':'갑목(甲木(갑목))의 해는 새로운 시작과 도전의 기운입니다. 이 시기는 마치 봄에 새싹이 힘차게 돋아나듯, 새로운 프로젝트와 관계가 시작되는 시기입니다. 두려움 없이 앞으로 나아가야 하며, 첫발을 내딛는 용기가 이 시기의 핵심 덕목입니다.',
+        '乙':'을목(乙木(을목))의 기운은 유연한 적응력입니다. 강한 바람에도 꺾이지 않는 덩굴처럼, 상황에 따라 방향을 바꾸면서도 목표를 향해 나아가는 전략이 필요합니다. 인간관계와 네트워크가 이 시기의 핵심 자산입니다.',
+        '丙':'병화(丙火(병화))의 대운은 태양처럼 모든 것을 밝히는 시기입니다. 사회적 인정과 명성이 따르며, 오랫동안 준비해온 것이 세상에 드러납니다. 자신을 적극적으로 알리고 표현하는 것이 이 시기를 극대화하는 방법입니다.',
+        '丁':'정화(丁火(정화))의 기운은 촛불처럼 집중적이고 세밀합니다. 화려한 외면보다 깊이 있는 내실을 다지는 시기입니다. 한 분야에 집중하여 전문성을 높이면 이 시기의 에너지가 폭발적으로 활성화됩니다.',
+        '戊':'무토(戊土(무토))의 대운은 묵직한 산처럼 안정적인 기반을 만드는 시기입니다. 장기적인 투자와 부동산, 사업 기반 확장에 유리합니다. 성급함을 버리고 10년 후를 내다보는 안목으로 뿌리를 내려야 합니다.',
+        '己':'기토(己土(기토))의 기운은 비옥한 농토처럼 실용적입니다. 이전에 뿌린 씨앗들이 실질적인 결과물로 돌아오는 시기입니다. 꼼꼼한 관리와 내실 있는 운영이 이 시기를 빛나게 합니다.',
+        '庚':'경금(庚金(경금))의 대운은 도끼처럼 불필요한 것을 쳐내고 핵심에 집중하는 시기입니다. 과감한 결단과 구조 개혁이 필요합니다. 오래된 관습과 비효율을 제거하고 새로운 기준을 세울 때 이 에너지가 빛을 발합니다.',
+        '辛':'신금(辛金(신금))의 기운은 보석을 세공하듯 정밀하게 완성도를 높이는 시기입니다. 디테일에 집중하고 품질을 극대화할 때 최고의 결과물이 나옵니다. 이 시기에 완성된 작업이 오래도록 가치를 인정받습니다.',
+        '壬':'임수(壬水(임수))의 대운은 큰 강처럼 에너지가 넓게 확산되는 시기입니다. 인맥이 폭발적으로 확장되고 새로운 기회가 사방에서 찾아옵니다. 다만 너무 많은 방향으로 분산되지 않도록 핵심 목표를 명확히 유지해야 합니다.',
+        '癸':'계수(癸水(계수))의 기운은 깊은 지하수처럼 내면을 충전하는 시기입니다. 외부 활동보다 내공을 쌓고, 분석하고 연구하는 것이 이 시기의 핵심입니다. 조용히 준비한 것들이 다음 대운에서 폭발적으로 발현됩니다.'
     };
     const JI_DESC = {
         '子':'자(子)의 지지는 지혜와 집중력의 절정입니다. 분석력이 극대화되고 아이디어가 샘솟는 시기입니다. 문서 작업, 계획 수립, 자격증 취득에 유리한 에너지입니다. 단 감정 기복이 생길 수 있으니 내면의 평정심을 유지하는 것이 중요합니다.',
@@ -2273,7 +2396,7 @@ function buildDaewunLoop(data) {
     function col(s) { return s>=3?'#c7a76a':s>=1?'#00C853':s===0?'#888':s>=-2?'#ff9800':'#e74c3c'; }
 
     let out = `<div class="report-chapter"><h3 class="ch-title">대운 80년 — 인생 계절의 완전 해부</h3>
-    <p class="ch-text">대운(大運)은 10년마다 바뀌는 인생의 기후입니다. 지금 어떤 계절을 살고 있는지 알면, 그에 맞는 전략으로 인생을 설계할 수 있습니다. 용신(用神) 기운의 대운에서 집중 공략하고, 기신(忌神) 기운의 대운에서 내공을 쌓으십시오. 아래에 당신의 평생 대운 흐름을 모두 해부합니다.</p>
+    <p class="ch-text">대운(大運(대운))은 10년마다 바뀌는 인생의 기후입니다. 지금 어떤 계절을 살고 있는지 알면, 그에 맞는 전략으로 인생을 설계할 수 있습니다. 용신(用神(용신)) 기운의 대운에서 집중 공략하고, 기신(忌神) 기운의 대운에서 내공을 쌓으십시오. 아래에 당신의 평생 대운 흐름을 모두 해부합니다.</p>
     <div style="display:flex;flex-direction:column;gap:16px;">`;
 
     rows.forEach((r, idx) => {
@@ -2303,11 +2426,11 @@ function buildDaewunLoop(data) {
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
                 <div style="background:rgba(0,0,0,0.25);border-radius:8px;padding:12px;">
-                    <div style="font-size:10px;color:var(--text-dim);margin-bottom:6px;letter-spacing:1px;">천간(天干) ${gan}</div>
+                    <div style="font-size:10px;color:var(--text-dim);margin-bottom:6px;letter-spacing:1px;">천간(天干(천간)) ${gan}</div>
                     <p style="font-size:12.5px;color:#ddd;line-height:1.75;margin:0;">${ganD}</p>
                 </div>
                 <div style="background:rgba(0,0,0,0.25);border-radius:8px;padding:12px;">
-                    <div style="font-size:10px;color:var(--text-dim);margin-bottom:6px;letter-spacing:1px;">지지(地支) ${ji}</div>
+                    <div style="font-size:10px;color:var(--text-dim);margin-bottom:6px;letter-spacing:1px;">지지(地支(지지)) ${ji}</div>
                     <p style="font-size:12.5px;color:#ddd;line-height:1.75;margin:0;">${jiD}</p>
                 </div>
             </div>
@@ -2389,11 +2512,11 @@ function buildSewunLoop(data) {
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
                 <div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;">
-                    <div style="font-size:10px;color:var(--text-dim);margin-bottom:4px;">천간(天干) ${stem}</div>
+                    <div style="font-size:10px;color:var(--text-dim);margin-bottom:4px;">천간(天干(천간)) ${stem}</div>
                     <div style="font-size:12px;color:#ddd;line-height:1.65;">${GAN_DESC[stem]||''}</div>
                 </div>
                 <div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;">
-                    <div style="font-size:10px;color:var(--text-dim);margin-bottom:4px;">지지(地支) ${branch}</div>
+                    <div style="font-size:10px;color:var(--text-dim);margin-bottom:4px;">지지(地支(지지)) ${branch}</div>
                     <div style="font-size:12px;color:#ddd;line-height:1.65;">${JI_DESC[branch]||''}</div>
                 </div>
             </div>
@@ -2401,8 +2524,8 @@ function buildSewunLoop(data) {
     }
 
     return `<div class="report-chapter">
-        <h3 class="ch-title">Chapter 11. 향후 10년 세운(歲運) 정밀 타격</h3>
-        <p class="ch-text">대운(大運)이 10년의 기후라면, 세운(歲運)은 그해의 날씨입니다. 올해부터 향후 10년간 당신에게 어떤 바람이 불고 어떤 해가 뜰지 예측합니다. 매년 당신의 원국 기운이 그해의 기운과 충돌하며 만들어내는 서사입니다. 용신(用神) 기운이 들어오는 해는 집중 공략하고, 기신(忌神) 기운의 해는 수비에 집중하십시오.</p>
+        <h3 class="ch-title">Chapter 11. 향후 10년 세운(歲運(세운)) 정밀 타격</h3>
+        <p class="ch-text">대운(大運(대운))이 10년의 기후라면, 세운(歲運(세운))은 그해의 날씨입니다. 올해부터 향후 10년간 당신에게 어떤 바람이 불고 어떤 해가 뜰지 예측합니다. 매년 당신의 원국 기운이 그해의 기운과 충돌하며 만들어내는 서사입니다. 용신(用神(용신)) 기운이 들어오는 해는 집중 공략하고, 기신(忌神) 기운의 해는 수비에 집중하십시오.</p>
         <div style="display:flex;flex-direction:column;gap:12px;">${rows}</div>
     </div>`;
 }
@@ -2476,8 +2599,8 @@ function buildWolunLoop(data) {
     }).join('');
 
     return `<div class="report-chapter">
-        <h3 class="ch-title">Chapter 12. ${yr}년 12개월 작전 지도 — 월운(月運)</h3>
-        <p class="ch-text">세운(歲運)이 한 해의 날씨라면, 월운(月運)은 그날의 시간별 일기예보입니다. 언제 액셀을 밟고 언제 브레이크를 밟아야 하는지 — 12개월 전략 지도를 활용하십시오. 용신(用神) 기운의 달에는 중요한 결정과 행동을, 기신(忌神) 기운의 달에는 수비와 내공 축적에 집중하십시오.</p>
+        <h3 class="ch-title">Chapter 12. ${yr}년 12개월 작전 지도 — 월운(月運(월운))</h3>
+        <p class="ch-text">세운(歲運(세운))이 한 해의 날씨라면, 월운(月運(월운))은 그날의 시간별 일기예보입니다. 언제 액셀을 밟고 언제 브레이크를 밟아야 하는지 — 12개월 전략 지도를 활용하십시오. 용신(用神(용신)) 기운의 달에는 중요한 결정과 행동을, 기신(忌神) 기운의 달에는 수비와 내공 축적에 집중하십시오.</p>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
             ${rows}
         </div>
@@ -2501,7 +2624,7 @@ function buildChapter5_Career(data) {
     };
     const cd = careerDB[careerType];
     const wealthLink = jaeC/total>0.25
-        ? '재성(財星)이 강해 돈을 끌어당기는 본능이 탁월합니다. 월급보다 사업소득·투자소득이 더 잘 맞는 구조입니다.'
+        ? '재성(財星(재성))이 강해 돈을 끌어당기는 본능이 탁월합니다. 월급보다 사업소득·투자소득이 더 잘 맞는 구조입니다.'
         : jaeC===0
         ? '재성이 없는 구조입니다. 돈을 직접 쫓기보다 명예·전문성·브랜드 가치를 올릴 때 돈이 그림자처럼 따라옵니다.'
         : '재성이 적정 수준입니다. 안정적 수입 기반 위에 전문성을 쌓는 것이 재물 성장의 핵심입니다.';
@@ -2556,7 +2679,7 @@ function buildChapter6_Love(data) {
         <p class="ch-text">${meetTiming}</p>
         <div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:18px;margin-top:16px;">
             <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;letter-spacing:1px;">인연 활성화 전략</div>
-            <p style="font-size:13.5px;color:#bbb;line-height:1.9;margin:0;">당신에게 맞는 사람은 완벽한 사람이 아니라 당신의 에너지를 가장 잘 보완해주는 사람입니다. 당신이 부족한 오행 기운을 일간(日干)으로 가진 상대와 만날 때 가장 강력한 에너지 보완이 이루어집니다. 또한 일지(日支)가 서로 합(合)을 이루는 상대와는 특별한 유대감과 편안함을 느낍니다.</p>
+            <p style="font-size:13.5px;color:#bbb;line-height:1.9;margin:0;">당신에게 맞는 사람은 완벽한 사람이 아니라 당신의 에너지를 가장 잘 보완해주는 사람입니다. 당신이 부족한 오행 기운을 일간(日干(일간))으로 가진 상대와 만날 때 가장 강력한 에너지 보완이 이루어집니다. 또한 일지(日支(일지))가 서로 합(合)을 이루는 상대와는 특별한 유대감과 편안함을 느낍니다.</p>
         </div>
     </div>`;
 }
@@ -2577,13 +2700,13 @@ function buildChapter7_Hidden(data) {
 
     return `<div class="report-chapter">
         <h3 class="ch-title">Chapter 7. 빙산 아래의 욕망 — 地藏干(지장간) 해부</h3>
-        <p class="ch-text">사람들은 원국에 드러난 8글자만으로 운명을 논합니다. 그러나 빙산의 일각처럼, 수면 아래에 숨겨져 당신을 무의식적으로 조종하는 진짜 본능은 地藏干(지장간)에 있습니다. 지장간은 각 지지(地支) 안에 감춰진 하늘의 기운으로, 평소에는 드러나지 않다가 특정 대운이나 세운의 기운과 만날 때 비로소 발동합니다.</p>
-        <p class="ch-text">특히 일지(日支) — 배우자궁이자 내면의 자아가 자리한 곳 — 의 지장간은 당신이 평생 무의식적으로 추구하는 욕망의 원형(原型)입니다. 표면적인 성격과 완전히 다른 이 내면의 본능을 아는 것이 자기 이해의 가장 깊은 출발점입니다.</p>
+        <p class="ch-text">사람들은 원국에 드러난 8글자만으로 운명을 논합니다. 그러나 빙산의 일각처럼, 수면 아래에 숨겨져 당신을 무의식적으로 조종하는 진짜 본능은 地藏干(지장간)에 있습니다. 지장간은 각 지지(地支(지지)) 안에 감춰진 하늘의 기운으로, 평소에는 드러나지 않다가 특정 대운이나 세운의 기운과 만날 때 비로소 발동합니다.</p>
+        <p class="ch-text">특히 일지(日支(일지)) — 배우자궁이자 내면의 자아가 자리한 곳 — 의 지장간은 당신이 평생 무의식적으로 추구하는 욕망의 원형(原型)입니다. 표면적인 성격과 완전히 다른 이 내면의 본능을 아는 것이 자기 이해의 가장 깊은 출발점입니다.</p>
         <div style="background:rgba(255,255,255,0.04);border-left:3px solid var(--gold);padding:18px 20px;border-radius:0 10px 10px 0;margin:20px 0;">
             <div style="font-size:11px;color:var(--text-dim);margin-bottom:12px;letter-spacing:1px;">日支(일지) ${branch} — 숨겨진 지장간 심층 분석</div>
             <p style="font-size:14.5px;color:#ddd;line-height:1.9;margin:0;">${hiddenText}</p>
         </div>
-        ${hiddenAll ? `<div style="background:rgba(255,255,255,0.03);border-radius:10px;padding:18px;margin-top:16px;"><div style="font-size:11px;color:var(--text-dim);margin-bottom:14px;letter-spacing:1px;">원국 전체 지지(地支) 지장간 일람</div>${hiddenAll}</div>` : ''}
+        ${hiddenAll ? `<div style="background:rgba(255,255,255,0.03);border-radius:10px;padding:18px;margin-top:16px;"><div style="font-size:11px;color:var(--text-dim);margin-bottom:14px;letter-spacing:1px;">원국 전체 지지(地支(지지)) 지장간 일람</div>${hiddenAll}</div>` : ''}
         <p class="ch-text" style="margin-top:16px;">이 숨겨진 기운은 평소에는 작동하지 않습니다. 인생의 극적인 위기나 결핍에 몰렸을 때, 혹은 해당 기운을 가진 대운과 세운이 들어올 때 비로소 폭발하며 당신을 전혀 다른 수준으로 끌어올립니다. 지장간의 발동 시점을 파악하면, 인생의 결정적 전환점이 언제 오는지 미리 알 수 있습니다.</p>
     </div>`;
 }
@@ -3126,8 +3249,8 @@ function startReport() {
   <div class="ii-label">✦ 사주 원국 해설</div>
   <div class="ii-title">당신의 8글자 — 태어난 순간 새겨진 운명의 설계도</div>
   <div class="ii-text">
-    <p>사주의 8글자는 단순한 기호가 아닙니다. 태어난 순간 우주의 기운이 당신에게 새긴 고유한 코드입니다. 연주(年柱)는 뿌리, 월주(月柱)는 줄기, 일주(日柱)는 꽃, 시주(時柱)는 열매입니다. 이 4개의 기둥이 만들어내는 조화와 충돌이 당신 인생의 큰 흐름을 결정합니다.</p>
-    <p>일주(日柱)는 나 자신입니다. 일간(日干)이 당신의 본질적 기질이고, 일지(日支)가 내면 깊숙이 숨어있는 진짜 욕망입니다. 나머지 7글자는 일간을 중심으로 어떤 관계를 맺느냐에 따라 십성(十星)이 결정되고, 이것이 당신의 사회적 역할과 인간관계 패턴을 만듭니다.</p>
+    <p>사주의 8글자는 단순한 기호가 아닙니다. 태어난 순간 우주의 기운이 당신에게 새긴 고유한 코드입니다. 연주(年柱(년주))는 뿌리, 월주(月柱(월주))는 줄기, 일주(日柱(일주))는 꽃, 시주(時柱(시주))는 열매입니다. 이 4개의 기둥이 만들어내는 조화와 충돌이 당신 인생의 큰 흐름을 결정합니다.</p>
+    <p>일주(日柱(일주))는 나 자신입니다. 일간(日干(일간))이 당신의 본질적 기질이고, 일지(日支(일지))가 내면 깊숙이 숨어있는 진짜 욕망입니다. 나머지 7글자는 일간을 중심으로 어떤 관계를 맺느냐에 따라 십성(十星(십성))이 결정되고, 이것이 당신의 사회적 역할과 인간관계 패턴을 만듭니다.</p>
     
   </div>
 </div>
@@ -3157,7 +3280,7 @@ function startReport() {
   <div class="ii-label">✦ 신살 해석</div>
   <div class="ii-title">당신의 사주에 새겨진 특별한 별의 기운</div>
   <div class="ii-text">
-    <p>신살(神殺)은 사주 8글자의 조합에서 발동하는 특수한 에너지입니다. 천을귀인·문창귀인 같은 길성(吉星)은 타고난 복력이고, 역마살·도화살 같은 동살(動殺)은 당신의 삶에 독특한 색깔을 입힙니다.</p>
+    <p>신살(神殺(신살))은 사주 8글자의 조합에서 발동하는 특수한 에너지입니다. 천을귀인·문창귀인 같은 길성(吉星)은 타고난 복력이고, 역마살·도화살 같은 동살(動殺)은 당신의 삶에 독특한 색깔을 입힙니다.</p>
     <p>중요한 것은 길성이든 흉살이든 — 그것이 당신이라는 사람을 설명하는 코드입니다. 흉살도 올바르게 활용하면 강력한 무기가 됩니다. </p>
   </div>
 </div>
@@ -3189,7 +3312,7 @@ function startReport() {
   <div class="ii-label">✦ 십성 분석</div>
   <div class="ii-title">사회적 페르소나 — 당신이 세상을 대하는 방식</div>
   <div class="ii-text">
-    <p>십성(十星)은 일간을 중심으로 나머지 7글자가 맺는 관계입니다. 비견·겁재는 경쟁심과 독립심, 식신·상관은 재능과 표현욕, 정재·편재는 재물관, 정관·편관은 권력욕, 정인·편인은 학습욕과 직관력입니다.</p>
+    <p>십성(十星(십성))은 일간을 중심으로 나머지 7글자가 맺는 관계입니다. 비견·겁재는 경쟁심과 독립심, 식신·상관은 재능과 표현욕, 정재·편재는 재물관, 정관·편관은 권력욕, 정인·편인은 학습욕과 직관력입니다.</p>
     <p>어떤 십성이 강하냐에 따라 당신이 돈을 버는 방식, 사람을 이끄는 방식, 사랑에 빠지는 방식이 결정됩니다. </p>
   </div>
 </div>
@@ -3210,7 +3333,7 @@ function startReport() {
   <div class="ii-label">✦ 용신·희신·기신 해석</div>
   <div class="ii-title">나를 돕는 기운 vs 방해하는 기운</div>
   <div class="ii-text">
-    <p>용신(用神)은 당신의 사주를 균형 잡아주는 가장 중요한 기운입니다. 용신의 오행이 강해지는 대운과 세운에서 인생이 크게 도약합니다. 반대로 기신(忌神)의 기운이 들어오는 시기에는 수비적 전략이 필요합니다.</p>
+    <p>용신(用神(용신))은 당신의 사주를 균형 잡아주는 가장 중요한 기운입니다. 용신의 오행이 강해지는 대운과 세운에서 인생이 크게 도약합니다. 반대로 기신(忌神)의 기운이 들어오는 시기에는 수비적 전략이 필요합니다.</p>
     <p>용신을 가진 귀인과의 만남, 용신 색상과 방위의 활용 — 이것이 개운(開運)의 핵심 원리입니다. </p>
   </div>
 </div>
@@ -3254,7 +3377,7 @@ function startReport() {
   <div class="ii-label">✦ 신강·신약 해석</div>
   <div class="ii-title">내 기운의 강약 — 인생 전략의 출발점</div>
   <div class="ii-text">
-    <p>신강(身强)은 일간의 기운이 강한 사주입니다. 에너지가 넘쳐 독립적으로 판을 짜는 창업가·전문가에 어울립니다. 신약(身弱)은 일간의 기운이 분산된 사주입니다. 혼자보다 좋은 파트너·귀인과 협력할 때 폭발적 시너지를 냅니다.</p>
+    <p>신강(身强(신강))은 일간의 기운이 강한 사주입니다. 에너지가 넘쳐 독립적으로 판을 짜는 창업가·전문가에 어울립니다. 신약(身弱(신약))은 일간의 기운이 분산된 사주입니다. 혼자보다 좋은 파트너·귀인과 협력할 때 폭발적 시너지를 냅니다.</p>
     <p>강약이 다를 뿐 우열이 아닙니다. 내 기운의 구조를 알고 그에 맞는 전략을 쓰는 것이 핵심입니다. </p>
   </div>
 </div>
@@ -3295,9 +3418,9 @@ function startReport() {
   <div class="ii-label">✦ 평생 운세 종합 분석</div>
   <div class="ii-title">재물·직업·애정·건강 — 4대 영역 완전 해부</div>
   <div class="ii-text">
-    <p><b style="color:var(--gold);">재물운</b> — 재성(財星)의 구조가 당신의 돈 버는 방식을 결정합니다. 무재(無財) 사주라도 걱정 없습니다. 역사적으로 무재 사주에서 큰 부자가 많이 나왔습니다. 돈을 직접 쫓지 말고 당신만의 가치를 높이십시오.</p>
-    <p><b style="color:var(--gold);">직업운</b> — 식상(食傷)·관성(官星)·인성(印星)의 조합이 최적의 직업 유형을 알려줍니다. 당신이 빛나는 무대가 어디인지 분석합니다.</p>
-    <p><b style="color:var(--gold);">애정운</b> — 일지(日支)와 재성·관성의 배치가 연애 스타일과 배우자 인연의 패턴을 만듭니다.</p>
+    <p><b style="color:var(--gold);">재물운</b> — 재성(財星(재성))의 구조가 당신의 돈 버는 방식을 결정합니다. 무재(無財(무재)) 사주라도 걱정 없습니다. 역사적으로 무재 사주에서 큰 부자가 많이 나왔습니다. 돈을 직접 쫓지 말고 당신만의 가치를 높이십시오.</p>
+    <p><b style="color:var(--gold);">직업운</b> — 식상(食傷(식상))·관성(官星(관성))·인성(印星(인성))의 조합이 최적의 직업 유형을 알려줍니다. 당신이 빛나는 무대가 어디인지 분석합니다.</p>
+    <p><b style="color:var(--gold);">애정운</b> — 일지(日支(일지))와 재성·관성의 배치가 연애 스타일과 배우자 인연의 패턴을 만듭니다.</p>
     <p><b style="color:var(--gold);">건강운</b> — 오행의 태과(太過)와 고립이 5장 6부의 취약점으로 연결됩니다. </p>
   </div>
 </div>
@@ -3348,7 +3471,7 @@ function startReport() {
             <div id="report-container" style="padding:0; border-radius:0; background:transparent; border:none; box-shadow:none;">
 <div class="report-chapter">
   <h3 class="ch-title">성격 분석 — 당신이라는 사람</h3>
-  <p class="ch-text">사주에서 성격은 선천적으로 새겨진 코드입니다. 일간(日干)의 오행이 당신의 기본 기질을 만들고, 신강·신약의 구조가 에너지를 어떻게 쓰느냐를 결정합니다. 이 코드를 정확히 아는 사람과 모르는 사람 사이에는, 같은 상황에서도 전혀 다른 결과가 나옵니다.</p>
+  <p class="ch-text">사주에서 성격은 선천적으로 새겨진 코드입니다. 일간(日干(일간))의 오행이 당신의 기본 기질을 만들고, 신강·신약의 구조가 에너지를 어떻게 쓰느냐를 결정합니다. 이 코드를 정확히 아는 사람과 모르는 사람 사이에는, 같은 상황에서도 전혀 다른 결과가 나옵니다.</p>
   <p class="ch-text">당신의 강점은 태어날 때부터 새겨진 무기입니다. 이를 제대로 활용하는 것이 성공의 첫 번째 열쇠이며, 약점을 알고 보완하는 것이 두 번째 열쇠입니다. 분석 완료 후 당신의 일주에 맞는 개인화 성격 분석이 여기에 표시됩니다.</p>
 </div>
 <div class="report-chapter">
@@ -3358,22 +3481,22 @@ function startReport() {
 </div>
 <div class="report-chapter">
   <h3 class="ch-title">재물운 — 당신만의 금고를 여는 열쇠</h3>
-  <p class="ch-text">명리학에서 재성(財星)은 단순히 통장 잔고가 아닙니다. 내가 세상을 통제하고 다루는 힘, 내 영향력이 미치는 영토의 크기입니다. 사주에서 재물을 바라보는 방식은 사람마다 완전히 다릅니다. 어떤 사람은 돈을 직접 쫓아야 하고, 어떤 사람은 가치를 높이면 돈이 저절로 따라옵니다.</p>
-  <p class="ch-text">재성이 없는 무재(無財) 사주라도 걱정할 필요가 없습니다. 역사적으로 가장 큰 부를 이룬 사람들 중 무재 사주가 많습니다. 재성이 없으면 돈이 나를 따르는 구조가 아닌, 내 가치와 명성이 부를 끌어당기는 구조이기 때문입니다. 분석 후 당신만의 재물 전략이 표시됩니다.</p>
+  <p class="ch-text">명리학에서 재성(財星(재성))은 단순히 통장 잔고가 아닙니다. 내가 세상을 통제하고 다루는 힘, 내 영향력이 미치는 영토의 크기입니다. 사주에서 재물을 바라보는 방식은 사람마다 완전히 다릅니다. 어떤 사람은 돈을 직접 쫓아야 하고, 어떤 사람은 가치를 높이면 돈이 저절로 따라옵니다.</p>
+  <p class="ch-text">재성이 없는 무재(無財(무재)) 사주라도 걱정할 필요가 없습니다. 역사적으로 가장 큰 부를 이룬 사람들 중 무재 사주가 많습니다. 재성이 없으면 돈이 나를 따르는 구조가 아닌, 내 가치와 명성이 부를 끌어당기는 구조이기 때문입니다. 분석 후 당신만의 재물 전략이 표시됩니다.</p>
 </div>
 <div class="report-chapter">
   <h3 class="ch-title">대운 80년 — 인생의 계절 변화</h3>
-  <p class="ch-text">대운(大運)은 10년마다 바뀌는 인생의 기후입니다. 봄이 오면 씨를 뿌리고, 여름이 오면 성장에 투자하고, 가을이 오면 수확하고, 겨울이 오면 내공을 다져야 합니다. 지금 어떤 계절인지 모른 채 살면, 겨울에 씨를 뿌리는 어리석음을 반복하게 됩니다.</p>
-  <p class="ch-text">용신(用神) 기운의 대운에서는 공격적으로 확장하고, 기신(忌神) 기운의 대운에서는 수비하며 내공을 쌓아야 합니다. 당신의 현재 대운이 어느 계절인지, 다음 대운은 무엇을 준비해야 하는지 — 분석 후 80년 전체 흐름이 표시됩니다.</p>
+  <p class="ch-text">대운(大運(대운))은 10년마다 바뀌는 인생의 기후입니다. 봄이 오면 씨를 뿌리고, 여름이 오면 성장에 투자하고, 가을이 오면 수확하고, 겨울이 오면 내공을 다져야 합니다. 지금 어떤 계절인지 모른 채 살면, 겨울에 씨를 뿌리는 어리석음을 반복하게 됩니다.</p>
+  <p class="ch-text">용신(用神(용신)) 기운의 대운에서는 공격적으로 확장하고, 기신(忌神) 기운의 대운에서는 수비하며 내공을 쌓아야 합니다. 당신의 현재 대운이 어느 계절인지, 다음 대운은 무엇을 준비해야 하는지 — 분석 후 80년 전체 흐름이 표시됩니다.</p>
 </div>
 <div class="report-chapter">
   <h3 class="ch-title">세운 10년 — 해마다 바뀌는 날씨</h3>
-  <p class="ch-text">세운(歲運)은 그해의 날씨입니다. 같은 사람이라도 어떤 해에는 모든 것이 잘 풀리고, 어떤 해에는 버티는 것만으로도 벅찹니다. 이것은 운이 좋고 나쁜 것이 아니라, 그해의 기운과 당신의 원국이 어떻게 만나느냐의 문제입니다.</p>
+  <p class="ch-text">세운(歲運(세운))은 그해의 날씨입니다. 같은 사람이라도 어떤 해에는 모든 것이 잘 풀리고, 어떤 해에는 버티는 것만으로도 벅찹니다. 이것은 운이 좋고 나쁜 것이 아니라, 그해의 기운과 당신의 원국이 어떻게 만나느냐의 문제입니다.</p>
   <p class="ch-text">용신 기운이 강한 해에는 중요한 결정과 행동을 집중하고, 기신 기운의 해에는 무리하게 확장하기보다 수비와 내공 축적에 집중해야 합니다. 올해부터 향후 10년간 어떤 해에 무엇을 해야 하는지 — 분석 후 연도별 전략이 표시됩니다.</p>
 </div>
 <div class="report-chapter">
   <h3 class="ch-title">월운 12개월 — 이달의 기운 파동</h3>
-  <p class="ch-text">세운이 한 해의 날씨라면 월운(月運)은 그 안의 시간별 기상입니다. 같은 해 안에서도 어떤 달에는 기회가 쏟아지고, 어떤 달에는 예상치 못한 방해가 생깁니다. 중요한 계약, 첫 만남, 사업 시작의 타이밍을 잡을 때 월운을 아는 것이 결정적 우위가 됩니다.</p>
+  <p class="ch-text">세운이 한 해의 날씨라면 월운(月運(월운))은 그 안의 시간별 기상입니다. 같은 해 안에서도 어떤 달에는 기회가 쏟아지고, 어떤 달에는 예상치 못한 방해가 생깁니다. 중요한 계약, 첫 만남, 사업 시작의 타이밍을 잡을 때 월운을 아는 것이 결정적 우위가 됩니다.</p>
   <p class="ch-text">분석 후 올해 12개월의 기운 파동과 월별 전략이 표시됩니다. 언제 액셀을 밟고 언제 브레이크를 밟아야 하는지 — 달력처럼 활용하실 수 있습니다.</p>
 </div>
             </div>
@@ -3710,7 +3833,7 @@ const ANIMAL_SPRITE = {
     '戌': {kr:'개',     file:'dog'},
     '亥': {kr:'돼지',   file:'pig'}
 };
-// 일간(天干) 오행 → 동물 색상 (CSS filter로 흰색 실루엣에 색 입히기)
+// 일간(天干(천간)) 오행 → 동물 색상 (CSS filter로 흰색 실루엣에 색 입히기)
 const ANIMAL_COLOR = {
     // 木 - 초록
     '甲': {filter:'brightness(0) saturate(100%) invert(58%) sepia(49%) saturate(445%) hue-rotate(103deg) brightness(101%)', bg:'#0d2016', label:'푸른'},
@@ -4409,7 +4532,7 @@ function runAnalysis() {
         (function(){
             var OH={'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
             var JO={'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'};
-            var GAN_T={'甲':'갑목(甲木) — 봄의 새싹처럼 뚫고 나오는 에너지. 새로운 시작과 도전이 이 기운과 공명합니다. 사업 시작, 이직, 이사, 학업 착수에 최적입니다.','乙':'을목(乙木) — 덩굴처럼 유연하게 목표를 향해 나아갑니다. 인간관계와 네트워크가 최고의 자산. 귀인(貴人)이 결정적 역할을 합니다.','丙':'병화(丙火) — 태양처럼 모든 것이 드러나는 시기. 사회적 인정과 명성이 따릅니다. 자신을 드러내는 강의·발표·브랜딩 활동을 적극적으로 하십시오.','丁':'정화(丁火) — 촛불처럼 한 분야를 깊이 파는 전문성의 시기. 장인정신, 전문직, 심층 연구가 빛을 발합니다.','戊':'무토(戊土) — 거대한 산처럼 묵직하고 안정적. 부동산·자산 축적·신뢰 구축 등 10년 후를 내다보는 투자의 시기입니다.','己':'기토(己土) — 비옥한 농토처럼 이전에 뿌린 씨앗이 결실로 돌아옵니다. 꼼꼼한 관리와 내실 운영이 강점이 됩니다.','庚':'경금(庚金) — 도끼처럼 과감하게 쳐내는 혁신의 에너지. 불필요한 구조를 제거하고 새 기준을 세울 때입니다.','辛':'신금(辛金) — 보석 세공처럼 정밀하게 완성도를 높이는 시기. 디테일과 품질에 집중하면 최고의 결과물이 나옵니다.','壬':'임수(壬水) — 큰 강처럼 인맥과 기회가 사방으로 확산됩니다. 핵심 목표를 유지하며 자연스러운 흐름을 타십시오.','癸':'계수(癸水) — 지하수처럼 내면에서 에너지가 축적되는 시기. 학습·연구·내공 쌓기로 채우면 다음 대운에서 폭발적으로 터집니다.'};
+            var GAN_T={'甲':'갑목(甲木(갑목)) — 봄의 새싹처럼 뚫고 나오는 에너지. 새로운 시작과 도전이 이 기운과 공명합니다. 사업 시작, 이직, 이사, 학업 착수에 최적입니다.','乙':'을목(乙木(을목)) — 덩굴처럼 유연하게 목표를 향해 나아갑니다. 인간관계와 네트워크가 최고의 자산. 귀인(貴人(귀인))이 결정적 역할을 합니다.','丙':'병화(丙火(병화)) — 태양처럼 모든 것이 드러나는 시기. 사회적 인정과 명성이 따릅니다. 자신을 드러내는 강의·발표·브랜딩 활동을 적극적으로 하십시오.','丁':'정화(丁火(정화)) — 촛불처럼 한 분야를 깊이 파는 전문성의 시기. 장인정신, 전문직, 심층 연구가 빛을 발합니다.','戊':'무토(戊土(무토)) — 거대한 산처럼 묵직하고 안정적. 부동산·자산 축적·신뢰 구축 등 10년 후를 내다보는 투자의 시기입니다.','己':'기토(己土(기토)) — 비옥한 농토처럼 이전에 뿌린 씨앗이 결실로 돌아옵니다. 꼼꼼한 관리와 내실 운영이 강점이 됩니다.','庚':'경금(庚金(경금)) — 도끼처럼 과감하게 쳐내는 혁신의 에너지. 불필요한 구조를 제거하고 새 기준을 세울 때입니다.','辛':'신금(辛金(신금)) — 보석 세공처럼 정밀하게 완성도를 높이는 시기. 디테일과 품질에 집중하면 최고의 결과물이 나옵니다.','壬':'임수(壬水(임수)) — 큰 강처럼 인맥과 기회가 사방으로 확산됩니다. 핵심 목표를 유지하며 자연스러운 흐름을 타십시오.','癸':'계수(癸水(계수)) — 지하수처럼 내면에서 에너지가 축적되는 시기. 학습·연구·내공 쌓기로 채우면 다음 대운에서 폭발적으로 터집니다.'};
             var JI_T={'子':'자(子) — 지혜와 집중력이 극대화됩니다. 계획 수립·자격증·학업에 유리합니다.','丑':'축(丑) — 눈에 보이지 않는 내공이 쌓이는 시기. 조급함 없이 장기적으로 자신을 단련하십시오.','寅':'인(寅) — 이동·변화·새 출발의 에너지가 강합니다. 이 시기에 시작한 일이 오래도록 뿌리를 내립니다.','卯':'묘(卯) — 인맥이 넓어지고 협력 기회가 풍부합니다. 혼자보다 함께할 때 성과가 배가됩니다.','辰':'진(辰) — 잠재력이 폭발하는 변화의 기운. 예상치 못한 전환점이 찾아옵니다.','巳':'사(巳) — 오래 고민해온 문제의 답이 명확해집니다. 과감한 선택이 이후 10년을 결정합니다.','午':'오(午) — 성취와 인정의 기운. 쌓아온 노력이 드러나고 인정받습니다. 적극적으로 승부하십시오.','未':'미(未) — 인간관계가 깊어지고 감성·창작 활동에서 빛을 발합니다.','申':'신(申) — 판단력과 실행력의 기운. 기회를 민첩하게 포착하고 즉시 실행해야 합니다.','酉':'유(酉) — 완성과 보상의 기운. 전문성이 인정받고 노력에 정당한 대가가 돌아옵니다.','戌':'술(戌) — 통찰과 마무리. 불필요한 것을 정리하고 핵심에 집중하게 됩니다.','亥':'해(亥) — 잠복과 준비의 기운. 가장 어두운 밤이 새벽 직전임을 기억하십시오.'};
             var sc={}; sc[yong]=2;sc[hee]=1;sc[gi]=-2;sc[goo]=-1;
             function gs(g,j){return (sc[OH[g]]||0)+(sc[JO[j]]||0);}
@@ -4432,8 +4555,8 @@ function runAnalysis() {
                     '<div><div style="font-size:12px;color:#bbb;">'+age+'세 ~ '+(endAge-1)+'세</div>'+(isCur?'<span style="font-size:10px;background:var(--gold);color:#000;padding:1px 6px;border-radius:6px;font-weight:700;">▶ 현재</span>':'')+'</div></div>'+
                     '<span style="font-size:12px;font-weight:700;color:'+col+';">'+gb(s)+'</span></div>'+
                     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">'+
-                    '<div style="background:rgba(0,0,0,0.25);border-radius:6px;padding:10px;"><div style="font-size:10px;color:var(--text-dim);margin-bottom:4px;">천간(天干) '+g+'</div><p style="font-size:12px;color:#ddd;line-height:1.7;margin:0;">'+(GAN_T[g]||g+' 기운')+'</p></div>'+
-                    '<div style="background:rgba(0,0,0,0.25);border-radius:6px;padding:10px;"><div style="font-size:10px;color:var(--text-dim);margin-bottom:4px;">지지(地支) '+j+'</div><p style="font-size:12px;color:#ddd;line-height:1.7;margin:0;">'+(JI_T[j]||j+' 기운')+'</p></div></div>'+
+                    '<div style="background:rgba(0,0,0,0.25);border-radius:6px;padding:10px;"><div style="font-size:10px;color:var(--text-dim);margin-bottom:4px;">천간(天干(천간)) '+g+'</div><p style="font-size:12px;color:#ddd;line-height:1.7;margin:0;">'+(GAN_T[g]||g+' 기운')+'</p></div>'+
+                    '<div style="background:rgba(0,0,0,0.25);border-radius:6px;padding:10px;"><div style="font-size:10px;color:var(--text-dim);margin-bottom:4px;">지지(地支(지지)) '+j+'</div><p style="font-size:12px;color:#ddd;line-height:1.7;margin:0;">'+(JI_T[j]||j+' 기운')+'</p></div></div>'+
                     '<div style="background:rgba(199,167,106,0.05);border-radius:6px;padding:8px 10px;border-left:2px solid '+col+';"><p style="font-size:12px;color:#ccc;line-height:1.75;margin:0;">'+strat+'</p></div>';
                 detDiv.appendChild(d);
             });
@@ -4587,15 +4710,15 @@ function runAnalysis() {
             // ── 재물운 상세 ──
             const wealthType = jaeC > sipTotalWeight*0.25 ? 'rich' : jaeC === 0 ? 'none' : 'balanced';
             const wealthMain = {
-                rich: `당신의 사주에는 財星(재성)이 풍부합니다. 돈 냄새를 맡는 본능이 탁월하고 기회가 왔을 때 놓치지 않는 감각이 있습니다. 그러나 '재다신약(財多身弱)'의 함정을 조심해야 합니다. 너무 많은 기회가 오히려 당신을 소진시킵니다. 선택과 집중이 부의 핵심 전략입니다.`,
+                rich: `당신의 사주에는 財星(재성)이 풍부합니다. 돈 냄새를 맡는 본능이 탁월하고 기회가 왔을 때 놓치지 않는 감각이 있습니다. 그러나 '재다신약(財多身弱(신약))'의 함정을 조심해야 합니다. 너무 많은 기회가 오히려 당신을 소진시킵니다. 선택과 집중이 부의 핵심 전략입니다.`,
                 none: `당신의 사주는 無財(무재) 구조입니다. 이것을 '돈과 인연이 없다'고 해석하는 것은 구시대적 오류입니다. 무재 사주의 진짜 의미는 돈을 직접 쫓으면 오히려 도망간다는 것입니다. 당신은 명예, 전문성, 브랜드 가치를 극대화할 때 돈이 그림자처럼 따라오는 구조입니다. 돈보다 가치를 먼저 만드십시오.`,
                 balanced: `당신의 재성은 적정 수준으로 균형 잡혀 있습니다. 투기나 대박보다는 꾸준히 우상향하는 '스노우볼 전략'이 가장 효과적입니다. 한 가지 전문성을 깊이 파고들어 안정적인 현금흐름을 만드는 것이 당신의 부의 공식입니다.`
             }[wealthType];
 
             const wealthStrategy = sikC > sipTotalWeight * 0.2
-                ? `<b>💰 재물 창출 전략 — 식상(食傷)형:</b> 당신의 재물은 재능과 아이디어에서 나옵니다. 머릿속에 있는 것을 세상 밖으로 꺼낼수록 돈이 됩니다. 유튜브, 강의, 컨설팅, 창작물 등 '내가 만든 것'이 복리로 돈을 버는 구조를 빠르게 구축하십시오.`
+                ? `<b>💰 재물 창출 전략 — 식상(食傷(식상))형:</b> 당신의 재물은 재능과 아이디어에서 나옵니다. 머릿속에 있는 것을 세상 밖으로 꺼낼수록 돈이 됩니다. 유튜브, 강의, 컨설팅, 창작물 등 '내가 만든 것'이 복리로 돈을 버는 구조를 빠르게 구축하십시오.`
                 : gwanC > sipTotalWeight * 0.2
-                ? `<b>💰 재물 창출 전략 — 관성(官星)형:</b> 조직 안에서 인정받고 승진할수록 재물이 커지는 구조입니다. 안정적인 급여 기반 위에 투자 소득을 레이어링하는 '월급쟁이 부자' 전략이 가장 적합합니다.`
+                ? `<b>💰 재물 창출 전략 — 관성(官星(관성))형:</b> 조직 안에서 인정받고 승진할수록 재물이 커지는 구조입니다. 안정적인 급여 기반 위에 투자 소득을 레이어링하는 '월급쟁이 부자' 전략이 가장 적합합니다.`
                 : `<b>💰 재물 창출 전략:</b> 用神(용신) 운이 들어오는 대운과 세운에서 재물 확장 기회가 집중됩니다. 해당 시기를 미리 파악하고 준비하는 것이 수십 년의 재산 차이를 만듭니다.`;
 
             document.getElementById('cat-wealth').innerHTML = `
@@ -4620,7 +4743,7 @@ function runAnalysis() {
                 officer: `官星(관성)이 강한 당신은 조직 생활의 생리를 본능적으로 이해합니다. 규칙과 위계, 책임과 권한이 명확한 환경에서 두각을 드러내며, 승진과 사회적 지위를 꾸준히 쌓아올리는 것이 최적 경로입니다. 공직, 대기업, 금융, 법조계에서 탁월한 성과를 냅니다.`,
                 creator: `食傷(식상)이 강한 당신의 무대는 창작과 표현입니다. 남이 설계한 시스템 안에서는 부품처럼 쓰이다 소진됩니다. 당신의 아이디어와 목소리가 곧 돈이 되는 구조 — 프리랜서, 기획자, 크리에이터, 교육자, 강사, 예술가 — 여기서 당신은 폭발적 성취를 이룹니다.`,
                 expert: `印星(인성)이 강한 당신의 경쟁력은 '지식과 자격증'입니다. 남들이 쉽게 따라올 수 없는 전문성이 당신의 평생 자산입니다. 의사, 변호사, 회계사, 컨설턴트, 연구자, 교수 등 전문직에서 독보적인 권위를 쌓을 수 있습니다.`,
-                independent: `당신은 남 밑에 있으면 에너지가 억눌립니다. 비견(比肩)과 겁재(劫財)가 강할수록 내 영역을 스스로 개척하는 독립 사업, 영업, 스포츠, 군인/경찰 등 치열한 경쟁 구도에서 진가를 발휘합니다.`
+                independent: `당신은 남 밑에 있으면 에너지가 억눌립니다. 비견(比肩(비견))과 겁재(劫財(겁재))가 강할수록 내 영역을 스스로 개척하는 독립 사업, 영업, 스포츠, 군인/경찰 등 치열한 경쟁 구도에서 진가를 발휘합니다.`
             }[careerType];
 
             document.getElementById('cat-career').innerHTML = `
@@ -4656,7 +4779,7 @@ function runAnalysis() {
                 <div class="cat-body">
                     <p class="cat-text">${loveMain}</p>
                     <div class="cat-highlight">
-                        <b>💑 배우자궁(日支) 분석:</b><br>${loveText2}
+                        <b>💑 배우자궁(日支(일지)) 분석:</b><br>${loveText2}
                     </div>
                     <div class="cat-advice">
                         당신에게 맞는 인연은 용신 오행을 일간으로 가진 사람입니다. 궁합은 天干(천간)보다 日支(일지)의 합충 관계가 평생 에너지를 좌우합니다.
@@ -4843,7 +4966,7 @@ function runAnalysis() {
 
         // ─── 인생 전반 서술 (만세력 아래) ───
         (function(){
-            var PLC={'시주':'시주(時柱)는 자녀궁이자 말년의 기운을 담은 기둥입니다. 50대 이후 삶의 방향과 당신의 가장 깊은 내면, 남에게 보이지 않는 은밀한 욕망이 숨어있습니다. 시주가 길하면 자녀 복이 크고 말년에 평안을 맞이합니다.','일주':'일주(日柱)는 당신 자신입니다. 일간(日干)이 본질적 기질이고, 일지(日支)는 배우자궁이자 내면 깊숙이 숨어있는 진짜 욕망입니다. 30~50대 사회적 삶과 가정의 기운을 담고 있습니다. 일지에 길한 기운이 있으면 배우자 복이 크고 가정이 안정됩니다.','월주':'월주(月柱)는 부모궁이자 직업과 사회적 활동의 기운입니다. 청소년기부터 30대까지 성장 환경과 직업 적성을 보여줍니다. 월지(月支)의 계절 기운이 당신의 오행 전체를 지배합니다. 직업 선택, 사회 진출, 부모와의 관계 패턴이 모두 여기에서 시작됩니다.','년주':'년주(年柱)는 조상과 유년기의 기운입니다. 0~20세, 태어난 시대와 가문의 기운, 조상으로부터 물려받은 유전적 기질이 담겨있습니다. 년주가 길하면 초년에 도움이 많습니다. 년주와 일주가 충돌하면 조상·부모로부터의 독립이 일찍 찾아올 수 있습니다.'};
+            var PLC={'시주':'시주(時柱(시주))는 자녀궁이자 말년의 기운을 담은 기둥입니다. 50대 이후 삶의 방향과 당신의 가장 깊은 내면, 남에게 보이지 않는 은밀한 욕망이 숨어있습니다. 시주가 길하면 자녀 복이 크고 말년에 평안을 맞이합니다.','일주':'일주(日柱(일주))는 당신 자신입니다. 일간(日干(일간))이 본질적 기질이고, 일지(日支(일지))는 배우자궁이자 내면 깊숙이 숨어있는 진짜 욕망입니다. 30~50대 사회적 삶과 가정의 기운을 담고 있습니다. 일지에 길한 기운이 있으면 배우자 복이 크고 가정이 안정됩니다.','월주':'월주(月柱(월주))는 부모궁이자 직업과 사회적 활동의 기운입니다. 청소년기부터 30대까지 성장 환경과 직업 적성을 보여줍니다. 월지(月支(월지))의 계절 기운이 당신의 오행 전체를 지배합니다. 직업 선택, 사회 진출, 부모와의 관계 패턴이 모두 여기에서 시작됩니다.','년주':'년주(年柱(년주))는 조상과 유년기의 기운입니다. 0~20세, 태어난 시대와 가문의 기운, 조상으로부터 물려받은 유전적 기질이 담겨있습니다. 년주가 길하면 초년에 도움이 많습니다. 년주와 일주가 충돌하면 조상·부모로부터의 독립이 일찍 찾아올 수 있습니다.'};
             var pN={'시주':'⏰ 시주 — 말년·자녀','일주':'👤 일주 — 나 자신·배우자','월주':'🌿 월주 — 직업·청년기','년주':'🌳 년주 — 유년기·조상'};
             var lc='<div class="report-chapter"><h3 class="ch-title">인생 전반 서술 — 유년기부터 말년까지</h3><p class="ch-text">사주의 네 기둥은 각각 당신 인생의 서로 다른 시기를 담당합니다. 년주는 뿌리, 월주는 줄기, 일주는 꽃, 시주는 열매입니다. 이 4개의 기둥이 만들어내는 이야기가 바로 당신 인생의 큰 서사입니다.</p>';
             var orderMap={'년주':0,'월주':1,'일주':2,'시주':3};
@@ -4858,13 +4981,13 @@ function runAnalysis() {
         (function(){
             var OH={'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
             var JO={'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'};
-            var GAN_T={'甲':'갑목(甲木)의 기운이 지배하는 이 시기는 새로운 시작과 도전의 계절입니다. 봄에 처음 땅을 뚫고 나오는 새싹처럼 강인하고 직진하는 에너지가 넘칩니다. 두려움 없이 앞으로 나아가는 것이 핵심 전략입니다. 새로운 사업, 이직, 이사, 학업 시작 등 도전적 행보가 이 에너지와 정확히 공명합니다.','乙':'을목(乙木)은 덩굴처럼 유연하게 뻗어나가는 기운입니다. 인간관계와 네트워크가 이 시기 최고의 자산입니다. 직접 밀어붙이기보다 옆으로 돌아가는 유연한 전략이 큰 성과를 냅니다.','丙':'병화(丙火)는 태양처럼 모든 것을 밝게 드러내는 기운입니다. 숨겨왔던 재능과 성과가 세상에 드러나는 시기입니다. 강의, 출판, 브랜딩, 발표 등 자신을 드러내는 모든 활동이 극대화됩니다.','丁':'정화(丁火)는 촛불처럼 집중적이고 섬세한 기운입니다. 한 분야를 깊이 파고드는 전문성의 시기입니다. 장인정신, 전문직, 심층 연구가 이 기운과 가장 잘 맞습니다.','戊':'무토(戊土)는 거대한 산처럼 묵직하고 안정적인 기운입니다. 부동산, 자산 축적, 사업 기반 확장 등 10년 후를 내다보는 투자가 이 에너지를 극대화합니다.','己':'기토(己土)는 비옥한 농토처럼 실용적이고 섬세한 기운입니다. 이전에 뿌린 씨앗들이 실질적인 결과물로 돌아오는 시기입니다. 꼼꼼한 관리와 내실 있는 운영이 빛을 발합니다.','庚':'경금(庚金)은 날카로운 도끼처럼 불필요한 것을 과감히 쳐내는 기운입니다. 혁신과 개혁의 에너지가 강합니다. 과감한 결단과 구조 개혁이 필요하며 망설임이 가장 큰 적입니다.','辛':'신금(辛金)은 보석을 세공하듯 정밀하게 완성도를 높이는 기운입니다. 디테일에 집중하고 품질을 극대화할 때 최고의 결과물이 나옵니다.','壬':'임수(壬水)는 큰 강처럼 에너지가 넓게 확산되는 기운입니다. 인맥이 폭발적으로 확장되고 새로운 기회가 사방에서 찾아오는 시기입니다.','癸':'계수(癸水)는 깊은 지하수처럼 보이지 않는 곳에서 힘을 키우는 기운입니다. 이 시기를 분석·연구·학습으로 채운 사람과 허비한 사람의 차이는 다음 대운에서 극명하게 드러납니다.'};
+            var GAN_T={'甲':'갑목(甲木(갑목))의 기운이 지배하는 이 시기는 새로운 시작과 도전의 계절입니다. 봄에 처음 땅을 뚫고 나오는 새싹처럼 강인하고 직진하는 에너지가 넘칩니다. 두려움 없이 앞으로 나아가는 것이 핵심 전략입니다. 새로운 사업, 이직, 이사, 학업 시작 등 도전적 행보가 이 에너지와 정확히 공명합니다.','乙':'을목(乙木(을목))은 덩굴처럼 유연하게 뻗어나가는 기운입니다. 인간관계와 네트워크가 이 시기 최고의 자산입니다. 직접 밀어붙이기보다 옆으로 돌아가는 유연한 전략이 큰 성과를 냅니다.','丙':'병화(丙火(병화))는 태양처럼 모든 것을 밝게 드러내는 기운입니다. 숨겨왔던 재능과 성과가 세상에 드러나는 시기입니다. 강의, 출판, 브랜딩, 발표 등 자신을 드러내는 모든 활동이 극대화됩니다.','丁':'정화(丁火(정화))는 촛불처럼 집중적이고 섬세한 기운입니다. 한 분야를 깊이 파고드는 전문성의 시기입니다. 장인정신, 전문직, 심층 연구가 이 기운과 가장 잘 맞습니다.','戊':'무토(戊土(무토))는 거대한 산처럼 묵직하고 안정적인 기운입니다. 부동산, 자산 축적, 사업 기반 확장 등 10년 후를 내다보는 투자가 이 에너지를 극대화합니다.','己':'기토(己土(기토))는 비옥한 농토처럼 실용적이고 섬세한 기운입니다. 이전에 뿌린 씨앗들이 실질적인 결과물로 돌아오는 시기입니다. 꼼꼼한 관리와 내실 있는 운영이 빛을 발합니다.','庚':'경금(庚金(경금))은 날카로운 도끼처럼 불필요한 것을 과감히 쳐내는 기운입니다. 혁신과 개혁의 에너지가 강합니다. 과감한 결단과 구조 개혁이 필요하며 망설임이 가장 큰 적입니다.','辛':'신금(辛金(신금))은 보석을 세공하듯 정밀하게 완성도를 높이는 기운입니다. 디테일에 집중하고 품질을 극대화할 때 최고의 결과물이 나옵니다.','壬':'임수(壬水(임수))는 큰 강처럼 에너지가 넓게 확산되는 기운입니다. 인맥이 폭발적으로 확장되고 새로운 기회가 사방에서 찾아오는 시기입니다.','癸':'계수(癸水(계수))는 깊은 지하수처럼 보이지 않는 곳에서 힘을 키우는 기운입니다. 이 시기를 분석·연구·학습으로 채운 사람과 허비한 사람의 차이는 다음 대운에서 극명하게 드러납니다.'};
             var JI_T={'子':'자(子) 지지는 지혜와 집중력의 기운입니다. 분석력이 극대화되는 시기로 계획 수립, 자격증 취득, 학업에 유리합니다.','丑':'축(丑) 지지는 인내와 저력의 기운입니다. 눈에 보이는 성과보다 내공이 쌓이는 시기입니다. 이 기간을 묵묵히 견디며 쌓은 실력이 이후 운에서 폭발적 결과로 이어집니다.','寅':'인(寅) 지지는 강렬한 활동과 변화의 기운입니다. 이동, 변화, 새로운 출발의 에너지가 강하게 발동합니다. 이 시기에 시작한 일이 오래도록 지속됩니다.','卯':'묘(卯) 지지는 성장과 관계의 기운입니다. 인맥이 넓어지고 협력 기회가 풍부해집니다. 혼자보다 함께할 때 성과가 배가됩니다.','辰':'진(辰) 지지는 잠재력이 폭발하는 변화의 기운입니다. 예상치 못한 변수가 많지만 유연하게 대응하면 인생의 전환점이 됩니다.','巳':'사(巳) 지지는 내면의 결단력이 요구됩니다. 오래 고민해온 문제의 답이 이 시기에 명확해집니다. 과감한 선택이 이후 10년의 방향을 결정합니다.','午':'오(午) 지지는 성취와 인정의 기운입니다. 쌓아온 노력이 사회적으로 드러나고 인정받습니다. 이 기세를 타고 더 큰 목표로 나아가야 합니다.','未':'미(未) 지지는 풍요로운 감성과 창작의 기운입니다. 인간적인 관계가 깊어지고 예술·교육 활동에서 빛을 발합니다.','申':'신(申) 지지는 판단력과 실행력의 기운입니다. 기회가 빠르게 스쳐 지나가므로 민첩하게 포착하고 즉시 실행해야 합니다.','酉':'유(酉) 지지는 완성과 보상의 기운입니다. 쌓아온 전문성이 인정받고 노력에 대한 정당한 대가가 돌아옵니다.','戌':'술(戌) 지지는 통찰과 마무리의 기운입니다. 불필요한 것을 정리하고 핵심 가치에 집중하게 됩니다.','亥':'해(亥) 지지는 잠복과 준비의 기운입니다. 표면적으로는 정체처럼 보이지만 내면에서 엄청난 에너지가 축적됩니다.'};
             var sc={}; sc[yong]=2;sc[hee]=1;sc[gi]=-2;sc[goo]=-1;
             function gs(g,j){return (sc[OH[g]]||0)+(sc[JO[j]]||0);}
             function gc(s){return s>=3?'#c7a76a':s>=1?'#00C853':s===0?'#888':s>=-2?'#ff9800':'#e74c3c';}
             function gb(s){return s>=3?'🌟 대길':s>=1?'✦ 길':s===0?'— 평':s>=-2?'⚠ 주의':'❌ 흉';}
-            var h2='<div class="report-chapter"><h3 class="ch-title">대운(大運) 80년 — 10년 단위 완전 해부</h3><p class="ch-text">대운은 인생의 기후입니다. 용신 기운의 대운에서 집중 공략하고, 기신 기운의 대운에서 내공을 쌓으십시오.</p>';
+            var h2='<div class="report-chapter"><h3 class="ch-title">대운(大運(대운)) 80년 — 10년 단위 완전 해부</h3><p class="ch-text">대운은 인생의 기후입니다. 용신 기운의 대운에서 집중 공략하고, 기신 기운의 대운에서 내공을 쌓으십시오.</p>';
             daeunData.forEach(function(dy,idx){
                 var gz=dy.getGanZhi();var g=gz[0];var j=gz[1];
                 var age=dy.getStartAge();
@@ -4873,7 +4996,7 @@ function runAnalysis() {
                 var strat=s>=2?'이 대운은 용신·희신 기운이 강한 길한 시기입니다. 공격적으로 확장하고 중요한 결정을 실행에 옮기십시오. 새로운 사업·투자·인맥 확장을 모두 적극적으로 추진하십시오. 이런 길운은 평생 몇 번 오지 않으니 최대한 활용하는 것이 인생의 전환점이 됩니다.':s>=0?'이 대운은 큰 기복 없이 안정적으로 흐릅니다. 도약보다는 내실을 다지고 꾸준히 자신을 개발하는 시기입니다.':'이 대운은 기신·구신 기운이 강한 시기입니다. 무리한 확장은 피하고 수비 전략이 현명합니다. 이 시기를 내공 쌓기로 채운 사람이 다음 길운에서 가장 크게 도약합니다.';
                 h2+='<div style="margin-bottom:18px;padding:18px;background:rgba(255,255,255,'+(isCur?'0.07':'0.03')+');border:1px solid '+(isCur?'var(--gold)':'rgba(255,255,255,0.07)')+';border-radius:12px;">';
                 h2+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:26px;font-weight:900;color:var(--gold);font-family:Noto Serif KR,serif;">'+g+j+'</span><div><div style="font-size:13px;color:#bbb;">'+age+'세 ~ '+(endAge-1)+'세</div>'+(isCur?'<span style="font-size:10px;background:var(--gold);color:#000;padding:1px 8px;border-radius:8px;font-weight:700;">▶ 현재</span>':'')+'</div></div><span style="font-size:13px;font-weight:700;color:'+col+';padding:4px 12px;border-radius:20px;background:rgba(255,255,255,0.05);">'+gb(s)+'</span></div>';
-                h2+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;"><div style="background:rgba(0,0,0,0.3);border-radius:8px;padding:12px;"><div style="font-size:10px;color:var(--text-dim);margin-bottom:5px;">천간(天干) '+g+'</div><p style="font-size:12.5px;color:#ddd;line-height:1.75;margin:0;">'+(GAN_T[g]||g+' 기운이 이 시기를 이끕니다.')+'</p></div><div style="background:rgba(0,0,0,0.3);border-radius:8px;padding:12px;"><div style="font-size:10px;color:var(--text-dim);margin-bottom:5px;">지지(地支) '+j+'</div><p style="font-size:12.5px;color:#ddd;line-height:1.75;margin:0;">'+(JI_T[j]||j+' 기운이 뒷받침합니다.')+'</p></div></div>';
+                h2+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;"><div style="background:rgba(0,0,0,0.3);border-radius:8px;padding:12px;"><div style="font-size:10px;color:var(--text-dim);margin-bottom:5px;">천간(天干(천간)) '+g+'</div><p style="font-size:12.5px;color:#ddd;line-height:1.75;margin:0;">'+(GAN_T[g]||g+' 기운이 이 시기를 이끕니다.')+'</p></div><div style="background:rgba(0,0,0,0.3);border-radius:8px;padding:12px;"><div style="font-size:10px;color:var(--text-dim);margin-bottom:5px;">지지(地支(지지)) '+j+'</div><p style="font-size:12.5px;color:#ddd;line-height:1.75;margin:0;">'+(JI_T[j]||j+' 기운이 뒷받침합니다.')+'</p></div></div>';
                 h2+='<div style="background:rgba(199,167,106,0.06);border-radius:8px;padding:12px;border-left:2px solid '+col+';"><div style="font-size:10px;color:var(--text-dim);margin-bottom:5px;">이 대운의 전략</div><p style="font-size:13px;color:#ccc;line-height:1.8;margin:0;">'+strat+'</p></div></div>';
             });
             h2+='</div>';
@@ -4891,7 +5014,7 @@ function runAnalysis() {
             function gc(s){return s>=3?'#c7a76a':s>=1?'#00C853':s===0?'#888':s>=-2?'#ff9800':'#e74c3c';}
             function gb(s){return s>=3?'🌟 대길':s>=1?'✦ 길':s===0?'— 평':s>=-2?'⚠ 주의':'❌ 흉';}
             var curY2=new Date().getFullYear();
-            var h3='<div class="report-chapter"><h3 class="ch-title">세운(歲運) 10년 — 연도별 완전 분석</h3><p class="ch-text">세운은 그해의 날씨입니다. 용신 기운이 강한 해에 중요한 행동을 집중하고, 기신 기운의 해에는 수비 전략을 택하십시오.</p>';
+            var h3='<div class="report-chapter"><h3 class="ch-title">세운(歲運(세운)) 10년 — 연도별 완전 분석</h3><p class="ch-text">세운은 그해의 날씨입니다. 용신 기운이 강한 해에 중요한 행동을 집중하고, 기신 기운의 해에는 수비 전략을 택하십시오.</p>';
             for(var yr=curY2;yr<curY2+10;yr++){
                 var yL2=Solar.fromYmd(yr,6,15).getLunar();
                 var yE2=yL2.getEightChar();
@@ -4920,7 +5043,7 @@ function runAnalysis() {
             function gc(s){return s>=3?'#c7a76a':s>=1?'#00C853':s===0?'#888':s>=-2?'#ff9800':'#e74c3c';}
             function gb(s){return s>=3?'🌟 대길':s>=1?'✦ 길':s===0?'— 평':s>=-2?'⚠ 주의':'❌ 흉';}
             var curY3=new Date().getFullYear();var curM3=new Date().getMonth()+1;
-            var h4='<div class="report-chapter"><h3 class="ch-title">월운(月運) 12개월 — 이달의 기운 완전 해부</h3><p class="ch-text">월운은 그달의 날씨입니다. 언제 액셀을 밟고 언제 브레이크를 밟아야 하는지 — 달력처럼 활용하십시오.</p>';
+            var h4='<div class="report-chapter"><h3 class="ch-title">월운(月運(월운)) 12개월 — 이달의 기운 완전 해부</h3><p class="ch-text">월운은 그달의 날씨입니다. 언제 액셀을 밟고 언제 브레이크를 밟아야 하는지 — 달력처럼 활용하십시오.</p>';
             for(var m4=1;m4<=12;m4++){
                 var mS=Solar.fromYmd(curY3,m4,15);
                 var mE=mS.getLunar().getEightChar();
