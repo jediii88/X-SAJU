@@ -4405,6 +4405,40 @@ function runAnalysis() {
             return [ dy.getStartAge() + '세', getSipseong(dayStem, gz[0]), `${gz[0]}${gz[1]}`, `${HAN_KOR[gz[0]]}${HAN_KOR[gz[1]]}`, getUnsung(dayStem, gz[1]) || '-' ];
         });
         buildFortuneCards('daeun-table', daeunRows2, activeDaeunIdx);
+        // ===== 대운 표 아래 풀이 주입 =====
+        (function(){
+            var OH={'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
+            var JO={'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'};
+            var GAN_T={'甲':'갑목(甲木) — 봄의 새싹처럼 뚫고 나오는 에너지. 새로운 시작과 도전이 이 기운과 공명합니다. 사업 시작, 이직, 이사, 학업 착수에 최적입니다.','乙':'을목(乙木) — 덩굴처럼 유연하게 목표를 향해 나아갑니다. 인간관계와 네트워크가 최고의 자산. 귀인(貴人)이 결정적 역할을 합니다.','丙':'병화(丙火) — 태양처럼 모든 것이 드러나는 시기. 사회적 인정과 명성이 따릅니다. 자신을 드러내는 강의·발표·브랜딩 활동을 적극적으로 하십시오.','丁':'정화(丁火) — 촛불처럼 한 분야를 깊이 파는 전문성의 시기. 장인정신, 전문직, 심층 연구가 빛을 발합니다.','戊':'무토(戊土) — 거대한 산처럼 묵직하고 안정적. 부동산·자산 축적·신뢰 구축 등 10년 후를 내다보는 투자의 시기입니다.','己':'기토(己土) — 비옥한 농토처럼 이전에 뿌린 씨앗이 결실로 돌아옵니다. 꼼꼼한 관리와 내실 운영이 강점이 됩니다.','庚':'경금(庚金) — 도끼처럼 과감하게 쳐내는 혁신의 에너지. 불필요한 구조를 제거하고 새 기준을 세울 때입니다.','辛':'신금(辛金) — 보석 세공처럼 정밀하게 완성도를 높이는 시기. 디테일과 품질에 집중하면 최고의 결과물이 나옵니다.','壬':'임수(壬水) — 큰 강처럼 인맥과 기회가 사방으로 확산됩니다. 핵심 목표를 유지하며 자연스러운 흐름을 타십시오.','癸':'계수(癸水) — 지하수처럼 내면에서 에너지가 축적되는 시기. 학습·연구·내공 쌓기로 채우면 다음 대운에서 폭발적으로 터집니다.'};
+            var JI_T={'子':'자(子) — 지혜와 집중력이 극대화됩니다. 계획 수립·자격증·학업에 유리합니다.','丑':'축(丑) — 눈에 보이지 않는 내공이 쌓이는 시기. 조급함 없이 장기적으로 자신을 단련하십시오.','寅':'인(寅) — 이동·변화·새 출발의 에너지가 강합니다. 이 시기에 시작한 일이 오래도록 뿌리를 내립니다.','卯':'묘(卯) — 인맥이 넓어지고 협력 기회가 풍부합니다. 혼자보다 함께할 때 성과가 배가됩니다.','辰':'진(辰) — 잠재력이 폭발하는 변화의 기운. 예상치 못한 전환점이 찾아옵니다.','巳':'사(巳) — 오래 고민해온 문제의 답이 명확해집니다. 과감한 선택이 이후 10년을 결정합니다.','午':'오(午) — 성취와 인정의 기운. 쌓아온 노력이 드러나고 인정받습니다. 적극적으로 승부하십시오.','未':'미(未) — 인간관계가 깊어지고 감성·창작 활동에서 빛을 발합니다.','申':'신(申) — 판단력과 실행력의 기운. 기회를 민첩하게 포착하고 즉시 실행해야 합니다.','酉':'유(酉) — 완성과 보상의 기운. 전문성이 인정받고 노력에 정당한 대가가 돌아옵니다.','戌':'술(戌) — 통찰과 마무리. 불필요한 것을 정리하고 핵심에 집중하게 됩니다.','亥':'해(亥) — 잠복과 준비의 기운. 가장 어두운 밤이 새벽 직전임을 기억하십시오.'};
+            var sc={}; sc[yong]=2;sc[hee]=1;sc[gi]=-2;sc[goo]=-1;
+            function gs(g,j){return (sc[OH[g]]||0)+(sc[JO[j]]||0);}
+            function gc(s){return s>=3?'#c7a76a':s>=1?'#00C853':s===0?'#888':s>=-2?'#ff9800':'#e74c3c';}
+            function gb(s){return s>=3?'🌟 대길':s>=1?'✦ 길':s===0?'— 평':s>=-2?'⚠ 주의':'❌ 흉';}
+            var wrap=document.getElementById('daeun-table');
+            if(!wrap) return;
+            var detDiv=document.createElement('div');
+            detDiv.style.cssText='margin-top:12px;display:flex;flex-direction:column;gap:12px;';
+            daeunData.forEach(function(dy,idx){
+                var gz=dy.getGanZhi();var g=gz[0];var j=gz[1];
+                var age=dy.getStartAge();
+                var endAge=idx<daeunData.length-1?daeunData[idx+1].getStartAge():age+10;
+                var s=gs(g,j);var isCur=idx===activeDaeunIdx;var col=gc(s);
+                var strat=s>=2?'이 대운은 길한 시기입니다. 공격적으로 확장하고 중요한 결정을 실행에 옮기십시오. 새로운 사업·투자·인맥 확장을 모두 적극 추진하십시오.':s>=0?'안정적으로 흐르는 대운입니다. 내실을 다지고 꾸준히 자신을 개발하는 것이 최선입니다.':'기신·구신 기운이 강한 시기입니다. 무리한 확장은 피하고 수비 전략이 현명합니다. 내공을 쌓아두면 다음 길운에서 크게 도약합니다.';
+                var d=document.createElement('div');
+                d.style.cssText='padding:14px;background:rgba(255,255,255,'+(isCur?'0.07':'0.03')+');border:1px solid '+(isCur?'var(--gold)':'rgba(255,255,255,0.07)')+';border-radius:10px;';
+                d.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:6px;">'+
+                    '<div style="display:flex;align-items:center;gap:8px;"><span style="font-size:22px;font-weight:900;color:var(--gold);font-family:Noto Serif KR,serif;">'+g+j+'</span>'+
+                    '<div><div style="font-size:12px;color:#bbb;">'+age+'세 ~ '+(endAge-1)+'세</div>'+(isCur?'<span style="font-size:10px;background:var(--gold);color:#000;padding:1px 6px;border-radius:6px;font-weight:700;">▶ 현재</span>':'')+'</div></div>'+
+                    '<span style="font-size:12px;font-weight:700;color:'+col+';">'+gb(s)+'</span></div>'+
+                    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">'+
+                    '<div style="background:rgba(0,0,0,0.25);border-radius:6px;padding:10px;"><div style="font-size:10px;color:var(--text-dim);margin-bottom:4px;">천간(天干) '+g+'</div><p style="font-size:12px;color:#ddd;line-height:1.7;margin:0;">'+(GAN_T[g]||g+' 기운')+'</p></div>'+
+                    '<div style="background:rgba(0,0,0,0.25);border-radius:6px;padding:10px;"><div style="font-size:10px;color:var(--text-dim);margin-bottom:4px;">지지(地支) '+j+'</div><p style="font-size:12px;color:#ddd;line-height:1.7;margin:0;">'+(JI_T[j]||j+' 기운')+'</p></div></div>'+
+                    '<div style="background:rgba(199,167,106,0.05);border-radius:6px;padding:8px 10px;border-left:2px solid '+col+';"><p style="font-size:12px;color:#ccc;line-height:1.75;margin:0;">'+strat+'</p></div>';
+                detDiv.appendChild(d);
+            });
+            wrap.appendChild(detDiv);
+        })();
         // ===== 대운 그래프 =====
         (function() {
             const svg = document.getElementById('daeun-graph-svg');
@@ -4669,6 +4703,38 @@ function runAnalysis() {
             ]);
         }
         buildFortuneCards('seun-table', seunRows, 0);
+        // ===== 세운 표 아래 풀이 주입 =====
+        (function(){
+            var OH={'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
+            var JO={'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'};
+            var KN={wood:'목(木)',fire:'화(火)',earth:'토(土)',metal:'금(金)',water:'수(水)'};
+            var sc={}; sc[yong]=2;sc[hee]=1;sc[gi]=-2;sc[goo]=-1;
+            function gs(g,j){return (sc[OH[g]]||0)+(sc[JO[j]]||0);}
+            function gc(s){return s>=3?'#c7a76a':s>=1?'#00C853':s===0?'#888':s>=-2?'#ff9800':'#e74c3c';}
+            function gb(s){return s>=3?'🌟 대길':s>=1?'✦ 길':s===0?'— 평':s>=-2?'⚠ 주의':'❌ 흉';}
+            var curY=new Date().getFullYear();
+            var wrap=document.getElementById('seun-table');
+            if(!wrap) return;
+            var detDiv=document.createElement('div');
+            detDiv.style.cssText='margin-top:12px;display:flex;flex-direction:column;gap:10px;';
+            for(var yr=curY;yr<curY+10;yr++){
+                var yL=Solar.fromYmd(yr,6,15).getLunar();
+                var gz=yL.getEightChar().getYear();var g=gz[0];var j=gz[1];
+                var s=gs(g,j);var col=gc(s);var isThis=(yr===curY);
+                var gOh=OH[g]||'earth';var jOh=JO[j]||'earth';
+                var adv=s>=2?'올해는 적극적으로 행동하십시오. 용신 기운이 강한 해라 중요한 시작·도전·투자가 좋은 결실로 이어집니다.':s>=0?'안정적인 한 해입니다. 꾸준히 실력을 쌓고 내실을 다지는 것이 최선의 전략입니다.':'수비가 최선입니다. 새로운 모험이나 큰 투자는 미루고 기존을 지키십시오. 이 해를 넘기면 다음 해에 기회가 찾아옵니다.';
+                var d=document.createElement('div');
+                d.style.cssText='padding:12px;background:rgba(255,255,255,'+(isThis?'0.07':'0.03')+');border:1px solid '+(isThis?'var(--gold)':'rgba(255,255,255,0.07)')+';border-radius:10px;';
+                d.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px;">'+
+                    '<div style="display:flex;align-items:center;gap:7px;"><span style="font-size:18px;font-weight:900;color:var(--gold);font-family:Noto Serif KR,serif;">'+g+j+'</span>'+
+                    '<span style="font-size:13px;color:#bbb;">'+yr+'년'+(isThis?' <span style="font-size:10px;background:var(--gold);color:#000;padding:1px 6px;border-radius:6px;font-weight:700;">올해</span>':'')+'</span></div>'+
+                    '<span style="font-size:11px;font-weight:700;color:'+col+';">'+gb(s)+'</span></div>'+
+                    '<p style="font-size:12px;color:#ddd;line-height:1.7;margin:0 0 7px;">천간 '+g+'는 '+KN[gOh]+' 기운, 지지 '+j+'는 '+KN[jOh]+' 기운입니다. 올 한 해 당신의 원국과 이 에너지가 만나는 방식이 한 해의 성패를 결정합니다.</p>'+
+                    '<div style="background:rgba(199,167,106,0.05);border-radius:6px;padding:8px 10px;border-left:2px solid '+col+';"><p style="font-size:12px;color:#ccc;line-height:1.75;margin:0;">'+adv+'</p></div>';
+                detDiv.appendChild(d);
+            }
+            wrap.appendChild(detDiv);
+        })();
 
         // 올해 세운 요약 문장
         const seunSummaryEl = document.getElementById('seun-summary');
@@ -4691,6 +4757,39 @@ function runAnalysis() {
             ]);
         }
         buildFortuneCards('wolun-table', wolunRows, currentMonth - 1);
+        // ===== 월운 표 아래 풀이 주입 =====
+        (function(){
+            var OH={'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
+            var JO={'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'};
+            var KN={wood:'목(木)',fire:'화(火)',earth:'토(土)',metal:'금(金)',water:'수(水)'};
+            var WL={'寅':'인(寅)월 — 봄의 시작. 새로운 계획·프로젝트 착수·인맥 확장에 최적입니다. 머뭇거리지 말고 이달에 첫발을 내딛으십시오.','卯':'묘(卯)월 — 성장과 확장의 기운. 인맥을 넓히고 협업 제안에 적극 응하세요. 이달의 만남이 중요한 장기 인연이 됩니다.','辰':'진(辰)월 — 변화와 전환의 기운. 예상치 못한 기회가 찾아올 수 있으니 유연하게 대응하십시오.','巳':'사(巳)월 — 집중력이 최고조. 중요한 결정을 내리고 실행에 집중하십시오. 이달의 결단이 하반기를 좌우합니다.','午':'오(午)월 — 에너지와 활력이 넘칩니다. 사회적 활동·발표·영업에 최적. 적극적으로 나서면 인정받습니다.','未':'미(未)월 — 관계와 감성이 풍부해집니다. 인간관계를 돌보고 협력을 강화하십시오.','申':'신(申)월 — 결단과 실행력이 요구됩니다. 판단한 것을 즉시 행동으로 옮기십시오.','酉':'유(酉)월 — 마무리와 완성의 기운. 진행 중인 일을 깔끔하게 마무리하십시오.','戌':'술(戌)월 — 성찰과 정리의 달. 불필요한 것을 정리하고 중요한 것에만 집중하십시오.','亥':'해(亥)월 — 준비와 내공의 달. 학습·자기 성찰에 집중하면 내년에 큰 도약이 찾아옵니다.','子':'자(子)월 — 지혜와 집중의 달. 복잡한 문제를 분석하고 장기 계획을 수립하기에 최적입니다.','丑':'축(丑)월 — 인내와 축적의 달. 결과를 서두르지 말고 착실하게 실력을 쌓는 것이 전략입니다.'};
+            var sc={}; sc[yong]=2;sc[hee]=1;sc[gi]=-2;sc[goo]=-1;
+            function gs(g,j){return (sc[OH[g]]||0)+(sc[JO[j]]||0);}
+            function gc(s){return s>=3?'#c7a76a':s>=1?'#00C853':s===0?'#888':s>=-2?'#ff9800':'#e74c3c';}
+            function gb(s){return s>=3?'🌟 대길':s>=1?'✦ 길':s===0?'— 평':s>=-2?'⚠ 주의':'❌ 흉';}
+            var curY=new Date().getFullYear();var curM=new Date().getMonth()+1;
+            var wrap=document.getElementById('wolun-table');
+            if(!wrap) return;
+            var detDiv=document.createElement('div');
+            detDiv.style.cssText='margin-top:12px;display:flex;flex-direction:column;gap:8px;';
+            for(var m=1;m<=12;m++){
+                var mS=Solar.fromYmd(curY,m,15);
+                var gz=mS.getLunar().getEightChar().getMonth();var g=gz[0];var j=gz[1];
+                var s=gs(g,j);var col=gc(s);var isThis=(m===curM);
+                var wlDesc=WL[j]||j+'월의 기운이 이달을 이끕니다.';
+                var advm=s>=2?'이달은 적극적으로 행동하십시오. 용신 기운이 강해 중요한 시작·만남·결정이 좋은 결실로 이어집니다.':s>=0?'안정적인 달입니다. 꾸준히 나아가는 것이 최선의 전략입니다.':'이달은 수비가 최선. 큰 결정과 투자는 다음 달로 미루고 조용히 내공을 쌓으십시오.';
+                var d=document.createElement('div');
+                d.style.cssText='padding:11px;background:rgba(255,255,255,'+(isThis?'0.07':'0.02')+');border:1px solid '+(isThis?'var(--gold)':'rgba(255,255,255,0.06)')+';border-radius:8px;';
+                d.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;">'+
+                    '<div style="display:flex;align-items:center;gap:6px;"><span style="font-size:16px;font-weight:900;color:var(--gold);font-family:Noto Serif KR,serif;">'+g+j+'</span>'+
+                    '<span style="font-size:12px;color:#bbb;">'+m+'월'+(isThis?' <span style="font-size:10px;background:var(--gold);color:#000;padding:1px 5px;border-radius:5px;font-weight:700;">이달</span>':'')+'</span></div>'+
+                    '<span style="font-size:11px;font-weight:700;color:'+col+';">'+gb(s)+'</span></div>'+
+                    '<p style="font-size:12px;color:#ddd;line-height:1.7;margin:0 0 6px;">'+wlDesc+'</p>'+
+                    '<div style="background:rgba(199,167,106,0.04);border-radius:5px;padding:7px 9px;border-left:2px solid '+col+';"><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">'+advm+'</p></div>';
+                detDiv.appendChild(d);
+            }
+            wrap.appendChild(detDiv);
+        })();
 
         // 대운 데이터 수집
         const daeunForReport = daeunData.map(dy => {
