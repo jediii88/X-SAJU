@@ -1996,7 +1996,7 @@ function buildCurrentPeriodSummary(data) {
         const dOh = OH[dg]||'earth'; const djOh = JO[dj]||'earth';
         const dStrat = ds>=2?'이 대운은 용신에너지가 강한 길한 시기입니다. 재물: 적극적 투자와 수입로 확대가 가능합니다. 직업: 새로운 기회를 잡고 사회적 영향력이 커집니다. 애정: 인연이 풍부하고 중요한 만남이 시작될 수 있습니다. 건강: 전체적으로 활력이 맘치는 시기입니다.':ds>=0?'안정적인 대운입니다. 재물: 급격한 변화보다 꾸준한 축적이 유리합니다. 직업: 현 위치를 지키면서 실력을 쌓는 시기입니다. 애정: 화려한 인연보다 깨은 신뢰가 더 중요합니다. 건강: 특별한 주의 사항 없이 안정적입니다.':'기신 기운이 강한 주의 시기입니다. 재물: 큰 추가 투자는 자제하고 현상 유지에 집중하십시오. 직업: 가능하면 현 위치 유지가 유리하며, 시작보다 마무리에 집중하십시오. 애정: 갈등이 생기는 시기이니 인내와 소통이 핵심입니다. 건강: 체력 관리와 소진한 외출을 주의하십시오.';
         daeunHtml = `<div style="margin-bottom:12px;padding:14px;background:rgba(199,167,106,0.06);border:1px solid var(--gold);border-radius:10px;">
-            <div style="font-size:11px;color:var(--gold);font-weight:700;margin-bottom:8px;letter-spacing:1px;">▶ 현재 대운(大運) — ${curDaeun.age}세 구간</div>
+            <div style="font-size:11px;color:var(--gold);font-weight:700;margin-bottom:8px;letter-spacing:1px;">▶ 현재 대운(大運) — ${curDaeun.age}세 구간 · 지금 진행 중인 10년 운세</div>
             <div style="font-size:22px;font-weight:900;color:var(--gold);font-family:Noto Serif KR,serif;margin-bottom:6px;">${dg}${dj} <span style="font-size:13px;color:#bbb;font-weight:400;">${KN[dOh]||''} + ${KN[djOh]||''} 기운</span></div>
             <p style="font-size:13px;color:#ddd;line-height:1.8;margin:0 0 8px;">${dStrat}</p>
             <span style="font-size:12px;font-weight:700;color:${dcol};">${gb(ds)}</span>
@@ -2013,9 +2013,14 @@ function buildCurrentPeriodSummary(data) {
         const ss = gs(sg,sj); const scol = gc(ss);
         const sOh = OH[sg]||'earth'; const sjOh = JO[sj]||'earth';
         const sAdv = ss>=2?'올해는 용신에너지가 강한 장사의 해입니다. 재물: 신규 수입 창출와 투자 기회에 적극 나서십시오. 직업: 승진·독립·신규 시작 모두 흙신이 있습니다. 애정: 중요한 인연이 시작되거나 관계가 선명해집니다. 건강: 활력이 넘치는 해로 얼마든지 단마카를 지크십시오.':ss>=0?'안정적인 한 해입니다. 재물: 투기보다 복리 저축이 유리합니다. 직업: 맡햤 맄를 프로젝트의 햴인보다 관리에 집중하십시오. 애정: 신뢰와 지속성이 인연의 핵심입니다.':'주의가 필요한 한 해입니다. 재물: 미수금은 졌공하는 해로, 신규 투자는 연내하십시오. 직업: 직장 내 갈등이 생길 수 있으니 놔라운 고리를 낮추십시오. 애정: 코업리터는 현주소를 지키는 날로 닫습니다.';
+        // 현재 대운과 세운의 교차 설명 추가
+        const curDGan = curDaeun ? (curDaeun.gz ? curDaeun.gz[0] : curDaeun.gan||'') : '';
+        const curDJi  = curDaeun ? (curDaeun.gz ? curDaeun.gz[1] : curDaeun.ji||'') : '';
+        const crossText = curDGan ? `현재 대운 ${curDGan}${curDJi}의 ${KN[OH[curDGan]]||''}에너지와 ${curY}년 세운 ${sg}${sj}의 ${KN[sOh]||''}에너지가 만남니다. 이 두 기운의 상생·충돌 관계가 올 한 해 운의 질을 결정합니다.` : '';
         sewunHtml = `<div style="margin-bottom:12px;padding:14px;background:rgba(74,158,106,0.05);border:1px solid rgba(74,158,106,0.3);border-radius:10px;">
-            <div style="font-size:11px;color:#4a9e6a;font-weight:700;margin-bottom:8px;letter-spacing:1px;">▶ 올해 ${curY}년 세운(歲運)</div>
+            <div style="font-size:11px;color:#4a9e6a;font-weight:700;margin-bottom:8px;letter-spacing:1px;">▶ ${curY}년 세운(歲運) · 지금 현재의 연운</div>
             <div style="font-size:20px;font-weight:900;color:#4a9e6a;font-family:Noto Serif KR,serif;margin-bottom:6px;">${sg}${sj} <span style="font-size:13px;color:#bbb;font-weight:400;">${KN[sOh]||''} + ${KN[sjOh]||''} 기운</span></div>
+            ${crossText ? `<p style="font-size:12.5px;color:#aaa;line-height:1.75;margin:0 0 8px;border-left:2px solid #4a9e6a;padding-left:10px;">${crossText}</p>` : ''}
             <p style="font-size:13px;color:#ddd;line-height:1.8;margin:0 0 8px;">${sAdv}</p>
             <span style="font-size:12px;font-weight:700;color:${scol};">${gb(ss)}</span>
         </div>`;
@@ -2034,7 +2039,7 @@ function buildCurrentPeriodSummary(data) {
         const WL = {'寅':'인월 — 봄의 시작. 새로운 시작과 인맥 확장에 최적입니다.','卯':'묘월 — 성장과 협업의 기운. 파트너십과 환동에 유리합니다.','辰':'진월 — 변화와 전환의 달. 유연한 대응이 핵심입니다.','巳':'사월 — 결단의 달. 오래 미룠 일을 실행에 옥기십시오.','午':'오월 — 활력이 넘치는 달. 적극적 대외 활동에 최적입니다.','未':'미월 — 관계와 감성의 달. 사람에게 집중하십시오.','申':'신월 — 실행력의 달. 결정을 즉시 행동으로 옥기십시오.','酉':'유월 — 마무리의 달. 진행 중인 일을 마무리하십시오.','戌':'술월 — 정리의 달. 뺈어낼 것을 뺈어내십시오.','亥':'해월 — 준비의 달. 내공과 학습에 집중하십시오.','子':'자월 — 지혜의 달. 로직과 분석이 휴리하는 달입니다.','丑':'축월 — 인내의 달. 천정히 쳐나가는 것이 이달의 항로입니다.'};
         const mAdv = ms>=2?`이달은 용신에너지가 강한 달입니다. 재물직업에서 중요한 행동을 주저없이 실행하십시오.`:ms>=0?`평온한 달입니다. 꾸준한 뤄률을 유지하는 것이 최선입니다.`:`주의가 필요한 달입니다. 큰 실행보다 준비와 방어에 집중하십시오.`;
         wolunHtml = `<div style="padding:14px;background:rgba(74,114,198,0.05);border:1px solid rgba(74,114,198,0.3);border-radius:10px;">
-            <div style="font-size:11px;color:#5b7fc4;font-weight:700;margin-bottom:8px;letter-spacing:1px;">▶ 이달 ${curM2}월 월운(月運)</div>
+            <div style="font-size:11px;color:#5b7fc4;font-weight:700;margin-bottom:8px;letter-spacing:1px;">▶ ${curY2}년 ${curM2}월 월운(月運) · 지금 이 달의 기운</div>
             <div style="font-size:18px;font-weight:900;color:#5b7fc4;font-family:Noto Serif KR,serif;margin-bottom:6px;">${mg}${mj} <span style="font-size:13px;color:#bbb;font-weight:400;">${KN[mOh]||''} + ${KN[mjOh]||''} 기운</span></div>
             <p style="font-size:13px;color:#ddd;line-height:1.8;margin:0 0 6px;">${WL[mj]||'이달의 기운입니다.'}</p>
             <p style="font-size:12.5px;color:#bbb;line-height:1.75;margin:0 0 8px;">${mAdv}</p>
@@ -2043,9 +2048,14 @@ function buildCurrentPeriodSummary(data) {
     } catch(e) {}
 
     if(!daeunHtml && !sewunHtml && !wolunHtml) return '';
-    return `<div class="report-chapter">
-        <h3 class="ch-title">▶ 현재 시기 핑실 요약 — 지금 이 순간의 대운·세운·월운</h3>
-        <p class="ch-text">대운(인생의 기후)·세운(지금 한 해의 날씨)·월운(이달의 날씨)이 한꿈에 폼쳐집니다. 당신의 원국 에너지가 지금 이 시기와 어떻게 마는지 확인하십시오.</p>
+    const nowDate = new Date();
+    const nowY = nowDate.getFullYear();
+    const nowM = nowDate.getMonth()+1;
+    const nowD = nowDate.getDate();
+    return `<div class="report-chapter" style="border:2px solid var(--gold);border-radius:14px;padding:20px;background:rgba(199,167,106,0.04);">
+        <div style="font-size:11px;color:var(--gold);letter-spacing:2px;margin-bottom:6px;">★ 지금 이 순간 — ${nowY}년 ${nowM}월 ${nowD}일 기준</div>
+        <h3 class="ch-title" style="margin-top:0;">현재 대운·세운·월운 종합 분석 — 지금 당신의 운은 어디로 흐르는가</h3>
+        <p class="ch-text">대운(인생의 10년 기후)·세운(올 한 해의 날씨)·월운(이달의 날씨)이 한꿈에 폼쳐집니다. ${nowY}년 ${nowM}월 현재, 당신의 원국 에너지가 지금 이 시기와 어떻게 맞물리는지를 확인하십시오.</p>
         ${daeunHtml}${sewunHtml}${wolunHtml}
     </div>`;
 }
