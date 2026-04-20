@@ -1790,52 +1790,27 @@ function generateDeepReport(data) {
 }
 
 function injectSectionInterpretations(data) {
-    // 1. 사주원국 아래 → Chapter 1 (일주 본질)
-    const ch1 = buildChapter1_Basic(data);
-    injectBelow('manse-inline-summary', ch1);
-    
-    // 2. 합충형파해 아래 → 관계 해석
-    const relEl = document.getElementById('relation-inline-summary');
-    if(relEl) {
-        relEl.innerHTML = buildRelationSummary(data);
-        relEl.style.display = 'block';
+    function setEl(id, html) {
+        const el = document.getElementById(id);
+        if(el) { el.innerHTML = html; el.style.display = 'block'; }
+        else console.warn('inject: #'+id+' not found');
     }
-    
-    // 3. 신살 아래 → 신살 해석
-    const shinsalEl = document.getElementById('shinsal-inline-summary');
-    if(shinsalEl) {
-        shinsalEl.innerHTML = buildShinsalSummary(data);
-        shinsalEl.style.display = 'block';
-    }
-    
-    // 4. 오행 아래 → Chapter 2 (오행)
-    const ch2 = buildChapter2_Wuxing(data);
-    injectBelow('wuxing-inline-summary', ch2);
-    
-    // 5. 십성 아래 → Chapter 3 (십성)
-    const sipEl = document.getElementById('sipseong-inline-summary');
-    if(sipEl) {
-        sipEl.innerHTML = buildChapter3_Sipseong(data);
-        sipEl.style.display = 'block';
-    }
-    
-    // 6. 신강신약 아래 → 강약 해석
-    const ch_str = buildStrengthSummary(data);
-    injectBelow('strength-inline-summary', ch_str);
-    
-    // 7. 용신 아래 → Chapter 7 (지장간) + 개운 힌트
-    const yongEl = document.getElementById('yong-inline-summary');
-    if(yongEl) {
-        yongEl.innerHTML = buildChapter7_Hidden(data);
-        yongEl.style.display = 'block';
-    }
-    
-    // 8. 인생시기 아래 → Chapter 4~6 (재물/직업/애정 요약)
-    const lifeEl = document.getElementById('lifecycle-inline-summary');
-    if(lifeEl) {
-        lifeEl.innerHTML = buildChapter4_Wealth(data) + buildChapter5_Career(data) + buildChapter6_Love(data);
-        lifeEl.style.display = 'block';
-    }
+    // 1. 만세력 원국 아래 → 4주 전체 해설
+    setEl('manse-inline-summary', buildChapter1_Basic(data));
+    // 2. 합충형파해 아래
+    setEl('relation-inline-summary', buildRelationSummary(data));
+    // 3. 신살 아래
+    setEl('shinsal-inline-summary', buildShinsalSummary(data));
+    // 4. 오행 아래
+    setEl('wuxing-inline-summary', buildChapter2_Wuxing(data));
+    // 5. 십성 아래
+    setEl('sipseong-inline-summary', buildChapter3_Sipseong(data));
+    // 6. 신강신약 아래
+    setEl('strength-inline-summary', buildStrengthSummary(data));
+    // 7. 용신/희신 아래
+    setEl('yong-inline-summary', buildChapter7_Hidden(data));
+    // 8. 인생 시기별 아래 → 재물+직업+애정
+    setEl('lifecycle-inline-summary', buildChapter4_Wealth(data) + buildChapter5_Career(data) + buildChapter6_Love(data) + buildChapter8_Health(data) + buildChapter9_Remedy(data));
 }
 
 function injectBelow(id, html_content) {
@@ -3322,7 +3297,7 @@ function startReport() {
         </div>
 
         <!-- 인라인 통합 리포트 (버튼 클릭 후 이 자리에 펼쳐짐) -->
-        <div id="sec-report-full" style="display:none; padding-bottom:60px;">
+        <div id="sec-report-full" style="display:block; padding-bottom:60px;">
             <div id="report-inline-top" style="text-align:center; padding: 30px 0 10px;">
                 <div style="font-size:11px; letter-spacing:3px; color:var(--text-soft); margin-bottom:6px;">X · S A J U · R E P O R T</div>
                 <div style="font-size:22px; font-weight:800; color:var(--gold); font-family:'Noto Serif KR',serif;">당신의 운명 서사</div>
@@ -4737,17 +4712,18 @@ function runAnalysis() {
 
         go(2);
         // DOM이 완전히 렌더된 뒤 리포트 생성 (requestAnimationFrame 2회)
-        requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
+        // DOM 렌더 완료 후 리포트 생성
+        setTimeout(function() {
+            try {
                 generateDeepReport(globalSajuData);
-                const reportFull = document.getElementById('sec-report-full');
-                if(reportFull) reportFull.style.display = 'block';
-                const reportSec = document.getElementById('sec-report');
-                if(reportSec) reportSec.style.display = 'none';
                 const toc = document.getElementById('floating-toc');
                 if(toc) toc.style.display = 'block';
-            });
-        });
+                const reportSec = document.getElementById('sec-report');
+                if(reportSec) reportSec.style.display = 'none';
+            } catch(err) {
+                console.error('리포트 생성 오류:', err);
+            }
+        }, 200);
     });
 }
 </script>
