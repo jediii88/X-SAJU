@@ -645,7 +645,12 @@
             font-weight: 300;
         }
 
-        @keyframes spin { to { transform: rotate(360deg); } }
+        
+@keyframes dotPulse {
+    0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+    40% { transform: scale(1.0); opacity: 1; }
+}
+@keyframes spin { to { transform: rotate(360deg); } }
     
         /* 점신 스타일 애니메이션 및 레이아웃 */
         .jeomsin-nav {
@@ -1953,8 +1958,8 @@ function buildSectionHeader(title) {
 
 function buildChapter1_Basic(data) {
     const pillars = data.pillars || [];
-    const pillarNames = ['연주(年柱)','월주(月柱)','일주(日柱)','시주(時柱)'];
-    const pillarDesc = ['조상·가문·초년 환경','부모·청년기·직업 환경','나 자신·배우자 자리','자녀·말년·내면의 소망'];
+    const pillarNames = ['시주(時柱)','일주(日柱)','월주(月柱)','연주(年柱)'];
+    const pillarDesc = ['자녀·말년·내면의 소망','나 자신·배우자 자리','부모·청년기·직업 환경','조상·가문·초년 환경'];
 
     // 천간 설명
     const stemDesc = {
@@ -2793,8 +2798,16 @@ function collapseToc() {
 </script>
 
 <div class="loading" id="loading">
-    <div class="spinner"></div>
-    <div class="loading-text" id="loading-msg">만세력을 정밀 계산하는 중입니다</div>
+    <div style="text-align:center;">
+        <div class="spinner"></div>
+        <div style="font-size:11px;letter-spacing:3px;color:rgba(199,167,106,0.6);margin-bottom:16px;font-family:'Noto Serif KR',serif;">X · S A J U</div>
+        <div class="loading-text" id="loading-msg">사주 원국을 계산하는 중...</div>
+        <div style="margin-top:20px;display:flex;justify-content:center;gap:6px;">
+            <span style="width:6px;height:6px;background:var(--gold);border-radius:50%;animation:dotPulse 1.4s ease-in-out 0s infinite;display:inline-block;"></span>
+            <span style="width:6px;height:6px;background:var(--gold);border-radius:50%;animation:dotPulse 1.4s ease-in-out 0.2s infinite;display:inline-block;"></span>
+            <span style="width:6px;height:6px;background:var(--gold);border-radius:50%;animation:dotPulse 1.4s ease-in-out 0.4s infinite;display:inline-block;"></span>
+        </div>
+    </div>
 </div>
 
 <div class="container" id="main-ui">
@@ -3532,12 +3545,35 @@ const CIRCLE_BG = {
 };
 
 function showLoading(msg, callback) {
-    document.getElementById('loading').style.display = 'flex';
-    document.getElementById('loading-msg').innerText = msg;
+    const loadEl = document.getElementById('loading');
+    const msgEl = document.getElementById('loading-msg');
+    loadEl.style.display = 'flex';
+    
+    const steps = [
+        '사주 원국(四柱 原局)을 계산하는 중...',
+        '오행(五行) 에너지를 분석하는 중...',
+        '십성(十星) · 신살(神殺)을 검출하는 중...',
+        '용신(用神) · 대운(大運)을 산출하는 중...',
+        '심층 리포트를 생성하는 중...',
+        '완료! 잠시 후 결과를 표시합니다...'
+    ];
+    let stepIdx = 0;
+    msgEl.innerText = steps[0];
+    const stepInterval = setInterval(() => {
+        stepIdx++;
+        if(stepIdx < steps.length) msgEl.innerText = steps[stepIdx];
+    }, 500);
+    
+    // 계산 실행 (로딩 표시 직후)
     setTimeout(() => {
         try { callback(); } catch (e) { console.error(e); }
-        document.getElementById('loading').style.display = 'none';
-    }, 300);
+    }, 50);
+    
+    // 최소 2.5초 로딩 표시 후 숨김
+    setTimeout(() => {
+        clearInterval(stepInterval);
+        loadEl.style.display = 'none';
+    }, 2500);
 }
 
 const ni = document.getElementById('user-name');
@@ -4537,17 +4573,18 @@ function runAnalysis() {
         };
 
         go(2);
-        // 계산 완료 즉시 전체 리포트 자동 생성
-        setTimeout(() => {
-            generateDeepReport(globalSajuData);
-            const reportFull = document.getElementById('sec-report-full');
-            if(reportFull) reportFull.style.display = 'block';
-            const reportSec = document.getElementById('sec-report');
-            if(reportSec) reportSec.style.display = 'none';
-            // 플로팅 목차 표시
-            const toc = document.getElementById('floating-toc');
-            if(toc) toc.style.display = 'block';
-        }, 100);
+        // DOM이 완전히 렌더된 뒤 리포트 생성 (requestAnimationFrame 2회)
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                generateDeepReport(globalSajuData);
+                const reportFull = document.getElementById('sec-report-full');
+                if(reportFull) reportFull.style.display = 'block';
+                const reportSec = document.getElementById('sec-report');
+                if(reportSec) reportSec.style.display = 'none';
+                const toc = document.getElementById('floating-toc');
+                if(toc) toc.style.display = 'block';
+            });
+        });
     });
 }
 </script>
