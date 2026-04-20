@@ -1994,7 +1994,11 @@ function buildCurrentPeriodSummary(data) {
         const ds = gs(dg,dj);
         const dcol = gc(ds);
         const dOh = OH[dg]||'earth'; const djOh = JO[dj]||'earth';
-        const dStrat = ds>=2?'이 대운은 용신에너지가 강한 길한 시기입니다. 재물: 적극적 투자와 수입로 확대가 가능합니다. 직업: 새로운 기회를 잡고 사회적 영향력이 커집니다. 애정: 인연이 풍부하고 중요한 만남이 시작될 수 있습니다. 건강: 전체적으로 활력이 맘치는 시기입니다.':ds>=0?'안정적인 대운입니다. 재물: 급격한 변화보다 꾸준한 축적이 유리합니다. 직업: 현 위치를 지키면서 실력을 쌓는 시기입니다. 애정: 화려한 인연보다 깨은 신뢰가 더 중요합니다. 건강: 특별한 주의 사항 없이 안정적입니다.':'기신 기운이 강한 주의 시기입니다. 재물: 큰 추가 투자는 자제하고 현상 유지에 집중하십시오. 직업: 가능하면 현 위치 유지가 유리하며, 시작보다 마무리에 집중하십시오. 애정: 갈등이 생기는 시기이니 인내와 소통이 핵심입니다. 건강: 체력 관리와 소진한 외출을 주의하십시오.';
+        const dStrat = ds>=2
+            ?'현재 대운은 용신·희신 기운이 강하게 작동하는 인생의 황금기입니다. 지금 이 시기는 당신이 타고난 잠재력이 세상과 가장 강하게 공명하는 순간입니다. 오랫동안 준비해온 것들을 세상에 꺼내 놓을 타이밍입니다. 재물: 신규 수입 창출, 투자, 사업 확장 모두 적극적으로 추진하십시오. 이 시기의 투자는 10년 후의 자산 기반이 됩니다. 직업: 더 큰 무대, 더 높은 자리를 향해 적극적으로 나아가십시오. 이직, 창업, 승진 요구 모두 지금이 적기입니다. 건강: 전반적으로 활력이 넘치지만, 과욕으로 인한 번아웃을 경계하십시오. 애정: 인연의 문이 활짝 열려있습니다. 마음을 열고 새로운 만남을 적극적으로 맞이하십시오.'
+            :ds>=0
+            ?'현재 대운은 큰 기복 없이 안정적으로 흐르는 내실 강화의 시기입니다. 폭발적인 도약보다는 꾸준한 성장이 이 대운의 핵심 키워드입니다. 지금 당장 눈에 보이는 성과가 없더라도, 이 시기에 쌓은 실력·자산·신뢰가 다음 황금 대운의 발판이 됩니다. 재물: 투기보다 복리 저축과 장기 투자가 유리합니다. 직업: 현재 위치에서 전문성을 높이고, 업계에서 자신의 신뢰도를 높이는 데 집중하십시오. 건강: 균형 잡힌 생활 루틴을 유지하는 것이 중요합니다. 애정: 인위적인 만남보다 자연스러운 관계의 깊이를 높이는 것이 더 의미 있습니다.'
+            :'현재 대운은 기신·구신 기운이 강하게 작동하는 준비와 수비의 시기입니다. 이것은 당신의 잘못이 아닙니다. 세상 모든 성공한 사람들이 반드시 이런 저조기를 거쳐 다음 황금 대운에서 폭발합니다. 무리한 확장·투자·새 출발을 자제하고, 지금은 기반을 다지고 실력을 쌓는 것이 최선의 전략입니다. 재물: 새로운 투자보다 기존 자산 보전과 불필요한 지출 차단이 우선입니다. 직업: 현 위치를 유지하면서 실력을 키우십시오. 큰 이직이나 창업은 다음 대운으로 미루는 것이 현명합니다. 건강: 이 시기에 쌓인 피로가 나중에 큰 문제로 터질 수 있습니다. 규칙적인 수면과 검진을 반드시 챙기십시오.';
         daeunHtml = `<div style="margin-bottom:12px;padding:14px;background:rgba(199,167,106,0.06);border:1px solid var(--gold);border-radius:10px;">
             <div style="font-size:11px;color:var(--gold);font-weight:700;margin-bottom:8px;letter-spacing:1px;">▶ 현재 대운 — ${curDaeun.age}세 구간 · 지금 진행 중인 10년 운세</div>
             <div style="font-size:18px;font-weight:900;color:var(--gold);font-family:Noto Serif KR,serif;margin-bottom:6px;"><span style="font-family:Noto Serif KR,serif;">${dg}${dj}</span> <span style="font-size:14px;font-weight:600;color:#ddd;">(${HAN_KOR[dg]||dg}${HAN_KOR[dj]||dj})</span> <span style="font-size:13px;color:#bbb;font-weight:400;">${KN[dOh]||''} + ${KN[djOh]||''} 기운</span></div>
@@ -2012,11 +2016,15 @@ function buildCurrentPeriodSummary(data) {
         const sg = gz[0]; const sj = gz[1];
         const ss = gs(sg,sj); const scol = gc(ss);
         const sOh = OH[sg]||'earth'; const sjOh = JO[sj]||'earth';
-        const sAdv = ss>=2?'올해는 용신에너지가 강한 장사의 해입니다. 재물: 신규 수입 창출와 투자 기회에 적극 나서십시오. 직업: 승진·독립·신규 시작 모두 흙신이 있습니다. 애정: 중요한 인연이 시작되거나 관계가 선명해집니다. 건강: 활력이 넘치는 해로 얼마든지 단마카를 지크십시오.':ss>=0?'안정적인 한 해입니다. 재물: 투기보다 복리 저축이 유리합니다. 직업: 맡햤 맄를 프로젝트의 햴인보다 관리에 집중하십시오. 애정: 신뢰와 지속성이 인연의 핵심입니다.':'주의가 필요한 한 해입니다. 재물: 미수금은 졌공하는 해로, 신규 투자는 연내하십시오. 직업: 직장 내 갈등이 생길 수 있으니 놔라운 고리를 낮추십시오. 애정: 코업리터는 현주소를 지키는 날로 닫습니다.';
+        const sAdv = ss>=2
+            ?'올해는 용신 기운이 강하게 들어오는 대길의 해입니다. 오래 고민해온 결정을 실행할 최고의 타이밍입니다. 재물: 신규 수입 창출, 새로운 투자, 사업 확장 모두 올해 안에 실행하십시오. 기회는 지금 이 순간 가장 풍부합니다. 직업: 승진 요구, 이직, 창업 모두 이 해에 가장 강한 지원을 받습니다. 원하는 것을 직접 요청하십시오. 애정: 새로운 인연이 시작되거나 기존 관계가 한 단계 깊어지는 해입니다. 건강: 활력이 넘치지만 과부하를 주의하십시오.'
+            :ss>=0
+            ?'안정적인 한 해입니다. 이 해는 급격한 변화보다 꾸준한 내실 강화가 핵심입니다. 재물: 복리 저축과 장기 자산 관리에 집중하십시오. 직업: 맡은 프로젝트를 완성도 있게 마무리하고, 전문성을 높이는 학습에 투자하십시오. 애정: 화려한 새 인연보다 기존 관계의 신뢰를 더욱 깊게 쌓는 해입니다.'
+            :'올해는 기신 기운이 강하게 작동하는 주의의 해입니다. 신규 투자, 보증, 큰 계약 체결은 신중하게 검토하십시오. 재물: 지출을 줄이고 비상금을 확보하십시오. 직장 내 불필요한 갈등을 피하고 자기 업무에 집중하십시오. 건강: 정기 검진을 반드시 받고, 스트레스 관리에 신경 쓰십시오. 이 해를 묵묵히 내공을 쌓는 기간으로 활용하면, 다음 해에 반드시 더 큰 기회가 찾아옵니다.';
         // 현재 대운과 세운의 교차 설명 추가
         const curDGan = curDaeun ? (curDaeun.gz ? curDaeun.gz[0] : curDaeun.gan||'') : '';
         const curDJi  = curDaeun ? (curDaeun.gz ? curDaeun.gz[1] : curDaeun.ji||'') : '';
-        const crossText = curDGan ? `현재 대운 ${curDGan}${curDJi}의 ${KN[OH[curDGan]]||''}에너지와 ${curY}년 세운 ${sg}${sj}의 ${KN[sOh]||''}에너지가 만남니다. 이 두 기운의 상생·충돌 관계가 올 한 해 운의 질을 결정합니다.` : '';
+        const crossText = curDGan ? `현재 대운 ${curDGan}${curDJi}(${(HAN_KOR&&HAN_KOR[curDGan])||curDGan}${(HAN_KOR&&HAN_KOR[curDJi])||curDJi})의 ${KN[OH[curDGan]]||''}에너지와 ${curY}년 세운 ${sg}${sj}(${(HAN_KOR&&HAN_KOR[sg])||sg}${(HAN_KOR&&HAN_KOR[sj])||sj})의 ${KN[sOh]||''}에너지가 만남니다. 이 두 기운의 상생·충돌 관계가 올 한 해 운의 질을 결정합니다.` : '';
         sewunHtml = `<div style="margin-bottom:12px;padding:14px;background:rgba(74,158,106,0.05);border:1px solid rgba(74,158,106,0.3);border-radius:10px;">
             <div style="font-size:11px;color:#4a9e6a;font-weight:700;margin-bottom:8px;letter-spacing:1px;">▶ ${curY}년 세운 · 지금 현재의 연운</div>
             <div style="font-size:17px;font-weight:900;color:#4a9e6a;font-family:Noto Serif KR,serif;margin-bottom:6px;"><span style="font-family:Noto Serif KR,serif;">${sg}${sj}</span> <span style="font-size:13px;font-weight:600;color:#ddd;">(${HAN_KOR[sg]||sg}${HAN_KOR[sj]||sj})</span> <span style="font-size:13px;color:#bbb;font-weight:400;">${KN[sOh]||''} + ${KN[sjOh]||''} 기운</span></div>
@@ -4865,7 +4873,11 @@ function runAnalysis() {
                 var gz=yL.getEightChar().getYear();var g=gz[0];var j=gz[1];
                 var s=gs(g,j);var col=gc(s);var isThis=(yr===curY);
                 var gOh=OH[g]||'earth';var jOh=JO[j]||'earth';
-                var adv=s>=2?'올해는 적극적으로 행동하십시오. 용신 기운이 강한 해라 중요한 시작·도전·투자가 좋은 결실로 이어집니다.':s>=0?'안정적인 한 해입니다. 꾸준히 실력을 쌓고 내실을 다지는 것이 최선의 전략입니다.':'수비가 최선입니다. 새로운 모험이나 큰 투자는 미루고 기존을 지키십시오. 이 해를 넘기면 다음 해에 기회가 찾아옵니다.';
+                var adv=s>=2
+                    ?'이 해는 용신 기운이 강하게 들어오는 대길의 해입니다. 인생에서 중요한 결단을 실행할 최고의 타이밍입니다. 사업 시작, 이직, 결혼, 이사, 투자 등 오래 고민해온 일들을 올해 실행하십시오. 기회는 지금 가장 풍부합니다. 재물에서는 신규 수입 창출과 자산 확장이 가능한 해이며, 직업적으로는 더 큰 무대를 향해 나아갈 수 있습니다. 이 기운을 놓치지 마십시오.'
+                    :s>=0
+                    ?'안정적인 한 해입니다. 이 해는 폭발적 도약보다 꾸준한 성장과 내실 강화가 핵심입니다. 현재 하고 있는 일의 완성도를 높이고, 장기적 자산 가치를 쌓는 데 집중하십시오. 직업적으로는 전문성을 깊이 파는 것이 유리하며, 재물은 복리 저축과 안정적 투자가 맞습니다. 급하지 않게, 그러나 멈추지도 않게.'
+                    :'이 해는 기신 기운이 강하게 작동하는 주의의 해입니다. 신규 투자, 보증, 큰 계약은 신중하게 검토하고, 가능하면 다음 해로 미루십시오. 기존 자산을 지키고 불필요한 지출을 줄이는 것이 가장 중요합니다. 직장에서 불필요한 갈등을 만들지 말고 자기 업무에 집중하십시오. 건강 검진을 반드시 받으십시오. 이 해를 묵묵히 내공 쌓기로 채운 사람이 다음 좋은 해에 가장 크게 도약합니다.';
                 var d=document.createElement('div');
                 d.style.cssText='padding:12px;background:rgba(255,255,255,'+(isThis?'0.07':'0.03')+');border:1px solid '+(isThis?'var(--gold)':'rgba(255,255,255,0.07)')+';border-radius:10px;';
                 d.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px;">'+
@@ -4927,7 +4939,7 @@ function runAnalysis() {
                 var gz=mS.getLunar().getEightChar().getMonth();var g=gz[0];var j=gz[1];
                 var s=gs(g,j);var col=gc(s);var isThis=(i===0);
                 var wlDesc=WL[j]||j+'월의 기운이 이달을 이끕니다.';
-                var advm=s>=2?'이달은 적극적으로 행동하십시오. 용신 기운이 강해 중요한 시작·만남·결정이 좋은 결실로 이어집니다.':s>=0?'안정적인 달입니다. 꾸준히 나아가는 것이 최선의 전략입니다.':'이달은 수비가 최선. 큰 결정과 투자는 다음 달로 미루고 조용히 내공을 쌓으십시오.';
+                var advm=s>=2?'이달은 용신 기운이 최고조에 달하는 달입니다. 이달 안에 중요한 결정을 실행하고, 새로운 사람을 만나고, 협상 테이블에 앉으십시오. 이 기운은 한 달이 지나면 사라집니다. 재물: 이달에 들어오는 기회는 잡으십시오. 직업: 원하는 포지션을 적극적으로 요청하거나 제안하십시오. 애정: 마음에 두었던 사람에게 먼저 다가가십시오. 이 달의 에너지는 행동하는 자의 편입니다.':s>=0?'안정적인 달입니다. 무리하게 새로운 것을 시작하기보다, 현재 진행 중인 일들을 꼼꼼히 관리하고 완성도를 높이는 데 집중하십시오. 작은 성실함이 이달의 가장 큰 전략입니다. 꾸준히 나아가면 됩니다.':'이달은 기신 기운이 강한 수비의 달입니다. 큰 투자, 중요한 계약, 새로운 사업 시작은 다음 달로 미루십시오. 이달은 몸을 낮추고 조용히 준비하는 것이 가장 현명합니다. 건강에 평소보다 더 신경 쓰고, 불필요한 지출과 감정 소비를 줄이십시오. 다음 좋은 달을 위해 에너지를 비축하는 달로 활용하십시오.';
                 var d=document.createElement('div');
                 d.style.cssText='padding:11px;background:rgba(255,255,255,'+(isThis?'0.07':'0.02')+');border:1px solid '+(isThis?'var(--gold)':'rgba(255,255,255,0.06)')+';border-radius:8px;';
                 d.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;">'+
@@ -5090,7 +5102,11 @@ function runAnalysis() {
                 var age=dy.getStartAge();
                 var endAge=idx<daeunData.length-1?daeunData[idx+1].getStartAge():age+10;
                 var s=gs(g,j);var isCur=idx===activeDaeunIdx;var col=gc(s);
-                var strat=s>=2?'이 대운은 용신·희신 기운이 강한 길한 시기입니다. 공격적으로 확장하고 중요한 결정을 실행에 옮기십시오. 새로운 사업·투자·인맥 확장을 모두 적극적으로 추진하십시오. 이런 길운은 평생 몇 번 오지 않으니 최대한 활용하는 것이 인생의 전환점이 됩니다.':s>=0?'이 대운은 큰 기복 없이 안정적으로 흐릅니다. 도약보다는 내실을 다지고 꾸준히 자신을 개발하는 시기입니다.':'이 대운은 기신·구신 기운이 강한 시기입니다. 무리한 확장은 피하고 수비 전략이 현명합니다. 이 시기를 내공 쌓기로 채운 사람이 다음 길운에서 가장 크게 도약합니다.';
+                var strat=s>=2
+                    ?'이 대운은 용신·희신 기운이 강하게 작동하는 인생 최고의 황금기입니다. 당신이 오랫동안 준비해온 모든 것을 세상에 내놓을 타이밍입니다. 사업을 시작하거나 규모를 키우고, 새로운 직장·직위에 도전하고, 중요한 계약과 파트너십을 맺기에 이보다 좋은 시기가 없습니다. 재물: 적극적인 투자와 신규 수입 창출이 실현됩니다. 투자를 두려워하지 마십시오. 직업: 이직·창업·승진 모두 길한 시기로, 더 큰 무대를 향해 발을 내딛을 때입니다. 건강: 전반적으로 활력이 넘치지만, 과욕으로 인한 과부하를 주의하십시오. 애정: 인연이 열리는 시기로, 적극적으로 사람들을 만나십시오. 이런 황금 대운은 평생 두세 번밖에 오지 않습니다. 지금 이 기운을 최대한 활용하십시오.'
+                    :s>=0
+                    ?'이 대운은 큰 기복 없이 안정적으로 흐르는 수평 이동의 시기입니다. 폭발적 도약보다는 기반을 다지고 내실을 강화하는 데 집중해야 합니다. 지금 당장 눈에 보이는 결과가 없더라도, 이 기간에 쌓은 실력과 인맥이 다음 대운에서 폭발적 결과로 이어집니다. 재물: 투기보다 꾸준한 저축과 자산 관리가 유리합니다. 직업: 현재 위치에서 전문성을 높이고 신뢰를 쌓는 시기입니다. 건강: 균형 잡힌 루틴을 유지하고 체력 관리에 신경 쓰십시오. 애정: 화려한 인연보다 깊은 신뢰 관계를 쌓을 시기입니다. 급하지 않게, 하지만 멈추지도 않게.'
+                    :'이 대운은 기신·구신 기운이 강하게 작동하는 시기입니다. 그러나 이것은 실패가 아니라 준비의 시간입니다. 세상 모든 성공한 사람들은 반드시 이런 저조기를 거쳤습니다. 무리한 확장·투자·새 출발은 자제하고, 수비와 내실 강화에 올인하십시오. 재물: 신규 투자는 최소화하고, 기존 자산을 지키는 것이 최우선입니다. 불필요한 지출을 줄이고 비상금을 확보하십시오. 직업: 가능하면 현 위치를 유지하고, 이직이나 창업은 다음 대운으로 미루는 것이 현명합니다. 건강: 이 시기에 건강 신호를 무시하면 나중에 크게 불거집니다. 정기 검진과 충분한 휴식이 필수입니다. 애정: 갈등이 쉽게 생기는 시기이니 상대방을 배려하고 소통을 강화하십시오. 이 시기를 내공 쌓기로 채운 사람이 다음 황금 대운에서 가장 크게 도약한다는 사실을 기억하십시오.';
                 h2+='<div style="margin-bottom:18px;padding:18px;background:rgba(255,255,255,'+(isCur?'0.07':'0.03')+');border:1px solid '+(isCur?'var(--gold)':'rgba(255,255,255,0.07)')+';border-radius:12px;">';
                 h2+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:26px;font-weight:900;color:var(--gold);font-family:Noto Serif KR,serif;">'+g+j+'</span><div><div style="font-size:13px;color:#bbb;">'+age+'세 ~ '+(endAge-1)+'세</div>'+(isCur?'<span style="font-size:10px;background:var(--gold);color:#000;padding:1px 8px;border-radius:8px;font-weight:700;">▶ 현재</span>':'')+'</div></div><span style="font-size:13px;font-weight:700;color:'+col+';padding:4px 12px;border-radius:20px;background:rgba(255,255,255,0.05);">'+gb(s)+'</span></div>';
                 h2+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;"><div style="background:rgba(0,0,0,0.3);border-radius:8px;padding:12px;"><div style="font-size:10px;color:var(--text-dim);margin-bottom:5px;">천간 '+g+'</div><p style="font-size:12.5px;color:#ddd;line-height:1.75;margin:0;">'+(GAN_T[g]||g+' 기운이 이 시기를 이끕니다.')+'</p></div><div style="background:rgba(0,0,0,0.3);border-radius:8px;padding:12px;"><div style="font-size:10px;color:var(--text-dim);margin-bottom:5px;">지지 '+j+'</div><p style="font-size:12.5px;color:#ddd;line-height:1.75;margin:0;">'+(JI_T[j]||j+' 기운이 뒷받침합니다.')+'</p></div></div>';
