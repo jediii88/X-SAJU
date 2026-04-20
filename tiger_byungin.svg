@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <circle cx="100" cy="100" r="100" fill="#1a0a0a"/>
+  <!-- 호랑이 실루엣 (병인 = 붉은 호랑이) -->
+  <g fill="#c0392b" transform="translate(100,100)">
+    <!-- 몸통 -->
+    <ellipse cx="0" cy="15" rx="38" ry="28"/>
+    <!-- 머리 -->
+    <circle cx="0" cy="-28" r="26"/>
+    <!-- 귀 왼쪽 -->
+    <polygon points="-18,-48 -26,-62 -8,-50"/>
+    <!-- 귀 오른쪽 -->
+    <polygon points="18,-48 26,-62 8,-50"/>
+    <!-- 앞발 왼쪽 -->
+    <ellipse cx="-28" cy="40" rx="8" ry="16"/>
+    <!-- 앞발 오른쪽 -->
+    <ellipse cx="28" cy="40" rx="8" ry="16"/>
+    <!-- 꼬리 -->
+    <path d="M38,20 Q65,0 60,-20 Q55,-35 48,-25" stroke="#c0392b" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <!-- 눈 왼쪽 (황금) -->
+    <ellipse cx="-9" cy="-30" rx="4" ry="5" fill="#f39c12"/>
+    <!-- 눈 오른쪽 (황금) -->
+    <ellipse cx="9" cy="-30" rx="4" ry="5" fill="#f39c12"/>
+    <!-- 코 -->
+    <ellipse cx="0" cy="-20" rx="3" ry="2" fill="#8b0000"/>
+    <!-- 줄무늬 머리 -->
+    <line x1="-12" y1="-50" x2="-8" y2="-36" stroke="#8b0000" stroke-width="2" stroke-linecap="round"/>
+    <line x1="12" y1="-50" x2="8" y2="-36" stroke="#8b0000" stroke-width="2" stroke-linecap="round"/>
+    <line x1="0" y1="-54" x2="0" y2="-40" stroke="#8b0000" stroke-width="2" stroke-linecap="round"/>
+    <!-- 줄무늬 몸통 -->
+    <line x1="-20" y1="5" x2="-35" y2="10" stroke="#8b0000" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="-15" y1="15" x2="-35" y2="22" stroke="#8b0000" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="20" y1="5" x2="35" y2="10" stroke="#8b0000" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="15" y1="15" x2="35" y2="22" stroke="#8b0000" stroke-width="2.5" stroke-linecap="round"/>
+  </g>
+  <!-- 일주 텍스트 -->
+  <text x="100" y="185" text-anchor="middle" font-size="13" fill="rgba(255,255,255,0.5)" font-family="serif" letter-spacing="2">丙寅</text>
+</svg>
