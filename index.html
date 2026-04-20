@@ -2225,151 +2225,98 @@ function buildChapter4_Wealth(data) {
 }
 
 function buildDaewunLoop(data) {
-    // 실제 계산된 대운 데이터 사용
-    const daewuns = data.daeunRows || [];
-    const yong = data.yong || 'wood';
-    const hee = data.hee || 'fire';
-    const gi = data.gi || 'metal';
-    const goo = data.goo || 'water';
-    const OHMAP = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
-    const OHKR = {wood:'목(木)',fire:'화(火)',earth:'토(土)',metal:'금(金)',water:'수(水)'};
-    const sc = {}; sc[yong]=2; sc[hee]=1; sc[gi]=-2; sc[goo]=-1;
-    
-    const DW_THEMES = [
-        ['귀인의 문이 열리는 시기','이 대운의 기운이 당신의 용신과 맞닿아 막혔던 길이 열립니다. 새로운 인연과 기회가 동시에 몰려옵니다. 적극적으로 세상에 자신을 드러내십시오.'],
-        ['내실을 다지는 준비의 시간','환경이 당신을 압박하지만 이 압박이 당신을 더 단단하게 만듭니다. 무리한 확장보다는 실력과 기반을 다지는 시기로 활용하십시오.'],
-        ['변화와 충돌의 시기','기존의 관계와 환경에 균열이 생깁니다. 이 균열이 낡은 것을 부수고 새로운 판을 짜는 기회입니다. 변화를 두려워하지 마십시오.'],
-        ['안정과 성취의 시기','뿌리가 깊어지고 열매를 맺는 시기입니다. 그동안의 노력이 사회적 인정과 물질적 보상으로 돌아옵니다.'],
-        ['관계와 협력의 시기','혼자의 힘보다 타인과의 협력이 큰 에너지를 만들어냅니다. 중요한 파트너십이 형성되는 시기입니다.'],
-        ['정리와 재편의 시기','불필요한 것들을 쳐내고 핵심에 집중할 때입니다. 미련을 버리는 용기가 다음 도약의 발판이 됩니다.'],
-        ['창의와 표현의 시기','억눌렸던 재능이 폭발할 시기입니다. 나만의 색깔을 세상에 드러내고 새로운 방식으로 가치를 창출합니다.'],
-        ['지혜와 완숙의 시기','오랜 경험이 지혜로 승화되는 시기입니다. 후세에게 물려줄 것을 준비하고 진정한 삶의 의미를 찾습니다.']
-    ];
+    const rows = data.daeunRows || [];
+    if(!rows.length) return `<div class="report-chapter"><h3 class="ch-title">대운 80년 심층 해부</h3><p class="ch-text">대운 데이터를 계산할 수 없습니다. 생년월일시를 정확히 입력해주세요.</p></div>`;
 
-    // 천간/지지 상세 설명 DB
-    const DW_STEM_DESC = {
-        '甲':'큰 나무처럼 곧고 강한 리더십의 기운이 천간에 흐릅니다. 새로운 시작과 독립, 개척 정신이 이 시기를 지배합니다. 준비해온 것들을 세상 밖으로 내보낼 최적의 환경이 갖춰집니다.',
-        '乙':'덩굴처럼 유연하게 환경에 적응하는 기운이 천간에 흐릅니다. 부드럽지만 목표를 향해 끝없이 나아가는 생명력이 발현됩니다. 강직하게 정면 돌파하기보다 유연하게 돌아가는 전략이 효과적입니다.',
-        '丙':'태양처럼 사방을 밝히는 강렬한 기운이 천간에 흐릅니다. 사회적 존재감이 극대화되고 리더로서의 면모가 드러나는 시기입니다. 당신의 이름이 더 넓은 무대에 알려지기 시작합니다.',
-        '丁':'별처럼 깊고 섬세하게 빛나는 기운이 천간에 흐릅니다. 감수성과 통찰력이 날카로워지며 내면의 재능이 꽃을 피웁니다. 겉으로 화려하지 않더라도 내실 있는 성취가 쌓이는 시기입니다.',
-        '戊':'거대한 산처럼 묵직하고 중후한 안정의 기운이 천간에 흐릅니다. 이 시기에 쌓은 기반은 쉽사리 무너지지 않습니다. 사람들이 당신을 믿고 의지하며 신뢰 자본이 급격히 쌓입니다.',
-        '己':'기름진 논밭처럼 무엇이든 품어내는 포용의 기운이 천간에 흐릅니다. 사람들이 자연스럽게 모여들고 신뢰가 쌓이는 시기입니다. 실무 능력과 세밀한 실행력이 빛을 발합니다.',
-        '庚':'차갑게 단련된 금속의 기운이 천간에 흐릅니다. 외부의 압박이 강해지지만 그 압박이 당신을 더욱 날카롭고 강하게 벼립니다. 결단력이 요구되는 상황이 빈번하게 찾아옵니다.',
-        '辛':'순수하게 정제된 보석의 기운이 천간에 흐릅니다. 완성도와 전문성이 빛을 발하며 세상이 당신의 진짜 가치를 알아보기 시작합니다. 오래 갈고닦은 실력이 정당한 보상을 받습니다.',
-        '壬':'대해처럼 깊고 광활한 지혜의 기운이 천간에 흐릅니다. 큰 그림을 그리고 전략적으로 사고하는 능력이 극대화됩니다. 넓은 시야로 새로운 분야를 개척하는 선구자 역할이 주어집니다.',
-        '癸':'깊은 샘처럼 차갑고 명확한 분석의 기운이 천간에 흐릅니다. 논리와 직관이 예리하게 살아나며 숨겨진 진실을 꿰뚫어봅니다. 조용하지만 실력으로 승부하는 조용한 전성기입니다.'
+    const OH = {'甲':'목','乙':'목','丙':'화','丁':'화','戊':'토','己':'토','庚':'금','辛':'금','壬':'수','癸':'수'};
+    const JI_OH = {'子':'수','丑':'토','寅':'목','卯':'목','辰':'토','巳':'화','午':'화','未':'토','申':'금','酉':'금','戌':'토','亥':'수'};
+    const GAN_DESC = {
+        '甲':'갑목(甲木)의 해는 새로운 시작과 도전의 기운입니다. 이 시기는 마치 봄에 새싹이 힘차게 돋아나듯, 새로운 프로젝트와 관계가 시작되는 시기입니다. 두려움 없이 앞으로 나아가야 하며, 첫발을 내딛는 용기가 이 시기의 핵심 덕목입니다.',
+        '乙':'을목(乙木)의 기운은 유연한 적응력입니다. 강한 바람에도 꺾이지 않는 덩굴처럼, 상황에 따라 방향을 바꾸면서도 목표를 향해 나아가는 전략이 필요합니다. 인간관계와 네트워크가 이 시기의 핵심 자산입니다.',
+        '丙':'병화(丙火)의 대운은 태양처럼 모든 것을 밝히는 시기입니다. 사회적 인정과 명성이 따르며, 오랫동안 준비해온 것이 세상에 드러납니다. 자신을 적극적으로 알리고 표현하는 것이 이 시기를 극대화하는 방법입니다.',
+        '丁':'정화(丁火)의 기운은 촛불처럼 집중적이고 세밀합니다. 화려한 외면보다 깊이 있는 내실을 다지는 시기입니다. 한 분야에 집중하여 전문성을 높이면 이 시기의 에너지가 폭발적으로 활성화됩니다.',
+        '戊':'무토(戊土)의 대운은 묵직한 산처럼 안정적인 기반을 만드는 시기입니다. 장기적인 투자와 부동산, 사업 기반 확장에 유리합니다. 성급함을 버리고 10년 후를 내다보는 안목으로 뿌리를 내려야 합니다.',
+        '己':'기토(己土)의 기운은 비옥한 농토처럼 실용적입니다. 이전에 뿌린 씨앗들이 실질적인 결과물로 돌아오는 시기입니다. 꼼꼼한 관리와 내실 있는 운영이 이 시기를 빛나게 합니다.',
+        '庚':'경금(庚金)의 대운은 도끼처럼 불필요한 것을 쳐내고 핵심에 집중하는 시기입니다. 과감한 결단과 구조 개혁이 필요합니다. 오래된 관습과 비효율을 제거하고 새로운 기준을 세울 때 이 에너지가 빛을 발합니다.',
+        '辛':'신금(辛金)의 기운은 보석을 세공하듯 정밀하게 완성도를 높이는 시기입니다. 디테일에 집중하고 품질을 극대화할 때 최고의 결과물이 나옵니다. 이 시기에 완성된 작업이 오래도록 가치를 인정받습니다.',
+        '壬':'임수(壬水)의 대운은 큰 강처럼 에너지가 넓게 확산되는 시기입니다. 인맥이 폭발적으로 확장되고 새로운 기회가 사방에서 찾아옵니다. 다만 너무 많은 방향으로 분산되지 않도록 핵심 목표를 명확히 유지해야 합니다.',
+        '癸':'계수(癸水)의 기운은 깊은 지하수처럼 내면을 충전하는 시기입니다. 외부 활동보다 내공을 쌓고, 분석하고 연구하는 것이 이 시기의 핵심입니다. 조용히 준비한 것들이 다음 대운에서 폭발적으로 발현됩니다.'
     };
-    const DW_BRANCH_DESC = {
-        '子':'자(子)수의 지지 기운이 땅 속 깊이 흐릅니다. 겨울의 절정처럼 극도의 집중과 축적의 에너지가 보이지 않는 곳에서 응집됩니다. 준비한 자에게 결실이 찾아오는 구조입니다.',
-        '丑':'축(丑)토의 지지 기운이 흐릅니다. 혹독한 겨울을 견디는 얼어붙은 대지처럼 외부 환경은 녹록지 않습니다. 그러나 이 인내의 시간이 다음 봄을 준비하는 가장 강력한 기반입니다.',
-        '寅':'인(寅)목의 지지 기운이 흐릅니다. 대지를 박차고 솟아오르는 봄의 첫 호랑이 기운입니다. 새로운 출발과 도전의 에너지가 강하게 발동하며 막혔던 길이 열립니다.',
-        '卯':'묘(卯)목의 지지 기운이 흐릅니다. 봄꽃이 만발하는 생명 폭발의 에너지입니다. 관계와 창의력이 만개하며 귀인과의 만남이 빈번해지는 시기입니다.',
-        '辰':'진(辰)토의 지지 기운이 흐릅니다. 용이 잠든 봄의 대지처럼 거대한 잠재력이 서서히 깨어나고 있습니다. 겉으로는 조용해 보이지만 내부에서 결정적인 변화가 일어납니다.',
-        '巳':'사(巳)화의 지지 기운이 흐릅니다. 강렬한 여름의 시작, 뱀의 예리한 관찰력과 폭발적 변신의 에너지가 흐릅니다. 숨겨진 재능이 세상 밖으로 드러나는 시기입니다.',
-        '午':'오(午)화의 지지 기운이 흐릅니다. 한여름 정오의 태양처럼 에너지가 극에 달합니다. 사회적 성취의 절정기가 오며 이름이 알려지고 인정받는 시기입니다.',
-        '未':'미(未)토의 지지 기운이 흐릅니다. 무더운 여름의 축적된 열기와 땅의 관록입니다. 경험이 지혜로 숙성되고 인간관계에서 두터운 신뢰가 쌓이는 시기입니다.',
-        '申':'신(申)금의 지지 기운이 흐릅니다. 가을 서리처럼 냉철한 결단의 기운입니다. 불필요한 것을 과감히 쳐내는 용기가 필요한 시기로 선택과 집중이 핵심 전략입니다.',
-        '酉':'유(酉)금의 지지 기운이 흐릅니다. 가을 추수의 정밀한 수확 기운입니다. 노력에 대한 정당한 보상이 이루어지며 그동안 투자한 것들이 결실을 맺습니다.',
-        '戌':'술(戌)토의 지지 기운이 흐릅니다. 가을이 저물어가는 황혼의 중후함입니다. 깊어진 통찰로 주변을 이끄는 역할이 주어지며 인생의 진정한 가치를 재정립하는 시기입니다.',
-        '亥':'해(亥)수의 지지 기운이 흐릅니다. 겨울 바다의 심연처럼 무한한 가능성이 잠든 저장고입니다. 다음 사이클을 위한 에너지를 충전하고 내면을 깊이 들여다보는 시기입니다.'
-    };
-    const HAP_KEYS = {
-        '子丑':['子丑합 → 土로 화합','안정적 자원 결합, 귀인 등장'],
-        '寅亥':['寅亥합 → 木으로 화합','성장의 기운 활성화, 새 출발'],
-        '卯戌':['卯戌합 → 火로 화합','열정과 변화의 에너지 폭발'],
-        '辰酉':['辰酉합 → 金으로 화합','전문성 결실, 완성도 극대화'],
-        '巳申':['巳申합 → 水로 화합','지혜와 계획의 결합'],
-        '午未':['午未합 → 土로 화합','중화와 안정의 에너지']
-    };
-    const CHUNG_KEYS = {
-        '子午':['子午충','물과 불의 정면 충돌 — 이직·이사·관계 변화가 찾아옵니다. 큰 변동에 미리 대비하십시오.'],
-        '丑未':['丑未충','안정 기반이 흔들림 — 이별·재정 변동 가능성. 유연하게 대응하십시오.'],
-        '寅申':['寅申충','봄과 가을의 충돌 — 교통사고·이동 다발. 각별히 안전에 주의하십시오.'],
-        '卯酉':['卯酉충','관계의 균열 — 소송·갈등 주의. 감정적 대응을 자제하십시오.'],
-        '辰戌':['辰戌충','땅의 진동 — 부동산·직장 변동. 중요 계약 시 신중하게 검토하십시오.'],
-        '巳亥':['巳亥충','숨겨진 충돌 — 건강 이상·비밀 누설 주의. 내면의 안정에 집중하십시오.']
+    const JI_DESC = {
+        '子':'자(子)의 지지는 지혜와 집중력의 절정입니다. 분석력이 극대화되고 아이디어가 샘솟는 시기입니다. 문서 작업, 계획 수립, 자격증 취득에 유리한 에너지입니다. 단 감정 기복이 생길 수 있으니 내면의 평정심을 유지하는 것이 중요합니다.',
+        '丑':'축(丑)의 지지는 인내와 저력의 시기입니다. 눈에 보이는 성과보다 보이지 않는 내공이 쌓이는 기간입니다. 이 시기를 묵묵히 견디며 쌓은 실력이 이후 대운에서 폭발적인 결과로 이어집니다.',
+        '寅':'인(寅)의 지지는 강렬한 활동과 변화의 에너지입니다. 이동, 변화, 새로운 출발의 기운이 강합니다. 이 시기에 시작한 일이 오래도록 지속되는 뿌리 깊은 나무가 됩니다. 적극적인 행동과 도전이 이 에너지를 극대화합니다.',
+        '卯':'묘(卯)의 지지는 성장과 관계의 확장입니다. 인맥이 넓어지고 협력 기회가 풍부해집니다. 창의적인 아이디어가 실현되고 재능이 빛을 발하는 시기입니다. 혼자보다 함께할 때 성과가 배가됩니다.',
+        '辰':'진(辰)의 지지는 잠재력이 폭발하는 시기입니다. 예상치 못한 변수가 많이 생기는 만큼, 변화에 유연하게 대응하는 것이 중요합니다. 이 시기에 만나는 사람과 기회가 인생의 전환점이 될 수 있습니다.',
+        '巳':'사(巳)의 지지는 내면의 결단력이 요구되는 시기입니다. 오래 고민해온 문제에 대한 답이 이 시기에 명확해집니다. 과감한 선택과 변신이 필요하며, 변화를 두려워하지 않는 용기가 이 시기의 열쇠입니다.',
+        '午':'오(午)의 지지는 성취와 인정의 시기입니다. 그동안의 노력이 사회적으로 드러나고 인정받습니다. 에너지가 넘치고 자신감이 극대화되는 시기이므로, 이 기세를 타고 더 큰 목표를 향해 나아가야 합니다.',
+        '未':'미(未)의 지지는 풍요로운 감성의 시기입니다. 인간적인 관계가 깊어지고 창작 활동에서 특히 빛을 발합니다. 물질적 축적보다 관계와 경험에 투자하는 것이 이 시기를 가장 풍요롭게 만드는 방법입니다.',
+        '申':'신(申)의 지지는 판단력과 실행력의 시기입니다. 기회가 빠르게 스쳐 지나가므로 민첩하게 포착하고 실행해야 합니다. 느린 결정이 이 시기에는 가장 큰 손실이 됩니다.',
+        '酉':'유(酉)의 지지는 완성과 보상의 시기입니다. 그동안 쌓아온 전문성이 인정받고, 노력에 대한 정당한 대가가 돌아옵니다. 이 시기에 만들어진 결과물이 당신의 브랜드가 됩니다.',
+        '戌':'술(戌)의 지지는 통찰과 마무리의 시기입니다. 깊은 성찰을 통해 불필요한 것을 정리하고 핵심 가치에 집중하게 됩니다. 이 시기의 내면적 성장이 다음 대운의 도약을 위한 토대가 됩니다.',
+        '亥':'해(亥)의 지지는 잠복과 준비의 시기입니다. 표면적으로는 정체처럼 보이지만, 내면에서는 엄청난 에너지가 축적되고 있습니다. 이 시기를 조용히 준비에 투자한 사람과 허비한 사람의 차이는 다음 대운에서 극명하게 드러납니다.'
     };
 
-    let html = `<div class="report-chapter" id="sec-daeun-detail"><h3 class="ch-title">Chapter 10. 大運(대운) 80년 심층 해부</h3>
-    <p class="ch-text" style="margin-bottom:12px;">大運(대운)은 10년 단위로 교체되는 당신 인생의 계절입니다. 用神(용신) 기운의 대운에는 순풍을 타고, 忌神(기신) 기운에는 역풍을 만납니다. 미리 알고 준비하면, 그 계절의 주인이 될 수 있습니다.</p>
-    <div style="background:rgba(199,167,106,0.07);border-radius:10px;padding:14px 18px;margin-bottom:28px;display:flex;gap:20px;flex-wrap:wrap;">
-        <div><div style="font-size:10px;color:var(--text-dim);margin-bottom:3px;">用神(용신)</div><b style="color:#00C853;">${OHKR[yong]}</b></div>
-        <div><div style="font-size:10px;color:var(--text-dim);margin-bottom:3px;">喜神(희신)</div><b style="color:#4fc3f7;">${OHKR[hee]}</b></div>
-        <div><div style="font-size:10px;color:var(--text-dim);margin-bottom:3px;">忌神(기신)</div><b style="color:#e74c3c;">${OHKR[gi]}</b></div>
-        <div><div style="font-size:10px;color:var(--text-dim);margin-bottom:3px;">仇神(구신)</div><b style="color:#ff8a65;">${OHKR[goo]}</b></div>
-    </div>
-    <div class="timeline">`;
+    const yong = data.yong || ''; const hee = data.hee || '';
+    const gi = data.gi || ''; const goo = data.goo || '';
+    const OH_MAP = {'甲':'목','乙':'목','丙':'화','丁':'화','戊':'토','己':'토','庚':'금','辛':'금','壬':'수','癸':'수'};
+    const JI_OH_MAP = {'子':'수','丑':'토','寅':'목','卯':'목','辰':'토','巳':'화','午':'화','未':'토','申':'금','酉':'금','戌':'토','亥':'수'};
 
-    daewuns.forEach((dw, idx) => {
-        const gz = dw.gz || ['甲','子'];
-        const stem = gz[0]; const branch = gz[1];
-        const stemOH = OHMAP[stem] || 'earth';
-        const branchOH = OHMAP[branch] || 'earth';
-        const score = (sc[stemOH]||0) + (sc[branchOH]||0);
-        const isGood = score >= 1;
-        const isBad = score <= -1;
-        const borderColor = isGood ? '#00C853' : isBad ? '#e74c3c' : 'var(--gold)';
-        const label = isGood ? '🟢 吉運(길운)' : isBad ? '🔴 凶運(흉운)' : '🟡 中和運(중화운)';
-        const theme = DW_THEMES[idx % DW_THEMES.length];
-        const stemDesc = DW_STEM_DESC[stem] || '';
-        const branchDesc = DW_BRANCH_DESC[branch] || '';
+    function scoreRow(gan, ji) {
+        let s = 0;
+        const gOh = OH_MAP[gan]; const jOh = JI_OH_MAP[ji];
+        if(gOh===yong||gOh===hee) s+=2; if(gOh===gi||gOh===goo) s-=2;
+        if(jOh===yong||jOh===hee) s+=2; if(jOh===gi||jOh===goo) s-=2;
+        return s;
+    }
+    function badge(s) { return s>=3?'🌟 대길':s>=1?'✦ 길(吉)':s===0?'— 평(平)':s>=-2?'⚠ 주의':'❌ 흉(凶)'; }
+    function col(s) { return s>=3?'#c7a76a':s>=1?'#00C853':s===0?'#888':s>=-2?'#ff9800':'#e74c3c'; }
 
-        // 원국 지지와 합충 분석
-        const pillars = data.pillars || [];
-        const origBranches = pillars.map(p => p.h ? p.h[1] : '').filter(Boolean);
-        let hapHtml = '', chungHtml = '', chungWarningText = '';
-        origBranches.forEach(ob => {
-            const pair = [ob, branch].sort().join('');
-            if(HAP_KEYS[pair]) hapHtml += `<span style="color:#4fc3f7;font-size:12px;background:rgba(79,195,247,0.08);padding:3px 8px;border-radius:4px;margin:2px;">${HAP_KEYS[pair][0]}</span>`;
-            if(CHUNG_KEYS[pair]) { chungHtml += `<span style="color:#e74c3c;font-size:12px;background:rgba(231,76,60,0.08);padding:3px 8px;border-radius:4px;margin:2px;">${CHUNG_KEYS[pair][0]}</span>`; if(!chungWarningText) chungWarningText = CHUNG_KEYS[pair][1]; }
-        });
+    let out = `<div class="report-chapter"><h3 class="ch-title">대운 80년 — 인생 계절의 완전 해부</h3>
+    <p class="ch-text">대운(大運)은 10년마다 바뀌는 인생의 기후입니다. 지금 어떤 계절을 살고 있는지 알면, 그에 맞는 전략으로 인생을 설계할 수 있습니다. 용신(用神) 기운의 대운에서 집중 공략하고, 기신(忌神) 기운의 대운에서 내공을 쌓으십시오. 아래에 당신의 평생 대운 흐름을 모두 해부합니다.</p>
+    <div style="display:flex;flex-direction:column;gap:16px;">`;
 
-        const strategy = isGood
-            ? `用神(용신) ${OHKR[yong]}과 공명하는 이 대운은 당신 인생의 황금기입니다. 그동안 쌓아온 것들이 세상에 드러나고 사회적 인정이 뒤따릅니다. 이 10년 안에 최소 3~4년은 폭발적인 기회가 찾아옵니다. 귀인과의 만남이 활성화되고 새로운 협력관계가 형성됩니다. 이 시기에 과감하게 확장하고 투자하십시오. 이 시기에 확보한 자산과 인맥이 평생의 자산이 됩니다.`
-            : isBad
-            ? `忌神(기신) ${OHKR[gi]}의 기운이 강해지는 이 대운은 제동이 걸리는 시기입니다. 그러나 이것은 패배가 아닙니다. 폭풍 속에서도 뿌리를 깊이 내리는 나무처럼, 이 시기를 어떻게 버티느냐가 다음 황금기의 규모를 결정합니다. 무리한 투자와 확장을 자제하고 핵심 역량 강화와 현금 확보에 집중하십시오. 이 시기를 온전히 버텨낸 자만이 다음 吉運(길운)의 과실을 온전히 수확합니다.`
-            : `큰 길흉의 파도 없이 실력대로 평가받는 中和運(중화운)입니다. 화려한 행운보다는 꾸준한 실력 향상과 기반 다지기에 집중하십시오. 이 시기에 묵묵히 쌓아올린 것들이 다음 吉運(길운)이 왔을 때 폭발적인 성과로 전환되는 기폭제가 됩니다.`;
+    rows.forEach((r, idx) => {
+        const gan = r.gan || '甲'; const ji = r.ji || '子';
+        const age = r.age || (idx*10+5);
+        const sc = scoreRow(gan, ji);
+        const b = badge(sc); const c = col(sc);
+        const isCurrent = idx === (data.activeDaeunIdx || 0);
+        const ganD = GAN_DESC[gan] || '';
+        const jiD = JI_DESC[ji] || '';
+        const strategy = sc >= 2
+            ? `<div style="background:rgba(0,200,83,0.08);border-radius:8px;padding:12px;margin-top:12px;"><b style="color:#00C853;">✦ 이 대운의 전략</b><p style="font-size:13px;color:#ccc;line-height:1.8;margin:6px 0 0;">용신·희신 기운이 강한 길한 대운입니다. 이 시기는 적극적으로 확장하고 투자하십시오. 준비해온 것을 세상에 내놓고, 인맥을 확장하며 기회를 잡는 것이 핵심입니다. 이런 대운은 평생에 몇 번 오지 않으므로 최대한 활용해야 합니다.</p></div>`
+            : sc >= 0
+            ? `<div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:12px;margin-top:12px;"><b style="color:#aaa;">— 이 대운의 전략</b><p style="font-size:13px;color:#ccc;line-height:1.8;margin:6px 0 0;">중화적인 대운으로 큰 기복 없이 안정적으로 흐르는 시기입니다. 꾸준히 자기 자신을 개발하고 인간관계를 다지는 것이 이 시기를 가장 알차게 활용하는 방법입니다.</p></div>`
+            : `<div style="background:rgba(255,150,0,0.07);border-radius:8px;padding:12px;margin-top:12px;"><b style="color:#ff9800;">⚠ 이 대운의 전략</b><p style="font-size:13px;color:#ccc;line-height:1.8;margin:6px 0 0;">기신·구신 기운이 강한 대운입니다. 무리한 확장이나 모험은 피하고, 기존에 쌓아온 것을 지키는 수비 전략이 필요합니다. 이 시기에 충실히 내공을 다지면 다음 대운에서 폭발적으로 도약할 수 있습니다.</p></div>`;
 
-        const healthMap = {wood:'간담·신경계 이상 신호에 즉각 반응하십시오. 피로가 쌓이면 간 수치부터 확인하세요.',fire:'심장·혈관 계통을 점검하십시오. 가슴 두근거림, 혈압 이상, 수면 장애가 신호입니다.',earth:'위장·소화기 계통이 예민해집니다. 불규칙한 식사와 폭식을 피하십시오.',metal:'호흡기·폐 계통을 챙기십시오. 미세먼지 노출을 줄이고 정기 폐 기능 검사를 권장합니다.',water:'신장·호르몬 계통의 에너지 고갈에 주의하십시오. 충분한 수면과 수분 섭취가 최우선입니다.'};
-        const healthNote = healthMap[stemOH] || '전반적인 건강 관리를 게을리하지 마십시오.';
-        const chungWarning = chungHtml ? `<div style="background:rgba(231,76,60,0.07);border-radius:8px;padding:12px 14px;margin-bottom:12px;"><div style="font-size:11px;color:rgba(255,120,120,0.8);margin-bottom:6px;letter-spacing:1px;">⚠ 원국과의 충돌 경보</div><div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px;">${chungHtml}</div><div style="font-size:12px;color:#bbb;line-height:1.6;">${chungWarningText}</div></div>` : '';
-        const hapInfo = hapHtml ? `<div style="margin-bottom:12px;display:flex;flex-wrap:wrap;gap:4px;align-items:center;"><span style="font-size:11px;color:var(--text-dim);margin-right:4px;">합(合) 작용:</span>${hapHtml}</div>` : '';
-
-        html += `
-            <div class="timeline-item" style="margin-bottom:36px;padding:24px;background:rgba(255,255,255,0.04);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-left:4px solid ${borderColor};border-radius:0 12px 12px 0;box-shadow:0 4px 24px rgba(0,0,0,0.35);">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
-                    <h4 style="color:${borderColor};font-size:20px;margin:0;font-family:'Noto Serif KR',serif;">${dw.age}세 ~ ${dw.age+9}세 &nbsp;·&nbsp; ${stem}${branch}(${dw.name||stem+branch}) 대운</h4>
-                    <span style="font-size:13px;color:${borderColor};font-weight:700;background:rgba(255,255,255,0.06);padding:5px 14px;border-radius:20px;">${label}</span>
-                </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
-                    <div style="padding:14px;background:rgba(255,255,255,0.03);border-radius:8px;">
-                        <div style="font-size:10px;color:var(--text-dim);margin-bottom:6px;letter-spacing:1px;">天干(천간) ${stem}</div>
-                        <div style="font-size:13.5px;color:#ddd;line-height:1.75;">${stemDesc}</div>
-                    </div>
-                    <div style="padding:14px;background:rgba(255,255,255,0.03);border-radius:8px;">
-                        <div style="font-size:10px;color:var(--text-dim);margin-bottom:6px;letter-spacing:1px;">地支(지지) ${branch}</div>
-                        <div style="font-size:13.5px;color:#ddd;line-height:1.75;">${branchDesc}</div>
-                    </div>
-                </div>
-                ${hapInfo}${chungWarning}
-                <p style="color:#fff;font-size:16px;font-weight:700;margin-bottom:10px;font-family:'Noto Serif KR',serif;">${theme[0]}</p>
-                <p style="color:#ccc;font-size:14.5px;line-height:1.9;margin-bottom:16px;">${theme[1]}</p>
-                <div style="background:rgba(255,255,255,0.04);border-left:3px solid ${borderColor};padding:16px 18px;border-radius:0 8px 8px 0;margin-bottom:14px;">
-                    <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;letter-spacing:1px;">이 시기의 핵심 전략</div>
-                    <p style="color:#ddd;font-size:14.5px;line-height:1.9;margin:0;">${strategy}</p>
-                </div>
-                <div style="background:rgba(255,80,80,0.05);border-radius:8px;padding:12px 14px;display:flex;gap:10px;align-items:flex-start;">
-                    <span style="font-size:18px;flex-shrink:0;">🫀</span>
+        out += `<div style="background:rgba(255,255,255,${isCurrent?'0.07':'0.03'});border:1px solid ${isCurrent?'var(--gold)':'rgba(255,255,255,0.07)'};border-radius:12px;padding:18px;break-inside:avoid;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <span style="font-size:26px;font-weight:800;color:var(--gold);font-family:'Noto Serif KR',serif;">${gan}${ji}</span>
                     <div>
-                        <div style="font-size:11px;color:rgba(255,160,160,0.7);margin-bottom:5px;letter-spacing:1px;">건강 주의사항</div>
-                        <div style="font-size:13.5px;color:#bbb;line-height:1.75;">${healthNote}</div>
+                        <div style="font-size:13px;color:#bbb;">${age}세 ~ ${age+9}세</div>
+                        ${isCurrent?'<span style="font-size:10px;background:var(--gold);color:#000;padding:2px 8px;border-radius:8px;font-weight:700;">현재 대운</span>':''}
                     </div>
+                </div>
+                <span style="font-size:13px;font-weight:700;color:${c};padding:4px 12px;border-radius:20px;background:rgba(255,255,255,0.05);">${b}</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+                <div style="background:rgba(0,0,0,0.25);border-radius:8px;padding:12px;">
+                    <div style="font-size:10px;color:var(--text-dim);margin-bottom:6px;letter-spacing:1px;">천간(天干) ${gan}</div>
+                    <p style="font-size:12.5px;color:#ddd;line-height:1.75;margin:0;">${ganD}</p>
+                </div>
+                <div style="background:rgba(0,0,0,0.25);border-radius:8px;padding:12px;">
+                    <div style="font-size:10px;color:var(--text-dim);margin-bottom:6px;letter-spacing:1px;">지지(地支) ${ji}</div>
+                    <p style="font-size:12.5px;color:#ddd;line-height:1.75;margin:0;">${jiD}</p>
                 </div>
             </div>
-        `;
+            ${strategy}
+        </div>`;
     });
-    html += `</div></div>`;
-    return html;
+
+    out += `</div></div>`;
+    return out;
 }
 
 function buildSewunLoop(data) {
@@ -3399,7 +3346,36 @@ function startReport() {
             @media print { .toc-item { cursor:default; color:#333; border-bottom:1px solid #eee; } }
             </style>
             <div id="report-container" style="padding:0; border-radius:0; background:transparent; border:none; box-shadow:none;">
-                <!-- 리포트 내용 동적 렌더링 -->
+<div class="report-chapter">
+  <h3 class="ch-title">성격 분석 — 당신이라는 사람</h3>
+  <p class="ch-text">사주에서 성격은 선천적으로 새겨진 코드입니다. 일간(日干)의 오행이 당신의 기본 기질을 만들고, 신강·신약의 구조가 에너지를 어떻게 쓰느냐를 결정합니다. 이 코드를 정확히 아는 사람과 모르는 사람 사이에는, 같은 상황에서도 전혀 다른 결과가 나옵니다.</p>
+  <p class="ch-text">당신의 강점은 태어날 때부터 새겨진 무기입니다. 이를 제대로 활용하는 것이 성공의 첫 번째 열쇠이며, 약점을 알고 보완하는 것이 두 번째 열쇠입니다. 분석 완료 후 당신의 일주에 맞는 개인화 성격 분석이 여기에 표시됩니다.</p>
+</div>
+<div class="report-chapter">
+  <h3 class="ch-title">오행 분석 — 절대적 무기와 아킬레스건</h3>
+  <p class="ch-text">당신의 사주 8글자에서 목(木)·화(火)·토(土)·금(金)·수(水) 다섯 기운이 어떻게 분포되어 있느냐가 인생의 큰 흐름을 결정합니다. 한쪽으로 강하게 쏠린 기운이 당신의 절대적 무기이자 아킬레스건입니다.</p>
+  <p class="ch-text">한 시대를 풍미한 인물들의 사주를 보면 오행이 중화(中和)된 경우보다 극단적으로 편중된 경우가 훨씬 많습니다. 편중된 에너지를 억누르는 것이 아니라, 그것을 가장 잘 활용할 수 있는 분야와 방식을 찾는 것이 핵심입니다. 분석 후 당신의 오행 분포와 상세 전략이 표시됩니다.</p>
+</div>
+<div class="report-chapter">
+  <h3 class="ch-title">재물운 — 당신만의 금고를 여는 열쇠</h3>
+  <p class="ch-text">명리학에서 재성(財星)은 단순히 통장 잔고가 아닙니다. 내가 세상을 통제하고 다루는 힘, 내 영향력이 미치는 영토의 크기입니다. 사주에서 재물을 바라보는 방식은 사람마다 완전히 다릅니다. 어떤 사람은 돈을 직접 쫓아야 하고, 어떤 사람은 가치를 높이면 돈이 저절로 따라옵니다.</p>
+  <p class="ch-text">재성이 없는 무재(無財) 사주라도 걱정할 필요가 없습니다. 역사적으로 가장 큰 부를 이룬 사람들 중 무재 사주가 많습니다. 재성이 없으면 돈이 나를 따르는 구조가 아닌, 내 가치와 명성이 부를 끌어당기는 구조이기 때문입니다. 분석 후 당신만의 재물 전략이 표시됩니다.</p>
+</div>
+<div class="report-chapter">
+  <h3 class="ch-title">대운 80년 — 인생의 계절 변화</h3>
+  <p class="ch-text">대운(大運)은 10년마다 바뀌는 인생의 기후입니다. 봄이 오면 씨를 뿌리고, 여름이 오면 성장에 투자하고, 가을이 오면 수확하고, 겨울이 오면 내공을 다져야 합니다. 지금 어떤 계절인지 모른 채 살면, 겨울에 씨를 뿌리는 어리석음을 반복하게 됩니다.</p>
+  <p class="ch-text">용신(用神) 기운의 대운에서는 공격적으로 확장하고, 기신(忌神) 기운의 대운에서는 수비하며 내공을 쌓아야 합니다. 당신의 현재 대운이 어느 계절인지, 다음 대운은 무엇을 준비해야 하는지 — 분석 후 80년 전체 흐름이 표시됩니다.</p>
+</div>
+<div class="report-chapter">
+  <h3 class="ch-title">세운 10년 — 해마다 바뀌는 날씨</h3>
+  <p class="ch-text">세운(歲運)은 그해의 날씨입니다. 같은 사람이라도 어떤 해에는 모든 것이 잘 풀리고, 어떤 해에는 버티는 것만으로도 벅찹니다. 이것은 운이 좋고 나쁜 것이 아니라, 그해의 기운과 당신의 원국이 어떻게 만나느냐의 문제입니다.</p>
+  <p class="ch-text">용신 기운이 강한 해에는 중요한 결정과 행동을 집중하고, 기신 기운의 해에는 무리하게 확장하기보다 수비와 내공 축적에 집중해야 합니다. 올해부터 향후 10년간 어떤 해에 무엇을 해야 하는지 — 분석 후 연도별 전략이 표시됩니다.</p>
+</div>
+<div class="report-chapter">
+  <h3 class="ch-title">월운 12개월 — 이달의 기운 파동</h3>
+  <p class="ch-text">세운이 한 해의 날씨라면 월운(月運)은 그 안의 시간별 기상입니다. 같은 해 안에서도 어떤 달에는 기회가 쏟아지고, 어떤 달에는 예상치 못한 방해가 생깁니다. 중요한 계약, 첫 만남, 사업 시작의 타이밍을 잡을 때 월운을 아는 것이 결정적 우위가 됩니다.</p>
+  <p class="ch-text">분석 후 올해 12개월의 기운 파동과 월별 전략이 표시됩니다. 언제 액셀을 밟고 언제 브레이크를 밟아야 하는지 — 달력처럼 활용하실 수 있습니다.</p>
+</div>
             </div>
             <div style="text-align:center; margin-top:40px; padding-top:20px; border-top:1px solid var(--border);">
                 <button class="btn subtle" onclick="window.print()">🖨️ PDF로 저장</button>
