@@ -4710,20 +4710,21 @@ function runAnalysis() {
             activeDaeunIdx: activeDaeunIdx
         };
 
+        // 1단계: 리포트 내용 먼저 생성 (DOM이 이미 있으므로 즉시 가능)
+        try {
+            generateDeepReport(globalSajuData);
+        } catch(err) {
+            console.error('리포트 생성 오류:', err);
+        }
+        // 2단계: step-2로 페이지 전환
         go(2);
-        // DOM이 완전히 렌더된 뒤 리포트 생성 (requestAnimationFrame 2회)
-        // DOM 렌더 완료 후 리포트 생성
-        setTimeout(function() {
-            try {
-                generateDeepReport(globalSajuData);
-                const toc = document.getElementById('floating-toc');
-                if(toc) toc.style.display = 'block';
-                const reportSec = document.getElementById('sec-report');
-                if(reportSec) reportSec.style.display = 'none';
-            } catch(err) {
-                console.error('리포트 생성 오류:', err);
-            }
-        }, 200);
+        // 3단계: 보조 UI 표시
+        const toc = document.getElementById('floating-toc');
+        if(toc) toc.style.display = 'block';
+        const reportSec = document.getElementById('sec-report');
+        if(reportSec) reportSec.style.display = 'none';
+        // 4단계: 상단으로 스크롤
+        window.scrollTo(0,0);
     });
 }
 </script>
