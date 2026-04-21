@@ -352,8 +352,11 @@ function buildChapterHealth_Full(data) {
 }
 
 function buildChapter9_Full(data) {
-    let gongmang = data.gongmang || '-';
-    let gmSip = gongmang.split('').map(c => typeof getSipseong === 'function' ? getSipseong(data.dayStem, c) : '').join(', ');
+    // gongmang은 배열 또는 문자열 모두 허용
+    const gmRaw = data.gongmang || '-';
+    const gmArr = Array.isArray(gmRaw) ? gmRaw : (typeof gmRaw === 'string' && gmRaw !== '-' ? [...gmRaw] : []);
+    let gongmang = gmArr.length > 0 ? gmArr.join('') : '-';
+    let gmSip = gmArr.map(c => typeof getSipseong === 'function' ? getSipseong(data.dayStem, c) : '').filter(Boolean).join(', ');
     
     return `
     <div class="report-chapter">
