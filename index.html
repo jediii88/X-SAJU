@@ -2207,6 +2207,290 @@ function buildMasterFullReading(data) {
 }
 function buildChapter1_Basic(data) {
     const pillars = data.pillars || [];
+    const name = data.name || '고객';
+    const iljuKey = (data.dayStem||'') + (data.dayBranch||'');
+    const dbEntry = window.SAJU_DB?.ILJU?.[iljuKey] || {};
+    const isStrong = data.strengthText && (data.strengthText.includes('신강') || data.strengthText.includes('강'));
+    const gongmangBranches = data.gongmang || [];
+
+    // 오행별 삶의 패턴 (일간 기준, 신강/신약 연계)
+    const OH = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
+    const ds = data.dayStem || '丙';
+    const db = data.dayBranch || '寅';
+    const dayOh = OH[ds] || 'fire';
+
+    // 일간별 인생 서사 (신강/신약 분기)
+    const LIFE_NARRATIVE = {
+        wood: {
+            strong: `${name}님의 사주는 목(木) 기운이 강한 신강(身强) 구조입니다. 이 원국이 말하는 삶의 지도는 이렇습니다. 당신은 태어날 때부터 '첫 번째 발자국'을 남기는 사람으로 설계되어 있습니다. 아무도 가지 않은 길에 먼저 발을 내딛고, 그 길을 개척해서 뒤따르는 사람들이 걸어올 수 있도록 만드는 것이 당신의 천명에 가장 가까운 삶입니다.
+
+20대의 당신은 에너지가 너무 강해 주변과 마찰이 많을 것입니다. '왜 저 사람은 혼자서만 앞서가려 하는가'라는 오해를 받기도 합니다. 하지만 이것은 당신의 결함이 아닙니다. 엔진이 너무 강력해서 생기는 현상입니다. 30대에는 이 에너지를 어디에 쏟을 것인가를 결정하는 시기가 옵니다. 이 선택이 이후 인생 전체의 방향을 결정합니다.
+
+40대부터 당신의 진짜 인생이 시작됩니다. 20~30대의 마찰과 충돌이 오히려 당신을 가장 단단하게 만들었다는 것을 이때 깨닫습니다. 50대 이후에는 당신이 걸어온 길이 누군가의 지도가 됩니다.`,
+            weak: `${name}님의 사주는 목(木) 기운이 있지만 주변 환경에 의해 분산되는 신약(身弱) 구조입니다. 이 원국이 말하는 삶의 지도는 이렇습니다. 당신의 가장 큰 강점은 '혼자'가 아니라 '함께'일 때 1+1이 10이 된다는 것입니다.
+
+20대의 당신은 혼자 모든 것을 해결하려다가 번번이 한계에 부딪히는 경험을 합니다. 그러나 이것은 약점이 아닙니다. 당신에게는 좋은 파트너와 귀인이 찾아오는 운이 내재되어 있습니다. 문제는 그 귀인을 알아보는 눈을 갖는 것입니다. 30대에 당신의 에너지를 채워주는 결정적 파트너를 만나면, 이후 인생이 완전히 달라집니다.
+
+40대 이후 당신의 삶은 좋은 사람들로 둘러싸인 따뜻한 생태계를 만드는 방향으로 흘러갑니다. 혼자 빛나는 별보다, 별들이 모여 만드는 별자리 같은 존재가 당신의 진짜 정체성입니다.`
+        },
+        fire: {
+            strong: `${name}님의 사주는 화(火) 기운이 강한 신강(身强) 구조입니다. 이 원국이 말하는 삶의 지도는 이렇습니다. 당신이 방에 들어서는 순간, 공기가 바뀝니다. 이것은 과장이 아닙니다. 당신은 존재 자체가 에너지인 사람으로 태어났습니다.
+
+20대의 당신은 이 넘치는 에너지를 통제하지 못해 번아웃과 감정 기복을 반복합니다. 열정을 쏟아붓다가 갑자기 무너지는 패턴이 반복됩니다. 그러나 30대에 접어들면서 이 에너지를 다루는 법을 터득하기 시작합니다. 엔진의 출력을 조절하는 법을 배우는 것입니다.
+
+40대의 당신은 이 카리스마와 에너지가 완성된 형태로 드러납니다. 사람들이 당신 곁에 있고 싶어 합니다. 당신의 열정이 전염되기 때문입니다. 50대 이후에는 당신이 쌓아온 존재감이 가장 큰 자산이 됩니다.`,
+            weak: `${name}님의 사주는 화(火) 기운이 있지만 주변에서 약해지는 신약(身弱) 구조입니다. 이 원국이 말하는 삶의 지도는 이렇습니다. 당신 안에는 폭발적인 열정의 씨앗이 있습니다. 그러나 그 씨앗이 피어나려면 적절한 환경이 필요합니다.
+
+20대의 당신은 열정을 갖고 시작했다가 예상보다 빨리 에너지가 소진되는 경험을 반복합니다. '나는 왜 이렇게 쉽게 지치는가'라는 자책이 생깁니다. 그러나 이것은 당신의 문제가 아니라 환경의 문제입니다. 당신의 에너지를 올려주는 사람과 장소에 있을 때, 당신은 누구보다 빛납니다.
+
+30대에 당신의 에너지를 충전시켜주는 진정한 환경을 찾아낼 때, 이후 삶이 완전히 달라집니다. 그 환경 안에서 당신의 따뜻함과 헌신이 가장 강력한 무기가 됩니다.`
+        },
+        earth: {
+            strong: `${name}님의 사주는 토(土) 기운이 강한 신강(身强) 구조입니다. 이 원국이 말하는 삶의 지도는 이렇습니다. 당신은 흔들리지 않는 사람입니다. 주변이 아무리 요동쳐도, 당신은 중심을 잡고 있습니다. 이 안정감이 사람들을 당신 곁으로 끌어당기는 가장 강력한 자력(磁力)입니다.
+
+그러나 이 구조에는 그림자가 있습니다. 변화를 두려워하다가 좋은 기회를 흘려보내는 것입니다. 20~30대에 '좀 더 확실해지면 할게'를 반복하다가 정작 기회가 지나간 후에야 후회하는 패턴이 생길 수 있습니다. 당신의 과제는 70%의 확신이 생겼을 때 실행하는 결단입니다.
+
+40대 이후의 당신은 묵직한 신뢰로 쌓아올린 인간관계와 자산이 최고의 전성기를 만들어냅니다. 느리지만 확실하게 쌓아온 것들이 빛나는 시기가 바로 이때입니다.`,
+            weak: `${name}님의 사주는 토(土) 기운이 있지만 흩어지는 신약(身弱) 구조입니다. 이 원국이 말하는 삶의 지도는 이렇습니다. 당신은 안정을 원하지만, 삶이 계속 변화를 들이밉니다. 이 긴장감이 20~30대를 가장 힘들게 만드는 요소입니다.
+
+그러나 이 구조의 비밀이 있습니다. 변화 속에서도 중심을 잡을 수 있는 단 하나의 기반을 만드는 것 — 이것이 당신의 삶의 핵심 과제입니다. 그 기반은 직업일 수도, 관계일 수도, 공간일 수도 있습니다. 40대에 그 기반이 완성될 때, 이후의 삶은 안정과 풍요로 가득 찹니다.`
+        },
+        metal: {
+            strong: `${name}님의 사주는 금(金) 기운이 강한 신강(身强) 구조입니다. 이 원국이 말하는 삶의 지도는 이렇습니다. 당신의 눈은 레이저입니다. 복잡한 상황 속에서도 핵심을 꿰뚫어보는 능력, 불필요한 것을 단번에 쳐내는 결단력 — 이것이 당신 인생 최강의 무기입니다.
+
+20대의 당신은 이 냉철함이 '차갑다', '감정이 없다'는 오해를 만들기도 합니다. 그러나 이것은 오해입니다. 당신 안에는 강렬한 열정이 있습니다. 다만 그 열정을 낭비하지 않는 방식으로 표현합니다. 30대에 전문성이 이 결단력과 결합될 때, 당신은 해당 분야에서 누구도 무시할 수 없는 존재가 됩니다.
+
+40~50대의 당신은 그 분야의 권위자가 되어 있을 것입니다. 당신이 말하면 사람들이 따릅니다. 이 영향력의 크기를 스스로 제대로 인식하고 책임감 있게 사용하는 것이 중요합니다.`,
+            weak: `${name}님의 사주는 금(金) 기운이 있지만 주변에서 눌리는 신약(身弱) 구조입니다. 이 원국이 말하는 삶의 지도는 이렇습니다. 당신 안에는 날카로운 판단력과 높은 기준이 있습니다. 그러나 그 기준을 실현할 환경과 에너지가 항상 충분하지 않습니다.
+
+20대의 당신은 '더 잘할 수 있는데 왜 이렇게 안 되는가'라는 내적 갈등이 큽니다. 이것은 당신의 능력 부족이 아니라, 아직 당신에게 맞는 환경을 찾지 못했기 때문입니다. 30대에 당신의 날카로운 능력을 인정해주는 환경과 사람을 찾으면, 이후 삶이 완전히 달라집니다. 40대 이후, 드디어 당신의 정밀한 전문성이 세상에 인정받는 시기가 옵니다.`
+        },
+        water: {
+            strong: `${name}님의 사주는 수(水) 기운이 강한 신강(身强) 구조입니다. 이 원국이 말하는 삶의 지도는 이렇습니다. 당신의 머릿속은 항상 바쁩니다. 남들이 보지 못하는 패턴을 보고, 남들이 느끼지 못하는 흐름을 감지합니다. 이 통찰력이 당신 인생 최대의 자산입니다.
+
+그러나 이 구조의 함정이 있습니다. 너무 많이 생각해서 실행을 미루는 것입니다. 완벽한 계획이 완성될 때까지 기다리다가 기회가 지나가는 패턴이 20~30대에 반복될 수 있습니다. 당신의 직관은 대부분 맞습니다. 그 직관을 믿고 실행으로 옮기는 용기가 이 시기의 핵심 과제입니다.
+
+40대 이후의 당신은 오랜 기간 축적된 통찰과 경험이 결합되면서 진짜 지혜가 완성됩니다. 이때부터 당신 주변에 조언을 구하는 사람들이 모여듭니다. 깊은 강처럼, 나이가 들수록 당신의 가치는 올라갑니다.`,
+            weak: `${name}님의 사주는 수(水) 기운이 있지만 분산되는 신약(身弱) 구조입니다. 이 원국이 말하는 삶의 지도는 이렇습니다. 당신은 섬세한 감각과 깊은 통찰을 가지고 있습니다. 그러나 이 능력이 표면으로 드러나기까지 시간이 걸립니다.
+
+20대의 당신은 자신의 능력에 대한 확신이 흔들리는 시기입니다. '나는 잘하고 있는 걸까'라는 의문이 자주 찾아옵니다. 그러나 이것은 당신이 부족한 것이 아니라, 아직 준비 중이기 때문입니다. 30대에 당신의 통찰을 믿어주는 한 명의 귀인을 만나면 그 이후가 달라집니다. 40대 이후 당신이 쌓아온 깊이 있는 지혜가 빛을 발하는 시기가 옵니다.`
+        }
+    };
+
+    const strengthKey = isStrong ? 'strong' : 'weak';
+    const lifeNarr = LIFE_NARRATIVE[dayOh]?.[strengthKey] || `${name}님의 사주 원국이 그리는 삶의 지도를 해부합니다.`;
+
+    // 일주 핵심 분석 (DB에서)
+    const iljuCore = dbEntry.core || '';
+
+    // 공망 분석
+    const gongmangText = gongmangBranches.length > 0
+        ? `<div style="background:rgba(231,76,60,0.06);border-left:3px solid rgba(231,76,60,0.4);padding:14px 16px;border-radius:0 8px 8px 0;margin-top:16px;"><div style="font-size:11px;color:#e74c3c;margin-bottom:6px;letter-spacing:1px;">공망(空亡) — 결핍과 갈망의 에너지</div><p style="font-size:13px;color:#ccc;line-height:1.85;margin:0;">${name}님의 사주에는 공망이 있습니다. 공망은 '비어있음'입니다. 그러나 이 비어있음이 반드시 나쁜 것이 아닙니다. 공망된 자리에 대한 끊임없는 갈망이 오히려 당신을 계속 앞으로 나아가게 만드는 원동력이 됩니다. 이 결핍이 채워질 것 같다는 느낌이 들 때 가장 위험한 선택을 하게 되니, 그 순간 한 번 더 냉정하게 판단하십시오.</p></div>`
+        : '';
+
+    // 원국 인생 챕터별 요약 (연/월/일/시주)
+    const yPillar = pillars[3] || {}; // 연주
+    const mPillar = pillars[2] || {}; // 월주
+    const dPillar = pillars[1] || {}; // 일주
+    const hPillar = pillars[0] || {}; // 시주
+
+    const yH = yPillar.h ? (typeof yPillar.h==='string' ? yPillar.h : yPillar.h.join('')) : '';
+    const mH = mPillar.h ? (typeof mPillar.h==='string' ? mPillar.h : mPillar.h.join('')) : '';
+    const dH = dPillar.h ? (typeof dPillar.h==='string' ? dPillar.h : dPillar.h.join('')) : '';
+    const hH = hPillar.h ? (typeof hPillar.h==='string' ? hPillar.h : hPillar.h.join('')) : '';
+
+    const HK = {'甲':'갑','乙':'을','丙':'병','丁':'정','戊':'무','己':'기','庚':'경','辛':'신','壬':'임','癸':'계','子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해'};
+    const toKr = s => s ? [...s].map(c=>HK[c]||c).join('') : '';
+
+    return `<div class="report-chapter chapter-start">
+        <h3 class="ch-title">Chapter 1. 당신의 사주 원국 — 한 사람의 삶의 지도</h3>
+        <p class="ch-text">사주 8자는 단순한 기호가 아닙니다. 당신이 태어난 순간, 우주의 에너지가 새겨넣은 인생 설계도입니다. 이 설계도를 읽을 줄 아는 사람과 모르는 사람 사이에는 — 같은 상황에서도 전혀 다른 선택과 전혀 다른 결과가 나타납니다.</p>
+
+        <div style="background:rgba(199,167,106,0.07);border-left:4px solid var(--gold);padding:20px 22px;border-radius:0 12px 12px 0;margin:24px 0;">
+            <div style="font-size:11px;color:var(--text-dim);margin-bottom:12px;letter-spacing:2px;">✦ 원국 종합 통변 — ${name}님의 삶의 지도</div>
+            <p style="font-size:14.5px;color:#ddd;line-height:2.0;white-space:pre-line;margin:0;">${lifeNarr}</p>
+        </div>
+
+        ${iljuCore ? `<div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:18px 20px;margin:20px 0;"><div style="font-size:11px;color:var(--text-dim);margin-bottom:10px;letter-spacing:1px;">일주(日柱) ${dH}(${toKr(dH)}) — 나 자신의 핵심</div><p style="font-size:14px;color:#ddd;line-height:1.9;margin:0;">${iljuCore}</p></div>` : ''}
+
+        <div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:20px;margin:20px 0;">
+            <div style="font-size:12px;color:var(--gold);font-weight:700;margin-bottom:16px;letter-spacing:1px;">✦ 인생 4막의 흐름</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:14px;">
+                    <div style="font-size:10px;color:var(--text-dim);margin-bottom:6px;">🌱 유년기 · 초년기 (0~15세)</div>
+                    <div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:8px;">연주(年柱) ${yH}(${toKr(yH)})</div>
+                    <p style="font-size:12.5px;color:#ccc;line-height:1.8;margin:0;">조상과 뿌리의 에너지가 당신의 유년기 환경을 만들었습니다. 태어난 가정의 분위기, 어린 시절 경험한 세상의 첫인상이 이 기운 안에 담겨 있습니다. 이 시기의 경험이 무의식 깊숙이 새겨져 평생의 기준점이 됩니다.</p>
+                </div>
+                <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:14px;">
+                    <div style="font-size:10px;color:var(--text-dim);margin-bottom:6px;">🔥 청년기 (15~35세)</div>
+                    <div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:8px;">월주(月柱) ${mH}(${toKr(mH)})</div>
+                    <p style="font-size:12.5px;color:#ccc;line-height:1.8;margin:0;">부모와 성장 환경, 그리고 직업적 적성의 에너지입니다. 사회에 처음 발을 내딛는 이 시기의 주된 흐름과 도전이 월주에 담겨 있습니다. 어떤 분야에서 재능이 먼저 드러나는지, 어떤 환경에서 성장하는지를 보여줍니다.</p>
+                </div>
+                <div style="background:rgba(199,167,106,0.08);border-radius:8px;padding:14px;border:1px solid rgba(199,167,106,0.2);">
+                    <div style="font-size:10px;color:var(--text-dim);margin-bottom:6px;">⚡ 중년기 (35~55세)</div>
+                    <div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:8px;">일주(日柱) ${dH}(${toKr(dH)}) ← 나 자신</div>
+                    <p style="font-size:12.5px;color:#ccc;line-height:1.8;margin:0;">나 자신과 배우자의 에너지입니다. 사주 8자 중 가장 중요한 자리입니다. 당신이 어떤 사람인지, 내면 깊숙이 무엇을 원하는지, 어떤 사람과 함께할 때 가장 빛나는지가 이 자리에 새겨져 있습니다.</p>
+                </div>
+                <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:14px;">
+                    <div style="font-size:10px;color:var(--text-dim);margin-bottom:6px;">🌙 말년기 (55세~)</div>
+                    <div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:8px;">시주(時柱) ${hH.length>0?hH+'('+toKr(hH)+')':'미상'}</div>
+                    <p style="font-size:12.5px;color:#ccc;line-height:1.8;margin:0;">자녀와 말년, 그리고 내면 깊숙이 숨어있는 소망의 에너지입니다. 인생 후반부에 무엇이 당신을 행복하게 하는지, 어떤 유산을 남기고 싶은지가 이 자리에 담겨 있습니다.</p>
+                </div>
+            </div>
+        </div>
+
+        ${gongmangText}
+
+        <div style="background:rgba(199,167,106,0.05);border-radius:10px;padding:18px;margin:20px 0;border:1px solid rgba(199,167,106,0.1);">
+            <div style="font-size:12px;color:var(--gold);font-weight:700;margin-bottom:10px;">✦ 이 원국을 가진 사람이 인생에서 가장 중요하게 기억해야 할 것</div>
+            <p style="font-size:13.5px;color:#ccc;line-height:1.9;margin:0;">${name}님의 사주는 단점처럼 보이는 것들 안에 가장 강력한 무기가 숨어 있는 구조입니다. 힘들었던 시간, 마찰이 있었던 순간, 무언가가 잘 안 됐던 경험 — 이 모든 것이 사실은 당신을 가장 단단하게 만들어온 과정이었습니다. 당신의 인생은 지금까지 낭비된 시간이 없습니다. 모든 것이 지금의 당신을 만들기 위한 설계의 일부였습니다.</p>
+        </div>
+    </div>`;
+}
+
+function buildCurrentPeriodSummary(data) {
+    const daeunRows = data.daeunRows || [];
+    const aIdx = data.activeDaeunIdx || 0;
+    const curDaeun = daeunRows[aIdx];
+    const OH = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','申':'metal','壬':'water','癸':'water'};
+    const JO = {'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'};
+    const KN = {wood:'목',fire:'화',earth:'토',metal:'금',water:'수'};
+    const sc = {}; sc[data.yong]=2;sc[data.hee]=1;sc[data.gi]=-2;sc[data.goo]=-1;
+    function gs(g,j){return (sc[OH[g]]||0)+(sc[JO[j]]||0);}
+    function gc(s){return s>=3?'#c7a76a':s>=1?'#00C853':s===0?'#888':s>=-2?'#ff9800':'#e74c3c';}
+    function gb(s){return s>=3?'🌟 대길':s>=1?'✦ 길':s===0?'— 평':s>=-2?'⚠ 주의':'❌ 흉';}
+
+    // 현재 대운
+    let daeunHtml = '';
+    if(curDaeun) {
+        const dg = curDaeun.gz ? curDaeun.gz[0] : (curDaeun.gan||'');
+        const dj = curDaeun.gz ? curDaeun.gz[1] : (curDaeun.ji||'');
+        const ds = gs(dg,dj);
+        const dcol = gc(ds);
+        const dOh = OH[dg]||'earth'; const djOh = JO[dj]||'earth';
+        const dStrat = ds>=2
+            ?'현재 대운은 용신·희신 기운이 강하게 작동하는 인생의 황금기입니다. 지금 이 시기는 당신이 타고난 잠재력이 세상과 가장 강하게 공명하는 순간입니다. 오랫동안 준비해온 것들을 세상에 꺼내 놓을 타이밍입니다. 재물: 신규 수입 창출, 투자, 사업 확장 모두 적극적으로 추진하십시오. 이 시기의 투자는 10년 후의 자산 기반이 됩니다. 직업: 더 큰 무대, 더 높은 자리를 향해 적극적으로 나아가십시오. 이직, 창업, 승진 요구 모두 지금이 적기입니다. 건강: 전반적으로 활력이 넘치지만, 과욕으로 인한 번아웃을 경계하십시오. 애정: 인연의 문이 활짝 열려있습니다. 마음을 열고 새로운 만남을 적극적으로 맞이하십시오.'
+            :ds>=0
+            ?'현재 대운은 큰 기복 없이 안정적으로 흐르는 내실 강화의 시기입니다. 폭발적인 도약보다는 꾸준한 성장이 이 대운의 핵심 키워드입니다. 지금 당장 눈에 보이는 성과가 없더라도, 이 시기에 쌓은 실력·자산·신뢰가 다음 황금 대운의 발판이 됩니다. 재물: 투기보다 복리 저축과 장기 투자가 유리합니다. 직업: 현재 위치에서 전문성을 높이고, 업계에서 자신의 신뢰도를 높이는 데 집중하십시오. 건강: 균형 잡힌 생활 루틴을 유지하는 것이 중요합니다. 애정: 인위적인 만남보다 자연스러운 관계의 깊이를 높이는 것이 더 의미 있습니다.'
+            :'현재 대운은 기신·구신 기운이 강하게 작동하는 준비와 수비의 시기입니다. 이것은 당신의 잘못이 아닙니다. 세상 모든 성공한 사람들이 반드시 이런 저조기를 거쳐 다음 황금 대운에서 폭발합니다. 무리한 확장·투자·새 출발을 자제하고, 지금은 기반을 다지고 실력을 쌓는 것이 최선의 전략입니다. 재물: 새로운 투자보다 기존 자산 보전과 불필요한 지출 차단이 우선입니다. 직업: 현 위치를 유지하면서 실력을 키우십시오. 큰 이직이나 창업은 다음 대운으로 미루는 것이 현명합니다. 건강: 이 시기에 쌓인 피로가 나중에 큰 문제로 터질 수 있습니다. 규칙적인 수면과 검진을 반드시 챙기십시오.';
+        daeunHtml = `<div style="margin-bottom:12px;padding:14px;background:rgba(199,167,106,0.06);border:1px solid var(--gold);border-radius:10px;">
+            <div style="font-size:11px;color:var(--gold);font-weight:700;margin-bottom:8px;letter-spacing:1px;">▶ 현재 대운 — ${curDaeun.age}세 구간 · 지금 진행 중인 10년 운세</div>
+            <div style="font-size:18px;font-weight:900;color:var(--gold);font-family:Noto Serif KR,serif;margin-bottom:6px;"><span style="font-family:Noto Serif KR,serif;">${dg}${dj}</span> <span style="font-size:14px;font-weight:600;color:#ddd;">(${HAN_KOR[dg]||dg}${HAN_KOR[dj]||dj})</span> <span style="font-size:13px;color:#bbb;font-weight:400;">${KN[dOh]||''} + ${KN[djOh]||''} 기운</span></div>
+            <p style="font-size:13px;color:#ddd;line-height:1.8;margin:0 0 8px;">${dStrat}</p>
+            <span style="font-size:12px;font-weight:700;color:${dcol};">${gb(ds)}</span>
+        </div>`;
+    }
+
+    // 올해 세운
+    let sewunHtml = '';
+    try {
+        const curY = new Date().getFullYear();
+        const yL = Solar.fromYmd(curY,6,15).getLunar();
+        const gz = yL.getEightChar().getYear();
+        const sg = gz[0]; const sj = gz[1];
+        const ss = gs(sg,sj); const scol = gc(ss);
+        const sOh = OH[sg]||'earth'; const sjOh = JO[sj]||'earth';
+        const sAdv = ss>=2
+            ?'올해는 용신 기운이 강하게 들어오는 대길의 해입니다. 오래 고민해온 결정을 실행할 최고의 타이밍입니다. 재물: 신규 수입 창출, 새로운 투자, 사업 확장 모두 올해 안에 실행하십시오. 기회는 지금 이 순간 가장 풍부합니다. 직업: 승진 요구, 이직, 창업 모두 이 해에 가장 강한 지원을 받습니다. 원하는 것을 직접 요청하십시오. 애정: 새로운 인연이 시작되거나 기존 관계가 한 단계 깊어지는 해입니다. 건강: 활력이 넘치지만 과부하를 주의하십시오.'
+            :ss>=0
+            ?'안정적인 한 해입니다. 이 해는 급격한 변화보다 꾸준한 내실 강화가 핵심입니다. 재물: 복리 저축과 장기 자산 관리에 집중하십시오. 직업: 맡은 프로젝트를 완성도 있게 마무리하고, 전문성을 높이는 학습에 투자하십시오. 애정: 화려한 새 인연보다 기존 관계의 신뢰를 더욱 깊게 쌓는 해입니다.'
+            :'올해는 기신 기운이 강하게 작동하는 주의의 해입니다. 신규 투자, 보증, 큰 계약 체결은 신중하게 검토하십시오. 재물: 지출을 줄이고 비상금을 확보하십시오. 직장 내 불필요한 갈등을 피하고 자기 업무에 집중하십시오. 건강: 정기 검진을 반드시 받고, 스트레스 관리에 신경 쓰십시오. 이 해를 묵묵히 내공을 쌓는 기간으로 활용하면, 다음 해에 반드시 더 큰 기회가 찾아옵니다.';
+        // 현재 대운과 세운의 교차 설명 추가
+        const curDGan = curDaeun ? (curDaeun.gz ? curDaeun.gz[0] : curDaeun.gan||'') : '';
+        const curDJi  = curDaeun ? (curDaeun.gz ? curDaeun.gz[1] : curDaeun.ji||'') : '';
+        const crossText = curDGan ? `현재 대운 ${curDGan}${curDJi}(${(HAN_KOR&&HAN_KOR[curDGan])||curDGan}${(HAN_KOR&&HAN_KOR[curDJi])||curDJi})의 ${KN[OH[curDGan]]||''}에너지와 ${curY}년 세운 ${sg}${sj}(${(HAN_KOR&&HAN_KOR[sg])||sg}${(HAN_KOR&&HAN_KOR[sj])||sj})의 ${KN[sOh]||''}에너지가 만남니다. 이 두 기운의 상생·충돌 관계가 올 한 해 운의 질을 결정합니다.` : '';
+        sewunHtml = `<div style="margin-bottom:12px;padding:14px;background:rgba(74,158,106,0.05);border:1px solid rgba(74,158,106,0.3);border-radius:10px;">
+            <div style="font-size:11px;color:#4a9e6a;font-weight:700;margin-bottom:8px;letter-spacing:1px;">▶ ${curY}년 세운 · 지금 현재의 연운</div>
+            <div style="font-size:17px;font-weight:900;color:#4a9e6a;font-family:Noto Serif KR,serif;margin-bottom:6px;"><span style="font-family:Noto Serif KR,serif;">${sg}${sj}</span> <span style="font-size:13px;font-weight:600;color:#ddd;">(${HAN_KOR[sg]||sg}${HAN_KOR[sj]||sj})</span> <span style="font-size:13px;color:#bbb;font-weight:400;">${KN[sOh]||''} + ${KN[sjOh]||''} 기운</span></div>
+            ${crossText ? `<p style="font-size:12.5px;color:#aaa;line-height:1.75;margin:0 0 8px;border-left:2px solid #4a9e6a;padding-left:10px;">${crossText}</p>` : ''}
+            <p style="font-size:13px;color:#ddd;line-height:1.8;margin:0 0 8px;">${sAdv}</p>
+            <span style="font-size:12px;font-weight:700;color:${scol};">${gb(ss)}</span>
+        </div>`;
+    } catch(e) {}
+
+    // 이달 월운
+    let wolunHtml = '';
+    try {
+        const curY2 = new Date().getFullYear();
+        const curM2 = new Date().getMonth()+1;
+        const mS = Solar.fromYmd(curY2,curM2,15);
+        const gz2 = mS.getLunar().getEightChar().getMonth();
+        const mg = gz2[0]; const mj = gz2[1];
+        const ms = gs(mg,mj); const mcol = gc(ms);
+        const mOh = OH[mg]||'earth'; const mjOh = JO[mj]||'earth';
+        const WL = {'寅':'인월 — 봄의 시작. 새로운 시작과 인맥 확장에 최적입니다.','卯':'묘월 — 성장과 협업의 기운. 파트너십과 환동에 유리합니다.','辰':'진월 — 변화와 전환의 달. 유연한 대응이 핵심입니다.','巳':'사월 — 결단의 달. 오래 미룠 일을 실행에 옥기십시오.','午':'오월 — 활력이 넘치는 달. 적극적 대외 활동에 최적입니다.','未':'미월 — 관계와 감성의 달. 사람에게 집중하십시오.','辛':'신월 — 실행력의 달. 결정을 즉시 행동으로 옥기십시오.','酉':'유월 — 마무리의 달. 진행 중인 일을 마무리하십시오.','戌':'술월 — 정리의 달. 뺈어낼 것을 뺈어내십시오.','亥':'해월 — 준비의 달. 내공과 학습에 집중하십시오.','子':'자월 — 지혜의 달. 로직과 분석이 휴리하는 달입니다.','丑':'축월 — 인내의 달. 천정히 쳐나가는 것이 이달의 항로입니다.'};
+        const mAdv = ms>=2?`이달은 용신에너지가 강한 달입니다. 재물직업에서 중요한 행동을 주저없이 실행하십시오.`:ms>=0?`평온한 달입니다. 꾸준한 뤄률을 유지하는 것이 최선입니다.`:`주의가 필요한 달입니다. 큰 실행보다 준비와 방어에 집중하십시오.`;
+        wolunHtml = `<div style="padding:14px;background:rgba(74,114,198,0.05);border:1px solid rgba(74,114,198,0.3);border-radius:10px;">
+            <div style="font-size:11px;color:#5b7fc4;font-weight:700;margin-bottom:8px;letter-spacing:1px;">▶ ${curY2}년 ${curM2}월 월운 · 지금 이 달의 기운</div>
+            <div style="font-size:16px;font-weight:900;color:#5b7fc4;font-family:Noto Serif KR,serif;margin-bottom:6px;"><span style="font-family:Noto Serif KR,serif;">${mg}${mj}</span> <span style="font-size:13px;font-weight:600;color:#ddd;">(${HAN_KOR[mg]||mg}${HAN_KOR[mj]||mj})</span> <span style="font-size:13px;color:#bbb;font-weight:400;">${KN[mOh]||''} + ${KN[mjOh]||''} 기운</span></div>
+            <p style="font-size:13px;color:#ddd;line-height:1.8;margin:0 0 6px;">${WL[mj]||'이달의 기운입니다.'}</p>
+            <p style="font-size:12.5px;color:#bbb;line-height:1.75;margin:0 0 8px;">${mAdv}</p>
+            <span style="font-size:12px;font-weight:700;color:${mcol};">${gb(ms)}</span>
+        </div>`;
+    } catch(e) {}
+
+    if(!daeunHtml && !sewunHtml && !wolunHtml) return '';
+    const nowDate = new Date();
+    const nowY = nowDate.getFullYear();
+    const nowM = nowDate.getMonth()+1;
+    const nowD = nowDate.getDate();
+    return `<div class="report-chapter" style="border:2px solid var(--gold);border-radius:14px;padding:20px;background:rgba(199,167,106,0.04);">
+        <div style="font-size:11px;color:var(--gold);letter-spacing:2px;margin-bottom:6px;">★ 지금 이 순간 — ${nowY}년 ${nowM}월 ${nowD}일 기준</div>
+        <h3 class="ch-title" style="margin-top:0;">현재 대운·세운·월운 종합 분석 — 지금 당신의 운은 어디로 흐르는가</h3>
+        <p class="ch-text">대운(인생의 10년 기후)·세운(올 한 해의 날씨)·월운(이달의 날씨)이 한꿈에 폼쳐집니다. ${nowY}년 ${nowM}월 현재, 당신의 원국 에너지가 지금 이 시기와 어떻게 맞물리는지를 확인하십시오.</p>
+        ${daeunHtml}${sewunHtml}${wolunHtml}
+    </div>`;
+}
+
+// ─── 대가 수준 전체 심층 풀이 (원국 아래 종합연) ───
+function buildMasterFullReading(data) {
+    const ds = data.dayStem||'병'; const db = data.dayBranch||'인';
+    const isStrong = (data.strengthText||'').includes('신강')||(data.strengthText||'').includes('강');
+    const yong = data.yong||'water'; const gi = data.gi||'wood';
+    const sip = data.sipseong||{};
+    const hasBien = (sip['비견']||0)+(sip['겡재']||0) > 2;
+    const hasGwan = (sip['정관']||0)+(sip['편관']||0) > 0;
+    const hasJae = (sip['정재']||0)+(sip['편재']||0) > 0;
+    const OH = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','申':'metal','壬':'water','癸':'water'};
+    const dayOh = OH[ds]||'fire';
+
+    const CHAR_MAP = {
+        wood: '당신은 태어날 때부터 "첫 번째"가 되려는 본능을 가지고 태어났습니다. 남들이 이미 걸어간 길은 당신에게 흥미롭지 않습니다. 아무도 가지 않은 곳에 발을 내디딜 때, 당신의 에너지는 최고조로 올라갑니다. 20~30대에는 이 선구자 기질이 주변과 마찰을 일으키는 경우가 많습니다. "왜 저 사람은 혼자만 앞서려 하냐"는 오해를 받기도 하지만, 40대 이후에는 그 마찰이 오히려 당신을 가장 단단하게 만들었다는 것을 스스로 깨닫게 됩니다. 당신의 인생에서 가장 위험한 순간은 멈추는 것입니다. 성장을 멈추는 순간 내면이 급격히 시들어갑니다. 반드시 새로운 목표를 계속 만들어야 하는 사람입니다.',
+        fire: '당신이 방에 들어서는 순간, 공기가 바뀝니다. 이것은 과장이 아닙니다. 당신은 태어날 때부터 존재 자체가 에너지인 사람입니다. 20~30대의 당신은 이 에너지를 통제하지 못해 번아웃과 감정 기복을 반복하는 경우가 많습니다. 그러나 이것은 결함이 아니라 엔진이 너무 강력해서 생기는 현상입니다. 40대에 접어들면 이 에너지를 다루는 법을 터득하면서 진짜 카리스마가 완성됩니다. 당신은 혼자 있을 때 충전하는 타입이 아닙니다. 사람들 사이에서 주목받고 열정을 나눌 때 오히려 에너지가 충전됩니다. 당신 주변의 사람들은 당신 덕에 더 뜨겁게 살고 있습니다.',
+        earth: '당신은 흔들리지 않는 사람입니다. 주변이 아무리 요동쳐도, 당신은 중심을 지킵니다. 이 안정감이 사람들을 당신 곁으로 끌어당기는 가장 강력한 자력(磁力)입니다. 그러나 이 기질에는 그림자가 있습니다. 변화를 두려워하다가 시기를 놓치는 것입니다. 20~30대에 좋은 기회를 "좀 더 확실해질 때까지" 기다리다가 흘려보내는 패턴이 반복될 수 있습니다. 당신의 과제는 확신이 70%일 때 실행하는 용기입니다. 100%의 확신을 기다리면 기회는 이미 다른 사람 손에 있습니다. 느리지만 확실하게, 한 번 시작한 것은 끝을 보는 당신의 에너지가 결국 가장 크고 오래가는 성과를 만들어냅니다.',
+        metal: '당신의 눈은 레이저입니다. 복잡한 상황 속에서도 핵심만 뽑아내는 능력, 불필요한 것을 단번에 쳐내는 결단력 — 이것이 당신 인생을 이끄는 가장 강력한 무기입니다. 20~30대의 당신은 이 냉철함이 "차갑다", "감정이 없다"는 오해를 만들기도 합니다. 그러나 이것은 오해입니다. 당신은 뜨거운 열정을 가진 사람이지만, 그 열정을 낭비하지 않는 방식으로 표현합니다. 40대 이후 전문성이 쌓이면 이 냉철함과 원칙이 결합되면서 해당 분야에서 누구도 넘볼 수 없는 권위자로 자리 잡습니다. 당신이 말하면 사람들이 따릅니다. 그 영향력의 크기를 스스로 제대로 인식하는 것이 중요합니다.',
+        water: '당신의 머릿속은 항상 바쁩니다. 남들이 보지 못하는 패턴을 보고, 남들이 느끼지 못하는 흐름을 감지합니다. 이 통찰력이 당신 인생 최대의 자산입니다. 그러나 20~30대의 당신에게는 한 가지 함정이 있습니다. 너무 많이 생각해서 실행을 미룬다는 것입니다. 완벽한 계획을 짜느라 첫발을 내딛는 것을 두려워합니다. 당신의 직관은 대부분 맞습니다. 그 직관을 믿고 행동으로 옮기는 연습이 필요합니다. 40대 이후에는 오랜 기간 쌓아온 통찰과 경험이 결합되면서 당신 주변에 자연스럽게 조언을 구하는 사람들이 모여듭니다. 깊은 강처럼, 당신은 나이가 들수록 더 값어치가 올라가는 사람입니다.'
+    };
+    const charText = CHAR_MAP[dayOh] || '당신의 일간이 가진 고유한 기질이 인생 전반을 이끌어 갑니다.';
+    const jaeText = hasJae ? '재성(재성)이 있는 사주로, 돈을 다루는 감각과 현실 감각이 뛰어납니다. 적극적인 재테크와 사업에서 강점을 발휘합니다.' : '재성(재성)이 약한 무재 사주입니다. 직접적 수익보다 전문성·명성을 먼저 쌓으면 자연스럽게 재물이 따라오는 구조입니다.';
+    const gwanText = hasGwan ? '관성(관성)이 있어 사회적 성취욕이 강하고 조직에서 인정받는 능력이 탁월합니다. 명예와 직업적 안정을 중요하게 여깁니다.' : '관성(관성)이 약한 사주로 조직보다 자유로운 환경에서 더 뛰어난 능력을 발휘합니다. 창업·프리랜서·전문직이 더 적합합니다.';
+    const strongText = isStrong ? '신강 사주로 에너지가 강합니다. 자율성이 보장된 환경에서 능력이 폭발적으로 발현됩니다. 다른 사람의 통제를 받으면 극심한 스트레스를 받습니다.' : '신약 사주로 에너지가 분산되어 있습니다. 혼자보다 신뢰할 수 있는 파트너와 협력할 때 1+1이 10이 됩니다. 용신 오행의 사람을 곁에 두십시오.';
+
+    return `<div class="report-chapter">
+        <h3 class="ch-title">📖 원국 종합 통변 — 성격·재물·직업·애정·건강 전체 개관</h3>
+        <p class="ch-text">사주 원국 8자가 말하는 당신 인생의 설계도를 대가의 시선으로 통바로 풀어드립니다.</p>
+        <div style="background:rgba(255,255,255,0.03);border-radius:10px;padding:16px;margin-bottom:12px;border-left:3px solid var(--gold);">
+            <div style="font-size:11px;color:var(--gold);letter-spacing:1px;margin-bottom:6px;">「성격·기질 」 일간(일간) 통변</div>
+            <p style="font-size:13.5px;color:#ddd;line-height:1.85;margin:0;">${charText}</p>
+        </div>
+        <div style="background:rgba(255,255,255,0.03);border-radius:10px;padding:16px;margin-bottom:12px;border-left:3px solid #c7a76a;">
+            <div style="font-size:11px;color:#c7a76a;letter-spacing:1px;margin-bottom:6px;">「신강신약 」 일간 강약 판단</div>
+            <p style="font-size:13.5px;color:#ddd;line-height:1.85;margin:0;">${strongText}</p>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div style="background:rgba(255,255,255,0.03);border-radius:8px;padding:14px;">
+                <div style="font-size:11px;color:#00C853;letter-spacing:1px;margin-bottom:6px;">「재물운 」</div>
+                <p style="font-size:12.5px;color:#ddd;line-height:1.8;margin:0;">${jaeText}</p>
+            </div>
+            <div style="background:rgba(255,255,255,0.03);border-radius:8px;padding:14px;">
+                <div style="font-size:11px;color:#4a9e6a;letter-spacing:1px;margin-bottom:6px;">「직업운 」</div>
+                <p style="font-size:12.5px;color:#ddd;line-height:1.8;margin:0;">${gwanText}</p>
+            </div>
+        </div>
+    </div>`;
+}
+function buildChapter1_Basic(data) {
+    const pillars = data.pillars || [];
     const pillarNames = ['시주','일주','월주','연주'];
     const pillarDesc = ['자녀·말년·내면의 소망','나 자신·배우자 자리','부모·청년기·직업 환경','조상·가문·초년 환경'];
     const pillarPeriod = ['55세 이후 말년기','35~55세 장년기','15~35세 청년기','0~15세 초년기'];
