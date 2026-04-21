@@ -1146,24 +1146,36 @@
         
         /* PDF 출력 스타일 */
         @media print {
-            #star-canvas, body::before { display: none !important; }
-            body { background: #fff !important; color: #111 !important; }
-            .container { max-width: 100% !important; }
-            .jeomsin-nav, .btn, #sec-report, #floating-toc { display: none !important; }
-            .section { break-inside: avoid; border: 1px solid #ddd !important; background: #fff !important; }
-            .inline-interp { background: #f9f9f9 !important; border-color: #999 !important; }
-            .ii-text, .ch-text { color: #333 !important; }
-            .ii-title, .ch-title { color: #111 !important; }
-            .section-title span { color: #111 !important; }
-            .cover-page { page-break-after: always; min-height: 100vh; display: flex !important; flex-direction: column; justify-content: center; align-items: center; background: #fff !important; }
-            .toc-page { page-break-after: always; background: #fff !important; }
+            /* 화면용 UI 전부 숨기기 */
+            #star-canvas, body::before, #floating-toc { display: none !important; }
+            .jeomsin-nav, .btn, #sec-report { display: none !important; }
+            /* step-1(입력), step-2(화면 분석표) 완전 숨김 — report-container만 출력 */
+            #step-1, .step-nav { display: none !important; }
+            /* step-2 내 report-container 외 모든 섹션 숨김 */
+            #step-2 > .step-content > *:not(#sec-report-full) { display: none !important; }
+            #sec-report-full > #report-inline-top { display: none !important; }
+            /* 배경/색상 */
+            body { background: #fff !important; color: #111 !important; margin: 0 !important; }
+            .container { max-width: 100% !important; padding: 0 !important; }
+            #step-2, .step-content, #sec-report-full { padding: 0 !important; margin: 0 !important; }
+            /* 리포트 챕터 스타일 */
+            .cover-page { page-break-after: always; min-height: 100vh; display: flex !important; flex-direction: column; justify-content: center; align-items: center; background: #fff !important; color: #111 !important; }
+            .toc-page { page-break-after: always; background: #fff !important; color: #111 !important; padding: 40px !important; }
             .chapter-start { page-break-before: always; }
+            .report-chapter { break-inside: avoid; page-break-inside: avoid; padding: 20px 0; }
             .pillar-card { break-inside: avoid; }
             .interp-box { break-inside: avoid; min-height: 0; }
-            .report-chapter { break-inside: avoid; page-break-inside: avoid; }
-            .ch-title { color: #111 !important; border-bottom: 2px solid #c7a76a !important; }
+            .inline-interp { background: #f9f9f9 !important; border-color: #999 !important; }
+            .ii-text, .ch-text { color: #333 !important; }
+            .ii-title, .ch-title { color: #111 !important; border-bottom: 2px solid #c7a76a !important; }
+            .section-title span { color: #111 !important; }
             .cover-title { color: #111 !important; }
             .cover-hanja { color: #c7a76a !important; }
+            /* 어두운 배경 카드들 밝게 */
+            div[style*="rgba(255,255,255,0.0"], div[style*="rgba(0,0,0,"] { background: #f5f5f5 !important; }
+            p, div { color: #222 !important; }
+            b, strong { color: #000 !important; }
+            .gold, [style*="color:var(--gold)"], [style*="color:#c7a76a"] { color: #8B6914 !important; }
         }
         .ch-title { color: var(--gold); border-bottom: 1px solid #333; padding-bottom: 8px; margin-bottom: 15px; font-family: 'Noto Serif KR', serif; font-weight: 300; font-size: 20px; }
         .ch-text { font-size: 15px; line-height: 1.8; color: #eee; margin-bottom: 15px; text-align: justify; word-break: keep-all; }
