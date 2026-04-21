@@ -2725,8 +2725,23 @@ function buildChapter1_Basic(data) {
     const lifeNarr = LIFE_MAP[dayOh]?.[strengthKey] || (name + '님의 사주 원국이 그리는 삶의 지도입니다.');
     const iljuCore = dbEntry.core || '';
 
+    const HAN_KOR_GM = {'子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해'};
+    const BRANCH_OH_GM = {'子':'수','丑':'토','寅':'목','卯':'목','辰':'토','巳':'화','午':'화','未':'토','申':'금','酉':'금','戌':'토','亥':'수'};
+    const PILLAR_NAME_GM = {'시주':'시주(말년·자녀)','일주':'일주(배우자·나 자신)','월주':'월주(부모·직업)','년주':'년주(조상·사회)'};
+    // 공망이 있는 기둥 찾기
+    const gongmangPillars = (pillars||[]).filter(p => p.h && gongmangBranches.includes(p.h[1]));
+    const gmPillarNames = gongmangPillars.map(p => PILLAR_NAME_GM[p.n]||p.n).join(', ');
+    const gmBranchNames = gongmangBranches.map(b => `${b}(${HAN_KOR_GM[b]||b}·${BRANCH_OH_GM[b]||''})`).join('·');
     const gongmangText = gongmangBranches.length > 0
-        ? `<div style="background:rgba(231,76,60,0.06);border-left:3px solid rgba(231,76,60,0.4);padding:14px 16px;border-radius:0 8px 8px 0;margin-top:16px;"><div style="font-size:11px;color:#e74c3c;margin-bottom:6px;letter-spacing:1px;">공망(空亡) — 결핍과 갈망의 에너지</div><p style="font-size:13px;color:#ccc;line-height:1.85;margin:0;">${name}님의 사주에는 공망이 있습니다. 공망은 비어있음입니다. 그러나 이 비어있음이 반드시 나쁜 것이 아닙니다. 이 결핍에 대한 끊임없는 갈망이 오히려 앞으로 나아가게 만드는 원동력이 됩니다. 채워질 것 같다는 느낌이 들 때 가장 위험한 선택을 하게 되니, 그 순간 한 번 더 냉정하게 판단하십시오.</p></div>`
+        ? `<div style="background:rgba(231,76,60,0.06);border-left:3px solid rgba(231,76,60,0.5);padding:18px 20px;border-radius:0 12px 12px 0;margin-top:20px;">
+            <div style="font-size:12px;color:#e74c3c;margin-bottom:10px;letter-spacing:1px;font-weight:700;">⚠ 공망(空亡) — ${name}님 원국의 결핍과 갈망</div>
+            <p style="font-size:13.5px;color:#ddd;line-height:1.9;margin:0 0 12px;">${name}님의 원국에서 <b>${gmBranchNames}</b> 기운이 공망입니다. 이 공망이 원국 내 <b>${gmPillarNames}</b>에 해당됩니다. 즉, 이 기둥이 상징하는 삶의 영역 — ${gongmangPillars.map(p=>({시주:'자녀와 말년 운',일주:'배우자와 나 자신',월주:'부모와 직업 환경',년주:'조상과 사회적 기반'}[p.n]||p.n)).join(', ')} — 에서 특정한 결핍감과 갈망이 반복적으로 나타납니다.</p>
+            <p style="font-size:13.5px;color:#ddd;line-height:1.9;margin:0 0 12px;">공망은 단순히 나쁜 것이 아닙니다. 이 비어있음이 끊임없이 채우려는 동력이 되고, 그 집착과 갈망이 오히려 성취의 원동력이 되는 경우가 많습니다. 실제로 역사적으로 큰 성취를 이룬 사람들 중 공망이 있는 사주가 많은 것이 이를 증명합니다.</p>
+            <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:12px 14px;margin-top:4px;">
+                <div style="font-size:11px;color:#e74c3c;margin-bottom:6px;">⚡ 공망이 있을 때 가장 조심해야 할 순간</div>
+                <p style="font-size:13px;color:#ccc;line-height:1.85;margin:0;">공망이 있는 영역이 "채워질 것 같다"는 강한 느낌이 드는 순간이 가장 위험합니다. 그 감정에 이끌려 큰 결정을 내리면, 실망으로 끝나는 경우가 많습니다. 이 영역에서 중요한 결정을 할 때는 반드시 냉정하게 한 번 더 검토하십시오.</p>
+            </div>
+        </div>`
         : '';
 
     const yPillar = pillars[3] || {};
@@ -6019,7 +6034,11 @@ function runAnalysis() {
             daeunRows: daeunForReport,
             activeDaeunIdx: activeDaeunIdx,
             interactions: buildRelationLines(pillars).filter(r => r.type !== '없음'),
-            birthYear: y
+            birthYear: y,
+            gongmang: (function(){
+                const gmStr = getGongmang(dayStem + ec.getDay()[1]);
+                return gmStr ? [...gmStr] : [];
+            })()
         };
 
         // ─── 인생 전반 서술 (만세력 아래) ───
