@@ -5142,9 +5142,36 @@ function getElementDesc(ch) {
     return `${yy}${kr}, ${elKr}${elHz}`;
 }
 
+// 12신살 (삼합 기반 12지 순환 신살)
+const TWELVE_SHINSAL_KEYS = new Set(['역마살','도화살','화개살','겁살','망신살','지살','천살','장성살','수옥살','년살','반안살','육해살']);
+// 기타신살 (귀인성 + 특수살)
+const EXTRA_SHINSAL_KEYS = new Set(['천을귀인','문창귀인','문곡귀인','양인살','백호대살','괴강살','원진살','귀문관살','홍염살','고신살','과숙살','학당귀인','천관귀인','천의성','천덕귀인','월덕귀인','금여록','현침살','금각살','유하살','천주귀인','재고귀인','급각살','복성귀인','철새개금','장성살']);
+
 function getShinsal(gz, ec) {
     const arr = [];
     for (const key in SHINSAL_LOGIC) {
+        const val = SHINSAL_LOGIC[key](gz, ec);
+        if (val) arr.push(val);
+    }
+    return arr;
+}
+
+// 12신살만 반환
+function getTwelveShinsal(gz, ec) {
+    const arr = [];
+    for (const key in SHINSAL_LOGIC) {
+        if (!TWELVE_SHINSAL_KEYS.has(key)) continue;
+        const val = SHINSAL_LOGIC[key](gz, ec);
+        if (val) arr.push(val);
+    }
+    return arr;
+}
+
+// 기타신살만 반환
+function getExtraShinsal(gz, ec) {
+    const arr = [];
+    for (const key in SHINSAL_LOGIC) {
+        if (TWELVE_SHINSAL_KEYS.has(key)) continue;
         const val = SHINSAL_LOGIC[key](gz, ec);
         if (val) arr.push(val);
     }
@@ -5156,6 +5183,26 @@ function getAllShinsal(pillars, ec, isUnknown) {
     pillars.forEach((p, idx) => {
         if (isUnknown && idx === 0) return;
         result[p.n] = getShinsal((p.h[0] || '') + (p.h[1] || ''), ec);
+    });
+    return result;
+}
+
+// 12신살만 분리
+function getAllTwelveShinsal(pillars, ec, isUnknown) {
+    const result = {};
+    pillars.forEach((p, idx) => {
+        if (isUnknown && idx === 0) return;
+        result[p.n] = getTwelveShinsal((p.h[0] || '') + (p.h[1] || ''), ec);
+    });
+    return result;
+}
+
+// 기타신살만 분리
+function getAllExtraShinsal(pillars, ec, isUnknown) {
+    const result = {};
+    pillars.forEach((p, idx) => {
+        if (isUnknown && idx === 0) return;
+        result[p.n] = getExtraShinsal((p.h[0] || '') + (p.h[1] || ''), ec);
     });
     return result;
 }
@@ -5285,6 +5332,8 @@ function runAnalysis() {
         ];
         const dayStem = ec.getDay()[0];
         const allShinsal = getAllShinsal(pillars, ec, isUnknown);
+        const allTwelveShinsal = getAllTwelveShinsal(pillars, ec, isUnknown);
+        const allExtraShinsal = getAllExtraShinsal(pillars, ec, isUnknown);
 
         // 동물 아바타 및 배지 업데이트
         const elType = HAN_COLOR[dayStem] || 'wood';
@@ -5384,7 +5433,8 @@ function runAnalysis() {
             bRow('십성', p => `<div class="m-badge">${getSipseong(dayStem, p.h[1])}</div>`),
             bRow('지장간', p => `<div class="m-badge">${getHidden(p.h[1], dayStem).replace(/<br>/g, '')}</div>`),
             bRow('12운성', p => `<div class="m-badge">${getUnsung(dayStem, p.h[1]) || '-'}</div>`),
-            bRow('12신살', p => `<div class="m-badge">${(allShinsal[p.n] || []).join('<br>') || '-'}</div>`),
+            bRow('12신살', p => `<div class="m-badge" style="font-size:11px;">${(allTwelveShinsal[p.n] || []).join('<br>') || '-'}</div>`),
+            bRow('기타신살', p => `<div class="m-badge" style="font-size:11px;">${(allExtraShinsal[p.n] || []).join('<br>') || '-'}</div>`),
             bRow('공망', p => {
                 const gm = getGongmang(dayStem + ec.getDay()[1]);
                 return `<div class="m-badge" style="${gm.includes(p.h[1]) ? 'color:var(--fire);font-weight:bold;' : ''}">${gm.includes(p.h[1]) ? '공망' : '-'}</div>`;
@@ -5433,12 +5483,20 @@ function runAnalysis() {
             }).join('');
         }
 
-        document.getElementById('shinsal-grid').innerHTML = pillars.map((p, idx) => `
-            <div class="info-card">
+        document.getElementById('shinsal-grid').innerHTML = pillars.map((p, idx) => {
+            const twl = allTwelveShinsal[p.n] || [];
+            const ext = allExtraShinsal[p.n] || [];
+            const isUnk = isUnknown && idx === 0;
+            return `<div class="info-card">
                 <div class="info-label">${p.n}</div>
-                <div class="info-value">${isUnknown && idx === 0 ? '시간 미상' : ((allShinsal[p.n] || []).join(', ') || '특기 신살 없음')}</div>
-            </div>
-        `).join('');
+                <div style="margin-top:6px;">
+                    <div style="font-size:10px;color:var(--gold);letter-spacing:1px;margin-bottom:3px;">12신살</div>
+                    <div class="info-value" style="margin-bottom:8px;">${isUnk ? '시간 미상' : (twl.join(', ') || '-')}</div>
+                    <div style="font-size:10px;color:#9b59b6;letter-spacing:1px;margin-bottom:3px;">기타신살</div>
+                    <div class="info-value">${isUnk ? '시간 미상' : (ext.join(', ') || '-')}</div>
+                </div>
+            </div>`;
+        }).join('');
 
         const counts = { wood: 0, fire: 0, earth: 0, metal: 0, water: 0 };
         const sipCounts = { 비견:0, 겁재:0, 식신:0, 상관:0, 편재:0, 정재:0, 편관:0, 정관:0, 편인:0, 정인:0 };
