@@ -2089,8 +2089,12 @@ function buildCurrentPeriodSummary(data) {
             :ds>=0
             ?'현재 대운은 큰 기복 없이 안정적으로 흐르는 내실 강화의 시기입니다. 폭발적인 도약보다는 꾸준한 성장이 이 대운의 핵심 키워드입니다. 지금 당장 눈에 보이는 성과가 없더라도, 이 시기에 쌓은 실력·자산·신뢰가 다음 황금 대운의 발판이 됩니다. 재물: 투기보다 복리 저축과 장기 투자가 유리합니다. 직업: 현재 위치에서 전문성을 높이고, 업계에서 자신의 신뢰도를 높이는 데 집중하십시오. 건강: 균형 잡힌 생활 루틴을 유지하는 것이 중요합니다. 애정: 인위적인 만남보다 자연스러운 관계의 깊이를 높이는 것이 더 의미 있습니다.'
             :'현재 대운은 기신·구신 기운이 강하게 작동하는 준비와 수비의 시기입니다. 이것은 당신의 잘못이 아닙니다. 세상 모든 성공한 사람들이 반드시 이런 저조기를 거쳐 다음 황금 대운에서 폭발합니다. 무리한 확장·투자·새 출발을 자제하고, 지금은 기반을 다지고 실력을 쌓는 것이 최선의 전략입니다. 재물: 새로운 투자보다 기존 자산 보전과 불필요한 지출 차단이 우선입니다. 직업: 현 위치를 유지하면서 실력을 키우십시오. 큰 이직이나 창업은 다음 대운으로 미루는 것이 현명합니다. 건강: 이 시기에 쌓인 피로가 나중에 큰 문제로 터질 수 있습니다. 규칙적인 수면과 검진을 반드시 챙기십시오.';
+        const _dAge = parseInt(curDaeun.age)||0;
+        const _by = data.birthYear || new Date(data.birthDate||'1988-01-01').getFullYear();
+        const _dStartY = _by + _dAge - 1;
+        const _dEndY = _dStartY + 9;
         daeunHtml = `<div style="margin-bottom:12px;padding:14px;background:rgba(199,167,106,0.06);border:1px solid var(--gold);border-radius:10px;">
-            <div style="font-size:11px;color:var(--gold);font-weight:700;margin-bottom:8px;letter-spacing:1px;">▶ 현재 대운 — ${curDaeun.age}세 구간 · 지금 진행 중인 10년 운세</div>
+            <div style="font-size:11px;color:var(--gold);font-weight:700;margin-bottom:8px;letter-spacing:1px;">▶ 현재 대운 — ${curDaeun.age}세 구간 (${_dStartY}~${_dEndY}년) · 지금 진행 중인 10년 운세</div>
             <div style="font-size:18px;font-weight:900;color:var(--gold);font-family:Noto Serif KR,serif;margin-bottom:6px;"><span style="font-family:Noto Serif KR,serif;">${dg}${dj}</span> <span style="font-size:14px;font-weight:600;color:#ddd;">(${HAN_KOR[dg]||dg}${HAN_KOR[dj]||dj})</span> <span style="font-size:13px;color:#bbb;font-weight:400;">${KN[dOh]||''} + ${KN[djOh]||''} 기운</span></div>
             <p style="font-size:13px;color:#ddd;line-height:1.8;margin:0 0 8px;">${dStrat}</p>
             <span style="font-size:12px;font-weight:700;color:${dcol};">${gb(ds)}</span>
@@ -2230,8 +2234,12 @@ function buildCurrentPeriodSummary(data) {
             :ds>=0
             ?'현재 대운은 큰 기복 없이 안정적으로 흐르는 내실 강화의 시기입니다. 폭발적인 도약보다는 꾸준한 성장이 이 대운의 핵심 키워드입니다. 지금 당장 눈에 보이는 성과가 없더라도, 이 시기에 쌓은 실력·자산·신뢰가 다음 황금 대운의 발판이 됩니다. 재물: 투기보다 복리 저축과 장기 투자가 유리합니다. 직업: 현재 위치에서 전문성을 높이고, 업계에서 자신의 신뢰도를 높이는 데 집중하십시오. 건강: 균형 잡힌 생활 루틴을 유지하는 것이 중요합니다. 애정: 인위적인 만남보다 자연스러운 관계의 깊이를 높이는 것이 더 의미 있습니다.'
             :'현재 대운은 기신·구신 기운이 강하게 작동하는 준비와 수비의 시기입니다. 이것은 당신의 잘못이 아닙니다. 세상 모든 성공한 사람들이 반드시 이런 저조기를 거쳐 다음 황금 대운에서 폭발합니다. 무리한 확장·투자·새 출발을 자제하고, 지금은 기반을 다지고 실력을 쌓는 것이 최선의 전략입니다. 재물: 새로운 투자보다 기존 자산 보전과 불필요한 지출 차단이 우선입니다. 직업: 현 위치를 유지하면서 실력을 키우십시오. 큰 이직이나 창업은 다음 대운으로 미루는 것이 현명합니다. 건강: 이 시기에 쌓인 피로가 나중에 큰 문제로 터질 수 있습니다. 규칙적인 수면과 검진을 반드시 챙기십시오.';
+        const _dAge = parseInt(curDaeun.age)||0;
+        const _by = data.birthYear || new Date(data.birthDate||'1988-01-01').getFullYear();
+        const _dStartY = _by + _dAge - 1;
+        const _dEndY = _dStartY + 9;
         daeunHtml = `<div style="margin-bottom:12px;padding:14px;background:rgba(199,167,106,0.06);border:1px solid var(--gold);border-radius:10px;">
-            <div style="font-size:11px;color:var(--gold);font-weight:700;margin-bottom:8px;letter-spacing:1px;">▶ 현재 대운 — ${curDaeun.age}세 구간 · 지금 진행 중인 10년 운세</div>
+            <div style="font-size:11px;color:var(--gold);font-weight:700;margin-bottom:8px;letter-spacing:1px;">▶ 현재 대운 — ${curDaeun.age}세 구간 (${_dStartY}~${_dEndY}년) · 지금 진행 중인 10년 운세</div>
             <div style="font-size:18px;font-weight:900;color:var(--gold);font-family:Noto Serif KR,serif;margin-bottom:6px;"><span style="font-family:Noto Serif KR,serif;">${dg}${dj}</span> <span style="font-size:14px;font-weight:600;color:#ddd;">(${HAN_KOR[dg]||dg}${HAN_KOR[dj]||dj})</span> <span style="font-size:13px;color:#bbb;font-weight:400;">${KN[dOh]||''} + ${KN[djOh]||''} 기운</span></div>
             <p style="font-size:13px;color:#ddd;line-height:1.8;margin:0 0 8px;">${dStrat}</p>
             <span style="font-size:12px;font-weight:700;color:${dcol};">${gb(ds)}</span>
@@ -5423,13 +5431,15 @@ function runAnalysis() {
                 var gz=dy.getGanZhi();var g=gz[0];var j=gz[1];
                 var age=dy.getStartAge();
                 var endAge=idx<daeunData.length-1?daeunData[idx+1].getStartAge():age+10;
+                var _birthY=(globalSajuData&&globalSajuData.birthYear)||1988;
+                var _startYr=_birthY+age-1;var _endYr=_birthY+endAge-2;
                 var s=gs(g,j);var isCur=idx===activeDaeunIdx;var col=gc(s);
                 var strat=s>=2?'이 대운은 길한 시기입니다. 공격적으로 확장하고 중요한 결정을 실행에 옮기십시오. 새로운 사업·투자·인맥 확장을 모두 적극 추진하십시오.':s>=0?'안정적으로 흐르는 대운입니다. 내실을 다지고 꾸준히 자신을 개발하는 것이 최선입니다.':'기신·구신 기운이 강한 시기입니다. 무리한 확장은 피하고 수비 전략이 현명합니다. 내공을 쌓아두면 다음 길운에서 크게 도약합니다.';
                 var d=document.createElement('div');
                 d.style.cssText='padding:14px;background:rgba(255,255,255,'+(isCur?'0.07':'0.03')+');border:1px solid '+(isCur?'var(--gold)':'rgba(255,255,255,0.07)')+';border-radius:10px;';
                 d.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:6px;">'+
                     '<div style="display:flex;align-items:center;gap:8px;"><span style="font-size:22px;font-weight:900;color:var(--gold);font-family:Noto Serif KR,serif;">'+g+j+'</span><span style="font-size:15px;font-weight:600;color:#ccc;">('+((HAN_KOR&&HAN_KOR[g])||g)+((HAN_KOR&&HAN_KOR[j])||j)+')</span>'+
-                    '<div><div style="font-size:12px;color:#bbb;">'+age+'세 ~ '+(endAge-1)+'세</div>'+(isCur?'<span style="font-size:10px;background:var(--gold);color:#000;padding:1px 6px;border-radius:6px;font-weight:700;">▶ 현재</span>':'')+'</div></div>'+
+                    '<div><div style="font-size:12px;color:#bbb;">'+age+'세 ~ '+(endAge-1)+'세 <span style="color:rgba(199,167,106,0.7);font-size:11px;">('+_startYr+'~'+_endYr+'년)</span></div>'+(isCur?'<span style="font-size:10px;background:var(--gold);color:#000;padding:1px 6px;border-radius:6px;font-weight:700;">▶ 현재</span>':'')+'</div></div>'+
                     '<span style="font-size:12px;font-weight:700;color:'+col+';">'+gb(s)+'</span></div>'+
                     '<div style="background:rgba(0,0,0,0.15);border-radius:6px;padding:10px;margin-bottom:8px;"><p style="font-size:12px;color:#ddd;line-height:1.75;margin:0;">'+((window.PERIOD_NARRATIVE&&window.PERIOD_NARRATIVE[g+j]) ? window.PERIOD_NARRATIVE[g+j] : (GAN_T[g]||'')+' '+(JI_T[j]||''))+'</p></div>'+
                     /* 천간/지지 분리박스 제거 */
@@ -5949,6 +5959,8 @@ function runAnalysis() {
                 var gz=dy.getGanZhi();var g=gz[0];var j=gz[1];
                 var age=dy.getStartAge();
                 var endAge=idx<daeunData.length-1?daeunData[idx+1].getStartAge():age+10;
+                var _birthY=(globalSajuData&&globalSajuData.birthYear)||1988;
+                var _startYr=_birthY+age-1;var _endYr=_birthY+endAge-2;
                 var s=gs(g,j);var isCur=idx===activeDaeunIdx;var col=gc(s);
                 var strat=s>=2
                     ?'이 대운은 용신·희신 기운이 강하게 작동하는 인생 최고의 황금기입니다. 당신이 오랫동안 준비해온 모든 것을 세상에 내놓을 타이밍입니다. 사업을 시작하거나 규모를 키우고, 새로운 직장·직위에 도전하고, 중요한 계약과 파트너십을 맺기에 이보다 좋은 시기가 없습니다. 재물: 적극적인 투자와 신규 수입 창출이 실현됩니다. 투자를 두려워하지 마십시오. 직업: 이직·창업·승진 모두 길한 시기로, 더 큰 무대를 향해 발을 내딛을 때입니다. 건강: 전반적으로 활력이 넘치지만, 과욕으로 인한 과부하를 주의하십시오. 애정: 인연이 열리는 시기로, 적극적으로 사람들을 만나십시오. 이런 황금 대운은 평생 두세 번밖에 오지 않습니다. 지금 이 기운을 최대한 활용하십시오.'
