@@ -3123,6 +3123,9 @@ function buildDaewunLoop(data) {
     rows.forEach((r, idx) => {
         const gan = r.gan || '갑'; const ji = r.ji || '자';
         const age = r.age || (idx*10+5);
+        const _bY = data.birthYear || 1988;
+        const _startY2 = _bY + age - 1;
+        const _endY2 = _startY2 + 9;
         const sc = scoreRow(gan, ji);
         const b = badge(sc); const c = col(sc);
         const isCurrent = idx === (data.activeDaeunIdx || 0);
@@ -3159,7 +3162,7 @@ function buildDaewunLoop(data) {
                 <div style="display:flex;align-items:center;gap:10px;">
                     <div>
                         <div style="font-size:18px;font-weight:800;color:var(--gold);">${age}세 ~ ${age+9}세</div>
-                        <div style="font-size:12px;color:rgba(199,167,106,0.6);margin-top:2px;">${ganKr}${jiKr}운 · ${b.replace(/[🌟✦—⚠❌]/g,'').trim()}</div>
+                        <div style="font-size:12px;color:rgba(199,167,106,0.6);margin-top:2px;">${_startY2}~${_endY2}년 · ${ganKr}${jiKr}운</div>
                         ${isCurrent?'<span style="font-size:10px;background:var(--gold);color:#000;padding:2px 8px;border-radius:8px;font-weight:700;display:inline-block;margin-top:4px;">▶ 지금 이 시기</span>':''}
                     </div>
                 </div>
@@ -3318,49 +3321,6 @@ function buildSewunLoop(data) {
                     <div style="font-size:11px;color:#e74c3c;font-weight:700;">흉 (-3점-)</div>
                     <p style="font-size:11px;color:#bbb;margin:4px 0 0;line-height:1.6;">강한 역풍. 방어 전략으로 손실을 최소화하십시오.</p>
                 </div>
-            </div>
-        </div>
-        <div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:22px;margin:20px 0 0;">
-            <div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:14px;letter-spacing:1px;">&#9670; 10천간 × 12지지 — 세운 기운 완전 가이드</div>
-            <p style="font-size:13px;color:#ccc;line-height:1.9;margin:0 0 12px;">아래 10천간과 12지지의 기운을 이해하면 어떤 연도든 스스로 분석할 수 있는 능력이 생깁니다. 천간은 그 해의 방향성과 에너지의 성질을, 지지는 그 해의 실질적 사건과 흐름을 결정합니다.</p>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
-                <div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:10px;">
-                    <div style="font-size:11px;color:var(--gold);font-weight:700;margin-bottom:6px;">10천간 기운 해설</div>
-                    <div style="display:flex;flex-direction:column;gap:4px;">
-                        <p style="font-size:11px;color:#bbb;line-height:1.7;margin:0;"><b style="color:#4fc3a1;">甲(갑)</b> 새로운 시작과 도전. 창업·출발에 유리. 두려움 없는 첫발이 핵심.</p>
-                        <p style="font-size:11px;color:#bbb;line-height:1.7;margin:0;"><b style="color:#4fc3a1;">乙(을)</b> 유연한 적응. 관계·협상·네트워킹이 재물을 만드는 해.</p>
-                        <p style="font-size:11px;color:#bbb;line-height:1.7;margin:0;"><b style="color:#ff7043;">丙(병)</b> 태양처럼 드러남. 명성과 인정의 해. 자신을 적극 알려야.</p>
-                        <p style="font-size:11px;color:#bbb;line-height:1.7;margin:0;"><b style="color:#ff7043;">丁(정)</b> 집중과 내실. 한 분야 전문성 강화. 깊이가 성과를 만듦.</p>
-                        <p style="font-size:11px;color:#bbb;line-height:1.7;margin:0;"><b style="color:#ffca28;">戊(무)</b> 묵직한 안정. 장기 투자·부동산 기운. 10년 후를 내다봐야.</p>
-                        <p style="font-size:11px;color:#bbb;line-height:1.7;margin:0;"><b style="color:#ffca28;">己(기)</b> 실용적 마무리. 기존 사업 정리·실속 챙기기.</p>
-                        <p style="font-size:11px;color:#bbb;line-height:1.7;margin:0;"><b style="color:#b0bec5;">庚(경)</b> 결단과 쇄신. 불필요한 것을 쳐내고 새 기준을 세우는 해.</p>
-                        <p style="font-size:11px;color:#bbb;line-height:1.7;margin:0;"><b style="color:#b0bec5;">辛(신)</b> 정밀한 완성. 디테일과 품질이 성패를 가름.</p>
-                        <p style="font-size:11px;color:#bbb;line-height:1.7;margin:0;"><b style="color:#64b5f6;">壬(임)</b> 인맥 확산. 유동적 투자·이동·새 기회가 사방에서 등장.</p>
-                        <p style="font-size:11px;color:#bbb;line-height:1.7;margin:0;"><b style="color:#64b5f6;">癸(계)</b> 내면 충전. 분석·연구·조용히 내공 쌓는 해.</p>
-                    </div>
-                </div>
-                <div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:10px;">
-                    <div style="font-size:11px;color:var(--gold);font-weight:700;margin-bottom:6px;">12지지 기운 해설</div>
-                    <div style="display:flex;flex-direction:column;gap:4px;">
-                        <p style="font-size:11px;color:#bbb;line-height:1.7;margin:0;"><b style="color:#64b5f6;">子(자)</b> 지혜·집중. 아이디어가 넘치는 해. 문서·계약에 유리.</p>
-                        <p style="font-size:11px;color:#bbb;line-height:1.7;margin:0;"><b style="color:#ffca28;">丑(축)</b> 인내·저력. 눈에 띄지 않는 성실함이 미래 토대를 쌓음.</p>
-                        <p style="font-size:11px;color:#bbb;line-height:1.7;margin:0;"><b style="color:#4fc3a1;">寅(인)</b> 활동·도전. 새로운 출발과 이동의 에너지가 강함.</p>
-                        <p style="font-size:11px;color:#bbb;line-height:1.7;margin:0;"><b style="color:#4fc3a1;">卯(묘)</b> 관계·성장. 인맥이 확장되고 협력 기회가 풍부.</p>
-                        <p style="font-size:11px;color:#bbb;line-height:1.7;margin:0;"><b style="color:#ffca28;">辰(진)</b> 잠재력 발동. 예상치 못한 기회와 변수가 공존.</p>
-                        <p style="font-size:11px;color:#bbb;line-height:1.7;margin:0;"><b style="color:#ff7043;">巳(사)</b> 집중·변신. 결단력이 필요한 해. 큰 변화의 전조.</p>
-                        <p style="font-size:11px;color:#bbb;line-height:1.7;margin:0;"><b style="color:#ff7043;">午(오)</b> 성취·인정. 사회적 성과가 드러나는 화려한 해.</p>
-                        <p style="font-size:11px;color:#bbb;line-height:1.7;margin:0;"><b style="color:#ffca28;">未(미)</b> 감성·풍요. 창작·문화·예술 분야에서 결실.</p>
-                        <p style="font-size:11px;color:#bbb;line-height:1.7;margin:0;"><b style="color:#b0bec5;">申(신)</b> 판단·결단. 빠른 결정이 성패를 가름.</p>
-                        <p style="font-size:11px;color:#bbb;line-height:1.7;margin:0;"><b style="color:#b0bec5;">酉(유)</b> 완성·보상. 노력이 결실로 돌아오는 해.</p>
-                        <p style="font-size:11px;color:#bbb;line-height:1.7;margin:0;"><b style="color:#ffca28;">戌(술)</b> 통찰·마무리. 깊은 성찰과 정리가 필요한 국면.</p>
-                        <p style="font-size:11px;color:#bbb;line-height:1.7;margin:0;"><b style="color:#64b5f6;">亥(해)</b> 잠복·준비. 표면 침체지만 내면의 힘이 충전되는 해.</p>
-                    </div>
-                </div>
-            </div>
-            <div style="background:rgba(199,167,106,0.06);border-radius:8px;padding:14px;border-left:3px solid var(--gold);">
-                <div style="font-size:11px;color:var(--gold);margin-bottom:8px;">세운 활용 핵심 전략</div>
-                <p style="font-size:12.5px;color:#ccc;line-height:1.88;margin:0 0 10px;">길한 세운에는 인생의 주요 결정(창업·이직·투자·결혼)을 실행하십시오. 흉한 세운에는 현상 유지와 내공 축적에 집중하되, 몸과 마음의 건강 관리를 최우선으로 두십시오. 가장 강력한 전략은 길한 세운에 씨를 뿌리고, 흉한 세운에 뿌리를 내리며, 다음 길운에 폭발적으로 수확하는 것입니다. 단기적 결과에 집착하지 말고, 10년의 사이클을 보고 전략을 수립하십시오.</p>
-                <p style="font-size:12.5px;color:#ccc;line-height:1.88;margin:0;">세운은 매년 새해 시작(양력 2월 절기 입춘 기준)에 바뀝니다. 생일이 아닌 절기를 기준으로 세운의 시작을 인식하십시오. 세운 초반(봄~여름)에는 천간의 에너지가 강하게 작동하고, 후반(가을~겨울)에는 지지의 에너지가 더 강하게 발현됩니다. 따라서 같은 세운이라도 상반기와 하반기에 다른 전략이 필요합니다. 길한 세운의 상반기에는 확장과 공세, 하반기에는 안정과 수확에 집중하십시오. 흉한 세운의 상반기에는 신중한 관찰, 하반기에는 내실 다지기와 다음 해 준비에 집중하는 것이 현명합니다. 세운과 월운이 겹쳐 강화되는 달을 찾아 그 달에 중요한 행동을 집중하면 효과가 배가됩니다.</p>
             </div>
         </div>
         <div style="display:flex;flex-direction:column;gap:12px;">${rows}</div>
@@ -5843,7 +5803,7 @@ function runAnalysis() {
                         <b>💑 배우자궁 분석:</b><br>${loveText2}
                     </div>
                     <div class="cat-advice">
-                        당신에게 맞는 인연은 용신 오행을 일간으로 가진 사람입니다. 궁합은 천간보다 일지의 합충 관계가 평생 에너지를 좌우합니다.
+                        당신에게 맞는 인연은 용신 오행을 일간으로 가진 사람입니다. 서로의 일주 지지가 합(合) 관계를 이룰 때 평생 에너지가 잘 맞습니다.
                     </div>
                 </div>`;
 
