@@ -2210,23 +2210,7 @@ function injectSectionInterpretations(data) {
                 <div style="font-size:11px;color:var(--gold);margin-bottom:8px;">✦ 개운(운을 여는) 실천법</div>
                 <p style="font-size:13px;color:#ddd;line-height:1.85;margin:0;">용신 색상과 방위를 생활에 적용하고, 용신 오행을 일간으로 가진 사람을 파트너·귀인으로 선택하십시오. 용신 기운이 강해지는 대운·세운에 인생에서 가장 중요한 결정을 실행하십시오. 이것이 개운의 핵심 원리입니다.</p>
             </div>
-            ${(()=>{
-                const johu = data.johu || '';
-                const gg = data.geokguk;
-                let extra = '';
-                if(johu) {
-                    extra += '<div style="background:rgba(100,180,255,0.05);border-radius:10px;padding:14px 16px;margin-top:12px;border-left:3px solid rgba(100,180,255,0.4);"><div style="font-size:11px;color:#64b5f6;margin-bottom:8px;">🌡 조후용신(調候用神) — 태어난 계절 기반 균형</div><p style="font-size:12.5px;color:#bbb;line-height:1.8;margin:0;">' + johu + '</p></div>';
-                }
-                if(gg && gg.geokName && gg.info) {
-                    const GG_OH = {'정재격':'earth','편재격':'earth','정관격':'metal','편관격':'metal','식신격':'fire','상관격':'fire','편인격':'water','정인격':'water','비겁격':'wood'};
-                    const ggOh = GG_OH[gg.geokName] || '';
-                    const isSeong = data.yong && (data.yong === ggOh || data.hee === ggOh);
-                    const ggColor = isSeong ? '#c7a76a' : '#ff9800';
-                    const ggTxt = isSeong ? gg.info.success : gg.info.fail;
-                    extra += '<div style="background:rgba(199,167,106,0.05);border-radius:10px;padding:14px 16px;margin-top:12px;border-left:3px solid '+ggColor+';"><div style="font-size:11px;color:'+ggColor+';margin-bottom:8px;">🏛 격국(格局) — 사주 구조의 틀 · <b>'+gg.geokName+'</b></div><p style="font-size:12.5px;color:#bbb;line-height:1.8;margin:0;">'+ggTxt+'</p></div>';
-                }
-                return extra;
-            })()}
+
         </div>
     </div>`);
     // 8. 인생 시기별 아래 → 재물+직업+애정
@@ -2488,7 +2472,7 @@ function buildCurrentPeriodSummary(data) {
         const _dStartY = _by + _dAge - 1;
         const _dEndY = _dStartY + 9;
         daeunHtml = `<div style="margin-bottom:12px;padding:14px;background:rgba(199,167,106,0.06);border:1px solid var(--gold);border-radius:10px;">
-            <div style="font-size:11px;color:var(--gold);font-weight:700;margin-bottom:8px;letter-spacing:1px;">▶ 현재 대운 — ${curDaeun.age}세 구간 (${_dStartY}~${_dEndY}년) · 지금 진행 중인 10년 운세</div>
+            <div style="font-size:11px;color:var(--gold);font-weight:700;margin-bottom:8px;letter-spacing:1px;">▶ 현재 대운 — ${curDaeun.age}세~${curDaeun.age+9}세 · 지금 진행 중인 10년 운세</div>
             <div style="font-size:18px;font-weight:900;color:var(--gold);font-family:Noto Serif KR,serif;margin-bottom:6px;"><span style="font-family:Noto Serif KR,serif;">${dg}${dj}</span> <span style="font-size:14px;font-weight:600;color:#ddd;">(${HAN_KOR[dg]||dg}${HAN_KOR[dj]||dj})</span> <span style="font-size:13px;color:#bbb;font-weight:400;">${KN[dOh]||''} + ${KN[djOh]||''} 기운</span></div>
             <p style="font-size:13px;color:#ddd;line-height:1.8;margin:0 0 8px;">${dStrat}</p>
             <span style="font-size:12px;font-weight:700;color:${dcol};">${gb(ds)}</span>
@@ -2700,7 +2684,7 @@ function buildCurrentPeriodSummary(data) {
         const _dStartY = _by + _dAge - 1;
         const _dEndY = _dStartY + 9;
         daeunHtml = `<div style="margin-bottom:12px;padding:14px;background:rgba(199,167,106,0.06);border:1px solid var(--gold);border-radius:10px;">
-            <div style="font-size:11px;color:var(--gold);font-weight:700;margin-bottom:8px;letter-spacing:1px;">▶ 현재 대운 — ${curDaeun.age}세 구간 (${_dStartY}~${_dEndY}년) · 지금 진행 중인 10년 운세</div>
+            <div style="font-size:11px;color:var(--gold);font-weight:700;margin-bottom:8px;letter-spacing:1px;">▶ 현재 대운 — ${curDaeun.age}세~${curDaeun.age+9}세 · 지금 진행 중인 10년 운세</div>
             <div style="font-size:18px;font-weight:900;color:var(--gold);font-family:Noto Serif KR,serif;margin-bottom:6px;"><span style="font-family:Noto Serif KR,serif;">${dg}${dj}</span> <span style="font-size:14px;font-weight:600;color:#ddd;">(${HAN_KOR[dg]||dg}${HAN_KOR[dj]||dj})</span> <span style="font-size:13px;color:#bbb;font-weight:400;">${KN[dOh]||''} + ${KN[djOh]||''} 기운</span></div>
             <p style="font-size:13px;color:#ddd;line-height:1.8;margin:0 0 8px;">${dStrat}</p>
             <span style="font-size:12px;font-weight:700;color:${dcol};">${gb(ds)}</span>
@@ -2886,16 +2870,16 @@ function buildChapter1_Basic(data) {
 
 남들이 가지 않은 곳에 먼저 발을 내딛고, 뒤따르는 사람들이 걸어올 수 있는 길을 닦는 것 — 이것이 ${name}님의 사주가 가리키는 삶의 방향입니다.
 
-🌱 ${y1}~${y2}년, 유년기
+🌱 0~15세, 유년기
 태어난 환경이 이 강한 에너지를 처음 형성한 시기입니다. 가정과 주변 환경이 당신 안의 개척 본능을 어떻게 자극했는지 — 그 첫 경험들이 무의식 깊숙이 새겨져 평생의 추진력의 원형이 됩니다.
 
-🔥 ${y2}~${y3}년, 청년기
+🔥 15~35세, 청년기
 에너지가 너무 강해서 주변과 마찰이 잦은 시기입니다. "왜 저 사람은 혼자서만 앞서가려 하나"라는 오해를 받습니다. 그러나 이것은 결함이 아닙니다. 엔진이 강력한 것입니다. 이 시기의 핵심 과제는 방향입니다 — 이 에너지를 어디에 쏟을 것인가를 결정하는 순간이 오면, 그 선택이 이후 인생 전체를 바꿉니다.
 
-⚡ ${y3}~${y4}년, 중년기
+⚡ 35~55세, 중년기
 당신이 걸어온 길이 누군가에게 지도가 되는 시기입니다. 20~30대의 마찰과 충돌이 사실은 당신을 가장 단단하게 만들어온 과정이었다는 것을 이때 깨닫습니다. 이 시기에 본격적인 영향력과 결실이 나타납니다.
 
-🌙 ${y4}년~ 말년기
+🌙 55세~ 말년기
 당신이 개척해온 길 위에 쌓인 것들이 가장 풍성해지는 시기입니다. 스스로 만든 길의 끝에서, 뒤를 돌아보면 당신만의 역사가 펼쳐져 있습니다.
 
 ▸ 이 사주의 핵심 과제: 속도를 낮추는 것이 아니라, 방향을 명확히 하는 것.
@@ -2903,16 +2887,16 @@ function buildChapter1_Basic(data) {
 ▸ 가장 빛나는 순간: 처음 시작하는 것, 아무도 안 해본 것을 해낼 때.`,
             weak: `${name}님의 사주를 한 문장으로 요약하면 이렇습니다. "이 사람은 혼자일 때보다 함께일 때 1+1이 10이 되는 사람이다."
 
-🌱 ${y1}~${y2}년, 유년기
+🌱 0~15세, 유년기
 태어난 환경에서 이미 협력과 관계의 씨앗이 심어진 시기입니다. 주변 사람들과의 관계 속에서 자신의 에너지가 어떻게 달라지는지를 일찍 경험합니다.
 
-🔥 ${y2}~${y3}년, 청년기
+🔥 15~35세, 청년기
 혼자 모든 것을 해결하려는 시도가 한계에 부딪히는 경험을 반복합니다. 이것은 ${name}님이 부족해서가 아니라, 혼자 가는 것이 이 사주의 방식이 아니기 때문입니다. 이 시기의 핵심은 에너지를 채워주는 결정적 파트너와 귀인을 알아보는 눈을 기르는 것입니다.
 
-⚡ ${y3}~${y4}년, 중년기
+⚡ 35~55세, 중년기
 좋은 파트너와 함께할 때 당신의 능력이 극대화되는 것을 체감하는 시기입니다. 혼자였다면 불가능했던 일들이 함께이기에 가능해집니다. 이 시기에 좋은 사람들로 둘러싸인 생태계의 중심이 됩니다.
 
-🌙 ${y4}년~ 말년기
+🌙 55세~ 말년기
 당신이 만들어온 관계와 신뢰의 네트워크가 가장 풍성한 결실을 맺는 시기입니다.
 
 ▸ 이 사주의 핵심 과제: 혼자 모든 것을 감당하려는 고집을 내려놓는 것.
@@ -2923,16 +2907,16 @@ function buildChapter1_Basic(data) {
 
 존재 자체가 에너지입니다. 어떤 공간에 들어가도 분위기를 주도하는 카리스마, 말 한마디로 사람들을 움직이는 표현력 — 이것이 ${name}님의 가장 강력한 무기입니다.
 
-🌱 ${y1}~${y2}년, 유년기
+🌱 0~15세, 유년기
 이 뜨거운 에너지가 처음 형성된 시기입니다. 주목받는 경험, 표현하고 싶은 충동 — 이 어린 시절의 경험들이 당신 안의 카리스마의 원형을 만들었습니다.
 
-🔥 ${y2}~${y3}년, 청년기
+🔥 15~35세, 청년기
 에너지를 통제하지 못해 번아웃과 감정 기복을 반복하는 시기입니다. 열정을 쏟아붓다가 갑자기 무너지는 패턴이 생깁니다. 이 시기의 핵심 과제는 에너지를 다루는 법을 터득하는 것 — 불이 너무 세면 모든 것을 태웁니다. 출력을 조절하는 법을 배우는 것이 이 청년기의 가장 중요한 숙제입니다.
 
-⚡ ${y3}~${y4}년, 중년기
+⚡ 35~55세, 중년기
 카리스마가 완성된 형태로 드러나는 시기입니다. 사람들이 ${name}님 곁에 있고 싶어 합니다. 당신의 열정이 전염되기 때문입니다. 이 시기에 영향력이 가장 크게 발휘됩니다.
 
-🌙 ${y4}년~ 말년기
+🌙 55세~ 말년기
 쌓아온 존재감과 영향력이 가장 큰 자산이 되는 시기입니다. 당신이 걸어온 열정의 흔적들이 가장 빛나는 유산이 됩니다.
 
 ▸ 이 사주의 핵심 과제: 에너지 관리. 불이 너무 세면 모든 것을 태웁니다.
@@ -2940,16 +2924,16 @@ function buildChapter1_Basic(data) {
 ▸ 가장 빛나는 순간: 사람들 앞에 설 때, 자신의 열정을 전달할 때.`,
             weak: `${name}님의 사주를 한 문장으로 요약하면 이렇습니다. "이 사람 안에는 폭발적인 열정의 씨앗이 있다. 다만 그 씨앗이 피어나려면 환경이 맞아야 한다."
 
-🌱 ${y1}~${y2}년, 유년기
+🌱 0~15세, 유년기
 열정의 씨앗이 처음 심어진 시기입니다. 그러나 환경이 그 씨앗을 충분히 키워주지 못했을 수도 있습니다. 이 경험이 이후 "맞는 환경"에 대한 갈망의 원형이 됩니다.
 
-🔥 ${y2}~${y3}년, 청년기
+🔥 15~35세, 청년기
 에너지가 빠르게 소진되는 경험을 반복합니다. "나는 왜 이렇게 쉽게 지치는가"라는 자책이 생기지만, 이것은 ${name}님의 문제가 아니라 환경의 문제입니다. 에너지를 충전시켜주는 사람과 장소에 있을 때 누구보다 빛납니다. 이 시기의 핵심은 맞는 환경을 찾아내는 것입니다.
 
-⚡ ${y3}~${y4}년, 중년기
+⚡ 35~55세, 중년기
 진정한 환경과 사람을 찾아낸 후 삶이 달라지는 시기입니다. 그 환경 안에서 당신의 따뜻함과 헌신이 가장 강력한 무기가 됩니다.
 
-🌙 ${y4}년~ 말년기
+🌙 55세~ 말년기
 당신이 선택한 환경과 사람들 속에서 가장 따뜻하고 충만한 시기가 펼쳐집니다.
 
 ▸ 이 사주의 핵심 과제: 내 에너지를 빼앗는 사람과 채워주는 사람을 구별하는 것.
@@ -2960,32 +2944,32 @@ function buildChapter1_Basic(data) {
 
 주변이 아무리 요동쳐도 중심을 잡는 안정감 — 이것이 사람들이 ${name}님 곁에 오고 싶어하는 이유입니다. 신뢰와 포용이 이 사주의 핵심 자산입니다.
 
-🌱 ${y1}~${y2}년, 유년기
+🌱 0~15세, 유년기
 안정을 추구하는 성향의 뿌리가 형성된 시기입니다. 가정 환경과 어린 시절의 경험이 이 묵직한 중심감의 원형을 만들었습니다.
 
-🔥 ${y2}~${y3}년, 청년기
+🔥 15~35세, 청년기
 변화를 두려워하다가 좋은 기회를 흘려보내는 경험이 반복될 수 있습니다. "좀 더 확실해지면 할게"를 반복하다가 기회가 지나간 후 후회하는 패턴입니다. 이 시기의 핵심 과제는 70%의 확신이 생겼을 때 실행하는 결단입니다.
 
-⚡ ${y3}~${y4}년, 중년기
+⚡ 35~55세, 중년기
 묵직하게 쌓아온 신뢰와 자산이 전성기를 만들어내는 시기입니다. 느리지만 확실하게 쌓아온 것들이 이 시기에 가장 빛납니다.
 
-🌙 ${y4}년~ 말년기
+🌙 55세~ 말년기
 평생 쌓아온 신뢰와 관계의 네트워크가 가장 풍성하게 결실을 맺는 시기입니다. 흔들리지 않고 버텨온 것들이 당신의 가장 큰 자산이 됩니다.
 
 ▸ 이 사주의 핵심 과제: 결정을 지나치게 미루는 것을 경계하는 것.
 ▸ 가장 빛나는 순간: 장기적으로 묵묵히 신뢰를 쌓아올린 결과가 나올 때.`,
             weak: `${name}님의 사주를 한 문장으로 요약하면 이렇습니다. "안정을 원하는데, 삶이 계속 변화를 들이민다."
 
-🌱 ${y1}~${y2}년, 유년기
+🌱 0~15세, 유년기
 안정을 갈망하게 된 원형이 형성된 시기입니다. 어린 시절의 환경 변화가 이 갈망의 뿌리가 됩니다.
 
-🔥 ${y2}~${y3}년, 청년기
+🔥 15~35세, 청년기
 변화 속에서도 무너지지 않는 단 하나의 기반을 찾아가는 시기입니다. 그 기반은 직업일 수도, 관계일 수도, 공간일 수도 있습니다. 이것을 찾는 과정이 길고 힘들지만, 찾고 나면 이후가 완전히 달라집니다.
 
-⚡ ${y3}~${y4}년, 중년기
+⚡ 35~55세, 중년기
 기반이 완성되고 안정과 풍요가 펼쳐지는 시기입니다. 청년기의 흔들림이 오히려 이 시기의 단단함을 만들어낸 원동력이었음을 깨닫습니다.
 
-🌙 ${y4}년~ 말년기
+🌙 55세~ 말년기
 당신이 만들어낸 안정의 기반 위에서 가장 평화롭고 풍요로운 시기가 옵니다.
 
 ▸ 가장 빛나는 순간: 오랜 기간 묵묵히 쌓아온 것이 인정받을 때.`
@@ -2995,16 +2979,16 @@ function buildChapter1_Basic(data) {
 
 복잡한 상황 속에서 핵심을 꿰뚫어보는 능력, 불필요한 것을 단번에 쳐내는 결단력 — 이것이 ${name}님의 최강 무기입니다.
 
-🌱 ${y1}~${y2}년, 유년기
+🌱 0~15세, 유년기
 이 냉철한 판단력의 원형이 형성된 시기입니다. 어린 시절의 경험들이 "옳고 그름"을 명확하게 보는 눈을 만들었습니다.
 
-🔥 ${y2}~${y3}년, 청년기
+🔥 15~35세, 청년기
 이 냉철함이 "차갑다"는 오해를 만드는 시기입니다. 그러나 이것은 오해입니다. 이 사주 안에는 강렬한 열정이 있습니다. 다만 낭비하지 않는 방식으로 표현할 뿐입니다. 전문성이 결단력과 결합되기 시작하는 이 시기 — 해당 분야에서 누구도 무시할 수 없는 존재로 성장합니다.
 
-⚡ ${y3}~${y4}년, 중년기
+⚡ 35~55세, 중년기
 그 분야의 권위자가 되어 있는 시기입니다. 사람들이 ${name}님의 판단을 구합니다. 이 영향력의 크기를 스스로 인식하고 책임감 있게 사용하는 것이 중요합니다.
 
-🌙 ${y4}년~ 말년기
+🌙 55세~ 말년기
 당신이 쌓아온 전문성과 결단력의 역사가 가장 빛나는 유산이 됩니다. 당신이 걸어온 원칙의 발자국들이 후대에게 기준이 됩니다.
 
 ▸ 이 사주의 핵심 과제: 결단력을 유지하되, 주변에 대한 공감도 함께 키우는 것.
@@ -3013,16 +2997,16 @@ function buildChapter1_Basic(data) {
 
 높은 기준과 예리한 판단력이 있습니다. 그러나 그것을 실현할 환경과 에너지가 항상 충분하지 않습니다.
 
-🌱 ${y1}~${y2}년, 유년기
+🌱 0~15세, 유년기
 높은 기준의 원형이 심어진 시기입니다. "더 잘할 수 있는데"라는 내적 목소리가 이때부터 시작됩니다.
 
-🔥 ${y2}~${y3}년, 청년기
+🔥 15~35세, 청년기
 "더 잘할 수 있는데 왜 이렇게 안 되는가"라는 내적 갈등이 주를 지배하는 시기입니다. 이것은 ${name}님의 능력 부족이 아니라, 아직 당신의 능력을 인정해주는 환경을 찾지 못했기 때문입니다. 이 시기에 그 환경과 사람을 찾아내는 것이 핵심입니다.
 
-⚡ ${y3}~${y4}년, 중년기
+⚡ 35~55세, 중년기
 정밀한 전문성이 세상에 제대로 인정받는 시기입니다. 청년기의 인내가 이 시기의 매운 열매가 됩니다.
 
-🌙 ${y4}년~ 말년기
+🌙 55세~ 말년기
 당신만의 정밀도와 전문성이 가장 풍성한 지식으로 승화되는 시기입니다.
 
 ▸ 가장 빛나는 순간: 자신을 알아봐 주는 환경에서 전문성을 마음껏 발휘할 때.`
@@ -3032,16 +3016,16 @@ function buildChapter1_Basic(data) {
 
 패턴을 감지하는 능력, 흐름을 읽는 직관 — 이것이 이 사주의 핵심 자산입니다. 그러나 함정이 있습니다 — 너무 많이 생각해서 실행을 미루는 것입니다.
 
-🌱 ${y1}~${y2}년, 유년기
+🌱 0~15세, 유년기
 세상을 읽는 수줍은 능력이 나타난 시기입니다. 남들보다 더 많은 것을 보고 느끼지만, 그것을 표현하는 방법이 아직 없는 시기입니다.
 
-🔥 ${y2}~${y3}년, 청년기
+🔥 15~35세, 청년기
 완벽한 계획이 완성될 때까지 기다리다가 기회가 지나가는 패턴이 반복됩니다. ${name}님의 직관은 대부분 맞습니다. 그 직관을 믿고 실행으로 옮기는 용기가 이 시기의 핵심 과제입니다.
 
-⚡ ${y3}~${y4}년, 중년기
+⚡ 35~55세, 중년기
 오랜 기간 축적된 통찰이 완성된 지혜가 되는 시기입니다. 주변에서 조언을 구하는 사람들이 모여듭니다. 나이가 들수록 가치가 올라가는 사주입니다.
 
-🌙 ${y4}년~ 말년기
+🌙 55세~ 말년기
 깊은 우물이 되어 사람들이 모여드는 시기입니다. 평생 축적된 지혜와 통찰이 가장 빛나는 유산이 됩니다.
 
 ▸ 이 사주의 핵심 과제: 분석을 멈추고 실행하는 타이밍을 잡는 것.
@@ -3050,16 +3034,16 @@ function buildChapter1_Basic(data) {
 
 섬세한 감각과 통찰이 있지만, 그것이 표면으로 드러나기까지 시간이 걸립니다.
 
-🌱 ${y1}~${y2}년, 유년기
+🌱 0~15세, 유년기
 보이지 않는 것을 보는 섬세한 감각의 씨앗이 심어진 시기입니다. 어린 시절의 관찰들이 후날 직관의 원형이 됩니다.
 
-🔥 ${y2}~${y3}년, 청년기
+🔥 15~35세, 청년기
 자신의 능력에 대한 확신이 흔들리는 시기를 지납니다. 그러나 이것은 준비 중이기 때문입니다. 이 시기에 ${name}님의 통찰을 믿어주는 한 명의 귀인을 만나는 것이 핵심입니다.
 
-⚡ ${y3}~${y4}년, 중년기
+⚡ 35~55세, 중년기
 오랜 준비가 매운 열매로 나타나는 시기입니다. 깊이 쌓아온 지혜가 빛을 발합니다.
 
-🌙 ${y4}년~ 말년기
+🌙 55세~ 말년기
 천천히 깊어진 강이 가장 넓고 잔잔한 바다에 닿는 시기입니다. 이 지혜를 필요로 하는 사람들이 찾아옵니다.
 
 ▸ 가장 빛나는 순간: 오랜 시간 묵묵히 쌓아온 깊이가 드디어 세상에 드러날 때.`
@@ -3067,7 +3051,75 @@ function buildChapter1_Basic(data) {
     };
 
     const strengthKey = isStrong ? 'strong' : 'weak';
-    const lifeNarr = LIFE_MAP[dayOh]?.[strengthKey] || (name + '님의 사주 원국이 그리는 삶의 지도입니다.');
+    let lifeNarr = LIFE_MAP[dayOh]?.[strengthKey] || (name + '님의 사주 원국이 그리는 삶의 지도입니다.');
+
+    // 조후(태어난 계절 기운)와 격국(사주 구조)을 서사에 자연스럽게 녹임
+    (function(){
+        const johu = data.johu || '';
+        const gg = data.geokguk;
+        const mb = data.monthBranch || '';
+        const SEASON_KR = {'寅':'이른 봄','卯':'한창 봄','辰':'늦봄','巳':'초여름','午':'한여름','未':'늦여름','申':'초가을','酉':'한가을','戌':'늦가을','亥':'초겨울','子':'한겨울','丑':'겨울 끝자락'};
+        const seasonKr = SEASON_KR[mb] || '';
+
+        // 조후 서사: "X월에 태어났다"는 식의 교과서 설명 제거 → 삶에 미치는 영향만 추출
+        let johuNarr = '';
+        if(johu && seasonKr) {
+            // 조후 텍스트에서 핵심 균형 정보만 추출 (마지막 두 문장)
+            const johuSentences = johu.replace(/[甲乙丙丁戊己庚辛壬癸]/g, '').split('。').join('.').split('.');
+            const johuKey = johu.includes('절대적으로 필요') ? '절실히 필요한 기운이 있는 구조' :
+                           johu.includes('없으면') ? '균형을 잡는 핵심 기운이 중요한 구조' :
+                           johu.includes('폭발적') ? '봄이 오면 폭발적으로 성장하는 구조' :
+                           johu.includes('황금기') ? '전성기가 뚜렷한 구조' : '균형이 잡히면 크게 도약하는 구조';
+            johuNarr = `
+
+${name}님은 ${seasonKr}에 태어났습니다. 이 계절의 기운이 사주 전체의 온도와 습도를 결정합니다. ${johu.split('.').slice(-3).join('.').trim()} 이 균형이 맞는 대운·세운이 찾아올 때 삶이 가장 크게 도약합니다.`;
+        }
+
+        // 격국 서사: "격국이 뭐야" 설명 없이 → 사회적 성취 방식만 서술
+        let ggNarr = '';
+        if(gg && gg.geokName && gg.info) {
+            const GG_OH = {'정재격':'earth','편재격':'earth','정관격':'metal','편관격':'metal','식신격':'fire','상관격':'fire','편인격':'water','정인격':'water','비겁격':'wood'};
+            const ggOh = GG_OH[gg.geokName] || '';
+            const isSeong = data.yong && (data.yong === ggOh || data.hee === ggOh);
+            const GG_NARR = {
+                '정재격': isSeong
+                    ? `${name}님이 돈을 버는 방식은 뚜렷합니다. 화려한 한방이 아니라, 성실하고 꾸준한 신뢰 축적이 재물로 이어지는 구조입니다. 규칙적인 수입, 안정된 직장, 신뢰받는 관계 — 이 세 가지가 결합될 때 재물이 가장 크게 불어납니다.`
+                    : `${name}님은 재물에 대한 강한 의지가 있지만, 가까운 사람이 재물 흐름을 막는 패턴이 반복될 수 있습니다. 합법적 계약과 문서화가 반드시 필요합니다.`,
+                '편재격': isSeong
+                    ? `${name}님이 가장 빛나는 무대는 고정된 월급이 아닌 사업, 투자, 광범위한 인간관계입니다. 아이디어가 곧 돈이 되고, 사람이 기회가 됩니다. 큰 판을 벌이는 것을 두려워하지 않아야 합니다.`
+                    : `${name}님은 큰 재물을 다루는 감각이 있지만, 한번에 크게 잃는 리스크도 함께 옵니다. 과감한 투자보다 분산과 안전장치가 먼저입니다.`,
+                '정관격': isSeong
+                    ? `${name}님은 사회적 시스템 안에서 가장 빛납니다. 법과 원칙을 지키며 차근차근 인정받는 구조이며, 조직에서의 신뢰와 명예가 가장 강력한 자산이 됩니다.`
+                    : `${name}님은 명예에 대한 강한 욕구가 있지만, 독설이나 원칙 위반이 돌이킬 수 없는 결과를 낳을 수 있습니다. 언행에 각별히 주의해야 합니다.`,
+                '편관격': isSeong
+                    ? `${name}님의 진짜 능력은 역경 속에서 폭발합니다. 경쟁이 치열하고 도전적인 환경일수록 더 강해지는 구조입니다. 군인, 운동선수, 법조인, 외과의처럼 강도 높은 분야에서 두각을 나타냅니다.`
+                    : `${name}님은 강한 추진력이 있지만, 충동과 공격성을 제어하지 못하면 사고나 법적 문제로 이어집니다. 반드시 제어 장치와 멘토가 필요합니다.`,
+                '식신격': isSeong
+                    ? `${name}님의 재능이 곧 밥입니다. 예술, 기획, 요리, 교육처럼 자신의 능력을 표현하는 방식으로 수입이 자연스럽게 따라오는 구조입니다. 좋아하는 일을 계속 파고들면 됩니다.`
+                    : `${name}님은 재능이 있어도 수입으로 연결되지 않는 시기가 반복됩니다. 재능보다 마케팅과 판로 개척이 먼저입니다.`,
+                '상관격': isSeong
+                    ? `${name}님은 기존 관념을 깨는 혁신적 사고와 탁월한 언변이 최대 강점입니다. 조직보다 독립적인 환경에서, 창작·기획·컨설팅 분야에서 가장 빛납니다.`
+                    : `${name}님의 날카로운 언변이 때로 가장 중요한 관계를 끊어냅니다. 말 한마디가 인생을 바꿀 수 있습니다. 표현 방식에 신중함이 필요합니다.`,
+                '편인격': isSeong
+                    ? `${name}님은 남들이 가지 않은 독창적인 길에서 전문성을 만들어내는 구조입니다. 깊이 파고드는 연구, 창작, 기술 분야에서 타의 추종을 불허하는 권위자가 됩니다.`
+                    : `${name}님의 뛰어난 전문성이 다른 사람에게 가로막히는 패턴이 있습니다. 지식재산권 보호와 독립적 활동 환경이 필요합니다.`,
+                '정인격': isSeong
+                    ? `${name}님은 배울수록 가치가 올라가는 사주입니다. 자격증, 학위, 공인된 지식이 사회적 신뢰와 수입의 핵심입니다. 평생 배움을 멈추지 말아야 합니다.`
+                    : `${name}님은 배움에 대한 강한 욕구가 있지만, 학업 중단이나 귀인의 배신이 반복될 수 있습니다. 검증된 스승을 신중하게 선택해야 합니다.`,
+                '비겁격': isSeong
+                    ? `${name}님은 독립적 환경에서 경쟁할 때 가장 강합니다. 조직의 통제를 받기보다 스스로 판을 벌이는 사업가, 프리랜서, 전문직 분야가 맞습니다.`
+                    : `${name}님은 강한 자아가 협력을 방해합니다. 혼자 모든 것을 하려다가 기회를 놓치는 패턴이 반복됩니다. 신뢰할 수 있는 파트너를 찾는 것이 핵심입니다.`
+            };
+            ggNarr = '
+
+' + (GG_NARR[gg.geokName] || '');
+        }
+
+        if(johuNarr || ggNarr) {
+            lifeNarr = lifeNarr + ggNarr + johuNarr;
+        }
+    })();
+
     const iljuCore = dbEntry.core || '';
 
     const HAN_KOR_GM = {'子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해'};
@@ -3110,51 +3162,6 @@ function buildChapter1_Basic(data) {
         ${iljuCore ? `<div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:18px 20px;margin:20px 0;"><div style="font-size:11px;color:var(--text-dim);margin-bottom:10px;letter-spacing:1px;">일주 ${dH}(${toKr(dH)}) — 나 자신의 핵심 기질</div><p style="font-size:14px;color:#ddd;line-height:1.9;margin:0;">${iljuCore}</p></div>` : ''}
 
         ${gongmangText}
-
-        ${(()=>{
-            const johu = data.johu || '';
-            const gg = data.geokguk;
-            const monthBranch = data.monthBranch || '';
-            const HK2 = {'甲':'갑','乙':'을','丙':'병','丁':'정','戊':'무','己':'기','庚':'경','辛':'신','壬':'임','癸':'계','子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해'};
-            const toKr2 = s => s ? [...s].map(c=>HK2[c]||c).join('') : '';
-            const MONTH_SEASON = {'寅':'봄(이른 봄)','卯':'봄(한창 봄)','辰':'봄(늦봄)','巳':'여름(초여름)','午':'여름(한여름)','未':'여름(늦여름)','申':'가을(초가을)','酉':'가을(한가을)','戌':'가을(늦가을)','亥':'겨울(초겨울)','子':'겨울(한겨울)','丑':'겨울(늦겨울)'};
-            const season = MONTH_SEASON[monthBranch] || '';
-            
-            let johuHtml = '';
-            if(johu) {
-                johuHtml = `<div style="background:rgba(100,180,255,0.05);border-radius:10px;padding:18px 20px;margin:20px 0;border-left:3px solid rgba(100,180,255,0.4);">
-                    <div style="font-size:11px;color:#64b5f6;letter-spacing:2px;margin-bottom:10px;">🌡 조후(調候) — 당신 사주의 온도와 습도 균형</div>
-                    <div style="font-size:11px;color:rgba(100,180,255,0.6);margin-bottom:10px;">${toKr2(data.dayStem||'')} 일간 · ${season} 출생</div>
-                    <p style="font-size:13.5px;color:#ccc;line-height:1.9;margin:0;">${johu}</p>
-                </div>`;
-            }
-            
-            let ggHtml = '';
-            if(gg && gg.geokName && gg.info) {
-                const isSuccess = (data.wuxing && Object.keys(data.wuxing).length > 0);
-                // 성격/파격 간단 판별: 용신이 격국 오행을 보조하는지
-                const GG_OH = {'정재격':'earth','편재격':'earth','정관격':'metal','편관격':'metal','식신격':'fire','상관격':'fire','편인격':'water','정인격':'water','비겁격':'wood'};
-                const ggOh = GG_OH[gg.geokName] || '';
-                const isSeong = data.yong && (data.yong === ggOh || data.hee === ggOh);
-                const ggText = isSeong ? (gg.info.success || '') : (gg.info.fail || gg.info.success || '');
-                const ggColor = isSeong ? '#c7a76a' : '#ff9800';
-                const ggBadge = isSeong ? '✅ 성격(成格)' : '⚠ 검토 필요';
-                ggHtml = `<div style="background:rgba(199,167,106,0.05);border-radius:10px;padding:18px 20px;margin:20px 0;border-left:3px solid ${ggColor};">
-                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-                        <div style="font-size:11px;color:${ggColor};letter-spacing:2px;">🏛 격국(格局) — 당신 사주의 구조적 틀</div>
-                        <span style="font-size:10px;background:rgba(199,167,106,0.15);color:${ggColor};padding:1px 8px;border-radius:8px;">${gg.geokName}</span>
-                        <span style="font-size:10px;color:#888;">${ggBadge}</span>
-                    </div>
-                    <p style="font-size:13.5px;color:#ccc;line-height:1.9;margin:0 0 10px;">${ggText}</p>
-                    <div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:10px 12px;">
-                        <div style="font-size:10px;color:#888;margin-bottom:4px;">이 격국을 가진 사람의 핵심 기질</div>
-                        <div style="font-size:12px;color:#bbb;">${gg.info.chars || ''}</div>
-                    </div>
-                </div>`;
-            }
-            
-            return johuHtml + ggHtml;
-        })()}
 
         <div style="background:rgba(199,167,106,0.05);border-radius:10px;padding:18px;margin:20px 0;border:1px solid rgba(199,167,106,0.1);">
             <div style="font-size:12px;color:var(--gold);font-weight:700;margin-bottom:10px;">✦ 이 사주를 가진 사람이 인생에서 가장 기억해야 할 것</div>
@@ -3552,7 +3559,7 @@ function buildDaewunLoop(data) {
                 <div style="display:flex;align-items:center;gap:10px;">
                     <div>
                         <div style="font-size:18px;font-weight:800;color:var(--gold);">${age}세 ~ ${age+9}세</div>
-                        <div style="font-size:12px;color:rgba(199,167,106,0.6);margin-top:2px;">${_startY2}~${_endY2}년 · ${ganKr}${jiKr}운</div>
+                        <div style="font-size:12px;color:rgba(199,167,106,0.6);margin-top:2px;">${ganKr}${jiKr}운</div>
                         <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:4px;">
                             ${(typeof getUnsung==='function'&&data.dayStem) ? `<span style="font-size:10px;background:rgba(255,255,255,0.1);color:#bbb;padding:1px 7px;border-radius:8px;">12운성: ${getUnsung(data.dayStem,ji)||'-'}</span>` : ''}
                             ${(typeof getSipseong==='function'&&data.dayStem) ? `<span style="font-size:10px;background:rgba(199,167,106,0.12);color:#c7a76a;padding:1px 7px;border-radius:8px;">${getSipseong(data.dayStem,gan)||''}</span>` : ''}
@@ -6144,7 +6151,7 @@ function runAnalysis() {
                 d.style.cssText='padding:14px;background:rgba(255,255,255,'+(isCur?'0.07':'0.03')+');border:1px solid '+(isCur?'var(--gold)':'rgba(255,255,255,0.07)')+';border-radius:10px;';
                 d.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:6px;">'+
                     '<div style="display:flex;align-items:center;gap:8px;"><span style="font-size:22px;font-weight:900;color:var(--gold);font-family:Noto Serif KR,serif;">'+g+j+'</span><span style="font-size:15px;font-weight:600;color:#ccc;">('+((HAN_KOR&&HAN_KOR[g])||g)+((HAN_KOR&&HAN_KOR[j])||j)+')</span>'+
-                    '<div><div style="font-size:12px;color:#bbb;">'+age+'세 ~ '+(endAge-1)+'세 <span style="color:rgba(199,167,106,0.7);font-size:11px;">('+_startYr+'~'+_endYr+'년)</span></div>'+(isCur?'<span style="font-size:10px;background:var(--gold);color:#000;padding:1px 6px;border-radius:6px;font-weight:700;">▶ 현재</span>':'')+'</div></div>'+
+                    '<div><div style="font-size:12px;color:#bbb;">'+age+'세 ~ '+(endAge-1)+'세</div>'+(isCur?'<span style="font-size:10px;background:var(--gold);color:#000;padding:1px 6px;border-radius:6px;font-weight:700;">▶ 현재</span>':'')+'</div></div>'+
                     '<span style="font-size:12px;font-weight:700;color:'+col+';">'+gb(s)+'</span></div>'+
                     '<div style="background:rgba(0,0,0,0.15);border-radius:6px;padding:10px;margin-bottom:8px;"><p style="font-size:12px;color:#ddd;line-height:1.75;margin:0;">'+((window.PERIOD_NARRATIVE&&window.PERIOD_NARRATIVE[g+j]) ? window.PERIOD_NARRATIVE[g+j] : (GAN_T[g]||'')+' '+(JI_T[j]||''))+'</p></div>'+
                     /* 천간/지지 분리박스 제거 */
