@@ -3147,7 +3147,21 @@ ${name}님은 ${seasonKr}에 태어났습니다. 이 계절의 기운이 사주 
     const gongmangText = gongmangBranches.length > 0
         ? `<div style="background:rgba(231,76,60,0.06);border-left:3px solid rgba(231,76,60,0.5);padding:18px 20px;border-radius:0 12px 12px 0;margin-top:20px;">
             <div style="font-size:12px;color:#e74c3c;margin-bottom:10px;letter-spacing:1px;font-weight:700;">⚠ 공망(空亡) — ${name}님 원국의 결핍과 갈망</div>
-            <p style="font-size:13.5px;color:#ddd;line-height:1.9;margin:0 0 12px;">${name}님의 원국에서 <b>${gmBranchNames}</b> 기운이 공망입니다. 이 공망이 원국 내 <b>${gmPillarNames}</b>에 해당됩니다. 즉, 이 기둥이 상징하는 삶의 영역 — ${gongmangPillars.map(p=>({시주:'자녀와 말년 운',일주:'배우자와 나 자신',월주:'부모와 직업 환경',년주:'조상과 사회적 기반'}[p.n]||p.n)).join(', ')} — 에서 특정한 결핍감과 갈망이 반복적으로 나타납니다.</p>
+            ${(()=>{
+                const PILLAR_DESC = {시주:'자녀와 말년의 운',일주:'배우자와 나 자신',월주:'부모와 직업 환경',년주:'조상과 사회적 기반'};
+                const BRANCH_MEANING = {
+                    '子':'감정과 지혜의 영역','丑':'인내와 재물의 영역','寅':'독립과 도전의 영역','卯':'성장과 인맥의 영역',
+                    '辰':'변화와 기회의 영역','巳':'열정과 표현의 영역','午':'명예와 인정의 영역','未':'안정과 조화의 영역',
+                    '申':'변화와 이동의 영역','酉':'완성과 전문성의 영역','戌':'신앙과 철학의 영역','亥':'지혜와 은둔의 영역'
+                };
+                const gmAreaNames = gongmangBranches.map(b => BRANCH_MEANING[b] || b).join(', ');
+                if(gongmangPillars.length > 0) {
+                    const pillarAreas = gongmangPillars.map(p => PILLAR_DESC[p.n]||p.n).join(', ');
+                    return '<p style="font-size:13.5px;color:#ddd;line-height:1.9;margin:0 0 12px;">' + name + '님의 원국에서 <b>' + gmBranchNames + '</b> 기운이 공망입니다. 이 공망은 원국의 <b>' + gmPillarNames + '</b>에 직접 걸려 있어, <b>' + pillarAreas + '</b>에서 특정한 결핍감과 갈망이 평생 반복되는 구조입니다.</p>';
+                } else {
+                    return '<p style="font-size:13.5px;color:#ddd;line-height:1.9;margin:0 0 12px;">' + name + '님의 원국에서 <b>' + gmBranchNames + '</b> 기운이 공망입니다. 이 공망 기운은 원국의 8자 안에 직접 있지는 않지만, 대운·세운에서 해당 기운이 들어오는 시기마다 <b>' + gmAreaNames + '</b>에서 결핍감과 허탈함이 반복적으로 나타납니다. 특히 공망 기운이 강해지는 운에서 큰 결정을 내릴 때는 평소보다 신중함이 두 배 더 필요합니다.</p>';
+                }
+            })()}
             <p style="font-size:13.5px;color:#ddd;line-height:1.9;margin:0 0 12px;">공망은 단순히 나쁜 것이 아닙니다. 이 비어있음이 끊임없이 채우려는 동력이 되고, 그 집착과 갈망이 오히려 성취의 원동력이 되는 경우가 많습니다. 실제로 역사적으로 큰 성취를 이룬 사람들 중 공망이 있는 사주가 많은 것이 이를 증명합니다.</p>
             <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:12px 14px;margin-top:4px;">
                 <div style="font-size:11px;color:#e74c3c;margin-bottom:6px;">⚡ 공망이 있을 때 가장 조심해야 할 순간</div>
@@ -5793,8 +5807,11 @@ function runAnalysis() {
             bRow('12신살', p => `<div class="m-badge" style="font-size:11px;">${(allTwelveShinsal[p.n] || []).join('<br>') || '-'}</div>`),
             bRow('기타신살', p => `<div class="m-badge" style="font-size:11px;">${(allExtraShinsal[p.n] || []).join('<br>') || '-'}</div>`),
             bRow('공망', p => {
-                const gm = getGongmang(dayStem + ec.getDay()[1]);
-                return `<div class="m-badge" style="${gm.includes(p.h[1]) ? 'color:var(--fire);font-weight:bold;' : ''}">${gm.includes(p.h[1]) ? '공망' : '-'}</div>`;
+                const gmStr = getGongmang(dayStem + ec.getDay()[1]);
+                const KR2HJ2 = {'자':'子','축':'丑','인':'寅','묘':'卯','진':'辰','사':'巳','오':'午','미':'未','신':'申','유':'酉','술':'戌','해':'亥'};
+                const gmHanja = gmStr ? [...gmStr].map(c => KR2HJ2[c]||c) : [];
+                const isGm = gmHanja.includes(p.h[1]);
+                return `<div class="m-badge" style="${isGm ? 'color:var(--fire);font-weight:bold;' : ''}">${isGm ? '공망' : '-'}</div>`;
             })
         ].join('');
         document.getElementById('manse-table').innerHTML = manseHtml;
@@ -6593,7 +6610,10 @@ function runAnalysis() {
             geokguk: (typeof window.getGeokGuk === 'function') ? window.getGeokGuk(pillars, dayStem, ec) : null,
             gongmang: (function(){
                 const gmStr = getGongmang(dayStem + ec.getDay()[1]);
-                return gmStr ? [...gmStr] : [];
+                if(!gmStr) return [];
+                // 한글→한자 변환 (pillars의 h[1]은 한자이므로)
+                const KR2HJ = {'자':'子','축':'丑','인':'寅','묘':'卯','진':'辰','사':'巳','오':'午','미':'未','신':'申','유':'酉','술':'戌','해':'亥'};
+                return [...gmStr].map(c => KR2HJ[c] || c);
             })()
         };
 
