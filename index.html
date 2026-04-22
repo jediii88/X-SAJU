@@ -5535,8 +5535,13 @@ function getGongmang(dayPillar) {
     const stems = ['갑','을','병','정','무','기','경','신','임','계'];
     const branches = ['자','축','인','묘','진','사','오','미','신','유','술','해'];
     if (!dayPillar || dayPillar.length < 2) return '';
-    const stemIdx = stems.indexOf(dayPillar[0]);
-    const branchIdx = branches.indexOf(dayPillar[1]);
+    // 한자→한글 변환 지원
+    const HJ2KR_S = {'甲':'갑','乙':'을','丙':'병','丁':'정','戊':'무','己':'기','庚':'경','辛':'신','壬':'임','癸':'계'};
+    const HJ2KR_B = {'子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해'};
+    const s0 = HJ2KR_S[dayPillar[0]] || dayPillar[0];
+    const b0 = HJ2KR_B[dayPillar[1]] || dayPillar[1];
+    const stemIdx = stems.indexOf(s0);
+    const branchIdx = branches.indexOf(b0);
     if (stemIdx === -1 || branchIdx === -1) return '';
     
     // Calculate the branch offset relative to stem
@@ -5868,10 +5873,22 @@ function runAnalysis() {
             bRow('공망', p => {
                 const gmStr = getGongmang(dayStem + ec.getDay()[1]);
                 const KR2HJ2 = {'자':'子','축':'丑','인':'寅','묘':'卯','진':'辰','사':'巳','오':'午','미':'未','신':'申','유':'酉','술':'戌','해':'亥'};
+                const HK2_GM = {'子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해'};
                 const gmHanja = gmStr ? [...gmStr].map(c => KR2HJ2[c]||c) : [];
                 const isGm = gmHanja.includes(p.h[1]);
-                return `<div class="m-badge" style="${isGm ? 'color:var(--fire);font-weight:bold;' : ''}">${isGm ? '공망' : '-'}</div>`;
-            })
+                // 공망 기준 표시: 공망 지지가 8자에 없으면 하단에 표기
+                const gmLabel = gmHanja.map(h => h+'('+( HK2_GM[h]||h)+')'  ).join('·');
+                return `<div class="m-badge" style="${isGm ? 'color:var(--fire);font-weight:bold;' : 'color:#555;'}">${isGm ? '⚠공망' : '-'}</div>`;
+            }),
+            // 공망 기준 별도 행
+            `<tr><td class="m-label" style="color:#e74c3c;">공망 기준</td>${[...pillars].reverse().map(p=>{
+                const gmStr = getGongmang(dayStem + ec.getDay()[1]);
+                const KR2HJ3 = {'자':'子','축':'丑','인':'寅','묘':'卯','진':'辰','사':'巳','오':'午','미':'未','신':'申','유':'酉','술':'戌','해':'亥'};
+                const HK3 = {'子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해'};
+                const gmHanja3 = gmStr ? [...gmStr].map(c=>KR2HJ3[c]||c) : [];
+                const gmLabel = gmHanja3.length ? gmHanja3.map(h=>h+'('+HK3[h]+')').join('·') : '-';
+                return '<td class="m-cell" style="color:#e74c3c;font-size:11px;font-weight:700;">'+gmLabel+'</td>';
+            }).join('')}</tr>`
         ].join('');
         document.getElementById('manse-table').innerHTML = manseHtml;
 
