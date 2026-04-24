@@ -6756,10 +6756,7 @@ function runAnalysis() {
                 lc+='<div style="text-align:right;font-size:11px;color:#888;line-height:1.7;"><div>'+ctx.palace+'</div><div>'+ganKn+' + '+jiKn+'</div>'+(sipVal?'<div style="color:rgba(199,167,106,0.7);">십성: '+sipVal+'</div>':'')+'</div></div>';
                 lc+='<p style="font-size:13.5px;color:#bbb;line-height:1.85;margin:0 0 12px;">'+ctx.intro+'</p>';
                 /* 천간/지지 분리박스 제거 — 종합 서사로 대체 */
-                // 세운: 연도 + 간지 + 고객 언어 서사
-                var _sewYear = new Date().getFullYear() - 1 + (idx||0);
-                var pnarr=(window.PERIOD_NARRATIVE&&window.PERIOD_NARRATIVE[gan+ji])
-                    ||(ganKrLabel+'·'+jiKrLabel+' 해('+_sewYear+'년) — '+ganDesc+' '+jiDesc);
+                var pnarr=(window.PERIOD_NARRATIVE&&window.PERIOD_NARRATIVE[gan+ji])||(ganDesc+' '+jiDesc);
                 lc+='<div style="background:rgba(0,0,0,0.15);border-radius:6px;padding:10px;margin-bottom:12px;"><p style="font-size:12.5px;color:#ddd;line-height:1.8;margin:0;">'+pnarr+'</p></div>';
                 lc+='<div style="background:rgba(199,167,106,0.05);border-radius:6px;padding:10px;border-left:2px solid rgba(199,167,106,0.3);">';
                 lc+='<div style="font-size:10px;color:var(--gold);margin-bottom:5px;letter-spacing:1px;">✦ '+ctx.period+' 핵심 조언</div>';
