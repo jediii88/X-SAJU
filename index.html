@@ -1160,6 +1160,10 @@
             #step-2, .step-content, #sec-report-full { padding: 0 !important; margin: 0 !important; }
             /* 리포트 챕터 스타일 */
             .cover-page { page-break-after: always; min-height: 100vh; display: flex !important; flex-direction: column; justify-content: center; align-items: center; background: #fff !important; color: #111 !important; }
+            .print-only { display: none !important; }
+            @media print { .print-only { display: flex !important; } }
+            .toc-page.print-only { display:none; }
+            @media print { .toc-page.print-only { display:block !important; } }
             .toc-page { page-break-after: always; background: #fff !important; color: #111 !important; padding: 40px !important; }
             .chapter-start { page-break-before: always; }
             .report-chapter { break-inside: avoid; page-break-inside: avoid; padding: 20px 0; }
@@ -2179,7 +2183,7 @@ function injectSectionInterpretations(data) {
         metal: '금 기운이 용신입니다. 결단과 완성의 에너지가 당신을 살립니다. 가을(8~10월), 경/신년·경/신 대운이 전성기입니다. 서쪽 방위, 흰색·금색, 금속·IT·의료·법 관련 분야가 길합니다.',
         water: '수 기운이 용신입니다. 지혜와 유연성의 에너지가 당신을 살립니다. 겨울(11~1월), 임/계년·임/계 대운이 전성기입니다. 북쪽 방위, 검은색·남색, 물·여행·무역·지식 산업이 길합니다.'
     };
-    setEl('yong-inline-summary', `<div class="inline-interp">
+    setEl('yong-inline-summary', () => `<div class="inline-interp">
         <div class="ii-label">\u2756 용신·희신·기신 해석</div>
         <div class="ii-title">나를 돕는 기운 vs 방해하는 기운 — 인생 전략의 핵심</div>
         <div class="ii-text">
@@ -2214,7 +2218,7 @@ function injectSectionInterpretations(data) {
         </div>
     </div>`);
     // 8. 인생 시기별 아래 → 재물+직업+애정
-    setEl('lifecycle-inline-summary', buildChapter4_Wealth(data) + buildChapter5_Career(data) + buildChapter6_Love(data) + buildChapter8_Health(data) + buildChapter9_Remedy(data));
+    setEl('lifecycle-inline-summary', () => buildChapter4_Wealth(data) + buildChapter5_Career(data) + buildChapter6_Love(data) + buildChapter8_Health(data) + buildChapter9_Remedy(data));
 }
 
 function injectBelow(id, html_content) {
@@ -3419,10 +3423,6 @@ function buildChapter3_Sipseong(data) {
     return `<div class="report-chapter">
         <h3 class="ch-title">Chapter 3. 十星(십성) — 사회적 페르소나와 내면의 욕망</h3>
         <p class="ch-text">五行(오행)이 당신의 하드웨어라면, 十星(십성)은 당신의 뇌에 깔린 운영체제입니다. 사람을 대할 때, 돈을 벌 때, 상사와 부하를 대할 때 무의식적으로 튀어나오는 패턴이 바로 이 십성에서 비롯됩니다. 당신은 10가지 유형 중 어떤 운영체제로 세상과 상호작용하고 있습니까?</p>
-        <div style="background:rgba(255,255,255,0.04);border-radius:12px;padding:18px;margin:20px 0;">
-            <div style="font-size:11px;color:var(--text-dim);margin-bottom:14px;letter-spacing:1px;">十星(십성) 분포</div>
-            ${sipRows}
-        </div>
         <p class="ch-text">당신의 무의식을 지배하는 가장 강력한 운영체제는 <b style="color:var(--gold);">[${mainSip}]</b>입니다. 결정적인 순간에 당신이 선택을 내리는 기준은 오직 이 기질 하나로 수렴됩니다.</p>
         <div style="background:rgba(199,167,106,0.07);border-left:3px solid var(--gold);padding:16px 18px;border-radius:0 8px 8px 0;margin:16px 0;">
             <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;letter-spacing:1px;">${mainSip} 심층 분석</div>
@@ -3457,96 +3457,88 @@ function buildChapter3_Sipseong(data) {
 }
 
 function buildChapter4_Wealth(data) {
+    const name = data.name || '고객';
     const sipseong = data.sipseong || {};
-    const jaeC = (sipseong['정재']||0) + (sipseong['편재']||0);
-    const sikC = (sipseong['식신']||0) + (sipseong['상관']||0);
-    const gwanC = (sipseong['정관']||0) + (sipseong['편관']||0);
-    const total = Math.max(Object.values(sipseong).reduce((a,b)=>a+b,0), 1);
-    const stemEl = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','申':'metal','壬':'water','癸':'water'}[data.dayStem] || 'earth';
+    const wuxing = data.wuxing || {};
     const isStrong = data.strengthText && (data.strengthText.includes('신강') || data.strengthText.includes('강'));
+    const OH = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
+    const dayOh = OH[data.dayStem||'丙']||'fire';
+    const OHKR = {wood:'목',fire:'화',earth:'토',metal:'금',water:'수'};
 
     // 재물 유형 판정
-    const wealthType = jaeC/total > 0.25 ? 'rich' : jaeC === 0 ? 'none' : 'balance';
-    const wealthCore = {
-        rich: '편재·정재가 강한 당신의 사주는 돈 냄새를 맡는 감각이 천부적입니다. 어디서 어떻게 돈을 벌어야 할지 본능적으로 압니다. 그러나 재성이 너무 강하면 일간의 기운을 고갈시켜 "돈은 있는데 건강과 인간관계가 무너지는" 구조가 됩니다. 10가지 기회 중 9가지를 냉정하게 쳐내고, 확실한 1가지에 올인하는 집중력이 당신의 재물 전략입니다. 분산 투자보다 검증된 한 우물을 깊이 파십시오.',
-        none: '당신의 원국에 재성이 약하거나 없습니다. 이른바 무재 사주라 돈과 인연이 없다고 단정하는 풀이는 완전히 틀렸습니다. 역사적으로 무재 사주에서 큰 부자가 많이 나왔습니다. 이 구조의 비밀은 간단합니다 — 돈을 직접 쫓으면 도망가고, 명예·전문성·브랜드 가치를 올릴 때 돈이 그림자처럼 따라옵니다. 당신은 "나 자신이 상품"이 되는 전략으로 재물을 모아야 합니다.',
-        balance: '재성이 적정 수준으로 균형 잡혀 있습니다. 극단적인 투기보다 꾸준한 복리와 시스템 수익이 당신의 재물 공식입니다. 한 단계씩 차곡차곡 자산을 불려 나가는 스노우볼 전략 — 부동산, 배당수익, 안정적 투자 등 시간이 지날수록 가치가 우상향하는 자산에 집중하십시오.'
-    }[wealthType];
+    const jaeC = (sipseong['정재']||0)+(sipseong['편재']||0);
+    const total = Math.max(Object.values(sipseong).reduce((a,b)=>a+b,0),1);
+    const hasJae = jaeC/total > 0.15;
+    const wealthType = hasJae ? 'active' : 'passive';
 
-    // 재물 획득 루트
-    const wealthRoute = sikC/total > 0.2
-        ? '당신의 재물 획득 루트는 식상입니다. 재능·창의력·표현력이 돈이 됩니다. 콘텐츠 창작, 교육, 컨설팅, 기획, 예술 등 "내 능력을 파는" 방식으로 수익을 만들어야 합니다. 이 루트로 들어온 돈이 가장 크고 오래 갑니다.'
-        : gwanC/total > 0.2
-        ? '당신의 재물 획득 루트는 관성입니다. 조직과 직위, 사회적 신뢰가 돈으로 연결됩니다. 승진·직함·인증·자격증이 수입을 올리는 가장 확실한 루트입니다. 명예가 재물을 끌어옵니다.'
-        : '당신의 재물 획득 루트는 비견과 독립 사업입니다. 남 밑에 있으면 실력의 절반도 발휘하지 못합니다. 직접 판을 짜고 내 사업 영역을 만들 때 재물이 폭발적으로 증가합니다.';
+    const wealthDesc = wealthType === 'active'
+        ? `${name}님은 돈을 직접 움직이는 구조입니다. 사업, 투자, 영업처럼 내가 직접 움직일수록 수입이 커지는 방식이 맞습니다. 고정 월급보다 성과 기반 보상 구조에서 더 강합니다.`
+        : `${name}님은 전문성과 신뢰가 쌓일수록 돈이 따라오는 구조입니다. 화려한 한탕보다 한 사람 한 사람에게 신뢰를 쌓아가는 방식이 장기적으로 더 강력한 재물 흐름을 만듭니다.`;
 
-    // 신강신약 × 재물
-    const strengthWealth = isStrong
-        ? '신강 사주의 재물은 공격적입니다. 에너지가 넘쳐서 여러 일을 동시에 추진하려는 본능이 있지만, 집중 없는 분산은 재물을 흩뜨립니다. 한 가지에 몰입하는 선택과 집중이 핵심 전략입니다.'
-        : '신약 사주의 재물은 수비가 중요합니다. 혼자 욕심내다 무너지는 것보다, 든든한 파트너·귀인과 함께 리스크를 분산하며 안정적으로 쌓는 방식이 재물을 지키는 열쇠입니다.';
+    const wealthCaution = wealthType === 'active'
+        ? `큰 수익을 향해 달리다가 한 번의 실수로 모든 것을 잃는 패턴을 가장 조심하십시오. 분산투자와 리스크 관리가 필수입니다.`
+        : `돈을 직접 쫓기보다 나의 가치를 높이는 데 집중하십시오. 가치가 올라가면 돈은 자연스럽게 따라옵니다.`;
+
+    // 대운별 재물 흐름
+    const rows = data.daeunRows || [];
+    const OH2 = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water','子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'};
+    const HK2 = {'甲':'갑','乙':'을','丙':'병','丁':'정','戊':'무','己':'기','庚':'경','辛':'신','壬':'임','癸':'계','子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해'};
+    const yong = data.yong; const gi = data.gi; const hee = data.hee;
+    const actIdx = data.activeDaeunIdx || 0;
+
+    const daewunRows = rows.slice(0, 8).map((r, i) => {
+        const age = r.age !== undefined ? r.age : (Array.isArray(r) ? r[0] : 0);
+        const gz = r.gz || (Array.isArray(r) ? r[1] : '') || '';
+        if (!gz) return '';
+        const g0 = gz[0] || ''; const g1 = gz[1] || '';
+        const ganOh = OH2[g0] || ''; const jiOh = OH2[g1] || '';
+        const ganKr = HK2[g0] || g0; const jiKr = HK2[g1] || g1;
+        const isGood = ganOh === yong || jiOh === yong || ganOh === hee || jiOh === hee;
+        const isBad = ganOh === gi || jiOh === gi;
+        const isCur = i === actIdx;
+        const score = isGood ? '🟢 재물 상승기' : isBad ? '🔴 수비 필요' : '🟡 유지기';
+        const txt = isGood
+            ? '이 10년은 재물 에너지가 가장 강하게 살아나는 구간입니다. 새로운 수입원 개발, 사업 확장, 투자 진입 — 용기 있는 행동이 결실을 맺습니다. 기회가 왔을 때 머뭇거리지 마십시오.'
+            : isBad
+            ? '이 10년은 재물 흐름이 막히거나 새는 구간입니다. 무리한 투자나 보증은 절대 금물입니다. 지금 있는 것을 지키는 전략이 먼저입니다.'
+            : '큰 변동 없이 안정적으로 유지되는 10년입니다. 꾸준한 수입 관리와 저축에 집중하십시오.';
+        const curBadge = isCur ? '<span style="font-size:10px;background:var(--gold);color:#000;padding:1px 6px;border-radius:6px;font-weight:700;">▶ 현재</span>' : '';
+        return `<div style="background:rgba(255,255,255,0.03);border-radius:8px;padding:12px 14px;margin-bottom:8px;border-left:3px solid ${isGood ? '#c7a76a' : isBad ? '#e74c3c' : '#555'};">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                <span style="font-size:12px;color:${isGood ? 'var(--gold)' : isBad ? '#e74c3c' : '#888'};">${age}세 ${ganKr}${jiKr}</span>
+                <span style="font-size:11px;">${score}</span>
+                ${curBadge}
+            </div>
+            <p style="font-size:12.5px;color:#bbb;margin:0;line-height:1.75;">${txt}</p>
+        </div>`;
+    }).join('');
 
     return `<div class="report-chapter">
-        <h3 class="ch-title">Chapter 4. 평생 재물운 — 나만의 금고를 여는 열쇠</h3>
-        <p class="ch-text">명리학에서 재성은 단순히 통장 잔고의 액수가 아닙니다. "내가 세상을 내 뜻대로 통제하고 다루는 힘"입니다. 당신이 세상을 상대로 얼마나 넓은 영토를 지배할 수 있는지, 그 권력의 크기가 바로 당신의 재물운입니다.</p>
-        <div style="background:rgba(199,167,106,0.07);border-left:3px solid var(--gold);padding:16px 18px;border-radius:0 8px 8px 0;margin:20px 0;">
-            <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;letter-spacing:1px;">재물 구조 분석</div>
-            <p style="font-size:14.5px;color:#ddd;line-height:1.9;margin:0;">${wealthCore}</p>
+        <h3 class="ch-title">Chapter 4. 재물운 — 언제, 어떻게 돈이 들어오는가</h3>
+        <p class="ch-text">사람들이 사주를 보는 가장 큰 이유 중 하나는 "언제 돈이 들어오는가"입니다. 사주의 재물운은 단순히 부자가 되는지 가난하게 사는지를 말하는 것이 아닙니다. 어떤 방식으로 수입이 생기고, 어느 시기에 재물 기회가 집중되는지를 파악하는 것입니다.</p>
+
+        <div style="background:rgba(199,167,106,0.07);border-left:3px solid var(--gold);padding:16px 18px;border-radius:0 8px 8px 0;margin:16px 0;">
+            <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;letter-spacing:1px;">${name}님의 재물 구조</div>
+            <p style="font-size:14.5px;color:#ddd;line-height:1.9;margin:0 0 10px;">${wealthDesc}</p>
+            <p style="font-size:13px;color:#ccc;line-height:1.8;margin:0;">⚠ 조심할 것: ${wealthCaution}</p>
         </div>
-        <div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:16px;margin:14px 0;">
-            <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;letter-spacing:1px;">재물 획득 최적 루트</div>
-            <p style="font-size:13.5px;color:#ddd;line-height:1.85;margin:0;">${wealthRoute}</p>
+
+        <div style="background:rgba(199,167,106,0.05);border-radius:12px;padding:20px;margin:20px 0;border:1px solid rgba(199,167,106,0.15);">
+            <div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:16px;letter-spacing:1px;">💰 대운별 재물 흐름 — ${name}님의 인생 재물 타임라인</div>
+            <p style="font-size:12.5px;color:#aaa;line-height:1.8;margin:0 0 14px;">10년 단위 대운에서 재물이 어떻게 변화하는지 보여줍니다. 용신 대운에 재물 기회를 잡고, 기신 대운에 지키는 전략을 쓰십시오.</p>
+            ${daewunRows || '<p style="color:#666;font-size:12px;">대운 데이터가 없습니다.</p>'}
         </div>
-        <div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:16px;margin:14px 0;">
-            <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;letter-spacing:1px;">신강·신약(신강·신약)과 재물 전략</div>
-            <p style="font-size:13.5px;color:#ddd;line-height:1.85;margin:0;">${strengthWealth}</p>
-        </div>
-        <div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:22px;margin:24px 0;">
-            <div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:16px;letter-spacing:1px;">&#9670; 재물운 유형별 획득 전략</div>
-            <div style="display:flex;flex-direction:column;gap:10px;">
-                <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:16px;">
-                    <div style="font-size:12px;font-weight:700;color:#4fc3a1;margin-bottom:8px;">無財(무재) 사주 — 전문성으로 부를 쌓는 전략</div>
-                    <p style="font-size:13px;color:#bbb;line-height:1.88;margin:0;">재성이 없거나 매우 약한 사주에서 가장 큰 실수는 직접적으로 돈을 쫓는 것입니다. 이 구조의 재물 공식은 반대입니다. 돈을 쫓지 않고 가치를 쌓으면 돈이 따라옵니다. 한 분야에서 대체 불가능한 전문가가 되십시오. 의사·변호사·작가·셰프·전문 강사처럼 이 사람이 아니면 안 된다는 인식이 형성될 때 재물이 폭발적으로 들어옵니다. 자격증과 인증, 출판과 강의, 브랜드 파워 구축이 이 유형의 핵심 재물 전략입니다. 초반에는 수입이 적어 불안할 수 있지만, 전문성이 임계점을 넘는 순간 수입이 폭발적으로 늘어납니다. 이 시점까지 포기하지 않는 인내가 무재 사주의 최대 과제이자 최강의 무기입니다.</p>
-                </div>
-                <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:16px;">
-                    <div style="font-size:12px;font-weight:700;color:#ffca28;margin-bottom:8px;">財多(재다) 사주 — 투자와 사업으로 부를 증폭하는 전략</div>
-                    <p style="font-size:13px;color:#bbb;line-height:1.88;margin:0;">재성이 강한 사주는 돈의 흐름을 감지하는 본능이 탁월합니다. 이 구조의 재물 전략은 적극적인 투자와 사업 확장입니다. 부동산 투자, 주식·ETF, 사업 지분 투자 등 자본이 자본을 낳는 구조를 만드는 것이 핵심입니다. 그러나 재다 사주의 함정은 과욕입니다. 너무 많은 기회에 동시에 올라타면 모든 것이 반토막납니다. 핵심 원칙은 하나입니다. 한 번에 하나의 투자 전략을 완성하고 그 다음으로 넘어가십시오. 성공한 투자자들의 공통 원칙인 자신이 잘 아는 것에만 투자한다는 말이 재다 사주에게 특히 중요합니다. 절대 감당할 수 없는 레버리지를 쓰지 마십시오.</p>
-                </div>
-                <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:16px;">
-                    <div style="font-size:12px;font-weight:700;color:#64b5f6;margin-bottom:8px;">균형 사주 — 복합 전략으로 안정적 부를 구축하는 방법</div>
-                    <p style="font-size:13px;color:#bbb;line-height:1.88;margin:0;">재성이 균형 잡힌 사주는 두 전략을 조합하는 것이 최선입니다. 메인 수입은 전문성 기반의 안정적인 직업 또는 사업으로 확보하고, 잉여 현금은 분산 투자로 증식합니다. 이 구조의 핵심은 수입원의 이중화입니다. 한 소스가 흔들려도 다른 소스가 버텨주는 구조를 만드십시오. 안정성과 성장성을 동시에 추구하기 때문에 극단적인 부를 만드는 속도는 느리지만, 잃어버리는 일도 적습니다. 복리의 시간이 쌓이면 균형 사주가 가장 지속 가능한 부를 만듭니다.</p>
-                </div>
-            </div>
-        </div>
-        <div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:22px;margin:24px 0;">
-            <div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:16px;letter-spacing:1px;">&#9670; 용신별 재물 활성화 시기 — 언제 올인하고 언제 지킬 것인가</div>
-            <p style="font-size:13.5px;color:#ccc;line-height:1.9;margin:0 0 14px;">용신 오행이 강해지는 시기는 재물 에너지가 가장 강하게 활성화되는 황금기입니다. 이 시기를 미리 알면, 핵심 투자와 사업 결정을 집중하여 성과를 극대화할 수 있습니다. 반대로 기신 오행이 강해지는 시기에는 무리한 확장보다 수비가 현명합니다.</p>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-                <div style="background:rgba(0,200,83,0.07);border-radius:8px;padding:14px;">
-                    <div style="font-size:11px;color:#00C853;margin-bottom:8px;">✦ 용신 기운 강화 시기 — 공격 전략</div>
-                    <p style="font-size:12.5px;color:#bbb;line-height:1.8;margin:0;">용신 오행의 대운과 세운이 겹치는 시기가 인생 최대의 재물 기회입니다. 이 시기에는 사업 확장 또는 창업, 부동산 매입, 주요 투자 결정, 이직·승진 도전을 실행하십시오. 용신 계절에 중요한 계약을 잡는 것도 운을 활용하는 방법입니다. 핵심은 기회를 흘려보내지 않는 것입니다. 이 시기에 망설이면 다음 주기까지 10년에서 20년을 기다려야 합니다.</p>
-                </div>
-                <div style="background:rgba(231,76,60,0.07);border-radius:8px;padding:14px;">
-                    <div style="font-size:11px;color:#e74c3c;margin-bottom:8px;">✗ 기신 기운 강화 시기 — 방어 전략</div>
-                    <p style="font-size:12.5px;color:#bbb;line-height:1.8;margin:0;">기신 오행의 대운·세운이 겹치는 시기에는 재물 수비가 최우선입니다. 무리한 신규 투자 자제, 보증 및 연대보증 절대 거부, 현금 유동성 확보(최소 6개월 생활비), 기존 자산 점검과 리밸런싱에 집중하십시오. 흉한 시기에 큰돈을 잃지 않는 것이 길한 시기에 버는 것만큼 중요합니다. 자산의 안전판을 미리 만들어두십시오.</p>
-                </div>
-            </div>
-        </div>
-        <p class="ch-text">재물의 그릇은 고정된 것이 아닙니다. 용신 기운이 강해지는 대운에서 그릇이 커지고, 기신 기운의 대운에서는 방어가 중요합니다. 재물의 크기를 결정하는 것은 타고난 사주가 아니라, 그 사주의 기운을 얼마나 정확하게 활용하느냐입니다. 당신의 진짜 금고는 아직 열리지 않았습니다. 용신이 들어오는 시기를 알고, 그 때에 집중적으로 행동하는 사람이 결국 운명을 바꿉니다. 지금 이 리포트를 읽는 것이 그 첫 번째 행동입니다.</p>
-        <div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:22px;margin:24px 0;">
-            <div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:16px;letter-spacing:1px;">&#9670; 재물을 부르는 생활 습관 — 용신 기운으로 돈의 흐름을 바꾸는 방법</div>
-            <p style="font-size:13.5px;color:#ccc;line-height:1.9;margin:0 0 14px;">명리학에서 재물운은 거대한 투자나 극적인 사건으로만 바뀌는 것이 아닙니다. 매일의 작은 선택들이 쌓여 용신 기운을 강화하고, 그것이 결국 재물의 흐름을 바꿉니다. 다음의 생활 습관이 당신의 재물 에너지를 지속적으로 충전합니다.</p>
+
+        <div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:20px;margin:20px 0;">
+            <div style="font-size:12px;color:var(--gold);margin-bottom:14px;letter-spacing:1px;">&#9670; 재물을 지키는 핵심 원칙</div>
             <div style="display:flex;flex-direction:column;gap:10px;">
                 <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:14px;">
-                    <div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:8px;">재물 확장을 위한 마인드셋 전환</div>
-                    <p style="font-size:13px;color:#bbb;line-height:1.88;margin:0;">재물을 부르는 가장 강력한 마인드셋은 희소성 사고에서 풍요 사고로의 전환입니다. 희소성 사고를 가진 사람은 항상 부족함을 느끼고 기회가 와도 두려움으로 놓칩니다. 풍요 사고를 가진 사람은 기회를 발견하고 창조합니다. 용신 기운이 강화되는 시기에 이 마인드셋 전환이 더욱 빠르게 이루어집니다. 매일 아침 오늘 내가 활용할 수 있는 기회는 무엇인가를 자문하는 습관을 들이십시오. 작은 승리를 기록하고 축하하는 습관이 재물 에너지를 끌어올립니다. 도움을 받기만 하는 것이 아니라 주변에 먼저 가치를 제공하는 사람이 되십시오. 귀인은 자신도 귀인이 될 준비가 된 사람 곁에 나타납니다.</p>
+                    <div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:8px;">기신 기운이 강한 시기 — 이것만은 하지 마십시오</div>
+                    <p style="font-size:13px;color:#bbb;line-height:1.88;margin:0;">기신 대운·세운에서는 무리한 투자, 보증, 충동적 사업 확장을 절대 피하십시오. 이 시기의 판단은 평소보다 흐려집니다. 72시간 규칙(큰 결정 전 72시간 숙고)을 철저히 지키십시오. 특히 가까운 사람의 투자 제안은 더욱 신중하게 검토해야 합니다.</p>
                 </div>
                 <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:14px;">
-                    <div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:8px;">재물 손실을 막는 방어 전략</div>
-                    <p style="font-size:13px;color:#bbb;line-height:1.88;margin:0;">재물을 키우는 것만큼 중요한 것이 재물을 지키는 것입니다. 명리학에서 재물 손실의 주요 원인은 기신 기운과의 충돌, 충동적 결정, 그리고 인간관계에서의 실수입니다. 기신 기운이 강해지는 시기에는 모든 재물 결정에 평소보다 두 배 신중하십시오. 충동적 구매와 투자를 막는 72시간 규칙을 사용하십시오. 큰 결정을 내리기 전 반드시 72시간 이상 숙고하는 것입니다. 보증과 연대보증은 어떠한 상황에서도 피하십시오. 이것이 가장 빠른 재물 손실의 경로입니다. 기신 기운의 사람이 가져오는 투자 제안은 특히 경계하십시오.</p>
-                </div>
-                <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:14px;">
-                    <div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:8px;">재물 에너지를 높이는 공간 전략</div>
-                    <p style="font-size:13px;color:#bbb;line-height:1.88;margin:0;">당신이 머무는 공간이 재물 에너지에 직접적인 영향을 줍니다. 용신 오행의 색상으로 인테리어를 꾸미십시오. 목 용신이라면 초록 식물을 많이 두고, 화 용신이라면 따뜻한 조명과 붉은 소품을 활용하십시오. 토 용신이라면 황토 계열의 소품과 안정적인 가구 배치가 좋습니다. 금 용신이라면 정리정돈과 깔끔한 흰색·금속 소품이 기운을 높입니다. 수 용신이라면 수족관이나 작은 분수, 검정·남색 계열 인테리어가 에너지를 충전합니다. 공간이 정돈되어 있을수록 에너지의 흐름이 원활해집니다.</p>
+                    <div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:8px;">용신 기운이 강한 시기 — 이때 움직이십시오</div>
+                    <p style="font-size:13px;color:#bbb;line-height:1.88;margin:0;">용신·희신 대운·세운이 겹치는 구간이 인생에서 재물 도약의 황금 타이밍입니다. 이 시기를 미리 알고 준비하는 사람과 모르고 지나치는 사람의 차이는 10년 후에 극명하게 드러납니다. 기회가 왔을 때 행동할 준비를 지금부터 해두십시오.</p>
                 </div>
             </div>
         </div>
@@ -4376,7 +4368,7 @@ function buildCoverPage(data) {
     const pillarHanja = pillars.map(p => p.h ? (Array.isArray(p.h) ? p.h.join('') : String(p.h)) : '').join(' ');
     const pillarLabels = ['시주','일주','월주','연주'];
 
-    return `<div class="cover-page chapter-start" style="display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:88vh;padding:60px 40px;text-align:center;border-bottom:1px solid rgba(199,167,106,0.2);margin-bottom:48px;">
+    return `<div class="cover-page chapter-start print-only" style="display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:88vh;padding:60px 40px;text-align:center;border-bottom:1px solid rgba(199,167,106,0.2);margin-bottom:48px;">
         <div style="font-size:10px;letter-spacing:5px;color:rgba(199,167,106,0.5);margin-bottom:48px;">X-SAJU MASTER  ·  PREMIUM DESTINY REPORT</div>
         <div style="display:flex;gap:24px;margin-bottom:20px;">${pillars.map((p,i) => {
             const h = p.h ? (Array.isArray(p.h) ? p.h.join('') : String(p.h)) : '';
@@ -4426,7 +4418,7 @@ function buildTOC(data) {
             <div style="font-size:11px;color:rgba(199,167,106,0.4);min-width:30px;text-align:right;">${c.pages}</div>
         </div>`).join('');
 
-    return `<div class="toc-page" style="padding:60px 40px 80px;border-bottom:1px solid rgba(199,167,106,0.1);margin-bottom:48px;">
+    return `<div class="toc-page print-only" style="padding:60px 40px 80px;border-bottom:1px solid rgba(199,167,106,0.1);margin-bottom:48px;">
         <div style="font-size:10px;letter-spacing:5px;color:rgba(199,167,106,0.5);margin-bottom:14px;">TABLE OF CONTENTS</div>
         <div style="font-family:'Noto Serif KR',serif;font-size:30px;font-weight:700;color:#fff;margin-bottom:6px;">목차</div>
         <div style="font-size:13px;color:#666;margin-bottom:32px;">X-SAJU MASTER 사주 분석 리포트 전체 구성</div>
@@ -5880,15 +5872,15 @@ function runAnalysis() {
                 const gmLabel = gmHanja.map(h => h+'('+( HK2_GM[h]||h)+')'  ).join('·');
                 return `<div class="m-badge" style="${isGm ? 'color:var(--fire);font-weight:bold;' : 'color:#555;'}">${isGm ? '⚠공망' : '-'}</div>`;
             }),
-            // 공망 기준 별도 행
-            `<tr><td class="m-label" style="color:#e74c3c;">공망 기준</td>${[...pillars].reverse().map(p=>{
-                const gmStr = getGongmang(dayStem + ec.getDay()[1]);
+            // 공망 기준 별도 행 (1칸에 colspan으로 표시)
+            (()=>{
+                const gmStr3 = getGongmang(dayStem + ec.getDay()[1]);
                 const KR2HJ3 = {'자':'子','축':'丑','인':'寅','묘':'卯','진':'辰','사':'巳','오':'午','미':'未','신':'申','유':'酉','술':'戌','해':'亥'};
                 const HK3 = {'子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해'};
-                const gmHanja3 = gmStr ? [...gmStr].map(c=>KR2HJ3[c]||c) : [];
-                const gmLabel = gmHanja3.length ? gmHanja3.map(h=>h+'('+HK3[h]+')').join('·') : '-';
-                return '<td class="m-cell" style="color:#e74c3c;font-size:11px;font-weight:700;">'+gmLabel+'</td>';
-            }).join('')}</tr>`
+                const gmHanja3 = gmStr3 ? [...gmStr3].map(c=>KR2HJ3[c]||c) : [];
+                const gmLabel3 = gmHanja3.length ? gmHanja3.map(h=>h+'('+HK3[h]+')').join(' · ') : '-';
+                return `<tr><td class="m-label" style="color:#e74c3c;">공망</td><td class="m-cell" colspan="4" style="color:#e74c3c;font-size:12px;font-weight:700;letter-spacing:1px;">${gmLabel3} — 이 기운이 운에서 들어올 때 조심</td></tr>`;
+            })()
         ].join('');
         document.getElementById('manse-table').innerHTML = manseHtml;
 
