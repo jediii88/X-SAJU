@@ -5,299 +5,240 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SAJUX 관리자</title>
 <style>
-  * { margin:0; padding:0; box-sizing:border-box; }
-  :root { --gold:#c7a76a; --bg:#0a0a0f; }
-  body { background:var(--bg); color:#ddd; font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif; min-height:100vh; display:flex; align-items:center; justify-content:center; }
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--gold:#c7a76a;--bg:#0a0a0f;--purple:#7c8dff;}
+body{background:var(--bg);color:#ddd;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
 
-  /* 비밀번호 화면 */
-  #lock-screen { text-align:center; }
-  #lock-screen h1 { font-size:28px; color:var(--gold); margin-bottom:8px; letter-spacing:2px; }
-  #lock-screen p { font-size:13px; color:#666; margin-bottom:32px; }
-  #pw-input { background:rgba(255,255,255,0.06); border:1px solid rgba(199,167,106,0.3); color:#fff; padding:12px 20px; border-radius:8px; font-size:16px; width:260px; text-align:center; letter-spacing:4px; outline:none; }
-  #pw-input:focus { border-color:var(--gold); }
-  #pw-btn { display:block; width:260px; margin:12px auto 0; background:var(--gold); color:#000; border:none; padding:12px; border-radius:8px; font-size:15px; font-weight:700; cursor:pointer; }
-  #pw-error { color:#e74c3c; font-size:13px; margin-top:10px; display:none; }
+/* 잠금 화면 */
+#lock-screen{text-align:center;}
+#lock-screen h1{font-size:28px;color:var(--gold);margin-bottom:8px;letter-spacing:2px;}
+#lock-screen p{font-size:13px;color:#666;margin-bottom:32px;}
+#pw-input{background:rgba(255,255,255,0.06);border:1px solid rgba(199,167,106,0.3);color:#fff;padding:12px 20px;border-radius:8px;font-size:16px;width:260px;text-align:center;letter-spacing:4px;outline:none;}
+#pw-input:focus{border-color:var(--gold);}
+#pw-btn{display:block;width:260px;margin:12px auto 0;background:var(--gold);color:#000;border:none;padding:12px;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;}
+#pw-error{color:#e74c3c;font-size:13px;margin-top:10px;display:none;}
 
-  /* 관리자 대시보드 */
-  #dashboard { display:none; width:100%; max-width:640px; padding:24px 16px; }
-  #dashboard h2 { font-size:22px; color:var(--gold); margin-bottom:4px; }
-  #dashboard .sub { font-size:12px; color:#666; margin-bottom:28px; }
+/* 대시보드 */
+#dashboard{display:none;width:100%;max-width:560px;}
+#dashboard h2{font-size:22px;color:var(--gold);margin-bottom:4px;}
+#dashboard .sub{font-size:12px;color:#666;margin-bottom:28px;}
+.sec-title{font-size:13px;font-weight:700;color:#aaa;margin:28px 0 14px;border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:8px;}
 
-  .form-group { margin-bottom:18px; }
-  .form-group label { display:block; font-size:12px; color:var(--gold); margin-bottom:6px; letter-spacing:1px; }
-  .form-group input, .form-group select { width:100%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#ddd; padding:10px 14px; border-radius:8px; font-size:14px; outline:none; }
-  .form-group input:focus, .form-group select:focus { border-color:var(--gold); }
-  .row2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-  .row3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+/* 폼 */
+.fg{margin-bottom:14px;}
+.fg label{display:block;font-size:11px;color:var(--gold);margin-bottom:5px;letter-spacing:1px;}
+.fg input,.fg select{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#ddd;padding:10px 14px;border-radius:8px;font-size:14px;outline:none;}
+.fg input:focus,.fg select:focus{border-color:var(--gold);}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 
-  #gen-btn { width:100%; background:var(--gold); color:#000; border:none; padding:14px; border-radius:10px; font-size:16px; font-weight:800; cursor:pointer; margin-top:8px; letter-spacing:1px; }
-  #gen-btn:hover { background:#d4b47a; }
+/* 버튼 */
+.btn-gold{width:100%;background:var(--gold);color:#000;border:none;padding:14px;border-radius:10px;font-size:16px;font-weight:800;cursor:pointer;margin-top:4px;}
+.btn-couple{width:100%;background:linear-gradient(135deg,var(--gold),var(--purple));color:#000;border:none;padding:14px;border-radius:10px;font-size:16px;font-weight:800;cursor:pointer;margin-top:4px;}
 
-  /* 결과 링크 */
-  #result-box { display:none; margin-top:24px; background:rgba(199,167,106,0.08); border:1px solid rgba(199,167,106,0.2); border-radius:10px; padding:20px; }
-  #result-box .label { font-size:11px; color:var(--gold); margin-bottom:8px; letter-spacing:1px; }
-  #result-link { font-size:13px; color:#ddd; word-break:break-all; background:rgba(0,0,0,0.3); padding:10px 14px; border-radius:6px; display:block; margin-bottom:12px; }
-  #copy-btn { background:rgba(199,167,106,0.15); color:var(--gold); border:1px solid rgba(199,167,106,0.3); padding:8px 16px; border-radius:6px; font-size:13px; cursor:pointer; }
-  #copy-btn:hover { background:rgba(199,167,106,0.25); }
+/* 결과 박스 */
+.result-box{display:none;margin-top:20px;border-radius:10px;padding:18px;}
+.result-box.gold{background:rgba(199,167,106,0.08);border:1px solid rgba(199,167,106,0.2);}
+.result-box.purple{background:rgba(124,141,255,0.08);border:1px solid rgba(124,141,255,0.2);}
+.result-box .rl{font-size:11px;color:var(--gold);margin-bottom:8px;letter-spacing:1px;}
+.result-box.purple .rl{color:var(--purple);}
+.link-text{font-size:12px;color:#ddd;word-break:break-all;background:rgba(0,0,0,0.3);padding:10px 14px;border-radius:6px;display:block;margin-bottom:10px;}
+.copy-btn{background:rgba(199,167,106,0.15);color:var(--gold);border:1px solid rgba(199,167,106,0.3);padding:8px 16px;border-radius:6px;font-size:13px;cursor:pointer;}
+.copy-btn.purple{background:rgba(124,141,255,0.15);color:var(--purple);border-color:rgba(124,141,255,0.3);}
 
-  .section-title { font-size:13px; font-weight:700; color:#aaa; margin:20px 0 14px; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:8px; }
+/* 힌트 */
+.hint{font-size:11px;color:#555;margin-top:4px;}
 </style>
 </head>
 <body>
 
-<!-- 잠금 화면 -->
+<!-- 잠금 -->
 <div id="lock-screen">
   <h1>🔒 SAJUX</h1>
-  <p>관리자 전용 페이지입니다</p>
-  <input type="password" id="pw-input" placeholder="비밀번호 입력" autocomplete="off">
+  <p>관리자 전용 페이지</p>
+  <input type="password" id="pw-input" placeholder="비밀번호" autocomplete="off">
   <button id="pw-btn" onclick="checkPW()">입장</button>
-  <div id="pw-error">❌ 비밀번호가 틀렸습니다</div>
+  <div id="pw-error">❌ 비밀번호 오류</div>
 </div>
 
-<!-- 관리자 대시보드 -->
+<!-- 대시보드 -->
 <div id="dashboard">
   <h2>SAJUX 관리자</h2>
-  <div class="sub">고객 정보를 입력하고 리포트 링크를 생성합니다</div>
+  <div class="sub">고객 정보 입력 → 링크 생성 → 카카오톡 전송</div>
 
-  <div class="section-title">고객 기본 정보</div>
+  <!-- ─── 공통 A 정보 (1인 + 궁합 공용) ─── -->
+  <div class="sec-title">👤 고객 정보 (A)</div>
 
-  <div class="form-group">
-    <label>고객 이름</label>
-    <input type="text" id="c-name" placeholder="예: 홍길동">
+  <div class="fg">
+    <label>이름</label>
+    <input type="text" id="a-name" placeholder="홍길동">
   </div>
-
   <div class="row2">
-    <div class="form-group">
+    <div class="fg">
       <label>성별</label>
-      <select id="c-gender">
+      <select id="a-gender">
         <option value="male">남성</option>
         <option value="female">여성</option>
       </select>
     </div>
-    <div class="form-group">
+    <div class="fg">
       <label>양/음력</label>
-      <select id="c-caltype">
+      <select id="a-cal">
         <option value="solar">양력</option>
         <option value="lunar">음력</option>
       </select>
     </div>
   </div>
-
-  <div class="section-title">생년월일시</div>
-
-  <div class="row3">
-    <div class="form-group">
-      <label>년 (4자리)</label>
-      <input type="number" id="c-year" placeholder="1988" min="1900" max="2099">
-    </div>
-    <div class="form-group">
-      <label>월</label>
-      <input type="number" id="c-month" placeholder="3" min="1" max="12">
-    </div>
-    <div class="form-group">
-      <label>일</label>
-      <input type="number" id="c-day" placeholder="12" min="1" max="31">
-    </div>
-  </div>
-
   <div class="row2">
-    <div class="form-group">
-      <label>시간 (0~23)</label>
-      <input type="number" id="c-hour" placeholder="1" min="0" max="23">
+    <div class="fg">
+      <label>생년월일 (6자리)</label>
+      <input type="text" id="a-date" placeholder="880312" maxlength="8" inputmode="numeric">
+      <div class="hint">YYMMDD 또는 YYYYMMDD</div>
     </div>
-    <div class="form-group">
-      <label>분 (선택)</label>
-      <input type="number" id="c-min" placeholder="0" min="0" max="59">
+    <div class="fg">
+      <label>생시 (4자리, 모르면 0000)</label>
+      <input type="text" id="a-time" placeholder="0104" maxlength="4" inputmode="numeric">
+      <div class="hint">HHMM — 새벽 1시4분 → 0104</div>
     </div>
   </div>
 
-  <button id="gen-btn" onclick="generateLink()">🔗 리포트 링크 생성</button>
-
-  <div id="result-box">
-    <div class="label">고객에게 전달할 리포트 링크</div>
-    <span id="result-link"></span>
-    <button id="copy-btn" onclick="copyLink()">📋 링크 복사</button>
+  <button class="btn-gold" onclick="generateSingle()">🔗 1인 리포트 링크 생성</button>
+  <div class="result-box gold" id="single-result">
+    <div class="rl">고객에게 전달할 링크</div>
+    <span class="link-text" id="single-link"></span>
+    <button class="copy-btn" id="single-copy" onclick="copyLink('single-link','single-copy')">📋 복사</button>
   </div>
 
-  <!-- ═══ 궁합 링크 생성 ═══ -->
-  <div class="section-title" style="margin-top:36px;">💕 궁합 — 두 번째 사람 정보</div>
+  <!-- ─── B 정보 (궁합용) ─── -->
+  <div class="sec-title">💑 궁합 — 두 번째 사람 (B)</div>
 
-  <div class="form-group">
-    <label>B 이름</label>
-    <input type="text" id="b-name" placeholder="예: 김미래">
+  <div class="fg">
+    <label>이름</label>
+    <input type="text" id="b-name" placeholder="김미래">
   </div>
   <div class="row2">
-    <div class="form-group">
-      <label>B 성별</label>
+    <div class="fg">
+      <label>성별</label>
       <select id="b-gender">
-        <option value="male">남성</option>
         <option value="female">여성</option>
+        <option value="male">남성</option>
       </select>
     </div>
-    <div class="form-group">
-      <label>B 양/음력</label>
-      <select id="b-caltype">
+    <div class="fg">
+      <label>양/음력</label>
+      <select id="b-cal">
         <option value="solar">양력</option>
         <option value="lunar">음력</option>
       </select>
     </div>
   </div>
-  <div class="row3">
-    <div class="form-group">
-      <label>B 년</label>
-      <input type="number" id="b-year" placeholder="1990" min="1900" max="2099">
-    </div>
-    <div class="form-group">
-      <label>B 월</label>
-      <input type="number" id="b-month" placeholder="7" min="1" max="12">
-    </div>
-    <div class="form-group">
-      <label>B 일</label>
-      <input type="number" id="b-day" placeholder="15" min="1" max="31">
-    </div>
-  </div>
   <div class="row2">
-    <div class="form-group">
-      <label>B 시간 (0~23)</label>
-      <input type="number" id="b-hour" placeholder="14" min="0" max="23">
+    <div class="fg">
+      <label>생년월일 (6자리)</label>
+      <input type="text" id="b-date" placeholder="900715" maxlength="8" inputmode="numeric">
+      <div class="hint">YYMMDD 또는 YYYYMMDD</div>
     </div>
-    <div class="form-group">
-      <label>관계 유형</label>
-      <select id="rel-type">
-        <option value="lover">💕 연인</option>
-        <option value="married">💍 부부</option>
-        <option value="friend">🤝 친구</option>
-        <option value="business">💼 비즈니스</option>
-      </select>
+    <div class="fg">
+      <label>생시 (4자리)</label>
+      <input type="text" id="b-time" placeholder="1400" maxlength="4" inputmode="numeric">
     </div>
   </div>
 
-  <button id="couple-btn" onclick="generateCoupleLink()" style="width:100%;background:linear-gradient(135deg,#c7a76a,#7c8dff);color:#000;border:none;padding:14px;border-radius:10px;font-size:16px;font-weight:800;cursor:pointer;margin-top:8px;letter-spacing:1px;">💑 궁합 링크 생성</button>
-
-  <div id="couple-result-box" style="display:none;margin-top:24px;background:rgba(124,141,255,0.08);border:1px solid rgba(124,141,255,0.2);border-radius:10px;padding:20px;">
-    <div class="label" style="color:#7c8dff;">궁합 리포트 링크</div>
-    <span id="couple-result-link" style="font-size:13px;color:#ddd;word-break:break-all;background:rgba(0,0,0,0.3);padding:10px 14px;border-radius:6px;display:block;margin-bottom:12px;"></span>
-    <button onclick="copyCoupleLink()" style="background:rgba(124,141,255,0.15);color:#7c8dff;border:1px solid rgba(124,141,255,0.3);padding:8px 16px;border-radius:6px;font-size:13px;cursor:pointer;" id="couple-copy-btn">📋 링크 복사</button>
+  <button class="btn-couple" onclick="generateCouple()">💑 궁합 링크 생성</button>
+  <div class="result-box purple" id="couple-result">
+    <div class="rl">궁합 리포트 링크</div>
+    <span class="link-text" id="couple-link"></span>
+    <button class="copy-btn purple" id="couple-copy" onclick="copyLink('couple-link','couple-copy')">📋 복사</button>
   </div>
 </div>
 
 <script>
-// ─── 비밀번호 설정 (여기서 변경) ───
 const ADMIN_PW = '1357642';
 
 function checkPW() {
-  const v = document.getElementById('pw-input').value;
-  if (v === ADMIN_PW) {
+  if (document.getElementById('pw-input').value === ADMIN_PW) {
     document.getElementById('lock-screen').style.display = 'none';
     document.getElementById('dashboard').style.display = 'block';
-    sessionStorage.setItem('sajux_admin', '1');
+    sessionStorage.setItem('sajux_admin','1');
   } else {
     document.getElementById('pw-error').style.display = 'block';
     document.getElementById('pw-input').value = '';
-    document.getElementById('pw-input').focus();
   }
 }
-
-// 엔터키 지원
-document.getElementById('pw-input')?.addEventListener('keydown', function(e) {
-  if (e.key === 'Enter') checkPW();
-});
-
-// 이미 로그인된 경우
-if (sessionStorage.getItem('sajux_admin') === '1') {
-  document.getElementById('lock-screen').style.display = 'none';
-  document.getElementById('dashboard').style.display = 'block';
+document.getElementById('pw-input').addEventListener('keydown', e => { if(e.key==='Enter') checkPW(); });
+if (sessionStorage.getItem('sajux_admin')==='1') {
+  document.getElementById('lock-screen').style.display='none';
+  document.getElementById('dashboard').style.display='block';
 }
 
-function generateLink() {
-  const name   = document.getElementById('c-name').value.trim();
-  const gender = document.getElementById('c-gender').value;
-  const cal    = document.getElementById('c-caltype').value;
-  const year   = document.getElementById('c-year').value.trim();
-  const month  = document.getElementById('c-month').value.trim();
-  const day    = document.getElementById('c-day').value.trim();
-  const hour   = document.getElementById('c-hour').value.trim();
-  const min    = document.getElementById('c-min').value.trim() || '0';
-
-  if (!name || !year || !month || !day) {
-    alert('이름, 년/월/일은 필수입니다.');
-    return;
+// 날짜 파싱: YYMMDD → {y,m,d} / YYYYMMDD → {y,m,d}
+function parseDate(str) {
+  str = str.replace(/\D/g,'');
+  if (str.length === 6) {
+    const yy = parseInt(str.slice(0,2));
+    const y = yy >= 0 && yy <= 30 ? 2000+yy : 1900+yy;
+    return { y, m: parseInt(str.slice(2,4)), d: parseInt(str.slice(4,6)) };
+  } else if (str.length === 8) {
+    return { y: parseInt(str.slice(0,4)), m: parseInt(str.slice(4,6)), d: parseInt(str.slice(6,8)) };
   }
-
-  // 파라미터 인코딩
-  const params = new URLSearchParams({
-    n: name,
-    g: gender,
-    c: cal,
-    y: year,
-    mo: month,
-    d: day,
-    h: hour || '0',
-    mi: min
-  });
-
-  // 리포트 페이지 URL
-  const base = window.location.origin;
-  const link = `${base}/report/?${params.toString()}`;
-
-  document.getElementById('result-link').textContent = link;
-  document.getElementById('result-box').style.display = 'block';
+  return null;
 }
 
-function generateCoupleLink() {
-  const aName  = document.getElementById('c-name').value.trim();
-  const aGender= document.getElementById('c-gender').value;
-  const aCal   = document.getElementById('c-caltype').value;
-  const aYear  = document.getElementById('c-year').value.trim();
-  const aMon   = document.getElementById('c-month').value.trim();
-  const aDay   = document.getElementById('c-day').value.trim();
-  const aHour  = document.getElementById('c-hour').value.trim() || '0';
-
-  const bName  = document.getElementById('b-name').value.trim();
-  const bGender= document.getElementById('b-gender').value;
-  const bCal   = document.getElementById('b-caltype').value;
-  const bYear  = document.getElementById('b-year').value.trim();
-  const bMon   = document.getElementById('b-month').value.trim();
-  const bDay   = document.getElementById('b-day').value.trim();
-  const bHour  = document.getElementById('b-hour').value.trim() || '0';
-  const rel    = document.getElementById('rel-type').value;
-
-  if (!aName || !aYear || !aMon || !aDay || !bName || !bYear || !bMon || !bDay) {
-    alert('두 사람의 이름과 생년월일은 필수입니다.');
-    return;
-  }
-
-  const params = new URLSearchParams({
-    a_n: aName, a_g: aGender, a_c: aCal,
-    a_y: aYear, a_mo: aMon, a_d: aDay, a_h: aHour,
-    b_n: bName, b_g: bGender, b_c: bCal,
-    b_y: bYear, b_mo: bMon, b_d: bDay, b_h: bHour,
-    rel
-  });
-
-  const base = window.location.origin;
-  const link = `${base}/couple/?${params.toString()}`;
-  document.getElementById('couple-result-link').textContent = link;
-  document.getElementById('couple-result-box').style.display = 'block';
+// 시간 파싱: HHMM → {h,mi}
+function parseTime(str) {
+  str = (str||'').replace(/\D/g,'').padStart(4,'0');
+  return { h: parseInt(str.slice(0,2)), mi: parseInt(str.slice(2,4)) };
 }
 
-function copyCoupleLink() {
-  const link = document.getElementById('couple-result-link').textContent;
-  navigator.clipboard.writeText(link).then(() => {
-    document.getElementById('couple-copy-btn').textContent = '✅ 복사됨!';
-    setTimeout(() => {
-      document.getElementById('couple-copy-btn').textContent = '📋 링크 복사';
-    }, 2000);
+function generateSingle() {
+  const name = document.getElementById('a-name').value.trim();
+  const gender = document.getElementById('a-gender').value;
+  const cal = document.getElementById('a-cal').value;
+  const dt = parseDate(document.getElementById('a-date').value);
+  const tm = parseTime(document.getElementById('a-time').value);
+
+  if (!name || !dt) { alert('이름과 생년월일을 입력하세요.'); return; }
+
+  const p = new URLSearchParams({
+    n: name, g: gender, c: cal,
+    y: dt.y, mo: dt.m, d: dt.d,
+    h: tm.h, mi: tm.mi
   });
+  const link = `${location.origin}/report/?${p}`;
+  document.getElementById('single-link').textContent = link;
+  document.getElementById('single-result').style.display = 'block';
 }
 
-function copyLink() {
-  const link = document.getElementById('result-link').textContent;
-  navigator.clipboard.writeText(link).then(() => {
-    document.getElementById('copy-btn').textContent = '✅ 복사됨!';
-    setTimeout(() => {
-      document.getElementById('copy-btn').textContent = '📋 링크 복사';
-    }, 2000);
+function generateCouple() {
+  const aName = document.getElementById('a-name').value.trim();
+  const bName = document.getElementById('b-name').value.trim();
+  if (!aName || !bName) { alert('두 사람 이름을 모두 입력하세요.'); return; }
+
+  const aDt = parseDate(document.getElementById('a-date').value);
+  const bDt = parseDate(document.getElementById('b-date').value);
+  if (!aDt || !bDt) { alert('두 사람 생년월일을 입력하세요.'); return; }
+
+  const aTm = parseTime(document.getElementById('a-time').value);
+  const bTm = parseTime(document.getElementById('b-time').value);
+
+  const p = new URLSearchParams({
+    a_n: aName, a_g: document.getElementById('a-gender').value,
+    a_c: document.getElementById('a-cal').value,
+    a_y: aDt.y, a_mo: aDt.m, a_d: aDt.d, a_h: aTm.h, a_mi: aTm.mi,
+    b_n: bName, b_g: document.getElementById('b-gender').value,
+    b_c: document.getElementById('b-cal').value,
+    b_y: bDt.y, b_mo: bDt.m, b_d: bDt.d, b_h: bTm.h, b_mi: bTm.mi
+  });
+  const link = `${location.origin}/couple/?${p}`;
+  document.getElementById('couple-link').textContent = link;
+  document.getElementById('couple-result').style.display = 'block';
+}
+
+function copyLink(linkId, btnId) {
+  const txt = document.getElementById(linkId).textContent;
+  navigator.clipboard.writeText(txt).then(() => {
+    const btn = document.getElementById(btnId);
+    btn.textContent = '✅ 복사됨!';
+    setTimeout(() => btn.textContent = '📋 복사', 2000);
   });
 }
 </script>
