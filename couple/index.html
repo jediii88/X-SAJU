@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>X-사주 궁합 리포트</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080810;
+  --panel: rgba(255,255,255,0.04);
+  --line: rgba(255,255,255,0.10);
+  --text: rgba(255,255,255,0.96);
+  --text-soft: rgba(255,255,255,0.70);
+  --text-dim: rgba(255,255,255,0.42);
+  --gold: #c7a76a;
+  --purple: #7c8dff;
+  --wood: #52b36a;
+  --fire: #d45a52;
+  --earth: #c9a24c;
+  --metal: #9ea4aa;
+  --water: #4e87d9;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans KR', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+body { overflow-x: hidden; }
+
+#loading-screen {
+  position: fixed; inset: 0;
+  background: var(--bg);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  z-index: 999; gap: 20px;
+}
+.spin {
+  width: 48px; height: 48px;
+  border: 3px solid rgba(199,167,106,0.2);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+#loading-screen p { color: var(--gold); font-size: 14px; letter-spacing: 0.15em; }
+
+.page-header {
+  text-align: center;
+  padding: 36px 20px 20px;
+  border-bottom: 1px solid rgba(199,167,106,0.1);
+}
+.page-header .brand {
+  font-size: 11px; letter-spacing: 0.4em;
+  color: var(--text-dim); margin-bottom: 12px;
+}
+.page-header h1 { font-size: 22px; font-weight: 300; letter-spacing: 0.05em; }
+.rel-badge {
+  display: inline-block; margin-top: 10px;
+  background: rgba(199,167,106,0.12);
+  border: 1px solid rgba(199,167,106,0.3);
+  color: var(--gold); font-size: 12px;
+  padding: 4px 14px; border-radius: 20px;
+  letter-spacing: 0.1em;
+}
+
+.container { max-width: 500px; margin: 0 auto; padding: 0 18px 80px; }
+
+.duo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 24px 0; }
+.person-card { border-radius: 12px; padding: 16px 12px; border: 1px solid; }
+.person-card.a { background: rgba(199,167,106,0.06); border-color: rgba(199,167,106,0.25); }
+.person-card.b { background: rgba(124,141,255,0.06); border-color: rgba(124,141,255,0.25); }
+.person-label { font-size: 10px; letter-spacing: 0.2em; margin-bottom: 8px; font-weight: 500; }
+.person-card.a .person-label { color: var(--gold); }
+.person-card.b .person-label { color: var(--purple); }
+.person-name { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+.person-card.a .person-name { color: var(--gold); }
+.person-card.b .person-name { color: var(--purple); }
+.person-ilju { font-size: 22px; font-weight: 300; letter-spacing: 0.05em; margin: 8px 0; }
+.person-meta { font-size: 11px; color: var(--text-dim); line-height: 1.6; }
+.pillar-mini { display: flex; gap: 3px; margin-top: 10px; }
+.pillar-chip { flex: 1; background: rgba(255,255,255,0.05); border-radius: 6px; padding: 5px 2px; text-align: center; }
+.pillar-chip .pn { font-size: 9px; color: var(--text-dim); margin-bottom: 2px; }
+.pillar-chip .pg { font-size: 13px; }
+.pillar-chip .pj { font-size: 13px; }
+
+.ohaeng-wrap { margin-top: 10px; }
+.ohaeng-row { display: flex; align-items: center; gap: 5px; margin-bottom: 3px; font-size: 9px; }
+.ohaeng-row .ol { width: 14px; }
+.ohaeng-row .ot { flex: 1; height: 2px; background: rgba(255,255,255,0.06); border-radius: 1px; position: relative; }
+.ohaeng-row .of { height: 2px; border-radius: 1px; position: absolute; top: 0; left: 0; }
+.ohaeng-row .ov { width: 20px; text-align: right; color: var(--text-dim); }
+
+.score-section { text-align: center; padding: 32px 0 24px; }
+.score-ring-wrap { position: relative; width: 160px; height: 160px; margin: 0 auto 16px; }
+.score-ring-wrap svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.score-ring-bg { fill: none; stroke: rgba(255,255,255,0.06); stroke-width: 10; }
+.score-ring-fill {
+  fill: none; stroke-width: 10; stroke-linecap: round;
+  stroke-dasharray: 408; stroke-dashoffset: 408;
+  transition: stroke-dashoffset 1.2s cubic-bezier(0.4,0,0.2,1);
+}
+.score-num { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.score-num .sn { font-size: 52px; font-weight: 200; line-height: 1; }
+.score-num .su { font-size: 16px; color: var(--text-dim); }
+.score-grade { font-size: 22px; font-weight: 300; letter-spacing: 0.1em; margin-bottom: 8px; }
+.score-sub { font-size: 13px; color: var(--text-soft); line-height: 1.7; max-width: 320px; margin: 0 auto; }
+
+.breakdown-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 20px 0; }
+.bk-item { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 12px 14px; }
+.bk-label { font-size: 11px; color: var(--text-dim); margin-bottom: 4px; }
+.bk-value { font-size: 20px; font-weight: 300; }
+.bk-value.plus { color: #52b36a; }
+.bk-value.minus { color: #d45a52; }
+.bk-value.neutral { color: var(--text-soft); }
+.bk-desc { font-size: 10px; color: var(--text-dim); margin-top: 4px; line-height: 1.5; }
+
+.rel-tabs { display: flex; overflow-x: auto; gap: 0; margin: 24px 0 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
+.rel-tabs::-webkit-scrollbar { display: none; }
+.rel-tab {
+  padding: 10px 16px; white-space: nowrap;
+  font-size: 13px; color: #888; cursor: pointer;
+  border: none; border-bottom: 2px solid transparent;
+  background: none; font-family: inherit; transition: color 0.2s;
+}
+.rel-tab:hover { color: var(--text-soft); }
+.rel-tab.active { color: var(--text); border-bottom-color: var(--gold); font-weight: 500; }
+
+.rel-panel { display: none; padding: 20px 0; }
+.rel-panel.active { display: block; }
+
+.sec-title {
+  font-size: 11px; color: var(--text-dim);
+  letter-spacing: 0.15em; margin-bottom: 12px;
+  padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.insight-card {
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 10px; padding: 16px; margin-bottom: 10px;
+  font-size: 13px; color: var(--text-soft); line-height: 1.75;
+}
+.insight-card strong { color: var(--text); }
+.tag {
+  display: inline-block; margin-bottom: 8px;
+  background: rgba(199,167,106,0.12);
+  color: var(--gold); font-size: 10px;
+  padding: 2px 8px; border-radius: 10px; letter-spacing: 0.1em;
+}
+.tag.purple { background: rgba(124,141,255,0.12); color: var(--purple); }
+.tag.green  { background: rgba(82,179,106,0.12);  color: #52b36a; }
+.tag.red    { background: rgba(212,90,82,0.12);   color: #d45a52; }
+
+.special-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.sp-badge { border-radius: 20px; padding: 5px 12px; font-size: 11px; border: 1px solid; }
+.sp-badge.g { background: rgba(82,179,106,0.1); border-color: rgba(82,179,106,0.4); color: #52b36a; }
+.sp-badge.r { background: rgba(212,90,82,0.1); border-color: rgba(212,90,82,0.3); color: #d45a52; }
+.sp-badge.n { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.1); color: var(--text-dim); }
+
+.timeline-section { margin: 24px 0; }
+.timeline-scroll {
+  display: flex; overflow-x: auto; gap: 8px;
+  padding-bottom: 16px; margin-top: 12px;
+  scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+}
+.timeline-scroll::-webkit-scrollbar { height: 3px; }
+.timeline-scroll::-webkit-scrollbar-thumb { background: rgba(199,167,106,0.3); border-radius: 2px; }
+.t-card {
+  flex: 0 0 96px; border-radius: 10px; padding: 12px 8px;
+  text-align: center; border: 1px solid; scroll-snap-align: start;
+}
+.t-card.good { background: rgba(82,179,106,0.08); border-color: rgba(82,179,106,0.3); }
+.t-card.half { background: rgba(199,167,106,0.07); border-color: rgba(199,167,106,0.25); }
+.t-card.hard { background: rgba(212,90,82,0.07); border-color: rgba(212,90,82,0.2); }
+.t-age { font-size: 10px; color: var(--text-dim); margin-bottom: 4px; }
+.t-icon { font-size: 16px; margin-bottom: 4px; }
+.t-gz { font-size: 11px; margin-bottom: 2px; }
+.t-label { font-size: 9px; margin-top: 5px; letter-spacing: 0.05em; }
+.t-card.good .t-gz, .t-card.good .t-label { color: #52b36a; }
+.t-card.half .t-gz { color: var(--gold); }
+.t-card.half .t-label { color: var(--gold); }
+.t-card.hard .t-gz, .t-card.hard .t-label { color: #d45a52; }
+
+#error-screen { display:none; text-align:center; padding:80px 24px; }
+#error-screen h2 { color:var(--gold); margin-bottom:12px; font-size:20px; }
+#error-screen p { color:var(--text-dim); font-size:14px; line-height:1.7; }
+
+.wood { color: var(--wood); } .fire { color: var(--fire); }
+.earth { color: var(--earth); } .metal { color: var(--metal); } .water { color: var(--water); }
+</style>
+</head>
+<body>
+
+<div id="loading-screen">
+  <div class="spin"></div>
+  <p>궁합 분석 중…</p>
+</div>
+
+<div id="error-screen">
+  <h2>🔮 정보 오류</h2>
+  <p>올바른 궁합 링크가 아닙니다.<br>관리자에게 문의하세요.</p>
+</div>
+
+<div id="main-content" style="display:none;">
+  <div class="page-header">
+    <div class="brand">X-SAJU · 궁합 리포트</div>
+    <h1>두 사람의 사주 궁합</h1>
+    <div class="rel-badge" id="rel-badge">연인 궁합</div>
+  </div>
+
+  <div class="container">
+    <div class="duo-grid">
+      <div class="person-card a">
+        <div class="person-label">◆ 첫번째</div>
+        <div class="person-name" id="a-name"></div>
+        <div class="person-ilju" id="a-ilju"></div>
+        <div class="person-meta" id="a-meta"></div>
+        <div class="pillar-mini" id="a-pillars"></div>
+        <div class="ohaeng-wrap" id="a-ohaeng"></div>
+      </div>
+      <div class="person-card b">
+        <div class="person-label">◆ 두번째</div>
+        <div class="person-name" id="b-name"></div>
+        <div class="person-ilju" id="b-ilju"></div>
+        <div class="person-meta" id="b-meta"></div>
+        <div class="pillar-mini" id="b-pillars"></div>
+        <div class="ohaeng-wrap" id="b-ohaeng"></div>
+      </div>
+    </div>
+
+    <div class="score-section">
+      <div class="score-ring-wrap">
+        <svg viewBox="0 0 140 140">
+          <circle class="score-ring-bg" cx="70" cy="70" r="65"/>
+          <circle class="score-ring-fill" id="score-ring" cx="70" cy="70" r="65"/>
+        </svg>
+        <div class="score-num">
+          <span class="sn" id="score-num">—</span>
+          <span class="su">/ 100</span>
+        </div>
+      </div>
+      <div class="score-grade" id="score-grade"></div>
+      <div class="score-sub" id="score-sub"></div>
+      <div class="breakdown-grid" id="breakdown-grid"></div>
+    </div>
+
+    <div class="rel-tabs">
+      <button class="rel-tab active" onclick="switchTab('lover',this)">💕 연인</button>
+      <button class="rel-tab" onclick="switchTab('married',this)">💍 부부</button>
+      <button class="rel-tab" onclick="switchTab('friend',this)">🤝 친구</button>
+      <button class="rel-tab" onclick="switchTab('business',this)">💼 비즈니스</button>
+    </div>
+
+    <div id="panel-lover"    class="rel-panel active"></div>
+    <div id="panel-married"  class="rel-panel"></div>
+    <div id="panel-friend"   class="rel-panel"></div>
+    <div id="panel-business" class="rel-panel"></div>
+
+    <div class="timeline-section">
+      <div class="sec-title">◆ 대운 싱크 — 시기별 궁합 흐름</div>
+      <div class="timeline-scroll" id="timeline-scroll"></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/lunar-javascript/lunar.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/korean-lunar-calendar/dist/korean-lunar-calendar.min.js"></script>
+<script>
+if (typeof KoreanLunarCalendar === 'undefined') {
+  window.KoreanLunarCalendar = class {
+    setLunarDate(){return false;}
+    getSolarCalendar(){return {year:2000,month:1,day:1};}
+  };
+}
+</script>
+<script src="../klc.min.js"></script>
+<script>
+// ══════════════════════════════════════
+// 기초 상수
+// ══════════════════════════════════════
+const STEM_OH   = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
+const BRANCH_OH = {'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'};
+const HAN_KOR   = {'甲':'갑','乙':'을','丙':'병','丁':'정','戊':'무','己':'기','庚':'경','辛':'신','壬':'임','癸':'계','子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해'};
+const HAN_COLOR = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water','子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'};
+const OH_KR = {wood:'목(木)',fire:'화(火)',earth:'토(土)',metal:'금(金)',water:'수(水)'};
+
+const SHENG = {wood:'fire',fire:'earth',earth:'metal',metal:'water',water:'wood'};
+const KE    = {wood:'earth',earth:'water',water:'fire',fire:'metal',metal:'wood'};
+
+const BRANCH_HAP   = {'子':'丑','丑':'子','寅':'亥','亥':'寅','卯':'戌','戌':'卯','辰':'酉','酉':'辰','巳':'申','申':'巳','午':'未','未':'午'};
+const BRANCH_CHUNG = {'子':'午','午':'子','丑':'未','未':'丑','寅':'申','申':'寅','卯':'酉','酉':'卯','辰':'戌','戌':'辰','巳':'亥','亥':'巳'};
+const SAMHAP = [['寅','午','戌'],['申','子','辰'],['亥','卯','未'],['巳','酉','丑']];
+const DOHWA  = {'子':'酉','丑':'午','寅':'卯','卯':'子','辰':'酉','巳':'午','午':'卯','未':'子','申':'酉','酉':'午','戌':'卯','亥':'子'};
+
+// 대운 오행 성격 (단순 positive/negative 판단)
+const OH_POSITIVE = {wood:true, fire:true, earth:true, metal:true, water:true}; // 기준 필요시 확장
+
+// ══════════════════════════════════════
+// URL 파라미터 파싱
+// ══════════════════════════════════════
+function parseParams() {
+  const sp = new URLSearchParams(location.search);
+  const g = (k,d='') => sp.get(k) || d;
+  return {
+    a: {
+      name:   decodeURIComponent(g('a_n','첫번째')),
+      gender: g('a_g','male'),
+      cal:    g('a_c','solar'),
+      year:   parseInt(g('a_y',1990)), month: parseInt(g('a_mo',1)),
+      day:    parseInt(g('a_d',1)),   hour:  parseInt(g('a_h',12)),
+    },
+    b: {
+      name:   decodeURIComponent(g('b_n','두번째')),
+      gender: g('b_g','female'),
+      cal:    g('b_c','solar'),
+      year:   parseInt(g('b_y',1992)), month: parseInt(g('b_mo',1)),
+      day:    parseInt(g('b_d',1)),   hour:  parseInt(g('b_h',12)),
+    },
+    rel: g('rel','lover')
+  };
+}
+
+// ══════════════════════════════════════
+// 사주 계산
+// ══════════════════════════════════════
+function calcSaju(info) {
+  const {year:y, month:m, day:d, hour:hr, cal, gender} = info;
+  let solarObj;
+
+  try {
+    if (cal === 'solar') {
+      solarObj = Solar.fromYmdHms(y, m, d, hr, 0, 0);
+    } else {
+      try {
+        const klc = new KoreanLunarCalendar();
+        const ok = klc.setLunarDate(y, m, d, false);
+        if (ok) {
+          const s = klc.getSolarCalendar();
+          solarObj = Solar.fromYmdHms(s.year, s.month, s.day, hr, 0, 0);
+        } else throw '';
+      } catch(e) {
+        const lObj = Lunar.fromYmdHms(y, m, d, hr, 0, 0);
+        solarObj = lObj.getSolar();
+      }
+    }
+  } catch(e) {
+    solarObj = Solar.fromYmdHms(y, m, d, hr, 0, 0);
+  }
+
+  const lunar = solarObj.getLunar();
+  const ec = lunar.getEightChar();
+
+  const pillars = [
+    { n:'시주', h: ec.getTime() },
+    { n:'일주', h: ec.getDay() },
+    { n:'월주', h: ec.getMonth() },
+    { n:'년주', h: ec.getYear() }
+  ];
+
+  const dayStem   = ec.getDay()[0];
+  const dayBranch = ec.getDay()[1];
+  const yearBranch = ec.getYear()[1];
+
+  const counts = {wood:0,fire:0,earth:0,metal:0,water:0};
+  pillars.forEach(p => {
+    const so = STEM_OH[p.h[0]]; if(so) counts[so]++;
+    const bo = BRANCH_OH[p.h[1]]; if(bo) counts[bo]++;
+  });
+  const totalW = Object.values(counts).reduce((a,b)=>a+b,0);
+
+  const myEl = STEM_OH[dayStem] || 'wood';
+  const sngMap = {wood:'water',fire:'wood',earth:'fire',metal:'earth',water:'metal'};
+  const supportEl = sngMap[myEl];
+  const support = (counts[myEl]||0) + (counts[supportEl]||0);
+  const ratio = totalW > 0 ? support / totalW : 0.5;
+  const strength = ratio > 0.55 ? '신강' : ratio < 0.45 ? '신약' : '중화';
+
+  const isMale = gender === 'male';
+  const yun = ec.getYun(isMale ? 1 : 0);
+  const allDaYun = (yun.getDaYun ? yun.getDaYun().slice(1) : []).filter(dy => dy.getStartAge() <= 100);
+
+  return {
+    pillars, dayStem, dayBranch, yearBranch,
+    counts, totalW, strength, ratio, allDaYun,
+    solarYear: solarObj.getYear(), ec
+  };
+}
+
+// ══════════════════════════════════════
+// 궁합 분석 (100점)
+// ══════════════════════════════════════
+function analyzeCoupling(a, b) {
+  let score = 50;
+  const breakdown = [];
+
+  // 1. 일지 합충 +20 / -20
+  const aDB = a.dayBranch, bDB = b.dayBranch;
+  const isHap   = BRANCH_HAP[aDB] === bDB;
+  const isChung = BRANCH_CHUNG[aDB] === bDB;
+  if (isHap) {
+    score += 20;
+    breakdown.push({ label:'일지 합(合)', value:'+20', cls:'plus',
+      desc:`${aDB}(${HAN_KOR[aDB]})·${bDB}(${HAN_KOR[bDB]}) 합 — 배우자궁이 자연스럽게 어우러집니다.` });
+  } else if (isChung) {
+    score -= 20;
+    breakdown.push({ label:'일지 충(沖)', value:'−20', cls:'minus',
+      desc:`${aDB}·${bDB} 충 — 배우자궁 에너지가 정면 충돌합니다.` });
+  } else {
+    breakdown.push({ label:'일지 관계', value:'중립', cls:'neutral',
+      desc:`${aDB}·${bDB} — 특별한 합충 없음. 안정적 관계.` });
+  }
+
+  // 2. 일간 상생 +15
+  const aOh = STEM_OH[a.dayStem] || 'wood';
+  const bOh = STEM_OH[b.dayStem] || 'wood';
+  const shengAB = SHENG[aOh] === bOh;
+  const shengBA = SHENG[bOh] === aOh;
+  if (shengAB || shengBA) {
+    score += 15;
+    const who = shengAB ? `${a.dayStem}이 ${b.dayStem}을 생` : `${b.dayStem}이 ${a.dayStem}을 생`;
+    breakdown.push({ label:'일간 상생', value:'+15', cls:'plus',
+      desc:`${who} — 서로 에너지를 북돋아 주는 이상적 관계.` });
+  } else if (KE[aOh] === bOh || KE[bOh] === aOh) {
+    score -= 5;
+    breakdown.push({ label:'일간 상극', value:'−5', cls:'minus',
+      desc:`${aOh}·${bOh} 상극 — 에너지 충돌 가능성. 이해와 배려 필요.` });
+  } else {
+    breakdown.push({ label:'일간 관계', value:'+0', cls:'neutral',
+      desc:`${aOh}·${bOh} — 비화 또는 중립 관계.` });
+  }
+
+  // 3. 오행 균형 보완 +20
+  const ohKeys = ['wood','fire','earth','metal','water'];
+  let synergy = 0;
+  ohKeys.forEach(oh => {
+    const aVal = a.counts[oh] || 0;
+    const bVal = b.counts[oh] || 0;
+    if (aVal === 0 && bVal >= 2) synergy += 4; // A 부족 B 보완
+    if (bVal === 0 && aVal >= 2) synergy += 4; // B 부족 A 보완
+    if (aVal >= 3 && bVal >= 3) synergy -= 3; // 동일 과잉
+  });
+  const ohScore = Math.max(-10, Math.min(20, synergy));
+  score += ohScore;
+  if (ohScore > 0) {
+    breakdown.push({ label:'오행 시너지', value:`+${ohScore}`, cls:'plus',
+      desc:'부족한 오행을 서로 보완하는 시너지 관계입니다.' });
+  } else if (ohScore < 0) {
+    breakdown.push({ label:'오행 충돌', value:`${ohScore}`, cls:'minus',
+      desc:'같은 오행이 과잉되어 에너지 충돌이 일어납니다.' });
+  }
+  // 4. 삼합 +15
+  let samhapScore = 0;
+  SAMHAP.forEach(group => {
+    if (group.includes(aDB) && group.includes(bDB)) {
+      samhapScore = 15;
+    }
+  });
+  score += samhapScore;
+  if (samhapScore > 0) {
+    breakdown.push({ label:'삼합(三合)', value:'+15', cls:'plus',
+      desc:`${aDB}·${bDB} — 같은 삼합 그룹. 목표와 방향이 일치합니다.` });
+  } else {
+    breakdown.push({ label:'삼합 관계', value:'+0', cls:'neutral',
+      desc:'삼합 관계 없음. 각자의 방향을 조율하는 과정이 필요합니다.' });
+  }
+
+  // 5. 신강/신약 상보 +15
+  const aStrong = a.strength === '신강';
+  const bStrong = b.strength === '신강';
+  let ssScore = 0;
+  if (aStrong !== bStrong) {
+    ssScore = 15;
+    breakdown.push({ label:'신강/신약 상보', value:'+15', cls:'plus',
+      desc:`${a.strength}·${b.strength} — 한쪽이 이끌고 한쪽이 조율하는 최적 조합.` });
+  } else if (aStrong && bStrong) {
+    ssScore = -5;
+    breakdown.push({ label:'신강 충돌', value:'−5', cls:'minus',
+      desc:'두 사람 모두 강한 기운. 주도권 갈등 주의.' });
+  } else {
+    ssScore = 5;
+    breakdown.push({ label:'신약 동반', value:'+5', cls:'neutral',
+      desc:'두 사람 모두 유연한 에너지. 서로의 귀인을 공유하면 시너지.' });
+  }
+  score += ssScore;
+
+  score = Math.max(0, Math.min(100, Math.round(score)));
+
+  let grade, sub;
+  if      (score >= 90) { grade='천생연분 ✨'; sub='강력한 사주 에너지 공명. 만남 자체가 운명입니다.'; }
+  else if (score >= 75) { grade='깊은 인연 💫'; sub='서로를 성장시키는 강한 유대. 함께할수록 빛납니다.'; }
+  else if (score >= 60) { grade='좋은 궁합 ⭐'; sub='균형 잡힌 에너지. 노력과 이해로 더욱 깊어집니다.'; }
+  else if (score >= 45) { grade='보통 궁합 🌙'; sub='특별한 합충 없이 무난합니다. 공통 목표가 중요합니다.'; }
+  else if (score >= 30) { grade='도전 궁합 ⚡'; sub='마찰이 있으나 극복하면 단단해집니다.'; }
+  else                  { grade='어려운 인연 🔥'; sub='강한 에너지 충돌. 상호 이해와 배려가 핵심입니다.'; }
+
+  const ringColor = score >= 75 ? '#c7a76a' : score >= 55 ? '#7c8dff' : score >= 40 ? '#c9a24c' : '#d45a52';
+  return { score, grade, sub, breakdown, ringColor, isHap, isChung, samhapScore, ssScore, aOh, bOh, shengAB, shengBA };
+}
+
+// ══════════════════════════════════════
+// UI 렌더링
+// ══════════════════════════════════════
+function renderPersonCard(prefix, info, saju) {
+  const nameEl    = document.getElementById(prefix + '-name');
+  const iljuEl    = document.getElementById(prefix + '-ilju');
+  const metaEl    = document.getElementById(prefix + '-meta');
+  const pillarsEl = document.getElementById(prefix + '-pillars');
+  const ohaengEl  = document.getElementById(prefix + '-ohaeng');
+
+  nameEl.textContent = info.name;
+  const ds = saju.dayStem, db = saju.dayBranch;
+  iljuEl.innerHTML = `<span class="${HAN_COLOR[ds]}">${ds}</span><span class="${HAN_COLOR[db]}">${db}</span> <span style="font-size:13px;color:var(--text-dim);">${HAN_KOR[ds]}${HAN_KOR[db]}</span>`;
+  metaEl.innerHTML  = `${saju.solarYear}년생 · ${info.gender==='male'?'남':'여'} · ${saju.strength}`;
+
+  const order  = [3,2,1,0];
+  const labels = ['년','월','일','시'];
+  pillarsEl.innerHTML = order.map((i,li) => {
+    const p = saju.pillars[i];
+    return `<div class="pillar-chip">
+      <div class="pn">${labels[li]}</div>
+      <div class="pg ${HAN_COLOR[p.h[0]]}">${p.h[0]}</div>
+      <div class="pj ${HAN_COLOR[p.h[1]]}">${p.h[1]}</div>
+    </div>`;
+  }).join('');
+
+  const ohKeys = [{k:'wood',l:'목'},{k:'fire',l:'화'},{k:'earth',l:'토'},{k:'metal',l:'금'},{k:'water',l:'수'}];
+  ohaengEl.innerHTML = ohKeys.map(o => {
+    const v = saju.counts[o.k] || 0;
+    const pct = Math.round(v / saju.totalW * 100) || 0;
+    return `<div class="ohaeng-row">
+      <span class="ol ${o.k}">${o.l}</span>
+      <div class="ot"><div class="of bg-${o.k}" style="width:${pct}%;"></div></div>
+      <span class="ov">${v}</span>
+    </div>`;
+  }).join('');
+}
+
+function renderScore(result) {
+  document.getElementById('score-num').textContent   = result.score;
+  document.getElementById('score-grade').textContent = result.grade;
+  document.getElementById('score-sub').textContent   = result.sub;
+
+  const ring = document.getElementById('score-ring');
+  ring.style.stroke = result.ringColor;
+  setTimeout(() => {
+    ring.style.strokeDashoffset = 408 - (408 * result.score / 100);
+  }, 100);
+
+  document.getElementById('breakdown-grid').innerHTML = result.breakdown.map(b =>
+    `<div class="bk-item">
+      <div class="bk-label">${b.label}</div>
+      <div class="bk-value ${b.cls}">${b.value}</div>
+      <div class="bk-desc">${b.desc}</div>
+    </div>`
+  ).join('');
+}
+
+// ══════════════════════════════════════
+// 관계 유형별 패널
+// ══════════════════════════════════════
+function buildRelPanels(params, a, b, result) {
+  const aName = params.a.name, bName = params.b.name;
+  const isHap = result.isHap, isChung = result.isChung;
+  const shengAB = result.shengAB, shengBA = result.shengBA;
+  const aDB = a.dayBranch, bDB = b.dayBranch;
+  const aOh = result.aOh, bOh = result.bOh;
+
+  const aDohwa = DOHWA[a.yearBranch] === a.dayBranch || DOHWA[a.dayBranch] === a.dayBranch;
+  const bDohwa = DOHWA[b.yearBranch] === b.dayBranch || DOHWA[b.dayBranch] === b.dayBranch;
+
+  // ── 연인 ──
+  const loverBadges = [];
+  if (aDohwa) loverBadges.push(`<span class="sp-badge g">🌸 ${aName} 도화살</span>`);
+  if (bDohwa) loverBadges.push(`<span class="sp-badge g">🌸 ${bName} 도화살</span>`);
+  if (!aDohwa && !bDohwa) loverBadges.push(`<span class="sp-badge n">도화살 없음</span>`);
+  if (isHap)   loverBadges.push(`<span class="sp-badge g">💞 일지 합 — 강한 끌림</span>`);
+  if (isChung) loverBadges.push(`<span class="sp-badge r">⚡ 일지 충 — 마찰 주의</span>`);
+
+  const loverInsights = [];
+  loverInsights.push(`<div class="insight-card">
+    <div class="tag">💕 애정 싱크</div><br>
+    <strong>${aName}(${a.dayStem})과 ${bName}(${b.dayStem})</strong>의 일간 에너지 관계: ${
+      shengAB ? aName+'이 '+bName+'을 자연스럽게 감싸 이끄는 구조입니다. 애정 표현에서 주도권이 뚜렷합니다.' :
+      shengBA ? bName+'이 '+aName+'을 포용하고 에너지를 공급합니다. 정서적 안정과 유대감이 강합니다.' :
+      aOh===bOh ? '같은 오행의 비화 관계. 이해는 쉽지만 새로운 자극이 필요합니다.' :
+      '상보적 오행 관계. 서로 다른 매력으로 끌리는 구조입니다.'
+    }
+  </div>`);
+  loverInsights.push(`<div class="insight-card">
+    <div class="tag">💍 결혼 타이밍</div><br>
+    ${a.strength==='신강'&&b.strength==='신약' ? '<strong>최적 조합</strong>: '+aName+'의 강한 추진력과 '+bName+'의 유연한 적응력이 결혼 후 안정적 가정을 만듭니다.' :
+      a.strength==='신약'&&b.strength==='신강' ? '<strong>최적 조합</strong>: '+bName+'의 강한 추진력과 '+aName+'의 유연한 지지가 균형을 이룹니다.' :
+      '두 사람의 에너지 구조가 비슷합니다. 서로의 강점을 인정하고 용신 대운이 겹치는 시기가 최적입니다.'
+    } 두 사람 대운이 함께 상승하는 구간이 최적의 결혼·전환점 시기입니다.
+  </div>`);
+  if (isHap) loverInsights.push(`<div class="insight-card">
+    <div class="tag green">✨ 일지 합 특이점</div><br>
+    <strong>${aDB}·${bDB} 합</strong> — 배우자궁이 합을 이루는 것은 사주 궁합에서 가장 강력한 인연 신호입니다.
+    처음 만남에서부터 편안함을 느끼며, 결혼 후에도 서로를 자연스럽게 받아들입니다.
+  </div>`);
+  else if (isChung) loverInsights.push(`<div class="insight-card">
+    <div class="tag red">⚡ 일지 충 주의</div><br>
+    <strong>${aDB}·${bDB} 충</strong> — 배우자궁의 충돌은 생활 방식과 가치관의 마찰로 나타납니다.
+    그러나 강한 마찰은 강한 끌림의 이면이기도 합니다. 서로의 다름을 인정하고 존중하는 의식적 노력이 관계를 지속시킵니다.
+  </div>`);
+  document.getElementById('panel-lover').innerHTML =
+    `<div class="special-badges">${loverBadges.join('')}</div>` + loverInsights.join('');
+
+  // ── 부부 ──
+  const marriedInsights = [];
+  marriedInsights.push(`<div class="insight-card">
+    <div class="tag">💍 재성/관성 균형</div><br>
+    ${(a.counts.metal>1||a.counts.earth>1) ? '<strong>'+aName+'</strong>은 재성·관성 기운이 있어 경제적 안정을 중시합니다.' : '<strong>'+aName+'</strong>은 재물보다 관계와 성장을 우선합니다.'}
+    ${(b.counts.metal>1||b.counts.earth>1) ? ' <strong>'+bName+'</strong>도 재성 기운이 강해 함께 자산을 쌓아가는 구조입니다.' : ' <strong>'+bName+'</strong>은 정서적 유대를 우선시합니다.'}
+    두 사람의 재물 철학을 초기에 맞추는 것이 장기 안정의 열쇠입니다.
+  </div>`);
+  marriedInsights.push(`<div class="insight-card">
+    <div class="tag red">⚠ 위기 구간 분석</div><br>
+    일반적으로 결혼 ${result.score<55 ? '3~5년' : '7~10년'} 차에 에너지 마찰이 표면화되는 경향이 있습니다.
+    ${isChung ? '두 사람의 일지 충('+aDB+'·'+bDB+')은 이 시기에 주요 갈등 원인이 될 수 있습니다. 일상의 역할 분담을 명확히 하세요.' :
+    '이 시기에 서로의 대운 흐름을 점검하고, 공통 목표를 재설정하는 것이 위기를 기회로 전환합니다.'}
+  </div>`);
+  marriedInsights.push(`<div class="insight-card">
+    <div class="tag">👶 자녀운</div><br>
+    ${(a.counts.wood+a.counts.fire>3)||(b.counts.wood+b.counts.fire>3) ? '목화(木火) 기운이 풍부하여 자녀와의 인연이 밝고 따뜻합니다. ' : ''}
+    ${(a.counts.water+a.counts.metal>3)||(b.counts.water+b.counts.metal>3) ? '금수(金水) 기운이 강한 사주는 늦게 자녀 인연이 이루어지는 경우도 있습니다. ' : ''}
+    두 사람의 오행 균형으로 볼 때 자녀는 ${result.score>=65 ? '비교적 순탄한' : '노력이 필요한'} 인연입니다.
+    용신 오행이 강한 대운 시기가 자녀 인연의 최적 구간입니다.
+  </div>`);
+  document.getElementById('panel-married').innerHTML = marriedInsights.join('');
+
+  // ── 친구 ──
+  const friendInsights = [];
+  friendInsights.push(`<div class="insight-card">
+    <div class="tag">🤝 에너지 충돌 진단</div><br>
+    ${isChung ? '<strong>강한 에너지 충돌</strong>('+aDB+'·'+bDB+' 충): 의견 충돌이 잦을 수 있지만, 이 두 사람의 조합은 서로에게 강한 자극을 주는 관계입니다. 갈등이 성장의 동력이 됩니다.' :
+    isHap ? '<strong>안정적 에너지</strong>('+aDB+'·'+bDB+' 합): 대화가 자연스럽고 오해가 적습니다. 오래될수록 더 편안해지는 우정입니다.' :
+    '에너지 충돌이 크지 않습니다. 서로 다른 관심사와 강점이 보완적 우정을 만듭니다.'}
+  </div>`);
+  friendInsights.push(`<div class="insight-card">
+    <div class="tag">📅 장기 지속성</div><br>
+    ${result.samhapScore>0 ? '<strong>삼합 관계</strong>('+aDB+'·'+bDB+'): 같은 방향을 향하는 에너지. 공통 목표나 취미가 생기면 평생 우정으로 발전합니다.' :
+    result.score>=60 ? '오행 보완이 잘 이루어져 '+aName+'와 '+bName+'은 서로에게 영감을 주는 장기적 인연입니다.' :
+    '에너지 차이가 있어 의도적 연락과 노력이 필요합니다. 공통 관심사를 찾는 것이 우정 유지의 핵심입니다.'}
+  </div>`);
+  document.getElementById('panel-friend').innerHTML = friendInsights.join('');
+
+  // ── 비즈니스 ──
+  const bizInsights = [];
+  bizInsights.push(`<div class="insight-card">
+    <div class="tag">💰 재물 상승기 분석</div><br>
+    ${a.solarYear<b.solarYear ? aName+'이 선배로서 경험을 제공하고 '+bName+'이 새로운 시각을 더하는 구조가 유리합니다.' : bName+'의 경험과 '+aName+'의 에너지가 시너지를 냅니다.'}
+    ${shengAB ? ' 특히 '+aName+'('+aOh+')이 '+bName+'('+bOh+')을 생하는 관계로, '+aName+'이 방향을 설정하고 '+bName+'이 실행하는 역할 분담이 효과적입니다.' :
+    shengBA ? ' '+bName+'('+bOh+')이 '+aName+'('+aOh+')을 생하는 관계로, '+bName+'이 전략을 수립하고 '+aName+'이 실행하는 구조가 최적입니다.' :
+    ' 동등한 파트너십 구조. 명확한 역할 분담과 계약이 중요합니다.'}
+  </div>`);
+  const getStyleDesc = s =>
+    s==='신강' ? '주도적이고 빠른 결정을 선호합니다. 큰 그림을 보는 추진력.' :
+    s==='신약' ? '신중하고 협의를 중시합니다. 리스크 관리에 강합니다.' :
+    '균형 잡힌 결정 방식. 상황에 따라 유연하게 대응합니다.';
+  bizInsights.push(`<div class="insight-card">
+    <div class="tag">🧠 의사결정 스타일</div><br>
+    <strong>${aName}</strong>(${a.strength}): ${getStyleDesc(a.strength)}<br>
+    <strong>${bName}</strong>(${b.strength}): ${getStyleDesc(b.strength)}<br><br>
+    ${a.strength!==b.strength ? '서로 다른 결정 스타일이 상호 보완적으로 작용합니다. 중요 결정 전 반드시 상의하세요.' : '비슷한 스타일로 빠른 합의가 가능하지만 외부 검토자가 필요합니다.'}
+  </div>`);
+  document.getElementById('panel-business').innerHTML = bizInsights.join('');
+}
+
+// ══════════════════════════════════════
+// 대운 싱크 타임라인
+// ══════════════════════════════════════
+function buildTimeline(a, b, aInfo, bInfo) {
+  const aDaYun = a.allDaYun;
+  const bDaYun = b.allDaYun;
+  const currYear = new Date().getFullYear();
+  const slots = [];
+
+  for (let ageA = 10; ageA <= 90; ageA += 10) {
+    const calYear = aInfo.year + ageA;
+    const ageB = calYear - bInfo.year;
+    if (ageB < 0 || ageB > 100) continue;
+
+    let aDY = null;
+    for (let i=0;i<aDaYun.length;i++) {
+      const s=aDaYun[i].getStartAge(), n=i+1<aDaYun.length?aDaYun[i+1].getStartAge():999;
+      if (ageA>=s&&ageA<n){aDY=aDaYun[i];break;}
+    }
+    let bDY = null;
+    for (let i=0;i<bDaYun.length;i++) {
+      const s=bDaYun[i].getStartAge(), n=i+1<bDaYun.length?bDaYun[i+1].getStartAge():999;
+      if (ageB>=s&&ageB<n){bDY=bDaYun[i];break;}
+    }
+    if (!aDY||!bDY) continue;
+
+    const aGZ = aDY.getGanZhi ? aDY.getGanZhi() : ['甲','子'];
+    const bGZ = bDY.getGanZhi ? bDY.getGanZhi() : ['甲','子'];
+    const aOhDY = STEM_OH[aGZ[0]]||'earth';
+    const bOhDY = STEM_OH[bGZ[0]]||'earth';
+
+    const sheng = SHENG[aOhDY]===bOhDY || SHENG[bOhDY]===aOhDY;
+    const ke = KE[aOhDY]===bOhDY || KE[bOhDY]===aOhDY;
+    const cls   = sheng?'good':ke?'hard':'half';
+    const icon  = sheng?'✨':ke?'⚡':'🌙';
+    const label = sheng?'함께 좋음':ke?'조율 필요':'무난';
+    const isCurrent = calYear>=currYear-5 && calYear<=currYear+5;
+    slots.push({ageA,ageB,aGZ,bGZ,cls,icon,label,isCurrent});
+  }
+
+  document.getElementById('timeline-scroll').innerHTML = slots.map(s =>
+    `<div class="t-card ${s.cls}" ${s.isCurrent?'style="box-shadow:0 0 0 2px var(--gold);"':''}>
+      <div class="t-age">A:${s.ageA}세/B:${s.ageB}세</div>
+      <div class="t-icon">${s.icon}</div>
+      <div class="t-gz"><span class="${HAN_COLOR[s.aGZ[0]]}">${s.aGZ[0]}${s.aGZ[1]}</span></div>
+      <div class="t-gz"><span class="${HAN_COLOR[s.bGZ[0]]}">${s.bGZ[0]}${s.bGZ[1]}</span></div>
+      <div class="t-label">${s.label}</div>
+    </div>`
+  ).join('');
+}
+
+// ══════════════════════════════════════
+// 탭 전환
+// ══════════════════════════════════════
+function switchTab(rel, btn) {
+  document.querySelectorAll('.rel-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.rel-panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('panel-'+rel).classList.add('active');
+}
+
+// ══════════════════════════════════════
+// 초기화
+// ══════════════════════════════════════
+window.addEventListener('DOMContentLoaded', () => setTimeout(init, 500));
+
+function init() {
+  try {
+    const params = parseParams();
+    const sajuA = calcSaju(params.a);
+    const sajuB = calcSaju(params.b);
+    const result = analyzeCoupling(sajuA, sajuB);
+
+    const relLabels = {lover:'💕 연인 궁합',married:'💍 부부 궁합',friend:'🤝 친구 궁합',business:'💼 비즈니스 궁합'};
+    document.getElementById('rel-badge').textContent = relLabels[params.rel] || '궁합 리포트';
+
+    renderPersonCard('a', params.a, sajuA);
+    renderPersonCard('b', params.b, sajuB);
+    renderScore(result);
+    buildRelPanels(params, sajuA, sajuB, result);
+    buildTimeline(sajuA, sajuB, params.a, params.b);
+
+    // CSS 오행 배경색 클래스
+    const st = document.createElement('style');
+    st.textContent = '.bg-wood{background:var(--wood)}.bg-fire{background:var(--fire)}.bg-earth{background:var(--earth)}.bg-metal{background:var(--metal)}.bg-water{background:var(--water)}';
+    document.head.appendChild(st);
+
+    // 기본 탭 활성화 (rel 파라미터 기준)
+    const rel = params.rel;
+    if (['lover','married','friend','business'].includes(rel)) {
+      document.querySelectorAll('.rel-tab').forEach(t=>t.classList.remove('active'));
+      document.querySelectorAll('.rel-panel').forEach(p=>p.classList.remove('active'));
+      document.querySelectorAll('.rel-tab').forEach(t=>{ if(t.getAttribute('onclick').includes("'"+rel+"'")) t.classList.add('active'); });
+      const panel = document.getElementById('panel-'+rel);
+      if (panel) panel.classList.add('active');
+    }
+
+    document.getElementById('loading-screen').style.display = 'none';
+    document.getElementById('main-content').style.display  = 'block';
+  } catch(e) {
+    console.error(e);
+    document.getElementById('loading-screen').style.display = 'none';
+    document.getElementById('error-screen').style.display   = 'block';
+  }
+}
+</script>
+</body>
+</html>
