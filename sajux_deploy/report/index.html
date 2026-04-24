@@ -5489,6 +5489,51 @@ const ni = document.getElementById('user-name');
 const di = document.getElementById('birth-date');
 const ti = document.getElementById('birth-time');
 ni.oninput = () => document.getElementById('n-pre').innerText = ni.value ? ni.value + ' 님' : '';
+
+// ── URL 파라미터 자동 로드 (관리자가 생성한 링크) ──────────────────
+(function autoLoadFromURL() {
+    const p = new URLSearchParams(window.location.search);
+    if (!p.get('n')) return; // 파라미터 없으면 일반 접속
+    
+    const name   = p.get('n') || '';
+    const gender = p.get('g') || 'male';
+    const cal    = p.get('c') || 'solar';
+    const year   = p.get('y') || '';
+    const month  = (p.get('mo')||'').padStart(2,'0');
+    const day    = (p.get('d')||'').padStart(2,'0');
+    const hour   = (p.get('h')||'0').padStart(2,'0');
+    const min    = (p.get('mi')||'0').padStart(2,'0');
+    
+    if (!year || !month || !day) return;
+    
+    // 폼 자동 채우기
+    ni.value = name;
+    document.getElementById('n-pre').innerText = name ? name + ' 님' : '';
+    
+    di.value = year + month + day;
+    document.getElementById('d-pre').innerText = `${year}년 ${parseInt(month)}월 ${parseInt(day)}일`;
+    
+    ti.value = hour + min;
+    
+    // 양음력 설정
+    const calEl = document.getElementById('cal-type');
+    if (calEl) calEl.value = cal === 'lunar' ? 'L' : 'S';
+    
+    // 성별 설정 (있으면)
+    const genderEl = document.getElementById('gender-select');
+    if (genderEl) genderEl.value = gender;
+    
+    // 1초 후 자동 계산 실행 (페이지 로드 완료 대기)
+    setTimeout(() => {
+        const calcBtn = document.querySelector('button[onclick*="showLoading"], button[onclick*="계산"], #calc-btn');
+        if (calcBtn) {
+            calcBtn.click();
+        } else {
+            // 직접 계산 함수 호출 시도
+            if (typeof window.generateReport === 'function') window.generateReport();
+        }
+    }, 800);
+})();
 di.oninput = () => {
     const v = di.value.replace(/\D/g, '');
     document.getElementById('d-pre').innerText = v.length === 8 ? `${v.slice(0,4)}년 ${parseInt(v.slice(4,6))}월 ${parseInt(v.slice(6,8))}일` : '';
@@ -5791,7 +5836,7 @@ function runAnalysis() {
             const STEM_EN = {"甲":"jia","乙":"yi","丙":"bing","丁":"ding","戊":"wu","己":"ji","庚":"geng","辛":"xin","壬":"ren","癸":"gui"};
             const BRANCH_EN = {"子":"zi","丑":"chou","寅":"yin","卯":"mao","辰":"chen","巳":"si","午":"wu","未":"wei","申":"shen","酉":"you","戌":"xu","亥":"hai"};
             const enName = (STEM_EN[dayStem]||'bing') + '_' + (BRANCH_EN[pillars[1].h[1]]||'yin');
-            circle.innerHTML = `<img src="zodiac_en/${enName}.png" style="width:100%;height:100%;object-fit:contain;display:block;" alt="${animalInfo.kr}">`;
+            circle.innerHTML = `<img src="../zodiac_en/${enName}.png" style="width:100%;height:100%;object-fit:contain;display:block;" alt="${animalInfo.kr}">`;
             circle.className = 'avatar-circle';
             // 색상 라벨 업데이트
             if(descHangul) descHangul.innerText = `${colorInfo.label} ${animalInfo.kr}`;
@@ -6756,7 +6801,10 @@ function runAnalysis() {
                 lc+='<div style="text-align:right;font-size:11px;color:#888;line-height:1.7;"><div>'+ctx.palace+'</div><div>'+ganKn+' + '+jiKn+'</div>'+(sipVal?'<div style="color:rgba(199,167,106,0.7);">십성: '+sipVal+'</div>':'')+'</div></div>';
                 lc+='<p style="font-size:13.5px;color:#bbb;line-height:1.85;margin:0 0 12px;">'+ctx.intro+'</p>';
                 /* 천간/지지 분리박스 제거 — 종합 서사로 대체 */
-                var pnarr=(window.PERIOD_NARRATIVE&&window.PERIOD_NARRATIVE[gan+ji])||(ganDesc+' '+jiDesc);
+                // 세운: 연도 + 간지 + 고객 언어 서사
+                var _sewYear = new Date().getFullYear() - 1 + (idx||0);
+                var pnarr=(window.PERIOD_NARRATIVE&&window.PERIOD_NARRATIVE[gan+ji])
+                    ||(ganKrLabel+'·'+jiKrLabel+' 해('+_sewYear+'년) — '+ganDesc+' '+jiDesc);
                 lc+='<div style="background:rgba(0,0,0,0.15);border-radius:6px;padding:10px;margin-bottom:12px;"><p style="font-size:12.5px;color:#ddd;line-height:1.8;margin:0;">'+pnarr+'</p></div>';
                 lc+='<div style="background:rgba(199,167,106,0.05);border-radius:6px;padding:10px;border-left:2px solid rgba(199,167,106,0.3);">';
                 lc+='<div style="font-size:10px;color:var(--gold);margin-bottom:5px;letter-spacing:1px;">✦ '+ctx.period+' 핵심 조언</div>';
