@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAJUX 관리자</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  :root { --gold:#c7a76a; --bg:#0a0a0f; }
+  body { background:var(--bg); color:#ddd; font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif; min-height:100vh; display:flex; align-items:center; justify-content:center; }
+
+  /* 비밀번호 화면 */
+  #lock-screen { text-align:center; }
+  #lock-screen h1 { font-size:28px; color:var(--gold); margin-bottom:8px; letter-spacing:2px; }
+  #lock-screen p { font-size:13px; color:#666; margin-bottom:32px; }
+  #pw-input { background:rgba(255,255,255,0.06); border:1px solid rgba(199,167,106,0.3); color:#fff; padding:12px 20px; border-radius:8px; font-size:16px; width:260px; text-align:center; letter-spacing:4px; outline:none; }
+  #pw-input:focus { border-color:var(--gold); }
+  #pw-btn { display:block; width:260px; margin:12px auto 0; background:var(--gold); color:#000; border:none; padding:12px; border-radius:8px; font-size:15px; font-weight:700; cursor:pointer; }
+  #pw-error { color:#e74c3c; font-size:13px; margin-top:10px; display:none; }
+
+  /* 관리자 대시보드 */
+  #dashboard { display:none; width:100%; max-width:640px; padding:24px 16px; }
+  #dashboard h2 { font-size:22px; color:var(--gold); margin-bottom:4px; }
+  #dashboard .sub { font-size:12px; color:#666; margin-bottom:28px; }
+
+  .form-group { margin-bottom:18px; }
+  .form-group label { display:block; font-size:12px; color:var(--gold); margin-bottom:6px; letter-spacing:1px; }
+  .form-group input, .form-group select { width:100%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#ddd; padding:10px 14px; border-radius:8px; font-size:14px; outline:none; }
+  .form-group input:focus, .form-group select:focus { border-color:var(--gold); }
+  .row2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .row3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+
+  #gen-btn { width:100%; background:var(--gold); color:#000; border:none; padding:14px; border-radius:10px; font-size:16px; font-weight:800; cursor:pointer; margin-top:8px; letter-spacing:1px; }
+  #gen-btn:hover { background:#d4b47a; }
+
+  /* 결과 링크 */
+  #result-box { display:none; margin-top:24px; background:rgba(199,167,106,0.08); border:1px solid rgba(199,167,106,0.2); border-radius:10px; padding:20px; }
+  #result-box .label { font-size:11px; color:var(--gold); margin-bottom:8px; letter-spacing:1px; }
+  #result-link { font-size:13px; color:#ddd; word-break:break-all; background:rgba(0,0,0,0.3); padding:10px 14px; border-radius:6px; display:block; margin-bottom:12px; }
+  #copy-btn { background:rgba(199,167,106,0.15); color:var(--gold); border:1px solid rgba(199,167,106,0.3); padding:8px 16px; border-radius:6px; font-size:13px; cursor:pointer; }
+  #copy-btn:hover { background:rgba(199,167,106,0.25); }
+
+  .section-title { font-size:13px; font-weight:700; color:#aaa; margin:20px 0 14px; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:8px; }
+</style>
+</head>
+<body>
+
+<!-- 잠금 화면 -->
+<div id="lock-screen">
+  <h1>🔒 SAJUX</h1>
+  <p>관리자 전용 페이지입니다</p>
+  <input type="password" id="pw-input" placeholder="비밀번호 입력" autocomplete="off">
+  <button id="pw-btn" onclick="checkPW()">입장</button>
+  <div id="pw-error">❌ 비밀번호가 틀렸습니다</div>
+</div>
+
+<!-- 관리자 대시보드 -->
+<div id="dashboard">
+  <h2>SAJUX 관리자</h2>
+  <div class="sub">고객 정보를 입력하고 리포트 링크를 생성합니다</div>
+
+  <div class="section-title">고객 기본 정보</div>
+
+  <div class="form-group">
+    <label>고객 이름</label>
+    <input type="text" id="c-name" placeholder="예: 홍길동">
+  </div>
+
+  <div class="row2">
+    <div class="form-group">
+      <label>성별</label>
+      <select id="c-gender">
+        <option value="male">남성</option>
+        <option value="female">여성</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>양/음력</label>
+      <select id="c-caltype">
+        <option value="solar">양력</option>
+        <option value="lunar">음력</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="section-title">생년월일시</div>
+
+  <div class="row3">
+    <div class="form-group">
+      <label>년 (4자리)</label>
+      <input type="number" id="c-year" placeholder="1988" min="1900" max="2099">
+    </div>
+    <div class="form-group">
+      <label>월</label>
+      <input type="number" id="c-month" placeholder="3" min="1" max="12">
+    </div>
+    <div class="form-group">
+      <label>일</label>
+      <input type="number" id="c-day" placeholder="12" min="1" max="31">
+    </div>
+  </div>
+
+  <div class="row2">
+    <div class="form-group">
+      <label>시간 (0~23)</label>
+      <input type="number" id="c-hour" placeholder="1" min="0" max="23">
+    </div>
+    <div class="form-group">
+      <label>분 (선택)</label>
+      <input type="number" id="c-min" placeholder="0" min="0" max="59">
+    </div>
+  </div>
+
+  <button id="gen-btn" onclick="generateLink()">🔗 리포트 링크 생성</button>
+
+  <div id="result-box">
+    <div class="label">고객에게 전달할 리포트 링크</div>
+    <span id="result-link"></span>
+    <button id="copy-btn" onclick="copyLink()">📋 링크 복사</button>
+  </div>
+</div>
+
+<script>
+// ─── 비밀번호 설정 (여기서 변경) ───
+const ADMIN_PW = '1357642';
+
+function checkPW() {
+  const v = document.getElementById('pw-input').value;
+  if (v === ADMIN_PW) {
+    document.getElementById('lock-screen').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    sessionStorage.setItem('sajux_admin', '1');
+  } else {
+    document.getElementById('pw-error').style.display = 'block';
+    document.getElementById('pw-input').value = '';
+    document.getElementById('pw-input').focus();
+  }
+}
+
+// 엔터키 지원
+document.getElementById('pw-input')?.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') checkPW();
+});
+
+// 이미 로그인된 경우
+if (sessionStorage.getItem('sajux_admin') === '1') {
+  document.getElementById('lock-screen').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+}
+
+function generateLink() {
+  const name   = document.getElementById('c-name').value.trim();
+  const gender = document.getElementById('c-gender').value;
+  const cal    = document.getElementById('c-caltype').value;
+  const year   = document.getElementById('c-year').value.trim();
+  const month  = document.getElementById('c-month').value.trim();
+  const day    = document.getElementById('c-day').value.trim();
+  const hour   = document.getElementById('c-hour').value.trim();
+  const min    = document.getElementById('c-min').value.trim() || '0';
+
+  if (!name || !year || !month || !day) {
+    alert('이름, 년/월/일은 필수입니다.');
+    return;
+  }
+
+  // 파라미터 인코딩
+  const params = new URLSearchParams({
+    n: name,
+    g: gender,
+    c: cal,
+    y: year,
+    mo: month,
+    d: day,
+    h: hour || '0',
+    mi: min
+  });
+
+  // 리포트 페이지 URL
+  const base = window.location.origin;
+  const link = `${base}/report/?${params.toString()}`;
+
+  document.getElementById('result-link').textContent = link;
+  document.getElementById('result-box').style.display = 'block';
+}
+
+function copyLink() {
+  const link = document.getElementById('result-link').textContent;
+  navigator.clipboard.writeText(link).then(() => {
+    document.getElementById('copy-btn').textContent = '✅ 복사됨!';
+    setTimeout(() => {
+      document.getElementById('copy-btn').textContent = '📋 링크 복사';
+    }, 2000);
+  });
+}
+</script>
+</body>
+</html>
