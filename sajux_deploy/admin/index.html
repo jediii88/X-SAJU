@@ -175,21 +175,15 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--go
         <div class="link-box" id="link-url-text"></div>
         <div style="margin-top:8px;font-size:12px;color:#888;">만료일: <span id="link-expiry" style="color:var(--gold);"></span></div>
         <div style="display:flex;gap:8px;margin-top:10px;">
-          <button class="btn sec" id="copy-link-btn" onclick="copyLink('link-url-text')" style="flex:1;opacity:0.35;pointer-events:none;">⏳ 리포트 생성 중...</button>
+          <button class="btn sec" id="copy-link-btn" onclick="copyLink('link-url-text')" style="flex:1;">📋 링크 복사</button>
         </div>
       </div>
-      <div id="preview-wrap" style="display:none;margin-top:24px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-          <div style="font-size:12px;color:#888;">👁 미리보기 — 리포트가 완전히 생성되면 아래 링크 복사 버튼이 활성화됩니다</div>
-          <div id="report-status" style="font-size:12px;color:#666;display:flex;align-items:center;gap:6px;">
-            <span id="status-dot" style="width:8px;height:8px;border-radius:50%;background:#555;display:inline-block;animation:pulse 1.2s infinite;"></span>
-            <span id="status-text">생성 중...</span>
-          </div>
-        </div>
-        <style>@keyframes pulse{0%,100%{opacity:0.3}50%{opacity:1}}</style>
-        <div style="border:1px solid rgba(199,167,106,0.3);border-radius:12px;overflow:hidden;">
-          <iframe id="preview-iframe" style="width:100%;height:700px;border:none;background:#080810;" src="about:blank"></iframe>
-        </div>
+      <div id="preview-wrap" style="display:none;margin-top:16px;">
+        <button onclick="window.open(document.getElementById('preview-wrap').dataset.url,'_blank')" 
+          style="width:100%;padding:14px;background:rgba(199,167,106,0.12);border:1px solid var(--gold);border-radius:10px;color:var(--gold);font-size:14px;font-weight:600;cursor:pointer;">
+          👁 새 탭에서 리포트 미리보기
+        </button>
+        <div style="font-size:11px;color:#666;margin-top:8px;text-align:center;">미리보기 확인 후 위 📋 링크 복사 버튼으로 고객에게 전달하세요</div>
       </div>
     </div>
   </div>
@@ -446,16 +440,15 @@ function generateReportLink(){
   const copyBtn = document.getElementById('copy-link-btn');
   const statusDot = document.getElementById('status-dot');
   const statusTxt = document.getElementById('status-text');
-  if(copyBtn){ copyBtn.style.opacity='0.35'; copyBtn.style.pointerEvents='none'; copyBtn.textContent='⏳ 리포트 생성 중...'; }
+  if(copyBtn){ copyBtn.style.opacity='1'; copyBtn.style.pointerEvents='auto'; copyBtn.textContent='📋 링크 복사'; }
   if(statusDot){ statusDot.style.background='#555'; statusDot.style.animation='pulse 1.2s infinite'; }
   if(statusTxt){ statusTxt.textContent='생성 중...'; statusTxt.style.color='#666'; }
 
   // iframe 미리보기 표시
   const iframeWrap = document.getElementById('preview-wrap');
-  const iframe = document.getElementById('preview-iframe');
-  if (iframeWrap && iframe) {
+  if (iframeWrap) {
     iframeWrap.style.display = 'block';
-    iframe.src = previewUrl;
+    iframeWrap.dataset.url = previewUrl;
   }
 
   // 링크 결과 표시
