@@ -58,7 +58,7 @@
       }
     })();
     </script>
-    <meta name="version" content="1777342509">
+    <meta name="version" content="1777342998">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -5359,19 +5359,23 @@ function showLoading(msg, callback) {
     const loadEl = document.getElementById('loading');
     const msgEl = document.getElementById('loading-msg');
     if(loadEl) loadEl.style.display = 'flex';
-    if(msgEl) msgEl.innerText = '사주를 분석하는 중입니다...';
+    if(msgEl) msgEl.innerText = msg || '사주를 분석하는 중입니다...';
+    // 안전장치: 20초 후 강제 로딩 해제
+    const safeTimer = setTimeout(function(){
+        if(loadEl) loadEl.style.display = 'none';
+        console.error('showLoading timeout - 강제 해제');
+    }, 20000);
     setTimeout(() => {
         try { callback(); } catch(e) {
-            console.error('분석 오류:', e);
+            console.error('분석 오류:', e.message, e.stack);
+            clearTimeout(safeTimer);
             if(loadEl) loadEl.style.display = 'none';
-            // 에러를 화면에 표시 (alert 제거)
-            console.error('runAnalysis 오류:', e);
             var errDiv = document.createElement('div');
-            errDiv.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#e74c3c;color:#fff;padding:16px 24px;border-radius:12px;z-index:99999;font-size:13px;max-width:80%;text-align:center;';
-            errDiv.textContent = '분석 오류: ' + e.message;
+            errDiv.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#e74c3c;color:#fff;padding:16px 24px;border-radius:12px;z-index:99999;font-size:13px;max-width:90%;text-align:center;line-height:1.6;';
+            errDiv.innerHTML = '분석 오류: ' + e.message + '<br><small style="opacity:0.7">' + (e.stack||'').split('\n')[1] + '</small>';
             document.body.appendChild(errDiv);
-            setTimeout(function(){ errDiv.remove(); }, 5000);
         }
+        clearTimeout(safeTimer);
         if(loadEl) loadEl.style.display = 'none';
     }, 100);
 }
