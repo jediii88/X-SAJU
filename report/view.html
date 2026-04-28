@@ -5358,7 +5358,13 @@ function showLoading(msg, callback) {
         try { callback(); } catch(e) {
             console.error('분석 오류:', e);
             if(loadEl) loadEl.style.display = 'none';
-            alert('분석 중 오류가 발생했습니다:\n' + e.message + '\n\n' + (e.stack||'').split('\n').slice(0,3).join('\n'));
+            // 에러를 화면에 표시 (alert 제거)
+            console.error('runAnalysis 오류:', e);
+            var errDiv = document.createElement('div');
+            errDiv.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#e74c3c;color:#fff;padding:16px 24px;border-radius:12px;z-index:99999;font-size:13px;max-width:80%;text-align:center;';
+            errDiv.textContent = '분석 오류: ' + e.message;
+            document.body.appendChild(errDiv);
+            setTimeout(function(){ errDiv.remove(); }, 5000);
         }
         if(loadEl) loadEl.style.display = 'none';
     }, 100);
@@ -5579,9 +5585,21 @@ function buildFortuneCards(targetId, rows) {
 function runAnalysis(overrideParams) {
     // view.html: window.__SAJUX_PARAMS__ 우선 사용
     var _op = overrideParams || window.__SAJUX_PARAMS__ || null;
+    // 디버그: 파라미터 상태 표시
+    var dbg = document.createElement('div');
+    dbg.id = 'sajux-dbg';
+    dbg.style.cssText = 'position:fixed;top:10px;right:10px;background:rgba(0,0,0,0.85);color:#0f0;padding:12px;border-radius:8px;z-index:99999;font-size:11px;font-family:monospace;max-width:320px;word-break:break-all;';
+    dbg.innerHTML = '<b>DEBUG</b><br>_op: ' + JSON.stringify(_op ? {cal:_op.cal,date:_op.birthDate,time:_op.birthTime} : null) + '<br>di: ' + (di ? di.value : 'NULL');
+    document.body.appendChild(dbg);
+    setTimeout(function(){ var el=document.getElementById('sajux-dbg'); if(el)el.remove(); }, 8000);
+
     const _d = (_op && _op.birthDate) || (di && di.value) || '';
     const dVal = _d.replace(/\D/g, '');
-    if (dVal.length < 8) { console.warn('view.html: birth-date 없음'); return; }
+    if (dVal.length < 8) { 
+      console.warn('view.html: birth-date 없음, _op=', JSON.stringify(_op));
+      document.getElementById('sajux-dbg') && (document.getElementById('sajux-dbg').style.background='rgba(200,0,0,0.9)');
+      return; 
+    }
 
     showLoading('만세력을 정밀 계산하는 중입니다', () => {
         const name = (_op && _op.name) || ni.value || '고객';
@@ -5613,7 +5631,7 @@ function runAnalysis(overrideParams) {
                 const klcInst = new KoreanLunarCalendar();
                 const ok = klcInst.setLunarDate(y, m, d, isLeap);
                 if (!ok) {
-                    alert('잘못된 음력 날짜입니다. (한국 기준)\n다시 확인해주세요.');
+                    console.error('잘못된 음력 날짜:', y, m, d); return;
                     return;
                 }
                 const klcSolar = klcInst.getSolarCalendar();
