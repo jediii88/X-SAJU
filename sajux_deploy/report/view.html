@@ -5524,13 +5524,16 @@ function buildFortuneCards(targetId, rows) {
     document.getElementById(targetId).innerHTML = html;
 }
 
-function runAnalysis() {
-    const dVal = (di && di.value ? di.value : '').replace(/\D/g, '');
-    if (dVal.length < 8) { console.warn('view.html: birth-date 미입력, 파라미터 대기중'); return; }
+function runAnalysis(overrideParams) {
+    // view.html: URL 파라미터 직접 주입 지원
+    const _d = (overrideParams && overrideParams.birthDate) || (di && di.value) || '';
+    const dVal = _d.replace(/\D/g, '');
+    if (dVal.length < 8) { console.warn('view.html: birth-date 미입력'); return; }
 
     showLoading('만세력을 정밀 계산하는 중입니다', () => {
-        const name = ni.value || '고객';
-        let tVal = ti.value.replace(/\D/g, '') || '0000';
+        const name = (overrideParams && overrideParams.name) || ni.value || '고객';
+        const _t = (overrideParams && overrideParams.birthTime) || (ti && ti.value) || '0000';
+        let tVal = _t.replace(/\D/g, '') || '0000';
         if (tVal.length < 4) tVal = tVal.padStart(4, '0');
 
         let y = parseInt(dVal.slice(0,4));
@@ -5539,10 +5542,10 @@ function runAnalysis() {
         let hr = parseInt(tVal.slice(0,2));
         let mn = parseInt(tVal.slice(2,4));
 
-        const isUnknown = document.getElementById('no-time').checked;
-        const isSolar = document.getElementById('cal-type').value === 'S';
-        const isLeap = document.getElementById('is-leap').value === 'true';
-        const calBase = document.getElementById('cal-base').value;
+        const isUnknown = (overrideParams && overrideParams.unknown) || (document.getElementById('no-time') && document.getElementById('no-time').checked) || false;
+        const isSolar = (overrideParams ? overrideParams.cal !== 'L' : (document.getElementById('cal-type') ? document.getElementById('cal-type').value === 'S' : true));
+        const isLeap = (overrideParams && overrideParams.yundal) || (document.getElementById('is-leap') ? document.getElementById('is-leap').value === 'true' : false);
+        const calBase = (document.getElementById('cal-base') && document.getElementById('cal-base').value) || 'KST';
 
         let origY = y, origM = m, origD = d;
         let lunarObj, solarObj;
@@ -5572,7 +5575,7 @@ function runAnalysis() {
         }
 
         // 2. 경도 보정 (-32분)은 무조건 '양력 시간' 객체를 기준으로 수행
-        if (document.getElementById('adj-l').checked && !isUnknown) {
+        if ((document.getElementById('adj-l') ? document.getElementById('adj-l').checked : true) && !isUnknown) {
             const dt = new Date(solarObj.getYear(), solarObj.getMonth() - 1, solarObj.getDay(), solarObj.getHour(), solarObj.getMinute());
             dt.setMinutes(dt.getMinutes() - 32);
             solarObj = Solar.fromYmdHms(dt.getFullYear(), dt.getMonth() + 1, dt.getDate(), dt.getHours(), dt.getMinutes(), 0);
@@ -6756,12 +6759,20 @@ function runAnalysis() {
     var adj = document.getElementById('adj-l');
     if (adj) adj.checked = true;
 
-    // runAnalysis 실행
+    // overrideParams 구성 후 runAnalysis 직접 호출
+    var overrideParams = {
+      name:      name,
+      birthDate: bdate,
+      birthTime: btime,
+      cal:       cVal,
+      yundal:    yundal,
+      unknown:   unk
+    };
     if (typeof runAnalysis === 'function') {
-      runAnalysis();
+      runAnalysis(overrideParams);
     } else {
       setTimeout(function() {
-        if (typeof runAnalysis === 'function') runAnalysis();
+        if (typeof runAnalysis === 'function') runAnalysis(overrideParams);
       }, 500);
     }
   }
