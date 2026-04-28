@@ -5747,7 +5747,7 @@ function runAnalysis(overrideParams) {
     if (dVal.length < 8) return alert('생년월일 8자리를 입력하세요.');
 
     showLoading('만세력을 정밀 계산하는 중입니다', () => {
-        const name = (_op && _op.name) || ni.value || '고객';
+        const name = (_op && _op.name) || (ni && ni.value) || '고객';
         const _t = (_op && _op.birthTime) || (ti && ti.value) || '0000';
         let tVal = _t.replace(/\D/g, '') || '0000';
         if (tVal.length < 4) tVal = tVal.padStart(4, '0');
