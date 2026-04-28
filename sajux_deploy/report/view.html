@@ -5312,6 +5312,28 @@ function showLoading(msg, callback) {
     }, 100);
 }
 
+// ── view.html: hidden inputs (ni/di/ti 보다 먼저 선언) ──
+(function(){
+  function ensureHidden(id, defVal) {
+    if (!document.getElementById(id)) {
+      var el = document.createElement('input');
+      el.type = id === 'no-time' || id === 'adj-l' ? 'checkbox' : 'hidden';
+      el.id = id;
+      if (defVal !== undefined) el.value = defVal;
+      if (id === 'adj-l') el.checked = true;
+      document.body.appendChild(el);
+    }
+  }
+  ensureHidden('user-name', '');
+  ensureHidden('birth-date', '');
+  ensureHidden('birth-time', '');
+  ensureHidden('gender', 'M');
+  ensureHidden('cal-type', 'S');
+  ensureHidden('is-leap', 'false');
+  ensureHidden('cal-base', 'KST');
+  ensureHidden('no-time');
+  ensureHidden('adj-l');
+})();
 const ni = document.getElementById('user-name');
 const di = document.getElementById('birth-date');
 const ti = document.getElementById('birth-time');
@@ -5503,8 +5525,8 @@ function buildFortuneCards(targetId, rows) {
 }
 
 function runAnalysis() {
-    const dVal = di.value.replace(/\D/g, '');
-    if (dVal.length < 8) return alert('생년월일 8자리를 입력하세요.');
+    const dVal = (di && di.value ? di.value : '').replace(/\D/g, '');
+    if (dVal.length < 8) { console.warn('view.html: birth-date 미입력, 파라미터 대기중'); return; }
 
     showLoading('만세력을 정밀 계산하는 중입니다', () => {
         const name = ni.value || '고객';
@@ -6682,30 +6704,23 @@ function runAnalysis() {
 
 
 
-<!-- view.html: runAnalysis가 읽는 hidden input들 -->
-<input type="hidden" id="user-name" value="">
-<input type="hidden" id="birth-date" value="">
-<input type="hidden" id="birth-time" value="">
-<input type="hidden" id="gender" value="M">
-<input type="hidden" id="cal-type" value="S">
-<input type="hidden" id="is-leap" value="false">
-<input type="hidden" id="cal-base" value="KST">
-<input type="checkbox" id="no-time" style="display:none">
-<input type="checkbox" id="adj-l" style="display:none" checked>
+
 <script>
-// ─── SAJUX view.html: URL 파라미터 자동 로드 ───
+// ─── SAJUX view.html: URL 파라미터 자동 로드 v5 ───
 (function(){
   var p = new URLSearchParams(location.search);
 
   // 만료 체크
   var exp = p.get('exp');
   if (exp && Date.now() > parseInt(exp)) {
-    document.body.innerHTML =
-      '<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#080810;color:#888;font-family:Malgun Gothic,sans-serif;text-align:center;padding:40px;">' +
-      '<div style="font-size:54px;margin-bottom:20px;">⏰</div>' +
-      '<div style="font-size:20px;color:#c7a76a;font-weight:700;margin-bottom:10px;">리포트 유효기간이 만료되었습니다</div>' +
-      '<div style="font-size:13px;color:#555;line-height:1.9;">PDF를 저장하지 않으셨다면 SAJUX에 문의해주세요.</div>' +
-      '</div>';
+    window.addEventListener('DOMContentLoaded', function() {
+      document.body.innerHTML =
+        '<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#080810;color:#888;font-family:Malgun Gothic,sans-serif;text-align:center;padding:40px;">' +
+        '<div style="font-size:54px;margin-bottom:20px;">⏰</div>' +
+        '<div style="font-size:20px;color:#c7a76a;font-weight:700;margin-bottom:10px;">리포트 유효기간이 만료되었습니다</div>' +
+        '<div style="font-size:13px;color:#555;line-height:1.9;">PDF를 저장하지 않으셨다면 SAJUX에 문의해주세요.</div>' +
+        '</div>';
+    });
     return;
   }
 
@@ -6719,46 +6734,44 @@ function runAnalysis() {
   var min2   = (p.get('mi')||'0').padStart(2,'0');
   var yundal = p.get('yun') === '1';
   var unk    = p.get('unk') === '1';
+  var bdate  = year + month + day;
+  var btime  = unk ? '1200' : (hour + min2);
 
-  // DOM 로드 후 값 주입 + 자동 실행
-  document.addEventListener('DOMContentLoaded', function() {
-    function setEl(id, val) {
+  function injectAndRun() {
+    function setVal(id, val) {
       var el = document.getElementById(id);
       if (el) el.value = val;
     }
-
-    setEl('user-name',  name);
-    setEl('birth-date', year + month + day);
-    setEl('birth-time', unk ? '1200' : (hour + min2));
-
+    setVal('user-name',  name);
+    setVal('birth-date', bdate);
+    setVal('birth-time', btime);
     var gVal = (gender==='female'||gender==='f') ? 'F' : 'M';
-    setEl('gender',   gVal);
+    setVal('gender',   gVal);
     var cVal = (cal==='lunar'||cal==='l') ? 'L' : 'S';
-    setEl('cal-type', cVal);
-    setEl('is-leap',  yundal ? 'true' : 'false');
-    setEl('cal-base', 'KST');
-
-    // no-time 체크박스 상태
+    setVal('cal-type', cVal);
+    setVal('is-leap',  yundal ? 'true' : 'false');
+    setVal('cal-base', 'KST');
     var cb = document.getElementById('no-time');
     if (cb) cb.checked = unk;
+    var adj = document.getElementById('adj-l');
+    if (adj) adj.checked = true;
 
-    // adj-l 체크박스는 항상 체크
-    var adjEl = document.getElementById('adj-l');
-    if (adjEl) adjEl.checked = true;
-
-    // ni/di/ti 전역변수가 hidden input을 가리키도록
-    if (typeof ni !== 'undefined') {
-      // ni/di/ti 는 이미 getElementById로 초기화됨
-      // 값만 직접 세팅
+    // runAnalysis 실행
+    if (typeof runAnalysis === 'function') {
+      runAnalysis();
+    } else {
+      setTimeout(function() {
+        if (typeof runAnalysis === 'function') runAnalysis();
+      }, 500);
     }
+  }
 
-    // 즉시 runAnalysis 실행
-    setTimeout(function() {
-      if (typeof runAnalysis === 'function') {
-        runAnalysis();
-      }
-    }, 300);
-  });
+  // DOM 준비 여부에 따라 즉시 or 대기
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', injectAndRun);
+  } else {
+    injectAndRun();
+  }
 })();
 </script>
 </body>
