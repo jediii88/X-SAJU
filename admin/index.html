@@ -329,6 +329,7 @@ function buildReportUrl(cust,expAt,unknown){
   if(!unknown)p.set('mi',cust.mi);
   if(unknown)p.set('unk','1');
   if(expAt)p.set('exp',expAt);
+  p.set('v', Date.now()); // 캐시버스터
   return base+'?'+p.toString();
 }
 function buildCoupleUrl(a,b,expAt){
