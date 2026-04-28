@@ -179,6 +179,13 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--go
           <button class="btn sec" onclick="previewReport()" style="flex:1;background:rgba(124,141,255,0.12);color:var(--purple);border-color:var(--purple);">👁 다시 확인</button>
         </div>
       </div>
+      <div id="preview-wrap" style="display:none;margin-top:24px;">
+        <div style="font-size:12px;color:#888;margin-bottom:8px;">👁 미리보기 — 고객에게 보이는 화면</div>
+        <div style="border:1px solid rgba(199,167,106,0.3);border-radius:12px;overflow:hidden;">
+          <iframe id="preview-iframe" style="width:100%;height:600px;border:none;background:#080810;" src="about:blank"></iframe>
+        </div>
+        <div style="margin-top:8px;font-size:11px;color:#555;">※ iframe 내부에서 리포트가 완전히 로드된 후 위의 링크를 고객에게 전송하세요.</div>
+      </div>
     </div>
   </div>
 
@@ -424,10 +431,24 @@ function previewReport() {
 }
 function generateReportLink(){
   const p=getLinkParams();if(!p)return;
+  // 미리보기용 URL (만료 없음)
+  const previewUrl=buildReportUrl(p.cust,0,p.unknown);
+  // 고객 전송용 URL (만료 있음)
   const url=buildReportUrl(p.cust,p.expAt,p.unknown);
+
+  // iframe 미리보기 표시
+  const iframeWrap = document.getElementById('preview-wrap');
+  const iframe = document.getElementById('preview-iframe');
+  if (iframeWrap && iframe) {
+    iframeWrap.style.display = 'block';
+    iframe.src = previewUrl;
+  }
+
+  // 링크 결과 표시
   document.getElementById('link-url-text').textContent=url;
   document.getElementById('link-expiry').textContent=fmtExpAt(p.expAt);
   document.getElementById('link-result').style.display='block';
+
   // 링크 저장
   const linkObj={id:Date.now(),customerId:selectedLinkCust?selectedLinkCust.id:0,type:'single',url,expAt:p.expAt,createdAt:today(),bCustomerId:null};
   const links=getLinks();links.push(linkObj);saveLinks(links);
