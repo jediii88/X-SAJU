@@ -54,6 +54,7 @@ deploy_dir = '/home/node/.openclaw/workspace/sajux_deploy'
 files = [
     (f'{deploy_dir}/index.html',         'index.html'),
     (f'{deploy_dir}/report/index.html',  'report/index.html'),
+    (f'{deploy_dir}/report/view.html',   'report/view.html'),
     (f'{deploy_dir}/admin/index.html',   'admin/index.html'),
     (f'{deploy_dir}/couple/index.html',  'couple/index.html'),
 ]
