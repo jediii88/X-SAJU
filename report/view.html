@@ -2144,6 +2144,8 @@ function generateDeepReport(data) {
     bottomHtml += buildWolunLoop(data);
     
     document.getElementById('report-container').innerHTML = bottomHtml;
+    // 완료 신호 — admin iframe에 전달
+    try { window.parent.postMessage({type:'SAJUX_REPORT_DONE'}, '*'); } catch(e){}
 }
 
 function injectSectionInterpretations(data) {
@@ -6700,6 +6702,8 @@ function runAnalysis(overrideParams) {
         go(2);
         window.scrollTo(0,0);
         try { generateDeepReport(globalSajuData); } catch(e) { console.error(e); }
+        // 완료 신호 (generateDeepReport가 동기 실행이므로 바로 전송)
+        try { window.parent.postMessage({type:'SAJUX_REPORT_DONE', name: name}, '*'); } catch(e){}
         const toc = document.getElementById('floating-toc');
         if(toc) toc.style.display = 'block';
     });
