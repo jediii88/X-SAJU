@@ -48,7 +48,7 @@
       });
     })();
     </script>
-    <meta name="version" content="1777350257">
+    <meta name="version" content="1777355663">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -5110,27 +5110,10 @@ function startReport() {
 <script src="lunar.js"></script>
     <!-- KLC: KASI 기준 한국 음양력 변환 (음력 입력 시 사용) -->
     <script src="klc.min.js"></script>
-    <script>
-    // ─── SAJUX: 모든 라이브러리 로드 후 자동 실행 ───
-    (function(){
-      if(!window.__SAJUX_PARAMS__) return;
-      var s1=document.getElementById('step-1');
-      if(s1) s1.style.display='none';
-      function tryRun(attempt) {
-        if(typeof runAnalysis==='function' && typeof Solar!=='undefined') {
-          runAnalysis(window.__SAJUX_PARAMS__);
-        } else if(attempt < 20) {
-          setTimeout(function(){ tryRun(attempt+1); }, 200);
-        } else {
-          console.error('SAJUX: runAnalysis 또는 Solar 로드 실패');
-        }
-      }
-      tryRun(0);
-    })();
-    </script>
+
 <script>
 
-const HELP_DATA = {
+var HELP_DATA = {
     manse: {
         title: "만세력 원국 (사주팔자)",
         desc: "태어난 연, 월, 일, 시간을 기준으로 우주의 기운(간지)을 8개의 글자로 표현한 나의 고유한 바코드입니다.<br><br>• <b>일원(일주)</b>: 나 자신과 배우자를 의미합니다.<br>• <b>월주</b>: 나의 부모, 타고난 환경, 직업적 적성을 뜻합니다.<br>• <b>년주</b>: 조상, 초년기, 국가적 스케일을 나타냅니다.<br>• <b>시주</b>: 자식, 말년운, 은밀한 속마음을 나타냅니다."
@@ -5191,14 +5174,14 @@ function closeHelp(e) {
     setTimeout(() => modal.style.display = 'none', 200);
 }
 
-const HAN_COLOR = {"甲":"wood","乙":"wood","寅":"wood","卯":"wood","丙":"fire","丁":"fire","巳":"fire","午":"fire","戊":"earth","己":"earth","辰":"earth","戌":"earth","丑":"earth","未":"earth","庚":"metal","辛":"metal","申":"metal","酉":"metal","壬":"water","癸":"water","亥":"water","子":"water"};
-const HAN_KOR = {"甲":"갑","乙":"을","丙":"병","丁":"정","戊":"무","己":"기","庚":"경","辛":"신","壬":"임","癸":"계","子":"자","丑":"축","寅":"인","卯":"묘","辰":"진","巳":"사","午":"오","未":"미","申":"신","酉":"유","戌":"술","亥":"해"};
-const STEM_YANG = ["갑","병","무","경","임"];
-const BRANCH_YANG = ["자","인","진","오","신","술"];
-const RELATION_LABELS = {
+var HAN_COLOR = {"甲":"wood","乙":"wood","寅":"wood","卯":"wood","丙":"fire","丁":"fire","巳":"fire","午":"fire","戊":"earth","己":"earth","辰":"earth","戌":"earth","丑":"earth","未":"earth","庚":"metal","辛":"metal","申":"metal","酉":"metal","壬":"water","癸":"water","亥":"water","子":"water"};
+var HAN_KOR = {"甲":"갑","乙":"을","丙":"병","丁":"정","戊":"무","己":"기","庚":"경","辛":"신","壬":"임","癸":"계","子":"자","丑":"축","寅":"인","卯":"묘","辰":"진","巳":"사","午":"오","未":"미","申":"신","酉":"유","戌":"술","亥":"해"};
+var STEM_YANG = ["갑","병","무","경","임"];
+var BRANCH_YANG = ["자","인","진","오","신","술"];
+var RELATION_LABELS = {
     wood: '목', fire: '화', earth: '토', metal: '금', water: '수'
 };
-const WUXING_ORDER = ['wood','fire','earth','metal','water'];
+var WUXING_ORDER = ['wood','fire','earth','metal','water'];
 
 window.UNSUNG_MAP = {
     "甲": {"亥": "장생", "子": "목욕", "丑": "관대", "寅": "건록", "卯": "제왕", "辰": "쇠", "巳": "병", "午": "사", "未": "묘", "辛": "절", "酉": "태", "戌": "양"},
@@ -5213,12 +5196,12 @@ window.UNSUNG_MAP = {
     "癸": {"卯": "장생", "寅": "목욕", "丑": "관대", "子": "건록", "亥": "제왕", "戌": "쇠", "酉": "병", "辛": "사", "未": "묘", "午": "절", "巳": "태", "辰": "양"}
 };
 
-const BRANCH_HIDDEN = {
+var BRANCH_HIDDEN = {
     '子':['癸'], '丑':['己','癸','辛'], '寅':['甲','丙','戊'], '卯':['乙'], '辰':['戊','乙','癸'], '巳':['丙','戊','庚'],
     '午':['丁','己'], '未':['己','丁','乙'], '申':['庚','壬','戊'], '酉':['辛'], '戌':['戊','辛','丁'], '亥':['壬','甲']
 };
 
-const SHINSAL_LOGIC = {
+var SHINSAL_LOGIC = {
     // ── 1. 천을귀인 — 일간 기준, 축·미·자·신·해·유·묘·사·인·오 ──
     '천을귀인': (gz, ec) => {
         const ds = ec.getDay()[0];
@@ -5495,7 +5478,7 @@ window.addEventListener('scroll', () => {
 
 
 
-const ANIMAL_SPRITE = {
+var ANIMAL_SPRITE = {
     '子': {kr:'쥐',     file:'rat'},
     '丑': {kr:'소',     file:'ox'},
     '寅': {kr:'호랑이', file:'tiger'},
@@ -5510,7 +5493,7 @@ const ANIMAL_SPRITE = {
     '亥': {kr:'돼지',   file:'pig'}
 };
 // 일간 오행 → 동물 색상 (CSS filter로 흰색 실루엣에 색 입히기)
-const ANIMAL_COLOR = {
+var ANIMAL_COLOR = {
     // 木 - 초록
     '甲': {filter:'brightness(0) saturate(100%) invert(58%) sepia(49%) saturate(445%) hue-rotate(103deg) brightness(101%)', bg:'#0d2016', label:'푸른'},
     '乙': {filter:'brightness(0) saturate(100%) invert(58%) sepia(49%) saturate(445%) hue-rotate(103deg) brightness(101%)', bg:'#0d2016', label:'푸른'},
@@ -5527,10 +5510,10 @@ const ANIMAL_COLOR = {
     '壬': {filter:'brightness(0)',                                                                                           bg:'#d0d0d0', label:'검은'},
     '癸': {filter:'brightness(0)',                                                                                           bg:'#d0d0d0', label:'검은'},
 };
-const COLOR_KR_MAP = {
+var COLOR_KR_MAP = {
     'wood': '푸른', 'fire': '붉은', 'earth': '황금', 'metal': '하얀', 'water': '검은'
 };
-const CIRCLE_BG = {
+var CIRCLE_BG = {
     'wood': '#1E3C28', 'fire': '#4A2320', 'earth': '#4A3E1B', 'metal': '#3A3A3A', 'water': '#182C4A'
 };
 
@@ -5636,9 +5619,9 @@ function getElementDesc(ch) {
 }
 
 // 12신살 (삼합 기반 12지 순환 신살)
-const TWELVE_SHINSAL_KEYS = new Set(['역마살','도화살','화개살','겁살','망신살','지살','천살','장성살','수옥살','년살','반안살','육해살']);
+window.TWELVE_SHINSAL_KEYS = new Set(['역마살','도화살','화개살','겁살','망신살','지살','천살','장성살','수옥살','년살','반안살','육해살']); var TWELVE_SHINSAL_KEYS = window.TWELVE_SHINSAL_KEYS;
 // 기타신살 (귀인성 + 특수살)
-const EXTRA_SHINSAL_KEYS = new Set(['천을귀인','문창귀인','문곡귀인','양인살','백호대살','괴강살','원진살','귀문관살','홍염살','고신살','과숙살','학당귀인','천관귀인','천의성','천덕귀인','월덕귀인','금여록','현침살','금각살','유하살','천주귀인','재고귀인','급각살','복성귀인','철새개금','장성살']);
+var EXTRA_SHINSAL_KEYS = new Set(['천을귀인','문창귀인','문곡귀인','양인살','백호대살','괴강살','원진살','귀문관살','홍염살','고신살','과숙살','학당귀인','천관귀인','천의성','천덕귀인','월덕귀인','금여록','현침살','금각살','유하살','천주귀인','재고귀인','급각살','복성귀인','철새개금','장성살']);
 
 function getShinsal(gz, ec) {
     const arr = [];
@@ -5653,7 +5636,7 @@ function getShinsal(gz, ec) {
 function getTwelveShinsal(gz, ec) {
     const arr = [];
     for (const key in SHINSAL_LOGIC) {
-        if (!TWELVE_SHINSAL_KEYS.has(key)) continue;
+        var _TSK = window.TWELVE_SHINSAL_KEYS || new Set(); if (!_TSK.has(key)) continue;
         const val = SHINSAL_LOGIC[key](gz, ec);
         if (val) arr.push(val);
     }
@@ -5664,7 +5647,7 @@ function getTwelveShinsal(gz, ec) {
 function getExtraShinsal(gz, ec) {
     const arr = [];
     for (const key in SHINSAL_LOGIC) {
-        if (TWELVE_SHINSAL_KEYS.has(key)) continue;
+        var _TSK2 = window.TWELVE_SHINSAL_KEYS || new Set(); if (_TSK2.has(key)) continue;
         const val = SHINSAL_LOGIC[key](gz, ec);
         if (val) arr.push(val);
     }
@@ -6941,5 +6924,18 @@ function runAnalysis(overrideParams) {
 </script>
 
 
+    <script>
+    // ─── SAJUX: 모든 스크립트 로드 완료 후 자동 실행 (body 최하단) ───
+    (function(){
+      if(!window.__SAJUX_PARAMS__) return;
+      var s1=document.getElementById('step-1');
+      if(s1) s1.style.display='none';
+      if(typeof runAnalysis==='function' && typeof Solar!=='undefined') {
+        runAnalysis(window.__SAJUX_PARAMS__);
+      } else {
+        console.error('SAJUX: runAnalysis 또는 Solar 로드 실패. runAnalysis=', typeof runAnalysis, ' Solar=', typeof Solar);
+      }
+    })();
+    </script>
 </body>
 </html>
