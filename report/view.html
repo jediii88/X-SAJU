@@ -5525,14 +5525,15 @@ function buildFortuneCards(targetId, rows) {
 }
 
 function runAnalysis(overrideParams) {
-    // view.html: URL 파라미터 직접 주입 지원
-    const _d = (overrideParams && overrideParams.birthDate) || (di && di.value) || '';
+    // view.html: window.__SAJUX_PARAMS__ 우선 사용
+    var _op = overrideParams || window.__SAJUX_PARAMS__ || null;
+    const _d = (_op && _op.birthDate) || (di && di.value) || '';
     const dVal = _d.replace(/\D/g, '');
-    if (dVal.length < 8) { console.warn('view.html: birth-date 미입력'); return; }
+    if (dVal.length < 8) { console.warn('view.html: birth-date 없음'); return; }
 
     showLoading('만세력을 정밀 계산하는 중입니다', () => {
-        const name = (overrideParams && overrideParams.name) || ni.value || '고객';
-        const _t = (overrideParams && overrideParams.birthTime) || (ti && ti.value) || '0000';
+        const name = (_op && _op.name) || ni.value || '고객';
+        const _t = (_op && _op.birthTime) || (ti && ti.value) || '0000';
         let tVal = _t.replace(/\D/g, '') || '0000';
         if (tVal.length < 4) tVal = tVal.padStart(4, '0');
 
@@ -5542,9 +5543,9 @@ function runAnalysis(overrideParams) {
         let hr = parseInt(tVal.slice(0,2));
         let mn = parseInt(tVal.slice(2,4));
 
-        const isUnknown = (overrideParams && overrideParams.unknown) || (document.getElementById('no-time') && document.getElementById('no-time').checked) || false;
-        const isSolar = (overrideParams ? overrideParams.cal !== 'L' : (document.getElementById('cal-type') ? document.getElementById('cal-type').value === 'S' : true));
-        const isLeap = (overrideParams && overrideParams.yundal) || (document.getElementById('is-leap') ? document.getElementById('is-leap').value === 'true' : false);
+        const isUnknown = (_op && _op.unknown) || (document.getElementById('no-time') && document.getElementById('no-time').checked) || false;
+        const isSolar = _op ? (_op.cal !== 'lunar' && _op.cal !== 'l' && _op.cal !== 'L') : (document.getElementById('cal-type') ? document.getElementById('cal-type').value === 'S' : true);
+        const isLeap = (_op && _op.yundal) || (document.getElementById('is-leap') ? document.getElementById('is-leap').value === 'true' : false);
         const calBase = (document.getElementById('cal-base') && document.getElementById('cal-base').value) || 'KST';
 
         let origY = y, origM = m, origD = d;
@@ -6709,81 +6710,51 @@ function runAnalysis(overrideParams) {
 
 
 <script>
-// ─── SAJUX view.html: URL 파라미터 자동 로드 v5 ───
+// ─── SAJUX view.html: URL 자동 로드 v6 (심플) ───
 (function(){
   var p = new URLSearchParams(location.search);
 
   // 만료 체크
   var exp = p.get('exp');
   if (exp && Date.now() > parseInt(exp)) {
-    window.addEventListener('DOMContentLoaded', function() {
+    window.addEventListener('DOMContentLoaded', function(){
       document.body.innerHTML =
-        '<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#080810;color:#888;font-family:Malgun Gothic,sans-serif;text-align:center;padding:40px;">' +
-        '<div style="font-size:54px;margin-bottom:20px;">⏰</div>' +
-        '<div style="font-size:20px;color:#c7a76a;font-weight:700;margin-bottom:10px;">리포트 유효기간이 만료되었습니다</div>' +
-        '<div style="font-size:13px;color:#555;line-height:1.9;">PDF를 저장하지 않으셨다면 SAJUX에 문의해주세요.</div>' +
-        '</div>';
+        '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#080810;color:#888;text-align:center;padding:40px;">' +
+        '<div><div style="font-size:48px;margin-bottom:16px;">⏰</div>' +
+        '<div style="font-size:18px;color:#c7a76a;font-weight:700;margin-bottom:8px;">리포트 유효기간 만료</div>' +
+        '<div style="font-size:13px;">PDF를 저장하지 않으셨다면 SAJUX에 문의해주세요.</div></div></div>';
     });
     return;
   }
 
-  var name   = p.get('n') || '고객';
-  var gender = (p.get('g')||'male').toLowerCase();
-  var cal    = (p.get('c')||'solar').toLowerCase();
-  var year   = p.get('y') || '1988';
-  var month  = (p.get('mo')||'1').padStart(2,'0');
-  var day    = (p.get('d') ||'1').padStart(2,'0');
-  var hour   = (p.get('h') ||'12').padStart(2,'0');
-  var min2   = (p.get('mi')||'0').padStart(2,'0');
-  var yundal = p.get('yun') === '1';
-  var unk    = p.get('unk') === '1';
-  var bdate  = year + month + day;
-  var btime  = unk ? '1200' : (hour + min2);
+  var name  = p.get('n')||'고객';
+  var gRaw  = (p.get('g')||'male').toLowerCase();
+  var cRaw  = (p.get('c')||'solar').toLowerCase();
+  var year  = p.get('y')||'1988';
+  var month = (p.get('mo')||'1').padStart(2,'0');
+  var day   = (p.get('d')||'1').padStart(2,'0');
+  var hour  = (p.get('h')||'12').padStart(2,'0');
+  var min   = (p.get('mi')||'0').padStart(2,'0');
+  var yun   = p.get('yun')==='1';
+  var unk   = p.get('unk')==='1';
 
-  function injectAndRun() {
-    function setVal(id, val) {
-      var el = document.getElementById(id);
-      if (el) el.value = val;
-    }
-    setVal('user-name',  name);
-    setVal('birth-date', bdate);
-    setVal('birth-time', btime);
-    var gVal = (gender==='female'||gender==='f') ? 'F' : 'M';
-    setVal('gender',   gVal);
-    var cVal = (cal==='lunar'||cal==='l') ? 'L' : 'S';
-    setVal('cal-type', cVal);
-    setVal('is-leap',  yundal ? 'true' : 'false');
-    setVal('cal-base', 'KST');
-    var cb = document.getElementById('no-time');
-    if (cb) cb.checked = unk;
-    var adj = document.getElementById('adj-l');
-    if (adj) adj.checked = true;
-
-    // overrideParams 구성 후 runAnalysis 직접 호출
-    var overrideParams = {
-      name:      name,
-      birthDate: bdate,
-      birthTime: btime,
-      cal:       cVal,
-      yundal:    yundal,
-      unknown:   unk
-    };
-    if (typeof runAnalysis === 'function') {
-      runAnalysis(overrideParams);
-    } else {
-      setTimeout(function() {
-        if (typeof runAnalysis === 'function') runAnalysis(overrideParams);
-      }, 500);
-    }
-  }
-
-  // DOM 준비 여부에 따라 즉시 or 대기
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', injectAndRun);
-  } else {
-    injectAndRun();
-  }
+  window.__SAJUX_PARAMS__ = {
+    name:name, gender:gRaw, cal:cRaw,
+    birthDate: year+month+day,
+    birthTime: unk?'1200':(hour+min),
+    yundal:yun, unknown:unk
+  };
 })();
+</script>
+<script>
+// view.html 자동 실행
+window.addEventListener('DOMContentLoaded', function(){
+  if (window.__SAJUX_PARAMS__) {
+    setTimeout(function(){
+      if (typeof runAnalysis === 'function') runAnalysis(window.__SAJUX_PARAMS__);
+    }, 200);
+  }
+});
 </script>
 </body>
 </html>
