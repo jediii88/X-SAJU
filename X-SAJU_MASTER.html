@@ -5110,6 +5110,24 @@ function startReport() {
 <script src="lunar.js"></script>
     <!-- KLC: KASI 기준 한국 음양력 변환 (음력 입력 시 사용) -->
     <script src="klc.min.js"></script>
+    <script>
+    // ─── SAJUX: 모든 라이브러리 로드 후 자동 실행 ───
+    (function(){
+      if(!window.__SAJUX_PARAMS__) return;
+      var s1=document.getElementById('step-1');
+      if(s1) s1.style.display='none';
+      function tryRun(attempt) {
+        if(typeof runAnalysis==='function' && typeof Solar!=='undefined') {
+          runAnalysis(window.__SAJUX_PARAMS__);
+        } else if(attempt < 20) {
+          setTimeout(function(){ tryRun(attempt+1); }, 200);
+        } else {
+          console.error('SAJUX: runAnalysis 또는 Solar 로드 실패');
+        }
+      }
+      tryRun(0);
+    })();
+    </script>
 <script>
 
 const HELP_DATA = {
