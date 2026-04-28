@@ -14,7 +14,7 @@
       // 만료 체크
       var exp = p.get('exp');
       if (exp && Date.now() > parseInt(exp)) {
-        document.addEventListener('DOMContentLoaded', function(){
+        window.addEventListener('load', function(){
           document.body.innerHTML =
             '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#080810;color:#888;text-align:center;padding:40px;">' +
             '<div><div style="font-size:48px;margin-bottom:16px;">⏰</div>' +
@@ -42,17 +42,21 @@
         yundal:yun, unknown:unk
       };
 
-      // DOMContentLoaded 후 자동 실행
-      document.addEventListener('DOMContentLoaded', function(){
+      // 자동 실행 - window.onload (모든 스크립트 로드 완료 후)
+      window.addEventListener('load', function(){
+        var s1=document.getElementById('step-1');
+        if(s1) s1.style.display='none';
         setTimeout(function(){
-          if (typeof runAnalysis === 'function') {
+          if(typeof runAnalysis==='function') {
             runAnalysis(window.__SAJUX_PARAMS__);
+          } else {
+            console.error('runAnalysis 함수 없음');
           }
-        }, 300);
+        }, 100);
       });
     })();
     </script>
-    <meta name="version" content="1777342271">
+    <meta name="version" content="1777344209">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -4564,6 +4568,7 @@ window.generateDeepReport = generateDeepReport;
 </script>
 </head>
 <body>
+<script>var globalSajuData = null;</script>
 
 <!-- 플로팅 목차 네비게이터 (웹 전용, PDF 숨김) -->
 <div id="floating-toc" style="display:none; position:fixed; right:12px; top:50%; transform:translateY(-50%); z-index:9999; background:rgba(0,0,0,0.75); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border-radius:14px; padding:10px 6px; box-shadow:0 8px 32px rgba(0,0,0,0.6); max-width:44px; overflow:hidden; transition:max-width 0.3s, padding 0.3s;" onmouseenter="expandToc()" onmouseleave="collapseToc()">
@@ -5353,19 +5358,23 @@ function showLoading(msg, callback) {
     const loadEl = document.getElementById('loading');
     const msgEl = document.getElementById('loading-msg');
     if(loadEl) loadEl.style.display = 'flex';
-    if(msgEl) msgEl.innerText = '사주를 분석하는 중입니다...';
+    if(msgEl) msgEl.innerText = msg || '사주를 분석하는 중입니다...';
+    // 안전장치: 20초 후 강제 로딩 해제
+    const safeTimer = setTimeout(function(){
+        if(loadEl) loadEl.style.display = 'none';
+        console.error('showLoading timeout - 강제 해제');
+    }, 20000);
     setTimeout(() => {
         try { callback(); } catch(e) {
-            console.error('분석 오류:', e);
+            console.error('분석 오류:', e.message, e.stack);
+            clearTimeout(safeTimer);
             if(loadEl) loadEl.style.display = 'none';
-            // 에러를 화면에 표시 (alert 제거)
-            console.error('runAnalysis 오류:', e);
             var errDiv = document.createElement('div');
-            errDiv.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#e74c3c;color:#fff;padding:16px 24px;border-radius:12px;z-index:99999;font-size:13px;max-width:80%;text-align:center;';
-            errDiv.textContent = '분석 오류: ' + e.message;
+            errDiv.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#e74c3c;color:#fff;padding:16px 24px;border-radius:12px;z-index:99999;font-size:13px;max-width:90%;text-align:center;line-height:1.6;';
+            errDiv.innerHTML = '분석 오류: ' + e.message + '<br><small style="opacity:0.7">' + (e.stack||'').split('\n')[1] + '</small>';
             document.body.appendChild(errDiv);
-            setTimeout(function(){ errDiv.remove(); }, 5000);
         }
+        clearTimeout(safeTimer);
         if(loadEl) loadEl.style.display = 'none';
     }, 100);
 }
@@ -5583,26 +5592,16 @@ function buildFortuneCards(targetId, rows) {
 }
 
 function runAnalysis(overrideParams) {
-    // view.html: window.__SAJUX_PARAMS__ 우선 사용
     var _op = overrideParams || window.__SAJUX_PARAMS__ || null;
-    // 디버그: 파라미터 상태 표시
-    var dbg = document.createElement('div');
-    dbg.id = 'sajux-dbg';
-    dbg.style.cssText = 'position:fixed;top:10px;right:10px;background:rgba(0,0,0,0.85);color:#0f0;padding:12px;border-radius:8px;z-index:99999;font-size:11px;font-family:monospace;max-width:320px;word-break:break-all;';
-    dbg.innerHTML = '<b>DEBUG</b><br>_op: ' + JSON.stringify(_op ? {cal:_op.cal,date:_op.birthDate,time:_op.birthTime} : null) + '<br>di: ' + (di ? di.value : 'NULL');
-    document.body.appendChild(dbg);
-    setTimeout(function(){ var el=document.getElementById('sajux-dbg'); if(el)el.remove(); }, 8000);
-
     const _d = (_op && _op.birthDate) || (di && di.value) || '';
     const dVal = _d.replace(/\D/g, '');
-    if (dVal.length < 8) { 
-      console.warn('view.html: birth-date 없음, _op=', JSON.stringify(_op));
-      document.getElementById('sajux-dbg') && (document.getElementById('sajux-dbg').style.background='rgba(200,0,0,0.9)');
-      return; 
+    if (dVal.length < 8) {
+      console.warn('birth-date 없음:', _d, '_op:', JSON.stringify(_op));
+      return;
     }
 
     showLoading('만세력을 정밀 계산하는 중입니다', () => {
-        const name = (_op && _op.name) || ni.value || '고객';
+        const name = (_op && _op.name) || (ni && ni.value) || '고객';
         const _t = (_op && _op.birthTime) || (ti && ti.value) || '0000';
         let tVal = _t.replace(/\D/g, '') || '0000';
         if (tVal.length < 4) tVal = tVal.padStart(4, '0');
