@@ -2,6 +2,51 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
+    <script>
+    // ─── SAJUX: URL 파라미터 자동 로드 (head 최상단) ───
+    (function(){
+      var p = new URLSearchParams(location.search);
+      if (!p.get('n') && !p.get('y')) return;
+
+      var exp = p.get('exp');
+      if (exp && Date.now() > parseInt(exp)) {
+        document.addEventListener('DOMContentLoaded', function(){
+          document.body.innerHTML =
+            '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#080810;color:#888;text-align:center;padding:40px;">' +
+            '<div><div style="font-size:48px;margin-bottom:16px;">⏰</div>' +
+            '<div style="font-size:18px;color:#c7a76a;font-weight:700;margin-bottom:8px;">리포트 유효기간 만료</div>' +
+            '<div style="font-size:13px;">PDF를 저장하지 않으셨다면 SAJUX에 문의해주세요.</div></div></div>';
+        });
+        return;
+      }
+
+      var name  = p.get('n')||'고객';
+      var gRaw  = (p.get('g')||'male').toLowerCase();
+      var cRaw  = (p.get('c')||'solar').toLowerCase();
+      var year  = p.get('y')||'1988';
+      var month = (p.get('mo')||'1').padStart(2,'0');
+      var day   = (p.get('d')||'1').padStart(2,'0');
+      var hour  = (p.get('h')||'12').padStart(2,'0');
+      var min   = (p.get('mi')||'0').padStart(2,'0');
+      var yun   = p.get('yun')==='1';
+      var unk   = p.get('unk')==='1';
+
+      window.__SAJUX_PARAMS__ = {
+        name:name, gender:gRaw, cal:cRaw,
+        birthDate: year+month+day,
+        birthTime: unk?'1200':(hour+min),
+        yundal:yun, unknown:unk
+      };
+
+      document.addEventListener('DOMContentLoaded', function(){
+        var s1=document.getElementById('step-1');
+        if(s1) s1.style.display='none';
+        setTimeout(function(){
+          if(typeof runAnalysis==='function') runAnalysis(window.__SAJUX_PARAMS__);
+        }, 300);
+      });
+    })();
+    </script>
     <meta name="version" content="1776659675">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
@@ -5695,13 +5740,16 @@ function buildFortuneCards(targetId, rows) {
     document.getElementById(targetId).innerHTML = html;
 }
 
-function runAnalysis() {
-    const dVal = di.value.replace(/\D/g, '');
+function runAnalysis(overrideParams) {
+    var _op = overrideParams || window.__SAJUX_PARAMS__ || null;
+    const _d = (_op && _op.birthDate) || (di && di.value) || '';
+    const dVal = _d.replace(/\D/g, '');
     if (dVal.length < 8) return alert('생년월일 8자리를 입력하세요.');
 
     showLoading('만세력을 정밀 계산하는 중입니다', () => {
-        const name = ni.value || '고객';
-        let tVal = ti.value.replace(/\D/g, '') || '0000';
+        const name = (_op && _op.name) || ni.value || '고객';
+        const _t = (_op && _op.birthTime) || (ti && ti.value) || '0000';
+        let tVal = _t.replace(/\D/g, '') || '0000';
         if (tVal.length < 4) tVal = tVal.padStart(4, '0');
 
         let y = parseInt(dVal.slice(0,4));
@@ -5710,10 +5758,10 @@ function runAnalysis() {
         let hr = parseInt(tVal.slice(0,2));
         let mn = parseInt(tVal.slice(2,4));
 
-        const isUnknown = document.getElementById('no-time').checked;
-        const isSolar = document.getElementById('cal-type').value === 'S';
-        const isLeap = document.getElementById('is-leap').value === 'true';
-        const calBase = document.getElementById('cal-base').value;
+        const isUnknown = (_op && _op.unknown) || document.getElementById('no-time').checked || false;
+        const isSolar = _op ? (_op.cal !== 'lunar' && _op.cal !== 'l' && _op.cal !== 'L') : (document.getElementById('cal-type').value === 'S');
+        const isLeap = (_op && _op.yundal) || (document.getElementById('is-leap').value === 'true');
+        const calBase = document.getElementById('cal-base').value || 'KST';
 
         let origY = y, origM = m, origD = d;
         let lunarObj, solarObj;
@@ -5743,7 +5791,7 @@ function runAnalysis() {
         }
 
         // 2. 경도 보정 (-32분)은 무조건 '양력 시간' 객체를 기준으로 수행
-        if (document.getElementById('adj-l').checked && !isUnknown) {
+        if ((document.getElementById('adj-l') ? document.getElementById('adj-l').checked : true) && !isUnknown) {
             const dt = new Date(solarObj.getYear(), solarObj.getMonth() - 1, solarObj.getDay(), solarObj.getHour(), solarObj.getMinute());
             dt.setMinutes(dt.getMinutes() - 32);
             solarObj = Solar.fromYmdHms(dt.getFullYear(), dt.getMonth() + 1, dt.getDate(), dt.getHours(), dt.getMinutes(), 0);
