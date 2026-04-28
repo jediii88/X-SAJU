@@ -7,6 +7,7 @@
     <meta http-equiv="Expires" content="0">
     <script>
     // ─── SAJUX view.html: URL 파라미터 최우선 파싱 (head 최상단) ───
+    var globalSajuData = null;  // 전역 선언 (최우선)
     (function(){
       var p = new URLSearchParams(location.search);
       if (!p.get('n') && !p.get('y')) return;
@@ -56,7 +57,7 @@
       });
     })();
     </script>
-    <meta name="version" content="1777344209">
+    <meta name="version" content="1777344481">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -2173,7 +2174,7 @@ function getDBText(category, key, fallback) {
 }
 
 function generateDeepReport(data) {
-    if(!data.dayStem) return;
+    if(!data || !data.dayStem) return;
     
     // ── 각 만세력 섹션 아래에 직접 주입 ──
     injectSectionInterpretations(data);
@@ -4568,7 +4569,6 @@ window.generateDeepReport = generateDeepReport;
 </script>
 </head>
 <body>
-<script>var globalSajuData = null;</script>
 
 <!-- 플로팅 목차 네비게이터 (웹 전용, PDF 숨김) -->
 <div id="floating-toc" style="display:none; position:fixed; right:12px; top:50%; transform:translateY(-50%); z-index:9999; background:rgba(0,0,0,0.75); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border-radius:14px; padding:10px 6px; box-shadow:0 8px 32px rgba(0,0,0,0.6); max-width:44px; overflow:hidden; transition:max-width 0.3s, padding 0.3s;" onmouseenter="expandToc()" onmouseleave="collapseToc()">
@@ -4706,6 +4706,7 @@ function collapseToc() {
             el.classList.add('active');
         }
 function startReport() {
+    if(!globalSajuData||!globalSajuData.dayStem){console.error("globalSajuData 없음");return;}
     showLoading('당신의 운명 데이터를 분석하여\n서사를 구축하고 있습니다...', () => {
         generateDeepReport(globalSajuData);
         // 버튼 영역 숨기고 리포트 섹션 표시
@@ -6768,7 +6769,13 @@ function runAnalysis(overrideParams) {
 
         go(2);
         window.scrollTo(0,0);
-        try { generateDeepReport(globalSajuData); } catch(e) { console.error(e); }
+        try { 
+            generateDeepReport(globalSajuData); 
+        } catch(e) { 
+            console.error('generateDeepReport 오류:', e.message, e.stack);
+            var rc = document.getElementById('report-container');
+            if(rc) rc.innerHTML = '<div style="padding:40px;color:#e74c3c;text-align:center;font-size:14px;">리포트 생성 오류: ' + e.message + '<br><small style="color:#888;font-size:11px;">' + (e.stack||'').split('\\n').slice(0,3).join('<br>') + '</small></div>';
+        }
         // 완료 신호 (generateDeepReport가 동기 실행이므로 바로 전송)
         try { window.parent.postMessage({type:'SAJUX_REPORT_DONE', name: name}, '*'); } catch(e){}
         const toc = document.getElementById('floating-toc');
