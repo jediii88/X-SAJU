@@ -48,7 +48,7 @@
       });
     })();
     </script>
-    <meta name="version" content="1777439757">
+    <meta name="version" content="1777440024">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -3153,7 +3153,9 @@ function buildChapter1_Basic(data) {
         if(gm.length>0) {
             var BRKR={'子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해'};
             var gmKr=gm.map(function(b){return (BRKR[b]||b);}).join('·');
-            gmText = '\n\n**공망(空亡)이란:** 손에 닿을 것 같은데 마지막에 빠져나가는 갈망의 영역입니다. '+gmKr+' 기운이 들어오는 대운·세운에 큰 결정을 서두르지 말고 한 번 더 검토하십시오. 이 갈망이 오히려 인생의 가장 큰 성취로 이어지는 경우가 많습니다.';
+            gmText = '\n\n⚠ '+name+'님의 사주에는 '+gmKr+' 기운이 공망입니다. 이 기운이 대운·세운에서 강하게 들어오는 시기에 중요한 결정을 서두르지 마십시오. 공망은 인생 최대 성취의 동력이 되기도 합니다 — 갈망하는 영역일수록 더 깊이 파고드는 것이 전략입니다.';
+        } else {
+            gmText = '\n\n✦ '+name+'님의 사주에는 공망이 없습니다. 원국 8자 모두 온전하게 작동하는 구조입니다. 어느 영역에서도 근본적인 결핍 없이 에너지를 고르게 발휘할 수 있습니다.';
         }
 
         // 십성 나이대별 사건
@@ -3531,11 +3533,12 @@ function buildChapter2_Wuxing(data) {
         metal:'금 기운이 지배적인 당신은 불필요한 것을 과감히 쳐내는 결단력이 탁월합니다. 원칙과 기준이 명확하여 어떤 압박에도 흔들리지 않습니다. 이 냉철함이 전문성과 결합할 때 분야 최고 권위자가 됩니다. 단 감정 표현이 부족하여 가까운 사람들과의 관계에서 오해를 받을 수 있습니다.',
         water:'수 기운이 지배적인 당신은 깊은 통찰력과 유연성을 가지고 있습니다. 복잡한 상황을 꿰뚫어보고 남들이 보지 못하는 본질을 파악합니다. 전략가, 분석가, 기획자로서의 천재적 능력으로 발현됩니다. 단 결정을 미루고 지나치게 분석하는 경향이 기회를 놓치게 만들기도 합니다.'
     }[maxW] || '';
-    const lackDesc = {wood:'목 기운이 부족합니다. 새로운 도전에 대한 두려움이 잠재됩니다. 의도적으로 새로운 것에 뛰어드는 경험 확장이 잠재된 능력을 깨웁니다.',
-        fire:'화 기운이 부족합니다. 열정과 표현력이 내면으로 향하는 경향이 있습니다. 생각과 감정을 세상에 드러내는 연습이 잠재 능력을 깨우는 열쇠입니다.',
-        earth:'토 기운이 부족합니다. 안정감보다 변화를 선호하는 경향이 있습니다. 한 곳에서 꾸준히 성장하는 것이 가장 큰 도전이자 기회입니다.',
-        metal:'금 기운이 부족합니다. 결단을 내리고 마무리하는 것이 어렵습니다. 시작한 일을 끝맺고 불필요한 것을 버리는 용기가 인생을 도약시킵니다.',
-        water:'수 기운이 부족합니다. 행동이 판단보다 앞서는 경향이 있습니다. 결정 전 충분히 생각하고 전략을 세우는 습관이 실수를 줄이고 성과를 극대화합니다.'
+    const lackDesc = {
+        wood:'새로운 시작보다 안정을 선호하는 경향이 있습니다. 이 점을 인식하고 변화의 기회를 의식적으로 잡는 것이 도움이 됩니다.',
+        fire:'감정과 열정을 겉으로 드러내는 것이 쉽지 않습니다. 표현을 연습할수록 인간관계와 성취 모두 달라집니다.',
+        earth:'안정보다 변화를 선호하는 편입니다. 하나를 꾸준히 쌓는 루틴이 장기적으로 가장 강력한 무기가 됩니다.',
+        metal:'결단과 마무리가 약한 편입니다. 시작한 일을 끝내는 습관 하나가 인생을 바꿉니다.',
+        water:'분석보다 행동이 앞서는 경향이 있습니다. 중요한 결정 전에 한 번 더 검토하는 습관이 실수를 줄여줍니다.'
     }[minW] || '';
     const balanceRows = Object.entries(wuxing).sort((a,b)=>b[1]-a[1]).map(([k,v]) => {
         const pct = Math.round(v); const isMax = k===maxW; const isMin = k===minW;
@@ -3545,15 +3548,14 @@ function buildChapter2_Wuxing(data) {
     }).join('');
     return `<div class="report-chapter">
         <h3 class="ch-title">Chapter 2. 오행의 세력 — 절대적 무기와 아킬레스건</h3>
-        <p class="ch-text">사람들은 오행(목화토금수)이 골고루 섞인 중화된 사주를 좋은 사주라고 말합니다. 평범하게 큰 굴곡 없이 살기엔 중화가 최고일 수 있습니다. 하지만 한 시대를 풍미하는 사람들은 거의 예외 없이 오행이 극단적으로 쏠려 있습니다. 편중이 클수록 그 에너지가 인생을 더 강렬하게 조각합니다.</p>
-        <p class="ch-text">당신의 사주를 해부한 결과, 절대적 무기이자 아킬레스건은 <b style="color:var(--gold);">${maxKr}</b>의 기운입니다. 이 기운이 당신의 뇌 구조, 판단 방식, 인간관계 패턴의 80% 이상을 지배합니다.</p>
+        <p class="ch-text">${name}님의 사주 8자를 분석한 결과, 가장 지배적인 에너지는 <b style="color:var(--gold);">${maxKr}</b>입니다. 이 기운이 ${name}님의 판단 방식, 인간관계 패턴, 그리고 돈을 다루는 방식의 핵심을 결정합니다.</p>
         <div style="background:rgba(199,167,106,0.07);border-left:3px solid var(--gold);padding:16px 18px;border-radius:0 8px 8px 0;margin:16px 0;">
             <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;letter-spacing:1px;">${maxKr} 기운 집중 분석</div>
             <p style="font-size:14.5px;color:#ddd;line-height:1.9;margin:0 0 12px;">${excessText}</p>
             <p style="font-size:14px;color:#ccc;line-height:1.85;margin:0;">${excessPer}</p>
         </div>
-        <p class="ch-text">반대로 가장 부족한 <b>${minKr}</b> 기운은 당신이 무의식적으로 갈망하는 결핍의 영역입니다. ${lackDesc}</p>
-        <p class="ch-text">이 편중된 에너지를 억누르거나 부끄러워하지 마십시오. 당신의 과제는 이 에너지를 흉기에서 명검으로 전환하는 것입니다. 용신 기운을 적극 활용하고 기신 기운을 경계하는 것이 인생 전략의 핵심입니다.</p>
+        <p class="ch-text">반대로 <b>${minKr}</b> 기운은 ${name}님이 가장 아쉬운 영역입니다. ${lackDesc}</p>
+        <p class="ch-text">${name}님의 과제는 이 강한 기운을 억누르는 것이 아니라, 가장 잘 작동하는 분야와 방식을 찾아 맞추는 것입니다.</p>
 
         <div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:22px;margin:24px 0;">
             <div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:18px;letter-spacing:1px;">&#9670; ${name}님이 가장 주의해야 할 건강 신호</div>
@@ -4257,7 +4259,7 @@ function buildChapter6_Love(data) {
         ? '인성이 강한 당신은 연애에서 헌신적이고 감성적입니다. 상대방에게 모든 것을 주고 싶은 충동을 느끼며 관계에 깊이 몰입합니다. 그러나 이 헌신이 상대에게 부담이 되거나, 자신이 원하는 방식의 사랑을 강요하는 형태로 변질될 위험이 있습니다. 자기 자신을 먼저 사랑하는 연습이 역설적으로 가장 건강한 사랑을 만들어냅니다.'
         : '당신의 연애는 독립적이고 자유로운 기운이 지배합니다. 서로의 공간과 자율성을 존중하는 파트너십 형태의 관계에서 가장 편안함을 느낍니다. 상대에게 지나치게 의존하거나 의존당하는 것을 불편해하므로, 각자의 삶을 충실히 살면서 함께하는 형태가 가장 이상적입니다.';
 
-    const meetTiming = '용신 기운이 강한 해와 월에 인연의 문이 열립니다. 특히 대운의 천간과 지지가 당신의 일주와 합을 이루는 시기에 결정적인 인연이 찾아오는 경우가 많습니다. 기다리는 것보다 그 시기에 사회적 활동 반경을 의도적으로 넓히고, 새로운 모임과 커뮤니티에 적극적으로 참여하는 것이 실질적인 전략입니다.';
+    const meetTiming = name+'님에게 인연의 문이 열리는 시기는 대운과 세운의 흐름에 따라 달라집니다. 중요한 것은 타이밍이 왔을 때 사회적 활동 반경이 충분히 열려 있어야 한다는 점입니다. 평소보다 새로운 사람을 만나는 기회를 의식적으로 늘리는 것이 가장 실질적인 전략입니다.';
 
     return `<div class="report-chapter">
         <h3 class="ch-title">Chapter 6. 닫힌 문을 여는 열쇠 — 이성운과 인연</h3>
