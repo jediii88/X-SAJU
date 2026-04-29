@@ -48,7 +48,7 @@
       });
     })();
     </script>
-    <meta name="version" content="1777448524">
+    <meta name="version" content="1777476660">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -2171,25 +2171,35 @@ function generateDeepReport(data) {
     injectSectionInterpretations(data);
     
     // ── PDF 200페이지 구조: 표지 + 목차 + CH1~CH10 + 대운/세운 ──
-    let bottomHtml = '';
-    bottomHtml += buildCoverPage(data);
-    bottomHtml += buildTOC(data);
-    bottomHtml += buildChapter1_Basic(data);
-    bottomHtml += buildChapter2_Wuxing(data);
-    bottomHtml += buildChapter3_Sipseong(data);
-    bottomHtml += buildChapter4_Wealth(data);
-    bottomHtml += buildChapter5_Career(data);
-    bottomHtml += buildChapter6_Love(data);
-    bottomHtml += buildChapter7_Hidden(data);
-    bottomHtml += buildChapter8_Health(data);
-    bottomHtml += buildChapter9_Remedy(data);
-    bottomHtml += buildChapterPersonality(data);
-    bottomHtml += buildSectionHeader("대운 · 세운 · 월운 심층 해부");
-    bottomHtml += buildDaewunLoop(data);
-    bottomHtml += buildSewunLoop(data);
-    bottomHtml += buildWolunLoop(data);
-    
-    document.getElementById('report-container').innerHTML = bottomHtml;
+    var html = '';
+    html += buildCoverPage(data);
+    html += buildTOC(data);
+
+    // PART 1
+    html += buildPartHeader(1,'당신이라는 사람','타고난 본성 · 자라온 환경 · 인생의 기승전결');
+    html += buildPart1_Story(data);
+
+    // PART 2
+    html += buildPartHeader(2,'핵심 4대 운 집중 조명','재물 · 직업 · 애정 · 건강');
+    html += buildChapter4_Wealth(data);
+    html += buildChapter5_Career(data);
+    html += buildChapter6_Love(data);
+    html += buildChapter8_Health(data);
+
+    // PART 3
+    html += buildPartHeader(3,'시간별 운세','올해부터 대운까지 — 거시에서 미시로');
+    html += buildChapter6_SeYun(data);
+    html += buildChapter7_NextYears(data);
+    html += buildChapter8_NextDaewun(data);
+    html += buildDaewunLoop(data);
+    html += buildChapter9_Monthly(data);
+
+    // PART 4
+    html += buildPartHeader(4,'마무리','자녀 · 말년 · 개운법');
+    html += buildChapter10_Legacy(data);
+    html += buildChapter9_Remedy(data);
+
+    document.getElementById('report-container').innerHTML = html;
 }
 
 function injectSectionInterpretations(data) {
@@ -2634,52 +2644,7 @@ function buildCurrentPeriodSummary(data) {
 }
 
 // ─── 대가 수준 전체 심층 풀이 (원국 아래 종합연) ───
-function buildMasterFullReading(data) {
-    const ds = data.dayStem||'병'; const db = data.dayBranch||'인';
-    const isStrong = (data.strengthText||'').includes('신강')||(data.strengthText||'').includes('강');
-    const yong = data.yong||'water'; const gi = data.gi||'wood';
-    const sip = data.sipseong||{};
-    const hasBien = (sip['비견']||0)+(sip['겡재']||0) > 2;
-    const hasGwan = (sip['정관']||0)+(sip['편관']||0) > 0;
-    const hasJae = (sip['정재']||0)+(sip['편재']||0) > 0;
-    const OH = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','申':'metal','壬':'water','癸':'water'};
-    const dayOh = OH[ds]||'fire';
 
-    const CHAR_MAP = {
-        wood: '당신은 태어날 때부터 "첫 번째"가 되려는 본능을 가지고 태어났습니다. 남들이 이미 걸어간 길은 당신에게 흥미롭지 않습니다. 아무도 가지 않은 곳에 발을 내디딜 때, 당신의 에너지는 최고조로 올라갑니다. 20~30대에는 이 선구자 기질이 주변과 마찰을 일으키는 경우가 많습니다. "왜 저 사람은 혼자만 앞서려 하냐"는 오해를 받기도 하지만, 40대 이후에는 그 마찰이 오히려 당신을 가장 단단하게 만들었다는 것을 스스로 깨닫게 됩니다. 당신의 인생에서 가장 위험한 순간은 멈추는 것입니다. 성장을 멈추는 순간 내면이 급격히 시들어갑니다. 반드시 새로운 목표를 계속 만들어야 하는 사람입니다.',
-        fire: '당신이 방에 들어서는 순간, 공기가 바뀝니다. 이것은 과장이 아닙니다. 당신은 태어날 때부터 존재 자체가 에너지인 사람입니다. 20~30대의 당신은 이 에너지를 통제하지 못해 번아웃과 감정 기복을 반복하는 경우가 많습니다. 그러나 이것은 결함이 아니라 엔진이 너무 강력해서 생기는 현상입니다. 40대에 접어들면 이 에너지를 다루는 법을 터득하면서 진짜 카리스마가 완성됩니다. 당신은 혼자 있을 때 충전하는 타입이 아닙니다. 사람들 사이에서 주목받고 열정을 나눌 때 오히려 에너지가 충전됩니다. 당신 주변의 사람들은 당신 덕에 더 뜨겁게 살고 있습니다.',
-        earth: '당신은 흔들리지 않는 사람입니다. 주변이 아무리 요동쳐도, 당신은 중심을 지킵니다. 이 안정감이 사람들을 당신 곁으로 끌어당기는 가장 강력한 자력(磁力)입니다. 그러나 이 기질에는 그림자가 있습니다. 변화를 두려워하다가 시기를 놓치는 것입니다. 20~30대에 좋은 기회를 "좀 더 확실해질 때까지" 기다리다가 흘려보내는 패턴이 반복될 수 있습니다. 당신의 과제는 확신이 70%일 때 실행하는 용기입니다. 100%의 확신을 기다리면 기회는 이미 다른 사람 손에 있습니다. 느리지만 확실하게, 한 번 시작한 것은 끝을 보는 당신의 에너지가 결국 가장 크고 오래가는 성과를 만들어냅니다.',
-        metal: '당신의 눈은 레이저입니다. 복잡한 상황 속에서도 핵심만 뽑아내는 능력, 불필요한 것을 단번에 쳐내는 결단력 — 이것이 당신 인생을 이끄는 가장 강력한 무기입니다. 20~30대의 당신은 이 냉철함이 "차갑다", "감정이 없다"는 오해를 만들기도 합니다. 그러나 이것은 오해입니다. 당신은 뜨거운 열정을 가진 사람이지만, 그 열정을 낭비하지 않는 방식으로 표현합니다. 40대 이후 전문성이 쌓이면 이 냉철함과 원칙이 결합되면서 해당 분야에서 누구도 넘볼 수 없는 권위자로 자리 잡습니다. 당신이 말하면 사람들이 따릅니다. 그 영향력의 크기를 스스로 제대로 인식하는 것이 중요합니다.',
-        water: '당신의 머릿속은 항상 바쁩니다. 남들이 보지 못하는 패턴을 보고, 남들이 느끼지 못하는 흐름을 감지합니다. 이 통찰력이 당신 인생 최대의 자산입니다. 그러나 20~30대의 당신에게는 한 가지 함정이 있습니다. 너무 많이 생각해서 실행을 미룬다는 것입니다. 완벽한 계획을 짜느라 첫발을 내딛는 것을 두려워합니다. 당신의 직관은 대부분 맞습니다. 그 직관을 믿고 행동으로 옮기는 연습이 필요합니다. 40대 이후에는 오랜 기간 쌓아온 통찰과 경험이 결합되면서 당신 주변에 자연스럽게 조언을 구하는 사람들이 모여듭니다. 깊은 강처럼, 당신은 나이가 들수록 더 값어치가 올라가는 사람입니다.'
-    };
-    const charText = CHAR_MAP[dayOh] || '당신의 일간이 가진 고유한 기질이 인생 전반을 이끌어 갑니다.';
-    const jaeText = hasJae ? '재성(재성)이 있는 사주로, 돈을 다루는 감각과 현실 감각이 뛰어납니다. 적극적인 재테크와 사업에서 강점을 발휘합니다.' : '재성(재성)이 약한 무재 사주입니다. 직접적 수익보다 전문성·명성을 먼저 쌓으면 자연스럽게 재물이 따라오는 구조입니다.';
-    const gwanText = hasGwan ? '관성(관성)이 있어 사회적 성취욕이 강하고 조직에서 인정받는 능력이 탁월합니다. 명예와 직업적 안정을 중요하게 여깁니다.' : '관성(관성)이 약한 사주로 조직보다 자유로운 환경에서 더 뛰어난 능력을 발휘합니다. 창업·프리랜서·전문직이 더 적합합니다.';
-    const strongText = isStrong ? '신강 사주로 에너지가 강합니다. 자율성이 보장된 환경에서 능력이 폭발적으로 발현됩니다. 다른 사람의 통제를 받으면 극심한 스트레스를 받습니다.' : '신약 사주로 에너지가 분산되어 있습니다. 혼자보다 신뢰할 수 있는 파트너와 협력할 때 1+1이 10이 됩니다. 용신 오행의 사람을 곁에 두십시오.';
-
-    return `<div class="report-chapter">
-        <h3 class="ch-title">📖 원국 종합 통변 — 성격·재물·직업·애정·건강 전체 개관</h3>
-        <p class="ch-text">당신의 사주 원국 8자를 낱낱이 분석하여, 삶의 흐름과 방향성을 서사적으로 풀어드립니다.</p>
-        <div style="background:rgba(255,255,255,0.03);border-radius:10px;padding:16px;margin-bottom:12px;border-left:3px solid var(--gold);">
-            <div style="font-size:11px;color:var(--gold);letter-spacing:1px;margin-bottom:6px;">「성격·기질 」 일간(일간) 통변</div>
-            <p style="font-size:13.5px;color:#ddd;line-height:1.85;margin:0;">${charText}</p>
-        </div>
-        <div style="background:rgba(255,255,255,0.03);border-radius:10px;padding:16px;margin-bottom:12px;border-left:3px solid #c7a76a;">
-            <div style="font-size:11px;color:#c7a76a;letter-spacing:1px;margin-bottom:6px;">「신강신약 」 일간 강약 판단</div>
-            <p style="font-size:13.5px;color:#ddd;line-height:1.85;margin:0;">${strongText}</p>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-            <div style="background:rgba(255,255,255,0.03);border-radius:8px;padding:14px;">
-                <div style="font-size:11px;color:#00C853;letter-spacing:1px;margin-bottom:6px;">「재물운 」</div>
-                <p style="font-size:12.5px;color:#ddd;line-height:1.8;margin:0;">${jaeText}</p>
-            </div>
-            <div style="background:rgba(255,255,255,0.03);border-radius:8px;padding:14px;">
-                <div style="font-size:11px;color:#4a9e6a;letter-spacing:1px;margin-bottom:6px;">「직업운 」</div>
-                <p style="font-size:12.5px;color:#ddd;line-height:1.8;margin:0;">${gwanText}</p>
-            </div>
-        </div>
-    </div>`;
-}
 function buildCurrentPeriodSummary(data) {
     const daeunRows = data.daeunRows || [];
     const aIdx = data.activeDaeunIdx || 0;
@@ -4468,6 +4433,225 @@ function buildChapter8_Health(data) {
         </div>
     </div>`;
 }
+
+// ═══════════════════════════════════════════════════════
+// PART HEADER
+// ═══════════════════════════════════════════════════════
+function buildPartHeader(num,title,subtitle){
+    var c={1:'199,167,106',2:'224,128,128',3:'122,184,212',4:'152,201,138'};
+    var h={1:'#c7a76a',2:'#e08080',3:'#7ab8d4',4:'#98c98a'};
+    var ic={1:'🌿',2:'✦',3:'🕰',4:'🌙'};
+    return'<div class="report-chapter" style="background:linear-gradient(135deg,rgba('+c[num]+',0.09),rgba(0,0,0,0));border-top:2px solid '+h[num]+';border-radius:16px;padding:32px 36px;margin:48px 0 8px;page-break-before:always;"><div style="font-size:11px;color:'+h[num]+';letter-spacing:3px;margin-bottom:10px;font-weight:700;">PART '+num+'</div><div style="font-size:26px;font-weight:700;color:#fff;margin-bottom:8px;">'+ic[num]+' '+title+'</div><div style="font-size:13px;color:rgba(255,255,255,0.4);letter-spacing:1px;">'+subtitle+'</div></div>';
+}
+
+// ═══════════════════════════════════════════════════════
+// PART 1 인생 서사 (성격→가족→시기별흐름→자녀→사회이미지)
+// ═══════════════════════════════════════════════════════
+function buildPart1_Story(data){
+    var name=data.name||'고객',ds=data.dayStem||'',db=data.dayBranch||'',yb=data.yearBranch||'',tb=data.timeBranch||'';
+    var isStrong=(data.strengthText||'').includes('신강');
+    var N={
+        '甲':name+'님은 곧게 자란 참나무처럼 타협을 모르는 원칙주의자입니다. 한번 방향을 정하면 끝까지 밀어붙이는 추진력이 있고, 주변이 자연스럽게 기댈 수 있는 존재가 됩니다.',
+        '乙':name+'님은 담쟁이덩굴처럼 환경에 맞게 자신을 조율하는 능력이 탁월합니다. 겉으로는 부드럽지만 내면의 목표를 절대 포기하지 않는 끈질김이 숨어 있습니다.',
+        '丙':name+'님은 한낮의 태양처럼 존재감이 뚜렷합니다. 어디 있든 주변을 밝히는 에너지가 있어 자연스럽게 시선을 끌고 사람들이 모여듭니다.',
+        '丁':name+'님은 은은히 타오르는 촛불처럼 깊은 내면의 열정을 품고 있습니다. 처음에는 조용해 보이지만 한번 마음을 열면 헌신적이고 따뜻합니다.',
+        '戊':name+'님은 넓은 대지처럼 묵직하고 신뢰감이 깊습니다. 쉽게 흔들리지 않는 안정감으로 주변 사람들의 버팀목이 됩니다.',
+        '己':name+'님은 비옥한 논밭처럼 모든 것을 품어내는 포용력이 있습니다. 섬세하고 현실적이며 계획을 세우고 착실히 실행하는 데 강합니다.',
+        '庚':name+'님은 날카로운 도끼처럼 결단력과 직진성이 강합니다. 옳다고 생각하면 거침없이 실행하고 불필요한 것을 쳐내는 능력이 탁월합니다.',
+        '辛':name+'님은 정제된 보석처럼 섬세한 미적 감각과 높은 기준을 갖고 있습니다. 완성도에 대한 집착이 강하고 세밀한 것을 놓치지 않습니다.',
+        '壬':name+'님은 깊고 넓은 강처럼 지적 호기심과 사고의 깊이가 남다릅니다. 다양한 분야를 넘나들며 유연하게 흡수하고 큰 그림을 그리는 능력이 있습니다.',
+        '癸':name+'님은 새벽 이슬처럼 섬세하고 직관력이 뛰어납니다. 남들이 보지 못하는 것을 감지하는 감각이 있으며 깊은 사색과 창의력이 강점입니다.'
+    };
+    var nt=N[ds]||name+'님은 '+ds+db+' 일주의 에너지를 타고났습니다.';
+    var ct=isStrong
+        ?'이 기질은 나이가 들수록 더욱 뚜렷해집니다. 30대 이후 자기확신이 강해지고 50대가 되면 주변에서 자연스럽게 조언을 구하는 존재가 됩니다.'
+        :'이 기질은 나이가 들수록 유연해집니다. 20~30대에는 주변 환경에 많은 영향을 받지만 40대 이후 내면이 단단해지면서 진짜 자신의 색깔을 드러내기 시작합니다.';
+    var ZM={
+        '子':'✦ 자미두수 — 지적·분석적 에너지. 전략과 계획에 강합니다.',
+        '丑':'✦ 자미두수 — 안정·축적의 에너지. 지속력과 신뢰가 무기입니다.',
+        '寅':'✦ 자미두수 — 도전·개척의 에너지. 새로운 판을 먼저 까는 타입입니다.',
+        '卯':'✦ 자미두수 — 감성·인연의 에너지. 인간관계에서 빛을 발합니다.',
+        '辰':'✦ 자미두수 — 변화·기회의 에너지. 환경 변화를 기회로 만드는 능력이 있습니다.',
+        '巳':'✦ 자미두수 — 열정·집중의 에너지. 하고 싶은 것에 강한 집중력을 발휘합니다.',
+        '午':'✦ 자미두수 — 명예·인정의 에너지. 사회적으로 두각을 나타내려는 본능이 강합니다.',
+        '未':'✦ 자미두수 — 복록·조화의 에너지. 자연스럽게 복이 따르는 구조입니다.',
+        '申':'✦ 자미두수 — 이동·변화의 에너지. 다양한 경험을 통해 성장합니다.',
+        '酉':'✦ 자미두수 — 완성·전문성의 에너지. 한 분야에서 최고를 추구합니다.',
+        '戌':'✦ 자미두수 — 철학·가치관의 에너지. 깊은 사색과 원칙이 삶을 이끕니다.',
+        '亥':'✦ 자미두수 — 지혜·내면의 에너지. 겉보다 속이 훨씬 깊은 사람입니다.'
+    };
+    var ziM=ZM[yb]||'';
+    var PE={
+        wood:'목(木) 기운의 가정 — 성장과 도전을 강조하는 분위기에서 자라났습니다. 자립심과 추진력이 어릴 때부터 길러졌습니다.',
+        fire:'화(火) 기운의 가정 — 밝고 활발한 분위기에서 자라났습니다. 표현력과 사교성이 자연스럽게 길러졌습니다.',
+        earth:'토(土) 기운의 가정 — 안정을 중시하는 실용적인 환경에서 자라났습니다. 성실함과 책임감이 어릴 때부터 형성됐습니다.',
+        metal:'금(金) 기운의 가정 — 원칙과 기준이 높은 환경에서 자라났습니다. 완벽주의적 분위기에서 높은 기준의식이 형성됐습니다.',
+        water:'수(水) 기운의 가정 — 지적이고 감성적인 환경에서 자라났습니다. 자유로운 사고와 깊은 감수성이 어릴 때부터 길러졌습니다.'
+    };
+    var pt=PE[data.monOh||'earth']||'';
+    var ZP={
+        '子':'자미두수 부모궁 — 지적이고 유연한 부모님의 영향이 있습니다.',
+        '丑':'자미두수 부모궁 — 현실적이고 성실한 부모님의 영향이 깊습니다.',
+        '寅':'자미두수 부모궁 — 독립심이 강한 가정환경에서 자랐습니다.',
+        '卯':'자미두수 부모궁 — 감성적·예술·교육적 분위기의 가정이었습니다.',
+        '辰':'자미두수 부모궁 — 변화가 많은 환경에서 자랐습니다.',
+        '巳':'자미두수 부모궁 — 열정적·표현력 강한 부모님의 영향이 있습니다.',
+        '午':'자미두수 부모궁 — 밝고 활발한 가정환경에서 자랐습니다.',
+        '未':'자미두수 부모궁 — 따뜻하고 포용적인 가정환경이었습니다.',
+        '申':'자미두수 부모궁 — 능력·경쟁을 강조하는 환경에서 자랐습니다.',
+        '酉':'자미두수 부모궁 — 높은 기준의 완벽주의적 가정이었습니다.',
+        '戌':'자미두수 부모궁 — 원칙·가치관을 중시하는 가정환경이었습니다.',
+        '亥':'자미두수 부모궁 — 감성적이고 자유로운 가정환경이었습니다.'
+    };
+    var zp=ZP[yb]||'';
+    var ZC={
+        '子':'총명하고 언어능력이 뛰어난 자녀와의 인연이 있습니다.',
+        '丑':'현실적이고 성실한 자녀와 안정적 관계를 맺습니다.',
+        '寅':'독립심이 강하고 개척적인 자녀를 두게 됩니다.',
+        '卯':'감성이 풍부하고 인기 있는 자녀와 깊은 교감이 있습니다.',
+        '辰':'자녀와의 관계에서 소통을 꾸준히 챙기는 것이 중요합니다.',
+        '巳':'열정적이고 표현력 강한 자녀와의 역동적인 관계입니다.',
+        '午':'사교적이고 존재감 뚜렷한 자녀를 두게 됩니다.',
+        '未':'따뜻하고 안정적인 부모-자녀 관계가 이어집니다.',
+        '申':'능력 있는 자녀와의 관계에서 거리감 관리가 중요합니다.',
+        '酉':'완벽주의적 성향의 자녀와 소통에 신경 써야 합니다.',
+        '戌':'깊은 대화가 통하는 자녀와의 관계입니다.',
+        '亥':'감성이 풍부한 자녀와 깊은 정서적 유대를 맺습니다.'
+    };
+    var zc=ZC[tb]||'';
+    var ZS={
+        '子':'지적이고 유연한 이미지. 분석력이 뛰어난 전문가로 평가받습니다.',
+        '丑':'믿을 수 있고 성실한 이미지. 오래 알수록 더 높게 평가받습니다.',
+        '寅':'개척적이고 리더십 있는 이미지. 도전하는 사람으로 기억됩니다.',
+        '卯':'감성적이고 따뜻한 이미지. 인간관계가 넓고 인기가 있습니다.',
+        '辰':'독특하고 예측 불가능한 이미지. 강렬한 인상을 남깁니다.',
+        '巳':'열정적이고 카리스마 있는 이미지.',
+        '午':'밝고 활발한 이미지. 자연스럽게 주목받는 타입입니다.',
+        '未':'온화하고 중재자적 이미지.',
+        '申':'능력 중심의 이미지. 실력으로 인정받고 싶어 하는 것이 드러납니다.',
+        '酉':'섬세하고 완벽한 이미지. 높은 기준으로 신뢰를 받습니다.',
+        '戌':'원칙적이고 의리 있는 이미지.',
+        '亥':'신비롭고 깊은 이미지. 알수록 더 매력적인 사람으로 평가받습니다.'
+    };
+    var zs=ZS[db]||'';
+    var lh=''; try{lh=buildChapter1_Basic(data)||'';}catch(e){}
+    function sec(ic,tt,bd,sb){
+        return '<div style="margin-bottom:26px;padding-bottom:22px;border-bottom:1px solid rgba(255,255,255,0.07);">'
+            +'<div style="font-size:12px;color:var(--gold);font-weight:700;letter-spacing:1.5px;margin-bottom:10px;">'+ic+' '+tt+'</div>'
+            +'<p style="font-size:13.5px;color:#ddd;line-height:2;margin:0'+(sb?';margin-bottom:10px':'')+';">'+bd+'</p>'
+            +(sb?'<p style="font-size:12.5px;color:#aaa;line-height:1.8;margin:0;background:rgba(199,167,106,0.04);padding:10px 14px;border-radius:8px;border-left:2px solid rgba(199,167,106,0.25);">'+sb+'</p>':'')
+            +'</div>';
+    }
+    return '<div class="report-chapter chapter-start">'
+        +'<h3 class="ch-title">Chapter 1. '+name+'님의 인생 서사</h3>'
+        +sec('🌿','타고난 본성',nt,ct)
+        +(ziM?'<div style="background:rgba(122,184,212,0.07);border-left:3px solid #7ab8d4;padding:12px 16px;border-radius:0 10px 10px 0;margin:-10px 0 24px;"><p style="font-size:12.5px;color:#aad4e8;margin:0;line-height:1.8;">'+ziM+'</p></div>':'')
+        +sec('🏡','자라온 환경과 가족',pt,zp)
+        +'<div style="margin-bottom:26px;padding-bottom:22px;border-bottom:1px solid rgba(255,255,255,0.07);"><div style="font-size:12px;color:var(--gold);font-weight:700;letter-spacing:1.5px;margin-bottom:10px;">🕰 인생의 기승전결</div>'+lh+'</div>'
+        +sec('👶','자녀와의 관계','자미두수 자녀궁 — '+zc,'')
+        +sec('🌐','사회에서 나를 보는 시각',name+'님은 — '+zs,'')
+        +'</div>';
+}
+
+// ═══════════════════════════════════════════════════════
+// Ch.6 올해 세운 거시적
+// ═══════════════════════════════════════════════════════
+function buildChapter6_SeYun(data){
+    var name=data.name||'고객',curY=new Date().getFullYear();
+    if(typeof Solar==='undefined') return typeof buildSewunLoop==='function'?buildSewunLoop(data):'';
+    var GA={'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'},JA={'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'},GK={'甲':'갑','乙':'을','丙':'병','丁':'정','戊':'무','己':'기','庚':'경','辛':'신','壬':'임','癸':'계'},JK={'子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해'},OK={wood:'목',fire:'화',earth:'토',metal:'금',water:'수'};
+    var yG='',yJ='',yGoh='earth',yJoh='earth',yKor='';
+    try{var L=Solar.fromYmd(curY,6,15).getLunar();var gz=L.getYearInGanZhi();yG=gz[0];yJ=gz[1];yKor=(GK[yG]||yG)+(JK[yJ]||yJ);yGoh=GA[yG]||'earth';yJoh=JA[yJ]||'earth';}catch(e){}
+    var yong=data.yong||'wood',gi=data.gi||'metal';
+    var ig=yGoh===yong||yJoh===yong,ib=yGoh===gi||yJoh===gi;
+    var luck=ig?'흥(興)의 해':ib?'주의가 필요한 해':'평온한 해',lc=ig?'#c7a76a':ib?'#e08080':'#aaa';
+    var D={wood:{m:'새 수입원 개척이 활발합니다.',c:'이직·창업·학습 시작에 강한 에너지.',l:'새 만남이 활발합니다. 능동적으로 움직이면 인연이 옵니다.',h:'간·신경 과부하 주의.'},fire:{m:'수입·지출 모두 증가. 저축 구조를 먼저 만드십시오.',c:'사회적 노출·인정이 절정.',l:'열정적 만남. 감정이 앞서지 않도록 하십시오.',h:'심장·혈관 주의.'},earth:{m:'안정적 수입 지속. 꾸준한 축적이 맞습니다.',c:'현 포지션을 굳히는 해.',l:'안정적 관계가 더 단단해집니다.',h:'소화기·위장 주의.'},metal:{m:'정리와 결산의 해.',c:'전문성이 인정받는 해.',l:'관계의 명확한 정리가 필요합니다.',h:'폐·대장 주의.'},water:{m:'정보·인맥이 돈이 됩니다.',c:'분석·기획 역량이 빛나는 해.',l:'감성적 연결. 기대를 현실적으로 유지하십시오.',h:'신장·방광 주의.'}};
+    var d=D[yGoh]||D.earth;
+    var ST={wood:'지금 씨앗을 뿌리는 것이 목표입니다. 3~5년 뒤를 보고 결단하십시오.',fire:'최대한 많이 노출되고 최대한 많이 저장하십시오.',earth:'서두르지 않아도 됩니다. 꾸준히 쌓는 것이 전략입니다.',metal:'가지치기의 해. 불필요한 것을 정리하면 다음 대운이 가벼워집니다.',water:'생각을 행동으로 옮기는 연습이 핵심입니다. 이제 실행하십시오.'};
+    var grid=['💰 재물','🏢 직업','❤ 애정','🌿 건강'].map(function(lb,i){var k=['m','c','l','h'];return'<div style="background:rgba(255,255,255,0.03);border-radius:10px;padding:14px 16px;border:1px solid rgba(255,255,255,0.06);"><div style="font-size:11px;color:var(--gold);margin-bottom:8px;font-weight:700;">'+lb+'</div><p style="font-size:12.5px;color:#ccc;line-height:1.8;margin:0;">'+d[k[i]]+'</p></div>';}).join('');
+    return'<div class="report-chapter chapter-start"><h3 class="ch-title">Chapter 6. '+curY+'년('+yKor+'년) 운세</h3><div style="display:flex;align-items:center;gap:16px;background:rgba(199,167,106,0.07);border-radius:12px;padding:16px 20px;margin-bottom:24px;"><div style="font-size:28px;font-weight:700;color:'+lc+';">'+yKor+'년</div><div><div style="font-size:11px;color:#888;margin-bottom:4px;">종합 판단</div><div style="font-size:15px;font-weight:700;color:'+lc+';">'+luck+'</div></div><div style="margin-left:auto;font-size:12px;color:#888;text-align:right;">천간 <b>'+OK[yGoh]+'</b><br>지지 <b>'+OK[yJoh]+'</b></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">'+grid+'</div><div style="background:rgba(199,167,106,0.05);border-left:3px solid var(--gold);padding:14px 18px;border-radius:0 10px 10px 0;"><div style="font-size:11px;color:var(--gold);margin-bottom:8px;font-weight:700;">✦ '+name+'님의 '+curY+'년 전략</div><p style="font-size:13px;color:#ccc;line-height:1.85;margin:0;">'+(ST[yGoh]||ST.earth)+'</p></div><div style="margin-top:16px;font-size:11px;color:#666;">▼ 월별 세부 풀이는 Ch.9 월운 섹션을 참조하십시오</div></div>';
+}
+
+// ═══════════════════════════════════════════════════════
+// Ch.7 내년·내후년
+// ═══════════════════════════════════════════════════════
+function buildChapter7_NextYears(data){
+    var name=data.name||'고객',curY=new Date().getFullYear();
+    if(typeof Solar==='undefined') return '';
+    var GA={'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'},JA={'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'},GK={'甲':'갑','乙':'을','丙':'병','丁':'정','戊':'무','己':'기','庚':'경','辛':'신','壬':'임','癸':'계'},JK={'子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해'},OK={wood:'목',fire:'화',earth:'토',metal:'금',water:'수'};
+    var yong=data.yong||'wood',gi=data.gi||'metal';
+    function yi(y){var g='',j='',go='earth',jo='earth',k='';try{var L=Solar.fromYmd(y,6,15).getLunar();var gz=L.getYearInGanZhi();g=gz[0];j=gz[1];k=(GK[g]||g)+(JK[j]||j);go=GA[g]||'earth';jo=JA[j]||'earth';}catch(e){}return{goh:go,joh:jo,kor:k};}
+    var ny=yi(curY+1),nny=yi(curY+2);
+    function ev(info){var g=info.goh===yong||info.joh===yong,b=info.goh===gi||info.joh===gi;return g?{l:'흥(興)',c:'#c7a76a'}:b?{l:'주의',c:'#e08080'}:{l:'평온',c:'#aaa'};}
+    var nev=ev(ny),nnev=ev(nny);
+    var BF={wood:'새 시작·확장의 해.',fire:'노출·성취의 해.',earth:'유지·축적의 해.',metal:'정리·전문화의 해.',water:'통찰·네트워크의 해.'};
+    function card(yr,info,ev2){
+        return '<div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:18px 20px;border:1px solid rgba(255,255,255,0.06);">'
+            +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">'
+            +'<span style="font-size:20px;font-weight:700;color:'+ev2.c+';">'+info.kor+'년</span>'
+            +'<span style="font-size:13px;font-weight:600;color:'+ev2.c+';">('+yr+')</span>'
+            +'<span style="margin-left:auto;font-size:12px;background:rgba(255,255,255,0.06);padding:3px 10px;border-radius:20px;color:'+ev2.c+';">'+ev2.l+'</span>'
+            +'</div>'
+            +'<p style="font-size:12.5px;color:#ccc;line-height:1.8;margin:0;">'+(BF[info.goh]||'')+'</p>'
+            +'<p style="font-size:11px;color:#888;margin:8px 0 0;">천간 '+OK[info.goh]+' · 지지 '+OK[info.joh]+'</p>'
+            +'</div>';
+    }
+    return '<div class="report-chapter chapter-start">'
+        +'<h3 class="ch-title">Chapter 7. 내년·내후년 운세</h3>'
+        +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">'
+        +card(curY+1,ny,nev)+card(curY+2,nny,nnev)
+        +'</div>'
+        +'</div>';
+}
+
+// ═══════════════════════════════════════════════════════
+// Ch.8 다음 대운 집중 풀이
+// ═══════════════════════════════════════════════════════
+function buildChapter8_NextDaewun(data){
+    var name=data.name||'고객';
+    if(!data.daewunList||data.daewunList.length<2) return '';
+    // 현재 나이 기준 다음 대운 찾기
+    var curAge=new Date().getFullYear()-parseInt((data.birthDate||'1990').substring(0,4));
+    var nextDW=null;
+    for(var i=0;i<data.daewunList.length;i++){
+        if(data.daewunList[i].age>curAge){nextDW=data.daewunList[i];break;}
+    }
+    if(!nextDW) nextDW=data.daewunList[data.daewunList.length-1];
+    var OH_KOR={wood:'목',fire:'화',earth:'토',metal:'금',water:'수'};
+    var GAN_OH={'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
+    var doh=GAN_OH[nextDW.name[0]]||'earth';
+    var yong=data.yong||'wood',gi=data.gi||'metal';
+    var isGood=doh===yong,isBad=doh===gi;
+    var judge=isGood?'황금 대운':'isBad?'조심 대운':'안정 대운';
+    var judgeColor=isGood?'#c7a76a':isBad?'#e08080':'#aaa';
+    var DWNEXT={wood:name+'님의 다음 대운은 목(木)의 기운입니다. 새로운 도전과 시작의 에너지가 10년을 지배합니다. 이직·창업·학습·이사 — 새로운 판을 까는 모든 결정이 이 시기에 힘을 받습니다. 단, 너무 많은 것을 동시에 시작하려는 충동을 제어해야 합니다.',fire:name+'님의 다음 대운은 화(火)의 기운입니다. 사회적 인정과 성취의 에너지가 10년을 지배합니다. 가장 많이 노출되고 가장 많이 인정받는 10년입니다. 번영의 시기이나 건강과 재무 관리를 소홀히 하면 한 번에 무너질 수 있습니다.',earth:name+'님의 다음 대운은 토(土)의 기운입니다. 안정과 축적의 에너지가 10년을 지배합니다. 서두르지 않아도 됩니다. 지금까지 쌓아온 것들이 결실을 맺는 10년입니다.',metal:name+'님의 다음 대운은 금(金)의 기운입니다. 전문성과 결단의 에너지가 10년을 지배합니다. 한 분야에 집중하면 타의 추종을 불허하는 전문가가 되는 10년입니다.',water:name+'님의 다음 대운은 수(水)의 기운입니다. 통찰과 지혜의 에너지가 10년을 지배합니다. 정보와 인맥이 재산이 되는 10년입니다.'};
+    return '<div class="report-chapter chapter-start"><h3 class="ch-title">Chapter 8. 다음 대운 집중 풀이</h3>'
+        +'<div style="display:flex;align-items:center;gap:16px;background:rgba(199,167,106,0.07);border-radius:12px;padding:16px 20px;margin-bottom:20px;">'
+        +'<div style="font-size:28px;font-weight:700;color:'+judgeColor+';">'+nextDW.name+'</div>'
+        +'<div><div style="font-size:11px;color:#888;margin-bottom:4px;">'+nextDW.age+'세부터 10년</div>'
+        +'<div style="font-size:13px;font-weight:600;color:'+judgeColor+';">'+judge+'</div></div></div>'
+        +'<p style="font-size:13.5px;color:#ddd;line-height:2;margin:0 0 16px;">'+(DWNEXT[doh]||'')+'</p>'
+        +'</div>';
+}
+
+// ═══════════════════════════════════════════════════════
+// Ch.9 월운 12개월
+// ═══════════════════════════════════════════════════════
+function buildChapter9_Monthly(data){
+    var name=data.name||'고객';
+    if(typeof buildWolunLoop==='function') return buildWolunLoop(data);
+    return '<div class="report-chapter chapter-start"><h3 class="ch-title">Chapter 9. 월운 12개월</h3><p style="color:#aaa;">월운 데이터를 불러오는 중입니다.</p></div>';
+}
+
+// ═══════════════════════════════════════════════════════
+// Ch.10 자녀·사회적 이미지·말년
+// ═══════════════════════════════════════════════════════
+function buildChapter10_Legacy(data){
+    var name=data.name||'고객';
+    if(typeof buildChapter7_Hidden==='function') return buildChapter7_Hidden(data);
+    return '';
+}
+
 
 function buildChapter9_Remedy(data) {
     const stemEl = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','申':'metal','壬':'water','癸':'water'}[data.dayStem] || 'earth';
