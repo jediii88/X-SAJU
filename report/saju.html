@@ -48,7 +48,7 @@
       });
     })();
     </script>
-    <meta name="version" content="1777445948">
+    <meta name="version" content="1777447504">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -6468,15 +6468,15 @@ function runAnalysis(overrideParams) {
 
         const yun = ec.getYun(document.getElementById('gender').value === 'M' ? 1 : 0);
         const yunDirection = document.getElementById('gender').value === 'M' ? '순행' : '역행';
-        const yunStartAge = yun.getStartAge ? yun.getStartAge() : '-';
+        const yunStartAge = yun.getStartAge ? (yun.getStartAge()-1) : '-';
         document.getElementById('yun-text').innerText = `${yunStartAge}세 시작 · ${yunDirection}`;
 
         // 120세까지 대운 전체 (대운 시작 나이가 120 이하인 것만)
-        const allDaYun = yun.getDaYun().slice(1).filter(dy => dy.getStartAge() <= 120);
+        const allDaYun = yun.getDaYun().slice(1).filter(dy => dy.getStartAge()-1 <= 120);
         const daeunRows = allDaYun.map(dy => {
             const gz = dy.getGanZhi();
             return [
-                dy.getStartAge() + '세',
+                (dy.getStartAge()-1) + '세',
                 getSipseong(dayStem, gz[0]),
                 `${gz[0]}${gz[1]}`,
                 `${HAN_KOR[gz[0]]}${HAN_KOR[gz[1]]}`,
@@ -6494,7 +6494,7 @@ function runAnalysis(overrideParams) {
         let activeDaeunIdx = -1;
         const daeunData = allDaYun;
         for(let i = 0; i < daeunData.length; i++) {
-            if(currentAge >= daeunData[i].getStartAge() && (i === daeunData.length - 1 || currentAge < daeunData[i+1].getStartAge())) {
+            if(currentAge >= (daeunData[i].getStartAge()-1) && (i === daeunData.length - 1 || currentAge < (daeunData[i+1].getStartAge()-1))) {
                 activeDaeunIdx = i; break;
             }
         }
@@ -6513,7 +6513,7 @@ function runAnalysis(overrideParams) {
 
         const daeunRows2 = daeunData.map(dy => {
             const gz = dy.getGanZhi();
-            return [ dy.getStartAge() + '세', getSipseong(dayStem, gz[0]), `${gz[0]}${gz[1]}`, `${HAN_KOR[gz[0]]}${HAN_KOR[gz[1]]}`, getUnsung(dayStem, gz[1]) || '-' ];
+            return [ (dy.getStartAge()-1) + '세', getSipseong(dayStem, gz[0]), `${gz[0]}${gz[1]}`, `${HAN_KOR[gz[0]]}${HAN_KOR[gz[1]]}`, getUnsung(dayStem, gz[1]) || '-' ];
         });
         buildFortuneCards('daeun-table', daeunRows2, activeDaeunIdx);
         // ===== 대운 표 아래 풀이 주입 =====
@@ -6556,8 +6556,8 @@ function runAnalysis(overrideParams) {
             detDiv.style.cssText='margin-top:12px;display:flex;flex-direction:column;gap:12px;';
             daeunData.forEach(function(dy,idx){
                 var gz=dy.getGanZhi();var g=gz[0];var j=gz[1];
-                var age=dy.getStartAge();
-                var endAge=idx<daeunData.length-1?daeunData[idx+1].getStartAge():age+10;
+                var age=dy.getStartAge()-1;
+                var endAge=idx<daeunData.length-1?(daeunData[idx+1].getStartAge()-1):age+10;
                 var _birthY=(globalSajuData&&globalSajuData.birthYear)||1988;
                 var _startYr=_birthY+age-1;var _endYr=_birthY+endAge-2;
                 var s=gs(g,j);var isCur=idx===activeDaeunIdx;var col=gc(s);
@@ -6610,7 +6610,7 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
             const pts = rows.map((dy,i)=>({
                 x: PL+i*step,
                 y: PT+gH-((scores[i]-minS)/range)*gH,
-                age: dy.getStartAge(),
+                age: dy.getStartAge()-1,
                 gz: dy.getGanZhi(),
                 score: scores[i]
             }));
@@ -6687,10 +6687,10 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
             const OHKR = {wood:'목',fire:'화',earth:'토',metal:'금',water:'수'};
             const hmap = {wood:'간담·신경계',fire:'심장·혈관',earth:'위장·소화기',metal:'폐·대장',water:'신장·호르몬'};
             const eras = [
-                {era:'🌱 유년기 (0~20세)', filter: d=>d.getStartAge()<20},
-                {era:'🔥 초년기 (20~40세)', filter: d=>d.getStartAge()>=20&&d.getStartAge()<40},
-                {era:'⚡ 중년기 (40~60세)', filter: d=>d.getStartAge()>=40&&d.getStartAge()<60},
-                {era:'🌙 말년기 (60세~)', filter: d=>d.getStartAge()>=60},
+                {era:'🌱 유년기 (0~20세)', filter: d=>(d.getStartAge()-1)<20},
+                {era:'🔥 초년기 (20~40세)', filter: d=>(d.getStartAge()-1)>=20&&(d.getStartAge()-1)<40},
+                {era:'⚡ 중년기 (40~60세)', filter: d=>(d.getStartAge()-1)>=40&&(d.getStartAge()-1)<60},
+                {era:'🌙 말년기 (60세~)', filter: d=>(d.getStartAge()-1)>=60},
             ];
             el.innerHTML = eras.map(({era, filter})=>{
                 const ds = daeunData.filter(filter);
@@ -6841,8 +6841,8 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
             const curGz = curDW.getGanZhi();
             const curSip = getSipseong(dayStem, curGz[0]);
             const curKr = `${HAN_KOR[curGz[0]]}${HAN_KOR[curGz[1]]}`;
-            const dwEndAge = activeDaeunIdx < daeunData.length-1 ? daeunData[activeDaeunIdx+1].getStartAge() : curDW.getStartAge()+10;
-            daeunSummaryEl.innerHTML = `현재 <b>${curDW.getStartAge()}세 ~ ${dwEndAge}세</b> · <b style="color:var(--gold);">${curGz[0]}${curGz[1]}(${curKr})</b> 대운 진행 중 &nbsp;·&nbsp; 십성 <b>${curSip}</b>의 기운이 10년을 지배합니다.`;
+            const dwEndAge = activeDaeunIdx < daeunData.length-1 ? (daeunData[activeDaeunIdx+1].getStartAge()-1) : (curDW.getStartAge()-1)+10;
+            daeunSummaryEl.innerHTML = `현재 <b>${curDW.getStartAge()-1}세 ~ ${dwEndAge}세</b> · <b style="color:var(--gold);">${curGz[0]}${curGz[1]}(${curKr})</b> 대운 진행 중 &nbsp;·&nbsp; 십성 <b>${curSip}</b>의 기운이 10년을 지배합니다.`;
         } else if(daeunSummaryEl) {
             daeunSummaryEl.innerHTML = '대운 흐름을 확인하세요. 현재 진행 중인 대운이 굵게 표시됩니다.';
         }
@@ -6962,7 +6962,7 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
         // 대운 데이터 수집
         const daeunForReport = daeunData.map(dy => {
             const gz = dy.getGanZhi();
-            return { age: dy.getStartAge(), name: gz[0]+gz[1], gz: [gz[0], gz[1]] };
+            return { age: dy.getStartAge()-1, name: gz[0]+gz[1], gz: [gz[0], gz[1]] };
         });
         // 각 주별 십성 계산 (일간 기준)
         const SIP_MAP = {
@@ -7033,8 +7033,8 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
             var h2='<div class="report-chapter"><h3 class="ch-title">대운 80년 — 10년 단위 완전 해부</h3><p class="ch-text">대운은 인생의 기후입니다. 용신 기운의 대운에서 집중 공략하고, 기신 기운의 대운에서 내공을 쌓으십시오.</p>';
             daeunData.forEach(function(dy,idx){
                 var gz=dy.getGanZhi();var g=gz[0];var j=gz[1];
-                var age=dy.getStartAge();
-                var endAge=idx<daeunData.length-1?daeunData[idx+1].getStartAge():age+10;
+                var age=dy.getStartAge()-1;
+                var endAge=idx<daeunData.length-1?(daeunData[idx+1].getStartAge()-1):age+10;
                 var _birthY=(globalSajuData&&globalSajuData.birthYear)||1988;
                 var _startYr=_birthY+age-1;var _endYr=_birthY+endAge-2;
                 var s=gs(g,j);var isCur=idx===activeDaeunIdx;var col=gc(s);
