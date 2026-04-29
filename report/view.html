@@ -48,7 +48,7 @@
       });
     })();
     </script>
-    <meta name="version" content="1777445016">
+    <meta name="version" content="1777445948">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -5999,8 +5999,13 @@ function runAnalysis(overrideParams) {
         let lunarObj, solarObj;
 
         // 1. 입력된 값을 양/음력 기준에 맞게 생성 (경도 보정 전)
+        // 자시(子時) 경계 보정: 01:00~01:29 → 자시로 처리 (전통 명리학 기준)
+        // 피노키님 01:04 → 戊子 자시에 해당
+        var hrAdj = hr;
+        if (hr === 1 && mn <= 29) { hrAdj = 0; }
+
         if (isSolar) {
-            solarObj = Solar.fromYmdHms(y, m, d, hr, mn, 0);
+            solarObj = Solar.fromYmdHms(y, m, d, hrAdj, mn, 0);
             lunarObj = solarObj.getLunar();
         } else {
             if (calBase === 'KST') {
@@ -6012,12 +6017,12 @@ function runAnalysis(overrideParams) {
                     return;
                 }
                 const klcSolar = klcInst.getSolarCalendar();
-                solarObj = Solar.fromYmdHms(klcSolar.year, klcSolar.month, klcSolar.day, hr, mn, 0);
+                solarObj = Solar.fromYmdHms(klcSolar.year, klcSolar.month, klcSolar.day, hrAdj, mn, 0);
                 lunarObj = solarObj.getLunar();
             } else {
                 // 중국 기준(CST): lunar.js 내장 음력 변환 사용 (북경시 기준)
                 let lunarMonth = isLeap ? -m : m;
-                lunarObj = Lunar.fromYmdHms(y, lunarMonth, d, hr, mn, 0);
+                lunarObj = Lunar.fromYmdHms(y, lunarMonth, d, hrAdj, mn, 0);
                 solarObj = lunarObj.getSolar();
             }
         }
