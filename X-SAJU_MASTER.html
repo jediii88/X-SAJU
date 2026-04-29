@@ -48,7 +48,7 @@
       });
     })();
     </script>
-    <meta name="version" content="1777430399">
+    <meta name="version" content="1777438427">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -3518,7 +3518,7 @@ function buildChapter2_Wuxing(data) {
                 };
                 const maxData = HEALTH_DESC[MAX_OH] || HEALTH_DESC.fire;
                 const minData = HEALTH_DESC[MIN_OH];
-                const isStrong2 = isStrong;
+                const isStrong2 = (data.strengthText||"").includes("신강") || (data.strengthText||"").includes("강");
                 const mainTxt = isStrong2 ? maxData.strong : maxData.weak;
                 let html = '<div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:16px;border-left:3px solid '+maxData.col+';">';
                 html += '<div style="font-size:12px;font-weight:700;color:'+maxData.col+';margin-bottom:8px;">⚠ 우선 챙겨야 할 건강 영역 — '+maxData.title+'</div>';
@@ -5116,8 +5116,8 @@ function startReport() {
         <!-- 대운 그래프 -->
         <div class="section" id="sec-daeun-graph">
             <div class="section-title"><div class="title-left"><span>인생 흐름 그래프</span></div><span>대운 10년 단위 에너지 곡선</span></div>
-            <div id="daeun-graph-wrap" style="width:100%;overflow-x:auto;padding:10px 0;">
-                <svg id="daeun-graph-svg" width="100%" height="240" style="min-width:480px;display:block;"></svg>
+            <div id="daeun-graph-wrap" style="width:100%;overflow:hidden;padding:10px 0;">
+                <svg id="daeun-graph-svg" width="100%" height="240" style="display:block;"></svg>
             </div>
             <div id="daeun-graph-legend" style="display:flex;gap:12px;justify-content:center;margin-top:8px;font-size:11px;color:var(--text-soft);"></div>
         </div>
@@ -6048,14 +6048,18 @@ function runAnalysis(overrideParams) {
                 const gmLabel = gmHanja.map(h => h+'('+( HK2_GM[h]||h)+')'  ).join('·');
                 return `<div class="m-badge" style="${isGm ? 'color:var(--fire);font-weight:bold;' : 'color:#555;'}">${isGm ? '⚠공망' : '-'}</div>`;
             }),
-            // 공망 기준 별도 행 (1칸에 colspan으로 표시)
+            // 공망 기준 별도 행 — 원국 8자에 공망 지지가 있을 때만 표시
             (()=>{
                 const gmStr3 = getGongmang(dayStem + ec.getDay()[1]);
                 const KR2HJ3 = {'자':'子','축':'丑','인':'寅','묘':'卯','진':'辰','사':'巳','오':'午','미':'未','신':'申','유':'酉','술':'戌','해':'亥'};
                 const HK3 = {'子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해'};
                 const gmHanja3 = gmStr3 ? [...gmStr3].map(c=>KR2HJ3[c]||c) : [];
-                const gmLabel3 = gmHanja3.length ? gmHanja3.map(h=>h+'('+HK3[h]+')').join(' · ') : '-';
-                return `<tr><td class="m-label" style="color:#e74c3c;">공망</td><td class="m-cell" colspan="4" style="color:#e74c3c;font-size:12px;font-weight:700;letter-spacing:1px;">${gmLabel3} </td></tr>`;
+                // 원국 지지 목록
+                const pillarBranches = pillars.map(p => p.h && p.h[1]).filter(Boolean);
+                const hasGmInPillars = gmHanja3.some(h => pillarBranches.includes(h));
+                if(!hasGmInPillars) return '';
+                const gmLabel3 = gmHanja3.map(h=>h+'('+HK3[h]+')').join(' · ');
+                return `<tr><td class="m-label" style="color:#e74c3c;">공망</td><td class="m-cell" colspan="4" style="color:#e74c3c;font-size:12px;font-weight:700;letter-spacing:1px;">${gmLabel3}</td></tr>`;
             })()
         ].join('');
         document.getElementById('manse-table').innerHTML = manseHtml;
@@ -6515,7 +6519,9 @@ function runAnalysis(overrideParams) {
                 if(act) s += `<text x="${p.x}" y="${H-PB+32}" text-anchor="middle" font-size="10" font-weight="700" fill="${col}">▶ 현재</text>`;
             });
             svg.innerHTML = s;
-            svg.setAttribute('width', W);
+            svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+            svg.setAttribute('preserveAspectRatio', 'none');
+            svg.setAttribute('width', '100%');
             svg.setAttribute('height', H);
         })();
 
