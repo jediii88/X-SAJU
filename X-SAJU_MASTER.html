@@ -48,7 +48,7 @@
       });
     })();
     </script>
-    <meta name="version" content="1777476660">
+    <meta name="version" content="1777531834">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -2204,14 +2204,18 @@ function generateDeepReport(data) {
 
 function injectSectionInterpretations(data) {
     function setEl(id, buildFn) {
-        const el = document.getElementById(id);
-        if(!el) { console.warn('inject: #'+id+' not found'); return; }
-        try {
-            el.innerHTML = buildFn();
-        } catch(e) {
-            console.error('inject #'+id+' ERROR:', e);
-            el.innerHTML = '<div class="inline-interp"><div class="ii-text" style="color:#e74c3c;">풀이 생성 중 오류: '+e.message+'</div></div>';
-        }
+        // 각 섹션 독립적 에러 격리 — 하나 실패해도 나머지 계속
+        setTimeout(function(){
+            var el = document.getElementById(id);
+            if(!el) { console.warn('inject: #'+id+' not found'); return; }
+            try {
+                var result = buildFn();
+                if(result && result.trim()) el.innerHTML = result;
+            } catch(e) {
+                console.error('inject #'+id+' ERROR:', e.message);
+                el.innerHTML = '<div class="inline-interp"><div class="ii-text" style="color:#e74c3c;font-size:12px;">풀이 생성 오류: '+e.message+'</div></div>';
+            }
+        }, 0);
     }
     // 1. 만세력 원국 아래
     setEl('manse-inline-summary', () => buildChapter1_Basic(data) + buildCurrentPeriodSummary(data) + buildMasterFullReading(data));
@@ -4534,7 +4538,7 @@ function buildPart1_Story(data){
         '亥':'신비롭고 깊은 이미지. 알수록 더 매력적인 사람으로 평가받습니다.'
     };
     var zs=ZS[db]||'';
-    var lh=''; try{lh=buildChapter1_Basic(data)||'';}catch(e){}
+    var lh=''; try{var _ch1=buildChapter1_Basic(data);if(typeof _ch1==='string')lh=_ch1;}catch(e){console.warn('buildChapter1_Basic 오류:',e.message);}
     function sec(ic,tt,bd,sb){
         return '<div style="margin-bottom:26px;padding-bottom:22px;border-bottom:1px solid rgba(255,255,255,0.07);">'
             +'<div style="font-size:12px;color:var(--gold);font-weight:700;letter-spacing:1.5px;margin-bottom:10px;">'+ic+' '+tt+'</div>'
