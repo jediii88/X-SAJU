@@ -48,7 +48,7 @@
       });
     })();
     </script>
-    <meta name="version" content="1777553853">
+    <meta name="version" content="1777554668">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -3484,6 +3484,7 @@ ${name}님은 ${seasonKr}에 태어났습니다. 이 계절의 기운이 사주 
 
 
 function buildChapter2_Wuxing(data) {
+    const name = data.name || '고객';
     const wuxing = data.wuxing || {};
     const OHKR2 = {wood:'목',fire:'화',earth:'토',metal:'금',water:'수'};
     let maxW = 'earth', minW = 'water';
