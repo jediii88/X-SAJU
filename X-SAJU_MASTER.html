@@ -48,7 +48,7 @@
       });
     })();
     </script>
-    <meta name="version" content="1777537208">
+    <meta name="version" content="1777553853">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -2166,40 +2166,48 @@ function getDBText(category, key, fallback) {
 
 function generateDeepReport(data) {
     if(!data || !data.dayStem) return;
-    
+
+    function safeCall(fn, label) {
+        try { return fn() || ''; }
+        catch(e) { console.error('generateDeepReport '+label+':', e.message); return ''; }
+    }
+
     // ── 각 만세력 섹션 아래에 직접 주입 ──
-    injectSectionInterpretations(data);
-    
-    // ── PDF 200페이지 구조: 표지 + 목차 + CH1~CH10 + 대운/세운 ──
+    try { injectSectionInterpretations(data); } catch(e) { console.error('inject error:', e.message); }
+
+    // ── PART 구조 ──
     var html = '';
-    html += buildCoverPage(data);
-    html += buildTOC(data);
+    html += safeCall(()=>buildCoverPage(data), 'cover');
+    html += safeCall(()=>buildTOC(data), 'toc');
 
     // PART 1
-    html += buildPartHeader(1,'당신이라는 사람','타고난 본성 · 자라온 환경 · 인생의 기승전결');
-    html += buildPart1_Story(data);
+    html += safeCall(()=>buildPartHeader(1,'당신이라는 사람','타고난 본성 · 자라온 환경 · 인생의 기승전결'), 'part1header');
+    html += safeCall(()=>buildPart1_Story(data), 'part1');
 
     // PART 2
-    html += buildPartHeader(2,'핵심 4대 운 집중 조명','재물 · 직업 · 애정 · 건강');
-    html += buildChapter4_Wealth(data);
-    html += buildChapter5_Career(data);
-    html += buildChapter6_Love(data);
-    html += buildChapter8_Health(data);
+    html += safeCall(()=>buildPartHeader(2,'핵심 4대 운 집중 조명','재물 · 직업 · 애정 · 건강'), 'part2header');
+    html += safeCall(()=>buildChapter4_Wealth(data), 'ch4');
+    html += safeCall(()=>buildChapter5_Career(data), 'ch5');
+    html += safeCall(()=>buildChapter6_Love(data), 'ch6love');
+    html += safeCall(()=>buildChapter8_Health(data), 'ch8health');
 
     // PART 3
-    html += buildPartHeader(3,'시간별 운세','올해부터 대운까지 — 거시에서 미시로');
-    html += buildChapter6_SeYun(data);
-    html += buildChapter7_NextYears(data);
-    html += buildChapter8_NextDaewun(data);
-    html += buildDaewunLoop(data);
-    html += buildChapter9_Monthly(data);
+    html += safeCall(()=>buildPartHeader(3,'시간별 운세','올해부터 대운까지 — 거시에서 미시로'), 'part3header');
+    html += safeCall(()=>buildChapter6_SeYun(data), 'ch6seyun');
+    html += safeCall(()=>buildChapter7_NextYears(data), 'ch7next');
+    html += safeCall(()=>buildChapter8_NextDaewun(data), 'ch8dw');
+    html += safeCall(()=>buildDaewunLoop(data), 'daewunloop');
+    html += safeCall(()=>buildChapter9_Monthly(data), 'ch9monthly');
 
     // PART 4
-    html += buildPartHeader(4,'마무리','자녀 · 말년 · 개운법');
-    html += buildChapter10_Legacy(data);
-    html += buildChapter9_Remedy(data);
+    html += safeCall(()=>buildPartHeader(4,'마무리','자녀 · 말년 · 개운법'), 'part4header');
+    html += safeCall(()=>buildChapter10_Legacy(data), 'ch10');
+    html += safeCall(()=>buildChapter9_Remedy(data), 'ch9remedy');
 
     document.getElementById('report-container').innerHTML = html;
+
+    // innerHTML 세팅 후 injectSection 한번 더 (DOM이 완성된 뒤)
+    setTimeout(function(){ try { injectSectionInterpretations(data); } catch(e){} }, 50);
 }
 
 function injectSectionInterpretations(data) {
@@ -2208,12 +2216,13 @@ function injectSectionInterpretations(data) {
         if(!el) return;
         try {
             var result = buildFn();
-            if(result && result.trim()) el.innerHTML = result;
-            // 결과 없으면 div 숨김
-            else el.style.display = 'none';
+            if(result && result.trim()) {
+                el.innerHTML = result;
+                el.style.display = '';
+            }
         } catch(e) {
-            console.error('inject #'+id+':', e.message);
-            el.style.display = 'none';  // 에러 시 섹션 숨김
+            console.error('inject #'+id+':', e.message, e.stack);
+            // 에러시 빈칸 유지 (숨기지 않음)
         }
     }
     // 1. 만세력 원국 아래
