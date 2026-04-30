@@ -48,7 +48,7 @@
       });
     })();
     </script>
-    <meta name="version" content="1777564235">
+    <meta name="version" content="1777564556">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -3346,10 +3346,10 @@ function buildChapter1_Basic(data) {
             const johuKey = johu.includes('절대적으로 필요') ? '절실히 필요한 기운이 있는 구조' :
                            johu.includes('없으면') ? '균형을 잡는 핵심 기운이 중요한 구조' :
                            johu.includes('폭발적') ? '봄이 오면 폭발적으로 성장하는 구조' :
-                           johu.includes('황금기') ? '전성기가 뚜렷한 구조' : '균형이 잡히면 크게 도약하는 구조';
+                           johu.includes('황금기') ? '전성기가 뚜렷한 구조' : '균형이 잡히면 크게 도약하는 구조`;
             johuNarr = `
 
-${name}님은 ${seasonKr}에 태어났습니다. 이 계절의 기운이 사주 전체의 온도와 습도를 결정합니다. ${johu.split('.').slice(-3).join('.').trim()} 이 균형이 맞는 대운·세운이 찾아올 때 삶이 가장 크게 도약합니다.`;
+${name}님은 ${seasonKr}에 태어났습니다. 이 계절의 기운이 사주 전체의 온도와 습도를 결정합니다. ${johu.split(`.').slice(-3).join('.').trim()} 이 균형이 맞는 대운·세운이 찾아올 때 삶이 가장 크게 도약합니다.`;
         }
 
         // 격국 서사: "격국이 뭐야" 설명 없이 → 사회적 성취 방식만 서술
@@ -3359,35 +3359,35 @@ ${name}님은 ${seasonKr}에 태어났습니다. 이 계절의 기운이 사주 
             const ggOh = GG_OH[gg.geokName] || '';
             const isSeong = data.yong && (data.yong === ggOh || data.hee === ggOh);
             const GG_NARR = {
-                '정재격': isSeong
+                '정재격`: isSeong
                     ? `재물에 관해 꼭 기억하셔야 할 것이 있습니다. ${name}님이 돈을 버는 가장 강력한 방식은 화려한 한탕이 아닙니다. 한 사람 한 사람에게 쌓아온 신뢰가 결국 자산이 됩니다. 빠른 돈벌이를 좇아 이직을 반복하거나 충동적 투자에 뛰어드는 시기가 오면, 그때가 오히려 가장 위험한 순간입니다. 지금 있는 자리에서 신뢰를 쌓으십시오. 그것이 10년 후 가장 큰 자산이 됩니다.`
                     : `${name}님, 재물과 관련해서 반복되는 위험한 패턴이 있습니다. 가까운 사람에 의해 돈이 새거나 막히는 상황이 생깁니다. 이것을 막는 방법은 하나입니다 — 돈이 오고 가는 모든 관계에 계약서와 문서를 남기십시오. 감정이 있는 관계일수록 더 철저히 해야 합니다.`,
-                '편재격': isSeong
+                `편재격`: isSeong
                     ? `${name}님에게 고정 월급만으로 사는 삶은 답답할 수 있습니다. 사람과 사람 사이에서 기회를 만들어내고, 아이디어가 돈이 되는 방식이 이 사주에 맞는 구조입니다. 큰 판을 벌이는 것을 겁내지 마십시오. 단, 한 번에 모든 것을 거는 도박은 피하십시오. 여러 판을 동시에 벌이는 것이 전략입니다.`
                     : `${name}님은 재물을 크게 다루는 감각이 있지만, 한 번의 판단 실수로 크게 잃는 리스크가 함께 옵니다. 큰 투자 전에 반드시 안전장치를 먼저 만드십시오. 잃어도 다시 시작할 수 있는 구조를 유지하는 것이 최우선입니다.`,
-                '정관격': isSeong
+                `정관격`: isSeong
                     ? `${name}님이 사회에서 인정받는 방식은 분명합니다. 원칙을 지키고, 약속을 지키고, 자리에서 흔들리지 않는 것이 쌓이면 조직과 사람들이 먼저 당신을 찾아옵니다. 조급해하지 마십시오. 꾸준히 쌓는 사람이 결국 가장 높은 곳에 올라가는 구조입니다.`
                     : `${name}님, 한 가지만 기억하십시오. 명예와 사회적 위치는 말 한마디, 행동 하나에 달려 있습니다. 감정이 격해지는 순간의 발언, 원칙을 조금만 어겨도 괜찮겠지라는 생각이 한순간에 모든 것을 무너뜨립니다. 평소에 지킨 원칙이 위기 때 당신을 지킵니다.`,
-                '편관격': isSeong
+                `편관격`: isSeong
                     ? `${name}님의 진짜 능력은 편한 환경에서 나오지 않습니다. 역경이 클수록, 경쟁이 치열할수록 더 강해지는 것이 이 사주의 특징입니다. 지금 힘들다면 — 그것은 당신이 맞는 자리에 있다는 신호일 수 있습니다. 버텨내는 것 자체가 당신의 무기입니다.`
                     : `${name}님에게 반드시 필요한 것이 있습니다 — 충동을 제어하는 구조. 강한 추진력이 방향 없이 폭발하면 사고, 갈등, 법적 문제로 이어질 수 있습니다. 당신을 냉정하게 붙잡아줄 수 있는 멘토나 파트너를 반드시 옆에 두십시오.`,
-                '식신격': isSeong
+                `식신격`: isSeong
                     ? `${name}님, 좋아하는 일을 계속 파고드십시오. 재능과 수입이 연결되는 구조입니다. 예술, 요리, 교육, 기획, 창작 — 형태는 무엇이든 자신이 잘하고 즐기는 것을 업으로 삼으면 돈이 따라옵니다. 빠른 수익보다 재능의 깊이를 먼저 쌓으십시오.`
                     : `${name}님, 재능이 있어도 알리지 않으면 없는 것과 같습니다. 지금 당신에게 부족한 것은 능력이 아니라 알리는 방법입니다. 당신이 잘하는 것을 세상에 보여주는 방법을 찾는 것이 지금 가장 시급한 과제입니다.`,
-                '상관격': isSeong
+                `상관격`: isSeong
                     ? `${name}님의 가장 강력한 무기는 말과 생각입니다. 남들이 당연하다고 받아들이는 것에 "왜?"라고 묻는 능력이 당신을 차별화합니다. 조직 안에서 답답함을 느낀다면 독립적인 환경을 찾으십시오. 비판적 사고가 제약 없이 펼쳐질 때 가장 빛납니다.`
                     : `${name}님, 솔직히 말씀드립니다. 당신의 말이 때로 가장 중요한 관계를 끊습니다. 틀린 말이 아닐 수 있습니다. 그러나 맞는 말을 잘못된 방식으로 하면 결과는 같습니다. 말하기 전에 1초만 더 생각하십시오. 그 1초가 인생을 바꿉니다.`,
-                '편인격': isSeong
+                `편인격`: isSeong
                     ? `${name}님은 남들이 가지 않은 길에서 나만의 전문성을 만들어내는 사람입니다. 기존의 방식을 답습하지 마십시오. 독창적으로 파고든 분야에서 타의 추종을 불허하는 깊이가 만들어집니다. 고독하더라도 그 길을 가십시오. 그것이 당신만의 권위가 됩니다.`
                     : `${name}님의 전문성이 다른 사람에 의해 가로막히는 패턴이 반복될 수 있습니다. 내가 쌓아온 것을 지키는 것이 먼저입니다. 지식재산권, 계약 문서, 독립적 활동 환경을 반드시 챙기십시오.`,
-                '정인격': isSeong
+                `정인격`: isSeong
                     ? `${name}님은 배울수록 가치가 올라가는 사주입니다. 지금 당장의 돈보다 자격증, 학위, 공인된 전문성을 쌓는 것이 장기적으로 훨씬 더 큰 수입을 만들어냅니다. 배움을 멈추지 마십시오. 노력이 배신하지 않는 구조입니다.`
                     : `${name}님, 배움에 대한 열망이 강한데 결실로 이어지지 않는 경험이 있으실 것입니다. 조심해야 할 것: 스승을 잘못 만나면 시간과 돈을 동시에 잃습니다. 검증되지 않은 교육 투자를 서두르지 마십시오.`,
-                '비겁격': isSeong
+                `비겁격`: isSeong
                     ? `${name}님, 조직 안에서 답답함을 느끼는 것은 당연합니다. 통제받는 환경보다 스스로 판을 벌이는 환경에서 진가가 나오는 사주입니다. 사업, 프리랜서, 전문직 — 방향은 달라도 독립이 핵심입니다. 언제 독립할 것인지를 항상 준비하십시오.`
                     : `${name}님, 혼자 다 하려 하지 마십시오. 강한 자아가 오히려 더 큰 성과를 막고 있을 수 있습니다. 당신이 못하는 것을 잘하는 사람을 파트너로 두는 것이 지금 가장 필요한 전략입니다.`
             };
-            ggNarr = '\n\n' + (GG_NARR[gg.geokName] || '');
+            ggNarr = `\n\n' + (GG_NARR[gg.geokName] || '');
         }
 
         if(johuNarr || ggNarr) {
@@ -3448,7 +3448,7 @@ ${name}님은 ${seasonKr}에 태어났습니다. 이 계절의 기운이 사주 
             '申':'이동과 변화','酉':'전문성과 완성','戌':'철학과 신앙','亥':'지혜와 내면'
         };
         const pillarAreas = gongmangPillars.map(p => (PILLAR_DESC[p.n]||p.n)).join('·');
-        const branchMeanings = gongmangBranches.map(b => (BRANCH_MEANING[b]||b)).join('·');
+        const branchMeanings = gongmangBranches.map(b => (BRANCH_MEANING[b]||b)).join('·`);
         return \`<div style="background:rgba(231,76,60,0.06);border-left:3px solid rgba(231,76,60,0.4);padding:14px 18px;border-radius:0 10px 10px 0;margin-top:16px;">
             <div style="font-size:11px;color:#e74c3c;margin-bottom:8px;font-weight:700;letter-spacing:1px;">⚠ 공망 — \${gmBranchNames}</div>
             <p style="font-size:13px;color:#ddd;line-height:1.85;margin:0;">\${name}님의 <b>\${gmPillarNames}</b>에 공망이 걸려 있습니다. <b>\${pillarAreas}</b> 영역에서 \${branchMeanings}에 대한 갈망이 반복될 수 있습니다. 이 기운이 강하게 들어오는 대운·세운에서 중요한 결정을 서두르지 마십시오.</p>
@@ -3459,10 +3459,10 @@ ${name}님은 ${seasonKr}에 태어났습니다. 이 계절의 기운이 사주 
     const mPillar = pillars[2] || {};
     const dPillar = pillars[1] || {};
     const hPillar = pillars[0] || {};
-    const yH = yPillar.h ? (typeof yPillar.h==='string' ? yPillar.h : yPillar.h.join('')) : '';
+    const yH = yPillar.h ? (typeof yPillar.h===`string' ? yPillar.h : yPillar.h.join('')) : '';
     const mH = mPillar.h ? (typeof mPillar.h==='string' ? mPillar.h : mPillar.h.join('')) : '';
     const dH = dPillar.h ? (typeof dPillar.h==='string' ? dPillar.h : dPillar.h.join('')) : '';
-    const hH = hPillar.h ? (typeof hPillar.h==='string' ? hPillar.h : hPillar.h.join('')) : '';
+    const hH = hPillar.h ? (typeof hPillar.h==='string' ? hPillar.h : hPillar.h.join('')) : '`;
 
     return `<div class="report-chapter chapter-start">
         <h3 class="ch-title">Chapter 1. 사주 원국 — ${name}님의 인생 흐름</h3>
@@ -3470,7 +3470,7 @@ ${name}님은 ${seasonKr}에 태어났습니다. 이 계절의 기운이 사주 
 
         <div style="background:rgba(199,167,106,0.07);border-left:4px solid var(--gold);padding:20px 22px;border-radius:0 12px 12px 0;margin:24px 0;">
             <div style="font-size:11px;color:var(--text-dim);margin-bottom:12px;letter-spacing:2px;">✦ ${name}님의 사주 — 종합 통변</div>
-            ${lifeNarr.split('\n\n').map((para,i) => {
+            ${lifeNarr.split(`\n\n').map((para,i) => {
                 if(!para.trim()) return '';
                 const isHeader = para.startsWith('💼') || para.startsWith('❤') || para.startsWith('🌡') || para.startsWith('🏛');
                 if(isHeader) {
@@ -3520,7 +3520,7 @@ function buildChapter2_Wuxing(data) {
         const col = isMax ? 'var(--gold)' : isMin ? '#666' : '#aaa';
         const ohChar = {wood:'木',fire:'火',earth:'土',metal:'金',water:'水'}[k]||k;
         return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;"><div style="width:44px;text-align:right;font-size:13px;color:${col};">${ohChar} ${OHKR2[k]}</div><div style="flex:1;background:rgba(255,255,255,0.07);border-radius:4px;height:8px;overflow:hidden;"><div style="width:${Math.min(pct,100)}%;height:100%;background:${col};border-radius:4px;"></div></div><div style="width:36px;font-size:13px;color:${col};">${pct}%</div></div>`;
-    }).join('');
+    }).join('`);
     return `<div class="report-chapter">
         <h3 class="ch-title">Chapter 2. 오행의 세력 — 절대적 무기와 아킬레스건</h3>
         <div style="background:rgba(199,167,106,0.06);border-radius:10px;padding:14px 18px;margin-bottom:16px;border-left:3px solid var(--gold);">
@@ -3538,26 +3538,26 @@ function buildChapter2_Wuxing(data) {
         <div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:22px;margin:24px 0;">
             <div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:18px;letter-spacing:1px;">&#9670; ${name}님이 가장 주의해야 할 건강 신호</div>
             ${(()=>{
-                const MAX_OH = data.wuxing ? Object.entries(data.wuxing).sort((a,b)=>b[1]-a[1])[0]?.[0] : (dayOh||'fire');
+                const MAX_OH = data.wuxing ? Object.entries(data.wuxing).sort((a,b)=>b[1]-a[1])[0]?.[0] : (dayOh||`fire');
                 const MIN_OH = data.wuxing ? Object.entries(data.wuxing).sort((a,b)=>a[1]-b[1])[0]?.[0] : 'metal';
                 const HEALTH_DESC = {
-                    wood: { col:'#4fc3a1', title:'간·담낭·신경계',
+                    wood: { col:'#4fc3a1', title:'간·담낭·신경계`,
                         strong:`${name}님의 사주에는 목(나무) 기운이 강하게 집중되어 있습니다. 이 기운이 넘칠 때 몸이 가장 먼저 보내는 신호가 있습니다 — 눈의 피로, 편두통, 근육 경련, 그리고 이유 없는 분노감입니다. 특히 봄(3~5월)과 스트레스가 극심한 시기에 이 증상이 몰려옵니다. 술을 조심하십시오. 간이 가장 먼저 과부하를 받습니다. 레몬·매실·녹색 채소를 자주 드시고, 자정 전 취침을 지키십시오. 분노와 억울함을 내면에 쌓아두지 말고 운동이나 표현으로 풀어내는 루틴을 만드십시오.`,
                         weak:`${name}님의 사주에서 목(나무) 기운이 약하게 자리잡고 있습니다. 이 경우 몸에서 나타나는 신호는 만성 피로, 결단력 저하, 무기력감입니다. 간과 신경계를 꾸준히 챙겨야 합니다. 규칙적인 수면과 기상 시간을 지키는 것이 가장 중요합니다. 봄 제철 채소를 충분히 섭취하고, 스트레칭과 가벼운 유산소를 꾸준히 하십시오.`
                     },
-                    fire: { col:'#ff7043', title:'심장·심혈관·수면',
+                    fire: { col:`#ff7043', title:'심장·심혈관·수면`,
                         strong:`${name}님의 사주에는 화(불) 기운이 강하게 집중되어 있습니다. 이 기운이 넘칠 때 가장 먼저 심장과 혈관이 신호를 보냅니다 — 가슴 두근거림, 불면증, 안면홍조, 그리고 감정의 급격한 기복입니다. 여름(6~8월)에 이 증상이 심화됩니다. 카페인과 에너지드링크를 멀리하십시오. 취침 전 2시간은 자극적인 콘텐츠를 피하고, 혈압을 정기적으로 체크하는 습관을 들이십시오. 명상이나 심호흡이 이 사주에 가장 좋은 건강 습관입니다.`,
                         weak:`${name}님의 사주에서 화(불) 기운이 약합니다. 열정이 쉽게 꺼지고, 순환이 잘 안 되며, 손발이 차가운 증상이 나타날 수 있습니다. 적당한 유산소 운동으로 심폐 기능을 꾸준히 키우십시오. 따뜻한 음식을 챙기고, 혼자 있는 시간보다 사람들과 어울리는 시간이 이 사주의 건강 에너지를 충전합니다.`
                     },
-                    earth: { col:'#ffca28', title:'위장·소화기·면역',
+                    earth: { col:`#ffca28', title:'위장·소화기·면역`,
                         strong:`${name}님의 사주에는 토(흙) 기운이 강하게 집중되어 있습니다. 이 기운이 넘칠 때 위장과 소화기에 신호가 옵니다 — 위염, 역류성 식도염, 소화불량, 그리고 과도한 걱정과 생각으로 인한 식욕 저하입니다. 스트레스가 쌓이면 먹는 것으로 푸는 패턴도 조심해야 합니다. 규칙적인 식사 시간을 지키는 것이 첫 번째 건강 습관입니다. 야식과 폭식을 피하고, 식후 30분 산책을 생활화하십시오.`,
                         weak:`${name}님의 사주에서 토(흙) 기운이 약합니다. 면역력이 쉽게 떨어지고 피로 회복이 느린 경향이 있습니다. 규칙적인 생활 리듬이 이 사주의 건강을 지키는 가장 강력한 방패입니다. 고구마·대추·단호박 등 자연 단맛 식품을 챙기십시오.`
                     },
-                    metal: { col:'#b0bec5', title:'폐·호흡기·피부',
+                    metal: { col:`#b0bec5', title:'폐·호흡기·피부`,
                         strong:`${name}님의 사주에는 금(쇠) 기운이 강하게 집중되어 있습니다. 이 기운이 넘칠 때 폐와 호흡기에 신호가 옵니다 — 기침, 피부 트러블, 변비, 그리고 슬픔이나 우울감이 신체 증상으로 나타납니다. 가을(9~11월)에 이 증상이 집중됩니다. 미세먼지 심한 날 마스크는 필수입니다. 수영이나 유산소 운동으로 폐활량을 키우고, 감정을 억누르지 말고 표현하는 것이 폐 건강에 직결됩니다.`,
                         weak:`${name}님의 사주에서 금(쇠) 기운이 약합니다. 결단력이 흔들리고 호흡기 감염에 취약한 경향이 있습니다. 도라지·무·배 등 호흡기를 강화하는 음식을 자주 드시고, 심호흡 운동을 꾸준히 하십시오.`
                     },
-                    water: { col:'#64b5f6', title:'신장·호르몬·체력',
+                    water: { col:`#64b5f6', title:'신장·호르몬·체력`,
                         strong:`${name}님의 사주에는 수(물) 기운이 강하게 집중되어 있습니다. 이 기운이 넘칠 때 신장과 호르몬 시스템에 신호가 옵니다 — 허리 통증, 부종, 탈모, 그리고 만성 피로와 두려움이 신체 증상으로 나타납니다. 겨울(12~2월)에 이 증상이 심화됩니다. 하루 수면 7시간 이상을 철저히 지키고, 물 2L 이상 섭취를 습관화하십시오. 검은콩·흑임자·미역을 꾸준히 드십시오.`,
                         weak:`${name}님의 사주에서 수(물) 기운이 약합니다. 체력 저하와 집중력 감소가 쉽게 나타날 수 있습니다. 충분한 수분 섭취와 규칙적인 수면이 이 사주의 건강을 지키는 핵심입니다. 두려움과 불안이 신체로 연결되지 않도록 명상이나 일기 쓰기로 감정을 정리하십시오.`
                     }
@@ -3566,7 +3566,7 @@ function buildChapter2_Wuxing(data) {
                 const minData = HEALTH_DESC[MIN_OH];
                 const isStrong2 = (data.strengthText||"").includes("신강") || (data.strengthText||"").includes("강");
                 const mainTxt = isStrong2 ? maxData.strong : maxData.weak;
-                let html = '<div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:16px;border-left:3px solid '+maxData.col+';">';
+                let html = `<div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:16px;border-left:3px solid '+maxData.col+';">';
                 html += '<div style="font-size:12px;font-weight:700;color:'+maxData.col+';margin-bottom:8px;">⚠ 우선 챙겨야 할 건강 영역 — '+maxData.title+'</div>';
                 html += '<p style="font-size:13px;color:#ccc;line-height:1.85;margin:0;">'+mainTxt+'</p>';
                 html += '</div>';
@@ -3687,11 +3687,11 @@ function buildChapter4_Wealth(data) {
     const hasJae = jaeC/total > 0.15;
     const wealthType = hasJae ? 'active' : 'passive';
 
-    const wealthDesc = wealthType === 'active'
+    const wealthDesc = wealthType === 'active`
         ? `${name}님은 돈을 직접 움직이는 구조입니다. 사업, 투자, 영업처럼 내가 직접 움직일수록 수입이 커지는 방식이 맞습니다. 고정 월급보다 성과 기반 보상 구조에서 더 강합니다.`
         : `${name}님은 전문성과 신뢰가 쌓일수록 돈이 따라오는 구조입니다. 화려한 한탕보다 한 사람 한 사람에게 신뢰를 쌓아가는 방식이 장기적으로 더 강력한 재물 흐름을 만듭니다.`;
 
-    const wealthCaution = wealthType === 'active'
+    const wealthCaution = wealthType === `active'
         ? `큰 수익을 향해 달리다가 한 번의 실수로 모든 것을 잃는 패턴을 가장 조심하십시오. 분산투자와 리스크 관리가 필수입니다.`
         : `돈을 직접 쫓기보다 나의 가치를 높이는 데 집중하십시오. 가치가 올라가면 돈은 자연스럽게 따라옵니다.`;
 
@@ -3727,7 +3727,7 @@ function buildChapter4_Wealth(data) {
             </div>
             <p style="font-size:12.5px;color:#bbb;margin:0;line-height:1.75;">${txt}</p>
         </div>`;
-    }).join('');
+    }).join('`);
 
     return `<div class="report-chapter">
         <h3 class="ch-title">Chapter 4. 재물운 — 언제, 어떻게 돈이 들어오는가</h3>
@@ -3742,7 +3742,7 @@ function buildChapter4_Wealth(data) {
         <div style="background:rgba(199,167,106,0.05);border-radius:12px;padding:20px;margin:20px 0;border:1px solid rgba(199,167,106,0.15);">
             <div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:16px;letter-spacing:1px;">💰 대운별 재물 흐름 — ${name}님의 인생 재물 타임라인</div>
             <p style="font-size:12.5px;color:#aaa;line-height:1.8;margin:0 0 14px;">10년 단위 대운에서 재물이 어떻게 변화하는지 보여줍니다. 용신 대운에 재물 기회를 잡고, 기신 대운에 지키는 전략을 쓰십시오.</p>
-            ${daewunRows || '<p style="color:#666;font-size:12px;">대운 데이터가 없습니다.</p>'}
+            ${daewunRows || `<p style="color:#666;font-size:12px;">대운 데이터가 없습니다.</p>'}
         </div>
 
         <div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:20px;margin:20px 0;">
@@ -4996,9 +4996,9 @@ function buildCoverPage(data) {
         <div class="cover-hanja" style="font-family:'Noto Serif KR',serif;font-size:80px;font-weight:800;color:var(--gold);letter-spacing:24px;margin:8px 0;line-height:1;">${iljuKey}</div>
         <div style="font-size:16px;color:rgba(199,167,106,0.7);margin-bottom:4px;letter-spacing:2px;">${iljuTitle}${animal ? '  ·  일지 ' + animal : ''}</div>
         <div style="width:100px;height:1px;background:var(--gold);margin:28px auto;opacity:0.4;"></div>
-        <div class="cover-title" style="font-family:'Noto Serif KR',serif;font-size:36px;font-weight:700;color:#fff;margin-bottom:12px;line-height:1.4;">${name}</div>
+        <div class="cover-title" style="font-family:'Noto Serif KR`,serif;font-size:36px;font-weight:700;color:#fff;margin-bottom:12px;line-height:1.4;">${name}</div>
         <div style="font-size:14px;color:#aaa;margin-bottom:6px;">${birthStr}</div>
-        ${data.strengthText ? `<div style="display:inline-block;font-size:12px;color:rgba(199,167,106,0.7);background:rgba(199,167,106,0.08);padding:4px 16px;border-radius:20px;margin:4px 4px;">${data.strengthText}</div>` : ''}
+        ${data.strengthText ? `<div style="display:inline-block;font-size:12px;color:rgba(199,167,106,0.7);background:rgba(199,167,106,0.08);padding:4px 16px;border-radius:20px;margin:4px 4px;">${data.strengthText}</div>` : `'}
         ${yongKr ? `<div style="display:inline-block;font-size:12px;color:#4a9e6a;background:rgba(74,158,106,0.08);padding:4px 16px;border-radius:20px;margin:4px 4px;">용신 ${yongKr}</div>` : ''}
         ${giKr ? `<div style="display:inline-block;font-size:12px;color:#e74c3c;background:rgba(231,76,60,0.06);padding:4px 16px;border-radius:20px;margin:4px 4px;">기신 ${giKr}</div>` : ''}
         <div style="width:100px;height:1px;background:rgba(255,255,255,0.08);margin:32px auto;"></div>
@@ -7413,8 +7413,8 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
             var sc={}; sc[yong]=2;sc[hee]=1;sc[gi]=-2;sc[goo]=-1;
             function gs(g,j){return (sc[OH[g]]||0)+(sc[JO[j]]||0);}
             function gc(s){return s>=3?'#c7a76a':s>=1?'#00C853':s===0?'#888':s>=-2?'#ff9800':'#e74c3c';}
-            function gb(s){return s>=3?'🌟 대길':s>=1?'✦ 길':s===0?'— 평':s>=-2?'⚠ 주의':'❌ 흉';}
-            var h2='<div class="report-chapter"><h3 class="ch-title">대운 80년 — 10년 단위 완전 해부</h3><p class="ch-text">${name}님의 대운 흐름 — 각 10년 구간별 기회와 조심 시기를 아래에서 확인하십시오.</p>';
+            function gb(s){return s>=3?'🌟 대길':s>=1?'✦ 길':s===0?'— 평':s>=-2?'⚠ 주의':'❌ 흉`;}
+            var h2=`<div class="report-chapter"><h3 class="ch-title">대운 80년 — 10년 단위 완전 해부</h3><p class="ch-text">${name}님의 대운 흐름 — 각 10년 구간별 기회와 조심 시기를 아래에서 확인하십시오.</p>`;
             daeunData.forEach(function(dy,idx){
                 var gz=dy.getGanZhi();var g=gz[0];var j=gz[1];
                 var age=dy.getStartAge()-1;
@@ -7423,7 +7423,7 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
                 var _startYr=_birthY+age-1;var _endYr=_birthY+endAge-2;
                 var s=gs(g,j);var isCur=idx===activeDaeunIdx;var col=gc(s);
                 var strat=s>=2
-                    ?'이 대운은 용신·희신 기운이 강하게 작동하는 인생 최고의 황금기입니다. 당신이 오랫동안 준비해온 모든 것을 세상에 내놓을 타이밍입니다. 사업을 시작하거나 규모를 키우고, 새로운 직장·직위에 도전하고, 중요한 계약과 파트너십을 맺기에 이보다 좋은 시기가 없습니다. 재물: 적극적인 투자와 신규 수입 창출이 실현됩니다. 투자를 두려워하지 마십시오. 직업: 이직·창업·승진 모두 길한 시기로, 더 큰 무대를 향해 발을 내딛을 때입니다. 건강: 전반적으로 활력이 넘치지만, 과욕으로 인한 과부하를 주의하십시오. 애정: 인연이 열리는 시기로, 적극적으로 사람들을 만나십시오. 이런 황금 대운은 평생 두세 번밖에 오지 않습니다. 지금 이 기운을 최대한 활용하십시오.'
+                    ?`이 대운은 용신·희신 기운이 강하게 작동하는 인생 최고의 황금기입니다. 당신이 오랫동안 준비해온 모든 것을 세상에 내놓을 타이밍입니다. 사업을 시작하거나 규모를 키우고, 새로운 직장·직위에 도전하고, 중요한 계약과 파트너십을 맺기에 이보다 좋은 시기가 없습니다. 재물: 적극적인 투자와 신규 수입 창출이 실현됩니다. 투자를 두려워하지 마십시오. 직업: 이직·창업·승진 모두 길한 시기로, 더 큰 무대를 향해 발을 내딛을 때입니다. 건강: 전반적으로 활력이 넘치지만, 과욕으로 인한 과부하를 주의하십시오. 애정: 인연이 열리는 시기로, 적극적으로 사람들을 만나십시오. 이런 황금 대운은 평생 두세 번밖에 오지 않습니다. 지금 이 기운을 최대한 활용하십시오.'
                     :s>=0
                     ?'이 대운은 큰 기복 없이 안정적으로 흐르는 수평 이동의 시기입니다. 폭발적 도약보다는 기반을 다지고 내실을 강화하는 데 집중해야 합니다. 지금 당장 눈에 보이는 결과가 없더라도, 이 기간에 쌓은 실력과 인맥이 다음 대운에서 폭발적 결과로 이어집니다. 재물: 투기보다 꾸준한 저축과 자산 관리가 유리합니다. 직업: 현재 위치에서 전문성을 높이고 신뢰를 쌓는 시기입니다. 건강: 균형 잡힌 루틴을 유지하고 체력 관리에 신경 쓰십시오. 애정: 화려한 인연보다 깊은 신뢰 관계를 쌓을 시기입니다. 급하지 않게, 하지만 멈추지도 않게.'
                     :'이 대운은 기신·구신 기운이 강하게 작동하는 시기입니다. 그러나 이것은 실패가 아니라 준비의 시간입니다. 세상 모든 성공한 사람들은 반드시 이런 저조기를 거쳤습니다. 무리한 확장·투자·새 출발은 자제하고, 수비와 내실 강화에 올인하십시오. 재물: 신규 투자는 최소화하고, 기존 자산을 지키는 것이 최우선입니다. 불필요한 지출을 줄이고 비상금을 확보하십시오. 직업: 가능하면 현 위치를 유지하고, 이직이나 창업은 다음 대운으로 미루는 것이 현명합니다. 건강: 이 시기에 건강 신호를 무시하면 나중에 크게 불거집니다. 정기 검진과 충분한 휴식이 필수입니다. 애정: 갈등이 쉽게 생기는 시기이니 상대방을 배려하고 소통을 강화하십시오. 이 시기를 내공 쌓기로 채운 사람이 다음 황금 대운에서 가장 크게 도약한다는 사실을 기억하십시오.';
