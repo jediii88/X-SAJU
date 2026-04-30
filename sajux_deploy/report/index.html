@@ -48,7 +48,7 @@
       });
     })();
     </script>
-    <meta name="version" content="1777536990">
+    <meta name="version" content="1777537208">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -7145,7 +7145,8 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
             activeDaeunIdx: activeDaeunIdx,
             // buildChapter8_NextDaewun용 daewunList
             daewunList: (daeunForReport||[]).map(function(r){
-                return {name: (r.gan||'')+(r.ji||''), age: r.startAge||0, oh: r.oh||'earth'};
+                var _GA={'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
+                return {name: r.name||'', age: r.age||0, oh: _GA[r.gz&&r.gz[0]]||'earth'};
             }),
             birthDate: y+'-'+String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0'),
             interactions: buildRelationLines(pillars).filter(r => r.type !== '없음'),
