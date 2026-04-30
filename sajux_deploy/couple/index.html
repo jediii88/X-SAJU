@@ -526,16 +526,62 @@ function renderPersonCard(prefix, info, saju) {
   iljuEl.innerHTML = `<span class="${HAN_COLOR[ds]}">${ds}</span><span class="${HAN_COLOR[db]}">${db}</span> <span style="font-size:13px;color:var(--text-dim);">${HAN_KOR[ds]}${HAN_KOR[db]}</span>`;
   metaEl.innerHTML  = `${saju.solarYear}년생 · ${info.gender==='male'?'남':'여'} · ${saju.strength}`;
 
+  // 원국 8자 만세력 표
   const order  = [3,2,1,0];
-  const labels = ['년','월','일','시'];
-  pillarsEl.innerHTML = order.map((i,li) => {
-    const p = saju.pillars[i];
-    return `<div class="pillar-chip">
-      <div class="pn">${labels[li]}</div>
-      <div class="pg ${HAN_COLOR[p.h[0]]}">${p.h[0]}</div>
-      <div class="pj ${HAN_COLOR[p.h[1]]}">${p.h[1]}</div>
-    </div>`;
-  }).join('');
+  const labels = ['년주','월주','일주','시주'];
+  const SIPSEONG_MAP = (function(){
+    const map = {'비견':'비견','겁재':'겁재','식신':'식신','상관':'상관','편재':'편재','정재':'정재','편관':'편관','정관':'정관','편인':'편인','정인':'정인'};
+    return map;
+  })();
+  function getSS(dayStem, targetStem) {
+    if(targetStem === dayStem) return '비견';
+    const SS_TABLE = {
+      '甲':{'甲':'비견','乙':'겁재','丙':'식신','丁':'상관','戊':'편재','己':'정재','庚':'편관','辛':'정관','壬':'편인','癸':'정인'},
+      '乙':{'甲':'겁재','乙':'비견','丙':'상관','丁':'식신','戊':'정재','己':'편재','庚':'정관','辛':'편관','壬':'정인','癸':'편인'},
+      '丙':{'甲':'편인','乙':'정인','丙':'비견','丁':'겁재','戊':'식신','己':'상관','庚':'편재','辛':'정재','壬':'편관','癸':'정관'},
+      '丁':{'甲':'정인','乙':'편인','丙':'겁재','丁':'비견','戊':'상관','己':'식신','庚':'정재','辛':'편재','壬':'정관','癸':'편관'},
+      '戊':{'甲':'편관','乙':'정관','丙':'편인','丁':'정인','戊':'비견','己':'겁재','庚':'식신','辛':'상관','壬':'편재','癸':'정재'},
+      '己':{'甲':'정관','乙':'편관','丙':'정인','丁':'편인','戊':'겁재','己':'비견','庚':'상관','辛':'식신','壬':'정재','癸':'편재'},
+      '庚':{'甲':'편재','乙':'정재','丙':'정관','丁':'편관','戊':'편인','己':'정인','庚':'비견','辛':'겁재','壬':'식신','癸':'상관'},
+      '辛':{'甲':'정재','乙':'편재','丙':'편관','丁':'정관','戊':'정인','己':'편인','庚':'겁재','辛':'비견','壬':'상관','癸':'식신'},
+      '壬':{'甲':'식신','乙':'상관','丙':'편재','丁':'정재','戊':'편관','己':'정관','庚':'편인','辛':'정인','壬':'비견','癸':'겁재'},
+      '癸':{'甲':'상관','乙':'식신','丙':'정재','丁':'편재','戊':'정관','己':'편관','庚':'정인','辛':'편인','壬':'겁재','癸':'비견'}
+    };
+    return (SS_TABLE[dayStem] && SS_TABLE[dayStem][targetStem]) || '';
+  }
+  const KOR_MAP = {'甲':'갑','乙':'을','丙':'병','丁':'정','戊':'무','己':'기','庚':'경','辛':'신','壬':'임','癸':'계','子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해'};
+
+  pillarsEl.innerHTML = `
+    <table style="width:100%;border-collapse:collapse;margin-top:6px;font-size:11px;">
+      <tr style="border-bottom:1px solid rgba(199,167,106,0.2);">
+        <td style="padding:3px 2px;color:#555;font-size:9px;width:36px;"></td>
+        ${order.map((i,li)=>`<td style="text-align:center;padding:3px 4px;color:var(--gold);font-size:9px;font-weight:700;">${labels[li]}</td>`).join('')}
+      </tr>
+      <tr style="border-bottom:1px solid rgba(255,255,255,0.03);">
+        <td style="color:#555;font-size:9px;padding:3px 2px;">십성</td>
+        ${order.map((i,li)=>{
+          const p = saju.pillars[i];
+          const ss = li===2 ? '일원' : getSS(ds, p.h[0]);
+          return `<td style="text-align:center;padding:2px 3px;"><span style="font-size:9px;background:rgba(199,167,106,0.08);color:#aaa;padding:1px 4px;border-radius:6px;">${ss}</span></td>`;
+        }).join('')}
+      </tr>
+      <tr style="border-bottom:1px solid rgba(255,255,255,0.03);">
+        <td style="color:#555;font-size:9px;padding:3px 2px;">천간</td>
+        ${order.map((i,li)=>{
+          const p = saju.pillars[i];
+          const col = HAN_COLOR[p.h[0]]||'';
+          return `<td style="text-align:center;padding:4px 2px;"><span class="${col}" style="font-size:18px;font-weight:900;">${p.h[0]}</span><br><span style="font-size:8px;color:#555;">${KOR_MAP[p.h[0]]||''}</span></td>`;
+        }).join('')}
+      </tr>
+      <tr>
+        <td style="color:#555;font-size:9px;padding:3px 2px;">지지</td>
+        ${order.map((i,li)=>{
+          const p = saju.pillars[i];
+          const col = HAN_COLOR[p.h[1]]||'';
+          return `<td style="text-align:center;padding:4px 2px;"><span class="${col}" style="font-size:18px;font-weight:900;">${p.h[1]}</span><br><span style="font-size:8px;color:#555;">${KOR_MAP[p.h[1]]||''}</span></td>`;
+        }).join('')}
+      </tr>
+    </table>`;
 
   const ohKeys = [{k:'wood',l:'목'},{k:'fire',l:'화'},{k:'earth',l:'토'},{k:'metal',l:'금'},{k:'water',l:'수'}];
   ohaengEl.innerHTML = ohKeys.map(o => {
@@ -544,7 +590,7 @@ function renderPersonCard(prefix, info, saju) {
     return `<div class="ohaeng-row">
       <span class="ol ${o.k}">${o.l}</span>
       <div class="ot"><div class="of bg-${o.k}" style="width:${pct}%;"></div></div>
-      <span class="ov">${v}</span>
+      <span class="ov">${pct}%</span>
     </div>`;
   }).join('');
 }
