@@ -48,7 +48,7 @@
       });
     })();
     </script>
-    <meta name="version" content="1777563685">
+    <meta name="version" content="1777564235">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -4695,13 +4695,13 @@ function buildPart1_Story(data){
 
     // ── ⑤ 신살 목록 ──
     var shArr=Array.isArray(allShinsal)?allShinsal:Object.values(allShinsal).reduce(function(a,v){return a.concat(Array.isArray(v)?v:[]);},[]);
+    var GOOD_SHINSAL=['천을귀인','문곡귀인','학당귀인','천의성','복성귀인','태극귀인','암록','월덕귀인','천덕귀인','문창귀인','식신','정재','정인','정관'];
     if(shArr.length>0){
         html += '<div style="margin:24px 0 8px;font-size:10px;color:var(--gold);font-weight:700;letter-spacing:2px;">⑤ 타고난 특별 코드 — 신살 '+shArr.length+'개</div>';
         html += '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">';
         shArr.forEach(function(s){
-            var info=window.SHINSAL_DESC&&window.SHINSAL_DESC[s]?window.SHINSAL_DESC[s]:{cat:'신살',color:'#aaa'};
-            var isG=info.cat==='길성'; var col=isG?'var(--gold)':'#e74c3c';
-            html+='<span style="font-size:11px;padding:3px 10px;border-radius:10px;border:1px solid '+col+';color:'+col+';">'+s+(isG?' ✦':' ⚠')+'</span>';
+            var isG=GOOD_SHINSAL.indexOf(s)>=0; var col=isG?'var(--gold)':'#e74c3c';
+            html+='<span style="font-size:11px;padding:3px 10px;border-radius:10px;border:1px solid '+col+';color:'+col+';">'+s+(isG?' ✦':' ▲')+'</span>';
         });
         html += '</div>';
         var KEY={'천을귀인':'위기 때마다 귀인이 나타납니다.','역마살':'이동과 변화가 핵심 키워드입니다. 이동을 직업으로 만드십시오.','도화살':'사람을 끌어당기는 매력이 있습니다. 대인관계·마케팅에서 빛납니다.','화개살':'예술·철학에 깊은 관심. 혼자만의 시간에서 통찰이 나옵니다.','문곡귀인':'학문·지식 분야에서 남다른 재능. 글쓰기·강의·컨설팅이 강점입니다.','천의성':'의료·상담·치료 분야에서 천부적 재능이 있습니다.','학당귀인':'배울수록 가치가 올라가는 구조입니다. 전문성이 최고의 무기입니다.'};
@@ -4739,22 +4739,17 @@ function buildPart1_Story(data){
     html += '</div>';
 
     // ── ⑦ 인생 기승전결 ──
-    html += '<div style="margin:24px 0 8px;font-size:10px;color:var(--gold);font-weight:700;letter-spacing:2px;">⑦ 인생의 기승전결</div>';
+    html += '<div style="margin:32px 0 8px;font-size:10px;color:var(--gold);font-weight:700;letter-spacing:2px;border-top:1px solid rgba(199,167,106,0.2);padding-top:24px;">⑦ 인생의 기승전결 — 나이대별 흐름</div>';
     try {
-        var ch1=buildChapter1_Basic(data);
-        // ch1에서 lifeNarr 섹션만 (🕰 인생의 기승전결 단락)
-        var lifeIdx=ch1.indexOf('🕰');
-        if(lifeIdx>=0){
-            var lifeEnd=ch1.indexOf('</div>',lifeIdx+100);
-            if(lifeEnd>=0) html+=ch1.substring(lifeIdx,lifeEnd+6);
-            else html+=ch1;
-        } else {
-            // 전체 ch1 내용 중 report-chapter div 안 내용만
-            var inner=ch1.replace(/<div class="report-chapter[^>]*>/,'').replace(/<h3[^>]*>.*?<\/h3>/,'');
-            html+=inner.substring(0,Math.min(inner.length,3000));
-        }
+        var ch1Html=buildChapter1_Basic(data);
+        // report-chapter wrapper 제거하고 내용만
+        ch1Html=ch1Html.replace(/<div class="report-chapter[^"]*"[^>]*>/,'').replace(/<h3 class="ch-title">[^<]*<\/h3>/,'');
+        // 마지막 닫는 div 제거
+        var lastDiv=ch1Html.lastIndexOf('</div>');
+        if(lastDiv>0) ch1Html=ch1Html.substring(0,lastDiv);
+        html+=ch1Html;
     } catch(e){
-        html += '<p style="color:#888;font-size:12px;">인생 서사 로딩 중...</p>';
+        html += '<p style="color:#888;font-size:12px;">인생 서사 분석 중 오류: '+e.message+'</p>';
     }
 
     html += '</div>';
