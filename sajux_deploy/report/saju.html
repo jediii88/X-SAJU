@@ -48,7 +48,7 @@
       });
     })();
     </script>
-    <meta name="version" content="1777536287">
+    <meta name="version" content="1777536521">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -2204,18 +2204,17 @@ function generateDeepReport(data) {
 
 function injectSectionInterpretations(data) {
     function setEl(id, buildFn) {
-        // 각 섹션 독립적 에러 격리 — 하나 실패해도 나머지 계속
-        setTimeout(function(){
-            var el = document.getElementById(id);
-            if(!el) { console.warn('inject: #'+id+' not found'); return; }
-            try {
-                var result = buildFn();
-                if(result && result.trim()) el.innerHTML = result;
-            } catch(e) {
-                console.error('inject #'+id+' ERROR:', e.message);
-                el.innerHTML = '<div class="inline-interp"><div class="ii-text" style="color:#e74c3c;font-size:12px;">풀이 생성 오류: '+e.message+'</div></div>';
-            }
-        }, 0);
+        var el = document.getElementById(id);
+        if(!el) return;
+        try {
+            var result = buildFn();
+            if(result && result.trim()) el.innerHTML = result;
+            // 결과 없으면 div 숨김
+            else el.style.display = 'none';
+        } catch(e) {
+            console.error('inject #'+id+':', e.message);
+            el.style.display = 'none';  // 에러 시 섹션 숨김
+        }
     }
     // 1. 만세력 원국 아래
     setEl('manse-inline-summary', () => buildChapter1_Basic(data) + buildCurrentPeriodSummary(data) + buildMasterFullReading(data));
@@ -5313,27 +5312,27 @@ function startReport() {
         <div class="section" id="sec-relation">
             <div class="section-title"><div class="title-left"><span>합 · 충 · 형 · 파 · 해</span><span class="help-icon" onclick="openHelp('relation')">?</span></div><span>글자끼리의 충돌과 결합</span></div>
             <div class="rel-grid" id="relation-grid"></div>
-            <div id="relation-inline-summary" class="section-interp"><div class="inline-interp"><div class="ii-label">✦ 합·충·형·파·해 해석</div><div class="ii-title">분석 결과를 불러오는 중...</div><div class="ii-text"><p style="color:#666;">정보를 입력하고 분석하면 당신의 원국에 있는 합·충·형·파·해 관계가 이곳에 상세하게 표시됩니다.</p></div></div></div>
+            <div id="relation-inline-summary" class="section-interp"></div>
         </div>
 
         <div class="section" id="sec-shinsal">
             <div class="section-title"><div class="title-left"><span>신살 · 길성</span><span class="help-icon" onclick="openHelp('shinsal')">?</span></div><span>숨겨진 특수 기운</span></div>
             <div class="pill-grid" id="shinsal-grid"></div>
-            <div id="shinsal-inline-summary" class="section-interp"><div class="inline-interp"><div class="ii-label">✦ 신살·길성 분석</div><div class="ii-title">분석 결과를 불러오는 중...</div><div class="ii-text"><p style="color:#666;">정보를 입력하고 분석하면 당신의 신살과 길성이 이곳에 상세하게 표시됩니다.</p></div></div></div>
+            <div id="shinsal-inline-summary" class="section-interp"></div>
         </div>
 
         <div class="section" id="sec-wuxing">
             <div class="section-title"><div class="title-left"><span>오행 분포</span><span class="help-icon" onclick="openHelp('wuxing')">?</span></div><span>5가지 에너지 비율</span></div>
             <div id="wuxing-summary" style="font-size:12px;color:var(--text-soft);margin-bottom:12px;padding:8px 12px;background:#111;border-radius:8px;border-left:3px solid var(--gold);line-height:1.6;"></div>
             <div class="bar-group" id="wuxing-bars"></div>
-            <div id="wuxing-inline-summary" class="section-interp"><div class="inline-interp"><div class="ii-label">✦ 오행 분석</div><div class="ii-title">분석 결과를 불러오는 중...</div><div class="ii-text"><p style="color:#666;">정보를 입력하고 분석하면 당신의 오행 분포와 상세 해석이 이곳에 표시됩니다.</p></div></div></div>
+            <div id="wuxing-inline-summary" class="section-interp"></div>
         </div>
 
         <div class="section">
             <div class="section-title"><div class="title-left"><span>십성 분포</span><span class="help-icon" onclick="openHelp('sipseong')">?</span></div><span>사회적 역할과 관계 패턴</span></div>
             <div id="sipseong-summary" style="font-size:12px;color:var(--text-soft);margin-bottom:12px;padding:8px 12px;background:#111;border-radius:8px;border-left:3px solid #8a9bb5;line-height:1.6;"></div>
             <div class="bar-group" id="sipseong-bars"></div>
-            <div id="sipseong-inline-summary" class="section-interp"><div class="inline-interp"><div class="ii-label">✦ 십성 분석</div><div class="ii-title">분석 결과를 불러오는 중...</div><div class="ii-text"><p style="color:#666;">정보를 입력하고 분석하면 당신의 십성 분포와 사회적 페르소나 해석이 이곳에 표시됩니다.</p></div></div></div>
+            <div id="sipseong-inline-summary" class="section-interp"></div>
         </div>
 
 
@@ -5345,7 +5344,7 @@ function startReport() {
                 <div class="info-card"><div class="info-label">✦ 기신 — 나를 방해하는 기운</div><div class="info-value" id="gi-val">-</div></div>
                 <div class="info-card"><div class="info-label">✦ 구신 — 기신을 돕는 기운</div><div class="info-value" id="goo-val">-</div></div>
             </div>
-            <div id="yong-inline-summary" class="section-interp"><div class="inline-interp"><div class="ii-label">✦ 용신·희신·기신 해석</div><div class="ii-title">분석 결과를 불러오는 중...</div><div class="ii-text"><p style="color:#666;">정보를 입력하고 분석하면 당신의 용신·희신·기신이 이곳에 상세하게 표시됩니다.</p></div></div></div>
+            <div id="yong-inline-summary" class="section-interp"></div>
         </div>
 
                 <div class="section" id="sec-fortune">
@@ -5380,7 +5379,7 @@ function startReport() {
             </div>
         </div>
 
-        <div id="strength-inline-summary" style="margin:0 0 8px 0;"><div class="inline-interp"><div class="ii-label">✦ 신강·신약 해석</div><div class="ii-title">분석 결과를 불러오는 중...</div><div class="ii-text"><p style="color:#666;">정보를 입력하고 분석하면 신강·신약 상세 해석이 이곳에 표시됩니다.</p></div></div></div>
+        <div id="strength-inline-summary" style="margin:0 0 8px 0;"></div>
         <div class="section">
             <div class="section-title"><div class="title-left"><span>대운</span><span class="help-icon" onclick="openHelp('daeun')">?</span></div><span>10년 단위 운의 흐름</span></div>
             <div id="daeun-summary" style="font-size:12px;color:var(--text-soft);margin-bottom:12px;padding:8px 12px;background:#111;border-radius:8px;border-left:3px solid var(--gold);line-height:1.6;"></div>
