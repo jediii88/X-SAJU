@@ -48,7 +48,7 @@
       });
     })();
     </script>
-    <meta name="version" content="1777531834">
+    <meta name="version" content="1777536287">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -6335,23 +6335,10 @@ function runAnalysis(overrideParams) {
                 const HK2_GM = {'子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해'};
                 const gmHanja = gmStr ? [...gmStr].map(c => KR2HJ2[c]||c) : [];
                 const isGm = gmHanja.includes(p.h[1]);
-                // 공망 기준 표시: 공망 지지가 8자에 없으면 하단에 표기
-                const gmLabel = gmHanja.map(h => h+'('+( HK2_GM[h]||h)+')'  ).join('·');
-                return `<div class="m-badge" style="${isGm ? 'color:var(--fire);font-weight:bold;' : 'color:#555;'}">${isGm ? '⚠공망' : '-'}</div>`;
+                return '';  // 공망 뱃지 표시 안 함
             }),
-            // 공망 기준 별도 행 — 원국 8자에 공망 지지가 있을 때만 표시
-            (()=>{
-                const gmStr3 = getGongmang(dayStem + ec.getDay()[1]);
-                const KR2HJ3 = {'자':'子','축':'丑','인':'寅','묘':'卯','진':'辰','사':'巳','오':'午','미':'未','신':'申','유':'酉','술':'戌','해':'亥'};
-                const HK3 = {'子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해'};
-                const gmHanja3 = gmStr3 ? [...gmStr3].map(c=>KR2HJ3[c]||c) : [];
-                // 원국 지지 목록
-                const pillarBranches = pillars.map(p => p.h && p.h[1]).filter(Boolean);
-                const hasGmInPillars = gmHanja3.some(h => pillarBranches.includes(h));
-                if(!hasGmInPillars) return '';
-                const gmLabel3 = gmHanja3.map(h=>h+'('+HK3[h]+')').join(' · ');
-                return `<tr><td class="m-label" style="color:#e74c3c;">공망</td><td class="m-cell" colspan="4" style="color:#e74c3c;font-size:12px;font-weight:700;letter-spacing:1px;">${gmLabel3}</td></tr>`;
-            })()
+            // 공망 행 비표시 (마스터 지시)
+            ''
         ].join('');
         document.getElementById('manse-table').innerHTML = manseHtml;
 
