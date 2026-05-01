@@ -904,6 +904,68 @@ function buildRelPanels(params, a, b, result) {
     </div>`
   ];
   document.getElementById('panel-spouse').innerHTML = spouseHtml.join('');
+
+  // ─── 자미두수 자녀 분석 섹션 ───
+  const ZIWEI_CHILD = {
+    '子':{txt:'총명하고 언어 감각이 뛰어난 자녀를 두게 됩니다. 분석력과 논리력이 강하며, 어릴 때부터 질문이 많고 지적 호기심이 넘칩니다. 학업 성취가 높고 글쓰기·언어 관련 분야에서 두각을 나타낼 가능성이 큽니다. 감정 표현보다 논리적 설득을 선호하는 자녀이므로, 이유를 충분히 설명해주는 대화 방식이 관계를 깊게 합니다.',emoji:'💫'},
+    '丑':{txt:'현실적이고 성실한 자녀입니다. 화려한 것보다 묵묵히 실력을 쌓는 타입으로, 한 번 목표를 정하면 끝까지 밀어붙이는 끈기가 있습니다. 예체능보다 이공계·농업·식품·금융 분야에서 안정적인 성취를 이룹니다. 감정 표현이 서툴러 보여도 내면에서 깊이 사랑을 느끼는 자녀이므로, 인내심을 갖고 기다려주는 것이 중요합니다.',emoji:'🌾'},
+    '寅':{txt:'독립심이 강하고 개척적인 자녀입니다. 어릴 때부터 자신만의 길을 가려는 본능이 강하며, 틀 안에 가두면 오히려 반발합니다. 스포츠·사업·탐험·군·경찰 등 도전적인 분야에서 빛납니다. 이 자녀에게는 선택의 자유를 주되, 최소한의 방향성을 제시하는 멘토형 부모가 이상적입니다.',emoji:'🐯'},
+    '卯':{txt:'감성이 풍부하고 인기 많은 자녀입니다. 친구들 사이에서 자연스럽게 중심이 되는 타입으로, 예술·음악·패션·뷰티·서비스업에서 탁월한 재능을 발휘합니다. 사람과의 관계에서 에너지를 얻는 자녀이므로, 사회적 활동을 충분히 지원해주는 것이 자녀의 잠재력을 극대화합니다.',emoji:'🌸'},
+    '辰':{txt:'변화무쌍하지만 뛰어난 잠재력을 가진 자녀입니다. 호기심이 넘쳐 여러 분야를 탐색하며, 한 가지에 정착하기까지 시간이 걸릴 수 있습니다. 이 자녀의 방황은 낭비가 아니라 자신에게 맞는 길을 찾는 과정입니다. 한 번 방향을 잡으면 그 분야에서 독보적인 성취를 이루게 됩니다.',emoji:'🐉'},
+    '巳':{txt:'집중력과 열정이 강한 자녀입니다. 좋아하는 것이 생기면 완전히 몰입하는 타입으로, 전문가형 성취가 예상됩니다. IT·의학·법·연구·예술 등 깊이를 요구하는 분야에서 탁월합니다. 강요나 억압보다 자녀 스스로 선택하게 하면 놀라운 집중력으로 결과를 만들어냅니다.',emoji:'🔥'},
+    '午':{txt:'활발하고 리더십 있는 자녀입니다. 어디서든 중심이 되고 주목받는 것을 좋아하며, 경쟁 상황에서 더욱 빛납니다. 정치·방송·마케팅·영업·스포츠 등 사람들 앞에 서는 분야에서 큰 성취를 이룹니다. 과잉 에너지를 건강하게 발산할 수 있는 운동과 활동을 충분히 지원해주십시오.',emoji:'☀️'},
+    '未':{txt:'창의적이고 예술적 감각이 뛰어난 자녀입니다. 남다른 시각과 감성으로 아름다움을 표현하는 데 탁월합니다. 음악·미술·인테리어·요리·글쓰기 등 창작 분야에서 진정한 재능이 발휘됩니다. 비교나 경쟁보다 자녀만의 고유한 감각을 인정하고 키워주는 것이 이 자녀를 빛나게 하는 핵심입니다.',emoji:'🌿'},
+    '申':{txt:'영리하고 행동력 있는 자녀입니다. 생각보다 행동이 앞서며, 빠른 판단력과 실행력이 강점입니다. IT·금융·무역·스포츠·발명 등 빠른 변화와 경쟁이 있는 분야에서 돋보입니다. 에너지가 넘치므로 올바른 방향을 잡아주면 그 어떤 자녀보다 빠르게 성장합니다.',emoji:'🐒'},
+    '酉':{txt:'완벽주의적이고 전문성을 추구하는 자녀입니다. 자신이 선택한 분야에서 최고 수준을 목표로 하며, 타협보다 완성도를 중시합니다. 의약·법·회계·기술·음악 등 전문직에서 독보적인 성취를 이룹니다. 실수에 대한 두려움이 클 수 있으므로, 완벽하지 않아도 충분히 훌륭하다는 격려가 자녀에게 큰 힘이 됩니다.',emoji:'🦅'},
+    '戌':{txt:'원칙 있고 철학적인 자녀입니다. 남들이 지나치는 것에서 깊은 의미를 찾으며, 어릴 때부터 옳고 그름에 대한 강한 기준이 있습니다. 법·철학·종교·사회운동·역사 분야에서 사회적으로 의미 있는 역할을 하게 됩니다. 이 자녀와는 표면적인 대화보다 가치관과 삶의 의미에 대한 깊은 대화를 자주 나누는 것이 관계를 깊게 합니다.',emoji:'🐕'},
+    '亥':{txt:'감성적이고 직관력 강한 자녀입니다. 표면에 드러나지 않는 것들을 느끼는 예민한 감수성이 있으며, 예술·상담·심리·종교·철학 분야에서 독특한 통찰력을 발휘합니다. 혼자만의 시간이 충분히 보장되어야 에너지가 회복되는 내향형 자녀이므로, 사교 활동을 강요하기보다 자녀의 내면 세계를 존중해주십시오.',emoji:'🌊'}
+  };
+
+  const ZIWEI_CHILD_BOND = {
+    same: '두 사람의 자녀궁 에너지가 같습니다. 자녀에 대한 기대와 양육 방식이 자연스럽게 일치하여 갈등 없이 협력하기 좋은 구조입니다.',
+    hap: '두 사람의 자녀궁이 합(合)을 이룹니다. 자녀를 통해 두 사람이 더욱 단단히 연결되는 구조입니다. 자녀 문제에서 이견이 생겨도 결국 하나의 방향으로 수렴하게 됩니다.',
+    chung: '두 사람의 자녀궁이 충(冲)을 이룹니다. 자녀 교육 방식이나 기대치에서 의견 충돌이 생길 수 있습니다. 서로의 방식이 다름을 인정하고, 자녀 앞에서는 통일된 메시지를 주는 것이 중요합니다.',
+    default: '두 사람의 자녀궁 에너지가 보완 관계입니다. 한 사람의 부족한 부분을 다른 사람이 채우는 구조로, 균형 잡힌 양육이 가능합니다.'
+  };
+
+  const HAP_PAIRS = [['子','丑'],['寅','亥'],['卯','戌'],['辰','酉'],['巳','申'],['午','未']];
+  const CHUNG_PAIRS = [['子','午'],['丑','未'],['寅','申'],['卯','酉'],['辰','戌'],['巳','亥']];
+
+  const aTB = sajuA.ec ? sajuA.ec.getTime()[1] : (sajuA.pillars&&sajuA.pillars[0]&&sajuA.pillars[0].h[1])||'子';
+  const bTB = sajuB.ec ? sajuB.ec.getTime()[1] : (sajuB.pillars&&sajuB.pillars[0]&&sajuB.pillars[0].h[1])||'子';
+
+  const aChild = ZIWEI_CHILD[aTB] || ZIWEI_CHILD['子'];
+  const bChild = ZIWEI_CHILD[bTB] || ZIWEI_CHILD['子'];
+
+  let bondType = 'default';
+  if (aTB === bTB) bondType = 'same';
+  else if (HAP_PAIRS.some(p => (p[0]===aTB&&p[1]===bTB)||(p[1]===aTB&&p[0]===bTB))) bondType = 'hap';
+  else if (CHUNG_PAIRS.some(p => (p[0]===aTB&&p[1]===bTB)||(p[1]===aTB&&p[0]===bTB))) bondType = 'chung';
+
+  const childPanel = `
+    <div style="margin-top:28px;padding:20px 16px;background:rgba(122,184,212,0.06);border:1px solid rgba(122,184,212,0.2);border-radius:14px;">
+      <div style="font-size:10px;color:#7ab8d4;font-weight:700;letter-spacing:2px;margin-bottom:16px;">✦ 자미두수로 보는 자녀의 모습</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+        <div style="background:rgba(0,0,0,0.2);border-radius:10px;padding:14px 12px;">
+          <div style="font-size:11px;color:var(--gold);font-weight:700;margin-bottom:6px;">${aName}님의 자녀 ${aChild.emoji}</div>
+          <div style="font-size:9px;color:#7ab8d4;margin-bottom:8px;">자녀궁 ${aTB}</div>
+          <p style="font-size:12px;color:#ccc;line-height:1.75;margin:0;">${aChild.txt}</p>
+        </div>
+        <div style="background:rgba(0,0,0,0.2);border-radius:10px;padding:14px 12px;">
+          <div style="font-size:11px;color:var(--gold);font-weight:700;margin-bottom:6px;">${bName}님의 자녀 ${bChild.emoji}</div>
+          <div style="font-size:9px;color:#7ab8d4;margin-bottom:8px;">자녀궁 ${bTB}</div>
+          <p style="font-size:12px;color:#ccc;line-height:1.75;margin:0;">${bChild.txt}</p>
+        </div>
+      </div>
+      <div style="background:rgba(199,167,106,0.06);border-left:3px solid var(--gold);padding:12px 14px;border-radius:0 8px 8px 0;">
+        <div style="font-size:10px;color:var(--gold);margin-bottom:6px;">두 사람의 자녀궁 관계</div>
+        <p style="font-size:12.5px;color:#ddd;line-height:1.75;margin:0;">${ZIWEI_CHILD_BOND[bondType]}</p>
+      </div>
+    </div>`;
+
+  // panel-spouse 안에 추가 (없으면 body에 append)
+  const spouseEl = document.getElementById('panel-spouse');
+  if (spouseEl) spouseEl.insertAdjacentHTML('beforeend', childPanel);
 }
 
 // ══════════════════════════════════════
