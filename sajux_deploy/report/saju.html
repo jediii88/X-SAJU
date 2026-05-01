@@ -39,16 +39,10 @@
         yundal:yun, unknown:unk
       };
 
-      document.addEventListener('DOMContentLoaded', function(){
-        var s1=document.getElementById('step-1');
-        if(s1) s1.style.display='none';
-        setTimeout(function(){
-          if(typeof runAnalysis==='function') runAnalysis(window.__SAJUX_PARAMS__);
-        }, 300);
-      });
+      // 자동실행은 window.load IIFE에서 처리 (하단 스크립트 참조)
     })();
     </script>
-    <meta name="version" content="1777564556">
+    <meta name="version" content="1777602263">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -7511,11 +7505,9 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
 
 
     <script>
-    // === SAJUX: 자동 실행 (모든 스크립트 로드 완료 후) ===
+    // === SAJUX: 자동 실행 (window.load 이후 — 외부 스크립트 완전 로드 보장) ===
     (function(){
       if (!window.__SAJUX_PARAMS__) return;
-      var s1 = document.getElementById('step-1');
-      if (s1) s1.style.display = 'none';
 
       function showErr(msg) {
         var d = document.createElement('div');
@@ -7524,24 +7516,36 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
         document.body.appendChild(d);
       }
 
-      // 의존성 체크
-      var missing = [];
-      if (typeof Solar === 'undefined') missing.push('Solar(lunar.js)');
-      if (typeof KoreanLunarCalendar === 'undefined') missing.push('KoreanLunarCalendar(klc.min.js)');
-      if (typeof runAnalysis !== 'function') missing.push('runAnalysis 함수');
-      if (typeof ANIMAL_SPRITE === 'undefined') missing.push('ANIMAL_SPRITE');
-      if (typeof BRANCH_HIDDEN === 'undefined') missing.push('BRANCH_HIDDEN');
+      function doRun() {
+        var s1 = document.getElementById('step-1');
+        if (s1) s1.style.display = 'none';
 
-      if (missing.length > 0) {
-        showErr('⚠️ 로드 오류<br><small style="opacity:0.7">누락: ' + missing.join(', ') + '</small>');
-        return;
+        // 의존성 체크
+        var missing = [];
+        if (typeof Solar === 'undefined') missing.push('Solar(lunar.js)');
+        if (typeof KoreanLunarCalendar === 'undefined') missing.push('KoreanLunarCalendar(klc.min.js)');
+        if (typeof runAnalysis !== 'function') missing.push('runAnalysis 함수');
+        if (typeof ANIMAL_SPRITE === 'undefined') missing.push('ANIMAL_SPRITE');
+        if (typeof BRANCH_HIDDEN === 'undefined') missing.push('BRANCH_HIDDEN');
+
+        if (missing.length > 0) {
+          showErr('⚠️ 로드 오류<br><small style="opacity:0.7">누락: ' + missing.join(', ') + '</small>');
+          return;
+        }
+
+        try {
+          runAnalysis(window.__SAJUX_PARAMS__);
+        } catch(e) {
+          showErr('<b>분석 오류</b><br><small style="opacity:0.7">' + e.message + '</small>');
+          console.error('runAnalysis 오류:', e.message, e.stack);
+        }
       }
 
-      try {
-        runAnalysis(window.__SAJUX_PARAMS__);
-      } catch(e) {
-        showErr('<b>분석 오류</b><br><small style="opacity:0.7">' + e.message + '</small>');
-        console.error('runAnalysis 오류:', e.message, e.stack);
+      // window.load 시점에 실행 (외부 스크립트 lunar.js/klc.min.js 완전 로드 후)
+      if (document.readyState === 'complete') {
+        doRun();
+      } else {
+        window.addEventListener('load', doRun);
       }
     })();
     </script>
