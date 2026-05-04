@@ -3,8 +3,14 @@ from urllib.request import Request, urlopen
 from urllib.parse import quote
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
-TOKEN = os.environ.get('GITHUB_TOKEN', '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')
+TOKEN = os.environ.get('GITHUB_TOKEN', '').strip()
 REPO = 'jediii88/X-SAJU'
+
+if not TOKEN:
+    raise SystemExit(
+        'GITHUB_TOKEN 환경변수를 설정하세요 (GitHub에 토큰 문자열을 파일로 커밋하지 마세요).\n'
+        '예: export GITHUB_TOKEN=ghp_xxxxxxxx'
+    )
 
 # 배포 구조:
 #   index.html        → sajux_deploy/index.html  (랜딩 페이지)
