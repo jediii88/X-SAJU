@@ -2,7 +2,8 @@ import base64, json, shutil, os
 from urllib.request import Request, urlopen
 from urllib.parse import quote
 
-TOKEN = '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'
+ROOT = os.path.dirname(os.path.abspath(__file__))
+TOKEN = os.environ.get('GITHUB_TOKEN', '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')
 REPO = 'jediii88/X-SAJU'
 
 # 배포 구조:
@@ -11,19 +12,19 @@ REPO = 'jediii88/X-SAJU'
 #   admin/index.html  → 관리자 페이지
 
 # 1. X-SAJU_MASTER.html → report/index.html 동기화
-os.makedirs('/home/node/.openclaw/workspace/sajux_deploy/report', exist_ok=True)
-shutil.copy('/home/node/.openclaw/workspace/X-SAJU_MASTER.html',
-            '/home/node/.openclaw/workspace/sajux_deploy/report/index.html')
+os.makedirs(os.path.join(ROOT, 'sajux_deploy', 'report'), exist_ok=True)
+shutil.copy(os.path.join(ROOT, 'X-SAJU_MASTER.html'),
+            os.path.join(ROOT, 'sajux_deploy', 'report', 'index.html'))
 
 # zodiac_en 경로 수정 (루트 기준 → report/ 기준 상대경로)
-with open('/home/node/.openclaw/workspace/sajux_deploy/report/index.html', 'r', encoding='utf-8') as f:
+with open(os.path.join(ROOT, 'sajux_deploy', 'report', 'index.html'), 'r', encoding='utf-8') as f:
     rc = f.read()
 # zodiac_en/ → ../zodiac_en/ (이미 된 게 아닐 때만)
 if "'zodiac_en/" in rc:
     rc = rc.replace("'zodiac_en/", "'../zodiac_en/")
 if '"zodiac_en/' in rc:
     rc = rc.replace('"zodiac_en/', '"../zodiac_en/')
-with open('/home/node/.openclaw/workspace/sajux_deploy/report/index.html', 'w', encoding='utf-8') as f:
+with open(os.path.join(ROOT, 'sajux_deploy', 'report', 'index.html'), 'w', encoding='utf-8') as f:
     f.write(rc)
 
 def get_sha(path):
@@ -48,7 +49,7 @@ def upload(local_path, gh_path, msg='deploy'):
     print(f'  ✅ {gh_path}')
 
 print('배포 시작...')
-deploy_dir = '/home/node/.openclaw/workspace/sajux_deploy'
+deploy_dir = os.path.join(ROOT, 'sajux_deploy')
 
 # 업로드할 파일 목록 (로컬경로, GitHub경로)
 files = [
