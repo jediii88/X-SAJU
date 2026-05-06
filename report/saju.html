@@ -63,11 +63,11 @@
             --glass-border: transparent;
             --glass-hover: rgba(255,255,255,0.06);
             /* 오행 색: old_good(v2.9.1) 팔레트 */
-            --wood: #6bb076;
-            --fire: #e67e63;
-            --earth: #dcb372;
-            --metal: #a1aab5;
-            --water: #5d8ab9;
+            --wood: #66d17a;
+            --fire: #ff7a59;
+            --earth: #d8b067;
+            --metal: #c9b8ff;
+            --water: #67a9ff;
         }
 
         * { box-sizing: border-box; }
@@ -660,9 +660,14 @@
 
         .f-head { font-size: 12px; color: var(--text-soft); font-weight: 500; }
         .f-sip { font-size: 12px; color: var(--gold); font-weight: 500; }
-        .f-hz { font-size: 24px; font-weight: 300; line-height: 1.1; color: var(--text); letter-spacing: -1px; }
+        .f-hz { font-size: 24px; font-family:'Noto Serif KR',serif; font-weight: 700; line-height: 1.08; color: var(--text); letter-spacing: -0.5px; text-shadow: 0 0 12px rgba(255,255,255,0.08); }
         .f-kr { font-size: 12px; color: var(--text-soft); font-weight: 400; }
         .f-un { font-size: 11px; color: var(--text-dim); border-top: 1px solid var(--line-soft); padding-top: 8px; margin-top: 4px; font-weight: 400; width: 80%; margin-left: auto; margin-right: auto; }
+        .f-card.el-wood { border-color: rgba(102,209,122,0.42); box-shadow: inset 0 0 0 1px rgba(102,209,122,0.18); }
+        .f-card.el-fire { border-color: rgba(255,122,89,0.42); box-shadow: inset 0 0 0 1px rgba(255,122,89,0.18); }
+        .f-card.el-earth { border-color: rgba(216,176,103,0.42); box-shadow: inset 0 0 0 1px rgba(216,176,103,0.18); }
+        .f-card.el-metal { border-color: rgba(201,184,255,0.42); box-shadow: inset 0 0 0 1px rgba(201,184,255,0.18); }
+        .f-card.el-water { border-color: rgba(103,169,255,0.42); box-shadow: inset 0 0 0 1px rgba(103,169,255,0.18); }
 
         .loading {
             position: fixed;
@@ -6307,7 +6312,7 @@ function buildBars(targetId, rows, toneMap) {
 function buildFortuneCards(targetId, rows) {
     const html = `<div class="fortune-scroll">
         ${rows.map(row => `
-            <div class="f-card">
+            <div class="f-card el-${HAN_COLOR[row[2][0]]||'earth'}">
                 <div class="f-head">${row[0]}</div>
                 <div class="f-sip">${row[1]}</div>
                 <div class="f-hz"><span class="${HAN_COLOR[row[2][0]]||''}">${row[2][0]}</span><br><span class="${HAN_COLOR[row[2][1]]||''}">${row[2][1]}</span></div>
@@ -6400,8 +6405,13 @@ function runAnalysis(overrideParams) {
 
         // 2. 경도 보정 (-32분)은 무조건 '양력 시간' 객체를 기준으로 수행
         if ((document.getElementById('adj-l') ? document.getElementById('adj-l').checked : true) && !isUnknown) {
-            const dt = new Date(solarObj.getYear(), solarObj.getMonth() - 1, solarObj.getDay(), solarObj.getHour(), solarObj.getMinute());
+            const baseY = solarObj.getYear(), baseM = solarObj.getMonth(), baseD = solarObj.getDay();
+            const dt = new Date(baseY, baseM - 1, baseD, solarObj.getHour(), solarObj.getMinute());
             dt.setMinutes(dt.getMinutes() - 32);
+            // 경도 보정으로 달력이 전날로 넘어가면 UX상 날짜/만세력이 어긋나 보이므로, 해당 케이스는 날짜를 유지한다.
+            if (dt.getFullYear() !== baseY || (dt.getMonth() + 1) !== baseM || dt.getDate() !== baseD) {
+                dt.setFullYear(baseY, baseM - 1, baseD);
+            }
             solarObj = Solar.fromYmdHms(dt.getFullYear(), dt.getMonth() + 1, dt.getDate(), dt.getHours(), dt.getMinutes(), 0);
             lunarObj = solarObj.getLunar();
         }
@@ -6858,7 +6868,7 @@ function runAnalysis(overrideParams) {
         // inject highlight logic into buildFortuneCards
         window.buildFortuneCards = function(targetId, rows, hIdx = -1) {
             document.getElementById(targetId).innerHTML = '<div class="fortune-scroll">' + rows.map((row, idx) => `
-                <div class="f-card ${idx === hIdx ? 'current-fortune' : ''}">
+                <div class="f-card el-${HAN_COLOR[row[2][0]]||'earth'} ${idx === hIdx ? 'current-fortune' : ''}">
                     <div class="f-head">${row[0]}</div>
                     <div class="f-sip">${row[1]}</div>
                     <div class="f-hz"><span class="${HAN_COLOR[row[2][0]]||''}">${row[2][0]}</span><br><span class="${HAN_COLOR[row[2][1]]||''}">${row[2][1]}</span></div>
@@ -7409,9 +7419,9 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
                 var _GA={'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
                 return {name: r.name||'', age: r.age||0, oh: _GA[r.gz&&r.gz[0]]||'earth'};
             }),
-            birthDate: y+'-'+String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0'),
+            birthDate: displaySolarY+'-'+String(displaySolarM).padStart(2,'0')+'-'+String(displaySolarD).padStart(2,'0'),
             interactions: buildRelationLines(pillars).filter(r => r.type !== '없음'),
-            birthYear: y,
+            birthYear: displaySolarY,
             johu: (window.JOHU_DB && window.JOHU_DB[dayStem] && window.JOHU_DB[dayStem][pillars[2].h[1]]) || '',
             geokguk: (typeof window.getGeokGuk === 'function') ? window.getGeokGuk(pillars, dayStem, ec) : null,
             gongmang: (function(){
