@@ -743,12 +743,14 @@
             display: flex;
             flex-direction: column;
             gap: 4px;
+            width: 100%;
         }
         .manse-row {
             display: grid;
-            grid-template-columns: 60px repeat(4, 1fr);
+            grid-template-columns: 60px repeat(4, minmax(0, 1fr));
             gap: 4px;
             align-items: center;
+            width: 100%;
         }
         .manse-cell {
             display: flex;
@@ -760,6 +762,7 @@
             border-radius: 8px;
             min-height: 48px;
             text-align: center;
+            min-width: 0;
         }
         .manse-label {
             background: transparent;
@@ -782,6 +785,10 @@
             font-size: 11px;
             color: var(--text-dim);
             margin-bottom: 4px;
+            line-height: 1.45;
+            white-space: normal;
+            word-break: keep-all;
+            overflow-wrap: anywhere;
         }
         .m-hanja {
             font-size: 34px;
@@ -794,6 +801,11 @@
             font-size: 11px;
             color: var(--text-dim);
         }
+        .m-hanja.wood, .m-badge .wood { color: var(--wood) !important; }
+        .m-hanja.fire, .m-badge .fire { color: var(--fire) !important; }
+        .m-hanja.earth, .m-badge .earth { color: var(--earth) !important; }
+        .m-hanja.metal, .m-badge .metal { color: var(--metal) !important; }
+        .m-hanja.water, .m-badge .water { color: var(--water) !important; }
         
 
 
@@ -4625,6 +4637,21 @@ function buildPart1_Story(data){
     var maxOh=sortedOh[0]?sortedOh[0][0]:'wood';
     var minOh=sortedOh[sortedOh.length-1]?sortedOh[sortedOh.length-1][0]:'metal';
     html += '<div style="background:rgba(255,255,255,0.02);border-radius:10px;padding:14px 16px;margin-bottom:12px;">';
+    html += '<div class="wuxing-circles" style="padding-top:2px;padding-bottom:12px;">';
+    sortedOh.forEach(function(entry){
+        var k=entry[0],v=entry[1]||0;
+        var pct=Math.round(v/total*100);
+        var col=ohColor(k); var kr=OH_KR[k]||k;
+        var h=Math.max(8,Math.min(100,pct));
+        html += '<div class="w-circle-wrap">';
+        html += '<div class="liq-container" style="border:1px solid rgba(255,255,255,0.08);">';
+        html += '<div class="liq-bg" style="--bg-color:'+col+';height:'+h+'%;"></div>';
+        html += '<div class="w-val">'+pct+'%</div>';
+        html += '</div>';
+        html += '<div class="w-label" style="color:'+col+';font-weight:700;">'+kr+'</div>';
+        html += '</div>';
+    });
+    html += '</div>';
     sortedOh.forEach(function(entry){
         var k=entry[0],v=entry[1]||0;
         var pct=Math.round(v/total*100);
@@ -6363,10 +6390,8 @@ function runAnalysis(overrideParams) {
         let displayLunarY = y, displayLunarM = m, displayLunarD = d, displayLunarLeap = false;
 
         // 1. 입력된 값을 양/음력 기준에 맞게 생성 (경도 보정 전)
-        // 자시(子時) 경계 보정: 01:00~01:29 → 자시로 처리 (전통 명리학 기준)
-        // 피노키님 01:04 → 戊子 자시에 해당
+        // 시주는 입력 시각을 그대로 사용한다. (특정 구간 강제 보정 제거)
         var hrAdj = hr;
-        if (hr === 1 && mn <= 29) { hrAdj = 0; }
 
         if (isSolar) {
             solarObj = Solar.fromYmdHms(y, m, d, hrAdj, mn, 0);
@@ -6586,9 +6611,9 @@ function runAnalysis(overrideParams) {
                 <div class="info-label">${p.n}</div>
                 <div style="margin-top:6px;">
                     <div style="font-size:10px;color:var(--gold);letter-spacing:1px;margin-bottom:3px;">12신살</div>
-                    <div class="info-value" style="margin-bottom:8px;">${isUnk ? '시간 미상' : (twl.join(', ') || '-')}</div>
+                    <div class="info-value" style="margin-bottom:8px;line-height:1.6;">${isUnk ? '시간 미상' : (twl.join('<br>') || '-')}</div>
                     <div style="font-size:10px;color:#9b59b6;letter-spacing:1px;margin-bottom:3px;">기타신살</div>
-                    <div class="info-value">${isUnk ? '시간 미상' : (ext.join(', ') || '-')}</div>
+                    <div class="info-value" style="line-height:1.6;">${isUnk ? '시간 미상' : (ext.join('<br>') || '-')}</div>
                 </div>
             </div>`;
         }).join('');
