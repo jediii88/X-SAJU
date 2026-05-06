@@ -747,23 +747,23 @@
             box-shadow: none;
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 6px;
         }
         .manse-row {
             display: grid;
-            grid-template-columns: 60px repeat(4, 1fr);
-            gap: 4px;
-            align-items: center;
+            grid-template-columns: 64px repeat(4, minmax(0, 1fr));
+            gap: 6px;
+            align-items: stretch;
         }
         .manse-cell {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 10px 4px;
+            padding: 10px 6px;
             background: var(--panel);
-            border-radius: 8px;
-            min-height: 48px;
+            border-radius: 10px;
+            min-height: 52px;
             text-align: center;
         }
         .manse-label {
@@ -785,19 +785,25 @@
         }
         .m-badge {
             font-size: 11px;
-            color: var(--text-dim);
-            margin-bottom: 4px;
+            color: #cfd3df;
+            line-height: 1.45;
+            margin-bottom: 2px;
+            word-break: keep-all;
         }
         .m-hanja {
-            font-size: 36px;
-            font-weight: 200;
-            font-family: 'Noto Sans KR', sans-serif;
-            line-height: 1.05;
-            margin-bottom: 2px;
+            font-size: 39px;
+            font-weight: 700;
+            font-family: 'Noto Serif KR', serif;
+            line-height: 1.02;
+            letter-spacing: -0.5px;
+            margin-bottom: 3px;
+            text-shadow: 0 0 10px rgba(255,255,255,0.08);
         }
         .m-hangul {
             font-size: 11px;
-            color: var(--text-dim);
+            color: #9ca4b6;
+            letter-spacing: -0.2px;
+            line-height: 1.3;
         }
         
 
