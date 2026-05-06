@@ -6321,6 +6321,8 @@ function runAnalysis(overrideParams) {
 
         let origY = y, origM = m, origD = d;
         let lunarObj, solarObj;
+        let displaySolarY = y, displaySolarM = m, displaySolarD = d;
+        let displayLunarY = y, displayLunarM = m, displayLunarD = d, displayLunarLeap = false;
 
         // 1. 입력된 값을 양/음력 기준에 맞게 생성 (경도 보정 전)
         // 자시(子時) 경계 보정: 01:00~01:29 → 자시로 처리 (전통 명리학 기준)
@@ -6331,6 +6333,8 @@ function runAnalysis(overrideParams) {
         if (isSolar) {
             solarObj = Solar.fromYmdHms(y, m, d, hrAdj, mn, 0);
             lunarObj = solarObj.getLunar();
+            displaySolarY = y; displaySolarM = m; displaySolarD = d;
+            displayLunarY = lunarObj.getYear(); displayLunarM = Math.abs(lunarObj.getMonth()); displayLunarD = lunarObj.getDay(); displayLunarLeap = lunarObj.getMonth() < 0;
         } else {
             if (calBase === 'KST') {
                 // 한국 기준: KLC(KASI 한국천문연구원) 기준 음→양 변환
@@ -6343,11 +6347,16 @@ function runAnalysis(overrideParams) {
                 const klcSolar = klcInst.getSolarCalendar();
                 solarObj = Solar.fromYmdHms(klcSolar.year, klcSolar.month, klcSolar.day, hrAdj, mn, 0);
                 lunarObj = solarObj.getLunar();
+                // 화면 표시는 "입력/변환 기준일"로 고정 (경도 보정으로 날짜가 흔들려 보이지 않게)
+                displaySolarY = klcSolar.year; displaySolarM = klcSolar.month; displaySolarD = klcSolar.day;
+                displayLunarY = y; displayLunarM = m; displayLunarD = d; displayLunarLeap = !!isLeap;
             } else {
                 // 중국 기준(CST): lunar.js 내장 음력 변환 사용 (북경시 기준)
                 let lunarMonth = isLeap ? -m : m;
                 lunarObj = Lunar.fromYmdHms(y, lunarMonth, d, hrAdj, mn, 0);
                 solarObj = lunarObj.getSolar();
+                displaySolarY = solarObj.getYear(); displaySolarM = solarObj.getMonth(); displaySolarD = solarObj.getDay();
+                displayLunarY = y; displayLunarM = m; displayLunarD = d; displayLunarLeap = !!isLeap;
             }
         }
 
@@ -6406,19 +6415,20 @@ function runAnalysis(overrideParams) {
             if(descHangul) descHangul.innerText = `${colorInfo.label} ${animalInfo.kr}`;
         }
         
-        let lMon = typeof lunar.getMonth === 'function' ? Math.abs(lunar.getMonth()) : 1;
-        let leapStr = typeof lunar.getMonth === 'function' && lunar.getMonth() < 0 ? '(윤달)' : '(평달)';
-        let sYear = typeof solar.getYear === 'function' ? solar.getYear() : y;
-        let sMon = typeof solar.getMonth === 'function' ? solar.getMonth() : m;
-        let sDay = typeof solar.getDay === 'function' ? solar.getDay() : d;
-        let lDay = typeof lunar.getDay === 'function' ? lunar.getDay() : d;
+        let lMon = displayLunarM || (typeof lunar.getMonth === 'function' ? Math.abs(lunar.getMonth()) : 1);
+        let leapStr = displayLunarLeap ? '(윤달)' : '(평달)';
+        let sYear = displaySolarY || (typeof solar.getYear === 'function' ? solar.getYear() : y);
+        let sMon = displaySolarM || (typeof solar.getMonth === 'function' ? solar.getMonth() : m);
+        let sDay = displaySolarD || (typeof solar.getDay === 'function' ? solar.getDay() : d);
+        let lYear = displayLunarY || (lunar.getYear ? lunar.getYear() : y);
+        let lDay = displayLunarD || (typeof lunar.getDay === 'function' ? lunar.getDay() : d);
         
         const badges = document.getElementById('av-badges');
         if(badges) {
             badges.innerHTML = `
                 <div class="badge">${gender === 'M' ? '남성' : '여성'}</div>
                 <div class="badge">양력 ${sYear}.${String(sMon).padStart(2,'0')}.${String(sDay).padStart(2,'0')}</div>
-                <div class="badge">음력 ${lunar.getYear ? lunar.getYear() : y}.${String(lMon).padStart(2,'0')}.${String(lDay).padStart(2,'0')} ${leapStr}</div>
+                <div class="badge">음력 ${lYear}.${String(lMon).padStart(2,'0')}.${String(lDay).padStart(2,'0')} ${leapStr}</div>
             `;
         }
 
