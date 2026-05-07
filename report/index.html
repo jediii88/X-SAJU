@@ -746,9 +746,11 @@
             width: 100%;
         }
         .manse-row {
+            --manse-label-col: 60px;
+            --manse-gap: 4px;
             display: grid;
-            grid-template-columns: 60px repeat(4, minmax(0, 1fr));
-            gap: 4px;
+            grid-template-columns: var(--manse-label-col) repeat(4, calc((100% - var(--manse-label-col) - (var(--manse-gap) * 4)) / 4));
+            gap: var(--manse-gap);
             align-items: stretch;
             width: 100%;
         }
@@ -4511,7 +4513,7 @@ function buildPart1_Story(data){
     var OH_KR={wood:'목',fire:'화',earth:'토',metal:'금',water:'수'};
     var STEM_OH={'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
     var BRNCH_OH={'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'};
-    var OH_COL={wood:'#4fc3a1',fire:'#ff7043',earth:'#ffca28',metal:'#b0bec5',water:'#64b5f6'};
+    var OH_COL={wood:'var(--wood)',fire:'var(--fire)',earth:'var(--earth)',metal:'var(--metal)',water:'var(--water)'};
     function ohColor(k){ return OH_COL[k]||'#aaa'; }
     function hanCol(h){ return ohColor(STEM_OH[h]||BRNCH_OH[h]||'earth'); }
 
