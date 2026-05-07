@@ -4870,7 +4870,7 @@ function buildPart1_Story(data){
     html += '<div style="background:rgba(231,76,60,0.12);border:1px solid rgba(231,76,60,0.35);border-radius:8px;padding:10px 11px;"><div style="font-size:10px;color:#ff9f9a;margin-bottom:4px;">통합 해석 핵심</div><div style="font-size:12px;color:#ffd8d6;line-height:1.72;">'+name+'님은 '+baseThesis+'로 읽힙니다. '+integratedConclusion+'</div></div>';
     html += '<div style="background:rgba(74,158,106,0.12);border:1px solid rgba(74,158,106,0.35);border-radius:8px;padding:10px 11px;"><div style="font-size:10px;color:#9ee1b6;margin-bottom:4px;">핵심 결론</div><div style="font-size:12px;color:#d7f3e1;line-height:1.72;">'+((OH_KR[yong]||yong||'용신')+' 기운을 중심축으로 두고, 커리어·재물·관계의 우선순위를 맞추면 결과 편차를 줄이고 성과 지속성을 높일 수 있습니다.')+'</div></div>';
     html += '</div>';
-    html += '<div style="background:rgba(0,0,0,0.16);border-radius:8px;padding:10px 11px;"><div style="font-size:10px;color:#7ab8d4;margin-bottom:4px;">실행 가이드</div><div style="font-size:12px;color:#cfe6f2;line-height:1.72;">'+actionTip+'</div></div>';
+    html += '<div style="background:rgba(0,0,0,0.16);border-radius:8px;padding:10px 11px;"><div style="font-size:10px;color:#7ab8d4;margin-bottom:6px;">실행 가이드</div><ul style="margin:0;padding-left:16px;font-size:12px;color:#cfe6f2;line-height:1.72;"><li>우선순위 1~2개만 선택해 집중합니다.</li><li>'+actionTip+'</li><li>중요 결정은 검토-실행 간격을 두고 진행합니다.</li></ul></div>';
     html += '<p style="font-size:10.5px;color:#86aabd;line-height:1.7;margin:9px 0 0;">※ 본 해석은 원국·운세·자미두수를 통합한 최종 해석입니다. 핵심은 같은 기회라도 실행 순서와 속도를 맞춰 결과 안정성을 높이는 것입니다.</p>';
     html += '</div>';
 
@@ -7269,9 +7269,7 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
                 <div class="cat-body">
                     <p class="cat-text">${healthOverall}</p>
                     <div class="cat-highlight">${healthDetail}</div>
-                    <div class="cat-advice">
-                        몸이 보내는 신호를 무시하지 않는 편이 좋습니다. 버티는 능력이 탁월한 만큼, 그 능력이 때로는 병을 키웁니다. 연 1회 정기검진을 빠짐없이 이행하는 것이 가장 강력한 건강 보험입니다.<br>${healthFlowHint}
-                    </div>
+                    <div class="cat-advice"><b style="color:#ddd;">실행 체크리스트</b><ul style="margin:8px 0 0;padding-left:16px;"><li>수면·회복 루틴을 일정에 고정합니다.</li><li>분기별 검진 항목을 미리 예약합니다.</li><li>${healthFlowHint}</li></ul></div>
                 </div>`;
 
             // ── 재물운 상세 ──
@@ -7297,9 +7295,7 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
                     </div>
                     <p class="cat-text">${wealthMain}</p>
                     <div class="cat-highlight">${wealthStrategy}</div>
-                    <div class="cat-advice">
-                        당신의 금고는 월급통장 사이즈가 아닙니다. 용신 기운을 가진 사람과의 협업 — 그것이 재물운의 숨겨진 가속 페달입니다.
-                    </div>
+                    <div class="cat-advice"><b style="color:#ddd;">실행 체크리스트</b><ul style="margin:8px 0 0;padding-left:16px;"><li>수익 구조를 2~3축으로 단순화합니다.</li><li>고정비·현금흐름 점검일을 월 1회 고정합니다.</li><li>용신 기운 협업 채널을 우선순위로 운영합니다.</li></ul></div>
                 </div>`;
 
             // ── 직업운 상세 ──
@@ -7326,9 +7322,7 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
                     <div class="cat-highlight">
                         <b>🎯 최적 직업 환경:</b> ${({officer:'조직 내 리더십 포지션 (부서장, 팀장, 임원 트랙)', creator:'자기 브랜드 기반의 1인 또는 소수 정예 팀', expert:'전문 자격 기반의 독립 컨설팅 또는 파트너십', independent:'완전한 자율과 성과로 평가받는 독립 영역'})[careerType]}
                     </div>
-                    <div class="cat-advice">
-                        "내 권한이 100% 보장되는가?" — 이것이 직업 선택의 단 하나의 기준입니다. 이 질문에 Yes가 나오는 자리에서만 진짜 능력이 폭발합니다.<br>${careerFlowHint}
-                    </div>
+                    <div class="cat-advice"><b style="color:#ddd;">실행 체크리스트</b><ul style="margin:8px 0 0;padding-left:16px;"><li>의사결정 권한 범위를 먼저 확인합니다.</li><li>역할·성과 기준을 문서로 합의합니다.</li><li>${careerFlowHint}</li></ul></div>
                 </div>`;
 
             // ── 애정운 상세 ──
@@ -7350,9 +7344,7 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
                     <div class="cat-highlight">
                         <b>💑 배우자궁 분석:</b><br>${loveText2}
                     </div>
-                    <div class="cat-advice">
-                        당신에게 맞는 인연은 용신 오행을 일간으로 가진 사람입니다. 서로의 일주 지지가 합(合) 관계를 이룰 때 평생 에너지가 잘 맞습니다.<br>${loveFlowHint}
-                    </div>
+                    <div class="cat-advice"><b style="color:#ddd;">실행 체크리스트</b><ul style="margin:8px 0 0;padding-left:16px;"><li>관계 결정은 감정 피크일을 피해서 잡습니다.</li><li>대화 리듬(빈도·시간)을 먼저 합의합니다.</li><li>${loveFlowHint}</li></ul></div>
                 </div>`;
 
         })();
