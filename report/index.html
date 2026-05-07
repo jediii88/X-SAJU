@@ -4590,14 +4590,29 @@ function buildPart1_Story(data){
         html += '</tr>';
         var at12=data.allTwelveShinsal||{};
         var atEx=data.allExtraShinsal||{};
+        function formatShinsalCell(arr){
+            var norm=(Array.isArray(arr)?arr:[arr])
+                .filter(Boolean)
+                .map(function(v){return String(v);})
+                .join(' · ')
+                .split(/\s*[·,\/\|]\s*/g)
+                .map(function(t){return t.trim();})
+                .filter(Boolean);
+            if(!norm.length) return '-';
+            var lines=[];
+            for(var i=0;i<norm.length;i+=2){
+                lines.push(norm.slice(i,i+2).join(' · '));
+            }
+            return lines.join('<br>');
+        }
         // 12신살
         html += '<tr style="border-bottom:1px solid rgba(255,255,255,0.04);">';
         html += '<td style="padding:4px;color:#555;font-size:10px;">12신살</td>';
         pillars.forEach(function(p,i){
             if(isUnk&&i===0){html+='<td style="text-align:center;color:#444;">-</td>';return;}
             var arr=at12[p.n]||[];
-            var txt=arr.length?arr.join(' · '):'-';
-            html+='<td style="padding:4px 6px;text-align:center;font-size:9px;color:#888;line-height:1.35;">'+txt+'</td>';
+            var txt=formatShinsalCell(arr);
+            html+='<td style="padding:4px 6px;text-align:center;font-size:9px;color:#888;line-height:1.45;white-space:normal;word-break:keep-all;overflow-wrap:anywhere;">'+txt+'</td>';
         });
         html += '</tr>';
         // 기타신살
@@ -4606,8 +4621,8 @@ function buildPart1_Story(data){
         pillars.forEach(function(p,i){
             if(isUnk&&i===0){html+='<td style="text-align:center;color:#444;">-</td>';return;}
             var arr=atEx[p.n]||[];
-            var txt=arr.length?arr.join(' · '):'-';
-            html+='<td style="padding:4px 6px;text-align:center;font-size:9px;color:#888;line-height:1.35;">'+txt+'</td>';
+            var txt=formatShinsalCell(arr);
+            html+='<td style="padding:4px 6px;text-align:center;font-size:9px;color:#888;line-height:1.45;white-space:normal;word-break:keep-all;overflow-wrap:anywhere;">'+txt+'</td>';
         });
         html += '</tr>';
         // 공망
