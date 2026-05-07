@@ -4082,7 +4082,7 @@ function buildSewunLoop(data) {
     }
 
     return `<div class="report-chapter">
-        <h3 class="ch-title">Chapter 11. 앞으로 10년의 바람결 — 세운 흐름 읽기</h3>
+        <h3 class="ch-title">Chapter 10. 앞으로 10년의 바람결 — 세운 흐름 읽기</h3>
         <p class="ch-text">대운이 10년의 기후라면, 세운은 그해의 날씨입니다. 올해부터 향후 10년간 당신에게 어떤 바람이 불고 어떤 해가 뜰지 예측합니다. 매년 당신의 원국 기운이 그해의 기운과 충돌하며 만들어내는 서사입니다. 용신 기운이 들어오는 해는 집중 공략하고, 기신 기운의 해는 수비에 집중하시는 편이 좋습니다.</p>
 
         <div style="background:rgba(199,167,106,0.06);border-radius:10px;padding:18px;margin:20px 0;border:1px solid rgba(199,167,106,0.15);">
@@ -4187,7 +4187,7 @@ function buildWolunLoop(data) {
     }).join('');
 
     return `<div class="report-chapter">
-        <h3 class="ch-title">Chapter 12. ${yr}년, 열두 달의 감정 곡선 — 월운 캘린더</h3>
+        <h3 class="ch-title">Chapter 11. ${yr}년, 열두 달의 감정 곡선 — 월운 캘린더</h3>
         <p class="ch-text">세운이 한 해의 날씨라면, 월운은 그날의 시간별 일기예보입니다. 언제 액셀을 밟고 언제 브레이크를 밟아야 하는지 — 12개월 전략 지도를 활용하시는 편이 좋습니다. 용신 기운의 달에는 중요한 결정과 행동을, 기신 기운의 달에는 수비와 내공 축적에 집중하시는 편이 좋습니다.</p>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
             ${rows}
@@ -4913,7 +4913,7 @@ function buildChapter6_SeYun(data){
     var d=D[yGoh]||D.earth;
     var ST={wood:'지금 씨앗을 뿌리는 것이 목표입니다. 3~5년 뒤를 보고 결단하시는 편이 좋습니다.',fire:'최대한 많이 노출되고 최대한 많이 저장하시는 편이 좋습니다.',earth:'서두르지 않아도 됩니다. 꾸준히 쌓는 것이 전략입니다.',metal:'가지치기의 해. 불필요한 것을 정리하면 다음 대운이 가벼워집니다.',water:'생각을 행동으로 옮기는 연습이 핵심 포인트입니다. 이제 실행하시는 편이 좋습니다.'};
     var grid=['💰 재물','🏢 직업','❤ 애정','🌿 건강'].map(function(lb,i){var k=['m','c','l','h'];return'<div style="background:rgba(255,255,255,0.03);border-radius:10px;padding:14px 16px;border:1px solid rgba(255,255,255,0.06);"><div style="font-size:11px;color:var(--gold);margin-bottom:8px;font-weight:700;">'+lb+'</div><p style="font-size:12.5px;color:#ccc;line-height:1.8;margin:0;">'+d[k[i]]+'</p></div>';}).join('');
-    return'<div class="report-chapter chapter-start"><h3 class="ch-title">Chapter 6. '+curY+'년('+yKor+'년) 운세</h3><div style="display:flex;align-items:center;gap:16px;background:rgba(199,167,106,0.07);border-radius:12px;padding:16px 20px;margin-bottom:24px;"><div style="font-size:28px;font-weight:700;color:'+lc+';">'+yKor+'년</div><div><div style="font-size:11px;color:#888;margin-bottom:4px;">종합 판단</div><div style="font-size:15px;font-weight:700;color:'+lc+';">'+luck+'</div></div><div style="margin-left:auto;font-size:12px;color:#888;text-align:right;">천간 <b>'+OK[yGoh]+'</b><br>지지 <b>'+OK[yJoh]+'</b></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">'+grid+'</div><div style="background:rgba(199,167,106,0.05);border-left:3px solid var(--gold);padding:14px 18px;border-radius:0 10px 10px 0;"><div style="font-size:11px;color:var(--gold);margin-bottom:8px;font-weight:700;">✦ '+name+'님의 '+curY+'년 전략</div><p style="font-size:13px;color:#ccc;line-height:1.85;margin:0;">'+(ST[yGoh]||ST.earth)+'</p></div><div style="margin-top:16px;font-size:11px;color:#666;">▼ 월별 세부 풀이는 Ch.9 월운 섹션을 참조하십시오</div></div>';
+    return'<div class="report-chapter chapter-start"><h3 class="ch-title">Chapter 10. '+curY+'년('+yKor+'년) 운세</h3><div style="display:flex;align-items:center;gap:16px;background:rgba(199,167,106,0.07);border-radius:12px;padding:16px 20px;margin-bottom:24px;"><div style="font-size:28px;font-weight:700;color:'+lc+';">'+yKor+'년</div><div><div style="font-size:11px;color:#888;margin-bottom:4px;">종합 판단</div><div style="font-size:15px;font-weight:700;color:'+lc+';">'+luck+'</div></div><div style="margin-left:auto;font-size:12px;color:#888;text-align:right;">천간 <b>'+OK[yGoh]+'</b><br>지지 <b>'+OK[yJoh]+'</b></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">'+grid+'</div><div style="background:rgba(199,167,106,0.05);border-left:3px solid var(--gold);padding:14px 18px;border-radius:0 10px 10px 0;"><div style="font-size:11px;color:var(--gold);margin-bottom:8px;font-weight:700;">✦ '+name+'님의 '+curY+'년 전략</div><p style="font-size:13px;color:#ccc;line-height:1.85;margin:0;">'+(ST[yGoh]||ST.earth)+'</p></div><div style="margin-top:16px;font-size:11px;color:#666;">▼ 월별 세부 풀이는 Ch.9 월운 섹션을 참조하십시오</div></div>';
 }
 
 // ═══════════════════════════════════════════════════════
@@ -4941,7 +4941,7 @@ function buildChapter7_NextYears(data){
             +'</div>';
     }
     return '<div class="report-chapter chapter-start">'
-        +'<h3 class="ch-title">Chapter 7. 바로 앞에 다가온 시간 — 내년·내후년 운세</h3>'
+        +'<h3 class="ch-title">Chapter 11. 바로 앞에 다가온 시간 — 내년·내후년 운세</h3>'
         +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">'
         +card(curY+1,ny,nev)+card(curY+2,nny,nnev)
         +'</div>'
@@ -4969,7 +4969,7 @@ function buildChapter8_NextDaewun(data){
     var judge=isGood?'황금 대운':isBad?'조심 대운':'안정 대운';
     var judgeColor=isGood?'#c7a76a':isBad?'#e08080':'#aaa';
     var DWNEXT={wood:name+'님의 다음 대운은 목(木)의 기운입니다. 새로운 도전과 시작의 에너지가 10년을 지배합니다. 이직·창업·학습·이사 — 새로운 판을 까는 모든 결정이 이 시기에 힘을 받습니다. 단, 너무 많은 것을 동시에 시작하려는 충동을 제어해야 합니다.',fire:name+'님의 다음 대운은 화(火)의 기운입니다. 사회적 인정과 성취의 에너지가 10년을 지배합니다. 가장 많이 노출되고 가장 많이 인정받는 10년입니다. 번영의 시기이나 건강과 재무 관리를 소홀히 하면 한 번에 무너질 수 있습니다.',earth:name+'님의 다음 대운은 토(土)의 기운입니다. 안정과 축적의 에너지가 10년을 지배합니다. 서두르지 않아도 됩니다. 지금까지 쌓아온 것들이 결실을 맺는 10년입니다.',metal:name+'님의 다음 대운은 금(金)의 기운입니다. 전문성과 결단의 에너지가 10년을 지배합니다. 한 분야에 집중하면 타의 추종을 불허하는 전문가가 되는 10년입니다.',water:name+'님의 다음 대운은 수(水)의 기운입니다. 통찰과 지혜의 에너지가 10년을 지배합니다. 정보와 인맥이 재산이 되는 10년입니다.'};
-    return '<div class="report-chapter chapter-start"><h3 class="ch-title">Chapter 8. 다음 물결을 타는 법 — 차기 대운 집중 해석</h3>'
+    return '<div class="report-chapter chapter-start"><h3 class="ch-title">Chapter 12. 다음 물결을 타는 법 — 차기 대운 집중 해석</h3>'
         +'<div style="display:flex;align-items:center;gap:16px;background:rgba(199,167,106,0.07);border-radius:12px;padding:16px 20px;margin-bottom:20px;">'
         +'<div style="font-size:28px;font-weight:700;color:'+judgeColor+';">'+nextDW.name+'</div>'
         +'<div><div style="font-size:11px;color:#888;margin-bottom:4px;">'+nextDW.age+'세부터 10년</div>'
@@ -4984,7 +4984,7 @@ function buildChapter8_NextDaewun(data){
 function buildChapter9_Monthly(data){
     var name=data.name||'고객';
     if(typeof buildWolunLoop==='function') return buildWolunLoop(data);
-    return '<div class="report-chapter chapter-start"><h3 class="ch-title">Chapter 9. 달마다 달라지는 결 — 월운 12개월</h3><p style="color:#aaa;">월운 데이터를 불러오는 중입니다.</p></div>';
+    return '<div class="report-chapter chapter-start"><h3 class="ch-title">Chapter 13. 달마다 달라지는 결 — 월운 12개월</h3><p style="color:#aaa;">월운 데이터를 불러오는 중입니다.</p></div>';
 }
 
 // ═══════════════════════════════════════════════════════
@@ -5231,7 +5231,7 @@ function buildChapterPersonality(data) {
     const iljuTitle = dbEntry.title || '당신의 일주';
 
     return `<div class="report-chapter" id="sec-personality">
-        <h3 class="ch-title">Chapter 9-1. 당신이라는 결 — 성향의 온도와 결</h3>
+        <h3 class="ch-title">Chapter 10. 당신이라는 결 — 성향의 온도와 결</h3>
         <p class="ch-text" style="margin-bottom:20px;">[${iljuTitle}]을 타고난 당신. 사주에서 성격은 선천적으로 새겨진 코드입니다. 이 코드를 정확히 아는 사람과 모르는 사람 사이에는, 같은 상황에서도 전혀 다른 결과가 나옵니다.</p>
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
