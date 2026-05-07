@@ -807,21 +807,12 @@
             margin-bottom: 0;
         }
         .m-badge-shinsal-line {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: center;
-            gap: 4px 8px;
+            display: block;
+            width: 100%;
+            text-align: center;
             line-height: 1.35;
-            max-width: 100%;
-        }
-        .m-badge-shinsal-line span:not(.m-badge-shinsal-sep) {
-            white-space: nowrap;
-        }
-        .m-badge-shinsal-sep {
-            opacity: 0.5;
-            font-weight: 400;
-            flex-shrink: 0;
+            word-break: keep-all;
+            overflow-wrap: anywhere;
         }
         .m-hanja {
             font-size: 34px;
@@ -4670,25 +4661,10 @@ function buildPart1_Story(data){
     var maxOh=sortedOh[0]?sortedOh[0][0]:'wood';
     var minOh=sortedOh[sortedOh.length-1]?sortedOh[sortedOh.length-1][0]:'metal';
     html += '<div style="background:rgba(255,255,255,0.02);border-radius:10px;padding:14px 16px;margin-bottom:12px;">';
-    html += '<div class="wuxing-circles" style="padding-top:2px;padding-bottom:12px;">';
     sortedOh.forEach(function(entry){
         var k=entry[0],v=entry[1]||0;
         var pct=Math.round(v/total*100);
-        var col=ohColor(k); var kr=OH_KR[k]||k;
-        var h=Math.max(8,Math.min(100,pct));
-        html += '<div class="w-circle-wrap">';
-        html += '<div class="liq-container" style="border:1px solid rgba(255,255,255,0.08);">';
-        html += '<div class="liq-bg" style="--bg-color:'+col+';height:'+h+'%;"></div>';
-        html += '<div class="w-val">'+pct+'%</div>';
-        html += '</div>';
-        html += '<div class="w-label" style="color:'+col+';font-weight:700;">'+kr+'</div>';
-        html += '</div>';
-    });
-    html += '</div>';
-    sortedOh.forEach(function(entry){
-        var k=entry[0],v=entry[1]||0;
-        var pct=Math.round(v/total*100);
-        var col=ohColor(k); var kr=OH_KR[k]||k;
+        var col='var(--'+k+')'; var kr=OH_KR[k]||k;
         var isMax=k===maxOh,isMin=k===minOh;
         html+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">';
         html+='<div style="width:24px;text-align:right;font-size:12px;font-weight:'+(isMax?'800':'400')+';color:'+(isMax?col:'#666')+';">'+kr+'</div>';
@@ -6531,7 +6507,7 @@ function runAnalysis(overrideParams) {
             let inner = '';
             for (let i = 0; i < arr.length; i += 2) {
                 const pair = arr.slice(i, i + 2);
-                const lineInner = pair.map((t) => `<span>${String(t)}</span>`).join('<span class="m-badge-shinsal-sep">\u00b7</span>');
+                const lineInner = pair.map((t) => String(t)).join(' · ');
                 inner += `<div class="m-badge-shinsal-line">${lineInner}</div>`;
             }
             return `<div class="m-badge m-badge-shinsal" style="font-size:11px;">${inner}</div>`;
@@ -6716,51 +6692,18 @@ function runAnalysis(overrideParams) {
             wxSummaryEl.innerHTML = `<b>${wxMax.label}</b> 기운이 <b>${wxMax.val}%</b>로 가장 강합니다 — ${dominantDesc[wxMax.key]}가 지배적입니다. ${lackDesc}`;
         }
 
-        // 오행별 웨이브 색상 맵
-        const WX_COLORS = {
-            wood:  { fill: '#4a9e6a', wave: '#3d8a5a' },
-            fire:  { fill: '#c0392b', wave: '#a93226' },
-            earth: { fill: '#b8860b', wave: '#9a7209' },
-            metal: { fill: '#8a9bb5', wave: '#6d7f99' },
-            water: { fill: '#2a6bbf', wave: '#1e55a0' },
-        };
-        let wxHtml = '<div class="wuxing-circles">';
+        let wxHtml = '<div class="bar-group">';
         wxData.forEach(w => {
-            const col = WX_COLORS[w.key] || { fill: '#555', wave: '#444' };
-            // 웨이브: SVG 단일 viewBox 안에서 animateTransform으로 처리
-            // overflow:hidden인 liq-container 안에 SVG 하나만 넣어 삐져나감 없음
-            // path: 0~200 2주기, animateTransform x: 0→-100 (뷰박스 절반) = seamless
-            const fillH = Math.max(w.val, 0);
-            const amp = 3;
-            // 수위: amp 반영해서 실제로 fillH%처럼 보이게 보정
-            const wY = 100 - fillH + amp * 0.5;
-            // path: 2주기(0~200), 각 주기=100, 25단위 포인트
-            const mkP = (dy, a) => {
-                const y = wY + dy;
-                return `M0,${y} C12,${y-a} 13,${y-a} 25,${y} C37,${y+a} 38,${y+a} 50,${y} C62,${y-a} 63,${y-a} 75,${y} C87,${y+a} 88,${y+a} 100,${y} C112,${y-a} 113,${y-a} 125,${y} C137,${y+a} 138,${y+a} 150,${y} C162,${y-a} 163,${y-a} 175,${y} C187,${y+a} 188,${y+a} 200,${y} L200,100 L0,100 Z`;
-            };
+            const badge = (w.key === wxMax.key)
+                ? '<span style="font-size:10px;margin-left:6px;padding:1px 6px;border-radius:10px;background:rgba(82,179,106,0.2);color:#7ce8a5;">최강</span>'
+                : (w.val <= 4 ? '<span style="font-size:10px;margin-left:6px;padding:1px 6px;border-radius:10px;background:rgba(158,164,170,0.18);color:#b8bfc6;">부족</span>' : '');
             wxHtml += `
-                <div class="w-circle-wrap">
-                    <div class="liq-container">
-                        <svg viewBox="0 0 100 100" preserveAspectRatio="none"
-                             style="position:absolute;inset:0;width:100%;height:100%;z-index:1;">
-                            <defs>
-                                <!-- 2주기 path를 -100 시작점에 두고 0까지 이동 = seamless -->
-                            </defs>
-                            <!-- 웨이브1: x: -100 → 0 (뷰박스 1주기=100) -->
-                            <path d="${mkP(0, amp)}" fill="${col.fill}" opacity="0.92">
-                                <animateTransform attributeName="transform" type="translate"
-                                    from="-100 0" to="0 0" dur="7s" repeatCount="indefinite"/>
-                            </path>
-                            <!-- 웨이브2: x: 0 → -100 반대방향 -->
-                            <path d="${mkP(1, amp-1)}" fill="${col.wave}" opacity="0.4">
-                                <animateTransform attributeName="transform" type="translate"
-                                    from="0 0" to="-100 0" dur="11s" repeatCount="indefinite"/>
-                            </path>
-                        </svg>
-                        <div class="w-val" style="z-index:10;">${w.val}%</div>
+                <div class="bar-item">
+                    <div class="bar-label-wrap">
+                        <span class="bar-label-main ${w.key}">${w.label}</span>
                     </div>
-                    <div class="w-label">${w.label}</div>
+                    <div class="bar-track"><div class="bar-fill bg-${w.key}" style="width:${w.val}%;"></div></div>
+                    <div class="bar-value ${w.key}">${w.val}%${badge}</div>
                 </div>
             `;
         });
