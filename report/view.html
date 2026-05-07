@@ -6540,12 +6540,17 @@ function runAnalysis(overrideParams) {
             </div>`;
 
         const shinsalBadgeHtml = (items) => {
-            const arr = items || [];
+            const raw = Array.isArray(items) ? items : [items];
+            const arr = raw
+                .filter(Boolean)
+                .flatMap((v) => String(v).split(/\s*[·,\/\|]\s*/g))
+                .map((s) => s.trim())
+                .filter(Boolean);
             if (!arr.length) return '<div class="m-badge m-badge-shinsal" style="font-size:11px;">-</div>';
             let inner = '';
             for (let i = 0; i < arr.length; i += 2) {
                 const pair = arr.slice(i, i + 2);
-                const lineInner = pair.map((t) => String(t)).join(' · ');
+                const lineInner = pair.join(' · ');
                 inner += `<div class="m-badge-shinsal-line">${lineInner}</div>`;
             }
             return `<div class="m-badge m-badge-shinsal" style="font-size:11px;">${inner}</div>`;
