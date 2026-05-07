@@ -771,7 +771,7 @@
             background: transparent;
             color: var(--text-dim);
             font-size: 12px;
-            font-weight: 500;
+            font-weight: 400;
             justify-content: center;
             align-items: center;
             box-sizing: border-box;
@@ -781,7 +781,7 @@
             background: transparent;
             color: var(--text-soft);
             font-size: 13px;
-            font-weight: 700;
+            font-weight: 500;
             text-align: center;
             justify-content: center;
             align-items: center;
@@ -791,6 +791,7 @@
         }
         .m-badge {
             font-size: 11px;
+            font-weight: 350;
             color: var(--text-dim);
             margin-bottom: 4px;
             line-height: 1.45;
@@ -825,6 +826,8 @@
         .m-hangul {
             font-size: 11px;
             color: var(--text-dim);
+            font-weight: 300;
+            letter-spacing: -0.15px;
         }
         .m-hanja.wood, .m-badge .wood { color: var(--wood) !important; }
         .m-hanja.fire, .m-badge .fire { color: var(--fire) !important; }
@@ -4530,7 +4533,7 @@ function buildPart1_Story(data){
         html += '<tr style="border-bottom:1px solid rgba(199,167,106,0.25);">';
         html += '<td style="padding:6px 4px;color:#555;font-size:10px;width:56px;"></td>';
         ['시주','일주','월주','년주'].forEach(function(h){
-            html += '<td style="padding:6px 8px;text-align:center;color:var(--gold);font-size:11px;font-weight:700;">'+h+'</td>';
+            html += '<td style="padding:6px 8px;text-align:center;color:var(--gold);font-size:11px;font-weight:500;">'+h+'</td>';
         });
         html += '</tr>';
         // 십성
