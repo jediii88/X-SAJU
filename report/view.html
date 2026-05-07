@@ -7250,6 +7250,7 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
             const mSipGan=(typeof getSipseong==='function'&&mGan)?(getSipseong(dayStem,mGan)||''):'';
             const mSipJi=(typeof getSipseong==='function'&&mJi)?(getSipseong(dayStem,mJi)||''):'';
             const flowAnchor=`올해(${curY})는 ${yGan}${yJi}${ySipGan?` · 천간 ${ySipGan}`:''}${ySipJi?` · 지지 ${ySipJi}`:''}, 이달(${curM}월)은 ${mGan}${mJi}${mSipGan?` · 천간 ${mSipGan}`:''}${mSipJi?` · 지지 ${mSipJi}`:''} 흐름입니다.`;
+            const healthFlowHint = `현재 흐름 기준으로 ${flowAnchor} 원국 취약점(${OHE[stemEl]||stemEl})이 겹치는 달에는 수면·회복 루틴을 우선순위 1순위로 두는 편이 안전합니다.`;
 
             // ── 건강운 상세 ──
             const healthOverall = counts[stemEl]>=30
