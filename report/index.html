@@ -749,7 +749,7 @@
             display: grid;
             grid-template-columns: 60px repeat(4, minmax(0, 1fr));
             gap: 4px;
-            align-items: center;
+            align-items: stretch;
             width: 100%;
         }
         .manse-cell {
@@ -763,16 +763,20 @@
             min-height: 48px;
             text-align: center;
             min-width: 0;
+            box-sizing: border-box;
         }
         .manse-label {
+            display: flex;
             background: transparent;
             color: var(--text-dim);
             font-size: 12px;
             font-weight: 500;
             justify-content: center;
             align-items: center;
+            box-sizing: border-box;
         }
         .manse-head {
+            display: flex;
             background: transparent;
             color: var(--text-soft);
             font-size: 13px;
@@ -780,6 +784,9 @@
             text-align: center;
             justify-content: center;
             align-items: center;
+            min-height: 40px;
+            padding: 6px 4px;
+            box-sizing: border-box;
         }
         .m-badge {
             font-size: 11px;
@@ -789,6 +796,32 @@
             white-space: normal;
             word-break: keep-all;
             overflow-wrap: anywhere;
+        }
+        .m-badge.m-badge-shinsal {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            width: 100%;
+            margin-bottom: 0;
+        }
+        .m-badge-shinsal-line {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 4px 8px;
+            line-height: 1.35;
+            max-width: 100%;
+        }
+        .m-badge-shinsal-line span:not(.m-badge-shinsal-sep) {
+            white-space: nowrap;
+        }
+        .m-badge-shinsal-sep {
+            opacity: 0.5;
+            font-weight: 400;
+            flex-shrink: 0;
         }
         .m-hanja {
             font-size: 34px;
@@ -6492,6 +6525,18 @@ function runAnalysis(overrideParams) {
                 <div class="manse-head">년주</div>
             </div>`;
 
+        const shinsalBadgeHtml = (items) => {
+            const arr = items || [];
+            if (!arr.length) return '<div class="m-badge m-badge-shinsal" style="font-size:11px;">-</div>';
+            let inner = '';
+            for (let i = 0; i < arr.length; i += 2) {
+                const pair = arr.slice(i, i + 2);
+                const lineInner = pair.map((t) => `<span>${String(t)}</span>`).join('<span class="m-badge-shinsal-sep">\u00b7</span>');
+                inner += `<div class="m-badge-shinsal-line">${lineInner}</div>`;
+            }
+            return `<div class="m-badge m-badge-shinsal" style="font-size:11px;">${inner}</div>`;
+        };
+
         const bRow = (lbl, fn) => `
             <div class="manse-row">
                 <div class="manse-cell manse-label">${lbl}</div>
@@ -6512,8 +6557,8 @@ function runAnalysis(overrideParams) {
             bRow('십성', p => `<div class="m-badge">${getSipseong(dayStem, p.h[1])}</div>`),
             bRow('지장간', p => `<div class="m-badge">${getHidden(p.h[1], dayStem).replace(/<br>/g, '')}</div>`),
             bRow('12운성', p => `<div class="m-badge">${getUnsung(dayStem, p.h[1]) || '-'}</div>`),
-            bRow('12신살', p => `<div class="m-badge" style="font-size:11px;">${(allTwelveShinsal[p.n] || []).join('<br>') || '-'}</div>`),
-            bRow('기타신살', p => `<div class="m-badge" style="font-size:11px;">${(allExtraShinsal[p.n] || []).join('<br>') || '-'}</div>`),
+            bRow('12신살', p => shinsalBadgeHtml(allTwelveShinsal[p.n])),
+            bRow('기타신살', p => shinsalBadgeHtml(allExtraShinsal[p.n])),
             bRow('공망', p => {
                 const ilju = dayStem + ((pillars[1] && pillars[1].h && pillars[1].h[1]) ? pillars[1].h[1] : ((ec.getDay && ec.getDay()[1]) || ''));
                 const gmStr = getGongmang(ilju);
