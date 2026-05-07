@@ -7552,11 +7552,35 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
                 var _birthY=(globalSajuData&&globalSajuData.birthYear)||1988;
                 var _startYr=_birthY+age-1;var _endYr=_birthY+endAge-2;
                 var s=gs(g,j);var isCur=idx===activeDaeunIdx;var col=gc(s);
-                var strat=s>=2
-                    ?`이 대운은 용신·희신 기운이 강하게 들어오는 편이라, 준비해둔 것을 밖으로 꺼냈을 때 반응이 붙을 가능성이 높습니다. 그래서 사업 확장·포지션 도전·중요 계약 같은 선택이 상대적으로 유리하게 작동할 수 있어요. 재물: 적극적인 투자와 신규 수입 창출이 실현됩니다. 투자를 두려워하지 않는 편이 좋습니다. 직업: 이직·창업·승진 모두 길한 시기로, 더 큰 무대를 향해 발을 내딛을 때입니다. 건강: 전반적으로 활력이 넘치지만, 과욕으로 인한 과부하를 유의하시는 편이 좋습니다. 애정: 인연이 열리는 시기로, 적극적으로 사람들을 만나십시오. 이런 황금 대운은 평생 두세 번밖에 오지 않습니다. 지금 이 기운을 최대한 활용하시는 편이 좋습니다.`
-                    :s>=0
-                    ?'이 대운은 큰 기복 없이 안정적으로 흐르는 수평 이동의 시기입니다. 폭발적 도약보다는 기반을 다지고 내실을 강화하는 데 집중해야 합니다. 지금 당장 눈에 보이는 결과가 없더라도, 이 기간에 쌓은 실력과 인맥이 다음 대운에서 폭발적 결과로 이어집니다. 재물: 투기보다 꾸준한 저축과 자산 관리가 유리합니다. 직업: 현재 위치에서 전문성을 높이고 신뢰를 쌓는 시기입니다. 건강: 균형 잡힌 루틴을 유지하고 체력 관리에 신경 쓰십시오. 애정: 화려한 인연보다 깊은 신뢰 관계를 쌓을 시기입니다. 급하지 않게, 하지만 멈추지도 않게.'
-                    :'이 대운은 기신·구신 기운이 강하게 작동할 가능성이 높은 시기입니다. 그래서 체감상 답답할 수 있지만, 실패라기보다 다음 상승 구간을 준비하는 시간으로 보는 쪽이 현실적입니다. 무리한 확장·투자·새 출발은 자제하고, 수비와 내실 강화에 올인하시는 편이 좋습니다. 재물: 신규 투자는 최소화하고, 기존 자산을 지키는 것이 최우선입니다. 불필요한 지출을 줄이고 비상금을 확보하시는 편이 좋습니다. 직업: 가능하면 현 위치를 유지하고, 이직이나 창업은 다음 대운으로 미루는 것이 현명합니다. 건강: 이 시기에 건강 신호를 무시하면 나중에 크게 불거집니다. 정기 검진과 충분한 휴식이 필수입니다. 애정: 갈등이 쉽게 생기는 시기이니 상대방을 배려하고 소통을 강화하시는 편이 좋습니다. 이 시기를 내공 쌓기로 채운 사람이 다음 황금 대운에서 가장 크게 도약한다는 사실을 기억하시는 편이 좋습니다.';
+                var OHK={wood:'목',fire:'화',earth:'토',metal:'금',water:'수'};
+                var ganSipD=(typeof getSipseong==='function'&&dayStem)?(getSipseong(dayStem,g)||''):'';
+                var jiSipD=(typeof getSipseong==='function'&&dayStem)?(getSipseong(dayStem,j)||''):'';
+                var gEl=OH[g]||'earth', jEl=JO[j]||'earth';
+                var phaseLead=(s>=2?'상승':'sustain');
+                if(s<0) phaseLead='defense';
+                var wealthLine=phaseLead==='상승'
+                    ?'재물은 수입원을 넓히는 시도에서 성과가 붙기 쉬워, 기존 수익 구조 위에 보조 수익축을 하나 더 얹는 전략이 유리합니다.'
+                    :phaseLead==='sustain'
+                    ?'재물은 공격적 확장보다 현금흐름의 누수를 줄이는 운영이 더 효과적이며, 고정비 점검 주기를 짧게 가져갈수록 안정성이 올라갑니다.'
+                    :'재물은 방어가 우선입니다. 신규 투자보다 보유 자산의 변동성을 낮추고, 지출을 줄여 안전 여력을 확보하는 편이 손실 가능성을 낮춥니다.';
+                var careerLine=phaseLead==='상승'
+                    ?'직업은 역할 확장 제안이나 직무 전환 시도에 응답이 오기 쉬운 구간입니다.'
+                    :phaseLead==='sustain'
+                    ?'직업은 자리 이동보다 현재 역할의 완성도를 높일 때 평판 자산이 쌓입니다.'
+                    :'직업은 방향 전환보다 리스크 관리가 먼저이며, 큰 결정은 검토 시간을 길게 두는 편이 안전합니다.';
+                var relationLine=phaseLead==='상승'
+                    ?'관계는 새로운 연결이 열리기 쉬워 협업·인연 모두 문이 넓어지는 흐름입니다.'
+                    :phaseLead==='sustain'
+                    ?'관계는 폭보다 깊이가 중요한 시기로, 오래 갈 사람을 선별해 밀도를 높일수록 좋습니다.'
+                    :'관계는 감정 반응이 커질 수 있어 속도를 늦추고 대화 간격을 조절하는 편이 안정적입니다.';
+                var strat=(age+'세~'+(endAge-1)+'세 구간은 '+g+j+' 기운이 중심이 됩니다. 천간은 '+g+'('+OHK[gEl]+'/'+(ganSipD||'십성 보류')+'), 지지는 '+j+'('+OHK[jEl]+'/'+(jiSipD||'십성 보류')+')로 작동해, 같은 기회라도 체감 방식이 달라집니다. ')
+                    +(phaseLead==='상승'
+                        ?'원국에서 약했던 축을 보완해 주는 편이라 실행력이 붙기 쉬운 대운입니다. 다만 속도를 한 번에 올리기보다 우선순위를 좁혀 정확도를 높일수록 결과가 오래 갑니다. '
+                        :phaseLead==='sustain'
+                        ?'급등보다 누적에 강한 흐름이라 준비된 것을 정교하게 다듬을수록 다음 구간에서 탄력이 커집니다. 서두르기보다 리듬을 일정하게 유지하는 편이 유리합니다. '
+                        :'부담 신호가 먼저 보이기 쉬운 대운이라 확장보다 방어 설계가 중요합니다. 무리하게 판을 키우기보다 손실 가능성을 줄이는 선택이 다음 반등의 발판이 됩니다. ')
+                    +wealthLine+' '+careerLine+' '+relationLine;
+
                 h2+='<div style="margin-bottom:18px;padding:18px;background:rgba(255,255,255,'+(isCur?'0.07':'0.03')+');border:1px solid '+(isCur?'var(--gold)':'rgba(255,255,255,0.07)')+';border-radius:12px;">';
                 h2+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:26px;font-weight:900;color:var(--gold);font-family:Noto Serif KR,serif;">'+g+j+'</span><div><div style="font-size:13px;color:#bbb;">'+age+'세 ~ '+(endAge-1)+'세</div>'+(isCur?'<span style="font-size:10px;background:var(--gold);color:#000;padding:1px 8px;border-radius:8px;font-weight:700;">▶ 현재</span>':'')+'</div></div><span style="font-size:13px;font-weight:700;color:'+col+';padding:4px 12px;border-radius:20px;background:rgba(255,255,255,0.05);">'+gb(s)+'</span></div>';
                 var _ageD = age||0;
