@@ -3690,15 +3690,19 @@ function buildChapter4_Wealth(data) {
         const g0 = gz[0] || ''; const g1 = gz[1] || '';
         const ganOh = OH2[g0] || ''; const jiOh = OH2[g1] || '';
         const ganKr = HK2[g0] || g0; const jiKr = HK2[g1] || g1;
+        const ganSip = (typeof getSipseong==='function' && data.dayStem) ? (getSipseong(data.dayStem,g0)||'') : '';
+        const jiSip = (typeof getSipseong==='function' && data.dayStem) ? (getSipseong(data.dayStem,g1)||'') : '';
         const isGood = ganOh === yong || jiOh === yong || ganOh === hee || jiOh === hee;
         const isBad = ganOh === gi || jiOh === gi;
         const isCur = i === actIdx;
         const score = isGood ? '🟢 재물 상승기' : isBad ? '🔴 수비 필요' : '🟡 유지기';
+        const ganTag = ganSip ? `${ganKr}(${ganSip})` : ganKr;
+        const jiTag = jiSip ? `${jiKr}(${jiSip})` : jiKr;
         const txt = isGood
-            ? '이 10년은 재물 에너지가 가장 강하게 살아나는 구간입니다. 새로운 수입원 개발, 사업 확장, 투자 진입 — 용기 있는 행동이 결실을 맺습니다. 기회가 왔을 때 머뭇거리지 마십시오.'
+            ? `${ganKr}${jiKr} 대운은 천간 ${ganTag}·지지 ${jiTag}가 재물축을 밀어주는 구간입니다. 원국에서 약했던 부분을 보완해 주기 쉬워, 새로운 수입원 개발·사업 확장·단계적 투자처럼 '준비된 실행'이 결실로 이어질 가능성이 높습니다.`
             : isBad
-            ? '이 10년은 재물 흐름이 막히거나 새는 구간입니다. 무리한 투자나 보증은 절대 금물입니다. 지금 있는 것을 지키는 전략이 먼저입니다.'
-            : '큰 변동 없이 안정적으로 유지되는 10년입니다. 꾸준한 수입 관리와 저축에 집중하십시오.';
+            ? `${ganKr}${jiKr} 대운은 천간 ${ganTag}·지지 ${jiTag}가 원국의 재물 흐름과 충돌하기 쉬운 구간입니다. 그래서 돈이 들어와도 지출·변동으로 새기 쉬우니, 공격보다 방어가 우선입니다. 큰 투자·보증은 보수적으로 보고, 현금흐름과 고정비부터 정리하는 편이 유리합니다.`
+            : `${ganKr}${jiKr} 대운은 천간 ${ganTag}·지지 ${jiTag}가 재물 흐름을 급격히 흔들기보다 안정적으로 운용하게 만드는 구간입니다. 크게 치고 나가기보다 기존 수입 구조를 정교화하고 저축·리밸런싱을 꾸준히 쌓을 때, 다음 상승 구간에서 체감 차이가 커집니다.`;
         const curBadge = isCur ? '<span style="font-size:10px;background:var(--gold);color:#000;padding:1px 6px;border-radius:6px;font-weight:700;">▶ 현재</span>' : '';
         return `<div style="background:rgba(255,255,255,0.03);border-radius:8px;padding:12px 14px;margin-bottom:8px;border-left:3px solid ${isGood ? '#c7a76a' : isBad ? '#e74c3c' : '#555'};">
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
@@ -5064,8 +5068,8 @@ function buildCoverPage(data) {
         ${birthStr ? `<div style="font-size:13px;color:rgba(220,224,232,0.62);margin-bottom:12px;font-weight:300;letter-spacing:0.02em;">${birthStr}</div>` : ''}
         <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center;">
             ${data.strengthText ? `<div style="display:inline-block;font-size:11px;color:rgba(199,167,106,0.76);background:rgba(199,167,106,0.08);padding:5px 14px;border-radius:999px;border:1px solid rgba(199,167,106,0.16);font-weight:300;">${data.strengthText}</div>` : ''}
-            ${yongKr ? `<div style="display:inline-block;font-size:11px;color:var(--metal);background:rgba(90,162,255,0.09);padding:5px 14px;border-radius:999px;border:1px solid rgba(90,162,255,0.2);font-weight:300;">용신 ${yongKr}</div>` : ''}
-            ${giKr ? `<div style="display:inline-block;font-size:11px;color:var(--fire);background:rgba(212,90,82,0.10);padding:5px 14px;border-radius:999px;border:1px solid rgba(212,90,82,0.22);font-weight:300;">기신 ${giKr}</div>` : ''}
+            ${yongKr ? `<div style="display:inline-block;font-size:11px;color:var(--metal);background:rgba(53,95,184,0.12);padding:5px 14px;border-radius:999px;border:1px solid rgba(53,95,184,0.32);font-weight:300;">용신 ${yongKr}</div>` : ''}
+            ${giKr ? `<div style="display:inline-block;font-size:11px;color:var(--fire);background:rgba(207,62,57,0.14);padding:5px 14px;border-radius:999px;border:1px solid rgba(207,62,57,0.34);font-weight:300;">기신 ${giKr}</div>` : ''}
         </div>
         <div style="margin-top:28px;font-size:10px;color:rgba(210,214,223,0.38);letter-spacing:0.18em;">${formatReportAccessLine(data)}</div>
     </div>`;
