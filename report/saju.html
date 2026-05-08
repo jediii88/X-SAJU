@@ -5574,7 +5574,7 @@ function buildCoverPage(data) {
             [strengthPlain, flowPlain].filter(Boolean).join(' ') + '</p></div>';
     }
 
-    return `<div class="cover-page chapter-start print-only" style="display:flex;flex-direction:column;justify-content:flex-start;align-items:center;min-height:88vh;padding:48px 28px 52px;text-align:center;border-bottom:1px solid rgba(199,167,106,0.12);margin-bottom:40px;">
+    return `<div class="cover-page chapter-start" style="display:flex;flex-direction:column;justify-content:flex-start;align-items:center;min-height:88vh;padding:48px 28px 52px;text-align:center;border-bottom:1px solid rgba(199,167,106,0.12);margin-bottom:40px;">
         <img class="sajux-logo" src="assets/sajux-logo.png" alt="SAJU X 로고" loading="lazy" />
         <div style="font-size:9px;letter-spacing:0.35em;color:rgba(199,167,106,0.4);margin:6px 0 22px;font-weight:300;">SAJU X · PRIVATE REPORT</div>
 
@@ -5604,7 +5604,7 @@ function buildCoverPage(data) {
 // ===================================================================
 function buildBookIntroPage(data) {
     const name = data.name || '고객';
-    return `<div id="sec-book-intro" class="toc-page print-only chapter-start book-intro-page" style="padding:56px 36px 64px;border-bottom:1px solid rgba(199,167,106,0.12);margin-bottom:40px;max-width:720px;margin-left:auto;margin-right:auto;">
+    return `<div id="sec-book-intro" class="toc-page chapter-start book-intro-page" style="padding:56px 36px 64px;border-bottom:1px solid rgba(199,167,106,0.12);margin-bottom:40px;max-width:720px;margin-left:auto;margin-right:auto;">
         <div style="font-size:10px;letter-spacing:0.35em;color:rgba(199,167,106,0.45);margin-bottom:16px;font-weight:600;">INTRODUCTION</div>
         <h2 style="font-family:Noto Serif KR,serif;font-size:28px;font-weight:700;color:#fff;margin:0 0 10px;">이 책을 펼치며</h2>
         <p style="font-size:13px;color:#888;margin:0 0 28px;line-height:1.75;">${name} 고객님을 위한 SAJU X 맞춤 리포트입니다. 아래 순서대로 읽어 오시면 한 권의 책을 넘기듯 흐름이 이어집니다.</p>
@@ -5636,7 +5636,7 @@ function buildBookIntroPage(data) {
 // ===================================================================
 function buildForewordPage(data) {
     const name = data.name || '고객';
-    return `<div id="sec-book-foreword" class="toc-page print-only chapter-start book-foreword-page" style="padding:56px 36px 72px;border-bottom:1px solid rgba(199,167,106,0.12);margin-bottom:40px;max-width:620px;margin-left:auto;margin-right:auto;">
+    return `<div id="sec-book-foreword" class="toc-page chapter-start book-foreword-page" style="padding:56px 36px 72px;border-bottom:1px solid rgba(199,167,106,0.12);margin-bottom:40px;max-width:620px;margin-left:auto;margin-right:auto;">
         <div style="font-size:10px;letter-spacing:0.35em;color:rgba(199,167,106,0.45);margin-bottom:16px;font-weight:600;">FOREWORD</div>
         <h2 style="font-family:Noto Serif KR,serif;font-size:28px;font-weight:700;color:#fff;margin:0 0 24px;">머릿말</h2>
         <div style="text-align:left;font-size:14px;line-height:2;color:#ddd;">
@@ -5680,7 +5680,7 @@ function buildTOC(data) {
             <div style="font-size:11px;color:rgba(199,167,106,0.4);min-width:30px;text-align:right;">${c.pages}</div>
         </div>`).join('');
 
-    return `<div class="toc-page print-only" style="padding:60px 40px 80px;border-bottom:1px solid rgba(199,167,106,0.1);margin-bottom:48px;">
+    return `<div class="toc-page" style="padding:60px 40px 80px;border-bottom:1px solid rgba(199,167,106,0.1);margin-bottom:48px;">
         <div style="font-size:10px;letter-spacing:5px;color:rgba(199,167,106,0.5);margin-bottom:14px;">TABLE OF CONTENTS</div>
         <div style="font-family:Noto Serif KR,serif;font-size:30px;font-weight:700;color:#fff;margin-bottom:6px;">목차</div>
         <div style="font-size:13px;color:#666;margin-bottom:32px;">X-SAJU MASTER 사주 분석 리포트 전체 구성</div>
@@ -6160,10 +6160,19 @@ function startReport() {
         if(reportSec) reportSec.style.display = 'none';
         const reportFull = document.getElementById('sec-report-full');
         if(reportFull) reportFull.style.display = 'block';
-        // 부드럽게 스크롤
+
+        // 심층 리포트(책)가 생성되면, 위쪽 대시보드 UI는 접고 '책'만 보여줍니다.
+        var hero = document.getElementById('hero-book-cover');
+        if (hero) hero.style.display = 'none';
+        var inlineTop = document.getElementById('report-inline-top');
+        if (inlineTop) inlineTop.style.display = 'none';
+        var nav = document.querySelector('.jeomsin-nav');
+        if (nav) nav.style.display = 'none';
+
+        // 부드럽게 스크롤 — 책의 첫 페이지(표지)로
         setTimeout(() => {
-            var hero = document.getElementById('hero-book-cover');
-            if (hero) hero.scrollIntoView({behavior:'smooth', block:'start'});
+            var t = document.querySelector('#report-container .cover-page') || document.getElementById('report-container');
+            if (t) t.scrollIntoView({behavior:'smooth', block:'start'});
         }, 100);
     });
 }
