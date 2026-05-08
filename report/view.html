@@ -1163,6 +1163,7 @@
             min-height: 48px;
             text-align: center;
             min-width: 0;
+            box-sizing: border-box;
         }
         .manse-label {
             display: flex;
@@ -1227,11 +1228,6 @@
             font-weight: 420;
             letter-spacing: -0.15px;
         }
-        .m-hanja.wood, .m-badge .wood { color: var(--wood) !important; }
-        .m-hanja.fire, .m-badge .fire { color: var(--fire) !important; }
-        .m-hanja.earth, .m-badge .earth { color: var(--earth) !important; }
-        .m-hanja.metal, .m-badge .metal { color: var(--metal) !important; }
-        .m-hanja.water, .m-badge .water { color: var(--water) !important; }
         
 
 
@@ -5186,7 +5182,7 @@ function buildPart1_Story(data){
     sortedOh.forEach(function(entry){
         var k=entry[0],v=entry[1]||0;
         var pct=Math.round(v/total*100);
-        var col='var(--'+k+')'; var kr=OH_KR[k]||k;
+        var col=ohColor(k); var kr=OH_KR[k]||k;
         var isMax=k===maxOh,isMin=k===minOh;
         html+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">';
         html+='<div style="width:24px;text-align:right;font-size:12px;font-weight:'+(isMax?'800':'400')+';color:'+(isMax?col:'#666')+';">'+kr+'</div>';
@@ -5801,15 +5797,9 @@ window.generateDeepReport = generateDeepReport;
     })();
     </script>
 
-
-
-
-
-
-
 <!-- SAJUX_CACHE_BUSTER_START -->
-<meta name="sajux-build" content="1778256339">
-<script>(function(){var v='1778256339';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
+<meta name="sajux-build" content="1778256519">
+<script>(function(){var v='1778256519';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
 <!-- SAJUX_CACHE_BUSTER_END -->
 </head>
 <body>
@@ -7024,8 +7014,10 @@ function runAnalysis(overrideParams) {
         let displayLunarY = y, displayLunarM = m, displayLunarD = d, displayLunarLeap = false;
 
         // 1. 입력된 값을 양/음력 기준에 맞게 생성 (경도 보정 전)
-        // 시주는 입력 시각을 그대로 사용한다. (특정 구간 강제 보정 제거)
+        // 자시(子時) 경계 보정: 01:00~01:29 → 자시로 처리 (전통 명리학 기준)
+        // 피노키님 01:04 → 戊子 자시에 해당
         var hrAdj = hr;
+        if (hr === 1 && mn <= 29) { hrAdj = 0; }
 
         if (isSolar) {
             solarObj = Solar.fromYmdHms(y, m, d, hrAdj, mn, 0);
@@ -7264,9 +7256,9 @@ function runAnalysis(overrideParams) {
                 <div class="info-label">${p.n}</div>
                 <div style="margin-top:6px;">
                     <div style="font-size:10px;color:var(--gold);letter-spacing:1px;margin-bottom:3px;">12신살</div>
-                    <div class="info-value" style="margin-bottom:8px;line-height:1.6;">${isUnk ? '시간 미상' : (twl.join('<br>') || '-')}</div>
+                    <div class="info-value" style="margin-bottom:8px;">${isUnk ? '시간 미상' : (twl.join(', ') || '-')}</div>
                     <div style="font-size:10px;color:#9b59b6;letter-spacing:1px;margin-bottom:3px;">기타신살</div>
-                    <div class="info-value" style="line-height:1.6;">${isUnk ? '시간 미상' : (ext.join('<br>') || '-')}</div>
+                    <div class="info-value">${isUnk ? '시간 미상' : (ext.join(', ') || '-')}</div>
                 </div>
             </div>`;
         }).join('');
