@@ -1216,7 +1216,7 @@
         }
         .m-hanja {
             font-size: 34px;
-            font-weight: 280;
+            font-weight: 560;
             font-family: 'Noto Sans KR', sans-serif;
             line-height: 1.1;
             margin-bottom: 2px;
@@ -1224,7 +1224,7 @@
         .m-hangul {
             font-size: 11px;
             color: var(--text-dim);
-            font-weight: 300;
+            font-weight: 420;
             letter-spacing: -0.15px;
         }
         .m-hanja.wood, .m-badge .wood { color: var(--wood) !important; }
@@ -5602,8 +5602,7 @@ function buildClientCoverPage(data) {
 
         <div style="width:110px;height:110px;margin:2px auto 12px;display:flex;align-items:center;justify-content:center;"><img src="${animalImage}" alt="${animalPlain || '일주 동물'}" loading="lazy" style="width:100%;height:100%;object-fit:contain;display:block;"/></div>
         <div style="font-size:30px;line-height:1.15;margin:0 0 6px;">${iljuBig}</div>
-        <div style="font-size:14px;color:rgba(220,224,234,0.86);margin-top:2px;letter-spacing:0.03em;font-weight:400;">${iljuKorean}</div>
-        <div style="font-size:15px;color:rgba(199,167,106,0.90);margin-top:6px;letter-spacing:0.02em;font-weight:500;">${iljuMeaning}</div>
+        <div style="font-size:15px;color:rgba(199,167,106,0.92);margin-top:4px;letter-spacing:0.02em;font-weight:600;">${iljuKorean} - ${iljuMeaning}</div>
         ${birthStr ? `<div style="font-size:13px;color:rgba(210,214,223,0.58);margin-top:16px;font-weight:300;">${birthStr}</div>` : ''}
 
         <div style="margin-top:38px;font-size:10px;color:rgba(210,214,223,0.34);letter-spacing:0.14em;">${formatReportAccessLine(data)}</div>
@@ -5802,9 +5801,11 @@ window.generateDeepReport = generateDeepReport;
     })();
     </script>
 
+
+
 <!-- SAJUX_CACHE_BUSTER_START -->
-<meta name="sajux-build" content="1778255880">
-<script>(function(){var v='1778255880';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
+<meta name="sajux-build" content="1778256059">
+<script>(function(){var v='1778256059';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
 <!-- SAJUX_CACHE_BUSTER_END -->
 </head>
 <body>
