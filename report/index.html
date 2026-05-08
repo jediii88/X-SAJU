@@ -3681,8 +3681,8 @@ function buildChapter4_Wealth(data) {
         ? `큰 수익을 향해 달리다가 한 번의 실수로 모든 것을 잃는 패턴을 가장 조심하시는 편이 좋습니다. 분산투자와 리스크 관리가 필수입니다.`
         : `돈을 직접 쫓기보다 나의 가치를 높이는 데 집중하시는 편이 좋습니다. 가치가 올라가면 돈은 자연스럽게 따라옵니다.`;
     const baseFlow = isStrong
-        ? '원국이 신강 쪽이라 과속 확장보다 분할 실행이 안정적입니다. 같은 기회라도 속도 조절이 수익 보존률을 좌우합니다.'
-        : '원국이 신약 쪽이라 환경·협업·파트너의 도움을 받을수록 수익 실현 속도가 빨라집니다. 혼자 버티기보다 연결 전략이 유리합니다.';
+        ? '타고난 추진력이 강한 편이라 한 번에 크게 벌이기보다 나눠서 실행하면 돈을 더 오래 지킬 수 있습니다.'
+        : '혼자 끌어가기보다 주변 도움을 받을 때 결과가 더 빨리 붙는 흐름입니다. 함께 가는 전략이 유리합니다.';
 
     // 대운별 재물 흐름
     const rows = data.daeunRows || [];
@@ -3693,6 +3693,9 @@ function buildChapter4_Wealth(data) {
 
     const daewunRows = rows.slice(0, 8).map((r, i) => {
         const age = r.age !== undefined ? r.age : (Array.isArray(r) ? r[0] : 0);
+        const next = rows[i+1];
+        const nextAgeRaw = next ? (next.age !== undefined ? next.age : (Array.isArray(next) ? next[0] : age+10)) : age+10;
+        const endAge = Math.max(age, (nextAgeRaw||age+10)-1);
         const gz = r.gz || (Array.isArray(r) ? r[1] : '') || '';
         if (!gz) return '';
         const g0 = gz[0] || ''; const g1 = gz[1] || '';
@@ -3704,17 +3707,37 @@ function buildChapter4_Wealth(data) {
         const isBad = ganOh === gi || jiOh === gi;
         const isCur = i === actIdx;
         const score = isGood ? '🟢 재물 상승기' : isBad ? '🔴 수비 필요' : '🟡 유지기';
-        const ganTag = ganSip ? `${ganKr}(${ganSip})` : ganKr;
-        const jiTag = jiSip ? `${jiKr}(${jiSip})` : jiKr;
-        const txt = isGood
-            ? `${ganKr}${jiKr} 대운은 천간 ${ganTag}·지지 ${jiTag}가 재물축을 밀어주는 구간입니다. 원국에서 약했던 부분을 보완해 주기 쉬워, 새로운 수입원 개발·사업 확장·단계적 투자처럼 '준비된 실행'이 결실로 이어질 가능성이 높습니다. ${baseFlow}`
-            : isBad
-            ? `${ganKr}${jiKr} 대운은 천간 ${ganTag}·지지 ${jiTag}가 원국의 재물 흐름과 충돌하기 쉬운 구간입니다. 그래서 돈이 들어와도 지출·변동으로 새기 쉬우니, 공격보다 방어가 우선입니다. 큰 투자·보증은 보수적으로 보고, 현금흐름과 고정비부터 정리하는 편이 유리합니다. ${baseFlow}`
-            : `${ganKr}${jiKr} 대운은 천간 ${ganTag}·지지 ${jiTag}가 재물 흐름을 급격히 흔들기보다 안정적으로 운용하게 만드는 구간입니다. 크게 치고 나가기보다 기존 수입 구조를 정교화하고 저축·리밸런싱을 꾸준히 쌓을 때, 다음 상승 구간에서 체감 차이가 커집니다. ${baseFlow}`;
+        const phase = isGood ? 'open' : (isBad ? 'guard' : 'steady');
+        const easyRole = function(tag){
+            if(!tag) return '균형형';
+            if(tag==='비견'||tag==='겁재') return '경쟁형';
+            if(tag==='식신'||tag==='상관') return '표현형';
+            if(tag==='정재'||tag==='편재') return '수익형';
+            if(tag==='정관'||tag==='편관') return '관리형';
+            if(tag==='정인'||tag==='편인') return '기획형';
+            return '균형형';
+        };
+        const roleLead = easyRole(ganSip);
+        const roleField = easyRole(jiSip);
+        const intro = phase==='open'
+            ? `${ganKr}${jiKr} 대운(${age}~${endAge}세)은 돈의 문이 열리기 쉬운 시기입니다.`
+            : phase==='guard'
+            ? `${ganKr}${jiKr} 대운(${age}~${endAge}세)은 돈이 새기 쉬워 지키는 힘이 더 중요한 시기입니다.`
+            : `${ganKr}${jiKr} 대운(${age}~${endAge}세)은 급하게 키우기보다 안정적으로 굴리는 데 강한 시기입니다.`;
+        const action = phase==='open'
+            ? '작게 시작해 반응이 붙는 쪽에 조금씩 더 싣는 방식이 안전하고 빠릅니다.'
+            : phase==='guard'
+            ? '새 투자보다 기존 지출 정리, 계약 점검, 비상자금 확보를 먼저 하면 흔들림이 줄어듭니다.'
+            : '새 판을 크게 벌이기보다 지금 하는 일을 더 단단하게 다듬으면 다음 상승 구간에서 차이가 커집니다.';
+        const roleText = `이번 구간은 앞에서는 ${roleLead} 스타일, 현장에서는 ${roleField} 스타일이 강하게 보입니다.`;
+        const tail = isStrong
+            ? '추진력이 좋은 타입이라 한 번에 크게 가기보다 나눠서 실행할 때 돈을 더 오래 지킬 수 있습니다.'
+            : '혼자 버티기보다 주변 도움을 받아 함께 움직일수록 결과가 빨리 붙습니다.';
+        const txt = `${intro} ${roleText} ${action} ${tail}`;
         const curBadge = isCur ? '<span style="font-size:10px;background:var(--gold);color:#000;padding:1px 6px;border-radius:6px;font-weight:700;">▶ 현재</span>' : '';
         return `<div style="background:rgba(255,255,255,0.03);border-radius:8px;padding:12px 14px;margin-bottom:8px;border-left:3px solid ${isGood ? '#c7a76a' : isBad ? '#e74c3c' : '#555'};">
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-                <span style="font-size:12px;color:${isGood ? 'var(--gold)' : isBad ? '#e74c3c' : '#888'};">${age}세 ${ganKr}${jiKr}</span>
+                <span style="font-size:12px;color:${isGood ? 'var(--gold)' : isBad ? '#e74c3c' : '#888'};">${age}~${endAge}세 ${ganKr}${jiKr}</span>
                 <span style="font-size:11px;">${score}</span>
                 ${curBadge}
             </div>
@@ -7217,7 +7240,7 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
             const ySipJi=(typeof getSipseong==='function'&&yJi)?(getSipseong(dayStem,yJi)||''):'';
             const mSipGan=(typeof getSipseong==='function'&&mGan)?(getSipseong(dayStem,mGan)||''):'';
             const mSipJi=(typeof getSipseong==='function'&&mJi)?(getSipseong(dayStem,mJi)||''):'';
-            const flowAnchor=`올해(${curY})는 ${yGan}${yJi}${ySipGan?` · 천간 ${ySipGan}`:''}${ySipJi?` · 지지 ${ySipJi}`:''}, 이달(${curM}월)은 ${mGan}${mJi}${mSipGan?` · 천간 ${mSipGan}`:''}${mSipJi?` · 지지 ${mSipJi}`:''} 흐름입니다.`;
+            const flowAnchor=`올해(${curY})는 ${yGan}${yJi} 흐름, 이달(${curM}월)은 ${mGan}${mJi} 흐름입니다.`;
 
             // ── 건강운 상세 ──
             const healthOverall = counts[stemEl]>=30
@@ -7282,7 +7305,7 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
                 independent: `당신은 남 밑에 있으면 에너지가 억눌립니다. 비견과 겁재가 강할수록 내 영역을 스스로 개척하는 독립 사업, 영업, 스포츠, 군인/경찰 등 치열한 경쟁 구도에서 진가를 발휘합니다.`
             }[careerType];
 
-            const careerFlowHint = `${flowAnchor} 직업 의사결정은 천간 십성(역할/성과 방식)과 지지 십성(현장 체감)을 함께 보고 속도를 조절할수록 실패 확률이 낮아집니다.`;
+            const careerFlowHint = `${flowAnchor} 직업 결정은 내 강점이 잘 살아나는 쪽을 먼저 고르고, 속도를 한 번에 올리기보다 단계별로 가면 실패 확률이 낮아집니다.`;
             document.getElementById('cat-career').innerHTML = `
                 <div class="cat-header"><span class="cat-icon">🏆</span><span class="cat-title">직업운 심층 분석</span></div>
                 <div class="cat-body">
@@ -7573,7 +7596,7 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
                     :phaseLead==='sustain'
                     ?'관계는 폭보다 깊이가 중요한 시기로, 오래 갈 사람을 선별해 밀도를 높일수록 좋습니다.'
                     :'관계는 감정 반응이 커질 수 있어 속도를 늦추고 대화 간격을 조절하는 편이 안정적입니다.';
-                var strat=(age+'세~'+(endAge-1)+'세 구간은 '+g+j+' 기운이 중심이 됩니다. 천간은 '+g+'('+OHK[gEl]+'/'+(ganSipD||'십성 보류')+'), 지지는 '+j+'('+OHK[jEl]+'/'+(jiSipD||'십성 보류')+')로 작동해, 같은 기회라도 체감 방식이 달라집니다. ')
+                var strat=(age+'세~'+(endAge-1)+'세 구간은 '+g+j+' 기운이 중심이 됩니다. 앞기운은 '+g+'('+OHK[gEl]+'), 뒷기운은 '+j+'('+OHK[jEl]+')로 작동해, 같은 기회라도 체감 방식이 달라집니다. ')
                     +(phaseLead==='상승'
                         ?'원국에서 약했던 축을 보완해 주는 편이라 실행력이 붙기 쉬운 대운입니다. 다만 속도를 한 번에 올리기보다 우선순위를 좁혀 정확도를 높일수록 결과가 오래 갑니다. '
                         :phaseLead==='sustain'
@@ -7613,16 +7636,16 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
                 var gOh=OH[g2]||'earth';var jOh=JO[j2]||'earth';
                 var ganSip2=(typeof getSipseong==='function'&&dayStem)?(getSipseong(dayStem,g2)||''):'';
                 var jiSip2=(typeof getSipseong==='function'&&dayStem)?(getSipseong(dayStem,j2)||''):'';
-                var gTag=ganSip2?((GK[g2]||g2)+'('+ganSip2+')'):(GK[g2]||g2);
-                var jTag=jiSip2?((JK[j2]||j2)+'('+jiSip2+')'):(JK[j2]||j2);
+                var gTag=(GK[g2]||g2);
+                var jTag=(JK[j2]||j2);
                 var adv=s2>=2
-                    ?`올해는 천간 ${gTag}, 지지 ${jTag}가 원국과 비교적 잘 맞물리는 해입니다. 그래서 신규 실행·협업·확장 시도가 성과로 이어질 가능성이 높습니다. 다만 속도보다 우선순위를 먼저 정하면 수익 효율이 더 좋아집니다.`
+                    ?`올해는 ${gTag}${jTag} 기운이 나와 잘 맞아, 새 시도·협업·확장이 성과로 이어질 가능성이 높습니다. 다만 한 번에 많이 벌이기보다 우선순위를 먼저 정하면 결과가 더 좋아집니다.`
                     :s2>=0
-                    ?`올해는 천간 ${gTag}, 지지 ${jTag}가 급격한 변동보다 안정 운영에 힘을 싣는 해입니다. 큰 승부보다 기존 구조를 정교화하고 누수 지점을 줄이는 쪽이 유리합니다.`
-                    :`올해는 천간 ${gTag}, 지지 ${jTag}가 원국의 부담 구간을 자극할 수 있는 해입니다. 그래서 공격적 투자보다 현금흐름 방어, 계약 재검토, 리스크 축소를 우선하는 편이 손실 가능성을 낮춥니다.`;
+                    ?`올해는 ${gTag}${jTag} 기운이 급한 변화보다 안정 운영에 힘을 싣는 해입니다. 큰 승부보다 기존 구조를 다듬고 새는 부분을 줄이는 쪽이 유리합니다.`
+                    :`올해는 ${gTag}${jTag} 기운이 부담 구간을 건드릴 수 있는 해입니다. 공격적으로 키우기보다 현금흐름 방어와 계약 재검토를 먼저 하면 손실 가능성을 낮출 수 있습니다.`;
                 h3+='<div style="margin-bottom:14px;padding:16px;background:rgba(255,255,255,'+(isThis?'0.07':'0.03')+');border:1px solid '+(isThis?'var(--gold)':'rgba(255,255,255,0.07)')+';border-radius:12px;">';
                 h3+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;"><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:20px;font-weight:280;color:var(--gold);font-family:Noto Serif KR,serif;">'+g2+j2+'</span><span style="font-size:14px;color:#bbb;">'+yr+'년'+(isThis?' <span style="font-size:10px;background:var(--gold);color:#000;padding:1px 7px;border-radius:8px;font-weight:700;">올해</span>':'')+'</span></div><span style="font-size:12px;font-weight:700;color:'+col2+';">'+gb(s2)+'</span></div>';
-                var ynarr=yr+'년은 '+(GK[g2]||g2)+'('+KN[gOh]+'/'+(ganSip2||'십성 무')+') 기운과 '+(JK[j2]||j2)+'('+KN[jOh]+'/'+(jiSip2||'십성 무')+') 기운이 함께 작동하는 해입니다. '+(s2>=2?'원국의 약점을 메우는 방향으로 작용해 실행 결과가 붙을 가능성이 큽니다.':s2>=0?'급격한 상승보다 안정적 누적에 유리해, 정비·축적 전략이 잘 맞습니다.':'기운 충돌이 커질 수 있어 의사결정 속도를 늦추고 방어 전략을 강화하는 편이 안전합니다.');
+                var ynarr=yr+'년은 '+(GK[g2]||g2)+'('+KN[gOh]+') 기운과 '+(JK[j2]||j2)+'('+KN[jOh]+') 기운이 함께 작동하는 해입니다. '+(s2>=2?'부족했던 부분을 채워 주는 해라, 실행한 일이 결과로 이어질 가능성이 큽니다.':s2>=0?'급하게 키우기보다 차근차근 쌓을 때 더 잘 맞는 해입니다.':'충돌이 커질 수 있는 해라, 결정 속도를 늦추고 안전장치를 먼저 챙기는 편이 좋습니다.');
                 h3+='<div style="background:rgba(0,0,0,0.15);border-radius:6px;padding:10px;margin-bottom:10px;"><p style="font-size:12px;color:#ddd;line-height:1.75;margin:0;">'+ynarr+'</p></div>';
                 h3+='<div style="background:rgba(199,167,106,0.06);border-radius:6px;padding:10px;border-left:2px solid '+col2+';"><div style="font-size:10px;color:var(--text-dim);margin-bottom:4px;">이 해의 전략</div><p style="font-size:12.5px;color:#ccc;line-height:1.8;margin:0;">'+adv+'</p></div></div>';
             }
@@ -7651,14 +7674,14 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
                 var gOhm=OH[gm4]||'earth';var jOhm=JO[jm4]||'earth';
                 var ganSipM=(typeof getSipseong==='function'&&dayStem)?(getSipseong(dayStem,gm4)||''):'';
                 var jiSipM=(typeof getSipseong==='function'&&dayStem)?(getSipseong(dayStem,jm4)||''):'';
-                var mGTag=ganSipM?((GK[gm4]||gm4)+'('+ganSipM+')'):(GK[gm4]||gm4);
-                var mJTag=jiSipM?((JK[jm4]||jm4)+'('+jiSipM+')'):(JK[jm4]||jm4);
+                var mGTag=(GK[gm4]||gm4);
+                var mJTag=(JK[jm4]||jm4);
                 var wlDesc=WL[jm4]||jm4+'월의 기운이 이달을 이끕니다.';
                 var advm=sm4>=2
-                    ?`이달은 천간 ${mGTag}, 지지 ${mJTag}가 실행 쪽으로 힘을 보태는 편입니다. 중요한 시작·연락·계약 초안을 밀어붙이면 다음 달로 연결될 가능성이 높습니다.`
+                    ?`이달은 ${mGTag}${mJTag} 기운이 실행 쪽으로 힘을 보태는 달입니다. 중요한 시작·연락·계약 초안을 진행하면 다음 달로 이어질 가능성이 높습니다.`
                     :sm4>=0
-                    ?`이달은 천간 ${mGTag}, 지지 ${mJTag}가 균형 쪽에 가까워, 정리·보완·루틴 강화가 효율적입니다. 작은 완성도를 쌓는 전략이 좋습니다.`
-                    :`이달은 천간 ${mGTag}, 지지 ${mJTag}가 부담을 키울 수 있어 속도 조절이 필요합니다. 큰 결정보다 검토·보류·리스크 축소를 우선하면 안정적으로 넘길 가능성이 높습니다.`;
+                    ?`이달은 ${mGTag}${mJTag} 기운이 균형에 가까워, 정리·보완·루틴 강화가 효율적입니다. 작은 완성도를 쌓는 전략이 좋습니다.`
+                    :`이달은 ${mGTag}${mJTag} 기운이 부담을 키울 수 있어 속도 조절이 필요합니다. 큰 결정보다 검토·보류를 먼저 하면 안정적으로 넘길 가능성이 높습니다.`;
                 h4+='<div style="margin-bottom:12px;padding:14px;background:rgba(255,255,255,'+(isThisM?'0.07':'0.03')+');border:1px solid '+(isThisM?'var(--gold)':'rgba(255,255,255,0.06)')+';border-radius:10px;">';
                 h4+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:18px;font-weight:900;color:var(--gold);font-family:Noto Serif KR,serif;">'+gm4+jm4+'</span><span style="font-size:13px;color:#bbb;">'+m4+'월'+(isThisM?' <span style="font-size:10px;background:var(--gold);color:#000;padding:1px 6px;border-radius:6px;font-weight:700;">이달</span>':'')+'</span></div><span style="font-size:11px;font-weight:700;color:'+colm+';">'+gb(sm4)+'</span></div>';
                 h4+='<p style="font-size:13px;color:#ddd;line-height:1.75;margin:0 0 8px;">'+wlDesc+'</p>';
