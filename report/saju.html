@@ -5591,11 +5591,9 @@ function buildCoverPage(data) {
 
     return `<div class="cover-page chapter-start" style="display:flex;flex-direction:column;justify-content:flex-start;align-items:center;min-height:88vh;padding:48px 28px 52px;text-align:center;border-bottom:1px solid rgba(199,167,106,0.12);margin-bottom:40px;">
         <div class="sajux-logo-wrap"><img class="sajux-logo dark" src="assets/sajux-logo-dark.png" alt="SAJU X 로고" loading="lazy" /><img class="sajux-logo light" src="assets/sajux-logo-light.png" alt="SAJU X 로고" loading="lazy" /></div>
-        <div style="font-size:9px;letter-spacing:0.35em;color:rgba(199,167,106,0.4);margin:6px 0 22px;font-weight:300;">SAJU X · PRIVATE REPORT</div>
-
-        <div class="cover-brush-block">
-            <p class="cover-brush-name">${name} 고객님</p>
-            <p class="cover-brush-sub">맞춤 사주 풀이 리포트</p>
+        <div class="cover-brush-block" style="margin-top:10px;">
+            <p class="cover-brush-name">${name}님의 사주풀이</p>
+            <p class="cover-brush-sub">비밀문서</p>
         </div>
         ${birthStr ? `<div style="font-size:12.5px;color:rgba(210,214,223,0.58);margin:14px 0 0;font-weight:300;">${birthStr}</div>` : ''}
 
