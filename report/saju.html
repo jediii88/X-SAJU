@@ -5573,6 +5573,8 @@ function buildClientCoverPage(data) {
     const BRANCH_KR = {'子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해'};
     const iljuKorean = (STEM_KR[ds] || '') + (BRANCH_KR[dbch] || '');
     const iljuLabel = iljuKorean || iljuTitle || iljuKey;
+    const iljuKoreanLabel = iljuKorean ? (iljuKorean + '일주') : ((iljuKey || '').trim() ? (iljuKey + '일주') : '일주');
+    const iljuAnimalLabel = iljuTitle || animalPlain || '';
 
     function hc(ch) {
         return (typeof HAN_COLOR !== 'undefined' && HAN_COLOR[ch]) ? HAN_COLOR[ch] : '';
@@ -5588,13 +5590,13 @@ function buildClientCoverPage(data) {
     return `<div id="sec-client-cover" class="cover-page chapter-start" style="display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:90vh;padding:78px 28px 72px;text-align:center;border-bottom:1px solid rgba(199,167,106,0.12);margin-bottom:56px;">
         <div class="cover-brush-block" style="margin-top:0;">
             <p class="cover-brush-name">${name}님의 사주풀이</p>
-            <p class="cover-brush-sub">비밀문서</p>
+            
         </div>
 
         <div style="width:96px;height:1px;background:rgba(199,167,106,0.36);margin:38px auto 28px;"></div>
 
         <div style="font-size:34px;line-height:1.15;margin:0 0 10px;">${iljuBig}</div>
-        <div style="font-size:14px;color:rgba(199,167,106,0.78);letter-spacing:0.03em;font-weight:300;">${iljuTitle}${animalPlain ? ' · ' + animalPlain : ''}</div>
+        <div style="font-size:14px;color:rgba(199,167,106,0.78);letter-spacing:0.03em;font-weight:300;">${iljuKoreanLabel}${iljuAnimalLabel ? ' · ' + iljuAnimalLabel : ''}</div>
         ${birthStr ? `<div style="font-size:13px;color:rgba(210,214,223,0.58);margin-top:16px;font-weight:300;">${birthStr}</div>` : ''}
 
         <div style="margin-top:38px;font-size:10px;color:rgba(210,214,223,0.34);letter-spacing:0.14em;">${formatReportAccessLine(data)}</div>
