@@ -608,18 +608,16 @@
         .sajux-logo {
             width: clamp(96px, 18vw, 138px);
             height: auto;
-            opacity: 0.74;
+            opacity: 0.88;
             display: block;
             margin: 0 auto;
-            mix-blend-mode: screen;
-            filter: brightness(2.2) contrast(1.25) grayscale(1) drop-shadow(0 4px 14px rgba(0,0,0,0.35));
+            filter: invert(1) grayscale(1) brightness(2.4) contrast(1.12) drop-shadow(0 4px 12px rgba(255,255,255,0.16));
         }
-        .sajux-logo.inline-top { margin: 0 auto 10px; opacity: 0.62; }
+        .sajux-logo.inline-top { margin: 0 auto 10px; opacity: 0.72; }
         .sajux-logo.hero { margin: 0 auto 10px; }
         body.light-mode .sajux-logo {
-            mix-blend-mode: normal;
-            opacity: 0.78;
-            filter: grayscale(1) brightness(0.2) contrast(1.1);
+            opacity: 0.82;
+            filter: grayscale(1) brightness(0.18) contrast(1.14);
         }
         .hero-brush-title {
             font-family: 'Jeongseon Arirang Ppuri', 'Nanum Brush Script', cursive;
@@ -6178,7 +6176,6 @@ function startReport() {
                 <div style="margin:22px 0 8px; text-align:center; background:rgba(199,167,106,0.04); border-radius:12px; padding:14px 18px; border:1px solid rgba(199,167,106,0.12);">
                     <div style="font-size:11px; letter-spacing:2px; color:var(--gold); margin-bottom:8px;">BOOK FLOW</div>
                     <div style="font-size:13px; color:var(--text-soft); line-height:1.75;">표지 → 소개 → 목차 → 머릿말 → 본문</div>
-                    <button class="btn" onclick="tocGo('report-container')" style="max-width:260px; margin:12px auto 0; padding:10px 14px; font-size:13px; font-weight:700; background:rgba(199,167,106,0.18); border:1px solid rgba(199,167,106,0.35);">책 본문 바로가기</button>
                 </div>
             </div>
 
