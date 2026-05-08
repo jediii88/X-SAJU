@@ -608,16 +608,18 @@
         .sajux-logo {
             width: clamp(96px, 18vw, 138px);
             height: auto;
-            opacity: 0.88;
+            opacity: 0.90;
             display: block;
             margin: 0 auto;
-            filter: invert(1) grayscale(1) brightness(2.4) contrast(1.12) drop-shadow(0 4px 12px rgba(255,255,255,0.16));
+            /* Dark mode: force white logo */
+            filter: invert(1) brightness(2.2) contrast(1.05) drop-shadow(0 4px 12px rgba(255,255,255,0.14));
         }
-        .sajux-logo.inline-top { margin: 0 auto 10px; opacity: 0.72; }
+        .sajux-logo.inline-top { margin: 0 auto 10px; opacity: 0.74; }
         .sajux-logo.hero { margin: 0 auto 10px; }
         body.light-mode .sajux-logo {
-            opacity: 0.82;
-            filter: grayscale(1) brightness(0.18) contrast(1.14);
+            /* Light mode: keep original black logo */
+            opacity: 0.92;
+            filter: none;
         }
         .hero-brush-title {
             font-family: 'Jeongseon Arirang Ppuri', 'Nanum Brush Script', cursive;
