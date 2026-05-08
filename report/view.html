@@ -5538,7 +5538,7 @@ function buildChapter9_Remedy(data) {
 // ===================================================================
 function buildCoverPage(data) {
     return `<div id="sec-cover" class="cover-page chapter-start" style="display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:90vh;padding:72px 28px;text-align:center;border-bottom:1px solid rgba(199,167,106,0.12);margin-bottom:56px;">
-        <div class="sajux-logo-wrap" style="width:clamp(150px,26vw,210px);"><img class="sajux-logo dark" src="assets/sajux-logo-dark.png" alt="SAJU X 로고" loading="lazy" /><img class="sajux-logo light" src="assets/sajux-logo-light.png" alt="SAJU X 로고" loading="lazy" /></div>
+        <div class="sajux-logo-wrap" style="width:clamp(420px,58vw,630px);"><img class="sajux-logo dark" src="assets/sajux-logo-dark.png" alt="SAJU X 로고" loading="lazy" /><img class="sajux-logo light" src="assets/sajux-logo-light.png" alt="SAJU X 로고" loading="lazy" /></div>
     </div>`;
 }
 
@@ -5548,8 +5548,8 @@ function buildCoverPage(data) {
 function buildBookIntroPage(data) {
     return `<div id="sec-book-intro" class="toc-page chapter-start book-intro-page" style="padding:74px 42px 84px;border-bottom:1px solid rgba(199,167,106,0.12);margin-bottom:56px;max-width:760px;margin-left:auto;margin-right:auto;text-align:center;">
         <div style="font-size:10px;letter-spacing:0.35em;color:rgba(199,167,106,0.45);margin-bottom:18px;font-weight:600;">INTRODUCTION</div>
-        <h2 style="font-family:Noto Serif KR,serif;font-size:30px;font-weight:700;color:#fff;margin:0 0 18px;">브랜드 소개</h2>
-        <p style="font-size:14px;color:rgba(218,222,230,0.86);line-height:1.95;margin:0;">SAJU X는 사주의 흐름을 한눈에 이해할 수 있도록 정리한 고객 맞춤 해석 리포트입니다.<br/>앞 장부터 천천히 읽으면 전체 흐름이 더 선명해집니다.</p>
+        <h2 style="font-family:Noto Serif KR,serif;font-size:30px;font-weight:700;color:#fff;margin:0 0 18px;">소개</h2>
+        <p style="font-size:14px;color:rgba(218,222,230,0.86);line-height:1.95;margin:0;">사주X는 X-파일처럼 고객님의 깊은 곳을 들여다보는 비밀문서입니다.<br/>또한 사주X의 X는 사주를 이루는 네 개의 기둥이 교차하는 형상을 담은 이름입니다.</p>
     </div>`;
 }
 
@@ -5564,6 +5564,7 @@ function buildClientCoverPage(data) {
     const iljuTitle = dbEntry.title || iljuKey;
     const ILJU_ANIMAL = {'甲子':'쥐(자)','乙丑':'소(축)','丙寅':'호랑이(인)','丁卯':'토끼(묘)','戊辰':'용(진)','己巳':'뱀(사)','庚午':'말(오)','辛未':'양(미)','壬申':'원숭이(신)','癸酉':'닭(유)','甲戌':'개(술)','乙亥':'돼지(해)','丙子':'쥐(자)','丁丑':'소(축)','戊寅':'호랑이(인)','己卯':'토끼(묘)','庚辰':'용(진)','辛巳':'뱀(사)','壬午':'말(오)','癸未':'양(미)','甲申':'원숭이(신)','乙酉':'닭(유)','丙戌':'개(술)','丁亥':'돼지(해)','戊子':'쥐(자)','己丑':'소(축)','庚寅':'호랑이(인)','辛卯':'토끼(묘)','壬辰':'용(진)','癸巳':'뱀(사)','甲午':'말(오)','乙未':'양(미)','丙申':'원숭이(신)','丁酉':'닭(유)','戊戌':'개(술)','己亥':'돼지(해)','庚子':'쥐(자)','辛丑':'소(축)','壬寅':'호랑이(인)','癸卯':'토끼(묘)','甲辰':'용(진)','乙巳':'뱀(사)','丙午':'말(오)','丁未':'양(미)','戊申':'원숭이(신)','己酉':'닭(유)','庚戌':'개(술)','辛亥':'돼지(해)','壬子':'쥐(자)','癸丑':'소(축)','甲寅':'호랑이(인)','乙卯':'토끼(묘)','丙辰':'용(진)','丁巳':'뱀(사)','戊午':'말(오)','己未':'양(미)','庚申':'원숭이(신)','辛酉':'닭(유)','壬戌':'개(술)','癸亥':'돼지(해)'};
     const animal = ILJU_ANIMAL[iljuKey] || '';
+    const animalPlain = animal ? animal.replace(/\([^)]*\)/g, '') : '';
     const ds = data.dayStem || (iljuKey ? iljuKey.charAt(0) : '') || '';
     const dbch = data.dayBranch || (iljuKey && iljuKey.length > 1 ? iljuKey.charAt(1) : '') || '';
 
@@ -5587,7 +5588,7 @@ function buildClientCoverPage(data) {
         <div style="width:96px;height:1px;background:rgba(199,167,106,0.36);margin:38px auto 28px;"></div>
 
         <div style="font-size:34px;line-height:1.15;margin:0 0 10px;">${iljuBig}</div>
-        <div style="font-size:14px;color:rgba(199,167,106,0.78);letter-spacing:0.03em;font-weight:300;">${iljuTitle}${animal ? ' · ' + animal : ''}</div>
+        <div style="font-size:14px;color:rgba(199,167,106,0.78);letter-spacing:0.03em;font-weight:300;">${iljuTitle}${animalPlain ? ' · ' + animalPlain + '띠' : ''}</div>
         ${birthStr ? `<div style="font-size:13px;color:rgba(210,214,223,0.58);margin-top:16px;font-weight:300;">${birthStr}</div>` : ''}
 
         <div style="margin-top:38px;font-size:10px;color:rgba(210,214,223,0.34);letter-spacing:0.14em;">${formatReportAccessLine(data)}</div>
@@ -5628,7 +5629,7 @@ function buildForewordPage(data) {
 // ===================================================================
 function buildTOC(data) {
     const chapters = [
-        { num:'앞부분', title:'브랜드 소개', sub:'SAJU X와 리포트 읽는 흐름', pages:'—' },
+        { num:'앞부분', title:'소개', sub:'사주X가 담고 있는 의미', pages:'—' },
         { num:'표지', title:'고객 맞춤 표지', sub:'고객명 · 일주 · 동물', pages:'—' },
         { num:'안내', title:'이용 안내', sub:'법적 안내 · 사용법 · 보관 정책', pages:'—' },
         { num:'요약', title:'맞춤 종합 핵심', sub:'Executive Summary · 링크·열람 안내', pages:'—' },
