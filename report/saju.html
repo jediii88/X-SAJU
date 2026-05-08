@@ -3534,10 +3534,17 @@ function buildChapter1_Basic(data) {
         if(pillarInts.length>0) {
             var HAPkr={'지합':'합','방합':'방합','충':'충'};
             pillarInts.forEach(function(r){
-                var t = r.type==='충'
-                    ? '원국에 '+r.pos+' 충(冲)이 있습니다. '+r.desc.split('—')[1]||r.desc
-                    : '원국에 '+r.pos+' 합(合)이 있습니다. '+r.desc.split('—')[1]||r.desc;
-                pillarIntText += '\n• '+t.trim();
+                var posText = (r && r.pos) ? r.pos : ((r && r.label) ? r.label : '해당 구도');
+                var descText = '';
+                if (r && r.desc) {
+                    var parts = String(r.desc).split('—');
+                    descText = (parts[1] || parts[0] || '').trim();
+                }
+                var head = (r && r.type==='충')
+                    ? ('원국에 '+posText+' 충(冲)이 있습니다.')
+                    : ('원국에 '+posText+' 합(合)이 있습니다.');
+                var t = descText ? (head + ' ' + descText) : head;
+                pillarIntText += '\\n• '+t.trim();
             });
         }
 
@@ -5798,8 +5805,8 @@ window.generateDeepReport = generateDeepReport;
     </script>
 
 <!-- SAJUX_CACHE_BUSTER_START -->
-<meta name="sajux-build" content="1778257393">
-<script>(function(){var v='1778257393';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
+<meta name="sajux-build" content="1778257589">
+<script>(function(){var v='1778257589';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
 <!-- SAJUX_CACHE_BUSTER_END -->
 </head>
 <body>
