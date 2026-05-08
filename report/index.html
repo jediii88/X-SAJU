@@ -609,16 +609,28 @@
             position: relative;
             width: clamp(120px, 24vw, 176px);
             margin: 0 auto;
+            isolation: isolate;
         }
         .sajux-logo {
             width: 100%;
             height: auto;
             display: block;
         }
-        .sajux-logo.dark { display: block; }
+        /* Dark mode: use white logo, remove black matte */
+        .sajux-logo.dark {
+            display: block;
+            mix-blend-mode: screen;
+            opacity: 0.96;
+        }
         .sajux-logo.light { display: none; }
+
+        /* Light mode: use black logo, remove white matte */
         body.light-mode .sajux-logo.dark { display: none; }
-        body.light-mode .sajux-logo.light { display: block; }
+        body.light-mode .sajux-logo.light {
+            display: block;
+            mix-blend-mode: multiply;
+            opacity: 0.98;
+        }
         .hero-brush-title {
             font-family: 'Jeongseon Arirang Ppuri', 'Nanum Brush Script', cursive;
             font-size: clamp(30px, 7vw, 52px);
