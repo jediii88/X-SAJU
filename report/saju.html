@@ -606,15 +606,21 @@
         }
         body.light-mode .report-inline-book-title { color: #7a5e24; }
         .sajux-logo {
-            width: clamp(110px, 22vw, 180px);
+            width: clamp(96px, 18vw, 138px);
             height: auto;
-            opacity: 0.88;
+            opacity: 0.74;
             display: block;
             margin: 0 auto;
-            filter: drop-shadow(0 4px 18px rgba(0,0,0,0.45));
+            mix-blend-mode: screen;
+            filter: brightness(2.2) contrast(1.25) grayscale(1) drop-shadow(0 4px 14px rgba(0,0,0,0.35));
         }
-        .sajux-logo.inline-top { margin: 0 auto 12px; opacity: 0.82; }
-        .sajux-logo.hero { margin: 0 auto 14px; }
+        .sajux-logo.inline-top { margin: 0 auto 10px; opacity: 0.62; }
+        .sajux-logo.hero { margin: 0 auto 10px; }
+        body.light-mode .sajux-logo {
+            mix-blend-mode: normal;
+            opacity: 0.78;
+            filter: grayscale(1) brightness(0.2) contrast(1.1);
+        }
         .hero-brush-title {
             font-family: 'Jeongseon Arirang Ppuri', 'Nanum Brush Script', cursive;
             font-size: clamp(30px, 7vw, 52px);
@@ -6130,7 +6136,7 @@ function updateTierUI() {
             <img class="sajux-logo hero" src="assets/sajux-logo.png" alt="SAJU X 로고" loading="lazy" />
             <div style="font-size:9px; letter-spacing:0.35em; color:rgba(199,167,106,0.42); margin-bottom:10px; font-weight:600;">COVER · 표지</div>
             <div class="hero-brush-title" id="hero-brush-title">장경현 고객님의 사주풀이 비밀문서</div>
-            <div class="avatar-name" id="av-name">장경현</div>
+            <div class="avatar-name" id="av-name" style="display:none;">장경현</div>
             <div class="avatar-circle" id="av-circle">🐯</div>
             <div class="avatar-desc-wrap" style="display:flex; flex-direction:column; align-items:center; margin-bottom:12px;">
                 <div id="av-desc-hanja" style="font-family:'Noto Sans KR', sans-serif; font-weight:200; font-size:28px; line-height:1; margin-bottom:4px; letter-spacing:4px;">병인</div>
@@ -6168,23 +6174,11 @@ function startReport() {
                 <img class="sajux-logo inline-top" src="assets/sajux-logo.png" alt="SAJU X 로고" loading="lazy" />
                 <div style="font-size:11px; letter-spacing:3px; color:var(--text-soft); margin-bottom:6px;">X · S A J U · R E P O R T</div>
                 <div class="report-inline-book-title">당신의 운명 서사</div>
-                <div style="font-size:12px; color:var(--text-dim); margin-top:10px; line-height:1.55;">위 표지(프로필) 다음부터 소개 → 목차(인쇄용) → 머릿말이 이어지고, 아래는 만세력·심층 본문으로 들어갑니다.</div>
-                <!-- 목차 -->
-                <div style="margin:24px 0 10px; text-align:left; background:rgba(199,167,106,0.06); border-radius:12px; padding:18px 20px;">
-                    <div style="font-size:11px; letter-spacing:2px; color:var(--gold); margin-bottom:12px;">C O N T E N T S</div>
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px 16px;">
-                        <div class="toc-item" onclick="tocGo('hero-book-cover')">표지 · 프로필</div>
-                        <div class="toc-item" onclick="tocGo('sec-book-intro')">소개 · 이 책을 펼치며</div>
-                        <div class="toc-item" onclick="tocGo('sec-book-foreword')">머릿말</div>
-                        <div class="toc-item" onclick="tocGo('sec-manse')">I. 사주원국 · 팔자</div>
-                        <div class="toc-item" onclick="tocGo('sec-wuxing')">II. 오행 분포 분석</div>
-                        <div class="toc-item" onclick="tocGo('sec-fortune')">III. 신강신약 판정</div>
-                        <div class="toc-item" onclick="tocGo('sec-yonghee')">IV. 용신 · 기신</div>
-                        <div class="toc-item" onclick="tocGo('sec-daeun-graph')">V. 인생 흐름 그래프</div>
-                        <div class="toc-item" onclick="tocGo('sec-lifecycle')">VI. 시기별 운세</div>
-                        <div class="toc-item" onclick="tocGo('sec-category')">VII. 건강 · 재물 · 직업 · 애정 · 합격운</div>
-                        <div class="toc-item" onclick="tocGo('report-container')">VIII. 심층 리포트 (표지~본문)</div>
-                    </div>
+                <div style="font-size:12px; color:var(--text-dim); margin-top:8px; line-height:1.55;">첫 화면은 표지입니다. 책 순서대로 읽으시려면 아래 버튼으로 본문(소개 페이지)부터 시작하세요.</div>
+                <div style="margin:22px 0 8px; text-align:center; background:rgba(199,167,106,0.04); border-radius:12px; padding:14px 18px; border:1px solid rgba(199,167,106,0.12);">
+                    <div style="font-size:11px; letter-spacing:2px; color:var(--gold); margin-bottom:8px;">BOOK FLOW</div>
+                    <div style="font-size:13px; color:var(--text-soft); line-height:1.75;">표지 → 소개 → 목차 → 머릿말 → 본문</div>
+                    <button class="btn" onclick="tocGo('report-container')" style="max-width:260px; margin:12px auto 0; padding:10px 14px; font-size:13px; font-weight:700; background:rgba(199,167,106,0.18); border:1px solid rgba(199,167,106,0.35);">책 본문 바로가기</button>
                 </div>
             </div>
 
