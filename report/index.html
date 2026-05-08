@@ -5576,6 +5576,8 @@ function buildClientCoverPage(data) {
     const iljuLabel = iljuKorean || iljuTitle || iljuKey;
     const iljuKoreanLabel = iljuKorean ? (iljuKorean + '일주') : ((iljuKey || '').trim() ? (iljuKey + '일주') : '일주');
     const iljuAnimalLabel = iljuTitle || animalPlain || '';
+    const STEM_COLOR_KR = {'甲':'푸른','乙':'푸른','丙':'붉은','丁':'붉은','戊':'노란','己':'노란','庚':'하얀','辛':'하얀','壬':'검은','癸':'검은'};
+    const iljuMeaning = ((STEM_COLOR_KR[ds] || '') + (animalPlain ? (' ' + animalPlain) : '')).trim() || iljuAnimalLabel || animalPlain;
 
     function hc(ch) {
         return (typeof HAN_COLOR !== 'undefined' && HAN_COLOR[ch]) ? HAN_COLOR[ch] : '';
@@ -5599,11 +5601,10 @@ function buildClientCoverPage(data) {
 
         <div style="width:96px;height:1px;background:rgba(199,167,106,0.36);margin:38px auto 28px;"></div>
 
-        <div style="font-size:34px;line-height:1.15;margin:0 0 10px;">${iljuBig}</div>
         <div style="width:110px;height:110px;margin:2px auto 12px;display:flex;align-items:center;justify-content:center;"><img src="${animalImage}" alt="${animalPlain || '일주 동물'}" loading="lazy" style="width:100%;height:100%;object-fit:contain;display:block;"/></div>
-        <div style="font-size:20px;line-height:1.2;color:rgba(236,239,246,0.96);font-weight:600;letter-spacing:0.02em;">${ds}${dbch}</div>
-        <div style="font-size:14px;color:rgba(220,224,234,0.86);margin-top:6px;letter-spacing:0.03em;font-weight:400;">${iljuKorean}</div>
-        <div style="font-size:15px;color:rgba(199,167,106,0.86);margin-top:6px;letter-spacing:0.02em;font-weight:500;">${iljuAnimalLabel || animalPlain}</div>
+        <div style="font-size:30px;line-height:1.15;margin:0 0 6px;">${iljuBig}</div>
+        <div style="font-size:14px;color:rgba(220,224,234,0.86);margin-top:2px;letter-spacing:0.03em;font-weight:400;">${iljuKorean}</div>
+        <div style="font-size:15px;color:rgba(199,167,106,0.90);margin-top:6px;letter-spacing:0.02em;font-weight:500;">${iljuMeaning}</div>
         ${birthStr ? `<div style="font-size:13px;color:rgba(210,214,223,0.58);margin-top:16px;font-weight:300;">${birthStr}</div>` : ''}
 
         <div style="margin-top:38px;font-size:10px;color:rgba(210,214,223,0.34);letter-spacing:0.14em;">${formatReportAccessLine(data)}</div>
