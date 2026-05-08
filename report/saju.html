@@ -605,20 +605,20 @@
             letter-spacing: -0.02em;
         }
         body.light-mode .report-inline-book-title { color: #7a5e24; }
-        .sajux-logo {
+        .sajux-logo-wrap {
+            position: relative;
             width: clamp(120px, 24vw, 176px);
-            height: auto;
-            opacity: 0.94;
-            display: block;
             margin: 0 auto;
-            /* Dark mode: force white logo */
-            filter: invert(1) brightness(2.2) contrast(1.05) drop-shadow(0 4px 12px rgba(255,255,255,0.14));
         }
-        body.light-mode .sajux-logo {
-            /* Light mode: keep original black logo */
-            opacity: 0.92;
-            filter: none;
+        .sajux-logo {
+            width: 100%;
+            height: auto;
+            display: block;
         }
+        .sajux-logo.dark { display: block; }
+        .sajux-logo.light { display: none; }
+        body.light-mode .sajux-logo.dark { display: none; }
+        body.light-mode .sajux-logo.light { display: block; }
         .hero-brush-title {
             font-family: 'Jeongseon Arirang Ppuri', 'Nanum Brush Script', cursive;
             font-size: clamp(30px, 7vw, 52px);
@@ -5573,7 +5573,7 @@ function buildCoverPage(data) {
     }
 
     return `<div class="cover-page chapter-start" style="display:flex;flex-direction:column;justify-content:flex-start;align-items:center;min-height:88vh;padding:48px 28px 52px;text-align:center;border-bottom:1px solid rgba(199,167,106,0.12);margin-bottom:40px;">
-        <img class="sajux-logo" src="assets/sajux-logo.png" alt="SAJU X 로고" loading="lazy" />
+        <div class="sajux-logo-wrap"><img class="sajux-logo dark" src="assets/sajux-logo-dark.png" alt="SAJU X 로고" loading="lazy" /><img class="sajux-logo light" src="assets/sajux-logo-light.png" alt="SAJU X 로고" loading="lazy" /></div>
         <div style="font-size:9px;letter-spacing:0.35em;color:rgba(199,167,106,0.4);margin:6px 0 22px;font-weight:300;">SAJU X · PRIVATE REPORT</div>
 
         <div class="cover-brush-block">
