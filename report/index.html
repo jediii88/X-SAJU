@@ -1217,7 +1217,7 @@
         }
         .m-hanja {
             font-size: 34px;
-            font-weight: 560;
+            font-weight: 680;
             font-family: 'Noto Sans KR', sans-serif;
             line-height: 1.1;
             margin-bottom: 2px;
@@ -5765,8 +5765,8 @@ window.generateDeepReport = generateDeepReport;
 </script>
 
 <!-- SAJUX_CACHE_BUSTER_START -->
-<meta name="sajux-build" content="1778256218">
-<script>(function(){var v='1778256218';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
+<meta name="sajux-build" content="1778256339">
+<script>(function(){var v='1778256339';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
 <!-- SAJUX_CACHE_BUSTER_END -->
 </head>
 <body>
@@ -7150,11 +7150,11 @@ function runAnalysis(overrideParams) {
             headerRow,
             bRow('십성', p => `<div class="m-badge">${p.n === '일주' ? '일원' : getSipseong(dayStem, p.h[0])}</div>`),
             bRow('천간', p => `
-                <div class="m-hanja ${HAN_COLOR[p.h[0]] || ''}">${p.h[0]}</div>
+                <div class="m-hanja ${HAN_COLOR[p.h[0]] || ''}" style="font-weight:760;">${p.h[0]}</div>
                 <div class="m-hangul">${getElementDesc(p.h[0])}</div>
             `),
             bRow('지지', p => `
-                <div class="m-hanja ${HAN_COLOR[p.h[1]] || ''}">${p.h[1]}</div>
+                <div class="m-hanja ${HAN_COLOR[p.h[1]] || ''}" style="font-weight:760;">${p.h[1]}</div>
                 <div class="m-hangul">${getElementDesc(p.h[1])}</div>
             `),
             bRow('십성', p => `<div class="m-badge">${getSipseong(dayStem, p.h[1])}</div>`),
