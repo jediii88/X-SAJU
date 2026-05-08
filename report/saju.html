@@ -6181,31 +6181,8 @@ function startReport() {
 </script>
 
         <div id="sec-report-full" style="display:block; padding-bottom:60px;">
-            <div id="report-inline-top" style="text-align:center; padding: 30px 0 10px;">
-                <div style="font-size:11px; letter-spacing:3px; color:var(--text-soft); margin-bottom:6px;">X · S A J U · R E P O R T</div>
-                <div class="report-inline-book-title">당신의 운명 서사</div>
-                <div style="font-size:12px; color:var(--text-dim); margin-top:8px; line-height:1.55;">첫 화면은 표지입니다. 책 순서대로 읽으시려면 아래 버튼으로 본문(소개 페이지)부터 시작하세요.</div>
-                <div style="margin:22px 0 8px; text-align:center; background:rgba(199,167,106,0.04); border-radius:12px; padding:14px 18px; border:1px solid rgba(199,167,106,0.12);">
-                    <div style="font-size:11px; letter-spacing:2px; color:var(--gold); margin-bottom:8px;">BOOK FLOW</div>
-                    <div style="font-size:13px; color:var(--text-soft); line-height:1.75;">표지 → 소개 → 목차 → 머릿말 → 본문</div>
-                </div>
-            </div>
-
-        <div class="jeomsin-nav">
-            <div class="j-nav-item active" onclick="scrollToSec('sec-manse'); updateNav(this);">사주원국</div>
-            <div class="j-nav-item" onclick="scrollToSec('sec-relation'); updateNav(this);">사주관계</div>
-            <div class="j-nav-item" onclick="scrollToSec('sec-wuxing'); updateNav(this);">오행과 십성</div>
-            <div class="j-nav-item" onclick="scrollToSec('sec-fortune'); updateNav(this);">신강신약/대운수</div>
-        </div>
-
-            <style>
-            .toc-item { font-size:13px; color:rgba(255,255,255,0.7); padding:6px 0; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.06); transition:color 0.15s; }
-            .toc-item:hover { color:var(--gold); }
-            @media print { .toc-item { cursor:default; color:#333; border-bottom:1px solid #eee; } }
-            </style>
-            <div id="report-container" style="padding:0; border-radius:0; background:transparent; border:none; box-shadow:none;">
-</div>
-            <div style="text-align:center; margin-top:40px; padding-top:20px; border-top:1px solid var(--border);">
+            <div id="report-container" style="padding:0; border-radius:0; background:transparent; border:none; box-shadow:none;"></div>
+            <div class="print-actions" style="text-align:center; margin-top:40px; padding-top:20px; border-top:1px solid var(--border);">
                 <button class="btn subtle" onclick="window.print()">🖨️ PDF로 저장</button>
             </div>
         </div>
