@@ -53,6 +53,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;700;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Nanum+Brush+Script&display=swap" rel="stylesheet">
     <style>
+        /* 정선아리랑뿌리체 — 정선군 공개 서체 */
+        @font-face {
+            font-family: 'Jeongseon Arirang Ppuri';
+            src: url('fonts/JeongseonArirangPpuri.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+
         :root {
             --bg: #000;
             --panel: rgba(255,255,255,0.04);
@@ -89,16 +98,18 @@
         body { overflow-x: hidden; background: var(--bg); color: var(--text); }
 
         body.light-mode {
-            --bg: #f4f6fb;
-            --panel: rgba(18,24,38,0.06);
-            --panel-2: rgba(18,24,38,0.03);
-            --line: rgba(18,24,38,0.12);
-            --line-soft: rgba(18,24,38,0.08);
-            --text: #101827;
-            --text-soft: rgba(16,24,39,0.78);
-            --text-dim: rgba(16,24,39,0.52);
-            --glass-bg: rgba(18,24,38,0.04);
-            --glass-hover: rgba(18,24,38,0.08);
+            --bg: #f5f6fb;
+            --panel: rgba(255,255,255,0.98);
+            --panel-2: rgba(246,248,252,0.96);
+            --line: rgba(15,20,28,0.14);
+            --line-soft: rgba(15,20,28,0.09);
+            --text: #101620;
+            --text-soft: rgba(16,22,32,0.86);
+            --text-dim: rgba(16,22,32,0.55);
+            --glass-bg: rgba(255,255,255,0.94);
+            --glass-hover: rgba(246,248,252,1);
+            --gold: #966d2e;
+            --gold-glow: rgba(150,109,46,0.14);
         }
 
         #theme-toggle {
@@ -121,6 +132,244 @@
             background: rgba(255,255,255,0.92);
             border-color: rgba(16,24,39,0.16);
             box-shadow: 0 4px 16px rgba(16,24,39,0.08);
+        }
+
+        /* 라이트 모드: 대비·패널 (다크 기준 하드코딩 보완) */
+        body.light-mode::before {
+            opacity: 0.16;
+            filter: saturate(0.62) brightness(1.06);
+        }
+        body.light-mode .brand {
+            color: rgba(22, 28, 38, 0.88) !important;
+            text-shadow: none;
+        }
+        body.light-mode .glass-card {
+            background: rgba(255, 255, 255, 0.94);
+            border-color: rgba(15, 20, 28, 0.11);
+            box-shadow: 0 2px 14px rgba(15, 20, 28, 0.06);
+        }
+        body.light-mode .section-title {
+            border-bottom-color: rgba(15, 20, 28, 0.12);
+        }
+        body.light-mode .section-interp {
+            border-top-color: rgba(15, 20, 28, 0.08);
+        }
+        body.light-mode .inline-interp {
+            background: rgba(199, 167, 106, 0.09);
+            border: 1px solid rgba(199, 167, 106, 0.18);
+        }
+        body.light-mode .ii-text,
+        body.light-mode .ii-text p {
+            color: rgba(28, 34, 46, 0.92) !important;
+        }
+        body.light-mode .ii-title {
+            color: #1a2230 !important;
+        }
+        body.light-mode .ch-text {
+            color: #1e2633 !important;
+        }
+        body.light-mode .ch-title {
+            color: #7a5c28 !important;
+            border-bottom-color: rgba(154, 118, 56, 0.45) !important;
+        }
+        body.light-mode .axe-advice {
+            color: #222a38 !important;
+            background: rgba(255, 255, 255, 0.96) !important;
+            border: 1px solid rgba(15, 20, 28, 0.08) !important;
+            box-shadow: 0 4px 18px rgba(15, 20, 28, 0.06) !important;
+        }
+        body.light-mode .report-chapter {
+            background: #ffffff !important;
+            border: 1px solid rgba(15, 20, 28, 0.09) !important;
+            box-shadow: 0 2px 18px rgba(15, 20, 28, 0.05) !important;
+        }
+        body.light-mode .cat-text {
+            color: #1e2633 !important;
+        }
+        body.light-mode .cat-highlight {
+            color: #293241 !important;
+            background: rgba(199, 167, 106, 0.1) !important;
+        }
+        body.light-mode .manse-cell {
+            background: rgba(255, 255, 255, 0.98);
+            border: 1px solid rgba(15, 20, 28, 0.07);
+            box-shadow: 0 1px 2px rgba(15, 20, 28, 0.03);
+        }
+        body.light-mode .rel-card {
+            background: linear-gradient(145deg, #ffffff 0%, #f3f5fa 100%);
+            border-color: rgba(15, 20, 28, 0.1);
+            box-shadow: 0 3px 14px rgba(15, 20, 28, 0.06);
+        }
+        body.light-mode .rel-char-circle {
+            background: rgba(255, 255, 255, 0.95);
+            color: #1a2230 !important;
+            box-shadow: inset 0 0 0 1px rgba(15, 20, 28, 0.1), 0 2px 6px rgba(15, 20, 28, 0.06);
+        }
+        body.light-mode .rel-char-kr {
+            color: rgba(28, 34, 46, 0.62) !important;
+        }
+        body.light-mode .rel-link::after {
+            background: var(--bg);
+            color: var(--text-dim);
+        }
+        body.light-mode .rel-badge {
+            background: rgba(255, 255, 255, 0.95);
+            border-color: rgba(199, 167, 106, 0.35);
+        }
+        body.light-mode .gauge-arc {
+            stroke: #d5dae6;
+        }
+        body.light-mode #gauge-percent {
+            color: #1a2230 !important;
+        }
+        body.light-mode .gauge-labels {
+            color: rgba(28, 34, 46, 0.65);
+        }
+        body.light-mode .f-card {
+            background: #ffffff;
+            border: 1px solid rgba(15, 20, 28, 0.09);
+            box-shadow: 0 2px 8px rgba(15, 20, 28, 0.04);
+        }
+        body.light-mode .f-card .f-head {
+            color: rgba(28, 34, 46, 0.72);
+        }
+        body.light-mode .f-card .f-hz {
+            color: #1a2230;
+        }
+        body.light-mode .f-card .f-kr,
+        body.light-mode .f-card .f-un {
+            color: rgba(28, 34, 46, 0.72);
+        }
+        body.light-mode .f-card.current-fortune {
+            background: linear-gradient(180deg, #fffdf8 0%, #faf6ee 100%);
+            border: 1px solid rgba(199, 167, 106, 0.45);
+            box-shadow: 0 4px 20px rgba(154, 118, 56, 0.12);
+            animation: pulseGoldLight 2s infinite;
+        }
+        @keyframes pulseGoldLight {
+            0% { box-shadow: 0 0 0 0 rgba(199, 167, 106, 0.28); }
+            70% { box-shadow: 0 0 0 9px rgba(199, 167, 106, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(199, 167, 106, 0); }
+        }
+        body.light-mode .bar-track {
+            background: rgba(15, 20, 28, 0.12);
+        }
+        body.light-mode .fortune-scroll::-webkit-scrollbar-track {
+            background: rgba(15, 20, 28, 0.06);
+        }
+        body.light-mode .fortune-scroll::-webkit-scrollbar-thumb {
+            background: rgba(15, 20, 28, 0.22);
+        }
+        body.light-mode .w-val {
+            color: #1a2230;
+        }
+        body.light-mode .lifecycle-card {
+            background: #ffffff;
+            border-color: rgba(15, 20, 28, 0.1);
+        }
+        body.light-mode .lifecycle-card .lc-title {
+            color: #1a2230 !important;
+        }
+        body.light-mode .cat-tab {
+            background: #eef1f7;
+            border-color: rgba(15, 20, 28, 0.12);
+        }
+        body.light-mode .cat-tab.active {
+            color: #1a1408;
+        }
+        body.light-mode #wuxing-summary,
+        body.light-mode #sipseong-summary,
+        body.light-mode #daeun-summary,
+        body.light-mode #seun-summary {
+            background: #eef1f8 !important;
+            border: 1px solid rgba(15, 20, 28, 0.06);
+        }
+        body.light-mode .modal-overlay {
+            background: rgba(245, 246, 250, 0.92);
+        }
+        body.light-mode .modal-card {
+            background: #ffffff;
+            border-color: rgba(15, 20, 28, 0.12);
+            box-shadow: 0 16px 48px rgba(15, 20, 28, 0.12);
+        }
+        body.light-mode .modal-body {
+            color: rgba(28, 34, 46, 0.88);
+        }
+        body.light-mode #sec-report-full .toc-item {
+            color: rgba(28, 34, 46, 0.72) !important;
+            border-bottom-color: rgba(15, 20, 28, 0.08) !important;
+        }
+        body.light-mode #sec-report-full .toc-item:hover {
+            color: var(--gold) !important;
+        }
+        body.light-mode .cover-brush-name {
+            color: rgba(26, 30, 42, 0.94) !important;
+        }
+        body.light-mode .cover-brush-sub {
+            color: rgba(45, 52, 65, 0.72) !important;
+        }
+        body.light-mode .cover-page .cover-energy {
+            background: rgba(255, 255, 255, 0.96) !important;
+            border-color: rgba(15, 20, 28, 0.1) !important;
+        }
+        body.light-mode .cover-page .cover-energy p {
+            color: rgba(28, 34, 46, 0.9) !important;
+        }
+        body.light-mode #report-container [style*="color:#ddd"],
+        body.light-mode #report-container [style*="color: #ddd"] {
+            color: #252d3a !important;
+        }
+        body.light-mode #report-container [style*="color:#ccc"],
+        body.light-mode #report-container [style*="color: #ccc"] {
+            color: #2c3544 !important;
+        }
+        body.light-mode #report-container [style*="color:#bbb"],
+        body.light-mode #report-container [style*="color: #bbb"] {
+            color: #3d4656 !important;
+        }
+        body.light-mode #report-container [style*="color:#eee"],
+        body.light-mode #report-container [style*="color: #eee"] {
+            color: #1f2733 !important;
+        }
+        body.light-mode #report-container ul[style*="color:#ccc"] li {
+            color: inherit !important;
+        }
+
+        body.light-mode .input-group label {
+            color: rgba(28, 34, 46, 0.58);
+        }
+        body.light-mode .input-wrapper input {
+            border-bottom-color: rgba(15, 20, 28, 0.22);
+            color: var(--text);
+        }
+        body.light-mode .input-wrapper input::placeholder {
+            color: rgba(28, 34, 46, 0.38);
+        }
+        body.light-mode .underline {
+            background-color: var(--gold);
+        }
+        body.light-mode .btn-toggle {
+            background: rgba(255, 255, 255, 0.96);
+            color: rgba(28, 34, 46, 0.68);
+            border: 1px solid rgba(15, 20, 28, 0.1);
+        }
+        body.light-mode .btn-toggle.active {
+            background: #1a2230;
+            color: #fff;
+        }
+        body.light-mode .toggle-item {
+            background: rgba(255, 255, 255, 0.96);
+            border-color: rgba(15, 20, 28, 0.12);
+        }
+        body.light-mode .toggle-label .t-text {
+            color: rgba(28, 34, 46, 0.82);
+        }
+        body.light-mode .toggle-label .t-knob {
+            background: #e4e8f1;
+            border-color: #c9d0df;
+        }
+        body.light-mode .toggle-label .t-knob::after {
+            background: #fff;
         }
 
         .container {
@@ -335,7 +584,48 @@
             margin-bottom: 16px;
             font-size: 40px; /* 이모지 임시 사용, 나중에 이미지로 교체 가능 */
         }
-        .avatar-name { font-size: 24px; font-weight: 800; color: #fff; margin-bottom: 8px; }
+        .avatar-name {
+            font-family: 'Jeongseon Arirang Ppuri', 'Nanum Brush Script', cursive;
+            font-size: clamp(26px, 5.5vw, 34px);
+            font-weight: 400;
+            color: rgba(244, 246, 250, 0.94);
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+        body.light-mode .avatar-name { color: rgba(35, 38, 42, 0.92); }
+
+        /* 웹 상단 리포트 헤더 — 인쇄 표지와 같은 붓글씨 계열 */
+        .report-inline-book-title {
+            font-family: 'Jeongseon Arirang Ppuri', 'Nanum Brush Script', cursive;
+            font-size: clamp(26px, 6vw, 36px);
+            font-weight: 400;
+            color: var(--gold);
+            margin: 0;
+            line-height: 1.25;
+            letter-spacing: -0.02em;
+        }
+        body.light-mode .report-inline-book-title { color: #7a5e24; }
+        .sajux-logo {
+            width: clamp(110px, 22vw, 180px);
+            height: auto;
+            opacity: 0.88;
+            display: block;
+            margin: 0 auto;
+            filter: drop-shadow(0 4px 18px rgba(0,0,0,0.45));
+        }
+        .sajux-logo.inline-top { margin: 0 auto 12px; opacity: 0.82; }
+        .sajux-logo.hero { margin: 0 auto 14px; }
+        .hero-brush-title {
+            font-family: 'Jeongseon Arirang Ppuri', 'Nanum Brush Script', cursive;
+            font-size: clamp(30px, 7vw, 52px);
+            line-height: 1.25;
+            color: rgba(244,246,250,0.97);
+            margin: 2px auto 10px;
+            text-align: center;
+            letter-spacing: -0.01em;
+            max-width: 760px;
+        }
+        body.light-mode .hero-brush-title { color: #1f2328; }
         .avatar-desc { font-size: 14px; color: var(--gold); font-weight: 400; margin-bottom: 12px; }
         .avatar-badges { display: flex; gap: 8px; justify-content: center; }
         .badge {
@@ -662,7 +952,54 @@
 
         .wood { color: var(--wood); } .fire { color: var(--fire); } .earth { color: var(--earth); } .metal { color: var(--metal); } .water { color: var(--water); }
         .bg-wood { background: var(--wood); } .bg-fire { background: var(--fire); } .bg-earth { background: var(--earth); } .bg-metal { background: var(--metal); } .bg-water { background: var(--water); }
-
+        .cover-page .cover-brush-block { max-width: 520px; margin: 0 auto; }
+        .cover-page .cover-brush-name {
+            font-family: 'Jeongseon Arirang Ppuri', 'Nanum Brush Script', cursive;
+            font-size: clamp(40px, 8vw, 54px);
+            font-weight: 400;
+            color: rgba(244, 246, 250, 0.94);
+            line-height: 1.15;
+            margin: 0;
+        }
+        .cover-page .cover-brush-sub {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 13px;
+            font-weight: 300;
+            color: rgba(210, 214, 223, 0.72);
+            letter-spacing: 0.28em;
+            margin: 10px 0 0;
+        }
+        .cover-page .cover-zodiac {
+            width: 96px;
+            height: 96px;
+            margin: 16px auto 6px;
+            object-fit: contain;
+            display: block;
+            opacity: 0.96;
+        }
+        .cover-page .cover-ilju-big {
+            font-family: 'Noto Serif KR', serif;
+            font-size: clamp(42px, 9vw, 64px);
+            font-weight: 500;
+            letter-spacing: 0.35em;
+            line-height: 1.12;
+            margin: 4px 0 0;
+        }
+        .cover-page .cover-pillar-strip .pz-hanja {
+            font-family: 'Noto Serif KR', serif;
+            font-size: 17px;
+            font-weight: 500;
+            letter-spacing: 0.06em;
+        }
+        .cover-page .cover-energy {
+            max-width: 560px;
+            margin: 22px auto 0;
+            padding: 14px 18px;
+            border-radius: 12px;
+            border: 1px solid rgba(199, 167, 106, 0.14);
+            background: rgba(255, 255, 255, 0.035);
+            text-align: left;
+        }
         .fortune-scroll {
             display: flex;
             overflow-x: auto;
@@ -2262,7 +2599,9 @@ function generateDeepReport(data) {
     // ── PART 구조 ──
     var html = '';
     html += safeCall(()=>buildCoverPage(data), 'cover');
+    html += safeCall(()=>buildBookIntroPage(data), 'bookIntro');
     html += safeCall(()=>buildTOC(data), 'toc');
+    html += safeCall(()=>buildForewordPage(data), 'foreword');
     html += safeCall(()=>buildPremiumExecutiveSummary(data), 'premium');
 
     // PART 1
@@ -5189,36 +5528,118 @@ function buildCoverPage(data) {
     const giKr = OH_KR[data.gi] || (data.gi||'');
     const pillars = data.pillars || [];
     const pillarLabels = ['시주','일주','월주','연주'];
+    const ds = data.dayStem || (iljuKey ? iljuKey.charAt(0) : '') || '';
+    const dbch = data.dayBranch || (iljuKey && iljuKey.length > 1 ? iljuKey.charAt(1) : '') || '';
+    const STEM_EN = {"甲":"jia","乙":"yi","丙":"bing","丁":"ding","戊":"wu","己":"ji","庚":"geng","辛":"xin","壬":"ren","癸":"gui"};
+    const BRANCH_EN = {"子":"zi","丑":"chou","寅":"yin","卯":"mao","辰":"chen","巳":"si","午":"wu","未":"wei","申":"shen","酉":"you","戌":"xu","亥":"hai"};
+    const zodiacSrc = '../zodiac_en/' + (STEM_EN[ds]||'bing') + '_' + (BRANCH_EN[dbch]||'yin') + '.png';
 
-    return `<div class="cover-page chapter-start print-only" style="display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:88vh;padding:64px 40px 56px;text-align:center;border-bottom:1px solid rgba(199,167,106,0.14);margin-bottom:42px;">
-        <div style="font-size:9px;letter-spacing:4px;color:rgba(199,167,106,0.46);margin-bottom:30px;font-weight:300;">SAJU X · CONFIDENTIAL DOSSIER</div>
+    function hc(ch) {
+        return (typeof HAN_COLOR !== 'undefined' && HAN_COLOR[ch]) ? HAN_COLOR[ch] : '';
+    }
+    function pairSpans(ch1, ch2) {
+        if (!ch1 || !ch2) return (ch1||'') + (ch2||'');
+        const c1 = hc(ch1), c2 = hc(ch2);
+        return '<span class="' + c1 + '">' + ch1 + '</span><span class="' + c2 + '">' + ch2 + '</span>';
+    }
 
-        <div style="display:flex;gap:22px;margin-bottom:16px;opacity:0.92;">${pillars.map((p,i) => {
-            const h = p.h ? (Array.isArray(p.h) ? p.h.join('') : String(p.h)) : '';
-            return '<div style="text-align:center;"><div style="font-size:10px;color:rgba(199,167,106,0.54);margin-bottom:3px;font-weight:300;letter-spacing:0.06em;">' + pillarLabels[i] + '</div><div style="font-family:Noto Serif KR,serif;font-size:22px;font-weight:500;color:' + (i===1?'#f2f4f8':'rgba(230,232,238,0.78)') + ';letter-spacing:2px;">' + h + '</div></div>';
-        }).join('')}</div>
+    const pillarStrip = pillars.map(function(p,i){
+        const h = p.h ? (Array.isArray(p.h) ? p.h.join('') : String(p.h)) : '';
+        const ch1 = h.charAt(0), ch2 = h.charAt(1);
+        const inner = (ch1 && ch2) ? pairSpans(ch1, ch2) : h;
+        const labCol = i===1 ? 'rgba(199,167,106,0.62)' : 'rgba(199,167,106,0.38)';
+        return '<div class="pz-cell" style="text-align:center;"><div style="font-size:9px;color:'+labCol+';margin-bottom:5px;font-weight:400;letter-spacing:0.14em;">'+pillarLabels[i]+'</div><div class="pz-hanja">'+inner+'</div></div>';
+    }).join('');
 
-        <div style="font-family:Noto Serif KR,serif;font-size:70px;font-weight:600;color:var(--gold);letter-spacing:12px;line-height:1;margin:8px 0 0;">${iljuKey}</div>
-        <div style="font-size:14px;color:rgba(199,167,106,0.72);margin-top:8px;letter-spacing:0.08em;font-weight:300;">${iljuTitle}${animal ? ' · 일지 ' + animal : ''}</div>
-        <div style="width:84px;height:1px;background:rgba(199,167,106,0.55);margin:24px auto 20px;"></div>
+    const iljuBig = pairSpans(ds, dbch);
 
-        <div class="cover-title" style="font-family:'Nanum Brush Script',cursive;font-size:56px;font-weight:400;color:#f4f0e8;line-height:1.12;margin-bottom:10px;">${name} 고객님의 사주풀이 비밀문서</div>
-        ${birthStr ? `<div style="font-size:13px;color:rgba(220,224,232,0.62);margin-bottom:14px;font-weight:300;letter-spacing:0.02em;">${birthStr}</div>` : ''}
+    const stRaw = (data.strengthText || '').trim();
+    let strengthPlain = '';
+    if (stRaw.indexOf('신강') >= 0) strengthPlain = '팔자 한가운데 있는 나를 대표하는 글자의 힘이 단단한 편이라, 한 번 방향을 잡으면 밀고 나가기 좋습니다.';
+    else if (stRaw.indexOf('신약') >= 0) strengthPlain = '팔자 한가운데 있는 나를 대표하는 글자의 힘이 부드러운 편이라, 무리한 경쟁보다 회복과 조력을 챙기면 더 잘 풀립니다.';
+    else if (stRaw) strengthPlain = '팔자 한가운데 있는 나를 대표하는 글자의 힘은 과하지도 모자라지도 않은 균형에 가깝습니다. 상황에 맞춰 속도를 조절하면 좋습니다.';
 
-        <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center;margin-bottom:16px;">
-            ${data.strengthText ? `<div style="display:inline-block;font-size:11px;color:rgba(199,167,106,0.76);background:rgba(199,167,106,0.08);padding:5px 14px;border-radius:999px;border:1px solid rgba(199,167,106,0.16);font-weight:300;">${data.strengthText}</div>` : ''}
-            ${yongKr ? `<div style="display:inline-block;font-size:11px;color:var(--metal);background:rgba(53,95,184,0.12);padding:5px 14px;border-radius:999px;border:1px solid rgba(53,95,184,0.32);font-weight:300;">용신 ${yongKr}</div>` : ''}
-            ${giKr ? `<div style="display:inline-block;font-size:11px;color:var(--fire);background:rgba(207,62,57,0.14);padding:5px 14px;border-radius:999px;border:1px solid rgba(207,62,57,0.34);font-weight:300;">기신 ${giKr}</div>` : ''}
+    let flowPlain = '';
+    if (yongKr && giKr) flowPlain = '이후 본문에서는 “살이 붙으면 좋은 기운”을 ' + yongKr + ', “많이 들어오면 피로해지기 쉬운 기운”을 ' + giKr + '으로 풀어 드립니다. 어려운 한자 용어 대신 색·방향·계절 감각으로 설명합니다.';
+    else if (yongKr) flowPlain = '이후 본문에서는 “살이 붙으면 좋은 기운”을 ' + yongKr + ' 중심으로 설명합니다.';
+
+    let energyHtml = '';
+    if (strengthPlain || flowPlain) {
+        energyHtml = '<div class="cover-energy"><div style="font-size:10px;letter-spacing:0.14em;color:rgba(199,167,106,0.5);margin-bottom:8px;font-weight:600;">에너지를 이렇게 읽으면 됩니다</div><p style="font-size:12.5px;color:rgba(228,232,240,0.84);line-height:1.82;margin:0;">' +
+            [strengthPlain, flowPlain].filter(Boolean).join(' ') + '</p></div>';
+    }
+
+    return `<div class="cover-page chapter-start print-only" style="display:flex;flex-direction:column;justify-content:flex-start;align-items:center;min-height:88vh;padding:48px 28px 52px;text-align:center;border-bottom:1px solid rgba(199,167,106,0.12);margin-bottom:40px;">
+        <img class="sajux-logo" src="assets/sajux-logo.png" alt="SAJU X 로고" loading="lazy" />
+        <div style="font-size:9px;letter-spacing:0.35em;color:rgba(199,167,106,0.4);margin:6px 0 22px;font-weight:300;">SAJU X · PRIVATE REPORT</div>
+
+        <div class="cover-brush-block">
+            <p class="cover-brush-name">${name} 고객님</p>
+            <p class="cover-brush-sub">맞춤 사주 풀이 리포트</p>
         </div>
+        ${birthStr ? `<div style="font-size:12.5px;color:rgba(210,214,223,0.58);margin:14px 0 0;font-weight:300;">${birthStr}</div>` : ''}
 
-        <div style="max-width:680px;background:rgba(255,255,255,0.03);border:1px solid rgba(199,167,106,0.14);border-radius:14px;padding:16px 18px;text-align:left;">
-            <div style="font-size:11px;color:var(--gold);letter-spacing:1px;margin-bottom:8px;">SAJU X 리포트 소개</div>
-            <p style="font-size:12.5px;color:#d4d8df;line-height:1.8;margin:0 0 10px;">SAJU X는 고객님의 사주 원국과 시기별 운의 반응을 연결해, 겉으로 보이는 결과뿐 아니라 숨겨진 패턴까지 추적하는 분석 문서입니다. 단순한 길흉 판정이 아니라, 왜 그런 흐름이 생기는지와 어떻게 대응해야 하는지를 함께 제시합니다.</p>
-            <p style="font-size:12.5px;color:#c5cad2;line-height:1.8;margin:0 0 10px;">브랜드명의 X는 두 가지 뜻을 담고 있습니다. 하나는 X-File처럼 숨은 단서를 파헤친다는 의미, 다른 하나는 사주를 이루는 네 기둥(연·월·일·시)이 교차해 만들어내는 핵심 축을 형상화한 상징입니다.</p>
-            <p style="font-size:12.5px;color:#b8bfca;line-height:1.8;margin:0;">본 리포트는 고객님의 생년월일시로 산출한 만세력 원국 데이터, 대운·세운·월운 시계열 계산값, 합·충·형 및 오행 분포 패턴을 AI 분석 엔진이 교차 학습해 작성합니다. 즉, 단순 요약이 아니라 시기별 반응까지 연결한 구조화 분석 결과입니다.</p>
+        <div style="width:72px;height:1px;background:rgba(199,167,106,0.35);margin:28px auto 22px;"></div>
+
+        <div class="cover-pillar-strip" style="display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin-bottom:20px;">${pillarStrip}</div>
+
+        <img class="cover-zodiac" src="${zodiacSrc}" alt="${animal || '일주 동물'}" loading="lazy" />
+
+        <p class="cover-ilju-big">${iljuBig}</p>
+        <div style="font-size:13px;color:rgba(199,167,106,0.68);margin-top:10px;letter-spacing:0.04em;font-weight:300;">${iljuTitle}${animal ? ' · 일지 ' + animal : ''}</div>
+
+        ${energyHtml}
+
+        <div style="margin-top:22px;font-size:10px;color:rgba(210,214,223,0.34);letter-spacing:0.16em;">${formatReportAccessLine(data)}</div>
+    </div>`;
+}
+
+// ===================================================================
+// buildBookIntroPage: 소개 (표지 다음)
+// ===================================================================
+function buildBookIntroPage(data) {
+    const name = data.name || '고객';
+    return `<div id="sec-book-intro" class="toc-page print-only chapter-start book-intro-page" style="padding:56px 36px 64px;border-bottom:1px solid rgba(199,167,106,0.12);margin-bottom:40px;max-width:720px;margin-left:auto;margin-right:auto;">
+        <div style="font-size:10px;letter-spacing:0.35em;color:rgba(199,167,106,0.45);margin-bottom:16px;font-weight:600;">INTRODUCTION</div>
+        <h2 style="font-family:Noto Serif KR,serif;font-size:28px;font-weight:700;color:#fff;margin:0 0 10px;">이 책을 펼치며</h2>
+        <p style="font-size:13px;color:#888;margin:0 0 28px;line-height:1.75;">${name} 고객님을 위한 SAJU X 맞춤 리포트입니다. 아래 순서대로 읽어 오시면 한 권의 책을 넘기듯 흐름이 이어집니다.</p>
+        <div style="display:flex;flex-direction:column;gap:14px;text-align:left;margin-bottom:26px;">
+            <div style="padding:14px 16px;background:rgba(255,255,255,0.03);border:1px solid rgba(199,167,106,0.14);border-radius:12px;">
+                <div style="font-size:11px;color:var(--gold);letter-spacing:0.12em;margin-bottom:8px;font-weight:700;">1. 표지</div>
+                <p style="font-size:13px;color:#ddd;line-height:1.82;margin:0;">일주와 네 기둥의 개요, 이 글을 읽을 때 도움이 되는 에너지 안내를 담았습니다.</p>
+            </div>
+            <div style="padding:14px 16px;background:rgba(255,255,255,0.03);border:1px solid rgba(199,167,106,0.14);border-radius:12px;">
+                <div style="font-size:11px;color:var(--gold);letter-spacing:0.12em;margin-bottom:8px;font-weight:700;">2. 소개 · 목차 · 머릿말</div>
+                <p style="font-size:13px;color:#ddd;line-height:1.82;margin:0;">리포트의 성격과 구성을 설명하고, 전체 목차를 한눈에 본 뒤 편지에 해당하는 머릿말로 마음을 맞춥니다.</p>
+            </div>
+            <div style="padding:14px 16px;background:rgba(255,255,255,0.03);border:1px solid rgba(199,167,106,0.14);border-radius:12px;">
+                <div style="font-size:11px;color:var(--gold);letter-spacing:0.12em;margin-bottom:8px;font-weight:700;">3. 요약과 본문</div>
+                <p style="font-size:13px;color:#ddd;line-height:1.82;margin:0;">핵심 요약으로 오늘의 흐름을 짚은 뒤, 원국부터 시기별 운·분야별 풀이까지 이어집니다. 꼭 순서대로가 아니어도 되지만, 처음에는 앞부분부터 읽으시면 전체 그림을 잡기에 좋습니다.</p>
+            </div>
         </div>
+        <div style="padding:18px 20px;background:rgba(255,255,255,0.028);border-radius:14px;border:1px solid rgba(199,167,106,0.12);text-align:left;">
+            <div style="font-size:11px;color:var(--gold);letter-spacing:0.12em;margin-bottom:10px;font-weight:600;">SAJU X는 어떤 책인가요</div>
+            <p style="font-size:12.5px;color:rgba(218,222,230,0.88);line-height:1.82;margin:0 0 10px;">SAJU X는 고객님의 사주 원국과 시기별 운의 반응을 연결해, 겉으로 보이는 결과뿐 아니라 숨겨진 패턴까지 짚는 분석 문서입니다. 길·흉만 적는 것이 아니라, 왜 그런 흐름이 생기는지와 어떻게 대응하면 좋은지를 함께 담았습니다.</p>
+            <p style="font-size:12.5px;color:rgba(210,214,223,0.78);line-height:1.82;margin:0 0 10px;">이름의 X는 두 가지를 겹친 뜻입니다. X-File처럼 숨은 단서를 따라가 보자는 마음, 그리고 연·월·일·시 네 기둥이 만나 한 사람의 축을 세운다는 이미지입니다.</p>
+            <p style="font-size:12.5px;color:rgba(206,210,218,0.74);line-height:1.82;margin:0;">생년월일시로 만든 만세력 원국, 대운·세운·월운의 시계열, 합·충·형과 오행 분포를 AI 분석 엔진이 함께 읽어 본문을 구성합니다.</p>
+        </div>
+    </div>`;
+}
 
-        <div style="margin-top:20px;font-size:10px;color:rgba(210,214,223,0.38);letter-spacing:0.18em;">${formatReportAccessLine(data)}</div>
+// ===================================================================
+// buildForewordPage: 머릿말 (목차 다음)
+// ===================================================================
+function buildForewordPage(data) {
+    const name = data.name || '고객';
+    return `<div id="sec-book-foreword" class="toc-page print-only chapter-start book-foreword-page" style="padding:56px 36px 72px;border-bottom:1px solid rgba(199,167,106,0.12);margin-bottom:40px;max-width:620px;margin-left:auto;margin-right:auto;">
+        <div style="font-size:10px;letter-spacing:0.35em;color:rgba(199,167,106,0.45);margin-bottom:16px;font-weight:600;">FOREWORD</div>
+        <h2 style="font-family:Noto Serif KR,serif;font-size:28px;font-weight:700;color:#fff;margin:0 0 24px;">머릿말</h2>
+        <div style="text-align:left;font-size:14px;line-height:2;color:#ddd;">
+            <p style="margin:0 0 1.2em;">${name} 고객님, 이 리포트를 집어 들어 주셔서 고맙습니다.</p>
+            <p style="margin:0 0 1.2em;">여기에는 태어난 순간을 바탕으로 정리한 ‘당신이라는 사람의 설계도’와, 시간의 흐름에 따라 어떤 바람이 불어오는지에 대한 이야기가 실려 있습니다. 운명을 한 줄로 재는 글이 아니라, 스스로 선택하고 살아가실 때 참고할 만한 지도에 가깝게 쓰고자 했습니다.</p>
+            <p style="margin:0 0 1.2em;">편하게 앉으신 자리에서, 글 한 줄 한 줄을 넘기듯 천천히 읽어 보세요. 문장이 삶의 한 페이지와 닿는 순간이 있다면, 그것만으로도 이 책이 제 몫을 한다고 생각합니다.</p>
+            <p style="margin:0;color:#888;font-size:13px;">SAJU X 드림</p>
+        </div>
     </div>`;
 }
 
@@ -5228,6 +5649,8 @@ function buildCoverPage(data) {
 // ===================================================================
 function buildTOC(data) {
     const chapters = [
+        { num:'앞부분', title:'머릿말', sub:'편지 — 목차 다음 장', pages:'—' },
+        { num:'요약', title:'맞춤 종합 핵심', sub:'Executive Summary · 링크·열람 안내', pages:'—' },
         { num:'CH 01', title:'사주 원국 완전 해부', sub:'4주 8자 심층 풀이 · 천간·지지·지장간 · 12운성 · 공망', pages:'8p' },
         { num:'CH 02', title:'오행 완전 해부', sub:'오행 분포 · 과다 기운 심층 · 부족 기운 보완법 · 건강 연결', pages:'7p' },
         { num:'CH 03', title:'십성 완전 해부', sub:'주도 십성 심층 · 조합 분석 · 직업·재물·애정에서의 발현', pages:'7p' },
@@ -5352,6 +5775,10 @@ window.generateDeepReport = generateDeepReport;
 <div id="floating-toc" style="display:none; position:fixed; right:12px; top:50%; transform:translateY(-50%); z-index:9999; background:rgba(0,0,0,0.75); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border-radius:14px; padding:10px 6px; box-shadow:0 8px 32px rgba(0,0,0,0.6); max-width:44px; overflow:hidden; transition:max-width 0.3s, padding 0.3s;" onmouseenter="expandToc()" onmouseleave="collapseToc()">
     <div style="font-size:10px; color:rgba(199,167,106,0.8); text-align:center; margin-bottom:8px; letter-spacing:1px; white-space:nowrap;">☰</div>
     <div id="toc-links" style="display:flex; flex-direction:column; gap:4px; min-width:120px;">
+        <a onclick="tocGo('hero-book-cover')" class="toc-link">표지</a>
+        <a onclick="tocGo('sec-book-intro')" class="toc-link">소개</a>
+        <a onclick="tocGo('sec-book-foreword')" class="toc-link">머릿말</a>
+        <div style="border-top:1px solid rgba(255,255,255,0.08); margin:4px 0;"></div>
         <a onclick="tocGo('sec-manse')" class="toc-link">사주원국</a>
         <a onclick="tocGo('sec-relation')" class="toc-link">합·충·형</a>
         <a onclick="tocGo('sec-wuxing')" class="toc-link">오행 분석</a>
@@ -5661,8 +6088,11 @@ function updateTierUI() {
         
         <!-- 점신식 스티키 네비게이션 (책갈피) -->
         
-        <!-- 동물 이미지 헤더 프로필 -->
-        <div class="avatar-header">
+        <!-- 동물 이미지 헤더 프로필 (페이지를 열면 가장 먼저 보이는 표지 역할) -->
+        <div class="avatar-header" id="hero-book-cover">
+            <img class="sajux-logo hero" src="assets/sajux-logo.png" alt="SAJU X 로고" loading="lazy" />
+            <div style="font-size:9px; letter-spacing:0.35em; color:rgba(199,167,106,0.42); margin-bottom:10px; font-weight:600;">COVER · 표지</div>
+            <div class="hero-brush-title" id="hero-brush-title">장경현 고객님의 사주풀이 비밀문서</div>
             <div class="avatar-name" id="av-name">장경현</div>
             <div class="avatar-circle" id="av-circle">🐯</div>
             <div class="avatar-desc-wrap" style="display:flex; flex-direction:column; align-items:center; margin-bottom:12px;">
@@ -5674,12 +6104,6 @@ function updateTierUI() {
             </div>
         </div>
 
-        <div class="jeomsin-nav">
-            <div class="j-nav-item active" onclick="scrollToSec('sec-manse'); updateNav(this);">사주원국</div>
-            <div class="j-nav-item" onclick="scrollToSec('sec-relation'); updateNav(this);">사주관계</div>
-            <div class="j-nav-item" onclick="scrollToSec('sec-wuxing'); updateNav(this);">오행과 십성</div>
-            <div class="j-nav-item" onclick="scrollToSec('sec-fortune'); updateNav(this);">신강신약/대운수</div>
-        </div>
         <script>
         function updateNav(el) {
             document.querySelectorAll('.j-nav-item').forEach(n => n.classList.remove('active'));
@@ -5695,8 +6119,8 @@ function startReport() {
         if(reportFull) reportFull.style.display = 'block';
         // 부드럽게 스크롤
         setTimeout(() => {
-            const t = document.getElementById('report-inline-top');
-            if(t) t.scrollIntoView({behavior:'smooth'});
+            var hero = document.getElementById('hero-book-cover');
+            if (hero) hero.scrollIntoView({behavior:'smooth', block:'start'});
         }, 100);
     });
 }
@@ -5704,12 +6128,17 @@ function startReport() {
 
         <div id="sec-report-full" style="display:block; padding-bottom:60px;">
             <div id="report-inline-top" style="text-align:center; padding: 30px 0 10px;">
+                <img class="sajux-logo inline-top" src="assets/sajux-logo.png" alt="SAJU X 로고" loading="lazy" />
                 <div style="font-size:11px; letter-spacing:3px; color:var(--text-soft); margin-bottom:6px;">X · S A J U · R E P O R T</div>
-                <div style="font-size:22px; font-weight:800; color:var(--gold); font-family:Noto Serif KR,serif;">당신의 운명 서사</div>
+                <div class="report-inline-book-title">당신의 운명 서사</div>
+                <div style="font-size:12px; color:var(--text-dim); margin-top:10px; line-height:1.55;">위 표지(프로필) 다음부터 소개 → 목차(인쇄용) → 머릿말이 이어지고, 아래는 만세력·심층 본문으로 들어갑니다.</div>
                 <!-- 목차 -->
                 <div style="margin:24px 0 10px; text-align:left; background:rgba(199,167,106,0.06); border-radius:12px; padding:18px 20px;">
                     <div style="font-size:11px; letter-spacing:2px; color:var(--gold); margin-bottom:12px;">C O N T E N T S</div>
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px 16px;">
+                        <div class="toc-item" onclick="tocGo('hero-book-cover')">표지 · 프로필</div>
+                        <div class="toc-item" onclick="tocGo('sec-book-intro')">소개 · 이 책을 펼치며</div>
+                        <div class="toc-item" onclick="tocGo('sec-book-foreword')">머릿말</div>
                         <div class="toc-item" onclick="tocGo('sec-manse')">I. 사주원국 · 팔자</div>
                         <div class="toc-item" onclick="tocGo('sec-wuxing')">II. 오행 분포 분석</div>
                         <div class="toc-item" onclick="tocGo('sec-fortune')">III. 신강신약 판정</div>
@@ -5717,10 +6146,18 @@ function startReport() {
                         <div class="toc-item" onclick="tocGo('sec-daeun-graph')">V. 인생 흐름 그래프</div>
                         <div class="toc-item" onclick="tocGo('sec-lifecycle')">VI. 시기별 운세</div>
                         <div class="toc-item" onclick="tocGo('sec-category')">VII. 건강 · 재물 · 직업 · 애정 · 합격운</div>
-                        <div class="toc-item" onclick="tocGo('report-container')">VIII. 심층 운명 서사</div>
+                        <div class="toc-item" onclick="tocGo('report-container')">VIII. 심층 리포트 (표지~본문)</div>
                     </div>
                 </div>
             </div>
+
+        <div class="jeomsin-nav">
+            <div class="j-nav-item active" onclick="scrollToSec('sec-manse'); updateNav(this);">사주원국</div>
+            <div class="j-nav-item" onclick="scrollToSec('sec-relation'); updateNav(this);">사주관계</div>
+            <div class="j-nav-item" onclick="scrollToSec('sec-wuxing'); updateNav(this);">오행과 십성</div>
+            <div class="j-nav-item" onclick="scrollToSec('sec-fortune'); updateNav(this);">신강신약/대운수</div>
+        </div>
+
             <style>
             .toc-item { font-size:13px; color:rgba(255,255,255,0.7); padding:6px 0; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.06); transition:color 0.15s; }
             .toc-item:hover { color:var(--gold); }
@@ -6644,6 +7081,8 @@ function runAnalysis(overrideParams) {
         const animalInfo = ANIMAL_SPRITE[pillars[1].h[1]] || ANIMAL_SPRITE['인'];
         
         document.getElementById('av-name').innerText = name + "님";
+        var heroBrushTitle = document.getElementById('hero-brush-title');
+        if (heroBrushTitle) heroBrushTitle.innerText = name + ' 고객님의 사주풀이 비밀문서';
         
         const krColor = COLOR_KR_MAP[elType];
         
