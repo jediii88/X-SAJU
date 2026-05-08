@@ -606,16 +606,14 @@
         }
         body.light-mode .report-inline-book-title { color: #7a5e24; }
         .sajux-logo {
-            width: clamp(96px, 18vw, 138px);
+            width: clamp(120px, 24vw, 176px);
             height: auto;
-            opacity: 0.90;
+            opacity: 0.94;
             display: block;
             margin: 0 auto;
             /* Dark mode: force white logo */
             filter: invert(1) brightness(2.2) contrast(1.05) drop-shadow(0 4px 12px rgba(255,255,255,0.14));
         }
-        .sajux-logo.inline-top { margin: 0 auto 10px; opacity: 0.74; }
-        .sajux-logo.hero { margin: 0 auto 10px; }
         body.light-mode .sajux-logo {
             /* Light mode: keep original black logo */
             opacity: 0.92;
@@ -6096,7 +6094,6 @@ function updateTierUI() {
         
         <!-- 동물 이미지 헤더 프로필 (페이지를 열면 가장 먼저 보이는 표지 역할) -->
         <div class="avatar-header" id="hero-book-cover">
-            <img class="sajux-logo hero" src="assets/sajux-logo.png" alt="SAJU X 로고" loading="lazy" />
             <div style="font-size:9px; letter-spacing:0.35em; color:rgba(199,167,106,0.42); margin-bottom:10px; font-weight:600;">COVER · 표지</div>
             <div class="hero-brush-title" id="hero-brush-title">장경현 고객님의 사주풀이 비밀문서</div>
             <div class="avatar-name" id="av-name" style="display:none;">장경현</div>
@@ -6143,7 +6140,6 @@ function startReport() {
 
         <div id="sec-report-full" style="display:block; padding-bottom:60px;">
             <div id="report-inline-top" style="text-align:center; padding: 30px 0 10px;">
-                <img class="sajux-logo inline-top" src="assets/sajux-logo.png" alt="SAJU X 로고" loading="lazy" />
                 <div style="font-size:11px; letter-spacing:3px; color:var(--text-soft); margin-bottom:6px;">X · S A J U · R E P O R T</div>
                 <div class="report-inline-book-title">당신의 운명 서사</div>
                 <div style="font-size:12px; color:var(--text-dim); margin-top:8px; line-height:1.55;">첫 화면은 표지입니다. 책 순서대로 읽으시려면 아래 버튼으로 본문(소개 페이지)부터 시작하세요.</div>
