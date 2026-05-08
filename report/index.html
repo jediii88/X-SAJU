@@ -5328,6 +5328,9 @@ window.generateDeepReport = generateDeepReport;
 .toc-link:hover { background:rgba(199,167,106,0.15); color:var(--gold); }
 #floating-toc #toc-links { opacity:0; transition:opacity 0.2s; pointer-events:none; }
 #floating-toc:hover #toc-links { opacity:1; pointer-events:all; }
+@media (max-width: 900px) {
+    #floating-toc { display:none !important; }
+}
 @media print {
     #floating-toc { display:none !important; }
     .cat-section, .cat-content { display:block !important; page-break-inside:avoid; }
@@ -7753,7 +7756,12 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
         window.scrollTo(0,0);
         try { generateDeepReport(globalSajuData); } catch(e) { console.error(e); }
         const toc = document.getElementById('floating-toc');
-        if(toc) toc.style.display = 'block';
+        function updateFloatingToc(){
+            if(!toc) return;
+            toc.style.display = (window.innerWidth > 900) ? 'block' : 'none';
+        }
+        updateFloatingToc();
+        window.addEventListener('resize', updateFloatingToc);
     });
 }
 </script>
