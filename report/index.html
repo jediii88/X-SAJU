@@ -3243,7 +3243,7 @@ function buildPremiumExecutiveSummary(data) {
     var today = new Date();
     var reportDateStr = today.getFullYear() + '년 ' + (today.getMonth() + 1) + '월 ' + today.getDate() + '일';
 
-    return '<div class="report-chapter premium-executive-summary chapter-start" style="margin-bottom:40px;padding:22px 20px;border-radius:14px;border:1px solid rgba(199,167,106,0.35);background:linear-gradient(165deg,rgba(199,167,106,0.12)0%,rgba(0,0,0,0.15)55%);">' +
+    return '<div id="sec-premium-summary" class="report-chapter premium-executive-summary chapter-start" style="margin-bottom:40px;padding:22px 20px;border-radius:14px;border:1px solid rgba(199,167,106,0.35);background:linear-gradient(165deg,rgba(199,167,106,0.12)0%,rgba(0,0,0,0.15)55%);">' +
         '<div style="font-size:10px;letter-spacing:4px;color:rgba(199,167,106,0.7);margin-bottom:8px;">PREMIUM SUMMARY · LINK ACCESS</div>' +
         '<h2 style="font-family:\'Noto Serif KR\',serif;font-size:22px;font-weight:700;color:#f5f0e6;margin:0 0 14px;line-height:1.45;">' + nm + '님 맞춤 종합 핵심</h2>' +
         '<p class="premium-thesis" style="margin:0 0 16px;font-size:15px;line-height:1.85;color:#e8e4dc;">한 줄 테제 — 「' + thesisCore + '」 ' + strengthShort + '. 지금 흐름에서는 <strong>' + yongKr + '</strong> 기운을 살리는 선택을 할수록, 원하는 결과에 닿을 가능성이 더 높아져요.</p>' +
@@ -5590,7 +5590,7 @@ function buildCoverPage(data) {
             [strengthPlain, flowPlain].filter(Boolean).join(' ') + '</p></div>';
     }
 
-    return `<div class="cover-page chapter-start" style="display:flex;flex-direction:column;justify-content:flex-start;align-items:center;min-height:88vh;padding:56px 28px 56px;text-align:center;border-bottom:1px solid rgba(199,167,106,0.12);margin-bottom:40px;">
+    return `<div id="sec-cover" class="cover-page chapter-start" style="display:flex;flex-direction:column;justify-content:flex-start;align-items:center;min-height:88vh;padding:56px 28px 56px;text-align:center;border-bottom:1px solid rgba(199,167,106,0.12);margin-bottom:40px;">
         <div class="sajux-logo-wrap"><img class="sajux-logo dark" src="assets/sajux-logo-dark.png" alt="SAJU X 로고" loading="lazy" /><img class="sajux-logo light" src="assets/sajux-logo-light.png" alt="SAJU X 로고" loading="lazy" /></div>
 
         <div class="cover-brush-block" style="margin-top:18px;">
@@ -5617,24 +5617,24 @@ function buildBookIntroPage(data) {
     const name = data.name || '고객';
     return `<div id="sec-book-intro" class="toc-page chapter-start book-intro-page" style="padding:56px 36px 64px;border-bottom:1px solid rgba(199,167,106,0.12);margin-bottom:40px;max-width:720px;margin-left:auto;margin-right:auto;">
         <div style="font-size:10px;letter-spacing:0.35em;color:rgba(199,167,106,0.45);margin-bottom:16px;font-weight:600;">INTRODUCTION</div>
-        <h2 style="font-family:Noto Serif KR,serif;font-size:28px;font-weight:700;color:#fff;margin:0 0 10px;">이 책을 펼치며</h2>
-        <p style="font-size:13px;color:#888;margin:0 0 28px;line-height:1.75;">${name} 고객님을 위한 SAJU X 맞춤 리포트입니다. 아래 순서대로 읽어 오시면 한 권의 책을 넘기듯 흐름이 이어집니다.</p>
+        <h2 style="font-family:Noto Serif KR,serif;font-size:28px;font-weight:700;color:#fff;margin:0 0 10px;">브랜드 소개</h2>
+        <p style="font-size:13px;color:#888;margin:0 0 28px;line-height:1.75;">${name} 고객님을 위한 SAJU X 맞춤 리포트입니다. 브랜드 소개 다음 고객 맞춤 해석으로 자연스럽게 이어집니다.</p>
         <div style="display:flex;flex-direction:column;gap:14px;text-align:left;margin-bottom:26px;">
             <div style="padding:14px 16px;background:rgba(255,255,255,0.03);border:1px solid rgba(199,167,106,0.14);border-radius:12px;">
-                <div style="font-size:11px;color:var(--gold);letter-spacing:0.12em;margin-bottom:8px;font-weight:700;">1. 표지</div>
+                <div style="font-size:11px;color:var(--gold);letter-spacing:0.12em;margin-bottom:8px;font-weight:700;">1. 브랜드 커버</div>
                 <p style="font-size:13px;color:#ddd;line-height:1.82;margin:0;">일주와 네 기둥의 개요, 이 글을 읽을 때 도움이 되는 에너지 안내를 담았습니다.</p>
             </div>
             <div style="padding:14px 16px;background:rgba(255,255,255,0.03);border:1px solid rgba(199,167,106,0.14);border-radius:12px;">
-                <div style="font-size:11px;color:var(--gold);letter-spacing:0.12em;margin-bottom:8px;font-weight:700;">2. 소개 · 목차 · 머릿말</div>
+                <div style="font-size:11px;color:var(--gold);letter-spacing:0.12em;margin-bottom:8px;font-weight:700;">2. 소개 · 목차 · 안내문</div>
                 <p style="font-size:13px;color:#ddd;line-height:1.82;margin:0;">리포트의 성격과 구성을 설명하고, 전체 목차를 한눈에 본 뒤 편지에 해당하는 머릿말로 마음을 맞춥니다.</p>
             </div>
             <div style="padding:14px 16px;background:rgba(255,255,255,0.03);border:1px solid rgba(199,167,106,0.14);border-radius:12px;">
-                <div style="font-size:11px;color:var(--gold);letter-spacing:0.12em;margin-bottom:8px;font-weight:700;">3. 요약과 본문</div>
+                <div style="font-size:11px;color:var(--gold);letter-spacing:0.12em;margin-bottom:8px;font-weight:700;">3. 고객 맞춤 요약과 본문</div>
                 <p style="font-size:13px;color:#ddd;line-height:1.82;margin:0;">핵심 요약으로 오늘의 흐름을 짚은 뒤, 원국부터 시기별 운·분야별 풀이까지 이어집니다. 꼭 순서대로가 아니어도 되지만, 처음에는 앞부분부터 읽으시면 전체 그림을 잡기에 좋습니다.</p>
             </div>
         </div>
         <div style="padding:18px 20px;background:rgba(255,255,255,0.028);border-radius:14px;border:1px solid rgba(199,167,106,0.12);text-align:left;">
-            <div style="font-size:11px;color:var(--gold);letter-spacing:0.12em;margin-bottom:10px;font-weight:600;">SAJU X는 어떤 책인가요</div>
+            <div style="font-size:11px;color:var(--gold);letter-spacing:0.12em;margin-bottom:10px;font-weight:600;">SAJU X 브랜드 소개</div>
             <p style="font-size:12.5px;color:rgba(218,222,230,0.88);line-height:1.82;margin:0 0 10px;">SAJU X는 고객님의 사주 원국과 시기별 운의 반응을 연결해, 겉으로 보이는 결과뿐 아니라 숨겨진 패턴까지 짚는 분석 문서입니다. 길·흉만 적는 것이 아니라, 왜 그런 흐름이 생기는지와 어떻게 대응하면 좋은지를 함께 담았습니다.</p>
             <p style="font-size:12.5px;color:rgba(210,214,223,0.78);line-height:1.82;margin:0 0 10px;">이름의 X는 두 가지를 겹친 뜻입니다. X-File처럼 숨은 단서를 따라가 보자는 마음, 그리고 연·월·일·시 네 기둥이 만나 한 사람의 축을 세운다는 이미지입니다.</p>
             <p style="font-size:12.5px;color:rgba(206,210,218,0.74);line-height:1.82;margin:0;">생년월일시로 만든 만세력 원국, 대운·세운·월운의 시계열, 합·충·형과 오행 분포를 AI 분석 엔진이 함께 읽어 본문을 구성합니다.</p>
@@ -5647,14 +5647,25 @@ function buildBookIntroPage(data) {
 // ===================================================================
 function buildForewordPage(data) {
     const name = data.name || '고객';
-    return `<div id="sec-book-foreword" class="toc-page chapter-start book-foreword-page" style="padding:56px 36px 72px;border-bottom:1px solid rgba(199,167,106,0.12);margin-bottom:40px;max-width:620px;margin-left:auto;margin-right:auto;">
-        <div style="font-size:10px;letter-spacing:0.35em;color:rgba(199,167,106,0.45);margin-bottom:16px;font-weight:600;">FOREWORD</div>
-        <h2 style="font-family:Noto Serif KR,serif;font-size:28px;font-weight:700;color:#fff;margin:0 0 24px;">머릿말</h2>
-        <div style="text-align:left;font-size:14px;line-height:2;color:#ddd;">
-            <p style="margin:0 0 1.2em;">${name} 고객님, 이 리포트를 집어 들어 주셔서 고맙습니다.</p>
-            <p style="margin:0 0 1.2em;">여기에는 태어난 순간을 바탕으로 정리한 ‘당신이라는 사람의 설계도’와, 시간의 흐름에 따라 어떤 바람이 불어오는지에 대한 이야기가 실려 있습니다. 운명을 한 줄로 재는 글이 아니라, 스스로 선택하고 살아가실 때 참고할 만한 지도에 가깝게 쓰고자 했습니다.</p>
-            <p style="margin:0 0 1.2em;">편하게 앉으신 자리에서, 글 한 줄 한 줄을 넘기듯 천천히 읽어 보세요. 문장이 삶의 한 페이지와 닿는 순간이 있다면, 그것만으로도 이 책이 제 몫을 한다고 생각합니다.</p>
-            <p style="margin:0;color:#888;font-size:13px;">SAJU X 드림</p>
+    const accessLine = formatReportAccessLine(data);
+    return `<div id="sec-book-foreword" class="toc-page chapter-start book-foreword-page" style="padding:56px 36px 72px;border-bottom:1px solid rgba(199,167,106,0.12);margin-bottom:40px;max-width:700px;margin-left:auto;margin-right:auto;">
+        <div style="font-size:10px;letter-spacing:0.35em;color:rgba(199,167,106,0.45);margin-bottom:16px;font-weight:600;">GUIDE & NOTICE</div>
+        <h2 style="font-family:Noto Serif KR,serif;font-size:28px;font-weight:700;color:#fff;margin:0 0 18px;">이용 안내</h2>
+
+        <div style="text-align:left;padding:16px 18px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(199,167,106,0.14);margin-bottom:14px;">
+            <div style="font-size:12px;color:var(--gold);letter-spacing:0.08em;margin-bottom:8px;font-weight:700;">법적 안내</div>
+            <p style="margin:0;font-size:13px;line-height:1.9;color:#d6dae2;">본 리포트는 명리학(사주) 해석을 기반으로 한 참고 정보입니다. 투자, 의료, 법률, 세무 등 전문 자문을 대체하지 않으며, 최종 판단과 책임은 이용자 본인에게 있습니다.</p>
+        </div>
+
+        <div style="text-align:left;padding:16px 18px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(199,167,106,0.14);margin-bottom:14px;">
+            <div style="font-size:12px;color:var(--gold);letter-spacing:0.08em;margin-bottom:8px;font-weight:700;">권장 사용법</div>
+            <p style="margin:0;font-size:13px;line-height:1.9;color:#d6dae2;">${name} 고객님에게 필요한 부분부터 읽으시되, 먼저 "고객 맞춤 요약"을 확인한 뒤 본문에서 상세 해석을 보시면 이해가 빠릅니다. 중요한 결정은 현실 여건과 전문가 의견을 함께 검토해 주세요.</p>
+        </div>
+
+        <div style="text-align:left;padding:16px 18px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(199,167,106,0.14);">
+            <div style="font-size:12px;color:var(--gold);letter-spacing:0.08em;margin-bottom:8px;font-weight:700;">보관 정책 및 PDF 저장</div>
+            <p style="margin:0 0 8px;font-size:13px;line-height:1.9;color:#d6dae2;">${accessLine}</p>
+            <p style="margin:0;font-size:13px;line-height:1.9;color:#d6dae2;">링크 만료 후 재열람이 어려울 수 있으니, 필요한 경우 반드시 PDF로 저장해 개인 보관해 주세요.</p>
         </div>
     </div>`;
 }
@@ -5791,22 +5802,15 @@ window.generateDeepReport = generateDeepReport;
 <div id="floating-toc" style="display:none; position:fixed; right:12px; top:50%; transform:translateY(-50%); z-index:9999; background:rgba(0,0,0,0.75); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border-radius:14px; padding:10px 6px; box-shadow:0 8px 32px rgba(0,0,0,0.6); max-width:44px; overflow:hidden; transition:max-width 0.3s, padding 0.3s;" onmouseenter="expandToc()" onmouseleave="collapseToc()">
     <div style="font-size:10px; color:rgba(199,167,106,0.8); text-align:center; margin-bottom:8px; letter-spacing:1px; white-space:nowrap;">☰</div>
     <div id="toc-links" style="display:flex; flex-direction:column; gap:4px; min-width:120px;">
-        <a onclick="tocGo('hero-book-cover')" class="toc-link">표지</a>
-        <a onclick="tocGo('sec-book-intro')" class="toc-link">소개</a>
-        <a onclick="tocGo('sec-book-foreword')" class="toc-link">머릿말</a>
-        <div style="border-top:1px solid rgba(255,255,255,0.08); margin:4px 0;"></div>
-        <a onclick="tocGo('sec-manse')" class="toc-link">사주원국</a>
-        <a onclick="tocGo('sec-relation')" class="toc-link">합·충·형</a>
-        <a onclick="tocGo('sec-wuxing')" class="toc-link">오행 분석</a>
-        <a onclick="tocGo('sec-fortune')" class="toc-link">신강신약</a>
-        <a onclick="tocGo('sec-daeun-graph')" class="toc-link">인생 그래프</a>
-        <a onclick="tocGo('sec-lifecycle')" class="toc-link">시기별 운</a>
-        <a onclick="tocGo('sec-category')" class="toc-link">분야별 운세</a>
+        <a onclick="tocGo('sec-cover')" class="toc-link">커버</a>
+        <a onclick="tocGo('sec-book-intro')" class="toc-link">브랜드 소개</a>
+        <a onclick="tocGo('sec-premium-summary')" class="toc-link">고객 맞춤 요약</a>
+        <a onclick="tocGo('sec-book-foreword')" class="toc-link">안내문</a>
         <a onclick="tocGo('sec-personality')" class="toc-link">성격 분석</a>
-        <a onclick="tocGo('sec-daeun-detail')" class="toc-link">대운 상세</a>
+        <a onclick="tocGo('report-container')" class="toc-link">본문 시작</a>
         <div style="border-top:1px solid rgba(255,255,255,0.1); margin:4px 0;"></div>
         <a onclick="window.print()" class="toc-link" style="color:rgba(199,167,106,0.9);">🖨 PDF 저장</a>
-    </div>
+    </div></div>
 </div>
 <style>
 .toc-link {
