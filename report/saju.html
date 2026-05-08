@@ -7696,6 +7696,12 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
             var OH={'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
             var JO={'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'};
             var KN={wood:'목',fire:'화',earth:'토',metal:'금',water:'수'};var GK={'甲':'갑','乙':'을','丙':'병','丁':'정','戊':'무','己':'기','庚':'경','辛':'신','壬':'임','癸':'계'},JK={'子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해'};
+            var natalP=(globalSajuData&&globalSajuData.pillars)||[];
+            var natalS=natalP.map(function(p){return p&&p.h&&p.h[0];}).filter(Boolean);
+            var natalB=natalP.map(function(p){return p&&p.h&&p.h[1];}).filter(Boolean);
+            var STEM_PAIR={'甲':'己','己':'甲','乙':'庚','庚':'乙','丙':'辛','辛':'丙','丁':'壬','壬':'丁','戊':'癸','癸':'戊'};
+            var BRANCH_PAIR={'子':'丑','丑':'子','寅':'亥','亥':'寅','卯':'戌','戌':'卯','辰':'酉','酉':'辰','巳':'申','申':'巳','午':'未','未':'午'};
+            var BRANCH_CLASH={'子':'午','午':'子','丑':'未','未':'丑','寅':'申','申':'寅','卯':'酉','酉':'卯','辰':'戌','戌':'辰','巳':'亥','亥':'巳'};
             var sc={wood:0,fire:0,earth:0,metal:0,water:0}; if(yong) sc[yong]+=2; if(hee) sc[hee]+=1; if(gi) sc[gi]-=2; if(goo) sc[goo]-=1;
             function gs(g,j){return (sc[OH[g]]||0)+(sc[JO[j]]||0);}
             function gc(s){return s>=3?'#c7a76a':s>=1?'#00C853':s===0?'#888':s>=-2?'#ff9800':'#e74c3c';}
