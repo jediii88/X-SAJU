@@ -7442,6 +7442,12 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
             var OH={'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
             var JO={'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'};
             var KN={wood:'목',fire:'화',earth:'토',metal:'금',water:'수'};var GK={'甲':'갑','乙':'을','丙':'병','丁':'정','戊':'무','己':'기','庚':'경','辛':'신','壬':'임','癸':'계'},JK={'子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해'};
+            var natalP=(globalSajuData&&globalSajuData.pillars)||[];
+            var natalS=natalP.map(function(p){return p&&p.h&&p.h[0];}).filter(Boolean);
+            var natalB=natalP.map(function(p){return p&&p.h&&p.h[1];}).filter(Boolean);
+            var STEM_PAIR={'甲':'己','己':'甲','乙':'庚','庚':'乙','丙':'辛','辛':'丙','丁':'壬','壬':'丁','戊':'癸','癸':'戊'};
+            var BRANCH_PAIR={'子':'丑','丑':'子','寅':'亥','亥':'寅','卯':'戌','戌':'卯','辰':'酉','酉':'辰','巳':'申','申':'巳','午':'未','未':'午'};
+            var BRANCH_CLASH={'子':'午','午':'子','丑':'未','未':'丑','寅':'申','申':'寅','卯':'酉','酉':'卯','辰':'戌','戌':'辰','巳':'亥','亥':'巳'};
             var sc={wood:0,fire:0,earth:0,metal:0,water:0}; if(yong) sc[yong]+=2; if(hee) sc[hee]+=1; if(gi) sc[gi]-=2; if(goo) sc[goo]-=1;
             function gs(g,j){return (sc[OH[g]]||0)+(sc[JO[j]]||0);}
             function gc(s){return s>=3?'#c7a76a':s>=1?'#00C853':s===0?'#888':s>=-2?'#ff9800':'#e74c3c';}
@@ -7692,11 +7698,19 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
                 var jiSip2=(typeof getSipseong==='function'&&dayStem)?(getSipseong(dayStem,j2)||''):'';
                 var gTag=(GK[g2]||g2);
                 var jTag=(JK[j2]||j2);
+                var reacts=[];
+                if(natalS.indexOf(g2)>=0) reacts.push(gTag+'가 원국에 겹쳐 같은 성향이 더 강해집니다.');
+                if(natalB.indexOf(j2)>=0) reacts.push(jTag+'가 원국에 겹쳐 같은 이슈가 크게 드러날 수 있습니다.');
+                var sPair=STEM_PAIR[g2], bPair=BRANCH_PAIR[j2], bClash=BRANCH_CLASH[j2];
+                if(sPair&&natalS.indexOf(sPair)>=0) reacts.push(gTag+'는 원국의 '+(GK[sPair]||sPair)+'와 잘 붙어 사람·기회 연결이 좋아집니다.');
+                if(bPair&&natalB.indexOf(bPair)>=0) reacts.push(jTag+'는 원국의 '+(JK[bPair]||bPair)+'와 잘 맞아 협업 흐름이 부드럽습니다.');
+                if(bClash&&natalB.indexOf(bClash)>=0) reacts.push(jTag+'는 원국의 '+(JK[bClash]||bClash)+'와 부딪혀 변경·충돌 이슈를 먼저 관리해야 합니다.');
+                var reactTxt=reacts.length?reacts.slice(0,2).join(' '):'원국과 큰 충돌이 적어 계획대로 밀어붙일수록 안정적으로 쌓입니다.';
                 var adv=s2>=2
-                    ?`올해는 ${gTag}${jTag} 기운이 나와 잘 맞아, 새 시도·협업·확장이 성과로 이어질 가능성이 높습니다. 다만 한 번에 많이 벌이기보다 우선순위를 먼저 정하면 결과가 더 좋아집니다.`
+                    ?`올해는 ${gTag}${jTag} 기운이 나와 잘 맞아, 새 시도·협업·확장이 성과로 이어질 가능성이 높습니다. ${reactTxt} 다만 한 번에 많이 벌이기보다 우선순위를 먼저 정하면 결과가 더 좋아집니다.`
                     :s2>=0
-                    ?`올해는 ${gTag}${jTag} 기운이 급한 변화보다 안정 운영에 힘을 싣는 해입니다. 큰 승부보다 기존 구조를 다듬고 새는 부분을 줄이는 쪽이 유리합니다.`
-                    :`올해는 ${gTag}${jTag} 기운이 부담 구간을 건드릴 수 있는 해입니다. 공격적으로 키우기보다 현금흐름 방어와 계약 재검토를 먼저 하면 손실 가능성을 낮출 수 있습니다.`;
+                    ?`올해는 ${gTag}${jTag} 기운이 급한 변화보다 안정 운영에 힘을 싣는 해입니다. ${reactTxt} 큰 승부보다 기존 구조를 다듬고 새는 부분을 줄이는 쪽이 유리합니다.`
+                    :`올해는 ${gTag}${jTag} 기운이 부담 구간을 건드릴 수 있는 해입니다. ${reactTxt} 공격적으로 키우기보다 현금흐름 방어와 계약 재검토를 먼저 하면 손실 가능성을 낮출 수 있습니다.`;
                 h3+='<div style="margin-bottom:14px;padding:16px;background:rgba(255,255,255,'+(isThis?'0.07':'0.03')+');border:1px solid '+(isThis?'var(--gold)':'rgba(255,255,255,0.07)')+';border-radius:12px;">';
                 h3+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;"><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:20px;font-weight:280;color:var(--gold);font-family:Noto Serif KR,serif;">'+g2+j2+'</span><span style="font-size:14px;color:#bbb;">'+yr+'년'+(isThis?' <span style="font-size:10px;background:var(--gold);color:#000;padding:1px 7px;border-radius:8px;font-weight:700;">올해</span>':'')+'</span></div><span style="font-size:12px;font-weight:700;color:'+col2+';">'+gb(s2)+'</span></div>';
                 var ynarr=yr+'년은 '+(GK[g2]||g2)+'('+KN[gOh]+') 기운과 '+(JK[j2]||j2)+'('+KN[jOh]+') 기운이 함께 작동하는 해입니다. '+(s2>=2?'부족했던 부분을 채워 주는 해라, 실행한 일이 결과로 이어질 가능성이 큽니다.':s2>=0?'급하게 키우기보다 차근차근 쌓을 때 더 잘 맞는 해입니다.':'충돌이 커질 수 있는 해라, 결정 속도를 늦추고 안전장치를 먼저 챙기는 편이 좋습니다.');
@@ -7713,6 +7727,12 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
             var OH={'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
             var JO={'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'};
             var KN={wood:'목',fire:'화',earth:'토',metal:'금',water:'수'};var GK={'甲':'갑','乙':'을','丙':'병','丁':'정','戊':'무','己':'기','庚':'경','辛':'신','壬':'임','癸':'계'},JK={'子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해'};
+            var natalP=(globalSajuData&&globalSajuData.pillars)||[];
+            var natalS=natalP.map(function(p){return p&&p.h&&p.h[0];}).filter(Boolean);
+            var natalB=natalP.map(function(p){return p&&p.h&&p.h[1];}).filter(Boolean);
+            var STEM_PAIR={'甲':'己','己':'甲','乙':'庚','庚':'乙','丙':'辛','辛':'丙','丁':'壬','壬':'丁','戊':'癸','癸':'戊'};
+            var BRANCH_PAIR={'子':'丑','丑':'子','寅':'亥','亥':'寅','卯':'戌','戌':'卯','辰':'酉','酉':'辰','巳':'申','申':'巳','午':'未','未':'午'};
+            var BRANCH_CLASH={'子':'午','午':'子','丑':'未','未':'丑','寅':'申','申':'寅','卯':'酉','酉':'卯','辰':'戌','戌':'辰','巳':'亥','亥':'巳'};
             var WL={'寅':'인월 — 봄의 시작, 새로운 기운이 발동합니다. 새로운 계획, 프로젝트 착수, 인맥 확장에 최적입니다. 머뭇거리지 말고 이달에 첫발을 내딛으십시오.','卯':'묘월 — 성장과 확장의 기운입니다. 인맥을 넓히고 협업 제안에 적극 응하세요. 이달의 만남이 중요한 장기 인연이 됩니다.','辰':'진월 — 변화와 전환의 기운입니다. 예상치 못한 기회가 찾아올 수 있으니 유연하게 대응하시는 편이 좋습니다.','巳':'사월 — 집중력이 최고조인 달입니다. 중요한 결정을 내리고 실행에 집중하시는 편이 좋습니다. 이달의 결단이 하반기를 좌우합니다.','午':'오월 — 에너지와 활력이 넘칩니다. 사회적 활동, 발표, 영업에 최적입니다. 적극적으로 나서면 인정받습니다.','未':'미월 — 관계와 감성이 풍부해집니다. 인간관계를 돌보고 협력을 강화하시는 편이 좋습니다.','申':'신월 — 결단과 실행력이 요구됩니다. 판단한 것을 즉시 행동으로 옮기십시오.','酉':'유월 — 마무리와 완성의 기운입니다. 진행 중인 일을 깔끔하게 마무리하시는 편이 좋습니다.','戌':'술월 — 성찰과 정리의 달입니다. 불필요한 것을 정리하고 중요한 것에만 집중하시는 편이 좋습니다.','亥':'해월 — 준비와 내공의 달입니다. 학습, 자기 성찰에 집중하면 내년에 큰 도약이 찾아옵니다.','子':'자월 — 지혜와 집중의 달입니다. 복잡한 문제를 분석하고 장기 계획을 수립하기에 최적입니다.','丑':'축월 — 인내와 축적의 달입니다. 결과를 서두르지 말고 착실하게 실력을 쌓는 것이 이달의 전략입니다.'};
             var sc={wood:0,fire:0,earth:0,metal:0,water:0}; if(yong) sc[yong]+=2; if(hee) sc[hee]+=1; if(gi) sc[gi]-=2; if(goo) sc[goo]-=1;
             function gs(g,j){return (sc[OH[g]]||0)+(sc[JO[j]]||0);}
@@ -7730,12 +7750,20 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
                 var jiSipM=(typeof getSipseong==='function'&&dayStem)?(getSipseong(dayStem,jm4)||''):'';
                 var mGTag=(GK[gm4]||gm4);
                 var mJTag=(JK[jm4]||jm4);
+                var mReacts=[];
+                if(natalS.indexOf(gm4)>=0) mReacts.push(mGTag+'가 원국에 겹쳐 같은 성향이 강해집니다.');
+                if(natalB.indexOf(jm4)>=0) mReacts.push(mJTag+'가 원국에 겹쳐 같은 일이 반복될 수 있습니다.');
+                var msPair=STEM_PAIR[gm4], mbPair=BRANCH_PAIR[jm4], mbClash=BRANCH_CLASH[jm4];
+                if(msPair&&natalS.indexOf(msPair)>=0) mReacts.push(mGTag+'가 원국의 '+(GK[msPair]||msPair)+'와 잘 붙어 연결 운이 좋아집니다.');
+                if(mbPair&&natalB.indexOf(mbPair)>=0) mReacts.push(mJTag+'가 원국의 '+(JK[mbPair]||mbPair)+'와 잘 맞아 협업이 부드럽습니다.');
+                if(mbClash&&natalB.indexOf(mbClash)>=0) mReacts.push(mJTag+'가 원국의 '+(JK[mbClash]||mbClash)+'와 부딪혀 일정 변경·감정 충돌을 조심해야 합니다.');
+                var mReactTxt=mReacts.length?mReacts[0]:'원국과 큰 충돌이 적어 계획대로 밀어붙이기 좋은 달입니다.';
                 var wlDesc=WL[jm4]||jm4+'월의 기운이 이달을 이끕니다.';
                 var advm=sm4>=2
-                    ?`이달은 ${mGTag}${mJTag} 기운이 실행 쪽으로 힘을 보태는 달입니다. 중요한 시작·연락·계약 초안을 진행하면 다음 달로 이어질 가능성이 높습니다.`
+                    ?`이달은 ${mGTag}${mJTag} 기운이 실행 쪽으로 힘을 보태는 달입니다. ${mReactTxt} 중요한 시작·연락·계약 초안을 진행하면 다음 달로 이어질 가능성이 높습니다.`
                     :sm4>=0
-                    ?`이달은 ${mGTag}${mJTag} 기운이 균형에 가까워, 정리·보완·루틴 강화가 효율적입니다. 작은 완성도를 쌓는 전략이 좋습니다.`
-                    :`이달은 ${mGTag}${mJTag} 기운이 부담을 키울 수 있어 속도 조절이 필요합니다. 큰 결정보다 검토·보류를 먼저 하면 안정적으로 넘길 가능성이 높습니다.`;
+                    ?`이달은 ${mGTag}${mJTag} 기운이 균형에 가까워, 정리·보완·루틴 강화가 효율적입니다. ${mReactTxt} 작은 완성도를 쌓는 전략이 좋습니다.`
+                    :`이달은 ${mGTag}${mJTag} 기운이 부담을 키울 수 있어 속도 조절이 필요합니다. ${mReactTxt} 큰 결정보다 검토·보류를 먼저 하면 안정적으로 넘길 가능성이 높습니다.`;
                 h4+='<div style="margin-bottom:12px;padding:14px;background:rgba(255,255,255,'+(isThisM?'0.07':'0.03')+');border:1px solid '+(isThisM?'var(--gold)':'rgba(255,255,255,0.06)')+';border-radius:10px;">';
                 h4+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:18px;font-weight:900;color:var(--gold);font-family:Noto Serif KR,serif;">'+gm4+jm4+'</span><span style="font-size:13px;color:#bbb;">'+m4+'월'+(isThisM?' <span style="font-size:10px;background:var(--gold);color:#000;padding:1px 6px;border-radius:6px;font-weight:700;">이달</span>':'')+'</span></div><span style="font-size:11px;font-weight:700;color:'+colm+';">'+gb(sm4)+'</span></div>';
                 h4+='<p style="font-size:13px;color:#ddd;line-height:1.75;margin:0 0 8px;">'+wlDesc+'</p>';
