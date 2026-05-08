@@ -51,6 +51,7 @@
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Brush+Script&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #000;
@@ -2285,7 +2286,6 @@ function generateDeepReport(data) {
 
     // PART 4
     html += safeCall(()=>buildPartHeader(4,'마무리','자녀 · 말년 · 개운법'), 'part4header');
-    html += safeCall(()=>buildChapter10_Legacy(data), 'ch10');
     html += safeCall(()=>buildChapter9_Remedy(data), 'ch9remedy');
 
     document.getElementById('report-container').innerHTML = html;
@@ -5187,50 +5187,58 @@ function buildCoverPage(data) {
     const OH_KR = {'wood':'목(木)','fire':'화(火)','earth':'토(土)','metal':'금(金)','water':'수(水)'};
     const yongKr = OH_KR[data.yong] || (data.yong||'');
     const giKr = OH_KR[data.gi] || (data.gi||'');
-    const today = new Date();
-    const reportDate = today.getFullYear() + '년 ' + (today.getMonth()+1) + '월 ' + today.getDate() + '일';
-    // 4주 한자 표기
     const pillars = data.pillars || [];
-    const pillarHanja = pillars.map(p => p.h ? (Array.isArray(p.h) ? p.h.join('') : String(p.h)) : '').join(' ');
     const pillarLabels = ['시주','일주','월주','연주'];
 
     return `<div class="cover-page chapter-start print-only" style="display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:88vh;padding:64px 40px 56px;text-align:center;border-bottom:1px solid rgba(199,167,106,0.14);margin-bottom:42px;">
-        <div style="font-size:9px;letter-spacing:4px;color:rgba(199,167,106,0.46);margin-bottom:34px;font-weight:300;">X-SAJU MASTER · PREMIUM REPORT</div>
-        <div style="display:flex;gap:26px;margin-bottom:18px;opacity:0.92;">${pillars.map((p,i) => {
+        <div style="font-size:9px;letter-spacing:4px;color:rgba(199,167,106,0.46);margin-bottom:30px;font-weight:300;">SAJU X · CONFIDENTIAL DOSSIER</div>
+
+        <div style="display:flex;gap:22px;margin-bottom:16px;opacity:0.92;">${pillars.map((p,i) => {
             const h = p.h ? (Array.isArray(p.h) ? p.h.join('') : String(p.h)) : '';
-            return '<div style="text-align:center;"><div style="font-size:10px;color:rgba(199,167,106,0.54);margin-bottom:3px;font-weight:300;letter-spacing:0.06em;">' + pillarLabels[i] + '</div><div style="font-family:Noto Serif KR,serif;font-size:24px;font-weight:500;color:' + (i===1?'#f2f4f8':'rgba(230,232,238,0.78)') + ';letter-spacing:2px;">' + h + '</div></div>';
+            return '<div style="text-align:center;"><div style="font-size:10px;color:rgba(199,167,106,0.54);margin-bottom:3px;font-weight:300;letter-spacing:0.06em;">' + pillarLabels[i] + '</div><div style="font-family:Noto Serif KR,serif;font-size:22px;font-weight:500;color:' + (i===1?'#f2f4f8':'rgba(230,232,238,0.78)') + ';letter-spacing:2px;">' + h + '</div></div>';
         }).join('')}</div>
-        <div class="cover-hanja" style="font-family:Noto Serif KR,serif;font-size:88px;font-weight:600;color:var(--gold);letter-spacing:14px;line-height:1;margin:10px 0 0;">${iljuKey}</div>
-        <div style="font-size:15px;color:rgba(199,167,106,0.72);margin-top:10px;letter-spacing:0.08em;font-weight:300;">${iljuTitle}${animal ? ' · 일지 ' + animal : ''}</div>
-        <div style="width:84px;height:1px;background:rgba(199,167,106,0.55);margin:26px auto 24px;"></div>
-        <div class="cover-title" style="font-family:'Noto Sans KR',sans-serif;font-size:56px;font-weight:300;color:#eef1f6;letter-spacing:-0.02em;line-height:1.08;margin-bottom:14px;">${name}</div>
-        ${birthStr ? `<div style="font-size:13px;color:rgba(220,224,232,0.62);margin-bottom:12px;font-weight:300;letter-spacing:0.02em;">${birthStr}</div>` : ''}
-        <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center;">
+
+        <div style="font-family:Noto Serif KR,serif;font-size:70px;font-weight:600;color:var(--gold);letter-spacing:12px;line-height:1;margin:8px 0 0;">${iljuKey}</div>
+        <div style="font-size:14px;color:rgba(199,167,106,0.72);margin-top:8px;letter-spacing:0.08em;font-weight:300;">${iljuTitle}${animal ? ' · 일지 ' + animal : ''}</div>
+        <div style="width:84px;height:1px;background:rgba(199,167,106,0.55);margin:24px auto 20px;"></div>
+
+        <div class="cover-title" style="font-family:'Nanum Brush Script',cursive;font-size:56px;font-weight:400;color:#f4f0e8;line-height:1.12;margin-bottom:10px;">${name} 고객님의 사주풀이 비밀문서</div>
+        ${birthStr ? `<div style="font-size:13px;color:rgba(220,224,232,0.62);margin-bottom:14px;font-weight:300;letter-spacing:0.02em;">${birthStr}</div>` : ''}
+
+        <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center;margin-bottom:16px;">
             ${data.strengthText ? `<div style="display:inline-block;font-size:11px;color:rgba(199,167,106,0.76);background:rgba(199,167,106,0.08);padding:5px 14px;border-radius:999px;border:1px solid rgba(199,167,106,0.16);font-weight:300;">${data.strengthText}</div>` : ''}
             ${yongKr ? `<div style="display:inline-block;font-size:11px;color:var(--metal);background:rgba(53,95,184,0.12);padding:5px 14px;border-radius:999px;border:1px solid rgba(53,95,184,0.32);font-weight:300;">용신 ${yongKr}</div>` : ''}
             ${giKr ? `<div style="display:inline-block;font-size:11px;color:var(--fire);background:rgba(207,62,57,0.14);padding:5px 14px;border-radius:999px;border:1px solid rgba(207,62,57,0.34);font-weight:300;">기신 ${giKr}</div>` : ''}
         </div>
-        <div style="margin-top:28px;font-size:10px;color:rgba(210,214,223,0.38);letter-spacing:0.18em;">${formatReportAccessLine(data)}</div>
+
+        <div style="max-width:680px;background:rgba(255,255,255,0.03);border:1px solid rgba(199,167,106,0.14);border-radius:14px;padding:16px 18px;text-align:left;">
+            <div style="font-size:11px;color:var(--gold);letter-spacing:1px;margin-bottom:8px;">SAJU X 리포트 소개</div>
+            <p style="font-size:12.5px;color:#d4d8df;line-height:1.8;margin:0 0 10px;">SAJU X는 고객님의 사주 원국과 시기별 운의 반응을 연결해, 겉으로 보이는 결과뿐 아니라 숨겨진 패턴까지 추적하는 분석 문서입니다. 단순한 길흉 판정이 아니라, 왜 그런 흐름이 생기는지와 어떻게 대응해야 하는지를 함께 제시합니다.</p>
+            <p style="font-size:12.5px;color:#c5cad2;line-height:1.8;margin:0;">브랜드명의 X는 두 가지 뜻을 담고 있습니다. 하나는 X-File처럼 숨은 단서를 파헤친다는 의미, 다른 하나는 사주를 이루는 네 기둥(연·월·일·시)이 교차해 만들어내는 핵심 축을 형상화한 상징입니다.</p>
+        </div>
+
+        <div style="margin-top:20px;font-size:10px;color:rgba(210,214,223,0.38);letter-spacing:0.18em;">${formatReportAccessLine(data)}</div>
     </div>`;
 }
+
 
 // ===================================================================
 // buildTOC: 목차 페이지
 // ===================================================================
 function buildTOC(data) {
     const chapters = [
-        { num:'CH 01', title:'사주 원국 완전 해부', sub:'4주 8자 심층 풀이 · 천간·지지·지장간 · 12운성 · 공망', pages:'20p' },
-        { num:'CH 02', title:'오행 완전 해부', sub:'오행 분포 · 과다 기운 심층 · 부족 기운 보완법 · 건강 연결', pages:'15p' },
-        { num:'CH 03', title:'십성 완전 해부', sub:'주도 십성 심층 · 조합 분석 · 직업·재물·애정에서의 발현', pages:'15p' },
-        { num:'CH 04', title:'재물운 완전 해부', sub:'재물 구조 · 획득 최적 루트 · 대운별 재물 전략 · 투자 조언', pages:'20p' },
-        { num:'CH 05', title:'직업운 완전 해부', sub:'직업 성향 유형 · 추천 직업군 · 커리어 단계별 전략', pages:'20p' },
-        { num:'CH 06', title:'애정운 완전 해부', sub:'연애 패턴 · 이상형 분석 · 결혼 시기 · 배우자 특성', pages:'20p' },
-        { num:'CH 07', title:'지장간 — 숨겨진 기운', sub:'빙산 아래의 욕망 · 잠재 능력 발동 조건과 시점', pages:'10p' },
-        { num:'CH 08', title:'건강운 완전 해부', sub:'취약 장기 · 감정-신체 연결고리 · 맞춤 식이·운동 처방', pages:'15p' },
-        { num:'CH 09', title:'개운법 & 종합 전략', sub:'용신 기반 개운법 · 색상·방위·음식·보석·귀인 처방', pages:'15p' },
-        { num:'CH 10', title:'성격 완전 분석', sub:'강점·약점 심층 · 인간관계 유형 · 호불호 상성 분석', pages:'10p' },
-        { num:'부록 A', title:'대운 80년 완전 해부', sub:'10년 단위 인생 계절 · 길흉 판단 · 분야별 전략', pages:'40p' },
-        { num:'부록 B', title:'세운·월운 심층 분석', sub:'올해 및 향후 10년 세운 예측 · 월별 흐름', pages:'20p' },
+        { num:'CH 01', title:'사주 원국 완전 해부', sub:'4주 8자 심층 풀이 · 천간·지지·지장간 · 12운성 · 공망', pages:'8p' },
+        { num:'CH 02', title:'오행 완전 해부', sub:'오행 분포 · 과다 기운 심층 · 부족 기운 보완법 · 건강 연결', pages:'7p' },
+        { num:'CH 03', title:'십성 완전 해부', sub:'주도 십성 심층 · 조합 분석 · 직업·재물·애정에서의 발현', pages:'7p' },
+        { num:'CH 04', title:'재물운 완전 해부', sub:'재물 구조 · 획득 최적 루트 · 대운별 재물 전략 · 투자 조언', pages:'8p' },
+        { num:'CH 05', title:'직업운 완전 해부', sub:'직업 성향 유형 · 추천 직업군 · 커리어 단계별 전략', pages:'7p' },
+        { num:'CH 06', title:'애정운 완전 해부', sub:'연애 패턴 · 이상형 분석 · 결혼 시기 · 배우자 특성', pages:'8p' },
+        { num:'CH 07', title:'지장간 — 숨겨진 기운', sub:'빙산 아래의 욕망 · 잠재 능력 발동 조건과 시점', pages:'5p' },
+        { num:'CH 08', title:'건강운 완전 해부', sub:'취약 장기 · 감정-신체 연결고리 · 맞춤 식이·운동 처방', pages:'7p' },
+        { num:'CH 09', title:'개운법 & 종합 전략', sub:'용신 기반 개운법 · 색상·방위·음식·보석·귀인 처방', pages:'6p' },
+        { num:'CH 10', title:'성격 완전 분석', sub:'강점·약점 심층 · 인간관계 유형 · 호불호 상성 분석', pages:'5p' },
+        { num:'부록 A', title:'대운 80년 완전 해부', sub:'10년 단위 인생 계절 · 길흉 판단 · 분야별 전략', pages:'14p' },
+        { num:'부록 B', title:'세운·월운 심층 분석', sub:'올해 및 향후 10년 세운 예측 · 월별 흐름', pages:'8p' },
     ];
 
     const rows = chapters.map((c, i) => `
