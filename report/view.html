@@ -5693,7 +5693,7 @@ function startReport() {
                         <div class="toc-item" onclick="tocGo('sec-yonghee')">IV. 용신 · 기신</div>
                         <div class="toc-item" onclick="tocGo('sec-daeun-graph')">V. 인생 흐름 그래프</div>
                         <div class="toc-item" onclick="tocGo('sec-lifecycle')">VI. 시기별 운세</div>
-                        <div class="toc-item" onclick="tocGo('sec-category')">VII. 건강 · 재물 · 직업 · 애정</div>
+                        <div class="toc-item" onclick="tocGo('sec-category')">VII. 건강 · 재물 · 직업 · 애정 · 합격운</div>
                         <div class="toc-item" onclick="tocGo('report-container')">VIII. 심층 운명 서사</div>
                     </div>
                 </div>
@@ -5846,11 +5846,12 @@ function startReport() {
         <!-- 카테고리별 심층 분석 -->
         <!-- 분야별 운세: 탭 제거, 섹션으로 펼침 (PDF 완전 출력) -->
         <div class="section" id="sec-category" style="display:none;">
-            <div class="section-title"><div class="title-left"><span id="toc-anchor-cat">분야별 심층 운세</span></div><span>건강 · 재물 · 직업 · 애정</span></div>
+            <div class="section-title"><div class="title-left"><span id="toc-anchor-cat">분야별 심층 운세</span></div><span>건강 · 재물 · 직업 · 애정 · 합격운</span></div>
             <div id="cat-health" class="cat-content cat-section"></div>
             <div id="cat-wealth" class="cat-content cat-section"></div>
             <div id="cat-career" class="cat-content cat-section"></div>
             <div id="cat-love" class="cat-content cat-section"></div>
+            <div id="cat-pass" class="cat-content cat-section"></div>
         </div>
 
         <div class="section" id="sec-report" style="display:none;">
@@ -7397,15 +7398,41 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
                     <div class="cat-advice"><b style="color:#ddd;">실행 방향</b><p style="margin:8px 0 0;color:#cfcfcf;line-height:1.8;">애정운은 감정의 강도보다 리듬의 합이 더 오래 갑니다. 중요한 관계 결정은 감정이 가장 높게 치는 날을 피해서 잡고, 대화의 빈도와 시간을 먼저 맞추면 관계의 안정감이 커집니다. ${loveFlowHint}</p></div>
                 </div>`;
 
+            // ── 합격운 상세 ──
+            const passPower = Math.min(100, Math.round((inC*1.25 + gwanC*1.15 + sikC*0.9) / Math.max(sipTotalWeight,1) * 100));
+            const passType = passPower >= 70 ? '상승' : passPower >= 45 ? '유지' : '보완';
+            const passMain = passType==='상승'
+                ? '지금은 합격운이 비교적 강하게 붙는 흐름입니다. 공부한 만큼 점수로 연결되기 쉬운 구간이라, 범위를 넓히기보다 출제 빈도가 높은 핵심 단원을 깊게 파는 편이 유리합니다.'
+                : passType==='유지'
+                ? '지금은 합격운이 중간 구간이라, 한 번에 큰 점프보다 누적이 중요합니다. 매일 같은 시간에 같은 루틴으로 공부 리듬을 고정하면 점수 흔들림을 줄일 수 있습니다.'
+                : '지금은 합격운 보완이 필요한 구간입니다. 실력을 새로 만들기보다 틀리는 패턴을 줄이는 데 집중하면 단기간에도 체감 점수를 올릴 수 있습니다.';
+            const passFlowHint = `${flowAnchor} 시험운은 "집중력(인성) + 실행력(식상) + 실전 안정감(관성)"의 합으로 읽습니다. 중요한 시험일수록 직전 2주 루틴을 고정해 컨디션 변수를 줄이는 편이 좋습니다.`;
+            const passAction = passType==='상승'
+                ? '실전 모의고사 비중을 높이고, 약점 2개만 정해 집중 보완하세요.'
+                : passType==='유지'
+                ? '기출 반복 비중을 높이고, 오답노트는 매일 20분 고정으로 유지하세요.'
+                : '새 교재 추가를 멈추고, 기존 오답 유형 3개만 반복 교정하세요.';
+            document.getElementById('cat-pass').innerHTML = `
+                <div class="cat-header"><span class="cat-icon">📘</span><span class="cat-title">합격운 심층 분석</span></div>
+                <div class="cat-body">
+                    <div class="cat-stat-row">
+                        <div class="cat-stat"><span class="cat-stat-label">합격 체감지수</span><span class="cat-stat-val">${passPower}%</span></div>
+                        <div class="cat-stat"><span class="cat-stat-label">현재 단계</span><span class="cat-stat-val" style="font-size:16px;">${passType}</span></div>
+                    </div>
+                    <p class="cat-text">${passMain}</p>
+                    <div class="cat-highlight"><b>🧭 이번 구간 전략:</b><br>${passAction}</div>
+                    <div class="cat-advice"><b style="color:#ddd;">실행 방향</b><p style="margin:8px 0 0;color:#cfcfcf;line-height:1.8;">${passFlowHint}</p></div>
+                </div>`;
+
         })();
 
         window.showCat = function(cat) {
-            ['health','wealth','career','love'].forEach(c=>{
+            ['health','wealth','career','love','pass'].forEach(c=>{
                 const el = document.getElementById('cat-'+c);
                 if(el) el.style.display = c===cat?'block':'none';
             });
             document.querySelectorAll('.cat-tab').forEach((t,i)=>{
-                t.classList.toggle('active',['health','wealth','career','love'][i]===cat);
+                t.classList.toggle('active',['health','wealth','career','love','pass'][i]===cat);
             });
         };
 
