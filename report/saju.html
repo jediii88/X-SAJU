@@ -1216,11 +1216,15 @@
             overflow-wrap: anywhere;
         }
         .m-hanja {
-            font-size: 37px;
-            font-weight: 780;
+            font-size: 40px;
+            font-weight: 900;
             font-family: 'Noto Sans KR', sans-serif;
             line-height: 1.1;
             margin-bottom: 2px;
+            letter-spacing: -0.02em;
+            -webkit-font-smoothing: antialiased;
+            text-shadow: 0.35px 0 0 currentColor, -0.35px 0 0 currentColor,
+                         0 0.35px 0 currentColor, 0 -0.35px 0 currentColor;
         }
         .m-hangul {
             font-size: 12px;
@@ -3534,17 +3538,10 @@ function buildChapter1_Basic(data) {
         if(pillarInts.length>0) {
             var HAPkr={'지합':'합','방합':'방합','충':'충'};
             pillarInts.forEach(function(r){
-                var posText = (r && r.pos) ? r.pos : ((r && r.label) ? r.label : '해당 구도');
-                var descText = '';
-                if (r && r.desc) {
-                    var parts = String(r.desc).split('—');
-                    descText = (parts[1] || parts[0] || '').trim();
-                }
-                var head = (r && r.type==='충')
-                    ? ('원국에 '+posText+' 충(冲)이 있습니다.')
-                    : ('원국에 '+posText+' 합(合)이 있습니다.');
-                var t = descText ? (head + ' ' + descText) : head;
-                pillarIntText += '\\n• '+t.trim();
+                var t = r.type==='충'
+                    ? '원국에 '+r.pos+' 충(冲)이 있습니다. '+r.desc.split('—')[1]||r.desc
+                    : '원국에 '+r.pos+' 합(合)이 있습니다. '+r.desc.split('—')[1]||r.desc;
+                pillarIntText += '\n• '+t.trim();
             });
         }
 
@@ -5805,8 +5802,8 @@ window.generateDeepReport = generateDeepReport;
     </script>
 
 <!-- SAJUX_CACHE_BUSTER_START -->
-<meta name="sajux-build" content="1778257589">
-<script>(function(){var v='1778257589';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
+<meta name="sajux-build" content="1778337942">
+<script>(function(){var v='1778337942';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
 <!-- SAJUX_CACHE_BUSTER_END -->
 </head>
 <body>
@@ -7191,11 +7188,11 @@ function runAnalysis(overrideParams) {
             headerRow,
             bRow('십성', p => `<div class="m-badge">${p.n === '일주' ? '일원' : getSipseong(dayStem, p.h[0])}</div>`),
             bRow('천간', p => `
-                <div class="m-hanja ${HAN_COLOR[p.h[0]] || ''}" style="font-weight:900;text-shadow:0 0 0.01px currentColor;">${p.h[0]}</div>
+                <div class="m-hanja ${HAN_COLOR[p.h[0]] || ''}" style="font-weight:900;">${p.h[0]}</div>
                 <div class="m-hangul">${getElementDesc(p.h[0])}</div>
             `),
             bRow('지지', p => `
-                <div class="m-hanja ${HAN_COLOR[p.h[1]] || ''}" style="font-weight:900;text-shadow:0 0 0.01px currentColor;">${p.h[1]}</div>
+                <div class="m-hanja ${HAN_COLOR[p.h[1]] || ''}" style="font-weight:900;">${p.h[1]}</div>
                 <div class="m-hangul">${getElementDesc(p.h[1])}</div>
             `),
             bRow('십성', p => `<div class="m-badge">${getSipseong(dayStem, p.h[1])}</div>`),
