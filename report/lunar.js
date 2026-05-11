@@ -5712,14 +5712,8 @@
         getDayDiShi:function(){return this._getDiShi(this.getDayZhiIndex());},
         getDayXun:function(){return 2===this._p.sect?this._p.lunar.getDayXunExact2():this._p.lunar.getDayXunExact()},
         getDayXunKong:function(){return 2===this._p.sect?this._p.lunar.getDayXunKongExact2():this._p.lunar.getDayXunKongExact()},
-        /** 시천간: 표시 일간(getDayGanIndex·sect)과 동일 기준으로 계산. 기본 sect=2에서 라이브러리 원본은 일간 Exact2인데 시간만 Exact 일간을 써 불일치했음. */
-        _getTimeGanIndex:function(){
-          var zi=this._p.lunar.getTimeZhiIndex();
-          var dgi=this.getDayGanIndex();
-          return (dgi%5*2+zi)%10;
-        },
-        getTime:function(){return LunarUtil.GAN[this._getTimeGanIndex()+1]+this.getTimeZhi();},
-        getTimeGan:function(){return LunarUtil.GAN[this._getTimeGanIndex()+1];},
+        getTime:function(){return this._p.lunar.getTimeInGanZhi();},
+        getTimeGan:function(){return this._p.lunar.getTimeGan();},
         getTimeZhi:function(){return this._p.lunar.getTimeZhi();},
         getTimeHideGan:function(){return LunarUtil.ZHI_HIDE_GAN[this.getTimeZhi()];},
         getTimeWuXing:function(){return LunarUtil.WU_XING_GAN[this.getTimeGan()]+LunarUtil.WU_XING_ZHI[this.getTimeZhi()];},
@@ -5735,8 +5729,8 @@
           return l;
         },
         getTimeDiShi:function(){return this._getDiShi(this._p.lunar.getTimeZhiIndex());},
-        getTimeXun:function(){return LunarUtil.getXun(this.getTime());},
-        getTimeXunKong:function(){return LunarUtil.getXunKong(this.getTime());},
+        getTimeXun:function(){return this._p.lunar.getTimeXun();},
+        getTimeXunKong:function(){return this._p.lunar.getTimeXunKong();},
         getTaiYuan:function(){
           var ganIndex = this._p.lunar.getMonthGanIndexExact() + 1;
           if(ganIndex>=10){
