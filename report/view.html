@@ -495,7 +495,7 @@
             border-left: 1px solid var(--line);
             background: #080808;
             border-radius: 4px;
-            overflow: hidden;
+            overflow: visible;
             box-shadow: 0 4px 20px rgba(0,0,0,0.5);
         }
 
@@ -758,6 +758,7 @@
             justify-content: center;
             text-align: center;
             padding: 8px 4px;
+            overflow: visible;
         }
         .manse-label {
             align-items: flex-start;
@@ -6331,6 +6332,25 @@ function buildFortuneCards(targetId, rows) {
     document.getElementById(targetId).innerHTML = html;
 }
 
+function solarAddWallMinutes(solar, deltaMin) {
+    var y = solar.getYear(), mo = solar.getMonth(), d = solar.getDay();
+    var h = solar.getHour(), mi = solar.getMinute(), se = solar.getSecond();
+    mi += deltaMin;
+    while (mi < 0) { mi += 60; h--; }
+    while (mi > 59) { mi -= 60; h++; }
+    while (h < 0) {
+        var prev = Solar.fromYmdHms(y, mo, d, 12, 0, 0).next(-1);
+        y = prev.getYear(); mo = prev.getMonth(); d = prev.getDay();
+        h += 24;
+    }
+    while (h > 23) {
+        var nxt = Solar.fromYmdHms(y, mo, d, 12, 0, 0).next(1);
+        y = nxt.getYear(); mo = nxt.getMonth(); d = nxt.getDay();
+        h -= 24;
+    }
+    return Solar.fromYmdHms(y, mo, d, h, mi, se);
+}
+
 function runAnalysis(overrideParams) {
     var _op = overrideParams || window.__SAJUX_PARAMS__ || null;
     const _d = (_op && _op.birthDate) || (di && di.value) || '';
@@ -6386,11 +6406,9 @@ function runAnalysis(overrideParams) {
             }
         }
 
-        // 2. 경도 보정 (-32분)은 무조건 '양력 시간' 객체를 기준으로 수행
+        // 2. 경도 보정 (-32분): new Date(연,월-1,일)은 로컬 타임존·DST에 따라 날짜가 하루 어긋날 수 있음 → Solar만 사용
         if ((document.getElementById('adj-l') ? document.getElementById('adj-l').checked : true) && !isUnknown) {
-            const dt = new Date(solarObj.getYear(), solarObj.getMonth() - 1, solarObj.getDay(), solarObj.getHour(), solarObj.getMinute());
-            dt.setMinutes(dt.getMinutes() - 32);
-            solarObj = Solar.fromYmdHms(dt.getFullYear(), dt.getMonth() + 1, dt.getDate(), dt.getHours(), dt.getMinutes(), 0);
+            solarObj = solarAddWallMinutes(solarObj, -32);
             lunarObj = solarObj.getLunar();
         }
 
@@ -6443,9 +6461,9 @@ function runAnalysis(overrideParams) {
         
         let lMon = typeof lunar.getMonth === 'function' ? Math.abs(lunar.getMonth()) : 1;
         let leapStr = typeof lunar.getMonth === 'function' && lunar.getMonth() < 0 ? '(윤달)' : '(평달)';
-        let sYear = typeof solar.getYear === 'function' ? solar.getYear() : y;
-        let sMon = typeof solar.getMonth === 'function' ? solar.getMonth() : m;
-        let sDay = typeof solar.getDay === 'function' ? solar.getDay() : d;
+        var sYear = isSolar ? y : (typeof solar.getYear === 'function' ? solar.getYear() : y);
+        var sMon = isSolar ? m : (typeof solar.getMonth === 'function' ? solar.getMonth() : m);
+        var sDay = isSolar ? d : (typeof solar.getDay === 'function' ? solar.getDay() : d);
         let lDay = typeof lunar.getDay === 'function' ? lunar.getDay() : d;
         
         const badges = document.getElementById('av-badges');
@@ -6479,11 +6497,11 @@ function runAnalysis(overrideParams) {
 
         const headerRow = `
             <div class="manse-row">
-                <div class="manse-label"></div>
-                <div class="manse-head">시주</div>
-                <div class="manse-head">일주</div>
-                <div class="manse-head">월주</div>
-                <div class="manse-head">년주</div>
+                <div class="manse-cell manse-label"></div>
+                <div class="manse-cell manse-head">시주</div>
+                <div class="manse-cell manse-head">일주</div>
+                <div class="manse-cell manse-head">월주</div>
+                <div class="manse-cell manse-head">년주</div>
             </div>`;
 
         const bRow = (lbl, fn) => `
@@ -6509,15 +6527,14 @@ function runAnalysis(overrideParams) {
             bRow('12신살', p => `<div class="m-badge" style="font-size:11px;">${(allTwelveShinsal[p.n] || []).join('<br>') || '-'}</div>`),
             bRow('기타신살', p => `<div class="m-badge" style="font-size:11px;">${(allExtraShinsal[p.n] || []).join('<br>') || '-'}</div>`),
             bRow('공망', p => {
-                const gmStr = getGongmang(dayStem + ec.getDay()[1]);
-                const KR2HJ2 = {'자':'子','축':'丑','인':'寅','묘':'卯','진':'辰','사':'巳','오':'午','미':'未','신':'申','유':'酉','술':'戌','해':'亥'};
-                const HK2_GM = {'子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해'};
-                const gmHanja = gmStr ? [...gmStr].map(c => KR2HJ2[c]||c) : [];
-                const isGm = gmHanja.includes(p.h[1]);
-                return '';  // 공망 뱃지 표시 안 함
-            }),
-            // 공망 행 비표시 (마스터 지시)
-            ''
+                const dg = ec.getDay();
+                const dayPz = (dg[0] || '') + (dg[1] || '');
+                const gmStr = getGongmang(dayPz);
+                if (!gmStr || gmStr.length < 2) return `<div class="m-badge">-</div>`;
+                const bKr = p.h[1] ? (HAN_KOR[p.h[1]] || p.h[1]) : '';
+                const hit = bKr && (gmStr.indexOf(bKr) >= 0);
+                return `<div class="m-badge" style="font-size:11px;color:${hit ? '#e74c3c' : 'var(--text-dim)'}">${hit ? '공망' : '-'}</div>`;
+            })
         ].join('');
         document.getElementById('manse-table').innerHTML = manseHtml;
 
