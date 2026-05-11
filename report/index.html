@@ -1199,7 +1199,7 @@
         }
         .m-hanja {
             font-size: 34px;
-            font-weight: 200;
+            font-weight: 600;
             font-family: 'Noto Sans KR', sans-serif;
             line-height: 1.1;
             margin-bottom: 2px;
@@ -1208,12 +1208,51 @@
             font-size: 11px;
             color: var(--text-dim);
         }
-        .m-hanja.wood, .m-badge .wood { color: var(--wood) !important; }
-        .m-hanja.fire, .m-badge .fire { color: var(--fire) !important; }
-        .m-hanja.earth, .m-badge .earth { color: var(--earth) !important; }
-        .m-hanja.metal, .m-badge .metal { color: var(--metal) !important; }
-        .m-hanja.water, .m-badge .water { color: var(--water) !important; }
-        
+        /* 만세력·리포트 표: 천간·지지·지장간 한자 = 동일 오행 팔레트(getHidden m-jg-*) */
+        .m-hanja.wood, .m-jg-h.wood { color: var(--wood) !important; }
+        .m-hanja.fire, .m-jg-h.fire { color: var(--fire) !important; }
+        .m-hanja.earth, .m-jg-h.earth { color: var(--earth) !important; }
+        .m-hanja.metal, .m-jg-h.metal { color: var(--metal) !important; }
+        .m-hanja.water, .m-jg-h.water { color: var(--water) !important; }
+        .m-jg-sip.wood { color: var(--wood) !important; }
+        .m-jg-sip.fire { color: var(--fire) !important; }
+        .m-jg-sip.earth { color: var(--earth) !important; }
+        .m-jg-sip.metal { color: var(--metal) !important; }
+        .m-jg-sip.water { color: var(--water) !important; }
+        .m-jg-line {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            justify-content: center;
+            gap: 3px 5px;
+            margin-bottom: 4px;
+            width: 100%;
+        }
+        .m-jg-line:last-child { margin-bottom: 0; }
+        .m-jg-h {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: clamp(15px, 3.6vw, 18px);
+            font-weight: 600;
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+        }
+        .m-jg-sip {
+            font-size: 10px;
+            font-weight: 600;
+            padding: 1px 5px;
+            border-radius: 4px;
+            line-height: 1.2;
+            border: 1px solid rgba(255,255,255,0.12);
+            background: rgba(255,255,255,0.06);
+            border-color: color-mix(in srgb, currentColor 38%, transparent);
+            background: color-mix(in srgb, currentColor 16%, transparent);
+        }
+        body.light-mode .m-jg-sip {
+            border: 1px solid rgba(15,20,28,0.1);
+            background: rgba(15,20,28,0.04);
+            background: color-mix(in srgb, currentColor 20%, transparent);
+            border-color: color-mix(in srgb, currentColor 45%, transparent);
+        }
 
 
         .bar-group { display: flex; flex-direction: column; gap: 16px; }
@@ -5771,8 +5810,8 @@ window.generateDeepReport = generateDeepReport;
 </script>
 
 <!-- SAJUX_CACHE_BUSTER_START -->
-<meta name="sajux-build" content="1778518966">
-<script>(function(){var v='1778518966';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
+<meta name="sajux-build" content="1778519449">
+<script>(function(){var v='1778519449';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
 <!-- SAJUX_CACHE_BUSTER_END -->
 </head>
 <body>
@@ -6859,7 +6898,8 @@ function getUnsung(stem, branch) {
 function getHidden(branch, dayStem) {
     return (BRANCH_HIDDEN[branch] || []).map(ch => {
         const ss = getSipseong(dayStem, ch);
-        return `<div style="margin-bottom:4px;"><span class="${HAN_COLOR[ch]}">${ch}</span> <span style="font-size:10px; color:#777; background:#111; padding:2px 4px; border-radius:3px;">${ss}</span></div>`;
+        const el = HAN_COLOR[ch] || '';
+        return `<div class="m-jg-line"><span class="m-jg-h ${el}">${ch}</span><span class="m-jg-sip ${el}">${ss}</span></div>`;
     }).join('');
 }
 
