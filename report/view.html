@@ -35,12 +35,13 @@
       var min   = (p.get('mi')||'0').padStart(2,'0');
       var yun   = p.get('yun')==='1';
       var unk   = p.get('unk')==='1';
+      var ez    = p.get('ez')==='1';
 
       window.__SAJUX_PARAMS__ = {
         name:name, gender:gRaw, cal:cRaw,
         birthDate: year+month+day,
         birthTime: unk?'1200':(hour+min),
-        yundal:yun, unknown:unk
+        yundal:yun, unknown:unk, earlyZi:ez
       };
 
       // 자동실행은 window.load IIFE에서 처리 (하단 스크립트 참조)
@@ -876,10 +877,10 @@
         }
 
         .hanja-main {
-            font-family: 'Noto Sans KR', sans-serif;
+            font-family: 'Noto Serif KR', 'Noto Sans KR', serif;
             font-size: 42px;
             line-height: 1.1;
-            font-weight: 200;
+            font-weight: 800;
             letter-spacing: -0.02em;
             text-shadow: 0 2px 10px rgba(0,0,0,0.5);
         }
@@ -996,15 +997,15 @@
         .cover-page .cover-ilju-big {
             font-family: 'Noto Serif KR', serif;
             font-size: clamp(42px, 9vw, 64px);
-            font-weight: 500;
+            font-weight: 800;
             letter-spacing: 0.35em;
             line-height: 1.12;
             margin: 4px 0 0;
         }
         .cover-page .cover-pillar-strip .pz-hanja {
             font-family: 'Noto Serif KR', serif;
-            font-size: 17px;
-            font-weight: 500;
+            font-size: 19px;
+            font-weight: 800;
             letter-spacing: 0.06em;
         }
         .cover-page .cover-energy {
@@ -1053,7 +1054,7 @@
 
         .f-head { font-size: 12px; color: var(--text-soft); font-weight: 500; }
         .f-sip { font-size: 12px; color: var(--gold); font-weight: 500; }
-        .f-hz { font-size: 24px; font-weight: 300; line-height: 1.1; color: var(--text); letter-spacing: -1px; }
+        .f-hz { font-size: 24px; font-weight: 800; font-family: 'Noto Serif KR', 'Noto Sans KR', serif; line-height: 1.1; color: var(--text); letter-spacing: -1px; }
         .f-kr { font-size: 12px; color: var(--text-soft); font-weight: 400; }
         .f-un { font-size: 11px; color: var(--text-dim); border-top: 1px solid var(--line-soft); padding-top: 8px; margin-top: 4px; font-weight: 400; width: 80%; margin-left: auto; margin-right: auto; }
 
@@ -1217,15 +1218,24 @@
             overflow-wrap: anywhere;
         }
         .m-hanja {
-            font-size: 40px;
+            font-size: 60px;
             font-weight: 900;
-            font-family: 'Noto Sans KR', sans-serif;
-            line-height: 1.1;
+            font-family: 'Noto Serif KR', 'Noto Sans KR', serif;
+            line-height: 1.05;
             margin-bottom: 2px;
-            letter-spacing: -0.02em;
+            letter-spacing: -0.028em;
             -webkit-font-smoothing: antialiased;
-            text-shadow: 0.35px 0 0 currentColor, -0.35px 0 0 currentColor,
-                         0 0.35px 0 currentColor, 0 -0.35px 0 currentColor;
+            paint-order: stroke fill;
+            -webkit-text-stroke: 1.05px currentColor;
+            text-shadow:
+                0.75px 0 0 currentColor,
+                -0.75px 0 0 currentColor,
+                0 0.75px 0 currentColor,
+                0 -0.75px 0 currentColor,
+                0.55px 0.55px 0 currentColor,
+                -0.55px 0.55px 0 currentColor,
+                0.55px -0.55px 0 currentColor,
+                -0.55px -0.55px 0 currentColor;
         }
         .m-hangul {
             font-size: 12px;
@@ -1534,9 +1544,10 @@
             line-height: 1.5;
         }
         .ii-text {
-            font-size: 14px;
-            line-height: 1.9;
-            color: #ccc;
+            font-size: 14.5px;
+            font-weight: 600;
+            line-height: 1.92;
+            color: #ddd;
             word-break: keep-all;
         }
         .ii-text p { margin-bottom: 12px; }
@@ -1584,9 +1595,10 @@
             font-family: 'Noto Serif KR', serif;
         }
         .ii-text {
-            font-size: 14px;
-            line-height: 1.8;
-            color: #ccc;
+            font-size: 14.5px;
+            font-weight: 600;
+            line-height: 1.9;
+            color: #ddd;
             word-break: keep-all;
         }
         
@@ -1669,8 +1681,8 @@
         }
         .premium-executive-summary { break-inside: avoid; }
         .print-doc-footer { display: none; }
-        .ch-title { color: var(--gold); border-bottom: 1px solid #333; padding-bottom: 8px; margin-bottom: 15px; font-family: 'Noto Serif KR', serif; font-weight: 300; font-size: 20px; }
-        .ch-text { font-size: 15px; line-height: 1.8; color: #eee; margin-bottom: 15px; text-align: justify; word-break: keep-all; }
+        .ch-title { color: var(--gold); border-bottom: 1px solid #333; padding-bottom: 8px; margin-bottom: 15px; font-family: 'Noto Serif KR', serif; font-weight: 800; font-size: 20px; }
+        .ch-text { font-size: 15.5px; line-height: 1.88; font-weight: 700; color: #eee; margin-bottom: 15px; text-align: justify; word-break: keep-all; }
         .axe-advice { background: rgba(255,255,255,0.04); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); padding: 18px; border-radius: 8px; border-left: 3px solid var(--gold); box-shadow: 0 4px 24px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06); font-size: 14.5px; line-height: 1.6; color: #ddd; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
     </style>
 
@@ -2708,7 +2720,7 @@ function injectSectionInterpretations(data) {
         <div class="ii-label">\u2756 용신·희신·기신 해석</div>
         <div class="ii-title">나를 돕는 기운 vs 방해하는 기운 — 인생 전략의 핵심</div>
         <div class="ii-text">
-            <p style="font-size:13.5px;color:#bbb;line-height:1.85;margin-bottom:16px;">용신은 원국의 불균형을 완화해 주는 축입니다. 그래서 용신 기운이 강해지는 대운·세운에서는 확장 전략이 잘 맞을 가능성이 높고, 기신 기운이 강한 시기에는 수비 전략이 손실을 줄이는 데 유리한 편입니다.</p>
+            <p style="font-size:13.5px;color:#bbb;line-height:1.85;margin-bottom:16px;">용신은 원국의 불균형을 덜어 주는 한 줄기 길입니다. 용신이 들어오는 해와 대운에는 책상 위 계약서가 무거워지고 사람이 모입니다—그때 문을 열고 나가십시오. 반대로 기신이 들어오는 달에는 통장과 시간이 바깥으로 새기 쉽습니다—그때는 새 프로젝트 이름을 적는 펜부터 치워 두십시오.</p>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
                 <div style="background:rgba(199,167,106,0.08);border-radius:10px;padding:14px;border:1px solid var(--gold);">
                     <div style="font-size:11px;color:var(--gold);margin-bottom:6px;">✦ 용신 — 나의 수호신</div>
@@ -2718,22 +2730,22 @@ function injectSectionInterpretations(data) {
                 <div style="background:rgba(74,158,106,0.08);border-radius:10px;padding:14px;border:1px solid rgba(74,158,106,0.4);">
                     <div style="font-size:11px;color:#4a9e6a;margin-bottom:6px;">✦ 희신 — 나를 돕는 기운</div>
                     <div style="font-size:18px;font-weight:800;color:#4a9e6a;">${heeKr}</div>
-                    <p style="font-size:12px;color:#bbb;margin:8px 0 0;line-height:1.7;">${heeKr} 기운이 강해지는 시기는 용신을 보조하여 더 큰 성과를 만들어냅니다.</p>
+                    <p style="font-size:12px;color:#bbb;margin:8px 0 0;line-height:1.7;">${heeKr} 기운이 붙는 시즌에는 용신 옆에 공격수가 하나 더 선 격입니다. 그때 건네지는 제안서·소개·헤드헌팅 연락은 평소보다 진심에 가깝습니다. 한 번은 무조건 만나 보고 숫자와 조건을 종이에 적어 두십시오.</p>
                 </div>
                 <div style="background:rgba(231,76,60,0.06);border-radius:10px;padding:14px;border:1px solid rgba(231,76,60,0.3);">
                     <div style="font-size:11px;color:#e74c3c;margin-bottom:6px;">⚠ 기신 — 나를 방해하는 기운</div>
                     <div style="font-size:18px;font-weight:800;color:#e74c3c;">${giKr}</div>
-                    <p style="font-size:12px;color:#bbb;margin:8px 0 0;line-height:1.7;">${giKr} 기운이 강한 시기에는 수비적 전략이 최선입니다. 큰 결정과 투자를 자제하시는 편이 좋습니다.</p>
+                    <p style="font-size:12px;color:#bbb;margin:8px 0 0;line-height:1.7;">${giKr} 기운이 세운·대운에 겹치는 구간, 특히 연말·연초와 명절 전후에는 지인이 건네는 투자·공동사업·‘간단한’ 문서 한 장이 당신 현금을 몇 년 묶어 버립니다. 첫 대답을 거절로 고정하고, 서류 도장은 하룻밤 거두어 두십시오.</p>
                 </div>
                 <div style="background:rgba(255,152,0,0.05);border-radius:10px;padding:14px;border:1px solid rgba(255,152,0,0.3);">
                     <div style="font-size:11px;color:#ff9800;margin-bottom:6px;">⚠ 구신 — 기신을 돕는 기운</div>
                     <div style="font-size:18px;font-weight:800;color:#ff9800;">${gooKr}</div>
-                    <p style="font-size:12px;color:#bbb;margin:8px 0 0;line-height:1.7;">${gooKr} 기운도 유의하시는 편이 좋습니다. 기신과 함께 들어오면 더 강한 역풍이 됩니다.</p>
+                    <p style="font-size:12px;color:#bbb;margin:8px 0 0;line-height:1.7;">${gooKr} 기운이 기신과 같은 해·같은 달에 겹치면 역풍이 두 배로 불어납니다. 그럴 때는 술자리 합석 요청과 급한 보증·연대보증 문자부터 차단하십시오. ‘나중에’라는 두 글자만 있는 미팅은 열지 마십시오.</p>
                 </div>
             </div>
             <div style="background:rgba(199,167,106,0.05);border-radius:10px;padding:14px 16px;border-left:3px solid var(--gold);">
                 <div style="font-size:11px;color:var(--gold);margin-bottom:8px;">✦ 개운(운을 여는) 실천법</div>
-                <p style="font-size:13px;color:#ddd;line-height:1.85;margin:0;">용신 색상과 방위를 생활에 적용하고, 용신 오행을 일간으로 가진 사람을 파트너·귀인으로 선택하시는 편이 좋습니다. 용신 기운이 강해지는 대운·세운에 인생에서 가장 중요한 결정을 실행하시는 편이 좋습니다. 이것이 개운의 핵심 원리입니다.</p>
+                <p style="font-size:13px;color:#ddd;line-height:1.85;margin:0;">침대 맞은편 벽이나 출근 가방 안에 용신 색 한 조각을 두십시오. 용신 오행 일간을 가진 사람과 같은 테이블에 앉을 때는 서명과 도장 순서를 그쪽 시간대에 맞추십시오. 이사·결혼·지분 계약은 용신이 들어오는 대운·세운의 첫 해 첫 달에 실행표를 올리십시오—개운은 습관이 아니라 날짜입니다.</p>
             </div>
 
         </div>
@@ -2872,11 +2884,20 @@ function buildStrengthSummary(data) {
     const yong = data.yong || 'metal';
     const gi = data.gi || 'wood';
     const OH = {wood:'목',fire:'화',earth:'토',metal:'금',water:'수'};
+    const lateSeason = (function(){ const m = new Date().getMonth() + 1; return m >= 11 ? '지금 막바지 두 달,' : '올해 11월과 12월,'; })();
+    const GI_TRAP = {
+        metal: `${lateSeason} 가까운 지인이 꺼낸 공동투자·차용증·전세 승계·스타트업 지분 1% 같은 종이 한 장이 당신 통장을 몇 달째 묶어 둡니다. “금전 문제는 내일”이 아니라 “법무·회계 검토 전에는 도장 없음”으로 단칼에 선을 긋십시오.`,
+        wood: `목 기신이 들어올 해·달에는 동호회 반장·신규 사업 제안·채용 면접이 줄줄이 붙습니다. 사람이 늘어날수록 당신만 야근하고 통장만 가벼워지는 패턴이니, 인원·예산 상한을 숫자로 적어 두고 넘으면 “이번 분기는 불가”로 잘라 내십시오.`,
+        fire: `화 기신이 들어올 때는 체면·SNS·밤늦은 약속이 돈을 태웁니다. “한 번만 만회” 식 단타와 술자리에서 나온 송금 링크는 아침에 후회로 바뀝니다. 그날 밤 결정한 이체는 무조건 취소 규칙을 지키십시오.`,
+        earth: `토 기신이 들어올 때는 부모님·친척·부동산 중개가 같은 줄에 서서 “딱 한 번만” 명의·보증·리모델링 선금을 떠넘깁니다. 서류 도착일부터 최소 6개월 냉각기를 두고, 그 사이엔 어떤 친절한 독촉도 답장하지 마십시오.`,
+        water: `수 기신이 들어올 때는 대출 재조정·카드론 이전·보험 해약 후 재가입처럼 “흐름만 바꾸면 이득”이라는 말이 물밀듯 옵니다. 금리 한 자리 차이에 현금 버퍼를 팔아 치우는 선택은 함정입니다. 숫자는 직접 다시 치고, 잠을 자고 나서도 이득인지 확인하십시오.`
+    };
+    const giTrap = GI_TRAP[gi] || `기신 ${OH[gi]||gi} 기운이 세질 때는 “조금만 더”가 연달아 옵니다. 지출·보증·계약은 48시간 룰을 적용하십시오.`;
     const title = isStrong ? '신강 \u2014 넘치는 에너지, 주도적 인생 설계자' : '신약 \u2014 협력과 귀인으로 폭발하는 시너지형';
     const coreText = isStrong ? '기운이 충만한 신강 사주입니다. 당신의 일간 에너지가 강하게 독립적으로 작동합니다. 이것은 내 판을 직접 짜는 사람의 에너지입니다. 남의 지시 아래서는 능력의 절반도 발휘하지 못하고 답답함을 느끼다가 결국 독립하게 됩니다. 창업, 프리랜서, 전문직, 1인 미디어 등 자율성이 최대한 보장된 환경에서 진짜 능력이 폭발합니다. 신강 사주의 함정은 독단적 결정과 인간관계 마찰입니다. 강한 기운이 넘쳐서 주변 사람들을 눌러버리거나, 의견 충돌에서 물러서지 않는 고집이 인간관계를 어렵게 만들 수 있습니다. 이 에너지를 사회적으로 인정받는 방향으로 분출하는 법을 배우는 것이 인생의 핵심 과제입니다.' : '에너지가 분산된 신약 사주입니다. 이것은 약함이 아니라 협력과 연결로 증폭되는 사람의 에너지입니다. 혼자서 모든 것을 짊어지려 하면 무너집니다. 하지만 훌륭한 파트너, 팀, 귀인과 함께하면 1+1이 10이 되는 폭발적 시너지가 발생합니다. 신약 사주의 가장 큰 전략은 좋은 사람을 알아보는 눈을 키우는 것입니다. 용신 오행을 일간으로 가진 사람이 당신의 에너지를 가장 잘 보완해주는 귀인입니다. 일, 사랑, 사업 파트너 선택에서 이 원칙을 적용하면 인생의 흐름이 바뀝니다.';
     const stratText = isStrong
-        ? `\u2756 신강 핵심 전략: 기신 에너지(${OH[gi]||gi})가 오는 대운·세운에서 과잉 에너지를 다스리는 것이 최우선입니다. 에너지가 넘칠수록 인간관계와 건강을 먼저 챙기십시오. 용신(${OH[yong]||yong}) 대운에서는 공격적으로 확장하되, 신뢰할 수 있는 팀을 구성하여 독주를 피하시는 편이 좋습니다.`
-        : `\u2756 신약 핵심 전략: 용신 에너지(${OH[yong]||yong})를 가진 귀인·파트너를 곁에 두십시오. 직업은 자신의 전문성을 살리되 조직이나 파트너와 함께하는 구조가 유리합니다. 혼자 밀어붙이기보다 좋은 사람과 함께하는 방식이 더 크고 안정적인 결과를 만들어냅니다.`;
+        ? `\u2756 신강 핵심 전략 — 손에 잡히는 행동\n${giTrap}\n용신 ${OH[yong]||yong} 기운이 살아나는 대운·세운에서는 연봉 협상·포트폴리오·지분 구조를 밖으로 꺼내 “증명”하십시오. 이때는 참는 것보다 보여 주는 쪽이 돈으로 돌아옵니다. 최종 서명은 반드시 두 명 이상이 보는 자리에서만 하십시오.`
+        : `\u2756 신약 핵심 전략 — 누구를 옆에 둘지가 승부처\n일간에 ${OH[yong]||yong} 오행을 둔 사람, 혹은 그 기운이 강한 상사·배우자·대표와 한 팀이 되면 당신의 누수가 막힙니다. 주간 회의·점심 일정에 그 사람을 고정으로 박아 넣으십시오.\n${giTrap}`;
     return `<div class="inline-interp">
         <div class="ii-label">\u2756 신강·신약 해석</div>
         <div class="ii-title">${title}</div>
@@ -2928,8 +2949,8 @@ function injectInlineSummaries(data) {
                 <div class="ii-label">✦ 신강·신약 해석</div>
                 <div class="ii-title">${data.strengthText}</div>
                 <div class="ii-text">${isStrong 
-                    ? '기운이 충만한 당신은 주도적으로 세상을 이끌어가는 자리에 있어야 진정한 능력을 발휘합니다. 남 밑에 있으면 에너지가 억눌려 오히려 손해입니다. 내 판을 직접 짜는 창업, 프리랜서, 전문직에서 빛을 발합니다.'
-                    : '기운이 다소 약한 당신은 혼자 모든 것을 짊어지기보다 훌륭한 파트너와 팀을 구성할 때 1+1이 10이 되는 폭발적인 시너지를 경험합니다. 좋은 귀인을 곁에 두는 것이 인생 전략의 핵심 포인트입니다.'
+                    ? '회의실 맨 끝자리에서만 빛나는 타입이 아닙니다. 서명란에 당신 이름이 먼저 찍히는 제안서·견적서·1인 사업자 등록부터 손을 대십시오. 반대로 “잠깐만 대표 맡아줘” 식의 지분 나누기는 에너지를 갉아먹는 덫입니다. 거절 연습이 곧 재물 방어입니다.'
+                    : '혼자 밤새 기획서만 고치다 보면 다음 날 아무것도 안 바뀝니다. 용신 오행을 일간으로 둔 사람을 주 1회 이상 같은 공간에 두십시오. 그 사람이 “이건 됐고 저건 버리자” 한 마디 해 줄 때 통장·컨디션이 동시에 살아납니다.'
                 }</div>
             </div>`;
         strengthInline.style.display = 'block';
@@ -2955,6 +2976,8 @@ function buildCurrentPeriodSummary(data) {
     function gs(g,j){return (sc[OH[g]]||0)+(sc[JO[j]]||0);}
     function gc(s){return s>=3?'#c7a76a':s>=1?'#00C853':s===0?'#888':s>=-2?'#ff9800':'#e74c3c';}
     function gb(s){return s>=3?'🌟 대길':s>=1?'✦ 길':s===0?'— 평':s>=-2?'⚠ 주의':'❌ 흉';}
+    const refM = new Date().getMonth() + 1;
+    const refLateHalf = refM >= 11 ? '지금 막바지 두 달' : '올해 11월과 12월';
 
     // 현재 대운
     let daeunHtml = '';
@@ -2964,6 +2987,10 @@ function buildCurrentPeriodSummary(data) {
         const ds = gs(dg,dj);
         const dcol = gc(ds);
         const dOh = OH[dg]||'earth'; const djOh = JO[dj]||'earth';
+        const _dAge = parseInt(curDaeun.age,10)||0;
+        const _by = data.birthYear || new Date(data.birthDate||'1988-01-01').getFullYear();
+        const dStartY = _by + _dAge - 1;
+        const dEndY = dStartY + 9;
         const dStrat = ds>=2
             ?`이 10년은 확장 신호가 비교적 강하게 들어오는 구간입니다. 원국에서 필요했던 기운이 대운에서 보강되기 쉬워, 준비해 둔 일을 바깥으로 꺼낼수록 성과로 이어질 가능성이 높아요.
 
@@ -2984,19 +3011,15 @@ function buildCurrentPeriodSummary(data) {
 ❤️ 애정 — 새 자극보다 관계의 깊이를 키우는 선택이 잘 맞습니다. 대화 품질이 올라가면 갈등 비용이 줄고 신뢰가 쌓입니다.
 
 🏥 건강 — 규칙적인 루틴이 성과를 좌우합니다. 생활 리듬을 안정시키면 체력과 집중력의 바닥이 올라갑니다.`
-            :`이 10년은 수비와 재정비 비중을 높이는 편이 안전한 구간입니다. 기신·구신 압력이 강하게 느껴질 수 있어, 공격보다 손실 관리가 결과를 지키는 핵심이 됩니다.
+            :`이 10년(${dStartY}~${dEndY}년)은 통장·서명·체력이 동시에 시험대에 오르는 구간입니다. 여기서 손실만 막아도 다음 상승기에 들고 설 자본이 남습니다.
 
-💰 재물 — 큰 투자·보증·고정비 확대는 보수적으로 접근하는 것이 좋습니다. 현금 유동성과 비상자금 비율을 높이면 불확실성 대응력이 커집니다.
+💰 재물 — ${refLateHalf}, 가까운 지인이 꺼낸 공동투자·보증·전세 승계·지분 1% 제안은 현금을 묶어 놓는 함정입니다. “법무 검토 전”이라는 문구 없이 찍히는 도장은 전부 거절하십시오. 차 바꾸기·헬스 연회비·반려동물까지 한꺼번에 늘리는 고정비 확장도 당분간 냉동하십시오.
 
-💼 직업 — 급격한 변화보다 현재 기반을 지키며 실력을 축적하는 전략이 유리합니다. 갈등 비용을 줄이고 신뢰 자산을 쌓는 데 집중하세요.
+💼 직업 — 조직이 흔들릴 때일수록 편 가르기 대화에 끼어들면 잘리는 줄에 설 확률이 올라갑니다. 당분간은 내 칸막이·KPI만 지키십시오. 이직·창업은 현금 버퍼가 최소 12개월분 쌓인 뒤로 미루십시오.
 
-❤️ 애정 — 관계를 '결정'보다 '관리' 관점으로 보면 불필요한 손상을 줄일 수 있습니다. 감정이 올라올수록 결론은 늦추는 편이 안정적입니다.
+❤️ 애정 — “지금 안 하면 끝”이라는 시간 압박이 오면 통제 신호로 읽으십시오. 동거·결혼·이별 통보는 스무 밤 자고도 같은 결론이면 그때 하십시오.
 
-🏥 건강 — 누적 피로가 커지기 쉬운 시기입니다. 정기 점검, 수면, 회복 루틴을 우선순위에 두면 다음 상승 구간 진입이 훨씬 수월해집니다.`;
-        const _dAge = parseInt(curDaeun.age)||0;
-        const _by = data.birthYear || new Date(data.birthDate||'1988-01-01').getFullYear();
-        const _dStartY = _by + _dAge - 1;
-        const _dEndY = _dStartY + 9;
+🏥 건강 — 밤 12시 넘어서만 떨어지는 성과는 몸값으로 갚습니다. 도장 대신 수면부터 찍으십시오.`;
         daeunHtml = `<div style="margin-bottom:12px;padding:14px;background:rgba(199,167,106,0.06);border:1px solid var(--gold);border-radius:10px;">
             <div style="font-size:11px;color:var(--gold);font-weight:700;margin-bottom:8px;letter-spacing:1px;">▶ 현재 대운 — ${curDaeun.age}세~${curDaeun.age+9}세 · 지금 진행 중인 10년 운세</div>
             <div style="font-size:18px;font-weight:900;color:var(--gold);font-family:Noto Serif KR,serif;margin-bottom:6px;"><span style="font-family:Noto Serif KR,serif;">${dg}${dj}</span> <span style="font-size:14px;font-weight:600;color:#ddd;">(${HAN_KOR[dg]||dg}${HAN_KOR[dj]||dj})</span> <span style="font-size:13px;color:#bbb;font-weight:400;">${KN[dOh]||''} + ${KN[djOh]||''} 기운</span></div>
@@ -3037,15 +3060,15 @@ function buildCurrentPeriodSummary(data) {
 ❤️ 올해 애정운 — 화려한 새 인연보다 기존 관계의 신뢰와 깊이를 더욱 강화하는 해입니다. 장기적으로 함께할 사람과의 관계에 집중하시는 편이 좋습니다. 오래된 인연이 새로운 의미로 다가오는 경험을 하게 됩니다.
 
 🏥 올해 건강운 — 균형 잡힌 생활 루틴이 건강의 핵심 포인트입니다. 수면, 운동, 식사 시간을 규칙적으로 유지하시는 편이 좋습니다. 평온한 해일수록 몸이 보내는 작은 신호를 놓치기 쉽습니다. 정기 검진은 가능하면 받으십시오.`
-            :`올해 ${curY}년은 기신 기운이 강하게 작동하는 주의의 한 해입니다. ${daeunCtx}의 에너지와 세운이 충돌하거나 기신을 강화하는 구조여서, 평소보다 신중한 판단과 방어적인 전략이 필요합니다. 이것은 당신의 잘못이 아닙니다. 10년에 한두 번 오는 이런 해를 어떻게 보내느냐가 다음 상승기의 크기를 결정합니다.
+            :`올해 ${curY}년, ${daeunCtx}의 흐름과 세운이 맞물리며 “조금만 더”가 연달아 옵니다. 당신 잘못이 아니라 기운이 그렇게 밀어올 뿐입니다.
 
-💰 올해 재물운 — 신규 투자, 보증, 큰 계약 체결은 신중하게 검토하시는 편이 좋습니다. 충동적인 결정은 가능하면 나중에 후회로 돌아옵니다. 기존 자산을 지키는 것이 올해의 최우선입니다. 불필요한 고정 지출을 정리하고, 비상자금을 최대한 확충하시는 편이 좋습니다.
+💰 올해 재물운 — ${refLateHalf}, 지인이 꺼낸 투자·문서 계약·보증은 현금을 묶어 버리는 덫입니다. 단칼에 거절하십시오. 새 카드·대출 재조정 문자는 서랍에 넣고 일주일 뒤 숫자를 다시 치십시오.
 
-💼 올해 직업운 — 직장 내 불필요한 갈등에 끼어들지 않는 편이 좋습니다. 자기 업무에만 집중하고, 말과 행동을 신중히 하시는 편이 좋습니다. 큰 변화(이직, 창업)는 최소 내년으로 미루는 것이 현명합니다. 이 해는 실력을 조용히 쌓는 시간으로 활용하시는 편이 좋습니다.
+💼 올해 직업운 — 회의실에서 감정이 올라온 날은 서명란에 손대지 마십시오. 이직·창업 서류는 비상금이 12개월분 찍힌 뒤로 미루고, 올해는 남의 실수를 대신 메우지 않는 연습만 하십시오.
 
-❤️ 올해 애정운 — 오해와 갈등이 생기기 쉬운 해입니다. 중요한 관계 결정(결혼, 이별)은 신중하게 접근하시는 편이 좋습니다. 상대방의 말을 충분히 듣고, 내 감정을 솔직하게 표현하는 연습이 필요합니다.
+❤️ 올해 애정운 — “지금 말 안 하면 끝”이라는 멘트가 나오면 일단 집에 돌아가십시오. 카톡으로 온 이별·청혼 통보는 답장 칸을 비워 두고 아침에 다시 읽으십시오.
 
-🏥 올해 건강운 — 정기 검진을 가능하면 받고, 스트레스 관리에 특별히 신경 쓰십시오. 이 해에 쌓인 피로와 스트레스가 나중에 큰 문제로 터질 수 있습니다. 수면 7시간 이상, 알코올 절제, 충분한 휴식 — 이 세 가지가 올해의 건강 마지노선입니다.`;
+🏥 올해 건강운 — 술자리에서 나온 “내일 병원 예약”은 대부분 취소됩니다. 금요일 밤 대신 일요일 오전에 예약을 박아 넣으십시오. 수면 7시간이 올해의 가장 싼 보험료입니다.`;
         // 현재 대운과 세운의 교차 설명 추가
         // curDGan, curDJi는 sAdv에서 이미 선언됨
         const crossText = '';  // 교차 설명은 sAdv에 통합됨
@@ -3086,7 +3109,7 @@ function buildCurrentPeriodSummary(data) {
             ?`이달은 용신 에너지가 강하게 들어오는 좋은 달입니다. 중요한 결정, 협상, 첫 실행을 이달 안에 하시는 편이 좋습니다. 재물과 직업 모두에서 긍정적인 신호가 오는 타이밍입니다. 기회가 보이면 주저하지 말고 잡으십시오.`
             :ms>=0
             ?`평온하게 흘러가는 달입니다. 꾸준한 루틴을 유지하는 것이 최선입니다. 새로운 도전보다 현재 진행 중인 것을 완성도 있게 마무리하는 데 집중하시는 편이 좋습니다.`
-            :`주의가 필요한 달입니다. 큰 결정과 실행보다 준비와 방어에 집중하시는 편이 좋습니다. 불필요한 다툼과 충동적인 지출을 피하고, 이달은 내공을 쌓는 시간으로 활용하시는 편이 좋습니다.`;
+            :`${curY2}년 ${curM2}월은 말 한마디·송금 한 번으로 분위기가 바뀌는 달입니다. 단톡방 야근 돌리기, 밤 11시 이후 송금 링크, “급해서 오늘 중” 계약은 전부 닫아 두십시오. 이사·보증·차량 계약은 다음 달 초순으로 일부러 미루고, 이번 달은 매일 아침 통장 잔고만 확인하는 달로 쓰십시오.`;
         wolunHtml = `<div style="padding:14px;background:rgba(74,114,198,0.05);border:1px solid rgba(74,114,198,0.3);border-radius:10px;">
             <div style="font-size:11px;color:#5b7fc4;font-weight:700;margin-bottom:8px;letter-spacing:1px;">▶ ${curY2}년 ${curM2}월 월운 · 지금 이 달의 기운</div>
             <div style="font-size:16px;font-weight:900;color:#5b7fc4;font-family:Noto Serif KR,serif;margin-bottom:6px;"><span style="font-family:Noto Serif KR,serif;">${mg}${mj}</span> <span style="font-size:13px;font-weight:600;color:#ddd;">(${HAN_KOR[mg]||mg}${HAN_KOR[mj]||mj})</span> <span style="font-size:13px;color:#bbb;font-weight:400;">${KN[mOh]||''} + ${KN[mjOh]||''} 기운</span></div>
@@ -3104,7 +3127,7 @@ function buildCurrentPeriodSummary(data) {
     return `<div class="report-chapter" style="border:2px solid var(--gold);border-radius:14px;padding:20px;background:rgba(199,167,106,0.04);">
         <div style="font-size:11px;color:var(--gold);letter-spacing:2px;margin-bottom:6px;">★ 지금 이 순간 — ${nowY}년 ${nowM}월 ${nowD}일 기준</div>
         <h3 class="ch-title" style="margin-top:0;">현재 대운·세운·월운 종합 분석 — 지금 당신의 운은 어디로 흐르는가</h3>
-        <p class="ch-text">대운(인생의 10년 기후)·세운(올 한 해의 날씨)·월운(이달의 날씨)이 한눈에 펼쳐집니다. ${nowY}년 ${nowM}월 현재, 당신의 원국 에너지가 지금 이 시기와 어떻게 맞물리는지 확인하시는 편이 좋습니다.</p>
+        <p class="ch-text">대운은 10년짜리 기후, 세운은 올해 날씨, 월운은 이번 달 시한폭탄 목록입니다. ${nowY}년 ${nowM}월 지금, 아래 세 칸에서 경고등이 켜진 줄부터 손대면 손해가 줄어듭니다.</p>
         ${daeunHtml}${sewunHtml}${wolunHtml}
     </div>`;
 }
@@ -4181,11 +4204,11 @@ function buildChapter4_Wealth(data) {
             <div style="display:flex;flex-direction:column;gap:10px;">
                 <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:14px;">
                     <div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:8px;">기신 기운이 강한 시기 — 이것만은 하지 마십시오</div>
-                    <p style="font-size:13px;color:#bbb;line-height:1.88;margin:0;">기신 대운·세운에서는 무리한 투자, 보증, 충동적 사업 확장을 가급적 피하시는 편이 좋습니다. 이 시기의 판단은 평소보다 흐려집니다. 72시간 규칙(큰 결정 전 72시간 숙고)을 기준으로 두면 의사결정 흔들림이 줄어듭니다. 특히 가까운 사람의 투자 제안은 더욱 신중하게 검토해야 합니다.</p>
+                    <p style="font-size:13px;color:#bbb;line-height:1.88;margin:0;">기신 대운·세운에서는 카페에서 넘겨받은 사업계획서와 카톡으로 돌아오는 ‘믿을 사람만’이라는 말이 함정으로 바뀝니다. 보증·연대·선급금 큰 물건은 이름 붙이기 전에 72시간 침묵 규칙을 적용하십시오. 가까운 지인일수록 첫 답은 ‘안 합니다’ 세 글자로 고정하십시오.</p>
                 </div>
                 <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:14px;">
                     <div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:8px;">용신 기운이 강한 시기 — 이때 움직이십시오</div>
-                    <p style="font-size:13px;color:#bbb;line-height:1.88;margin:0;">용신·희신 대운·세운이 겹치는 구간이 인생에서 재물 도약의 황금 타이밍입니다. 이 시기를 미리 알고 준비하는 사람과 모르고 지나치는 사람의 차이는 10년 후에 극명하게 드러납니다. 기회가 들어오는 순간 바로 움직일 수 있도록, 준비를 미리 갖춰두는 편이 좋습니다.</p>
+                    <p style="font-size:13px;color:#bbb;line-height:1.88;margin:0;">용신·희신이 겹치는 구간에서는 계좌 숫자보다 먼저 사람과 타이밍이 붙습니다. 미팅 일정을 여섯 칸 비워 두고, 그 안을 새 거래·새 직함·새 동업 후보로 채우십시오. 그 해 놓친 한 번의 악수가 십 년 뒤 자산표 줄 하나를 통째로 지웁니다.</p>
                 </div>
             </div>
         </div>
@@ -4315,12 +4338,25 @@ function buildDaewunLoop(data) {
             '戌':'커리어의 정리와 전환 시기입니다. 맞지 않는 역할을 정리하고 새 방향을 준비하시는 편이 좋습니다.',
             '亥':'표면적으로 조용해 보이지만 내면에서 역량이 쌓이는 시기입니다. 급하게 움직이지 말고 준비하시는 편이 좋습니다.'
         };
-        const wealthAdv = (WEALTH_GAN[gan]||'') + ' ' + (WEALTH_JI[ji]||'');
-        const careerAdv = (CAREER_GAN[gan]||'') + ' ' + (CAREER_JI[ji]||'');
-        // 건강 조언
-        const healthAdv = sc>=2 ? '건강 에너지가 충만합니다. 이 시기에 운동 습관을 구축하고 건강에 투자하면 효과가 두 배입니다. 무리하지 않으면서 체력을 키우는 것이 최선입니다.' : sc>=0 ? '건강은 무난하지만 과로를 경계하시는 편이 좋습니다. 규칙적인 수면과 식사, 그리고 정기 검진으로 건강을 유지하시는 편이 좋습니다.' : '면역력이 저하될 수 있습니다. 수면 7시간 이상, 알코올 절제, 정기 검진이 필수입니다. 몸의 이상 신호를 가급적 무시하지 않는 편이 좋습니다.';
-        // 애정 조언
-        const loveAdv = sc>=2 ? '인연의 문이 활짝 열리는 시기입니다. 새로운 만남에 적극적이고, 기존 관계를 더욱 깊게 발전시키기에 최적의 시기입니다.' : sc>=0 ? '관계는 안정적입니다. 서로를 이해하고 신뢰를 쌓는 것에 집중하시는 편이 좋습니다. 새로운 만남보다 기존 관계의 깊이를 더하는 시기입니다.' : '인간관계에서 오해와 갈등이 생길 수 있습니다. 감정적 대응을 자제하고 신중하게 의사소통하시는 편이 좋습니다. 중요한 관계 결정을 서두르지 않는 편이 좋습니다.';
+        let wealthAdv = (WEALTH_GAN[gan]||'') + ' ' + (WEALTH_JI[ji]||'');
+        let careerAdv = (CAREER_GAN[gan]||'') + ' ' + (CAREER_JI[ji]||'');
+        if (sc < 0) {
+            wealthAdv = '연말·연초, 명절 전후 술자리에서 건네지는 지인의 투자·공동사업·간단 계약 제안은 겉보기 수익보다 먼저 통장을 얼려 버리는 함정으로 바뀌기 쉽습니다. 서류에 이름이 올라가기 전날은 무조건 하루 비우고, 첫 대답을 거절로 고정하십시오. ' + wealthAdv;
+            careerAdv = '조직 안에서는 성과 대신 책임만 떠넘기는 공문·구두 지시가 늘어납니다. “한번만” 해 주는 업무가 퇴사할 때까지 당신 몫으로 남습니다. 새 직함을 미끼로 한 과로 요구에는 한 줄짜리 거절 답장이 정답입니다. ' + careerAdv;
+        } else if (sc >= 2) {
+            wealthAdv = '지금 맺는 계약 한 장이 이후 몇 년 동안 현금이 들어오는 폭을 가릅니다. 숫자를 세 번 다시 보고 도장을 찍으십시오. ' + wealthAdv;
+            careerAdv = '지금 올라오는 제안은 다음 분기 실적줄에 바로 박힙니다. 회의실에서 나온 날 저녁까지 실행 플랜 세 줄을 메모로 남기십시오. ' + careerAdv;
+        }
+        const healthAdv = sc>=2
+            ? '새벽에 몸이 먼저 깨어나고 발바닥이 뜨거워지는 날이 늘면, 이 시기 체력이 제대로 붙은 신호입니다. 주 3회, 땀이 배도록만 움직이면 그만큼 회사·사업장에서 버티는 시간이 늘어납니다.'
+            : sc>=0
+            ? '커피 대신 물 한 잔 더 마시는 날이 늘면 이미 몸이 경고를 보냅니다. 밤 12시 전에 불 끄는 날을 주말 포함 이틀만 늘려 보십시오. 그 두 밤이 한 달 뒤 피부와 집중력을 바꿉니다.'
+            : '갑자기 잠이 얕아지고 어깨가 돌처럼 굳으면 면역이 바닥에 닿은 겁니다. 술자리를 반으로 줄이고, 동네 병원 한 번 들러 혈압·간 수치만이라도 찍으십시오. “나중에”는 이미 늦은 신호입니다.';
+        const loveAdv = sc>=2
+            ? '카페에서 시선이 세 번 이상 마주치면 이번 달 인연입니다. 번호를 먼저 묻지 않아도 됩니다. “다음에 이 시간에 또 올까요?” 한 마디면 충분합니다.'
+            : sc>=0
+            ? '큰 싸움은 없는데 대화가 짧아진 주간이 오래 가면, 문제는 감정이 아니라 피로입니다. 주말 아침 한 시간은 폰 없이 같이 산책만 하십시오. 말보다 발 걸음이 관계를 고칩니다.'
+            : '차 안에서 시작된 말다툼은 집 문턱에서 멈추지 않습니다. 이별·이사·결혼 이야기는 술 마신 날 밤이 아니라, 주중 낮에 카페 테이블에 앉혀서 하십시오. 그날 밤 결정한 문자는 다음 날 아침에 후회합니다.';
 
         const strategy = sc >= 2
             ? `<div style="background:rgba(0,200,83,0.06);border-radius:8px;padding:14px;margin-top:12px;border:1px solid rgba(0,200,83,0.15);"><b style="color:#00C853;font-size:12px;">✦ 길한 대운 — 4분야 전략</b><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;"><div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;"><div style="font-size:10px;color:#c7a76a;margin-bottom:4px;">💰 재물</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${wealthAdv}</p></div><div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;"><div style="font-size:10px;color:#c7a76a;margin-bottom:4px;">💼 직업</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${careerAdv}</p></div><div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;"><div style="font-size:10px;color:#c7a76a;margin-bottom:4px;">❤️ 애정</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${loveAdv}</p></div><div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;"><div style="font-size:10px;color:#c7a76a;margin-bottom:4px;">🏥 건강</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${healthAdv}</p></div></div></div>`
@@ -4433,11 +4469,11 @@ function buildSewunLoop(data) {
         const brHJ = {'자':'子','축':'丑','인':'寅','묘':'卯','진':'辰','사':'巳','오':'午','미':'未','신':'申','유':'酉','술':'戌','해':'亥'}[branchKr] || '';
         const result = [];
         // 역마살
-        const maMap = {"亥":"巳","卯":"巳","未":"巳","辛":"寅","子":"寅","辰":"寅","巳":"亥","酉":"亥","丑":"亥","寅":"申","午":"申","戌":"申"};
+        const maMap = {"亥":"巳","卯":"巳","未":"巳","申":"寅","子":"寅","辰":"寅","巳":"亥","酉":"亥","丑":"亥","寅":"申","午":"申","戌":"申"};
         if(db && maMap[db]===brHJ) result.push('역마');
         if(yb && maMap[yb]===brHJ) result.push('역마');
         // 도화살
-        const dhMap = {"亥":"子","卯":"子","未":"子","辛":"酉","子":"酉","辰":"酉","巳":"午","酉":"午","丑":"午","寅":"卯","午":"卯","戌":"卯"};
+        const dhMap = {"亥":"子","卯":"子","未":"子","申":"酉","子":"酉","辰":"酉","巳":"午","酉":"午","丑":"午","寅":"卯","午":"卯","戌":"卯"};
         if(db && dhMap[db]===brHJ) result.push('도화');
         if(yb && dhMap[yb]===brHJ) result.push('도화');
         // 장성살
@@ -4445,7 +4481,7 @@ function buildSewunLoop(data) {
         if(db && jsMap[db]===brHJ) result.push('장성');
         if(yb && jsMap[yb]===brHJ) result.push('장성');
         // 화개살
-        const hgMap = {"亥":"未","卯":"未","未":"未","辛":"辰","子":"辰","辰":"辰","巳":"丑","酉":"丑","丑":"丑","寅":"戌","午":"戌","戌":"戌"};
+        const hgMap = {"亥":"未","卯":"未","未":"未","申":"辰","子":"辰","辰":"辰","巳":"丑","酉":"丑","丑":"丑","寅":"戌","午":"戌","戌":"戌"};
         if(db && hgMap[db]===brHJ) result.push('화개');
         if(yb && hgMap[yb]===brHJ) result.push('화개');
         return [...new Set(result)];
@@ -4914,7 +4950,7 @@ function buildChapter8_Health(data) {
 
         <div style="background:rgba(199,167,106,0.05);border-radius:12px;padding:20px;margin:16px 0;border:1px solid rgba(199,167,106,0.1);">
             <div style="font-size:12px;color:var(--gold);margin-bottom:12px;letter-spacing:1px;">&#9670; 대운별 건강 주의사항 & 종합 건강 전략</div>
-            <p style="font-size:13px;color:#bbb;line-height:1.85;margin:0 0 12px;">기신 기운이 강한 대운에서는 면역 밸런스가 흔들릴 가능성이 커집니다. 이 시기에 수면 부족과 과로가 겹치면 큰 병으로 이어질 수 있다. 가능하면 이 시기를 전후해 종합 건강검진을 받고, 평소보다 50% 더 세심한 건강 관리를 실천하라. 반면 용신 대운에는 적극적인 건강 투자(운동 습관 구축, 식단 개선)가 가장 효과를 발휘한다.</p>
+            <p style="font-size:13px;color:#bbb;line-height:1.85;margin:0 0 12px;">기신이 들어오는 대운 첫 해, 새벽 두 시에 눈이 떠지고 낮에 커피를 세 잔 넘기게 되면 면역이 이미 경사진 겁니다. 그 구간을 전후해 종합검진 예약을 날짜로 박아 두십시오. 반대로 용신 대운에는 헬스 연회비를 미리 결제해 버리십시오—그 시기에 깔린 루틴이 이후 십 년을 지탱합니다.</p>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
                 <div style="font-size:12px;color:#bbb;line-height:1.8;"><b style="color:#ddd;">&#10003; 기신 대운 필수 수칙</b><br>수면 7시간 이상 · 알코올 절제 · 정기 검진 · 감정 관리</div>
                 <div style="font-size:12px;color:#bbb;line-height:1.8;"><b style="color:#ddd;">&#10003; 용신 대운 건강 투자</b><br>운동 루틴 구축 · 식단 개선 · 의료 검진 최적화</div>
@@ -4989,7 +5025,7 @@ function buildPart1_Story(data){
             if(isUnk&&i===0){html+='<td style="text-align:center;color:#444;font-size:11px;">미상</td>';return;}
             var g=p.h[0]||''; var col=hanCol(g);
             var kr=typeof getElementDesc==='function'?getElementDesc(g):'';
-            html+='<td style="padding:4px 8px;text-align:center;"><span style="font-size:20px;font-weight:280;color:'+col+';">'+g+'</span><br><span style="font-size:9px;color:#555;">'+kr+'</span></td>';
+            html+='<td style="padding:4px 8px;text-align:center;"><span style="font-size:32px;font-weight:900;font-family:Noto Serif KR,Noto Sans KR,serif;-webkit-text-stroke:0.55px;color:'+col+';">'+g+'</span><br><span style="font-size:9px;color:#555;">'+kr+'</span></td>';
         });
         html += '</tr>';
         // 지지
@@ -4999,7 +5035,7 @@ function buildPart1_Story(data){
             if(isUnk&&i===0){html+='<td style="text-align:center;color:#444;font-size:11px;">미상</td>';return;}
             var j=p.h[1]||''; var col=hanCol(j);
             var kr=typeof getElementDesc==='function'?getElementDesc(j):'';
-            html+='<td style="padding:4px 8px;text-align:center;"><span style="font-size:20px;font-weight:280;color:'+col+';">'+j+'</span><br><span style="font-size:9px;color:#555;">'+kr+'</span></td>';
+            html+='<td style="padding:4px 8px;text-align:center;"><span style="font-size:32px;font-weight:900;font-family:Noto Serif KR,Noto Sans KR,serif;-webkit-text-stroke:0.55px;color:'+col+';">'+j+'</span><br><span style="font-size:9px;color:#555;">'+kr+'</span></td>';
         });
         html += '</tr>';
         // 십성(지지) — 만세력 표와 동일
@@ -5792,19 +5828,22 @@ window.generateDeepReport = generateDeepReport;
       var mn    = (p.get('mi') || '0').padStart(2,'0');
       var yun   = p.get('yun') === '1';
       var unk   = p.get('unk') === '1';
+      var ez    = p.get('ez') === '1';
 
       window.__SAJUX_PARAMS__ = {
         name: name, gender: gRaw, cal: cRaw,
         birthDate: yr + mo + dy,
         birthTime: unk ? '1200' : (hr + mn),
-        yundal: yun, unknown: unk
+        yundal: yun, unknown: unk, earlyZi: ez
       };
     })();
     </script>
 
+
+
 <!-- SAJUX_CACHE_BUSTER_START -->
-<meta name="sajux-build" content="1778337942">
-<script>(function(){var v='1778337942';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
+<meta name="sajux-build" content="1778516899">
+<script>(function(){var v='1778516899';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
 <!-- SAJUX_CACHE_BUSTER_END -->
 </head>
 <body>
@@ -6029,6 +6068,14 @@ function collapseToc() {
                     </div>
                     <input type="checkbox" id="adj-l" checked style="display:none">
                     <div class="toggle-desc">한국은 동경(135°) 기준 시간을 쓰지만, 실제 서울(동경 126.9°)은 약 32분 느립니다.<br>전통 명리학에서는 이 32분을 보정하는 방식을 선호합니다. (기본 켜짐)</div>
+                </div>
+                <div class="toggle-item">
+                    <div class="toggle-label" id="tlabel-early-zi" onclick="toggleSwitch('early-zi','tlabel-early-zi')">
+                        <span class="t-knob"></span>
+                        <span class="t-text">01:00~01:29 → 전날 자시(子初)로 계산</span>
+                    </div>
+                    <input type="checkbox" id="early-zi" style="display:none">
+                    <div class="toggle-desc">기본은 일반 만세력(lunar-javascript)과 동일하게 <b>丑時</b>로 둡니다. 옛 파(子初를 前日 자시로 보는 해석)를 쓸 때만 켜세요.</div>
                 </div>
             </div>
 
@@ -6417,22 +6464,38 @@ var RELATION_LABELS = {
 var WUXING_ORDER = ['wood','fire','earth','metal','water'];
 
 window.UNSUNG_MAP = {
-    "甲": {"亥": "장생", "子": "목욕", "丑": "관대", "寅": "건록", "卯": "제왕", "辰": "쇠", "巳": "병", "午": "사", "未": "묘", "辛": "절", "酉": "태", "戌": "양"},
-    "丙": {"寅": "장생", "卯": "목욕", "辰": "관대", "巳": "건록", "午": "제왕", "未": "쇠", "辛": "병", "酉": "사", "戌": "묘", "亥": "절", "子": "태", "丑": "양"},
-    "戊": {"寅": "장생", "卯": "목욕", "辰": "관대", "巳": "건록", "午": "제왕", "未": "쇠", "辛": "병", "酉": "사", "戌": "묘", "亥": "절", "子": "태", "丑": "양"},
-    "庚": {"巳": "장생", "午": "목욕", "未": "관대", "辛": "건록", "酉": "제왕", "戌": "쇠", "亥": "병", "子": "사", "丑": "묘", "寅": "절", "卯": "태", "辰": "양"},
-    "壬": {"辛": "장생", "酉": "목욕", "戌": "관대", "亥": "건록", "子": "제왕", "丑": "쇠", "寅": "병", "卯": "사", "辰": "묘", "巳": "절", "午": "태", "未": "양"},
-    "乙": {"午": "장생", "巳": "목욕", "辰": "관대", "卯": "건록", "寅": "제왕", "丑": "쇠", "子": "병", "亥": "사", "戌": "묘", "酉": "절", "辛": "태", "未": "양"},
-    "丁": {"酉": "장생", "辛": "목욕", "未": "관대", "午": "건록", "巳": "제왕", "辰": "쇠", "卯": "병", "寅": "사", "丑": "묘", "子": "절", "亥": "태", "戌": "양"},
-    "己": {"酉": "장생", "辛": "목욕", "未": "관대", "午": "건록", "巳": "제왕", "辰": "쇠", "卯": "병", "寅": "사", "丑": "묘", "子": "절", "亥": "태", "戌": "양"},
-    "辛": {"子": "장생", "亥": "목욕", "戌": "관대", "酉": "건록", "辛": "제왕", "未": "쇠", "午": "병", "巳": "사", "辰": "묘", "卯": "절", "寅": "태", "丑": "양"},
-    "癸": {"卯": "장생", "寅": "목욕", "丑": "관대", "子": "건록", "亥": "제왕", "戌": "쇠", "酉": "병", "辛": "사", "未": "묘", "午": "절", "巳": "태", "辰": "양"}
+    "甲": {"亥": "장생", "子": "목욕", "丑": "관대", "寅": "건록", "卯": "제왕", "辰": "쇠", "巳": "병", "午": "사", "未": "묘", "申": "절", "酉": "태", "戌": "양"},
+    "丙": {"寅": "장생", "卯": "목욕", "辰": "관대", "巳": "건록", "午": "제왕", "未": "쇠", "申": "병", "酉": "사", "戌": "묘", "亥": "절", "子": "태", "丑": "양"},
+    "戊": {"寅": "장생", "卯": "목욕", "辰": "관대", "巳": "건록", "午": "제왕", "未": "쇠", "申": "병", "酉": "사", "戌": "묘", "亥": "절", "子": "태", "丑": "양"},
+    "庚": {"巳": "장생", "午": "목욕", "未": "관대", "申": "건록", "酉": "제왕", "戌": "쇠", "亥": "병", "子": "사", "丑": "묘", "寅": "절", "卯": "태", "辰": "양"},
+    "壬": {"申": "장생", "酉": "목욕", "戌": "관대", "亥": "건록", "子": "제왕", "丑": "쇠", "寅": "병", "卯": "사", "辰": "묘", "巳": "절", "午": "태", "未": "양"},
+    "乙": {"午": "장생", "巳": "목욕", "辰": "관대", "卯": "건록", "寅": "제왕", "丑": "쇠", "子": "병", "亥": "사", "戌": "묘", "酉": "절", "申": "태", "未": "양"},
+    "丁": {"酉": "장생", "申": "목욕", "未": "관대", "午": "건록", "巳": "제왕", "辰": "쇠", "卯": "병", "寅": "사", "丑": "묘", "子": "절", "亥": "태", "戌": "양"},
+    "己": {"酉": "장생", "申": "목욕", "未": "관대", "午": "건록", "巳": "제왕", "辰": "쇠", "卯": "병", "寅": "사", "丑": "묘", "子": "절", "亥": "태", "戌": "양"},
+    "辛": {"子": "장생", "亥": "목욕", "戌": "관대", "酉": "건록", "申": "제왕", "未": "쇠", "午": "병", "巳": "사", "辰": "묘", "卯": "절", "寅": "태", "丑": "양"},
+    "癸": {"卯": "장생", "寅": "목욕", "丑": "관대", "子": "건록", "亥": "제왕", "戌": "쇠", "酉": "병", "申": "사", "未": "묘", "午": "절", "巳": "태", "辰": "양"}
 };
 
 var BRANCH_HIDDEN = {
     '子':['癸'], '丑':['己','癸','辛'], '寅':['甲','丙','戊'], '卯':['乙'], '辰':['戊','乙','癸'], '巳':['丙','戊','庚'],
     '午':['丁','己'], '未':['己','丁','乙'], '申':['庚','壬','戊'], '酉':['辛'], '戌':['戊','辛','丁'], '亥':['壬','甲']
 };
+
+/** 간주 문자열 정규화 — 신살·표시에서 h가 문자열·배열 겸용 */
+function pillarToGz(p) {
+    if (!p || !p.h) return '';
+    var h = p.h;
+    if (typeof h === 'string') return h.length >= 2 ? h.slice(0, 2) : h;
+    return (h[0] || '') + (h[1] || '');
+}
+/** 생지·왕지·고지 지장간 비율 [여기,중기,정기] — 설계 명세 정렬 */
+function hiddenStemRatiosForBranch(tZhi) {
+    if (['寅','申','巳','亥'].indexOf(tZhi) !== -1) return [0.2, 0.2, 0.6];
+    if (['子','午','卯','酉'].indexOf(tZhi) !== -1) return [0.3, 0, 0.7];
+    if (['辰','戌','丑','未'].indexOf(tZhi) !== -1) return [0.3, 0.2, 0.5];
+    return null;
+}
+
 
 var SHINSAL_LOGIC = {
     // ── 1. 천을귀인 — 일간 기준, 축·미·자·신·해·유·묘·사·인·오 ──
@@ -6463,51 +6526,49 @@ var SHINSAL_LOGIC = {
     // ── 5. 역마살 — 연지·일지 기준 ──
     '역마살': (gz, ec) => {
         const yb = ec.getYear()[1]; const db = ec.getDay()[1];
-        const map = {"亥":"巳","卯":"巳","未":"巳","辛":"寅","子":"寅","辰":"寅","巳":"亥","酉":"亥","丑":"亥","寅":"申","午":"申","戌":"申"};
+        const map = {"亥":"巳","卯":"巳","未":"巳","申":"寅","子":"寅","辰":"寅","巳":"亥","酉":"亥","丑":"亥","寅":"申","午":"申","戌":"申"};
         return (map[yb]===gz[1] || map[db]===gz[1]) ? '역마살' : '';
     },
     // ── 6. 도화살 — 연지·일지 기준 ──
     '도화살': (gz, ec) => {
         const yb = ec.getYear()[1]; const db = ec.getDay()[1];
-        const map = {"亥":"子","卯":"子","未":"子","辛":"酉","子":"酉","辰":"酉","巳":"午","酉":"午","丑":"午","寅":"卯","午":"卯","戌":"卯"};
+        const map = {"亥":"子","卯":"子","未":"子","申":"酉","子":"酉","辰":"酉","巳":"午","酉":"午","丑":"午","寅":"卯","午":"卯","戌":"卯"};
         return (map[yb]===gz[1] || map[db]===gz[1]) ? '도화살' : '';
     },
     // ── 7. 화개살 — 연지·일지 기준 ──
     '화개살': (gz, ec) => {
         const yb = ec.getYear()[1]; const db = ec.getDay()[1];
-        const map = {"亥":"未","卯":"未","未":"未","辛":"辰","子":"辰","辰":"辰","巳":"丑","酉":"丑","丑":"丑","寅":"戌","午":"戌","戌":"戌"};
+        const map = {"亥":"未","卯":"未","未":"未","申":"辰","子":"辰","辰":"辰","巳":"丑","酉":"丑","丑":"丑","寅":"戌","午":"戌","戌":"戌"};
         return (map[yb]===gz[1] || map[db]===gz[1]) ? '화개살' : '';
     },
     // ── 8. 겁살 — 연지·일지 기준 ──
     '겁살': (gz, ec) => {
         const yb = ec.getYear()[1]; const db = ec.getDay()[1];
-        const map = {"辛":"巳","子":"巳","辰":"巳","亥":"申","卯":"申","未":"申","寅":"亥","午":"亥","戌":"亥","巳":"寅","酉":"寅","丑":"寅"};
+        const map = {"申":"巳","子":"巳","辰":"巳","亥":"申","卯":"申","未":"申","寅":"亥","午":"亥","戌":"亥","巳":"寅","酉":"寅","丑":"寅"};
         return (map[yb]===gz[1] || map[db]===gz[1]) ? '겁살' : '';
     },
     // ── 9. 망신살 — 연지·일지 기준 ──
     '망신살': (gz, ec) => {
         const yb = ec.getYear()[1]; const db = ec.getDay()[1];
-        const map = {"辛":"亥","子":"卯","辰":"未","亥":"寅","卯":"午","未":"戌","寅":"巳","午":"酉","戌":"丑","巳":"申","酉":"子","丑":"辰"};
+        const map = {"申":"亥","子":"卯","辰":"未","亥":"寅","卯":"午","未":"戌","寅":"巳","午":"酉","戌":"丑","巳":"申","酉":"子","丑":"辰"};
         return (map[yb]===gz[1] || map[db]===gz[1]) ? '망신살' : '';
     },
-    // ── 10. 지살 — 연지·일지 기준 ──
+    // ── 10. 지살 — 연지·일지 기준 (삼합 첫 지지)
     '지살': (gz, ec) => {
-        const yb = ec.getYear()[1]; const db = ec.getDay()[1];
-        const map = {"辛":"申","子":"子","辰":"辰","亥":"亥","卯":"卯","未":"未","寅":"寅","午":"午","戌":"戌","巳":"巳","酉":"酉","丑":"丑"};
-        // 지살 = 삼합 첫번째 지지와 같은 자리
-        const gsMap = {"辛":"寅","子":"申","辰":"子","亥":"巳","卯":"亥","未":"卯","寅":"申","午":"寅","戌":"午","巳":"亥","酉":"巳","丑":"酉"};
+        var yb = ec.getYear()[1]; var db = ec.getDay()[1];
+        var gsMap = {"申":"寅","子":"申","辰":"子","亥":"巳","卯":"亥","未":"卯","寅":"申","午":"寅","戌":"午","巳":"亥","酉":"巳","丑":"酉"};
         return (gsMap[yb]===gz[1] || gsMap[db]===gz[1]) ? '지살' : '';
     },
     // ── 11. 천살 — 연지·일지 기준 ──
     '천살': (gz, ec) => {
         const yb = ec.getYear()[1]; const db = ec.getDay()[1];
-        const map = {"辛":"辰","子":"辰","辰":"辰","亥":"未","卯":"未","未":"未","寅":"戌","午":"戌","戌":"戌","巳":"丑","酉":"丑","丑":"丑"};
+        const map = {"申":"辰","子":"辰","辰":"辰","亥":"未","卯":"未","未":"未","寅":"戌","午":"戌","戌":"戌","巳":"丑","酉":"丑","丑":"丑"};
         return (map[yb]===gz[1] || map[db]===gz[1]) ? '천살' : '';
     },
     // ── 12. 년살 — 연지·일지 기준 (목욕지) ──
     '년살': (gz, ec) => {
         const yb = ec.getYear()[1]; const db = ec.getDay()[1];
-        const map = {"辛":"酉","子":"卯","辰":"卯","亥":"子","卯":"子","未":"子","寅":"卯","午":"午","戌":"午","巳":"午","酉":"酉","丑":"酉"};
+        const map = {"申":"酉","子":"卯","辰":"卯","亥":"子","卯":"子","未":"子","寅":"卯","午":"午","戌":"午","巳":"午","酉":"酉","丑":"酉"};
         // 년살 = 도화와 같은 기준 위치
         return false; // 도화와 중복 방지 — 도화살로 통합
     },
@@ -6523,14 +6584,14 @@ var SHINSAL_LOGIC = {
     '원진살': (gz, ec) => {
         const db = ec.getDay()[1];
         if(!db || gz === ec.getDay()) return '';
-        const map = {"子":"未","丑":"午","寅":"酉","卯":"申","辰":"亥","巳":"戌","午":"丑","未":"子","辛":"卯","酉":"寅","戌":"巳","亥":"辰"};
+        const map = {"子":"未","丑":"午","寅":"酉","卯":"申","辰":"亥","巳":"戌","午":"丑","未":"子","申":"卯","酉":"寅","戌":"巳","亥":"辰"};
         return gz[1] === map[db] ? '원진살' : '';
     },
     // ── 16. 귀문관살 — 일지 기준 ──
     '귀문관살': (gz, ec) => {
         const db = ec.getDay()[1];
         if(!db || gz === ec.getDay()) return '';
-        const map = {"子":"酉","丑":"午","寅":"未","卯":"申","辰":"亥","巳":"戌","午":"丑","未":"寅","辛":"卯","酉":"子","戌":"巳","亥":"辰"};
+        const map = {"子":"酉","丑":"午","寅":"未","卯":"申","辰":"亥","巳":"戌","午":"丑","未":"寅","申":"卯","酉":"子","戌":"巳","亥":"辰"};
         return gz[1] === map[db] ? '귀문관살' : '';
     },
     // ── 17. 홍염살 — 일간 기준 ──
@@ -6542,19 +6603,19 @@ var SHINSAL_LOGIC = {
     // ── 18. 고신살 — 연지 기준 (남성) ──
     '고신살': (gz, ec) => {
         const yb = ec.getYear()[1];
-        const map = {"寅":"巳","卯":"巳","辰":"巳","巳":"申","午":"申","未":"申","辛":"亥","酉":"亥","戌":"亥","亥":"寅","子":"寅","丑":"寅"};
+        const map = {"寅":"巳","卯":"巳","辰":"巳","巳":"申","午":"申","未":"申","申":"亥","酉":"亥","戌":"亥","亥":"寅","子":"寅","丑":"寅"};
         return map[yb] === gz[1] ? '고신살' : '';
     },
     // ── 19. 과숙살 — 연지 기준 (여성) ──
     '과숙살': (gz, ec) => {
         const yb = ec.getYear()[1];
-        const map = {"寅":"丑","卯":"丑","辰":"丑","巳":"辰","午":"辰","未":"辰","辛":"未","酉":"未","戌":"未","亥":"戌","子":"戌","丑":"戌"};
+        const map = {"寅":"丑","卯":"丑","辰":"丑","巳":"辰","午":"辰","未":"辰","申":"未","酉":"未","戌":"未","亥":"戌","子":"戌","丑":"戌"};
         return map[yb] === gz[1] ? '과숙살' : '';
     },
     // ── 20. 천의성 — 월지 기준 ──
     '천의성': (gz, ec) => {
         const mb = ec.getMonth()[1];
-        const prev = {"子":"亥","丑":"子","寅":"丑","卯":"寅","辰":"卯","巳":"辰","午":"巳","未":"午","辛":"未","酉":"申","戌":"酉","亥":"戌"};
+        const prev = {"子":"亥","丑":"子","寅":"丑","卯":"寅","辰":"卯","巳":"辰","午":"巳","未":"午","申":"未","酉":"申","戌":"酉","亥":"戌"};
         return prev[mb] === gz[1] ? '천의성' : '';
     },
     // ── 21. 학당귀인 — 일간 기준 ──
@@ -6569,17 +6630,24 @@ var SHINSAL_LOGIC = {
         const map = {"甲":"未","乙":"辰","丙":"酉","丁":"亥","戊":"丑","己":"子","庚":"丑","辛":"寅","壬":"卯","癸":"巳"};
         return map[ds] === gz[1] ? '천관귀인' : '';
     },
-    // ── 23. 천덕귀인 — 월지 기준 ──
+    // ── 23. 천덕귀인 — 월지 기준 (월덕 천간/지지)
     '천덕귀인': (gz, ec) => {
-        const mb = ec.getMonth()[1];
-        const map = {"寅":"정","卯":"申","辰":"임","巳":"申","午":"亥","未":"갑","辛":"계","酉":"寅","戌":"병","亥":"을","子":"巳","丑":"경"};
-        return map[mb] === gz[0] ? '천덕귀인' : '';
+        var mb = ec.getMonth()[1];
+        var TIANDE = {'寅':{k:'gan',v:'丁'},'卯':{k:'zhi',v:'申'},'辰':{k:'gan',v:'壬'},'巳':{k:'gan',v:'辛'},'午':{k:'zhi',v:'亥'},'未':{k:'gan',v:'甲'},'申':{k:'gan',v:'癸'},'酉':{k:'zhi',v:'寅'},'戌':{k:'gan',v:'丙'},'亥':{k:'gan',v:'乙'},'子':{k:'zhi',v:'巳'},'丑':{k:'gan',v:'庚'}};
+        var rule = TIANDE[mb];
+        if (!rule) return '';
+        if (rule.k === 'gan') return gz[0] === rule.v ? '천덕귀인' : '';
+        return gz[1] === rule.v ? '천덕귀인' : '';
     },
-    // ── 24. 월덕귀인 — 월지 기준 ──
+    // ── 24. 월덕귀인 — 월지 삼합별 월덕 천간
     '월덕귀인': (gz, ec) => {
-        const mb = ec.getMonth()[1];
-        const map = {"寅":"갑","卯":"임","辰":"임","巳":"병","午":"갑","未":"갑","辛":"임","酉":"병","戌":"병","亥":"갑","子":"임","丑":"병"};
-        return map[mb] === gz[0] ? '월덕귀인' : '';
+        var mb = ec.getMonth()[1];
+        var stem = '';
+        if (['亥','卯','未'].indexOf(mb) !== -1) stem = '甲';
+        else if (['寅','午','戌'].indexOf(mb) !== -1) stem = '丙';
+        else if (['巳','酉','丑'].indexOf(mb) !== -1) stem = '庚';
+        else if (['申','子','辰'].indexOf(mb) !== -1) stem = '壬';
+        return stem && gz[0] === stem ? '월덕귀인' : '';
     },
     // ── 25. 금여록 — 일간 기준 (귀한 수레, 배우자 복) ──
     '금여록': (gz, ec) => {
@@ -6619,7 +6687,7 @@ var SHINSAL_LOGIC = {
     '급각살': (gz, ec) => {
         const db = ec.getDay()[1];
         if(!db || gz === ec.getDay()) return '';
-        const map = {"子":"未","丑":"午","寅":"巳","卯":"辰","辰":"卯","巳":"寅","午":"丑","未":"子","辛":"亥","酉":"戌","戌":"酉","亥":"辛"};
+        const map = {"子":"未","丑":"午","寅":"巳","卯":"辰","辰":"卯","巳":"寅","午":"丑","未":"子","申":"亥","酉":"戌","戌":"酉","亥":"戌"};
         return gz[1] === map[db] ? '급각살' : '';
     },
     // ── 32. 수옥살 — 연지·일지 기준 (관재·구속) ──
@@ -6634,6 +6702,31 @@ var SHINSAL_LOGIC = {
         // 삼합 중간 지지
         const map = {"寅":"午","午":"戌","戌":"寅","亥":"卯","卯":"未","未":"亥","申":"子","子":"辰","辰":"申","巳":"酉","酉":"丑","丑":"巳"};
         return (map[yb]===gz[1] || map[db]===gz[1]) ? '장성살' : '';
+    },
+    // ── 33b. 육해살
+    '육해살': (gz, ec) => {
+        var yb = ec.getYear()[1]; var db = ec.getDay()[1]; var z = gz[1];
+        var LH = {'子':'未','未':'子','丑':'午','午':'丑','寅':'巳','巳':'寅','卯':'辰','辰':'卯','申':'亥','亥':'申','酉':'戌','戌':'酉'};
+        if (!z) return '';
+        if (yb && LH[yb]===z) return '육해살';
+        if (db && LH[db]===z) return '육해살';
+        return '';
+    },
+    // ── 33c. 반안살 (삼합국의 반안)
+    '반안살': (gz, ec) => {
+        var yb = ec.getYear()[1]; var db = ec.getDay()[1]; var z = gz[1];
+        function banOf(b) {
+            if (['寅','午','戌'].indexOf(b)!==-1) return '卯';
+            if (['亥','卯','未'].indexOf(b)!==-1) return '子';
+            if (['巳','酉','丑'].indexOf(b)!==-1) return '午';
+            if (['申','子','辰'].indexOf(b)!==-1) return '酉';
+            return '';
+        }
+        var by = banOf(yb), bd = banOf(db);
+        if (!z) return '';
+        if (by && by===z) return '반안살';
+        if (bd && bd===z) return '반안살';
+        return '';
     },
     // ── 34. 복성귀인 — 일간 기준 ──
     '복성귀인': (gz, ec) => {
@@ -6891,7 +6984,7 @@ function getAllShinsal(pillars, ec, isUnknown) {
     const result = {};
     pillars.forEach((p, idx) => {
         if (isUnknown && idx === 0) return;
-        result[p.n] = getShinsal((p.h[0] || '') + (p.h[1] || ''), ec);
+        result[p.n] = getShinsal(pillarToGz(p), ec);
     });
     return result;
 }
@@ -6901,7 +6994,7 @@ function getAllTwelveShinsal(pillars, ec, isUnknown) {
     const result = {};
     pillars.forEach((p, idx) => {
         if (isUnknown && idx === 0) return;
-        result[p.n] = getTwelveShinsal((p.h[0] || '') + (p.h[1] || ''), ec);
+        result[p.n] = getTwelveShinsal(pillarToGz(p), ec);
     });
     return result;
 }
@@ -6911,7 +7004,7 @@ function getAllExtraShinsal(pillars, ec, isUnknown) {
     const result = {};
     pillars.forEach((p, idx) => {
         if (isUnknown && idx === 0) return;
-        result[p.n] = getExtraShinsal((p.h[0] || '') + (p.h[1] || ''), ec);
+        result[p.n] = getExtraShinsal(pillarToGz(p), ec);
     });
     return result;
 }
@@ -6930,8 +7023,27 @@ function buildRelationLines(pillars) {
     const branchChung = [['子','午','자오충'],['丑','未','축미충'],['寅','申','인신충'],['卯','酉','묘유충'],['辰','戌','진술충'],['巳','亥','사해충']];
     branchChung.forEach(([a,b,label]) => { if (branches.includes(a) && branches.includes(b)) lines.push({type:'지지 충', label, chars:[a,b]}); });
 
+    const stemChung = [['甲','庚'],['乙','辛'],['丙','壬'],['丁','癸']];
+    stemChung.forEach(([a,b]) => { if (stems.includes(a) && stems.includes(b)) lines.push({type:'천간 충', label:'천간충', chars:[a,b]}); });
+
     const branchHyung = [['子','卯','자묘형'],['寅','巳','인사형'],['巳','申','사신형'],['丑','戌','축술형'],['戌','未','술미형']];
     branchHyung.forEach(([a,b,label]) => { if (branches.includes(a) && branches.includes(b)) lines.push({type:'지지 형', label, chars:[a,b]}); });
+
+    if (['寅','巳','申'].every(z => branches.includes(z))) lines.push({type:'지지 삼형', label:'인사신 삼형', chars:['寅','巳','申']});
+    if (['丑','戌','未'].every(z => branches.includes(z))) lines.push({type:'지지 삼형', label:'축술미 삼형', chars:['丑','戌','未']});
+    ['辰','午','酉','亥'].forEach(zh => { if (branches.filter(x => x===zh).length >= 2) lines.push({type:'지지 자형', label: zh+zh+' 자형', chars:[zh, zh]}); });
+
+    [['亥','卯','未','해묘미 목 삼합'],['寅','午','戌','인오술 화 삼합'],['巳','酉','丑','사유축 금 삼합'],['申','子','辰','신자진 수 삼합']].forEach(row => {
+        var chars = row.slice(0,3), lb = row[3];
+        if (chars.every(z => branches.includes(z))) lines.push({type:'지지 삼합', label:lb, chars:chars});
+    });
+
+    [['子','酉'],['丑','辰'],['寅','亥'],['卯','午'],['巳','申'],['戌','未']].forEach(pair => {
+        if (branches.includes(pair[0]) && branches.includes(pair[1])) lines.push({type:'지지 파', label:'육파', chars:pair});
+    });
+    [['子','未'],['丑','午'],['寅','巳'],['卯','辰'],['申','亥'],['酉','戌']].forEach(pair => {
+        if (branches.includes(pair[0]) && branches.includes(pair[1])) lines.push({type:'지지 해', label:'육해', chars:pair});
+    });
 
     if (branches.includes('寅') && branches.includes('卯') && branches.includes('辰')) lines.push({type:'방합', label:'인묘진 방합', chars:['寅','卯','辰']});
     if (branches.includes('巳') && branches.includes('午') && branches.includes('未')) lines.push({type:'방합', label:'사오미 방합', chars:['巳','午','未']});
@@ -7012,6 +7124,7 @@ function runAnalysis(overrideParams) {
         const isSolar = _op ? !(calRaw === 'lunar' || calRaw === 'l') : (document.getElementById('cal-type').value === 'S');
         const isLeap = toBool(_op && _op.yundal, (document.getElementById('is-leap').value === 'true'));
         const calBase = ((_op && _op.calBase) ? String(_op.calBase) : (document.getElementById('cal-base').value || 'KST')).toUpperCase();
+        const earlyZi = toBool(_op && _op.earlyZi, document.getElementById('early-zi') ? document.getElementById('early-zi').checked : false);
 
         let origY = y, origM = m, origD = d;
         let lunarObj, solarObj;
@@ -7019,10 +7132,9 @@ function runAnalysis(overrideParams) {
         let displayLunarY = y, displayLunarM = m, displayLunarD = d, displayLunarLeap = false;
 
         // 1. 입력된 값을 양/음력 기준에 맞게 생성 (경도 보정 전)
-        // 자시(子時) 경계 보정: 01:00~01:29 → 자시로 처리 (전통 명리학 기준)
-        // 피노키님 01:04 → 戊子 자시에 해당
+        // 기본: 입력 시각 그대로 = lunar-javascript 표준(01:00~02:59 → 丑時). 옵션 earlyZi일 때만 01:00~01:29 → 0시로 당겨 子初 파 적용.
         var hrAdj = hr;
-        if (hr === 1 && mn <= 29) { hrAdj = 0; }
+        if (earlyZi && hr === 1 && mn <= 29) { hrAdj = 0; }
 
         if (isSolar) {
             solarObj = Solar.fromYmdHms(y, m, d, hrAdj, mn, 0);
@@ -7309,19 +7421,29 @@ function runAnalysis(overrideParams) {
                 sipTotalWeight += zhiW;
             }
 
-            // 지장간 분석 (표면 지지 가중치에 비례하여 잠재력 배분)
+            // 지장간 분석 (생지·왕지·고지 비율)
             const hsList = BRANCH_HIDDEN[tZhi];
             if (hsList && hsList.length > 0) {
                 let hl = [];
-                // 지장간 총합은 해당 지지 가중치(zhiW)의 약 30~40% 영향력
-                const baseHw = zhiW * 0.4; 
-                if (hsList.length === 2) {
-                    hl.push({ch: hsList[0], w: baseHw * 0.3}); // 여기
-                    hl.push({ch: hsList[1], w: baseHw * 0.7}); // 정기
+                const baseHw = zhiW * 0.4;
+                var ratios = typeof hiddenStemRatiosForBranch === 'function' ? hiddenStemRatiosForBranch(tZhi) : null;
+                if (ratios && hsList.length === 3) {
+                    hl.push({ch: hsList[0], w: baseHw * ratios[0]});
+                    hl.push({ch: hsList[1], w: baseHw * ratios[1]});
+                    hl.push({ch: hsList[2], w: baseHw * ratios[2]});
+                } else if (ratios && hsList.length === 2) {
+                    var s = ratios[0] + ratios[2];
+                    hl.push({ch: hsList[0], w: baseHw * (ratios[0] / s)});
+                    hl.push({ch: hsList[1], w: baseHw * (ratios[2] / s)});
+                } else if (hsList.length === 2) {
+                    hl.push({ch: hsList[0], w: baseHw * 0.3});
+                    hl.push({ch: hsList[1], w: baseHw * 0.7});
                 } else if (hsList.length === 3) {
-                    hl.push({ch: hsList[0], w: baseHw * 0.25}); // 여기
-                    hl.push({ch: hsList[1], w: baseHw * 0.25}); // 중기
-                    hl.push({ch: hsList[2], w: baseHw * 0.50}); // 정기
+                    hl.push({ch: hsList[0], w: baseHw * 0.25});
+                    hl.push({ch: hsList[1], w: baseHw * 0.25});
+                    hl.push({ch: hsList[2], w: baseHw * 0.50});
+                } else if (hsList.length === 1) {
+                    hl.push({ch: hsList[0], w: baseHw});
                 }
                 
                 hl.forEach(h => {
@@ -8022,7 +8144,7 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
                 var gz=mS.getLunar().getEightChar().getMonth();var g=gz[0];var j=gz[1];
                 var s=gs(g,j);var col=gc(s);var isThis=(i===0);
                 var wlDesc=WL[j]||j+'월의 기운이 이달을 이끕니다.';
-                var advm=s>=2?'이달은 용신 기운이 최고조에 달하는 달입니다. 이달 안에 중요한 결정을 실행하고, 새로운 사람을 만나고, 협상 테이블에 앉으십시오. 이 기운은 한 달이 지나면 사라집니다. 재물: 이달에 들어오는 기회는 잡으십시오. 직업: 원하는 포지션을 적극적으로 요청하거나 제안하시는 편이 좋습니다. 애정: 마음에 두었던 사람에게 먼저 다가가십시오. 이 달의 에너지는 행동하는 자의 편입니다.':s>=0?'안정적인 달입니다. 무리하게 새로운 것을 시작하기보다, 현재 진행 중인 일들을 꼼꼼히 관리하고 완성도를 높이는 데 집중하시는 편이 좋습니다. 작은 성실함이 이달의 가장 큰 전략입니다. 꾸준히 나아가면 됩니다.':'이달은 기신 기운이 강한 수비의 달입니다. 큰 투자, 중요한 계약, 새로운 사업 시작은 다음 달로 미루십시오. 이달은 몸을 낮추고 조용히 준비하는 것이 가장 현명합니다. 건강에 평소보다 더 신경 쓰고, 불필요한 지출과 감정 소비를 줄이십시오. 다음 좋은 달을 위해 에너지를 비축하는 달로 활용하시는 편이 좋습니다.';
+                var advm=s>=2?'이달 안에 건네지는 초대장·미팅 제안·계약 초안은 다음 달까지 붙잡혀 있지 않으면 사라집니다. 재물: 통장에 들어올 입금 알림이 뜬 날 저녁까지 이체 확인 문자를 남기십시오. 직업: 원하는 직함을 적은 한 줄 메일을 오늘 발송함에 넣으십시오. 애정: 마음에 둔 사람에게 “이번 주 목요일 저녁 한 시간만”이라고 구체적으로 적어 보내십시오. 행동하는 사람에게만 문이 열립니다.':s>=0?'새 프로젝트 이름을 짓기보다 책상 위 서류 더미를 세 더미에서 두 더미로 줄이는 달입니다. 재물: 나간 작은 지출 세 건만 적어도 이번 달 승부처가 보입니다. 직업: 보류 중인 결재 두 건에 추적 전화 한 통씩 넣으십시오. 애정: 짧아진 대화는 따로 잡지 말고, 같이 걷는 시간 십 분만 늘리십시오.':'이달은 서류에 도장이 찍히는 순간 현금이 묶이기 쉬운 달입니다. 투자·공동사업·급한 계약은 일부러 다음 달 첫 월요일로 미루십시오. 건강: 술자리를 반으로 줄이고 정오 전에 물 한 리터를 비우십시오. 지출: 장바구니에 넣은 물건 삼 일 후에도 기억나지 않으면 결제하지 마십시오.';
                 var d=document.createElement('div');
                 d.style.cssText='padding:11px;background:rgba(255,255,255,'+(isThis?'0.07':'0.02')+');border:1px solid '+(isThis?'var(--gold)':'rgba(255,255,255,0.06)')+';border-radius:8px;';
                 d.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;">'+
@@ -8213,7 +8335,7 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
                     ?`올해는 ${gTag}${jTag} 기운이 급한 변화보다 안정 운영에 힘을 싣는 해입니다. ${reactTxt} 큰 승부보다 기존 구조를 다듬고 새는 부분을 줄이는 쪽이 유리합니다.`
                     :`올해는 ${gTag}${jTag} 기운이 부담 구간을 건드릴 수 있는 해입니다. ${reactTxt} 공격적으로 키우기보다 현금흐름 방어와 계약 재검토를 먼저 하면 손실 가능성을 낮출 수 있습니다.`;
                 h3+='<div style="margin-bottom:14px;padding:16px;background:rgba(255,255,255,'+(isThis?'0.07':'0.03')+');border:1px solid '+(isThis?'var(--gold)':'rgba(255,255,255,0.07)')+';border-radius:12px;">';
-                h3+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;"><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:20px;font-weight:280;color:var(--gold);font-family:Noto Serif KR,serif;">'+g2+j2+'</span><span style="font-size:14px;color:#bbb;">'+yr+'년'+(isThis?' <span style="font-size:10px;background:var(--gold);color:#000;padding:1px 7px;border-radius:8px;font-weight:700;">올해</span>':'')+'</span></div><span style="font-size:12px;font-weight:700;color:'+col2+';">'+gb(s2)+'</span></div>';
+                h3+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;"><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:24px;font-weight:900;color:var(--gold);font-family:Noto Serif KR,serif;-webkit-text-stroke:0.35px;">'+g2+j2+'</span><span style="font-size:14px;color:#bbb;">'+yr+'년'+(isThis?' <span style="font-size:10px;background:var(--gold);color:#000;padding:1px 7px;border-radius:8px;font-weight:700;">올해</span>':'')+'</span></div><span style="font-size:12px;font-weight:700;color:'+col2+';">'+gb(s2)+'</span></div>';
                 var ynarr=yr+'년은 '+(GK[g2]||g2)+'('+KN[gOh]+') 기운과 '+(JK[j2]||j2)+'('+KN[jOh]+') 기운이 함께 작동하는 해입니다. '+(s2>=2?'부족했던 부분을 채워 주는 해라, 실행한 일이 결과로 이어질 가능성이 큽니다.':s2>=0?'급하게 키우기보다 차근차근 쌓을 때 더 잘 맞는 해입니다.':'충돌이 커질 수 있는 해라, 결정 속도를 늦추고 안전장치를 먼저 챙기는 편이 좋습니다.');
                 h3+='<div style="background:rgba(0,0,0,0.15);border-radius:6px;padding:10px;margin-bottom:10px;"><p style="font-size:12px;color:#ddd;line-height:1.75;margin:0;">'+ynarr+'</p></div>';
                 h3+='<div style="background:rgba(199,167,106,0.06);border-radius:6px;padding:10px;border-left:2px solid '+col2+';"><div style="font-size:10px;color:var(--text-dim);margin-bottom:4px;">이 해의 전략</div><p style="font-size:12.5px;color:#ccc;line-height:1.8;margin:0;">'+adv+'</p></div></div>';
