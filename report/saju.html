@@ -742,12 +742,14 @@
             display: flex;
             flex-direction: column;
             gap: 4px;
+            width: 100%;
         }
         .manse-row {
             display: grid;
             grid-template-columns: 60px repeat(4, 1fr);
             gap: 4px;
             align-items: center;
+            width: 100%;
         }
         .manse-cell {
             display: flex;
@@ -759,6 +761,8 @@
             border-radius: 8px;
             min-height: 48px;
             text-align: center;
+            min-width: 0;
+            box-sizing: border-box;
         }
         .manse-label {
             background: transparent;
@@ -781,26 +785,17 @@
             font-size: 11px;
             color: var(--text-dim);
             margin-bottom: 4px;
+            line-height: 1.45;
+            white-space: normal;
+            word-break: keep-all;
+            overflow-wrap: anywhere;
         }
         .m-hanja {
-            font-size: 60px;
-            font-weight: 900;
-            font-family: 'Noto Serif KR', 'Noto Sans KR', serif;
-            line-height: 1.05;
+            font-size: 34px;
+            font-weight: 200;
+            font-family: 'Noto Sans KR', sans-serif;
+            line-height: 1.1;
             margin-bottom: 2px;
-            letter-spacing: -0.028em;
-            -webkit-font-smoothing: antialiased;
-            paint-order: stroke fill;
-            -webkit-text-stroke: 1.05px currentColor;
-            text-shadow:
-                0.75px 0 0 currentColor,
-                -0.75px 0 0 currentColor,
-                0 0.75px 0 currentColor,
-                0 -0.75px 0 currentColor,
-                0.55px 0.55px 0 currentColor,
-                -0.55px 0.55px 0 currentColor,
-                0.55px -0.55px 0 currentColor,
-                -0.55px -0.55px 0 currentColor;
         }
         .m-hangul {
             font-size: 11px;
@@ -5023,8 +5018,8 @@ window.generateDeepReport = generateDeepReport;
     </script>
 
 <!-- SAJUX_CACHE_BUSTER_START -->
-<meta name="sajux-build" content="1778517886">
-<script>(function(){var v='1778517886';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
+<meta name="sajux-build" content="1778518327">
+<script>(function(){var v='1778518327';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
 <!-- SAJUX_CACHE_BUSTER_END -->
 </head>
 <body>
@@ -6447,15 +6442,13 @@ function runAnalysis(overrideParams) {
             bRow('12신살', p => `<div class="m-badge" style="font-size:11px;">${(allTwelveShinsal[p.n] || []).join('<br>') || '-'}</div>`),
             bRow('기타신살', p => `<div class="m-badge" style="font-size:11px;">${(allExtraShinsal[p.n] || []).join('<br>') || '-'}</div>`),
             bRow('공망', p => {
-                const gmStr = getGongmang(dayStem + ec.getDay()[1]);
+                const ilju = dayStem + ((pillars[1] && pillars[1].h && pillars[1].h[1]) ? pillars[1].h[1] : ((ec.getDay && ec.getDay()[1]) || ''));
+                const gmStr = getGongmang(ilju);
                 const KR2HJ2 = {'자':'子','축':'丑','인':'寅','묘':'卯','진':'辰','사':'巳','오':'午','미':'未','신':'申','유':'酉','술':'戌','해':'亥'};
-                const HK2_GM = {'子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해'};
                 const gmHanja = gmStr ? [...gmStr].map(c => KR2HJ2[c]||c) : [];
                 const isGm = gmHanja.includes(p.h[1]);
-                return '';  // 공망 뱃지 표시 안 함
-            }),
-            // 공망 행 비표시 (마스터 지시)
-            ''
+                return `<div class="m-badge" style="${isGm ? 'color:var(--fire);font-weight:700;' : ''}">${isGm ? '공망' : '-'}</div>`;
+            })
         ].join('');
         document.getElementById('manse-table').innerHTML = manseHtml;
 
