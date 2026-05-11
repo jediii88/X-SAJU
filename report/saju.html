@@ -4399,7 +4399,7 @@ function buildPart1_Story(data){
     html += '<div style="font-size:10px;color:var(--gold);font-weight:700;letter-spacing:2px;margin-bottom:10px;">① 타고난 8자 — 사주 원국</div>';
     if(pillars.length>=2){
         var isUnk = !pillars[0]||!pillars[0].h||!pillars[0].h[0];
-        html += '<div style="overflow-x:auto;margin-bottom:10px;"><table style="width:100%;border-collapse:collapse;">';
+        html += '<div style="overflow-x:auto;margin-bottom:10px;"><table style="width:100%;border-collapse:collapse;table-layout:fixed;">';
         html += '<tr style="border-bottom:1px solid rgba(199,167,106,0.25);">';
         html += '<td style="padding:6px 4px;color:#555;font-size:10px;width:50px;"></td>';
         ['시주','일주','월주','년주'].forEach(function(h){
@@ -4434,13 +4434,80 @@ function buildPart1_Story(data){
             html+='<td style="padding:4px 8px;text-align:center;"><span style="font-size:20px;font-weight:900;color:'+col+';">'+j+'</span><br><span style="font-size:9px;color:#555;">'+kr+'</span></td>';
         });
         html += '</tr>';
+        // 십성(지지) — view/index buildPart1_Story 와 동일 (만세력 본표와 맞춤)
+        html += '<tr style="border-bottom:1px solid rgba(255,255,255,0.04);">';
+        html += '<td style="padding:4px;color:#555;font-size:10px;">십성</td>';
+        pillars.forEach(function(p,i){
+            var sp=(isUnk&&i===0)?'-':(typeof getSipseong==='function'?getSipseong(ds,p.h[1]):'');
+            html+='<td style="padding:4px 8px;text-align:center;"><span style="font-size:10px;background:rgba(199,167,106,0.08);padding:1px 6px;border-radius:8px;color:#ccc;">'+sp+'</span></td>';
+        });
+        html += '</tr>';
+        // 지장간
+        html += '<tr style="border-bottom:1px solid rgba(255,255,255,0.04);">';
+        html += '<td style="padding:4px;color:#555;font-size:10px;">지장간</td>';
+        pillars.forEach(function(p,i){
+            if(isUnk&&i===0){html+='<td style="text-align:center;color:#444;">-</td>';return;}
+            var hid=(typeof getHidden==='function'?getHidden(p.h[1],ds):'')||'-';
+            html+='<td style="padding:4px 8px;text-align:center;font-size:10px;color:#888;line-height:1.35;">'+String(hid).replace(/<br\s*\/?>/gi,' ')+'</td>';
+        });
+        html += '</tr>';
         // 12운성
-        html += '<tr>';
+        html += '<tr style="border-bottom:1px solid rgba(255,255,255,0.04);">';
         html += '<td style="padding:4px;color:#555;font-size:10px;">12운성</td>';
         pillars.forEach(function(p,i){
             if(isUnk&&i===0){html+='<td style="text-align:center;color:#444;">-</td>';return;}
             var u=typeof getUnsung==='function'?getUnsung(ds,p.h[1])||'-':'-';
             html+='<td style="padding:4px 8px;text-align:center;font-size:10px;color:#888;">'+u+'</td>';
+        });
+        html += '</tr>';
+        var at12=data.allTwelveShinsal||{};
+        var atEx=data.allExtraShinsal||{};
+        function formatShinsalCell(arr){
+            var norm=(Array.isArray(arr)?arr:[arr])
+                .filter(Boolean)
+                .map(function(v){return String(v);})
+                .join(' · ')
+                .split(/\s*[·,\/\|]\s*/g)
+                .map(function(t){return t.trim();})
+                .filter(Boolean);
+            if(!norm.length) return '-';
+            var lines=[];
+            for(var i=0;i<norm.length;i+=2){
+                lines.push(norm.slice(i,i+2).join(' · '));
+            }
+            return lines.join('<br>');
+        }
+        // 12신살
+        html += '<tr style="border-bottom:1px solid rgba(255,255,255,0.04);">';
+        html += '<td style="padding:4px;color:#555;font-size:10px;">12신살</td>';
+        pillars.forEach(function(p,i){
+            if(isUnk&&i===0){html+='<td style="text-align:center;color:#444;">-</td>';return;}
+            var arr=at12[p.n]||[];
+            var txt=formatShinsalCell(arr);
+            html+='<td style="padding:3px 4px;text-align:center;font-size:7.6px;color:#7f7f7f;line-height:1.24;white-space:normal;word-break:keep-all;overflow-wrap:anywhere;letter-spacing:-0.12px;">'+txt+'</td>';
+        });
+        html += '</tr>';
+        // 기타신살
+        html += '<tr style="border-bottom:1px solid rgba(255,255,255,0.04);">';
+        html += '<td style="padding:4px;color:#555;font-size:10px;">기타신살</td>';
+        pillars.forEach(function(p,i){
+            if(isUnk&&i===0){html+='<td style="text-align:center;color:#444;">-</td>';return;}
+            var arr=atEx[p.n]||[];
+            var txt=formatShinsalCell(arr);
+            html+='<td style="padding:3px 4px;text-align:center;font-size:7.6px;color:#7f7f7f;line-height:1.24;white-space:normal;word-break:keep-all;overflow-wrap:anywhere;letter-spacing:-0.12px;">'+txt+'</td>';
+        });
+        html += '</tr>';
+        // 공망
+        var KR2HJ2_r={'자':'子','축':'丑','인':'寅','묘':'卯','진':'辰','사':'巳','오':'午','미':'未','신':'申','유':'酉','술':'戌','해':'亥'};
+        var gmStrR=typeof getGongmang==='function'?getGongmang(ds+db):'';
+        var gmHanjaR=gmStrR?[...gmStrR].map(function(c){return KR2HJ2_r[c]||c;}):[];
+        html += '<tr>';
+        html += '<td style="padding:4px;color:#555;font-size:10px;">공망</td>';
+        pillars.forEach(function(p,i){
+            if(isUnk&&i===0){html+='<td style="text-align:center;color:#444;">-</td>';return;}
+            var br=(p.h&&p.h[1])||'';
+            var isGm=gmHanjaR.indexOf(br)!==-1;
+            html+='<td style="padding:4px 8px;text-align:center;font-size:10px;">'+(isGm?'<span style="color:#e74c3c;font-weight:700;">공망</span>':'<span style="color:#555;">-</span>')+'</td>';
         });
         html += '</tr>';
         html += '</table></div>';
@@ -5018,8 +5085,8 @@ window.generateDeepReport = generateDeepReport;
     </script>
 
 <!-- SAJUX_CACHE_BUSTER_START -->
-<meta name="sajux-build" content="1778518586">
-<script>(function(){var v='1778518586';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
+<meta name="sajux-build" content="1778518966">
+<script>(function(){var v='1778518966';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
 <!-- SAJUX_CACHE_BUSTER_END -->
 </head>
 <body>
@@ -7349,7 +7416,9 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
                 if(!gmStr) return [];
                 const KR2HJ = {'자':'子','축':'丑','인':'寅','묘':'卯','진':'辰','사':'巳','오':'午','미':'未','신':'申','유':'酉','술':'戌','해':'亥'};
                 return [...gmStr].map(c => KR2HJ[c] || c);
-            })()
+            })(),
+            allTwelveShinsal: allTwelveShinsal,
+            allExtraShinsal: allExtraShinsal
         };
 
         // ─── 대운 상세 풀이 ───
