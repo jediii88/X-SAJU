@@ -2,7 +2,6 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="sajux-build" content="1778570426">
     <script>
     // ─── SAJUX: URL 파라미터 자동 로드 (head 최상단) ───
     var globalSajuData = null;
@@ -4967,7 +4966,7 @@ function buildChapter9_Remedy(data) {
 function buildCoverPage(data) {
     const name = data.name || '사주 분석 대상자';
     const iljuKey = (data.dayStem||'') + (data.dayBranch||'');
-    const birthStr = data.birthStr || (data.birthDate ? String(data.birthDate).replace(/-/g, '.') : '');
+    const birthStr = data.birthStr || '';
     const dbEntry = window.SAJU_DB?.ILJU?.[iljuKey] || {};
     const iljuTitle = dbEntry.title || iljuKey;
     const ILJU_ANIMAL = {'甲子':'쥐(자)','乙丑':'소(축)','丙寅':'호랑이(인)','丁卯':'토끼(묘)','戊辰':'용(진)','己巳':'뱀(사)','庚午':'말(오)','辛未':'양(미)','壬申':'원숭이(신)','癸酉':'닭(유)','甲戌':'개(술)','乙亥':'돼지(해)','丙子':'쥐(자)','丁丑':'소(축)','戊寅':'호랑이(인)','己卯':'토끼(묘)','庚辰':'용(진)','辛巳':'뱀(사)','壬午':'말(오)','癸未':'양(미)','甲申':'원숭이(신)','乙酉':'닭(유)','丙戌':'개(술)','丁亥':'돼지(해)','戊子':'쥐(자)','己丑':'소(축)','庚寅':'호랑이(인)','辛卯':'토끼(묘)','壬辰':'용(진)','癸巳':'뱀(사)','甲午':'말(오)','乙未':'양(미)','丙申':'원숭이(신)','丁酉':'닭(유)','戊戌':'개(술)','己亥':'돼지(해)','庚子':'쥐(자)','辛丑':'소(축)','壬寅':'호랑이(인)','癸卯':'토끼(묘)','甲辰':'용(진)','乙巳':'뱀(사)','丙午':'말(오)','丁未':'양(미)','戊申':'원숭이(신)','己酉':'닭(유)','庚戌':'개(술)','辛亥':'돼지(해)','壬子':'쥐(자)','癸丑':'소(축)','甲寅':'호랑이(인)','乙卯':'토끼(묘)','丙辰':'용(진)','丁巳':'뱀(사)','戊午':'말(오)','己未':'양(미)','庚申':'원숭이(신)','辛酉':'닭(유)','壬戌':'개(술)','癸亥':'돼지(해)'};
@@ -5416,7 +5415,6 @@ function updateTierUI() {
             <div class="avatar-desc-wrap" style="display:flex; flex-direction:column; align-items:center; margin-bottom:12px;">
                 <div id="av-desc-hanja" style="font-family:'Noto Sans KR', sans-serif; font-weight:300; font-size:26px; line-height:1; margin-bottom:4px; letter-spacing:4px;">병인</div>
                 <div id="av-desc-hangul" style="font-size:14px; color:var(--gold); font-weight:400;">붉은 호랑이</div>
-                <div id="av-birth-line" class="hero-meta" style="margin-top:8px;font-size:13px;color:var(--text-soft);text-align:center;line-height:1.65;max-width:320px;"></div>
             </div>
             <div class="avatar-badges" id="av-badges">
                 <!-- 태그 동적 주입 -->
@@ -6282,26 +6280,6 @@ function buildFortuneCards(targetId, rows) {
     document.getElementById(targetId).innerHTML = html;
 }
 
-/** 경도 보정 등: `new Date(y,m-1,d)` 없이 Solar만으로 분 가감 (시주·자정 경계 오류 방지) */
-function solarAddWallMinutes(solar, deltaMin) {
-    var y = solar.getYear(), mo = solar.getMonth(), d = solar.getDay();
-    var h = solar.getHour(), mi = solar.getMinute(), se = solar.getSecond();
-    mi += deltaMin;
-    while (mi < 0) { mi += 60; h--; }
-    while (mi > 59) { mi -= 60; h++; }
-    while (h < 0) {
-        var prev = Solar.fromYmdHms(y, mo, d, 12, 0, 0).next(-1);
-        y = prev.getYear(); mo = prev.getMonth(); d = prev.getDay();
-        h += 24;
-    }
-    while (h > 23) {
-        var nxt = Solar.fromYmdHms(y, mo, d, 12, 0, 0).next(1);
-        y = nxt.getYear(); mo = nxt.getMonth(); d = nxt.getDay();
-        h -= 24;
-    }
-    return Solar.fromYmdHms(y, mo, d, h, mi, se);
-}
-
 function runAnalysis(overrideParams) {
     var _op = overrideParams || window.__SAJUX_PARAMS__ || null;
     const _d = (_op && _op.birthDate) || (di && di.value) || '';
@@ -6309,8 +6287,6 @@ function runAnalysis(overrideParams) {
     if (dVal.length < 8) return alert('생년월일 8자리를 입력하세요.');
 
     showLoading('만세력을 정밀 계산하는 중입니다', () => {
-        var __rcClear = document.getElementById('report-container');
-        if (__rcClear) __rcClear.innerHTML = '';
         const name = (_op && _op.name) || (ni && ni.value) || '고객';
         const _t = (_op && _op.birthTime) || (ti && ti.value) || '0000';
         let tVal = _t.replace(/\D/g, '') || '0000';
@@ -6359,10 +6335,11 @@ function runAnalysis(overrideParams) {
             }
         }
 
-        const adjLongitude = (document.getElementById('adj-l') ? document.getElementById('adj-l').checked : true) && !isUnknown;
-        // 2. 경도 보정 (-32분): Solar만 사용 (Date/타임존으로 시·일주가 틀어지는 문제 방지)
-        if (adjLongitude) {
-            solarObj = solarAddWallMinutes(solarObj, -32);
+        // 2. 경도 보정 (-32분)은 무조건 '양력 시간' 객체를 기준으로 수행
+        if ((document.getElementById('adj-l') ? document.getElementById('adj-l').checked : true) && !isUnknown) {
+            const dt = new Date(solarObj.getYear(), solarObj.getMonth() - 1, solarObj.getDay(), solarObj.getHour(), solarObj.getMinute());
+            dt.setMinutes(dt.getMinutes() - 32);
+            solarObj = Solar.fromYmdHms(dt.getFullYear(), dt.getMonth() + 1, dt.getDate(), dt.getHours(), dt.getMinutes(), 0);
             lunarObj = solarObj.getLunar();
         }
 
@@ -6429,11 +6406,9 @@ function runAnalysis(overrideParams) {
             `;
         }
 
-        const birthLineEl = document.getElementById('av-birth-line');
-        if (birthLineEl) {
-            const pad2 = function(n) { return String(Math.max(0, parseInt(n, 10) || 0)).padStart(2, '0'); };
-            birthLineEl.textContent = (isSolar ? '양력' : '음력') + ' ' + dVal.slice(0, 4) + '.' + dVal.slice(4, 6) + '.' + dVal.slice(6, 8) + ' · ' + pad2(hr) + ':' + pad2(mn) + (isUnknown ? ' · 시간 미입력' : '');
-        }
+        // 기존 hero-summary 숨기기 (점신 아바타로 대체됨)
+        const hm = document.getElementById('hero-meta');
+        if(hm) hm.parentElement.style.display = 'none';
 
         const header = `
             <div class="row">
@@ -7372,14 +7347,9 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
                 var _GA={'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
                 return {name: r.name||'', age: r.age||0, oh: _GA[r.gz&&r.gz[0]]||'earth'};
             }),
-            birthDate: (isSolar && adjLongitude)
-                ? (solar.getYear()+'-'+String(solar.getMonth()).padStart(2,'0')+'-'+String(solar.getDay()).padStart(2,'0'))
-                : (y+'-'+String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0')),
-            birthStr: (function(){ var pad=function(n){return String(Math.max(0,parseInt(n,10)||0)).padStart(2,'0');}; return (isSolar?'양력':'음력')+' '+dVal.slice(0,4)+'.'+dVal.slice(4,6)+'.'+dVal.slice(6,8)+' · '+pad(hr)+':'+pad(mn)+(isUnknown?' · 시간 미입력':''); })(),
-            birthSolarLabel: '양력 ' + sYear + '.' + String(sMon).padStart(2,'0') + '.' + String(sDay).padStart(2,'0'),
-            birthLunarLabel: '음력 ' + (lunar.getYear ? lunar.getYear() : y) + '.' + String(lMon).padStart(2,'0') + '.' + String(lDay).padStart(2,'0') + ' ' + leapStr,
+            birthDate: y+'-'+String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0'),
             interactions: buildRelationLines(pillars).filter(r => r.type !== '없음'),
-            birthYear: (isSolar && adjLongitude) ? solar.getYear() : y,
+            birthYear: y,
             johu: (window.JOHU_DB && window.JOHU_DB[dayStem] && window.JOHU_DB[dayStem][pillars[2].h[1]]) || '',
             geokguk: (typeof window.getGeokGuk === 'function') ? window.getGeokGuk(pillars, dayStem, ec) : null,
             gongmang: (function(){
@@ -7487,11 +7457,7 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
 
         go(2);
         window.scrollTo(0,0);
-        try { injectSectionInterpretations(globalSajuData); } catch(e) { console.error('injectSectionInterpretations:', e); }
-        ['sec-manse','sec-relation','sec-shinsal','sec-wuxing','sec-yonghee','sec-fortune','sec-daeun-graph','sec-lifecycle','sec-category','sec-report'].forEach(function(id) {
-            var el = document.getElementById(id);
-            if (el) el.style.display = 'block';
-        });
+        try { generateDeepReport(globalSajuData); } catch(e) { console.error(e); }
         const toc = document.getElementById('floating-toc');
         if(toc) toc.style.display = 'block';
     });
