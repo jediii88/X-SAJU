@@ -6310,7 +6310,6 @@ function runAnalysis(overrideParams) {
         // 자시(子時) 경계 보정: 01:00~01:29 → 자시로 처리 (전통 명리학 기준)
         // 피노키님 01:04 → 戊子 자시에 해당
         var hrAdj = hr;
-        if (hr === 1 && mn <= 29) { hrAdj = 0; }
 
         if (isSolar) {
             solarObj = Solar.fromYmdHms(y, m, d, hrAdj, mn, 0);
