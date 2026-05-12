@@ -7076,10 +7076,21 @@ function runAnalysis(overrideParams) {
             }
         }
 
+        const adjLongitude = (document.getElementById('adj-l') ? document.getElementById('adj-l').checked : true) && !isUnknown;
         // 2. 경도 보정 (-32분): Solar만 사용 (Date/타임존으로 시·일주가 틀어지는 문제 방지)
-        if ((document.getElementById('adj-l') ? document.getElementById('adj-l').checked : true) && !isUnknown) {
+        if (adjLongitude) {
             solarObj = solarAddWallMinutes(solarObj, -32);
             lunarObj = solarObj.getLunar();
+        }
+        // 양력 입력: 배지·birthDate 표시는 보정 후 시각과 동일하게(일주·시주와 같은 날의 양·음력, 구 Date()-32와 동일)
+        if (isSolar && adjLongitude) {
+            displaySolarY = solarObj.getYear();
+            displaySolarM = solarObj.getMonth();
+            displaySolarD = solarObj.getDay();
+            displayLunarY = lunarObj.getYear();
+            displayLunarM = Math.abs(lunarObj.getMonth());
+            displayLunarD = lunarObj.getDay();
+            displayLunarLeap = lunarObj.getMonth() < 0;
         }
 
         const lunar = lunarObj;
