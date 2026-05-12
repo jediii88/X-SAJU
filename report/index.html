@@ -2,6 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
+    <meta name="sajux-build" content="1778570426">
     <script>
     // ─── SAJUX: URL 파라미터 자동 로드 (head 최상단) ───
     var globalSajuData = null;
@@ -7375,6 +7376,8 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
                 ? (solar.getYear()+'-'+String(solar.getMonth()).padStart(2,'0')+'-'+String(solar.getDay()).padStart(2,'0'))
                 : (y+'-'+String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0')),
             birthStr: (function(){ var pad=function(n){return String(Math.max(0,parseInt(n,10)||0)).padStart(2,'0');}; return (isSolar?'양력':'음력')+' '+dVal.slice(0,4)+'.'+dVal.slice(4,6)+'.'+dVal.slice(6,8)+' · '+pad(hr)+':'+pad(mn)+(isUnknown?' · 시간 미입력':''); })(),
+            birthSolarLabel: '양력 ' + sYear + '.' + String(sMon).padStart(2,'0') + '.' + String(sDay).padStart(2,'0'),
+            birthLunarLabel: '음력 ' + (lunar.getYear ? lunar.getYear() : y) + '.' + String(lMon).padStart(2,'0') + '.' + String(lDay).padStart(2,'0') + ' ' + leapStr,
             interactions: buildRelationLines(pillars).filter(r => r.type !== '없음'),
             birthYear: (isSolar && adjLongitude) ? solar.getYear() : y,
             johu: (window.JOHU_DB && window.JOHU_DB[dayStem] && window.JOHU_DB[dayStem][pillars[2].h[1]]) || '',
