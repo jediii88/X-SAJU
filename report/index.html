@@ -6355,8 +6355,9 @@ function runAnalysis(overrideParams) {
             }
         }
 
+        const adjLongitude = (document.getElementById('adj-l') ? document.getElementById('adj-l').checked : true) && !isUnknown;
         // 2. 경도 보정 (-32분): Solar만 사용 (Date/타임존으로 시·일주가 틀어지는 문제 방지)
-        if ((document.getElementById('adj-l') ? document.getElementById('adj-l').checked : true) && !isUnknown) {
+        if (adjLongitude) {
             solarObj = solarAddWallMinutes(solarObj, -32);
             lunarObj = solarObj.getLunar();
         }
@@ -7365,9 +7366,11 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
                 var _GA={'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
                 return {name: r.name||'', age: r.age||0, oh: _GA[r.gz&&r.gz[0]]||'earth'};
             }),
-            birthDate: y+'-'+String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0'),
+            birthDate: (isSolar && adjLongitude)
+                ? (solar.getYear()+'-'+String(solar.getMonth()).padStart(2,'0')+'-'+String(solar.getDay()).padStart(2,'0'))
+                : (y+'-'+String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0')),
             interactions: buildRelationLines(pillars).filter(r => r.type !== '없음'),
-            birthYear: y,
+            birthYear: (isSolar && adjLongitude) ? solar.getYear() : y,
             johu: (window.JOHU_DB && window.JOHU_DB[dayStem] && window.JOHU_DB[dayStem][pillars[2].h[1]]) || '',
             geokguk: (typeof window.getGeokGuk === 'function') ? window.getGeokGuk(pillars, dayStem, ec) : null,
             gongmang: (function(){
