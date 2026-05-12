@@ -5806,7 +5806,7 @@ window.generateDeepReport = generateDeepReport;
     </script>
 
 <!-- SAJUX_CACHE_BUSTER_START -->
-<meta name="sajux-build" content="1778566000">
+<meta name="sajux-build" content="1778567500">
 <script>(function(){var v='1778257589';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
 <!-- SAJUX_CACHE_BUSTER_END -->
 </head>
@@ -6133,6 +6133,7 @@ function updateTierUI() {
             <div class="avatar-desc-wrap" style="display:flex; flex-direction:column; align-items:center; margin-bottom:12px;">
                 <div id="av-desc-hanja" style="font-family:'Noto Sans KR', sans-serif; font-weight:200; font-size:28px; line-height:1; margin-bottom:4px; letter-spacing:4px;">병인</div>
                 <div id="av-desc-hangul" style="font-size:14px; color:var(--gold); font-weight:400;">붉은 호랑이</div>
+                <div id="av-birth-line" class="hero-meta" style="margin-top:8px;font-size:13px;color:var(--text-soft);text-align:center;line-height:1.65;max-width:320px;"></div>
             </div>
             <div class="avatar-badges" id="av-badges">
                 <!-- 태그 동적 주입 -->
@@ -7005,6 +7006,8 @@ function runAnalysis(overrideParams) {
     if (dVal.length < 8) return alert('생년월일 8자리를 입력하세요.');
 
     showLoading('만세력을 정밀 계산하는 중입니다', () => {
+        var __rcClear = document.getElementById('report-container');
+        if (__rcClear) __rcClear.innerHTML = '';
         const name = (_op && _op.name) || (ni && ni.value) || '고객';
         const _t = (_op && _op.birthTime) || (ti && ti.value) || '0000';
         let tVal = _t.replace(/\D/g, '') || '0000';
@@ -7160,9 +7163,11 @@ function runAnalysis(overrideParams) {
             `;
         }
 
-        // 기존 hero-summary 숨기기 (점신 아바타로 대체됨)
-        const hm = document.getElementById('hero-meta');
-        if(hm) hm.parentElement.style.display = 'none';
+        const birthLineEl = document.getElementById('av-birth-line');
+        if (birthLineEl) {
+            const pad2 = function(n) { return String(Math.max(0, parseInt(n, 10) || 0)).padStart(2, '0'); };
+            birthLineEl.textContent = (isSolar ? '양력' : '음력') + ' ' + dVal.slice(0, 4) + '.' + dVal.slice(4, 6) + '.' + dVal.slice(6, 8) + ' · ' + pad2(hr) + ':' + pad2(mn) + (isUnknown ? ' · 시간 미입력' : '');
+        }
 
         const header = `
             <div class="row">
@@ -8304,7 +8309,11 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
 
         go(2);
         window.scrollTo(0,0);
-        try { generateDeepReport(globalSajuData); } catch(e) { console.error(e); }
+        try { injectSectionInterpretations(globalSajuData); } catch(e) { console.error('injectSectionInterpretations:', e); }
+        ['sec-manse','sec-relation','sec-shinsal','sec-wuxing','sec-yonghee','sec-fortune','sec-daeun-graph','sec-lifecycle','sec-category','sec-report'].forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) el.style.display = 'block';
+        });
         const toc = document.getElementById('floating-toc');
         function updateFloatingToc(){
             if(!toc) return;
