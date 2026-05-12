@@ -5805,7 +5805,7 @@ window.generateDeepReport = generateDeepReport;
     </script>
 
 <!-- SAJUX_CACHE_BUSTER_START -->
-<meta name="sajux-build" content="1778565200">
+<meta name="sajux-build" content="1778566000">
 <script>(function(){var v='1778257589';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
 <!-- SAJUX_CACHE_BUSTER_END -->
 </head>
@@ -7063,6 +7063,7 @@ function runAnalysis(overrideParams) {
                 const klcSolar = klcInst.getSolarCalendar();
                 solarObj = Solar.fromYmdHms(klcSolar.year, klcSolar.month, klcSolar.day, hrAdj, mn, 0);
                 lunarObj = solarObj.getLunar();
+                // 배지: 입력 음력 + KLC 양력(변환 기준일). 팔자는 경도 보정(-32분) 후 시각으로 산출.
                 displaySolarY = klcSolar.year; displaySolarM = klcSolar.month; displaySolarD = klcSolar.day;
                 displayLunarY = y; displayLunarM = m; displayLunarD = d; displayLunarLeap = !!isLeap;
             } else {
@@ -7081,8 +7082,8 @@ function runAnalysis(overrideParams) {
             solarObj = solarAddWallMinutes(solarObj, -32);
             lunarObj = solarObj.getLunar();
         }
-        // 경도 보정 사용 시: 배지·birthDate = 팔자와 동일 시각의 양·음력(음력 입력도 KLC 표시일과 다를 수 있음 — 연산 일치 우선)
-        if (adjLongitude) {
+        // 양력 입력일 때만: 배지·birthDate를 경도 보정 후 시각과 맞춤(일주·시주와 같은 날). 음력 입력은 입력·KLC 표시 유지.
+        if (isSolar && adjLongitude) {
             displaySolarY = solarObj.getYear();
             displaySolarM = solarObj.getMonth();
             displaySolarD = solarObj.getDay();
