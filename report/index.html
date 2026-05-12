@@ -4966,7 +4966,7 @@ function buildChapter9_Remedy(data) {
 function buildCoverPage(data) {
     const name = data.name || '사주 분석 대상자';
     const iljuKey = (data.dayStem||'') + (data.dayBranch||'');
-    const birthStr = data.birthStr || '';
+    const birthStr = data.birthStr || (data.birthDate ? String(data.birthDate).replace(/-/g, '.') : '');
     const dbEntry = window.SAJU_DB?.ILJU?.[iljuKey] || {};
     const iljuTitle = dbEntry.title || iljuKey;
     const ILJU_ANIMAL = {'甲子':'쥐(자)','乙丑':'소(축)','丙寅':'호랑이(인)','丁卯':'토끼(묘)','戊辰':'용(진)','己巳':'뱀(사)','庚午':'말(오)','辛未':'양(미)','壬申':'원숭이(신)','癸酉':'닭(유)','甲戌':'개(술)','乙亥':'돼지(해)','丙子':'쥐(자)','丁丑':'소(축)','戊寅':'호랑이(인)','己卯':'토끼(묘)','庚辰':'용(진)','辛巳':'뱀(사)','壬午':'말(오)','癸未':'양(미)','甲申':'원숭이(신)','乙酉':'닭(유)','丙戌':'개(술)','丁亥':'돼지(해)','戊子':'쥐(자)','己丑':'소(축)','庚寅':'호랑이(인)','辛卯':'토끼(묘)','壬辰':'용(진)','癸巳':'뱀(사)','甲午':'말(오)','乙未':'양(미)','丙申':'원숭이(신)','丁酉':'닭(유)','戊戌':'개(술)','己亥':'돼지(해)','庚子':'쥐(자)','辛丑':'소(축)','壬寅':'호랑이(인)','癸卯':'토끼(묘)','甲辰':'용(진)','乙巳':'뱀(사)','丙午':'말(오)','丁未':'양(미)','戊申':'원숭이(신)','己酉':'닭(유)','庚戌':'개(술)','辛亥':'돼지(해)','壬子':'쥐(자)','癸丑':'소(축)','甲寅':'호랑이(인)','乙卯':'토끼(묘)','丙辰':'용(진)','丁巳':'뱀(사)','戊午':'말(오)','己未':'양(미)','庚申':'원숭이(신)','辛酉':'닭(유)','壬戌':'개(술)','癸亥':'돼지(해)'};
@@ -7374,6 +7374,7 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
             birthDate: (isSolar && adjLongitude)
                 ? (solar.getYear()+'-'+String(solar.getMonth()).padStart(2,'0')+'-'+String(solar.getDay()).padStart(2,'0'))
                 : (y+'-'+String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0')),
+            birthStr: (function(){ var pad=function(n){return String(Math.max(0,parseInt(n,10)||0)).padStart(2,'0');}; return (isSolar?'양력':'음력')+' '+dVal.slice(0,4)+'.'+dVal.slice(4,6)+'.'+dVal.slice(6,8)+' · '+pad(hr)+':'+pad(mn)+(isUnknown?' · 시간 미입력':''); })(),
             interactions: buildRelationLines(pillars).filter(r => r.type !== '없음'),
             birthYear: (isSolar && adjLongitude) ? solar.getYear() : y,
             johu: (window.JOHU_DB && window.JOHU_DB[dayStem] && window.JOHU_DB[dayStem][pillars[2].h[1]]) || '',
