@@ -6978,6 +6978,26 @@ function buildFortuneCards(targetId, rows) {
     document.getElementById(targetId).innerHTML = html;
 }
 
+/** 경도 보정 등: `new Date(y,m-1,d)` 없이 Solar만으로 분 가감 (시주·자정 경계 오류 방지) */
+function solarAddWallMinutes(solar, deltaMin) {
+    var y = solar.getYear(), mo = solar.getMonth(), d = solar.getDay();
+    var h = solar.getHour(), mi = solar.getMinute(), se = solar.getSecond();
+    mi += deltaMin;
+    while (mi < 0) { mi += 60; h--; }
+    while (mi > 59) { mi -= 60; h++; }
+    while (h < 0) {
+        var prev = Solar.fromYmdHms(y, mo, d, 12, 0, 0).next(-1);
+        y = prev.getYear(); mo = prev.getMonth(); d = prev.getDay();
+        h += 24;
+    }
+    while (h > 23) {
+        var nxt = Solar.fromYmdHms(y, mo, d, 12, 0, 0).next(1);
+        y = nxt.getYear(); mo = nxt.getMonth(); d = nxt.getDay();
+        h -= 24;
+    }
+    return Solar.fromYmdHms(y, mo, d, h, mi, se);
+}
+
 function runAnalysis(overrideParams) {
     var _op = overrideParams || window.__SAJUX_PARAMS__ || null;
     const _d = (_op && _op.birthDate) || (di && di.value) || '';
@@ -7057,16 +7077,9 @@ function runAnalysis(overrideParams) {
             }
         }
 
-        // 2. 경도 보정 (-32분)은 무조건 '양력 시간' 객체를 기준으로 수행
+        // 2. 경도 보정 (-32분): Solar만 사용 (Date/타임존으로 시·일주가 틀어지는 문제 방지)
         if ((document.getElementById('adj-l') ? document.getElementById('adj-l').checked : true) && !isUnknown) {
-            const baseY = solarObj.getYear(), baseM = solarObj.getMonth(), baseD = solarObj.getDay();
-            const dt = new Date(baseY, baseM - 1, baseD, solarObj.getHour(), solarObj.getMinute());
-            dt.setMinutes(dt.getMinutes() - 32);
-            // 경도 보정으로 달력이 전날로 넘어가면 UX상 날짜/만세력이 어긋나 보이므로, 해당 케이스는 날짜를 유지한다.
-            if (dt.getFullYear() !== baseY || (dt.getMonth() + 1) !== baseM || dt.getDate() !== baseD) {
-                dt.setFullYear(baseY, baseM - 1, baseD);
-            }
-            solarObj = Solar.fromYmdHms(dt.getFullYear(), dt.getMonth() + 1, dt.getDate(), dt.getHours(), dt.getMinutes(), 0);
+            solarObj = solarAddWallMinutes(solarObj, -32);
             lunarObj = solarObj.getLunar();
         }
 
