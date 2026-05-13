@@ -57,7 +57,7 @@
       // 자동실행은 window.load IIFE에서 처리 (하단 스크립트 참조)
     })();
     </script>
-    <meta name="version" content="1778658907">
+    <meta name="version" content="1778659635">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -967,13 +967,13 @@
 
         .bar-group { display: flex; flex-direction: column; gap: 16px; }
 
-        .bar-item { display: grid; grid-template-columns: 70px 1fr 46px; gap: 12px; align-items: center; }
+        .bar-item { display: grid; grid-template-columns: 84px 1fr 52px; gap: 12px; align-items: center; }
         .bar-label { font-size: 14px; color: var(--text-soft); font-weight: 400; }
         .bar-label-wrap { display: flex; flex-direction: column; min-width: 52px; }
         .bar-label-main { font-size: 13px; color: var(--text); font-weight: 600; line-height: 1.2; }
         .bar-label-sub { font-size: 10px; color: var(--gold); font-weight: 400; line-height: 1.3; opacity: 0.85; }
-        .bar-track { height: 4px; background: rgba(255,255,255,0.08); position: relative; border-radius: 2px; }
-        .bar-fill { height: 4px; position: absolute; left: 0; top: 0; border-radius: 2px; }
+        .bar-track { height: 8px; background: rgba(255,255,255,0.08); position: relative; border-radius: 999px; overflow: hidden; }
+        .bar-fill { height: 8px; position: absolute; left: 0; top: 0; border-radius: 999px; box-shadow: 0 0 10px rgba(199,167,106,0.18); }
         .bar-value { text-align: right; font-size: 13px; color: var(--text); font-weight: 400; }
 
         .wood { color: var(--wood); } .fire { color: var(--fire); } .earth { color: var(--earth); } .metal { color: var(--metal); } .water { color: var(--water); }
@@ -1200,9 +1200,9 @@
             box-sizing: border-box;
         }
         .m-badge {
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 430;
-            color: rgba(205,211,224,0.82);
+            color: rgba(193,198,208,0.72);
             margin-bottom: 4px;
             line-height: 1.58;
             white-space: normal;
@@ -1243,10 +1243,10 @@
 
 
         .bar-group { display: flex; flex-direction: column; gap: 16px; }
-        .bar-item { display: grid; grid-template-columns: 70px 1fr 46px; gap: 12px; align-items: center; }
+        .bar-item { display: grid; grid-template-columns: 84px 1fr 52px; gap: 12px; align-items: center; }
         .bar-label { font-size: 14px; color: var(--text-soft); font-weight: 400; }
-        .bar-track { height: 4px; background: rgba(255,255,255,0.08); position: relative; border-radius: 2px; }
-        .bar-fill { height: 4px; position: absolute; left: 0; top: 0; border-radius: 2px; }
+        .bar-track { height: 8px; background: rgba(255,255,255,0.08); position: relative; border-radius: 999px; overflow: hidden; }
+        .bar-fill { height: 8px; position: absolute; left: 0; top: 0; border-radius: 999px; box-shadow: 0 0 10px rgba(199,167,106,0.18); }
         .bar-value { text-align: right; font-size: 13px; color: var(--text); font-weight: 400; }
 
         
@@ -1553,14 +1553,14 @@
         .cat-icon { font-size:22px; }
         .cat-title { font-size:17px; font-weight:700; color:var(--gold); font-family:Noto Serif KR,serif; }
         .cat-body { display:flex; flex-direction:column; gap:14px; }
-        .cat-text { font-size:14px; line-height:1.85; color:#ddd; word-break:keep-all; margin:0; }
+        .cat-text { font-size:14px; line-height:2.05; color:#ddd; word-break:keep-all; margin:0; }
         .cat-highlight { background:rgba(199,167,106,0.06); border-left:3px solid var(--gold); border-radius:0 8px 8px 0; padding:14px 16px; font-size:13.5px; line-height:1.8; color:#ccc; }
-        .cat-advice { background:rgba(255,255,255,0.04); border-radius:8px; padding:12px 14px; font-size:13px; line-height:1.7; color:#bbb; }
+        .cat-advice { background:rgba(255,255,255,0.04); border-radius:8px; padding:16px 18px; font-size:14px; line-height:2.05; color:#f0efec; font-weight:600; border-left:3px solid var(--gold); }
         .cat-stat-row { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:4px; }
         .cat-stat { background:rgba(255,255,255,0.05); border-radius:8px; padding:8px 12px; flex:1; min-width:80px; text-align:center; }
         .cat-stat-label { display:block; font-size:10px; color:var(--text-dim); margin-bottom:4px; }
         .cat-stat-val { display:block; font-size:18px; font-weight:800; color:var(--gold); }
-        .cat-section { margin-bottom:24px; background:rgba(255,255,255,0.025); border-radius:14px; padding:20px; box-shadow:0 4px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06); }
+        .cat-section { margin-bottom:32px; background:rgba(255,255,255,0.025); border-radius:14px; padding:24px; box-shadow:0 4px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06); }
         .report-chapter { margin-bottom: 40px; background: rgba(255,255,255,0.028); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 22px; box-shadow: 0 2px 14px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.04); }
         
         /* 인라인 해석 박스 */
@@ -1642,6 +1642,7 @@
             #step-2 > .step-content > *:not(#sec-report-full) { display: none !important; }
             #sec-report-full > #report-inline-top { display: none !important; }
             /* 배경/색상 */
+            @page { size: A4; margin: 14mm 12mm 16mm; }
             body { background: #fff !important; color: #111 !important; margin: 0 !important; }
             .container { max-width: 100% !important; padding: 0 !important; }
             #step-2, .step-content, #sec-report-full { padding: 0 !important; margin: 0 !important; }
@@ -1652,10 +1653,11 @@
             .toc-page.print-only { display:none; }
             @media print { .toc-page.print-only { display:block !important; } }
             .toc-page { page-break-after: always; background: #fff !important; color: #111 !important; padding: 40px !important; }
-            .chapter-start { page-break-before: always; }
-            .report-chapter { break-inside: avoid; page-break-inside: avoid; padding: 20px 0; }
+            .chapter-start, .report-chapter.chapter-start { page-break-before: always !important; }
+            .report-chapter { break-inside: avoid; page-break-inside: avoid; padding: 20px 0; margin: 0 0 8mm; }
             .pillar-card { break-inside: avoid; }
             .interp-box { break-inside: avoid; min-height: 0; }
+            .bar-group, .manse-table, .table, table, .cat-section { break-inside: avoid; page-break-inside: avoid; }
             .inline-interp { background: #f9f9f9 !important; border-color: #999 !important; }
             .ii-text, .ch-text { color: #333 !important; }
             .ii-title, .ch-title { color: #111 !important; border-bottom: 2px solid #c7a76a !important; }
@@ -1667,7 +1669,7 @@
             p, div { color: #222 !important; }
             b, strong { color: #000 !important; }
             .gold, [style*="color:var(--gold)"], [style*="color:#c7a76a"] { color: #8B6914 !important; }
-            @page { margin: 14mm 16mm; }
+            
             .premium-executive-summary { page-break-after: always !important; break-inside: avoid; background: #faf8f4 !important; border: 1px solid #c7a76a !important; }
             .premium-thesis, .premium-points li, .premium-disclaimer { color: #222 !important; }
             .premium-points strong { color: #111 !important; }
@@ -5899,8 +5901,8 @@ window.generateDeepReport = generateDeepReport;
     </script>
 
 <!-- SAJUX_CACHE_BUSTER_START -->
-<meta name="sajux-build" content="1778658907">
-<script>(function(){var v='1778658907';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
+<meta name="sajux-build" content="1778659635">
+<script>(function(){var v='1778659635';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
 <!-- SAJUX_CACHE_BUSTER_END -->
 </head>
 <body>
