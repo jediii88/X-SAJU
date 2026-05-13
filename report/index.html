@@ -53,7 +53,7 @@
       // 자동실행은 window.load IIFE에서 처리 (하단 스크립트 참조)
     })();
     </script>
-    <meta name="version" content="1778658907">
+    <meta name="version" content="1778659635">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -620,13 +620,13 @@
 
         .bar-group { display: flex; flex-direction: column; gap: 16px; }
 
-        .bar-item { display: grid; grid-template-columns: 70px 1fr 46px; gap: 12px; align-items: center; }
+        .bar-item { display: grid; grid-template-columns: 84px 1fr 52px; gap: 12px; align-items: center; }
         .bar-label { font-size: 14px; color: var(--text-soft); font-weight: 400; }
         .bar-label-wrap { display: flex; flex-direction: column; min-width: 52px; }
         .bar-label-main { font-size: 13px; color: var(--text); font-weight: 600; line-height: 1.2; }
         .bar-label-sub { font-size: 10px; color: var(--gold); font-weight: 400; line-height: 1.3; opacity: 0.85; }
-        .bar-track { height: 4px; background: rgba(255,255,255,0.08); position: relative; border-radius: 2px; }
-        .bar-fill { height: 4px; position: absolute; left: 0; top: 0; border-radius: 2px; }
+        .bar-track { height: 8px; background: rgba(255,255,255,0.08); position: relative; border-radius: 999px; overflow: hidden; }
+        .bar-fill { height: 8px; position: absolute; left: 0; top: 0; border-radius: 999px; box-shadow: 0 0 10px rgba(199,167,106,0.18); }
         .bar-value { text-align: right; font-size: 13px; color: var(--text); font-weight: 400; }
 
         .wood { color: var(--wood); } .fire { color: var(--fire); } .earth { color: var(--earth); } .metal { color: var(--metal); } .water { color: var(--water); }
@@ -788,8 +788,8 @@
             align-items: center;
         }
         .m-badge {
-            font-size: 11px;
-            color: var(--text-dim);
+            font-size: 10px;
+            color: rgba(193,198,208,0.72);
             margin-bottom: 4px;
         }
         .m-hanja {
@@ -807,10 +807,10 @@
 
 
         .bar-group { display: flex; flex-direction: column; gap: 16px; }
-        .bar-item { display: grid; grid-template-columns: 70px 1fr 46px; gap: 12px; align-items: center; }
+        .bar-item { display: grid; grid-template-columns: 84px 1fr 52px; gap: 12px; align-items: center; }
         .bar-label { font-size: 14px; color: var(--text-soft); font-weight: 400; }
-        .bar-track { height: 4px; background: rgba(255,255,255,0.08); position: relative; border-radius: 2px; }
-        .bar-fill { height: 4px; position: absolute; left: 0; top: 0; border-radius: 2px; }
+        .bar-track { height: 8px; background: rgba(255,255,255,0.08); position: relative; border-radius: 999px; overflow: hidden; }
+        .bar-fill { height: 8px; position: absolute; left: 0; top: 0; border-radius: 999px; box-shadow: 0 0 10px rgba(199,167,106,0.18); }
         .bar-value { text-align: right; font-size: 13px; color: var(--text); font-weight: 400; }
 
         
@@ -1117,14 +1117,14 @@
         .cat-icon { font-size:22px; }
         .cat-title { font-size:17px; font-weight:700; color:var(--gold); font-family:'Noto Serif KR',serif; }
         .cat-body { display:flex; flex-direction:column; gap:14px; }
-        .cat-text { font-size:14px; line-height:1.85; color:#ddd; word-break:keep-all; margin:0; }
+        .cat-text { font-size:14px; line-height:2.05; color:#ddd; word-break:keep-all; margin:0; }
         .cat-highlight { background:rgba(199,167,106,0.06); border-left:3px solid var(--gold); border-radius:0 8px 8px 0; padding:14px 16px; font-size:13.5px; line-height:1.8; color:#ccc; }
-        .cat-advice { background:rgba(255,255,255,0.04); border-radius:8px; padding:12px 14px; font-size:13px; line-height:1.7; color:#bbb; }
+        .cat-advice { background:rgba(255,255,255,0.04); border-radius:8px; padding:16px 18px; font-size:14px; line-height:2.05; color:#f0efec; font-weight:600; border-left:3px solid var(--gold); }
         .cat-stat-row { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:4px; }
         .cat-stat { background:rgba(255,255,255,0.05); border-radius:8px; padding:8px 12px; flex:1; min-width:80px; text-align:center; }
         .cat-stat-label { display:block; font-size:10px; color:var(--text-dim); margin-bottom:4px; }
         .cat-stat-val { display:block; font-size:18px; font-weight:800; color:var(--gold); }
-        .cat-section { margin-bottom:24px; background:rgba(255,255,255,0.025); border-radius:14px; padding:20px; box-shadow:0 4px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06); }
+        .cat-section { margin-bottom:32px; background:rgba(255,255,255,0.025); border-radius:14px; padding:24px; box-shadow:0 4px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06); }
         .report-chapter { margin-bottom: 40px; background: rgba(255,255,255,0.04); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); border: none; border-radius: 16px; padding: 24px; box-shadow: 0 4px 32px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.08); }
         
         /* 인라인 해석 박스 */
@@ -1206,6 +1206,7 @@
             #step-2 > .step-content > *:not(#sec-report-full) { display: none !important; }
             #sec-report-full > #report-inline-top { display: none !important; }
             /* 배경/색상 */
+            @page { size: A4; margin: 14mm 12mm 16mm; }
             body { background: #fff !important; color: #111 !important; margin: 0 !important; }
             .container { max-width: 100% !important; padding: 0 !important; }
             #step-2, .step-content, #sec-report-full { padding: 0 !important; margin: 0 !important; }
@@ -1216,10 +1217,11 @@
             .toc-page.print-only { display:none; }
             @media print { .toc-page.print-only { display:block !important; } }
             .toc-page { page-break-after: always; background: #fff !important; color: #111 !important; padding: 40px !important; }
-            .chapter-start { page-break-before: always; }
-            .report-chapter { break-inside: avoid; page-break-inside: avoid; padding: 20px 0; }
+            .chapter-start, .report-chapter.chapter-start { page-break-before: always !important; }
+            .report-chapter { break-inside: avoid; page-break-inside: avoid; padding: 20px 0; margin: 0 0 8mm; }
             .pillar-card { break-inside: avoid; }
             .interp-box { break-inside: avoid; min-height: 0; }
+            .bar-group, .manse-table, .table, table, .cat-section { break-inside: avoid; page-break-inside: avoid; }
             .inline-interp { background: #f9f9f9 !important; border-color: #999 !important; }
             .ii-text, .ch-text { color: #333 !important; }
             .ii-title, .ch-title { color: #111 !important; border-bottom: 2px solid #c7a76a !important; }
@@ -7552,7 +7554,6 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
             var OH={'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','申':'metal','壬':'water','癸':'water'};
             var JO={'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'};
             var KN={wood:'목',fire:'화',earth:'토',metal:'금',water:'수'};
-            var WL={'寅':'인월 — 봄의 시작. 새로운 계획·프로젝트 착수·인맥 확장에 최적입니다. 머뭇거리지 말고 이달에 첫발을 내딛으십시오.','卯':'묘월 — 성장과 확장의 기운. 인맥을 넓히고 협업 제안에 적극 응하세요. 이달의 만남이 중요한 장기 인연이 됩니다.','辰':'진월 — 변화와 전환의 기운. 예상치 못한 기회가 찾아올 수 있으니 유연하게 대응하십시오.','巳':'사월 — 집중력이 최고조. 중요한 결정을 내리고 실행에 집중하십시오. 이달의 결단이 하반기를 좌우합니다.','午':'오월 — 에너지와 활력이 넘칩니다. 사회적 활동·발표·영업에 최적. 적극적으로 나서면 인정받습니다.','未':'미월 — 관계와 감성이 풍부해집니다. 인간관계를 돌보고 협력을 강화하십시오.','辛':'신월 — 결단과 실행력이 요구됩니다. 판단한 것을 즉시 행동으로 옮기십시오.','酉':'유월 — 마무리와 완성의 기운. 진행 중인 일을 깔끔하게 마무리하십시오.','戌':'술월 — 성찰과 정리의 달. 불필요한 것을 정리하고 중요한 것에만 집중하십시오.','亥':'해월 — 준비와 내공의 달. 학습·자기 성찰에 집중하면 내년에 큰 도약이 찾아옵니다.','子':'자월 — 지혜와 집중의 달. 복잡한 문제를 분석하고 장기 계획을 수립하기에 최적입니다.','丑':'축월 — 인내와 축적의 달. 결과를 서두르지 말고 착실하게 실력을 쌓는 것이 전략입니다.'};
             var sc={}; sc[yong]=2;sc[hee]=1;sc[gi]=-2;sc[goo]=-1;
             function gs(g,j){return (sc[OH[g]]||0)+(sc[JO[j]]||0);}
             function gc(s){return s>=3?'#c7a76a':s>=1?'#00C853':s===0?'#888':s>=-2?'#ff9800':'#e74c3c';}
@@ -7710,7 +7711,6 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
             var OH={'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','申':'metal','壬':'water','癸':'water'};
             var JO={'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'};
             var KN={wood:'목',fire:'화',earth:'토',metal:'금',water:'수'};
-            var WL={'寅':'인월 — 봄의 시작, 새로운 기운이 발동합니다. 새로운 계획, 프로젝트 착수, 인맥 확장에 최적입니다. 머뭇거리지 말고 이달에 첫발을 내딛으십시오.','卯':'묘월 — 성장과 확장의 기운입니다. 인맥을 넓히고 협업 제안에 적극 응하세요. 이달의 만남이 중요한 장기 인연이 됩니다.','辰':'진월 — 변화와 전환의 기운입니다. 예상치 못한 기회가 찾아올 수 있으니 유연하게 대응하십시오.','巳':'사월 — 집중력이 최고조인 달입니다. 중요한 결정을 내리고 실행에 집중하십시오. 이달의 결단이 하반기를 좌우합니다.','午':'오월 — 에너지와 활력이 넘칩니다. 사회적 활동, 발표, 영업에 최적입니다. 적극적으로 나서면 인정받습니다.','未':'미월 — 관계와 감성이 풍부해집니다. 인간관계를 돌보고 협력을 강화하십시오.','辛':'신월 — 결단과 실행력이 요구됩니다. 판단한 것을 즉시 행동으로 옮기십시오.','酉':'유월 — 마무리와 완성의 기운입니다. 진행 중인 일을 깔끔하게 마무리하십시오.','戌':'술월 — 성찰과 정리의 달입니다. 불필요한 것을 정리하고 중요한 것에만 집중하십시오.','亥':'해월 — 준비와 내공의 달입니다. 학습, 자기 성찰에 집중하면 내년에 큰 도약이 찾아옵니다.','子':'자월 — 지혜와 집중의 달입니다. 복잡한 문제를 분석하고 장기 계획을 수립하기에 최적입니다.','丑':'축월 — 인내와 축적의 달입니다. 결과를 서두르지 말고 착실하게 실력을 쌓는 것이 이달의 전략입니다.'};
             var sc={}; sc[yong]=2;sc[hee]=1;sc[gi]=-2;sc[goo]=-1;
             function gs(g,j){return (sc[OH[g]]||0)+(sc[JO[j]]||0);}
             function gc(s){return s>=3?'#c7a76a':s>=1?'#00C853':s===0?'#888':s>=-2?'#ff9800':'#e74c3c';}
@@ -7723,11 +7723,11 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
                 var gmz=mE.getMonth();var gm4=gmz[0];var jm4=gmz[1];
                 var sm4=gs(gm4,jm4);var colm=gc(sm4);var isThisM=(m4===curM3);
                 var gOhm=OH[gm4]||'earth';var jOhm=JO[jm4]||'earth';
-                var wlDesc=WL[jm4]||jm4+'월의 기운이 이달을 이끕니다.';
-                var advm=sm4>=2?'이달은 적극적으로 행동하십시오. 용신 기운이 강한 달이라 중요한 시작, 만난, 결정이 좋은 결실로 이어집니다.':sm4>=0?'안정적인 달입니다. 꾸준히 나아가는 것이 최선의 전략입니다.':'수비가 최선인 달입니다. 큰 결정과 투자는 다음 달로 미루십시오. 조용히 내공을 쌓는 다음 달을 준비하십시오.';
+                var mSip4=(typeof getSipseong==='function'&&gm4)?(getSipseong(dayStem,gm4)||'비견'):'비견';
+                var mUns4=(typeof getUnsung==='function'&&jm4)?(getUnsung(dayStem,jm4)||'-'):'-';
+                var advm = renderFortuneText({ sip:mSip4, uns:mUns4, score:sm4, idx:m4, scope:'month' });
                 h4+='<div style="margin-bottom:12px;padding:14px;background:rgba(255,255,255,'+(isThisM?'0.07':'0.03')+');border:1px solid '+(isThisM?'var(--gold)':'rgba(255,255,255,0.06)')+';border-radius:10px;">';
                 h4+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:18px;font-weight:900;color:var(--gold);font-family:Noto Serif KR,serif;">'+gm4+jm4+'</span><span style="font-size:13px;color:#bbb;">'+m4+'월'+(isThisM?' <span style="font-size:10px;background:var(--gold);color:#000;padding:1px 6px;border-radius:6px;font-weight:700;">이달</span>':'')+'</span></div><span style="font-size:11px;font-weight:700;color:'+colm+';">'+gb(sm4)+'</span></div>';
-                h4+='<p style="font-size:13px;color:#ddd;line-height:1.75;margin:0 0 8px;">'+wlDesc+'</p>';
                 h4+='<div style="background:rgba(199,167,106,0.05);border-radius:6px;padding:8px 10px;border-left:2px solid '+colm+';"><p style="font-size:12px;color:#bbb;line-height:1.7;margin:0;">'+advm+'</p></div></div>';
             }
             h4+='</div>';
