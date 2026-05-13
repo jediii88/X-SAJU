@@ -6700,12 +6700,15 @@ function runAnalysis(overrideParams) {
         document.getElementById('shinsal-grid').innerHTML = pillars.map((p, idx) => {
             const twl = allTwelveShinsal[p.n] || [];
             const ext = allExtraShinsal[p.n] || [];
+            const uns = getUnsung(dayStem, p.h[1]) || '-';
             const isUnk = isUnknown && idx === 0;
             return `<div class="info-card">
                 <div class="info-label">${p.n}</div>
                 <div style="margin-top:6px;">
                     <div style="font-size:10px;color:var(--gold);letter-spacing:1px;margin-bottom:3px;">12신살</div>
                     <div class="info-value" style="margin-bottom:8px;">${isUnk ? '시간 미상' : (twl.join(', ') || '-')}</div>
+                    <div style="font-size:10px;color:#64b5f6;letter-spacing:1px;margin-bottom:3px;">12운성</div>
+                    <div class="info-value" style="margin-bottom:8px;">${isUnk ? '시간 미상' : uns}</div>
                     <div style="font-size:10px;color:#9b59b6;letter-spacing:1px;margin-bottom:3px;">기타신살</div>
                     <div class="info-value">${isUnk ? '시간 미상' : (ext.join(', ') || '-')}</div>
                 </div>
