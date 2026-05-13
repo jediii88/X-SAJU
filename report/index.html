@@ -53,7 +53,7 @@
       // 자동실행은 window.load IIFE에서 처리 (하단 스크립트 참조)
     })();
     </script>
-    <meta name="version" content="1777602263">
+    <meta name="version" content="1778657360">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -6339,6 +6339,69 @@ function getElementDesc(ch) {
     const elKr = RELATION_LABELS[el];
     const elHz = {'wood':'木','fire':'火','earth':'土','metal':'金','water':'水'}[el];
     return `${yy}${kr}, ${elKr}${elHz}`;
+}
+
+// v3.0 상호작용 엔진(요약): 합·충·형·파·해를 텍스트 풀이에 반영
+function evaluateMasterDynamics(pillars) {
+    const stems = (pillars || []).map(p => p && p.h && p.h[0]).filter(Boolean);
+    const branches = (pillars || []).map(p => p && p.h && p.h[1]).filter(Boolean);
+    const pairKey = (a, b) => [a, b].sort().join('');
+    const bset = new Set(branches);
+
+    const STEM_HE = new Set(['甲己','乙庚','丙辛','丁壬','戊癸']);
+    const BRANCH_CHUNG = new Set(['子午','丑未','寅申','卯酉','辰戌','巳亥']);
+    const BRANCH_HAE = new Set(['子未','丑午','寅巳','卯辰','申亥','酉戌']);
+    const BRANCH_PA = new Set(['子酉','丑辰','寅亥','卯午','巳申','未戌']);
+    const BRANCH_HYEONG = [
+        ['寅','巳','申'], ['丑','戌','未'],
+        ['子','卯'],
+        ['辰','辰'], ['午','午'], ['酉','酉'], ['亥','亥']
+    ];
+    const SAMHAP = [
+        ['亥','卯','未','wood'], ['寅','午','戌','fire'],
+        ['巳','酉','丑','metal'], ['申','子','辰','water']
+    ];
+
+    let he = 0, chung = 0, hae = 0, pa = 0, hyeong = 0, samh = 0;
+    for (let i = 0; i < stems.length; i++) {
+        for (let j = i + 1; j < stems.length; j++) {
+            if (STEM_HE.has(pairKey(stems[i], stems[j]))) he++;
+        }
+    }
+    for (let i = 0; i < branches.length; i++) {
+        for (let j = i + 1; j < branches.length; j++) {
+            const k = pairKey(branches[i], branches[j]);
+            if (BRANCH_CHUNG.has(k)) chung++;
+            if (BRANCH_HAE.has(k)) hae++;
+            if (BRANCH_PA.has(k)) pa++;
+        }
+    }
+    BRANCH_HYEONG.forEach(g => {
+        if (g.length === 2) {
+            if (bset.has(g[0]) && bset.has(g[1])) hyeong++;
+        } else if (g[0] === g[1]) {
+            if (branches.filter(x => x === g[0]).length >= 2) hyeong++;
+        } else {
+            if (g.every(x => bset.has(x))) hyeong++;
+        }
+    });
+    SAMHAP.forEach(g => { if (g.slice(0, 3).every(x => bset.has(x))) samh++; });
+
+    const tension = (chung * 2) + hyeong + hae + pa;
+    const cohesion = (he * 2) + (samh * 2);
+    const state = cohesion > tension ? 'cohesion' : (tension > cohesion ? 'tension' : 'balanced');
+    return { he, samh, chung, hyeong, hae, pa, tension, cohesion, state };
+}
+
+function buildDynamicsNarrative(dyn) {
+    if (!dyn) return '';
+    if (dyn.state === 'cohesion') {
+        return `합(合)·삼합 에너지가 우세해 관계/계약의 결속력이 높은 흐름입니다. 다만 과결속으로 의사결정이 느려질 수 있어 마감 기준을 먼저 고정하는 편이 좋습니다.`;
+    }
+    if (dyn.state === 'tension') {
+        return `충(沖)·형(刑)·해(害) 신호가 우세해 변화 압력이 큰 흐름입니다. 이동·역할 변경·관계 재정렬이 빨라질 수 있어, 중요한 결정은 단계 분할로 리스크를 낮추는 편이 좋습니다.`;
+    }
+    return `합과 충 신호가 균형권에 있어, 무리한 확장보다 구조 정비와 우선순위 관리에서 성과가 커지는 흐름입니다.`;
 }
 
 // 12신살 (삼합·일지 기준: 반안·육해·재·월·급각 등 만세력 통용 항목 포함)
