@@ -14,3 +14,4 @@ workspace_backup_copy/
 *.pyc
 __pycache__/
 node_modules/
+.github_token
