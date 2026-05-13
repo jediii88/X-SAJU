@@ -35,12 +35,23 @@
       var min   = (p.get('mi')||'0').padStart(2,'0');
       var yun   = p.get('yun')==='1';
       var unk   = p.get('unk')==='1';
+      var rb    = p.get('rb') || '';
+      var ri    = p.get('ri') || '';
+      var vd    = parseInt(p.get('vd') || '30', 10);
+      if (!rb && exp && /^\d+$/.test(String(exp))) {
+        var expMs = parseInt(String(exp), 10);
+        if (String(exp).length === 10) expMs *= 1000;
+        if (!isNaN(expMs)) rb = new Date(expMs - ((isNaN(vd) ? 30 : vd) * 86400000)).toISOString();
+      }
+      if (!ri && rb) ri = rb;
 
       window.__SAJUX_PARAMS__ = {
         name:name, gender:gRaw, cal:cRaw,
         birthDate: year+month+day,
         birthTime: unk?'1200':(hour+min),
-        yundal:yun, unknown:unk
+        yundal:yun, unknown:unk,
+        reportBaseAt: rb,
+        reportIssuedAt: ri
       };
 
       // 자동실행은 window.load IIFE에서 처리 (하단 스크립트 참조)
@@ -3228,6 +3239,20 @@ function formatReportAccessLine(data) {
     return '본 링크는 발행 기준 ' + days + '일간 열람·PDF 저장이 가능합니다. (서버에서 발행일·만료일을 넘기면 이 문구가 자동으로 바뀝니다.)';
 }
 
+// 리포트 기준 시각(내부 시계): 서버가 넘긴 기준일이 있으면 우선 사용
+function getReportBaseDate(data) {
+    var raw = data && (data.reportBaseAt || data.reportIssuedAt || data.analysisAt || data.serverNow);
+    if (raw && /^\d+$/.test(String(raw))) {
+        var n = parseInt(String(raw), 10);
+        if (String(raw).length === 10) raw = n * 1000;
+    }
+    if (raw) {
+        var d = new Date(raw);
+        if (!isNaN(d.getTime())) return d;
+    }
+    return new Date();
+}
+
 function buildPremiumExecutiveSummary(data) {
     var nm = data.name || '고객';
     var OH = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
@@ -4420,7 +4445,8 @@ function buildDaewunLoop(data) {
 }
 
 function buildSewunLoop(data) {
-    const currentYear = new Date().getFullYear();
+    const baseNow = getReportBaseDate(data);
+    const currentYear = baseNow.getFullYear();
     const GAN = ['갑','을','병','정','무','기','경','신','임','계'];
     const JI = ['자','축','인','묘','진','사','오','미','신','유','술','해'];
     const GAN_KR = {'甲':'갑','乙':'을','丙':'병','丁':'정','戊':'무','己':'기','庚':'경','辛':'신','壬':'임','癸':'계'};
@@ -5849,12 +5875,23 @@ window.generateDeepReport = generateDeepReport;
       var mn    = (p.get('mi') || '0').padStart(2,'0');
       var yun   = p.get('yun') === '1';
       var unk   = p.get('unk') === '1';
+      var rb    = p.get('rb') || '';
+      var ri    = p.get('ri') || '';
+      var vd    = parseInt(p.get('vd') || '30', 10);
+      if (!rb && exp && /^\d+$/.test(String(exp))) {
+        var expMs = parseInt(String(exp), 10);
+        if (String(exp).length === 10) expMs *= 1000;
+        if (!isNaN(expMs)) rb = new Date(expMs - ((isNaN(vd) ? 30 : vd) * 86400000)).toISOString();
+      }
+      if (!ri && rb) ri = rb;
 
       window.__SAJUX_PARAMS__ = {
         name: name, gender: gRaw, cal: cRaw,
         birthDate: yr + mo + dy,
         birthTime: unk ? '1200' : (hr + mn),
-        yundal: yun, unknown: unk
+        yundal: yun, unknown: unk,
+        reportBaseAt: rb,
+        reportIssuedAt: ri
       };
     })();
     </script>
@@ -6468,6 +6505,9 @@ var HAN_COLOR = {"甲":"wood","乙":"wood","寅":"wood","卯":"wood","丙":"fire
 var HAN_KOR = {"甲":"갑","乙":"을","丙":"병","丁":"정","戊":"무","己":"기","庚":"경","辛":"신","壬":"임","癸":"계","子":"자","丑":"축","寅":"인","卯":"묘","辰":"진","巳":"사","午":"오","未":"미","申":"신","酉":"유","戌":"술","亥":"해"};
 var STEM_YANG = ["갑","병","무","경","임"];
 var BRANCH_YANG = ["자","인","진","오","신","술"];
+var STEM_YANG_H = ['甲','丙','戊','庚','壬'];
+var BRANCH_YANG_H = ['子','寅','辰','午','申','戌'];
+var BRANCH_MAIN_STEM = { '子':'癸','丑':'己','寅':'甲','卯':'乙','辰':'戊','巳':'丙','午':'丁','未':'己','申':'庚','酉':'辛','戌':'戊','亥':'壬' };
 var RELATION_LABELS = {
     wood: '목', fire: '화', earth: '토', metal: '금', water: '수'
 };
@@ -6575,12 +6615,9 @@ var SHINSAL_LOGIC = {
         const map = {"申":"辰","子":"辰","辰":"辰","亥":"未","卯":"未","未":"未","寅":"戌","午":"戌","戌":"戌","巳":"丑","酉":"丑","丑":"丑"};
         return (map[yb]===gz[1] || map[db]===gz[1]) ? '천살' : '';
     },
-    // ── 12. 년살 — 연지·일지 기준 (목욕지) ──
+    // ── 12. 년살 — (만세력마다 이원화) 도화(咸池)와 지지가 겹쳐 TWELVE_SHINSAL_KEYS에서 제외, 도화살로 본다.
     '년살': (gz, ec) => {
-        const yb = ec.getYear()[1]; const db = ec.getDay()[1];
-        const map = {"申":"酉","子":"卯","辰":"卯","亥":"子","卯":"子","未":"子","寅":"卯","午":"午","戌":"午","巳":"午","酉":"酉","丑":"酉"};
-        // 년살 = 도화와 같은 기준 위치
-        return false; // 도화와 중복 방지 — 도화살로 통합
+        return '';
     },
     // ── 13. 백호대살 — 간지 조합 ──
     '백호대살': (gz, ec) => {
@@ -6949,12 +6986,15 @@ if (ti) ti.oninput = () => {
 };
 
 function isYang(ch) {
+    if (!ch) return false;
+    if (STEM_YANG_H.includes(ch) || BRANCH_YANG_H.includes(ch)) return true;
     return STEM_YANG.includes(ch) || BRANCH_YANG.includes(ch);
 }
 
 function getSipseong(dayStem, target) {
     if (!dayStem || !target) return '';
-    const t = target[0];
+    let t = target[0];
+    if (BRANCH_MAIN_STEM[t]) t = BRANCH_MAIN_STEM[t];
     const dIdx = WUXING_ORDER.indexOf(HAN_COLOR[dayStem]);
     const tIdx = WUXING_ORDER.indexOf(HAN_COLOR[t]);
     if (dIdx === -1 || tIdx === -1) return '';
@@ -7010,10 +7050,10 @@ function getElementDesc(ch) {
     return `${yy}${kr}, ${elKr}${elHz}`;
 }
 
-// 12신살 (삼합 기반 12지 순환 신살)
-window.TWELVE_SHINSAL_KEYS = new Set(['역마살','도화살','화개살','겁살','망신살','지살','천살','장성살','수옥살','년살','반안살','육해살']); var TWELVE_SHINSAL_KEYS = window.TWELVE_SHINSAL_KEYS;
+// 12신살 (삼합·일지 기준: 반안·육해·재·월·급각 등 만세력 통용 항목 포함)
+window.TWELVE_SHINSAL_KEYS = new Set(['역마살','도화살','화개살','겁살','망신살','지살','천살','장성살','수옥살','반안살','육해살','재살','월살','급각살']); var TWELVE_SHINSAL_KEYS = window.TWELVE_SHINSAL_KEYS;
 // 기타신살 (귀인성 + 특수살)
-var EXTRA_SHINSAL_KEYS = new Set(['천을귀인','문창귀인','문곡귀인','양인살','백호대살','괴강살','원진살','귀문관살','홍염살','고신살','과숙살','학당귀인','천관귀인','천의성','천덕귀인','월덕귀인','금여록','현침살','금각살','유하살','천주귀인','재고귀인','급각살','복성귀인','철새개금','태극귀인','천복귀인','상문살','조객살','격각살','평두살','효신살','장성살']);
+var EXTRA_SHINSAL_KEYS = new Set(['천을귀인','문창귀인','문곡귀인','양인살','백호대살','괴강살','원진살','귀문관살','홍염살','고신살','과숙살','학당귀인','천관귀인','천의성','천덕귀인','월덕귀인','금여록','현침살','금각살','유하살','천주귀인','재고귀인','복성귀인','철새개금','태극귀인','천복귀인','상문살','조객살','격각살','평두살','효신살']);
 
 function getShinsal(gz, ec) {
     const arr = [];
@@ -7136,6 +7176,8 @@ function buildFortuneCards(targetId, rows) {
 
 function runAnalysis(overrideParams) {
     var _op = overrideParams || window.__SAJUX_PARAMS__ || null;
+    var reportBaseAt = (_op && _op.reportBaseAt) ? String(_op.reportBaseAt) : new Date().toISOString();
+    var reportIssuedAt = (_op && _op.reportIssuedAt) ? String(_op.reportIssuedAt) : reportBaseAt;
     const _d = (_op && _op.birthDate) || (di && di.value) || '';
     const dVal = _d.replace(/\D/g, '');
     if (dVal.length < 8) return alert('생년월일 8자리를 입력하세요.');
@@ -7647,7 +7689,7 @@ function runAnalysis(overrideParams) {
         });
         buildFortuneCards('daeun-table', daeunRows);
 
-        const currentYearObj = new Date();
+        const currentYearObj = getReportBaseDate(globalSajuData || {});
         const currentYear = currentYearObj.getFullYear();
         const currentMonth = currentYearObj.getMonth() + 1;
         const currentAge = currentYear - y + 1; // Korean age approximation
@@ -8168,7 +8210,7 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
             function gs(g,j){return (sc[OH[g]]||0)+(sc[JO[j]]||0);}
             function gc(s){return s>=3?'#c7a76a':s>=1?'#00C853':s===0?'#888':s>=-2?'#ff9800':'#e74c3c';}
             function gb(s){return s>=3?'🌟 대길':s>=1?'✦ 길':s===0?'— 평':s>=-2?'⚠ 주의':'❌ 흉';}
-            var curY=new Date().getFullYear();var curM=new Date().getMonth()+1;
+            var curY=currentYear;var curM=currentMonth;
             var wrap=document.getElementById('wolun-table');
             if(!wrap) return;
             var detDiv=document.createElement('div');
@@ -8199,36 +8241,19 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
             const gz = dy.getGanZhi();
             return { age: dy.getStartAge()-1, name: gz[0]+gz[1], gz: [gz[0], gz[1]] };
         });
-        // 각 주별 십성 계산 (일간 기준)
-        const SIP_MAP = {
-            wood: {wood:'비견',fire:'식신',earth:'편재',metal:'편관',water:'편인'},
-            fire: {fire:'비견',earth:'식신',metal:'편재',water:'편관',wood:'편인'},
-            earth: {earth:'비견',metal:'식신',water:'편재',wood:'편관',fire:'편인'},
-            metal: {metal:'비견',water:'식신',wood:'편재',fire:'편관',earth:'편인'},
-            water: {water:'비견',wood:'식신',fire:'편재',earth:'편관',metal:'편인'}
-        };
-        const STEM_OH = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
-        const dayOh = STEM_OH[dayStem] || 'earth';
-        const dayStemYin = ['을','정','기','신','계'].includes(dayStem);
+        // 각 주별 십성 계산 (일간 기준, getSipseong과 동일 규칙)
         const pillars_sipseong = (pillars||[]).map((p,pi) => {
             if(!p || !p.h) return '';
-            const st = p.h[0]; const oh = STEM_OH[st] || 'earth';
-            const base = (SIP_MAP[dayOh]||{})[oh] || '';
-            const stYin = ['을','정','기','신','계'].includes(st);
-            if(!base) return '';
-            // 음양 동일 = 비견/식신/편재/편관/편인, 음양 다름 = 겁재/상관/정재/정관/정인
-            if(pi === 2) return '(일주)'; // 일주는 자기 자신
-            const yinDiff = (dayStemYin !== stYin);
-            if(base==='비견') return yinDiff ? '겁재' : '비견';
-            if(base==='식신') return yinDiff ? '상관' : '식신';
-            if(base==='편재') return yinDiff ? '정재' : '편재';
-            if(base==='편관') return yinDiff ? '정관' : '편관';
-            if(base==='편인') return yinDiff ? '정인' : '편인';
-            return base;
+            const st = p.h[0];
+            if (!st) return '';
+            if (pi === 1) return '(일주)';
+            return getSipseong(dayStem, st) || '';
         });
         // 공망 계산 (이전 globalSajuData에서 가져오거나 빈 배열)
         globalSajuData = {
             name: name,
+            reportBaseAt: reportBaseAt,
+            reportIssuedAt: reportIssuedAt,
             dayStem: dayStem,
             dayBranch: pillars[1].h[1],
             monthBranch: pillars[2].h[1],
