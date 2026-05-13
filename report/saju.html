@@ -1856,6 +1856,61 @@ window.SHINSAL_DESC = {
         cat: '신살', color: '#8b7ca8',
         short: '감옥·구속의 기운. 변동수 조심.',
         detail: '쇠창살의 기운입니다. 자유로운 활동이 제약받는 상황이 생길 수 있습니다. 갑작스러운 환경 변화나 이동이 잦을 수 있으므로 안정적인 기반을 확보하는 것이 중요합니다.'
+    },
+    '태극귀인': {
+        cat: '길성', color: '#c7a76a',
+        short: '큰 덕이 깔린 귀인. 흉살을 완화한다.',
+        detail: '천을·천덕과 함께 크게 꼽히는 길신입니다. 신성한 보호와 조상의 은덕, 재난에서 벗어나게 하는 힘으로 해석됩니다.'
+    },
+    '천복귀인': {
+        cat: '길성', color: '#c7a76a',
+        short: '하늘이 준 복록·안정. 조직·제도권의 도움.',
+        detail: '태생적으로 안정된 복과 윗사람·조직의 후원을 받기 쉬운 귀인입니다. 관운·승진·신뢰와 연결되어 해석되는 경우가 많습니다.'
+    },
+    '상문살': {
+        cat: '신살', color: '#e74c3c',
+        short: '상가·이별·우환. 활인업으로 업상대체.',
+        detail: '상문(喪門)은 슬픈 소식·이별·질병 이미지가 강한 살로 알려져 있습니다. 의료·복지·장례 등 타인의 아픔을 돕는 일로 기운을 돌리면 해석이 달라지기도 합니다.'
+    },
+    '조객살': {
+        cat: '신살', color: '#8b7ca8',
+        short: '조문·조문객. 상문과 짝을 이루는 기운.',
+        detail: '조객(弔客)은 상문과 함께 거론되는 살로, 조문·위로·정리의 물상과 연결됩니다. 상문과 만나면 작용이 강해진다고 전해집니다.'
+    },
+    '격각살': {
+        cat: '관계살', color: '#8b7ca8',
+        short: '앞뒤 한 칸 건너 격해짐. 고립·이별수.',
+        detail: '일지에서 두 칸 점프한 지지에 해당할 때 생기는 살입니다. 부모·형제·배우자·자녀와 물리적 거리나 마음의 거리가 생기기 쉽다고 풀이됩니다.'
+    },
+    '평두살': {
+        cat: '형태살', color: '#95a5a6',
+        short: '천간이 지지에 묻힌 형태. 일주별 물상.',
+        detail: '특정 일주에서 천간이 지지에 깔린 형국으로 보는 살입니다. 명리 서적마다 일주 목록이 조금씩 다를 수 있습니다.'
+    },
+    '효신살': {
+        cat: '신살', color: '#e74c3c',
+        short: '인성·육친 이슈. 독립과 거리 조절.',
+        detail: '전통적으로 어머니·배우자 육친과의 마찰 이미지가 강합니다. 현대에는 경제·정신적 독립으로 완화된다고도 합니다.'
+    },
+    '반안살': {
+        cat: '길성', color: '#4a9e6a',
+        short: '말 안장에 오름. 안정·출세·혜택.',
+        detail: '삼합 왕지 다음 지지에 해당할 때 붙는 십이신살로, 번영·명예·적은 노력으로 얻는 혜택 등 긍정적으로 해석되는 경우가 많습니다.'
+    },
+    '육해살': {
+        cat: '관계살', color: '#e67e22',
+        short: '육해(六害). 마음 맞지 않는 관계.',
+        detail: '두 지지가 서로 해(害)하는 조합입니다. 오해·구설·형제·부부 갈등 물상으로 이어지기 쉽다고 하며, 의식적 소통으로 완화합니다.'
+    },
+    '재살': {
+        cat: '신살', color: '#e74c3c',
+        short: '재앙·위기·구속 이미지. 전략과 생존력.',
+        detail: '삼합 장성(왕지)과 충하는 지지에 해당합니다. 관재·구설·사고 이미지와 함께, 위기 돌파 전략·특수직 적성으로 긍정 전환되기도 합니다.'
+    },
+    '월살': {
+        cat: '신살', color: '#e74c3c',
+        short: '월살(月煞). 고갈·정체 이미지.',
+        detail: '삼합 고지와 충하는 지지로 보는 십이신살입니다. 일이 막히거나 침체된다는 물상으로 전해지며, 택일·방위에서는 따로 쓰이기도 합니다.'
     }
 };
 
@@ -5249,7 +5304,7 @@ function buildPart1_Story(data){
 
     // ── ⑤ 신살 목록 ──
     var shArr=Array.isArray(allShinsal)?allShinsal:Object.values(allShinsal).reduce(function(a,v){return a.concat(Array.isArray(v)?v:[]);},[]);
-    var GOOD_SHINSAL=['천을귀인','문곡귀인','학당귀인','천의성','복성귀인','태극귀인','암록','월덕귀인','천덕귀인','문창귀인','식신','정재','정인','정관'];
+    var GOOD_SHINSAL=['천을귀인','문곡귀인','학당귀인','천의성','복성귀인','태극귀인','천복귀인','암록','월덕귀인','천덕귀인','문창귀인','식신','정재','정인','정관'];
     if(shArr.length>0){
         html += '<div style="margin:28px 0 10px;font-size:13px;color:var(--gold);font-weight:800;letter-spacing:1.2px;line-height:1.45;">⑤ 타고난 특별 코드 — 신살 '+shArr.length+'개</div>';
         html += '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">';
@@ -6436,6 +6491,21 @@ var BRANCH_HIDDEN = {
     '午':['丁','己'], '未':['己','丁','乙'], '申':['庚','壬','戊'], '酉':['辛'], '戌':['戊','辛','丁'], '亥':['壬','甲']
 };
 
+// 십이신살(반안·육해·재살·월살) 및 년지 상문/조객 등 공통 조견
+var BRANCH_RING = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+function sanHePackFromBranch(ref) {
+    if (!ref) return null;
+    if (['亥','卯','未'].includes(ref)) return { banAn:'辰', woSal:'丑', jaeSal:'酉' };
+    if (['寅','午','戌'].includes(ref)) return { banAn:'未', woSal:'辰', jaeSal:'子' };
+    if (['巳','酉','丑'].includes(ref)) return { banAn:'戌', woSal:'未', jaeSal:'卯' };
+    if (['申','子','辰'].includes(ref)) return { banAn:'丑', woSal:'戌', jaeSal:'午' };
+    return null;
+}
+var LIUHAI_PAIR = { '子':'未','未':'子','丑':'午','午':'丑','寅':'巳','巳':'寅','卯':'辰','辰':'卯','申':'亥','亥':'申','酉':'戌','戌':'酉' };
+// 평두살 대표 일주(명리 앱에서 통용되는 목록 기준)
+var PYEONGDU_GZ = new Set(['甲子','甲寅','甲辰','甲戌','甲申','丙寅','丙辰','丙戌','丙午','丙子','戊寅','戊辰','戊戌','庚寅','庚辰','庚戌','壬辰','壬寅','癸巳','癸卯','丁卯','己巳','辛酉','戊午','乙酉','丁酉']);
+var HYOSIN_GZ = new Set(['甲子','乙亥','丙寅','丁卯','戊午','己巳','庚辰','庚戌','辛丑','辛未','壬申','癸酉']);
+
 var SHINSAL_LOGIC = {
     // ── 1. 천을귀인 — 일간 기준, 축·미·자·신·해·유·묘·사·인·오 ──
     '천을귀인': (gz, ec) => {
@@ -6633,12 +6703,18 @@ var SHINSAL_LOGIC = {
         const map = {"寅":"巳","午":"申","戌":"亥","亥":"寅","卯":"午","未":"戌","申":"亥","子":"卯","辰":"未","巳":"申","酉":"子","丑":"辰"};
         return (map[yb]===gz[1] || map[db]===gz[1]) ? '수옥살' : '';
     },
-    // ── 33. 장성살 — 연지·일지 기준 (강한 성격·리더십) ──
+    // ── 33. 장성살 — 연지·일지 삼합의 왕지(將星)
     '장성살': (gz, ec) => {
         const yb = ec.getYear()[1]; const db = ec.getDay()[1];
-        // 삼합 중간 지지
-        const map = {"寅":"午","午":"戌","戌":"寅","亥":"卯","卯":"未","未":"亥","申":"子","子":"辰","辰":"申","巳":"酉","酉":"丑","丑":"巳"};
-        return (map[yb]===gz[1] || map[db]===gz[1]) ? '장성살' : '';
+        const jangFrom = (b) => {
+            if (['申','子','辰'].includes(b)) return '子';
+            if (['亥','卯','未'].includes(b)) return '卯';
+            if (['寅','午','戌'].includes(b)) return '午';
+            if (['巳','酉','丑'].includes(b)) return '酉';
+            return '';
+        };
+        const jy = jangFrom(yb), jd = jangFrom(db); const g = gz[1];
+        return ((jy && jy === g) || (jd && jd === g)) ? '장성살' : '';
     },
     // ── 34. 복성귀인 — 일간 기준 ──
     '복성귀인': (gz, ec) => {
@@ -6654,6 +6730,84 @@ var SHINSAL_LOGIC = {
         // 甲-庚충 작용 — 철새개금은 甲일간이 庚을 만나는 특수 구조
         const map = {"甲":"申","乙":"酉","丙":"亥","丁":"子","戊":"子","己":"亥","庚":"卯","辛":"寅","壬":"午","癸":"巳"};
         return map[ds] === gz[1] ? '철새개금' : '';
+    },
+    // ── 태극귀인 — 일간 기준
+    '태극귀인': (gz, ec) => {
+        const ds = ec.getDay()[0];
+        const map = {"甲":["子","午"],"乙":["子","午"],"丙":["卯","酉"],"丁":["卯","酉"],"戊":["辰","戌","丑","未"],"己":["辰","戌","丑","未"],"庚":["寅","亥"],"辛":["寅","亥"],"壬":["巳","申"],"癸":["巳","申"]};
+        const arr = map[ds];
+        return arr && gz[1] && arr.includes(gz[1]) ? '태극귀인' : '';
+    },
+    // ── 천복귀인 — 일간 기준
+    '천복귀인': (gz, ec) => {
+        const ds = ec.getDay()[0];
+        const map = {"甲":"酉","乙":"申","丙":"卯","丁":"寅","戊":"卯","己":"寅","庚":"午","辛":"巳","壬":"午","癸":"巳"};
+        return map[ds] === gz[1] ? '천복귀인' : '';
+    },
+    // ── 상문살 — 연지 기준 (+2지)
+    '상문살': (gz, ec) => {
+        const yb = ec.getYear()[1];
+        if (!yb || !gz[1]) return '';
+        const i = BRANCH_RING.indexOf(yb);
+        if (i < 0) return '';
+        return BRANCH_RING[(i + 2) % 12] === gz[1] ? '상문살' : '';
+    },
+    // ── 조객살 — 연지 기준 (+10지)
+    '조객살': (gz, ec) => {
+        const yb = ec.getYear()[1];
+        if (!yb || !gz[1]) return '';
+        const i = BRANCH_RING.indexOf(yb);
+        if (i < 0) return '';
+        return BRANCH_RING[(i + 10) % 12] === gz[1] ? '조객살' : '';
+    },
+    // ── 격각살 — 일지 기준 (+2지), 일주 본주 제외
+    '격각살': (gz, ec) => {
+        const dayGz = ec.getDay();
+        const db = dayGz && dayGz[1];
+        if (!db || !gz[1] || gz === dayGz) return '';
+        const i = BRANCH_RING.indexOf(db);
+        if (i < 0) return '';
+        return BRANCH_RING[(i + 2) % 12] === gz[1] ? '격각살' : '';
+    },
+    // ── 평두살 — 특정 일주(일주 칸만)
+    '평두살': (gz, ec) => {
+        const dayGz = ec.getDay();
+        if (!dayGz || gz !== dayGz) return '';
+        return PYEONGDU_GZ.has(gz) ? '평두살' : '';
+    },
+    // ── 효신살 — 특정 일주(일주 칸만)
+    '효신살': (gz, ec) => {
+        const dayGz = ec.getDay();
+        if (!dayGz || gz !== dayGz) return '';
+        return HYOSIN_GZ.has(gz) ? '효신살' : '';
+    },
+    // ── 반안살 — 년지·일지 삼합 기준 (왕지 다음 = 진미술축)
+    '반안살': (gz, ec) => {
+        const yb = ec.getYear()[1], db = ec.getDay()[1], b = gz[1];
+        if (!b) return '';
+        const hit = (ref) => { const p = sanHePackFromBranch(ref); return p && p.banAn === b; };
+        return (hit(yb) || hit(db)) ? '반안살' : '';
+    },
+    // ── 육해살 — 년지·일지 육해 상대 지지
+    '육해살': (gz, ec) => {
+        const yb = ec.getYear()[1], db = ec.getDay()[1], b = gz[1];
+        if (!b) return '';
+        if ((yb && LIUHAI_PAIR[yb] === b) || (db && LIUHAI_PAIR[db] === b)) return '육해살';
+        return '';
+    },
+    // ── 재살(災煞) — 일지 삼합 기준 장성 충
+    '재살': (gz, ec) => {
+        const db = ec.getDay()[1];
+        const p = sanHePackFromBranch(db);
+        if (!p || !gz[1]) return '';
+        return gz[1] === p.jaeSal ? '재살' : '';
+    },
+    // ── 월살(月煞) — 일지 삼합 고지와 충
+    '월살': (gz, ec) => {
+        const db = ec.getDay()[1];
+        const p = sanHePackFromBranch(db);
+        if (!p || !gz[1]) return '';
+        return gz[1] === p.woSal ? '월살' : '';
     }
 };
 
@@ -6859,7 +7013,7 @@ function getElementDesc(ch) {
 // 12신살 (삼합 기반 12지 순환 신살)
 window.TWELVE_SHINSAL_KEYS = new Set(['역마살','도화살','화개살','겁살','망신살','지살','천살','장성살','수옥살','년살','반안살','육해살']); var TWELVE_SHINSAL_KEYS = window.TWELVE_SHINSAL_KEYS;
 // 기타신살 (귀인성 + 특수살)
-var EXTRA_SHINSAL_KEYS = new Set(['천을귀인','문창귀인','문곡귀인','양인살','백호대살','괴강살','원진살','귀문관살','홍염살','고신살','과숙살','학당귀인','천관귀인','천의성','천덕귀인','월덕귀인','금여록','현침살','금각살','유하살','천주귀인','재고귀인','급각살','복성귀인','철새개금','장성살']);
+var EXTRA_SHINSAL_KEYS = new Set(['천을귀인','문창귀인','문곡귀인','양인살','백호대살','괴강살','원진살','귀문관살','홍염살','고신살','과숙살','학당귀인','천관귀인','천의성','천덕귀인','월덕귀인','금여록','현침살','금각살','유하살','천주귀인','재고귀인','급각살','복성귀인','철새개금','태극귀인','천복귀인','상문살','조객살','격각살','평두살','효신살','장성살']);
 
 function getShinsal(gz, ec) {
     const arr = [];
