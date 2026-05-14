@@ -185,16 +185,11 @@ function sipToIndustryWorkStyle(sip) {
     };
     return m[sip] || '**본인의 손끝·말·숫자가 곧 성과로 연결되는 일**';
 }
-/** 차트·표 라벨용 짧은 축 이름(전문 용어 비노출) */
-function sipIndustryAxisLabel(sip) {
-    var m = { '비견': '동료·경쟁', '겁재': '지출·승부', '식신': '창작·산출', '상관': '기준·방어', '편재': '거래·기회', '정재': '정산·루틴', '편관': '압박·마감', '정관': '조직·평가', '편인': '학습·준비', '정인': '문서·자격' };
-    return m[sip] || '실행';
-}
-/** 만세력 표·운세 카드 배지 — 전문 십성 한글명 비노출(일원 유지) */
+/** 만세력 표·운세 카드 배지 — 정통 십성 한글명(비견·식신 등) */
 function sipToManseBadge(sip, isIlwon) {
     if (isIlwon || sip === '일원') return '일원';
     if (!sip || sip === '-') return '-';
-    return sipIndustryAxisLabel(sip);
+    return sip;
 }
 /** 세운 챕터 제목 — 핵심 행동 한 줄 */
 function formatSeYunChapterH3(partNo, yr, sc, evLabel) {
@@ -3187,13 +3182,13 @@ function buildChapter3_Sipseong(data) {
         '정인':'**문서·자격·귀인**이 길을 엽니다. 배움이 안전벨트입니다. **공인·자격·문서**를 먼저 쌓으십시오.'
     };
     const sipPersonality = sipDB[mainSip] || sipText;
-    const axMain = sipIndustryAxisLabel(mainSip);
-    const axSec = secondSip ? sipIndustryAxisLabel(secondSip) : '';
+    const axMain = mainSip;
+    const axSec = secondSip || '';
     const sipRows = sorted.filter(function(x){return x[1]>0;}).map(([k,v]) => {
         const pct = Math.round(v/total*100); const isMain = k===mainSip;
         const col = isMain ? 'var(--gold)' : '#8a8a8a';
         const barW = Math.max(2, Math.min(100, pct));
-        const lab = sipIndustryAxisLabel(k);
+        const lab = k;
         return `<div class="sipseong-bar-row" style="display:flex;align-items:center;gap:12px;margin-bottom:10px;"><div style="min-width:72px;text-align:right;font-size:11.5px;font-weight:${isMain?800:500};color:${col};">${lab}</div><div style="flex:1;background:rgba(255,255,255,0.08);border-radius:6px;height:13px;overflow:hidden;border:1px solid rgba(255,255,255,0.06);"><div style="width:${barW}%;height:100%;background:linear-gradient(90deg,${col},rgba(255,255,255,0.12));border-radius:5px;"></div></div><div style="min-width:38px;font-size:12px;font-weight:700;color:${col};">${pct}%</div></div>`;
     }).join('');
     const sipComboText = secondSip ? `앞장서는 패턴은 **${axMain}**, 바닥에 깔리는 보조 패턴은 **${axSec}**입니다. 위기에서는 ${axMain} 쪽 반응부터 다루고, 평상시에는 ${axSec} 쪽 습관만 다듬으십시오. 둘을 한꺼번에 고치려 하지 마십시오. **충돌할 때는 ${axMain}만, 평소에는 ${axSec}만** 조정하십시오. 파트너는 둘 중 하나라도 덮어주는 사람을 고르십시오.` : '';
@@ -3709,7 +3704,7 @@ function buildSewunLoop(data) {
             ? buildYearStrategicNarrative(nameSe, yr, formatGanzhiPair(stemHan, jiHan), evLab, score, sewSip, yongTag, domAdv)
             : '<p class="yearly-description" style="font-size:13px;color:#ddd;line-height:1.85;margin:0;">' + yearNarr + '</p>';
         const seyunOneLine = formatSeYunCardOneLineConclusion(evLab, score);
-        const sewSipCustomer = sewSip ? sipIndustryAxisLabel(sewSip) : '';
+        const sewSipCustomer = sewSip ? sewSip : '';
         const keywordDetail = isCoreThree
             ? '<div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.08);font-size:11.5px;color:#aaa;line-height:1.85;"><b style="color:#c7a76a;">재물·직장·서류·사람</b> — 재물: ' + ykwInd.wealth + ' / 직업: ' + ykwInd.career + ' / 문서: ' + ykwInd.doc + ' / 애정: ' + ykwInd.love + '</div>'
             : '';
@@ -3851,7 +3846,7 @@ function buildWolunLoop(data) {
             ? neuOrdPool[neIx]
             : lowOrdPool[loIx];
         const wolOneLine = formatWolunCardOneLineConclusion(score);
-        const mSipAxis = mSip ? sipIndustryAxisLabel(mSip) : '';
+        const mSipAxis = mSip ? mSip : '';
         return `<div class="monthly-card glass-panel" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,${isNow?'0.07':'0.03'});border-radius:10px;padding:14px 16px;border-left:3px solid ${col};break-inside:avoid;">
             <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
                 <div style="display:flex;align-items:center;gap:8px;min-width:0;flex-wrap:wrap;">
@@ -4079,7 +4074,7 @@ function buildChapter7_Hidden(data) {
         + `</div>`
         + `<div style="background:rgba(199,167,106,0.06);border-radius:8px;padding:16px;border-left:3px solid var(--gold);margin:16px 0;">`
         + `<div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:10px;">지장간과 일간의 관계 — 십성으로 읽는 숨겨진 욕망</div>`
-        + `<p style="font-size:13px;color:#ccc;line-height:1.88;margin:0 0 10px;">지장간이 일간과 맺는 **역할 각도**는 속욕망의 라벨입니다. 동료·경쟁 축은 독립·경쟁, 표현·산출 축은 창작, 성과 축은 물질·통제, 조직 축은 인정·규범, 학습 축은 지식·안식을 끌어당깁니다.</p>`
+        + `<p style="font-size:13px;color:#ccc;line-height:1.88;margin:0 0 10px;">지장간이 일간과 맺는 **십성 관계**는 속욕망의 라벨입니다. 비견·겁재는 동료·경쟁, 식신·상관은 표현·기준, 편재·정재는 재물·정리, 편관·정관은 압박·직무, 편인·정인은 학습·보호 축으로 읽습니다.</p>`
         + `<p style="font-size:13px;color:#ccc;line-height:1.88;margin:0;">채워지지 않을 때 불안이 커집니다. 발동 시기를 달력에 표시해 두면 **갈등이 오기 전에 통로**를 만들 수 있습니다.</p>`
         + `</div>`
         + `<div style="background:rgba(255,255,255,0.03);border-radius:10px;padding:18px;margin:16px 0;"><div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:10px;">&#9670; 지장간과 이중 자아</div><p style="font-size:13px;color:#ccc;line-height:1.88;margin:0 0 10px;">천간은 겉의 역할, 지장간은 안의 역할입니다. 둘이 멀수록 **내적 마찰**이 큽니다. 억압보다 **안전한 출구**(운동·기록·소수 만남)를 하나 고정하십시오.</p><p style="font-size:13px;color:#ccc;line-height:1.88;margin:0;">겹침을 결함이 아니라 **다층 능력**으로 읽으십시오. 둘이 맞물릴 때 가장 강합니다.</p></div>`
@@ -4237,7 +4232,7 @@ function buildVipEvidenceBlock(data) {
         ev += '<td style="padding:4px;color:#555;font-size:10px;">십성</td>';
         pillars.forEach(function(p,i){
             var sp=(isUnk&&i===0)?'-':(p.n==='일주'?'일원':(typeof getSipseong==='function'?getSipseong(ds,p.h[0]):''));
-            var spShow=(sp==='-'||sp==='일원'||!sp)?sp:sipIndustryAxisLabel(sp);
+            var spShow = sp || '-';
             ev+='<td style="padding:4px 8px;text-align:center;"><span style="font-size:10px;background:rgba(199,167,106,0.08);padding:1px 6px;border-radius:8px;color:#ccc;">'+spShow+'</span></td>';
         });
         ev += '</tr>';
@@ -4266,7 +4261,7 @@ function buildVipEvidenceBlock(data) {
         ev += '<td style="padding:4px;color:#555;font-size:10px;">십성</td>';
         pillars.forEach(function(p,i){
             var sp=(isUnk&&i===0)?'-':(typeof getSipseong==='function'?getSipseong(ds,p.h[1]):'');
-            var spShow=(sp==='-'||!sp)?sp:sipIndustryAxisLabel(sp);
+            var spShow = sp || '-';
             ev+='<td style="padding:4px 8px;text-align:center;"><span style="font-size:10px;background:rgba(199,167,106,0.08);padding:1px 6px;border-radius:8px;color:#ccc;">'+spShow+'</span></td>';
         });
         ev += '</tr>';
@@ -6474,7 +6469,7 @@ function runAnalysis(overrideParams) {
             편인:{main:'편인', sub:'영감·편법'}, 정인:{main:'정인', sub:'학문·배움'}
         };
         const sipDom = Object.entries(sipCounts).sort((a,b)=>b[1]-a[1]);
-        const sipSummaryLines = sipDom.filter(e=>e[1]>0).slice(0,3).map(e=>`<b>${sipIndustryAxisLabel(e[0])}</b>`).join(' · ');
+        const sipSummaryLines = sipDom.filter(e=>e[1]>0).slice(0,3).map(e=>`<b>${e[0]}</b>`).join(' · ');
         const sipSummaryEl = document.getElementById('sipseong-summary');
         if(sipSummaryEl && sipDom[0][1] > 0) {
             const sipDescMap = {
@@ -6488,8 +6483,8 @@ function runAnalysis(overrideParams) {
         }
         buildBars('sipseong-bars', Object.keys(sipCounts).map(key => ({
             key,
-            label: sipIndustryAxisLabel(key),
-            labelMain: sipIndustryAxisLabel(key),
+            label: SIP_LABEL[key]?.main || key,
+            labelMain: SIP_LABEL[key]?.main || key,
             labelSub: SIP_LABEL[key]?.sub || '',
             value: percent(sipCounts[key], sipTotalWeight)
         })), () => 'bg-earth');
@@ -7010,7 +7005,7 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
             const curSip = getSipseong(dayStem, curGz[0]);
             const curKr = `${HAN_KOR[curGz[0]]}${HAN_KOR[curGz[1]]}`;
             const dwEndAge = activeDaeunIdx < daeunData.length-1 ? (daeunData[activeDaeunIdx+1].getStartAge()-1) : (curDW.getStartAge()-1)+10;
-            daeunSummaryEl.innerHTML = `현재 <b>${curDW.getStartAge()-1}세 ~ ${dwEndAge}세</b> · <b style="color:var(--gold);">${curGz[0]}${curGz[1]}(${curKr})</b> 대운 진행 중 &nbsp;·&nbsp; 십성 <b>${sipIndustryAxisLabel(curSip)}</b> 축이 10년을 이끕니다.`;
+            daeunSummaryEl.innerHTML = `현재 <b>${curDW.getStartAge()-1}세 ~ ${dwEndAge}세</b> · <b style="color:var(--gold);">${curGz[0]}${curGz[1]}(${curKr})</b> 대운 진행 중 &nbsp;·&nbsp; 십성 <b>${curSip || '-'}</b> 축이 10년을 이끕니다.`;
         } else if(daeunSummaryEl) {
             daeunSummaryEl.innerHTML = '대운 흐름을 확인하십시오. 현재 진행 중인 대운이 굵게 표시됩니다.';
         }
