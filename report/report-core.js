@@ -4683,7 +4683,7 @@ function buildBookIntroPage(data) {
     return `<div id="sec-book-intro" class="toc-page chapter-start book-intro-page" style="padding:88px 42px 96px;border-bottom:1px solid rgba(199,167,106,0.12);margin-bottom:56px;max-width:760px;margin-left:auto;margin-right:auto;text-align:center;">
         <div style="font-size:10px;letter-spacing:0.2em;color:rgba(199,167,106,0.75);margin-bottom:28px;font-weight:700;">[ 사주X 분석 개요 ]</div>
         <p style="font-size:15px;color:rgba(228,232,240,0.92);line-height:2.02;margin:0;font-weight:300;letter-spacing:0.01em;">
-            사주X는 한 사람의 판을 **숫자와 문장으로 고정**해 두는 비밀문서에 가깝습니다. X는 네 기둥이 맞물려 서는 지점입니다.<br/><br/>감상용 글이 아니라, **다음 행동 한 줄**을 고르게 만드는 데 쓰십시오.
+            X는 사주의 네 기둥입니다.<br/><br/>X는 당신이 몰랐던 미지수입니다.<br/><br/>X는 지금 막 열린 당신의 기밀 파일입니다.
         </p>
     </div>`;
 }
