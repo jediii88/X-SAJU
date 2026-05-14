@@ -13,7 +13,7 @@
       if (exp && Date.now() > parseInt(exp)) {
         document.addEventListener('DOMContentLoaded', function(){
           document.body.innerHTML =
-            '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#080810;color:#888;text-align:center;padding:40px;">' +
+            '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#000;color:#888;text-align:center;padding:40px;">' +
             '<div><div style="font-size:48px;margin-bottom:16px;">⏰</div>' +
             '<div style="font-size:18px;color:#c7a76a;font-weight:700;margin-bottom:8px;">리포트 유효기간 만료</div>' +
             '<div style="font-size:13px;">PDF를 저장하지 않으셨다면 SAJUX에 문의해주세요.</div></div></div>';
@@ -53,7 +53,7 @@
       // 자동실행은 window.load IIFE에서 처리 (하단 스크립트 참조)
     })();
     </script>
-    <meta name="version" content="1778790928">
+    <meta name="version" content="1778792605">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -117,9 +117,163 @@
         .page.active { display: block; }
 
         body.light-mode {
-            --accent-rgb: 139, 105, 20;
-            --text-primary: #111111;
+            --bg: #faf8f4;
+            --panel: #ffffff;
+            --panel-2: #f3f1ec;
+            --line: rgba(28, 24, 18, 0.12);
+            --line-soft: rgba(28, 24, 18, 0.07);
+            --text: #1c1814;
+            --text-soft: rgba(40, 36, 32, 0.78);
+            --text-dim: rgba(40, 36, 32, 0.48);
+            --gold: #7a5a22;
+            --gold-glow: rgba(122, 90, 34, 0.12);
+            --accent-rgb: 122, 90, 34;
+            --text-primary: #1c1814;
+            --glass-bg: rgba(255, 255, 255, 0.92);
+            --glass-hover: #ffffff;
+            --wood: #147a3e;
+            --fire: #b4221a;
+            --earth: #856321;
+            --metal: #3d4c5a;
+            --water: #1e5aa8;
+            --text-muted: rgba(40, 36, 32, 0.45);
+            --bg-rgb: 250, 248, 244;
         }
+        body.light-mode html,
+        body.light-mode {
+            background: var(--bg) !important;
+            color: var(--text) !important;
+        }
+
+        body.light-mode::before,
+        html[data-theme="light"] body::before {
+            background:
+                radial-gradient(ellipse at 22% 12%, rgba(199, 167, 106, 0.1) 0%, transparent 48%),
+                radial-gradient(ellipse at 78% 88%, rgba(122, 90, 34, 0.07) 0%, transparent 52%);
+            opacity: 0.5;
+            filter: saturate(0.72) brightness(1.04);
+            animation: nebula-shift 28s ease-in-out infinite alternate;
+        }
+        body.light-mode #star-canvas,
+        html[data-theme="light"] #star-canvas { opacity: 0.22; }
+        body.light-mode .brand,
+        html[data-theme="light"] .brand {
+            color: rgba(28, 24, 20, 0.88) !important;
+            text-shadow: none;
+        }
+        body.light-mode .logo,
+        html[data-theme="light"] .logo { text-shadow: none; }
+        body.light-mode #floating-toc,
+        html[data-theme="light"] #floating-toc {
+            background: rgba(255, 255, 255, 0.94) !important;
+            border: 1px solid rgba(28, 24, 18, 0.1) !important;
+            box-shadow: 0 8px 28px rgba(28, 24, 18, 0.1) !important;
+        }
+        body.light-mode .toc-link,
+        html[data-theme="light"] .toc-link { color: rgba(55, 50, 44, 0.72) !important; }
+        body.light-mode .input-group label,
+        html[data-theme="light"] .input-group label { color: rgba(55, 50, 44, 0.52) !important; }
+        body.light-mode .input-wrapper input,
+        html[data-theme="light"] .input-wrapper input {
+            border-bottom-color: rgba(28, 24, 18, 0.22) !important;
+        }
+        body.light-mode .input-wrapper input::placeholder,
+        html[data-theme="light"] .input-wrapper input::placeholder {
+            color: rgba(55, 50, 44, 0.35) !important;
+        }
+        body.light-mode .underline,
+        html[data-theme="light"] .underline { background-color: var(--gold) !important; }
+        body.light-mode .btn:not(.subtle),
+        html[data-theme="light"] .btn:not(.subtle) {
+            background: #ffffff !important;
+            color: #1c1814 !important;
+            border: 1px solid rgba(28, 24, 18, 0.1) !important;
+            box-shadow: 0 3px 14px rgba(28, 24, 18, 0.07) !important;
+        }
+        body.light-mode .btn.subtle,
+        html[data-theme="light"] .btn.subtle { color: rgba(55, 50, 44, 0.55) !important; }
+        body.light-mode .btn-toggle,
+        html[data-theme="light"] .btn-toggle {
+            background: rgba(28, 24, 18, 0.04) !important;
+            color: rgba(55, 50, 44, 0.55) !important;
+        }
+        body.light-mode .btn-toggle.active,
+        html[data-theme="light"] .btn-toggle.active {
+            background: #ffffff !important;
+            color: #1c1814 !important;
+            box-shadow: 0 1px 8px rgba(28, 24, 18, 0.06);
+        }
+        body.light-mode .toggle-item,
+        html[data-theme="light"] .toggle-item {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border-color: rgba(28, 24, 18, 0.1) !important;
+        }
+        body.light-mode .toggle-label .t-knob,
+        html[data-theme="light"] .toggle-label .t-knob {
+            background: #e8e4dc !important;
+            border-color: rgba(28, 24, 18, 0.14) !important;
+        }
+        body.light-mode .toggle-label .t-knob::after,
+        html[data-theme="light"] .toggle-label .t-knob::after { background: #6a6358 !important; }
+        body.light-mode .toggle-label.on .t-knob::after,
+        html[data-theme="light"] .toggle-label.on .t-knob::after { background: #1c1814 !important; }
+        body.light-mode .toggle-label .t-text,
+        html[data-theme="light"] .toggle-label .t-text { color: rgba(55, 50, 44, 0.75) !important; }
+        body.light-mode .modal-overlay,
+        html[data-theme="light"] .modal-overlay { background: rgba(28, 24, 18, 0.45) !important; }
+        body.light-mode .modal-card,
+        html[data-theme="light"] .modal-card {
+            background: #ffffff !important;
+            border: 1px solid rgba(28, 24, 18, 0.1) !important;
+            box-shadow: 0 16px 48px rgba(28, 24, 18, 0.12) !important;
+        }
+        body.light-mode .modal-close,
+        html[data-theme="light"] .modal-close {
+            background: #f3f1ec !important;
+            color: #1c1814 !important;
+        }
+        body.light-mode .loading,
+        html[data-theme="light"] .loading { background: rgba(250, 248, 244, 0.95) !important; }
+        body.light-mode .spinner,
+        html[data-theme="light"] .spinner {
+            border-color: rgba(28, 24, 18, 0.12) !important;
+            border-top-color: var(--gold) !important;
+        }
+        body.light-mode .manse-table,
+        html[data-theme="light"] .manse-table {
+            background: transparent !important;
+            box-shadow: 0 2px 14px rgba(28, 24, 18, 0.06) !important;
+            border: 1px solid rgba(28, 24, 18, 0.08) !important;
+        }
+        body.light-mode .row-label,
+        html[data-theme="light"] .row-label {
+            background: rgba(28, 24, 18, 0.04) !important;
+            color: rgba(55, 50, 44, 0.62) !important;
+        }
+        body.light-mode .col-head,
+        html[data-theme="light"] .col-head {
+            background: rgba(28, 24, 18, 0.04) !important;
+            color: rgba(55, 50, 44, 0.65) !important;
+        }
+        body.light-mode .avatar-name,
+        html[data-theme="light"] .avatar-name { color: #1c1814 !important; }
+        body.light-mode .badge,
+        html[data-theme="light"] .badge {
+            background: #f0ece6 !important;
+            border-color: rgba(28, 24, 18, 0.12) !important;
+            color: rgba(55, 50, 44, 0.75) !important;
+        }
+        body.light-mode .help-icon,
+        html[data-theme="light"] .help-icon {
+            background: rgba(28, 24, 18, 0.06) !important;
+            color: rgba(55, 50, 44, 0.55) !important;
+        }
+        body.light-mode .liq-container,
+        html[data-theme="light"] .liq-container {
+            background: rgba(28, 24, 18, 0.05) !important;
+        }
+        body.light-mode .section-title span:first-child,
+        html[data-theme="light"] .section-title span:first-child { text-shadow: none; }
 
         /* --- 입력 폼 (점신 스타일) --- */
         .input-group {
@@ -709,13 +863,15 @@
         body.light-mode .yearly-card,
         body.light-mode .monthly-card,
         body.light-mode .glass-panel,
+        body.light-mode .f-card,
         html[data-theme="light"] .card,
         html[data-theme="light"] .yearly-card,
         html[data-theme="light"] .monthly-card,
-        html[data-theme="light"] .glass-panel {
-            background: rgba(255, 255, 255, 0.4) !important;
-            border: 1px solid rgba(0, 0, 0, 0.1) !important;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
+        html[data-theme="light"] .glass-panel,
+        html[data-theme="light"] .f-card {
+            background: #ffffff !important;
+            border: 1px solid rgba(28, 24, 18, 0.09) !important;
+            box-shadow: 0 2px 14px rgba(28, 24, 18, 0.05);
         }
         body:not(.light-mode) .card,
         body:not(.light-mode) .yearly-card,
@@ -727,12 +883,6 @@
         html[data-theme="dark"] .glass-panel {
             background: rgba(30, 30, 30, 0.6) !important;
             border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        }
-        body.light-mode .f-card,
-        html[data-theme="light"] .f-card {
-            background: rgba(255, 255, 255, 0.4) !important;
-            border: 1px solid rgba(0, 0, 0, 0.1) !important;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
         }
         body:not(.light-mode) .f-card,
         html[data-theme="dark"] .f-card {
@@ -946,13 +1096,15 @@
         body.light-mode .yearly-card,
         body.light-mode .monthly-card,
         body.light-mode .glass-panel,
+        body.light-mode .f-card,
         html[data-theme="light"] .card,
         html[data-theme="light"] .yearly-card,
         html[data-theme="light"] .monthly-card,
-        html[data-theme="light"] .glass-panel {
-            background: rgba(255, 255, 255, 0.4) !important;
-            border: 1px solid rgba(0, 0, 0, 0.1) !important;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
+        html[data-theme="light"] .glass-panel,
+        html[data-theme="light"] .f-card {
+            background: #ffffff !important;
+            border: 1px solid rgba(28, 24, 18, 0.09) !important;
+            box-shadow: 0 2px 14px rgba(28, 24, 18, 0.05);
         }
         body:not(.light-mode) .card,
         body:not(.light-mode) .yearly-card,
@@ -964,12 +1116,6 @@
         html[data-theme="dark"] .glass-panel {
             background: rgba(30, 30, 30, 0.6) !important;
             border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        }
-        body.light-mode .f-card,
-        html[data-theme="light"] .f-card {
-            background: rgba(255, 255, 255, 0.4) !important;
-            border: 1px solid rgba(0, 0, 0, 0.1) !important;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
         }
         body:not(.light-mode) .f-card,
         html[data-theme="dark"] .f-card {
@@ -1215,6 +1361,97 @@
             font-weight: 500;
         }
 
+        /* 라이트 모드: 만세력·입력·VIP·로딩·게이지·라이프사이클 탭 */
+        body.light-mode .manse-label,
+        html[data-theme="light"] .manse-label {
+            color: rgba(55, 52, 48, 0.72) !important;
+        }
+        body.light-mode .manse-head,
+        html[data-theme="light"] .manse-head {
+            color: rgba(55, 52, 48, 0.82) !important;
+        }
+        body.light-mode .m-hangul,
+        html[data-theme="light"] .m-hangul {
+            color: rgba(55, 52, 48, 0.62) !important;
+        }
+        body.light-mode .m-badge,
+        html[data-theme="light"] .m-badge {
+            color: var(--text-primary) !important;
+            background: rgba(122, 90, 34, 0.09) !important;
+            border-color: rgba(122, 90, 34, 0.22) !important;
+        }
+        body.light-mode .vip-module-title,
+        html[data-theme="light"] .vip-module-title { color: #6b4f18 !important; }
+        body.light-mode .vip-module-desc,
+        html[data-theme="light"] .vip-module-desc { color: #3a3630 !important; }
+        body.light-mode .animal-symbol,
+        html[data-theme="light"] .animal-symbol { color: rgba(40, 36, 32, 0.88) !important; }
+        body.light-mode .birth-info,
+        html[data-theme="light"] .birth-info { color: rgba(60, 55, 48, 0.58) !important; }
+        body.light-mode .cover-highlight,
+        html[data-theme="light"] .cover-highlight { color: #7a5a22 !important; }
+        body.light-mode .gauge-arc,
+        html[data-theme="light"] .gauge-arc { stroke: rgba(28, 24, 18, 0.14) !important; }
+        body.light-mode .gauge-needle,
+        html[data-theme="light"] .gauge-needle {
+            background: #1c1814 !important;
+            box-shadow: 0 0 4px rgba(28, 24, 18, 0.2) !important;
+        }
+        body.light-mode .gauge-needle::after,
+        html[data-theme="light"] .gauge-needle::after { background: #1c1814 !important; }
+        body.light-mode .btn:not(.btn-toggle):not(.subtle),
+        html[data-theme="light"] .btn:not(.btn-toggle):not(.subtle) {
+            background: #ffffff !important;
+            color: #1c1814 !important;
+            border: 1px solid rgba(28, 24, 18, 0.1) !important;
+            box-shadow: 0 3px 14px rgba(28, 24, 18, 0.07) !important;
+        }
+        body.light-mode .input-group label,
+        html[data-theme="light"] .input-group label {
+            color: rgba(55, 50, 44, 0.52) !important;
+        }
+        body.light-mode .input-wrapper input,
+        html[data-theme="light"] .input-wrapper input {
+            border-bottom-color: rgba(28, 24, 18, 0.2) !important;
+        }
+        body.light-mode .input-wrapper input::placeholder,
+        html[data-theme="light"] .input-wrapper input::placeholder {
+            color: rgba(55, 50, 44, 0.32) !important;
+        }
+        body.light-mode .underline,
+        html[data-theme="light"] .underline {
+            background-color: var(--gold) !important;
+        }
+        body.light-mode .badge,
+        html[data-theme="light"] .badge {
+            background: #f0ece6 !important;
+            border-color: rgba(28, 24, 18, 0.12) !important;
+            color: rgba(55, 50, 44, 0.72) !important;
+        }
+        body.light-mode .cat-tab,
+        html[data-theme="light"] .cat-tab {
+            background: #eef0f4 !important;
+            border-color: rgba(28, 24, 18, 0.1) !important;
+            color: rgba(55, 50, 44, 0.78) !important;
+        }
+        body.light-mode .cat-tab.active,
+        html[data-theme="light"] .cat-tab.active {
+            color: #1c1814 !important;
+        }
+        body.light-mode .lifecycle-card,
+        html[data-theme="light"] .lifecycle-card {
+            background: #ffffff !important;
+            border-color: rgba(28, 24, 18, 0.1) !important;
+        }
+        body.light-mode .lifecycle-card .lc-title,
+        html[data-theme="light"] .lifecycle-card .lc-title {
+            color: #1c1814 !important;
+        }
+        body.light-mode .lifecycle-card .lc-text,
+        html[data-theme="light"] .lifecycle-card .lc-text {
+            color: rgba(55, 50, 44, 0.78) !important;
+        }
+
 </style>
 
     <style>
@@ -1311,23 +1548,20 @@
             width: 100%; height: 100%;
             pointer-events: none;
             z-index: 0;
-            opacity: 0.5;
+            opacity: 0.38;
         }
         .container { position: relative; z-index: 1; }
         
-        /* 성운 배경 */
+        /* 다크: 남색 성운 오버레이 제거 → 순검정에 가깝게. 라이트는 body.light-mode::before에서만 웜톤 */
         body::before {
             content: '';
             position: fixed;
             top: -50%; left: -50%;
             width: 200%; height: 200%;
-            background: 
-                radial-gradient(ellipse at 20% 20%, rgba(88,28,220,0.08) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 80%, rgba(28,88,220,0.06) 0%, transparent 50%),
-                radial-gradient(ellipse at 50% 50%, rgba(140,60,255,0.04) 0%, transparent 60%);
+            background: none;
             pointer-events: none;
             z-index: 0;
-            animation: nebula-shift 20s ease-in-out infinite alternate;
+            animation: none;
         }
         @keyframes nebula-shift {
             0% { transform: translate(0,0) scale(1); }
@@ -1392,6 +1626,71 @@
         .ch-title { color: var(--gold); border-bottom: 1px solid #333; padding-bottom: 8px; margin-bottom: 15px; font-family: 'Noto Serif KR', 'Nanum Myeongjo', 'Batang', serif; font-weight: 300; font-size: 20px; }
         .ch-text { font-size: 15px; line-height: 1.8; color: #eee; margin-bottom: 15px; text-align: justify; word-break: keep-all; }
         .axe-advice { background: rgba(255,255,255,0.04); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); padding: 18px; border-radius: 8px; border-left: 3px solid var(--gold); box-shadow: 0 4px 24px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06); font-size: 14.5px; line-height: 1.6; color: #ddd; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        body.light-mode .ch-text,
+        html[data-theme="light"] .ch-text {
+            color: rgba(40, 38, 34, 0.88) !important;
+        }
+        body.light-mode .ch-title,
+        html[data-theme="light"] .ch-title {
+            color: var(--gold) !important;
+            border-bottom-color: rgba(28, 24, 18, 0.15) !important;
+        }
+        body.light-mode .axe-advice,
+        html[data-theme="light"] .axe-advice {
+            color: rgba(40, 38, 34, 0.9) !important;
+            background: #faf9f7 !important;
+            border: 1px solid rgba(28, 24, 18, 0.08) !important;
+            box-shadow: 0 2px 12px rgba(28, 24, 18, 0.05) !important;
+        }
+        body.light-mode .ii-title,
+        html[data-theme="light"] .ii-title { color: #1c1814 !important; }
+        body.light-mode .ii-text,
+        body.light-mode .ii-text p,
+        html[data-theme="light"] .ii-text,
+        html[data-theme="light"] .ii-text p { color: rgba(40, 38, 34, 0.88) !important; }
+        body.light-mode .cat-text,
+        html[data-theme="light"] .cat-text { color: rgba(40, 38, 34, 0.88) !important; }
+        body.light-mode .cat-highlight,
+        html[data-theme="light"] .cat-highlight {
+            background: rgba(122, 90, 34, 0.07) !important;
+            color: rgba(40, 38, 34, 0.88) !important;
+        }
+        body.light-mode .cat-advice,
+        html[data-theme="light"] .cat-advice {
+            background: #faf9f7 !important;
+            color: rgba(40, 38, 34, 0.92) !important;
+        }
+        body.light-mode .report-chapter,
+        html[data-theme="light"] .report-chapter {
+            background: #ffffff !important;
+            border: 1px solid rgba(28, 24, 18, 0.08) !important;
+            box-shadow: 0 2px 14px rgba(28, 24, 18, 0.05) !important;
+        }
+        body.light-mode .cat-section,
+        html[data-theme="light"] .cat-section {
+            background: #ffffff !important;
+            box-shadow: 0 2px 14px rgba(28, 24, 18, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(28, 24, 18, 0.07) !important;
+        }
+        body.light-mode .cat-header,
+        html[data-theme="light"] .cat-header {
+            border-bottom-color: rgba(28, 24, 18, 0.1) !important;
+        }
+        body.light-mode .cat-stat,
+        html[data-theme="light"] .cat-stat {
+            background: #f6f4f0 !important;
+            border: 1px solid rgba(28, 24, 18, 0.06);
+        }
+        body.light-mode .inline-interp,
+        html[data-theme="light"] .inline-interp {
+            background: rgba(122, 90, 34, 0.06) !important;
+            border-color: rgba(122, 90, 34, 0.18) !important;
+            box-shadow: 0 1px 10px rgba(28, 24, 18, 0.05) !important;
+        }
+        body.light-mode .section-interp,
+        html[data-theme="light"] .section-interp {
+            border-top-color: rgba(28, 24, 18, 0.08) !important;
+        }
     </style>
 
     <style>
@@ -2083,7 +2382,7 @@ function startReport() {
 <script src="lunar.js"></script>
     <!-- KLC: KASI 기준 한국 음양력 변환 (음력 입력 시 사용) -->
     <script src="klc.min.js"></script>
-    <script src="report-core.js?v=1778790928"></script>
+    <script src="report-core.js?v=1778792605"></script>
 
 
     <script>
@@ -2149,6 +2448,40 @@ function startReport() {
     background: rgba(var(--bg-rgb, 128, 128, 128), 0.1) !important;
     backdrop-filter: blur(12px) !important;
     border: 1px solid rgba(128, 128, 128, 0.15) !important;
+}
+body.light-mode .card,
+body.light-mode .yearly-card,
+body.light-mode .monthly-card,
+body.light-mode .module-item,
+body.light-mode .f-card,
+html[data-theme="light"] .card,
+html[data-theme="light"] .yearly-card,
+html[data-theme="light"] .monthly-card,
+html[data-theme="light"] .module-item,
+html[data-theme="light"] .f-card {
+    background: #ffffff !important;
+    border: 1px solid rgba(28, 24, 18, 0.09) !important;
+    box-shadow: 0 2px 14px rgba(28, 24, 18, 0.05) !important;
+}
+body.light-mode .badge,
+body.light-mode .tag,
+body.light-mode .jijanggan,
+html[data-theme="light"] .badge,
+html[data-theme="light"] .tag,
+html[data-theme="light"] .jijanggan {
+    background: rgba(28, 24, 18, 0.05) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid rgba(28, 24, 18, 0.1) !important;
+}
+body.light-mode .pdf-btn,
+body.light-mode .sajux-pdf-wide-btn,
+body.light-mode #sajux-pdf-fab,
+html[data-theme="light"] .pdf-btn,
+html[data-theme="light"] .sajux-pdf-wide-btn,
+html[data-theme="light"] #sajux-pdf-fab {
+    background: rgba(255, 255, 255, 0.92) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid rgba(28, 24, 18, 0.1) !important;
 }
 </style>
 <style id="sajux-print-global-footer">
