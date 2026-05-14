@@ -57,7 +57,7 @@
       // 자동실행은 window.load IIFE에서 처리 (하단 스크립트 참조)
     })();
     </script>
-    <meta name="version" content="1778789351">
+    <meta name="version" content="1778789688">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -1938,6 +1938,20 @@
             .section-title span { color: #111 !important; }
             .cover-title { color: #111 !important; }
             .cover-hanja { color: #c7a76a !important; }
+            /* PDF=밝은 용지: 잉크형(라이트 에셋) 로고만 — screen 블렌드는 백지에서 거의 사라짐 */
+            .sajux-logo.dark { display: none !important; mix-blend-mode: normal !important; opacity: 1 !important; }
+            .sajux-logo.light {
+                display: block !important;
+                mix-blend-mode: normal !important;
+                opacity: 1 !important;
+                filter: none !important;
+            }
+            .sajux-logo-wrap img { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .sajux-pdf-wide-btn { display: none !important; }
+            #report-container .book-foreword-page h2,
+            #report-container .toc-page h2 { color: #111 !important; }
+            #sec-ziwei-appendix p { color: #242424 !important; }
+            #sec-ziwei-appendix div[style*="background:rgba(122,184,212"] { background: #eef6f9 !important; border-color: #b8c9d4 !important; }
             /* 어두운 배경 카드들 밝게 */
             div[style*="rgba(255,255,255,0.0"], div[style*="rgba(0,0,0,"] { background: #f5f5f5 !important; }
             p, div { color: #222 !important; }
@@ -2035,8 +2049,8 @@
     </script>
 
 <!-- SAJUX_CACHE_BUSTER_START -->
-<meta name="sajux-build" content="1778789351">
-<script>(function(){var v='1778789351';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
+<meta name="sajux-build" content="1778789688">
+<script>(function(){var v='1778789688';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
 <!-- SAJUX_CACHE_BUSTER_END -->
 </head>
 <body>
@@ -2775,7 +2789,7 @@ function startReport() {
 <script src="lunar.js"></script>
     <!-- KLC: KASI 기준 한국 음양력 변환 (음력 입력 시 사용) -->
     <script src="klc.min.js"></script>
-    <script src="report-core.js?v=1778789351"></script>
+    <script src="report-core.js?v=1778789688"></script>
 
 
 
@@ -2889,6 +2903,14 @@ body.light-mode #sajux-pdf-fab {
         break-after: avoid !important;
     }
     .pdf-btn, .nav-floating { display: none !important; }
+    .sajux-logo.dark { display: none !important; mix-blend-mode: normal !important; }
+    .sajux-logo.light {
+        display: block !important;
+        mix-blend-mode: normal !important;
+        opacity: 1 !important;
+        filter: none !important;
+    }
+    .sajux-logo-wrap img { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
     .card, .yearly-card, .monthly-card, .module-item, table, h1, h2, h3 {
         page-break-inside: avoid !important;
         break-inside: avoid !important;
