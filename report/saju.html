@@ -57,7 +57,7 @@
       // 자동실행은 window.load IIFE에서 처리 (하단 스크립트 참조)
     })();
     </script>
-    <meta name="version" content="1778788085">
+    <meta name="version" content="1778789125">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -99,6 +99,8 @@
             --earth: #c9a632;
             --metal: #b8c0d0;
             --water: #355fb8;
+            --text-muted: rgba(255,255,255,0.55);
+            --bg-rgb: 8, 8, 16;
         }
 
         * { box-sizing: border-box; }
@@ -134,6 +136,8 @@
             --glass-hover: rgba(246,248,252,1);
             --gold: var(--accent-color);
             --gold-glow: rgba(150,109,46,0.14);
+            --text-muted: rgba(16,22,32,0.5);
+            --bg-rgb: 245, 246, 251;
         }
 
         #theme-toggle {
@@ -1917,8 +1921,8 @@
     </script>
 
 <!-- SAJUX_CACHE_BUSTER_START -->
-<meta name="sajux-build" content="1778788085">
-<script>(function(){var v='1778788085';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
+<meta name="sajux-build" content="1778789125">
+<script>(function(){var v='1778789125';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
 <!-- SAJUX_CACHE_BUSTER_END -->
 </head>
 <body>
@@ -1926,7 +1930,7 @@
 <button id="theme-toggle" onclick="toggleTheme()" aria-label="테마 전환">☀️ 라이트</button>
 
 <!-- 플로팅 목차 — 5부 구조 (웹 전용, PDF 숨김) -->
-<div id="floating-toc" style="display:none; position:fixed; right:12px; top:50%; transform:translateY(-50%); z-index:9999; background:var(--panel); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid var(--line); border-radius:14px; padding:10px 6px; box-shadow:0 8px 32px rgba(0,0,0,0.45); max-width:44px; overflow:hidden; transition:max-width 0.3s, padding 0.3s;" onmouseenter="expandToc()" onmouseleave="collapseToc()">
+<div id="floating-toc" class="nav-floating" style="display:none; position:fixed; right:12px; top:50%; transform:translateY(-50%); z-index:9999; background:var(--panel); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid var(--line); border-radius:14px; padding:10px 6px; box-shadow:0 8px 32px rgba(0,0,0,0.45); max-width:44px; overflow:hidden; transition:max-width 0.3s, padding 0.3s;" onmouseenter="expandToc()" onmouseleave="collapseToc()">
     <div style="font-size:10px; color:var(--gold); text-align:center; margin-bottom:8px; letter-spacing:1px; white-space:nowrap; opacity:0.85;">☰</div>
     <div id="toc-links" style="display:flex; flex-direction:column; gap:4px; min-width:168px;">
         <a onclick="tocGo('sec-part1-narrative'); return false;" href="#sec-part1-narrative" class="toc-link" title="1부 당신이라는 사람">1부 당신이라는 사람</a>
@@ -1938,7 +1942,7 @@
         <a onclick="window.print(); return false;" class="toc-link toc-link-print" href="#">🖨 PDF 저장</a>
     </div>
 </div>
-<nav id="sticky-part-nav" class="sticky-part-nav" aria-label="리포트 5부 이동">
+<nav id="sticky-part-nav" class="sticky-part-nav nav-floating" aria-label="리포트 5부 이동">
     <button type="button" class="spn-item" onclick="tocGo('sec-part1-narrative')" title="1부">1부<br><span class="spn-sub">당신</span></button>
     <button type="button" class="spn-item" onclick="tocGo('sec-part2-hardware')" title="2부">2부<br><span class="spn-sub">스펙</span></button>
     <button type="button" class="spn-item" onclick="tocGo('sec-part3-four')" title="3부">3부<br><span class="spn-sub">4대운</span></button>
@@ -2495,7 +2499,7 @@ function startReport() {
   <div class="ii-title">당신의 8글자 — 태어난 순간 새겨진 운명의 설계도</div>
   <div class="ii-text">
     <p>사주의 8글자는 단순한 기호가 아닙니다. 태어난 순간 우주의 기운이 당신에게 새긴 고유한 코드입니다. 연주는 뿌리, 월주는 줄기, 일주는 꽃, 시주는 열매입니다. 이 4개의 기둥이 만들어내는 조화와 충돌이 당신 인생의 큰 흐름을 결정합니다.</p>
-    <p>일주는 나 자신입니다. 일간이 당신의 본질적 기질이고, 일지가 내면 깊숙이 숨어있는 진짜 욕망입니다. 나머지 7글자는 일간을 중심으로 어떤 관계를 맺느냐에 따라 <strong>역할 패턴</strong>이 정해지고, 이것이 당신의 사회적 역할과 인간관계 패턴을 만듭니다.</p>
+    <p>일주는 나 자신입니다. 일간이 당신의 본질적 기질이고, 일지가 내면 깊숙이 숨어있는 진짜 욕망입니다. 나머지 7글자는 일간을 중심으로 어떤 관계를 맺느냐에 따라 <strong>십성</strong>이 정해지고, 이것이 당신의 사회적 역할과 인간관계 패턴을 만듭니다.</p>
     
   </div>
 </div>
@@ -2566,7 +2570,7 @@ function startReport() {
 
         <div id="sec-legacy-inline-charts">
         <div class="section">
-            <div class="section-title"><div class="title-left"><span>역할 패턴 분포</span><span class="help-icon" onclick="openHelp('sipseong')">?</span></div><span>사회적 역할과 관계 패턴</span></div>
+            <div class="section-title"><div class="title-left"><span>십성 분포</span><span class="help-icon" onclick="openHelp('sipseong')">?</span></div><span>사회적 역할과 관계 패턴</span></div>
             <div id="sipseong-summary" style="font-size:12px;color:var(--text-soft);margin-bottom:12px;padding:8px 12px;background:#111;border-radius:8px;border-left:3px solid #8a9bb5;line-height:1.6;"></div>
             <div class="bar-group" id="sipseong-bars"></div>
             <div id="sipseong-inline-summary" class="section-interp"></div>
@@ -2657,7 +2661,7 @@ function startReport() {
 <script src="lunar.js"></script>
     <!-- KLC: KASI 기준 한국 음양력 변환 (음력 입력 시 사용) -->
     <script src="klc.min.js"></script>
-    <script src="report-core.js?v=1778788085"></script>
+    <script src="report-core.js?v=1778789125"></script>
 
 
 
@@ -2707,6 +2711,22 @@ function startReport() {
       }
     })();
     </script>
+<style id="sajux-glass-ui-overrides">
+.badge, .tag, .jijanggan {
+    background: rgba(128, 128, 128, 0.1) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid rgba(128, 128, 128, 0.2);
+}
+.pdf-btn {
+    background: rgba(128, 128, 128, 0.2) !important;
+    backdrop-filter: blur(5px);
+}
+.card, .yearly-card, .monthly-card, .module-item {
+    background: rgba(var(--bg-rgb, 128, 128, 128), 0.1) !important;
+    backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(128, 128, 128, 0.15) !important;
+}
+</style>
 <style id="sajux-print-global-footer">
 @media print {
     * {
@@ -2736,6 +2756,11 @@ function startReport() {
         break-inside: avoid !important;
         page-break-after: avoid !important;
         break-after: avoid !important;
+    }
+    .pdf-btn, .nav-floating { display: none !important; }
+    .card, .yearly-card, .monthly-card, .module-item, table, h1, h2, h3 {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
     }
 }
 </style>
