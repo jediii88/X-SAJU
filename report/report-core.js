@@ -1,12 +1,38 @@
 /* report-core.js — 리포트·만세력 공통 엔진 (tools/sync_report_core.py, view.html 기준 추출) */
 /* 로드 순서: lunar.js → klc.min.js → 본 파일 */
 
+/** 명리학 22글자 한글 표기용 조사(은/는·이/가·과/와) — 천간·지지 한글 한 글자에 강제 적용 */
+var JOSA_MAP_22 = {
+    '갑': { i: '이', wa: '과' }, '을': { i: '이', wa: '과' }, '병': { i: '이', wa: '과' }, '정': { i: '이', wa: '과' },
+    '무': { i: '가', wa: '와' }, '기': { i: '가', wa: '와' }, '경': { i: '이', wa: '과' }, '신': { i: '이', wa: '과' },
+    '임': { i: '이', wa: '과' }, '계': { i: '가', wa: '와' }, '자': { i: '가', wa: '와' }, '축': { i: '이', wa: '과' },
+    '인': { i: '이', wa: '과' }, '묘': { i: '가', wa: '와' }, '진': { i: '이', wa: '과' }, '사': { i: '가', wa: '와' },
+    '오': { i: '가', wa: '와' }, '미': { i: '가', wa: '와' }, '유': { i: '가', wa: '와' }, '술': { i: '이', wa: '과' }, '해': { i: '가', wa: '와' }
+};
+
+/** 부록 B 등 세운 상세 직전 4대 지표 블록 (디자인 고정, 값만 동적) */
+function buildYearlyIndicatorsHtml(ykw) {
+    var w = ykw || { wealth: '-', career: '-', doc: '-', love: '-' };
+    function esc(t) {
+        return String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+    return '<div class="yearly-indicators" style="margin-bottom:12px;padding:10px;background-color:#1a1a1a;border-radius:6px;border-left:3px solid #d4af37;">'
+        + '<div style="font-size:0.9em;margin-bottom:4px;">[ 💰 재물·투자 : <span style="color:#d4af37;font-weight:bold;">' + esc(w.wealth) + '</span> ]</div>'
+        + '<div style="font-size:0.9em;margin-bottom:4px;">[ 🏢 직업·합격 : <span style="color:#d4af37;font-weight:bold;">' + esc(w.career) + '</span> ]</div>'
+        + '<div style="font-size:0.9em;margin-bottom:4px;">[ 📝 문서·계약 : <span style="color:#d4af37;font-weight:bold;">' + esc(w.doc) + '</span> ]</div>'
+        + '<div style="font-size:0.9em;">[ ❤ 애정·대인 : <span style="color:#d4af37;font-weight:bold;">' + esc(w.love) + '</span> ]</div>'
+        + '</div>';
+}
+
 /** 마지막 음절 받침 기준 조사. ㄹ 받침은 은/는·이/가·을/를·과/와 에서 받침 없는 쪽(는/가/를/와)을 사용합니다. */
 function getJosa(word, pair) {
     if (word == null || word === '') return '';
     var s = String(word).replace(/\s+$/, '');
     if (!s.length) return '';
     var last = s.charAt(s.length - 1);
+    if (JOSA_MAP_22[last] && (pair === '이/가' || pair === '과/와')) {
+        return pair === '이/가' ? JOSA_MAP_22[last].i : JOSA_MAP_22[last].wa;
+    }
     var c = last.charCodeAt(0);
     var jong = 0;
     if (c >= 0xAC00 && c <= 0xD7A3) jong = (c - 0xAC00) % 28;
@@ -1017,8 +1043,26 @@ window.SAJU_DB = {
 };
 
 
-
 // --- X-SAJU DEEP REPORT GENERATOR ENGINE (V4 - REAL DB INTEGRATION) ---
+
+/** 와이드 PDF 버튼 스타일 + 우하단 FAB (인쇄 시 숨김) */
+function injectSajuxPdfUi() {
+    if (!document.getElementById('sajux-report-ui-styles')) {
+        var st = document.createElement('style');
+        st.id = 'sajux-report-ui-styles';
+        st.textContent = '.sajux-pdf-wide-btn{cursor:pointer;box-sizing:border-box;border:none;font-family:inherit;font-weight:800;font-size:15px;padding:16px 22px;margin:16px 0 18px;border-radius:12px;background:linear-gradient(135deg,#e8c76a,#b8923a);color:#1a1204;letter-spacing:0.02em;box-shadow:0 8px 28px rgba(212,175,55,0.38);width:100%;max-width:100%;} .sajux-pdf-wide-btn:active{transform:translateY(1px);} #sajux-pdf-fab{cursor:pointer;position:fixed;bottom:22px;right:18px;z-index:10001;font-family:inherit;font-weight:800;font-size:14px;padding:14px 20px;border-radius:999px;border:none;background:linear-gradient(135deg,#d4af37,#8a7020);color:#111;box-shadow:0 10px 32px rgba(0,0,0,0.5),0 0 0 1px rgba(255,255,255,0.12);} @media print{#sajux-pdf-fab,.sajux-pdf-wide-btn{display:none !important;}} @media(max-width:600px){#sajux-pdf-fab{bottom:16px;right:12px;padding:12px 16px;font-size:13px;}}';
+        document.head.appendChild(st);
+    }
+    var oldFab = document.getElementById('sajux-pdf-fab');
+    if (oldFab) oldFab.remove();
+    var fab = document.createElement('button');
+    fab.id = 'sajux-pdf-fab';
+    fab.type = 'button';
+    fab.setAttribute('aria-label', 'PDF로 저장');
+    fab.textContent = '🖨 PDF';
+    fab.addEventListener('click', function () { window.print(); });
+    document.body.appendChild(fab);
+}
 
 function getDBText(category, key, fallback) {
     if(window.SAJU_DB && window.SAJU_DB[category] && window.SAJU_DB[category][key]) {
@@ -1053,23 +1097,23 @@ function generateDeepReport(data) {
     html += safeCall(()=>buildForewordPage(data), 'foreword');
     html += safeCall(()=>buildPremiumExecutiveSummary(data), 'premium');
     html += safeCall(()=>buildVipEvidenceBlock(data), 'vipEvidence');
-    html += safeCall(()=>buildPartHeader(1,'당신이라는 사람','타고난 본성 · 자라온 환경 · 인생의 기승전결'), 'part1header');
+    html += safeCall(()=>buildPartHeader(1,'당신이라는 사람','타고난 본성 · 자라온 환경 · 인생의 기승전결','sec-part1-narrative'), 'part1header');
     html += safeCall(()=>buildPart1_Story(data), 'part1');
 
     // PHASE 2: 하드웨어 스펙 분석
-    html += safeCall(()=>buildPartHeader(2,'하드웨어 스펙 분석','오행 분포 · 십성 구조'), 'part2header');
+    html += safeCall(()=>buildPartHeader(2,'하드웨어 스펙 분석','오행 분포 · 십성 구조','sec-part2-hardware'), 'part2header');
     html += safeCall(()=>buildChapter2_Wuxing(data), 'ch2wuxing');
     html += safeCall(()=>buildChapter3_Sipseong(data), 'ch3sipseong');
 
     // PHASE 3: 도메인별 심층 해부
-    html += safeCall(()=>buildPartHeader(3,'핵심 4대 운 집중 조명','재물 · 직업 · 애정 · 건강'), 'part3header');
+    html += safeCall(()=>buildPartHeader(3,'핵심 4대 운 집중 조명','재물 · 직업 · 애정 · 건강','sec-part3-four'), 'part3header');
     html += safeCall(()=>buildChapter4_Wealth(data), 'ch4');
     html += safeCall(()=>buildChapter5_Career(data), 'ch5');
     html += safeCall(()=>buildChapter6_Love(data), 'ch6love');
     html += safeCall(()=>buildChapter8_Health(data), 'ch8health');
 
     // PHASE 4: 타임라인 전략 상황실
-    html += safeCall(()=>buildPartHeader(4,'시간별 운세','올해부터 대운까지 — 거시에서 미시로'), 'part4header');
+    html += safeCall(()=>buildPartHeader(4,'타임라인 전략','대운 · 세운 · 월운','sec-part4-timeline'), 'part4header');
     html += safeCall(()=>buildDaewunLoop(data), 'daewunloop');
     html += safeCall(()=>buildChapter6_SeYun(data), 'ch6seyun');
     html += safeCall(()=>buildChapter7_NextYears(data), 'ch7next');
@@ -1077,10 +1121,12 @@ function generateDeepReport(data) {
     html += safeCall(()=>buildChapter9_Monthly(data), 'ch9monthly');
 
     // PHASE 5: 최종 실행 지침
-    html += safeCall(()=>buildPartHeader(5,'마무리','자녀 · 말년 · 개운법'), 'part5header');
+    html += safeCall(()=>buildPartHeader(5,'최종 실행 지침 (마무리)','개운법 · 체크리스트 · 실행 우선순위','sec-part5-final'), 'part5header');
     html += safeCall(()=>buildChapter9_Remedy(data), 'ch9remedy');
 
     document.getElementById('report-container').innerHTML = html;
+
+    try { injectSajuxPdfUi(); } catch (e) { console.error('injectSajuxPdfUi', e.message); }
 
     // 기존 정적 만세력 섹션들 숨김 (report-container가 모든 내용을 포함하므로)
     var staticSecs = ['sec-manse','sec-relation','sec-shinsal','sec-wuxing',
@@ -1721,6 +1767,7 @@ function buildPremiumExecutiveSummary(data) {
     return '<div id="sec-premium-summary" class="report-chapter premium-executive-summary chapter-start" style="margin-bottom:40px;padding:22px 20px;border-radius:14px;border:1px solid rgba(199,167,106,0.35);background:linear-gradient(165deg,rgba(199,167,106,0.12)0%,rgba(0,0,0,0.15)55%);">' +
         '<div style="font-size:10px;letter-spacing:4px;color:rgba(199,167,106,0.7);margin-bottom:8px;">PREMIUM SUMMARY · STRATEGIC BRIEF</div>' +
         '<h2 style="font-family:\'Noto Serif KR\',serif;font-size:22px;font-weight:700;color:#f5f0e6;margin:0 0 12px;line-height:1.45;">' + nm + '님 맞춤 종합 핵심</h2>' +
+        '<button type="button" class="sajux-pdf-wide-btn" onclick="window.print()">PDF 다운로드 및 영구 보관</button>' +
         '<p class="premium-thesis" style="margin:0 0 14px;font-size:14.5px;line-height:1.9;color:#efe9dc;font-weight:600;">' + coreFusion + '</p>' +
         '<div style="font-size:11px;color:var(--gold);letter-spacing:1px;margin:16px 0 8px;">최종 전략 지침서 · 4대 모듈</div>' +
         '<ul class="premium-points" style="margin:0;padding-left:18px;color:#d8d3c9;line-height:1.9;font-size:13.5px;">' +
@@ -2920,7 +2967,7 @@ function buildSewunLoop(data) {
         '巳':'집중과 변신. 결단력이 필요한 시기. 큰 변화의 전조.',
         '午':'성취와 인정. 사회적 성과가 드러나는 화려한 시기.',
         '未':'감성과 풍요. 창작·문화·예술 분야에서 결실을 맺음.',
-        '辛':'판단과 결단. 빠른 결정이 필요. 민첩한 대응이 성패 가름.',
+        '申':'판단과 결단. 빠른 결정이 필요. 민첩한 대응이 성패를 가름.',
         '酉':'완성과 보상. 그동안의 노력이 결실로 돌아오는 시기.',
         '戌':'통찰과 마무리. 깊은 성찰과 정리가 필요한 마무리 국면.',
         '亥':'잠복과 준비. 표면적 침체지만 내면의 힘이 충전되는 시기.'
@@ -3002,32 +3049,42 @@ function buildSewunLoop(data) {
 
         // 세운: 연도 제목 직후 4줄 인디케이터 → 상세 서사
         const ykw = yearlyFourDomainKeywords(score, sewSip);
-        const yearNarr = score>=3
-            ? `${yr}년은 전면 공세 구간입니다. 우선순위 자산에 자원을 집중하고 핵심 승부를 즉시 실행하십시오.`
-            : score>=1
-            ? `${yr}년은 상승 구간입니다. 실행 속도를 유지하면서 계약·관계·평판을 동시에 확장하십시오.`
-            : score===0
-            ? `${yr}년은 균형 구간입니다. 무리한 확장을 멈추고 기존 시스템의 완성도를 끌어올리십시오.`
-            : score>=-2
-            ? `${yr}년은 방어 구간입니다. 현금흐름과 건강을 우선 보호하고 고위험 결정을 절대 삼가십시오.`
-            : `${yr}년은 긴급 방어 구간입니다. 신규 레버리지와 감정적 결정을 즉시 중단하고 손실 차단에 집중하십시오.`;
-        const stripRow = function(icon, label, kw) {
-            return '<div style="display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.06);font-size:12px;color:#e6e0d6;">'
-                + '<div style="font-weight:700;">[ ' + icon + ' ' + label + ' : <span style="color:var(--gold);font-weight:800;">' + kw + '</span> ]</div>'
-                + '</div>';
-        };
-        const yearlyFourStrip = '<div class="sewun-year-fourstrip" style="margin:0 0 12px;border:1px solid rgba(199,167,106,0.28);border-radius:10px;overflow:hidden;background:rgba(0,0,0,0.28);">'
-            + stripRow('💰', '재물·투자', ykw.wealth)
-            + stripRow('🏢', '직업·합격', ykw.career)
-            + stripRow('📝', '문서·계약', ykw.doc)
-            + stripRow('❤', '애정·대인', ykw.love).replace('border-bottom:1px solid rgba(255,255,255,0.06);', '')
-            + '</div>';
+        const jiHan = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'][jiIdx];
+        const stemHan = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'][ganIdx];
+        const gLine = GAN_DESC[stemHan] || '';
+        const jLine = JI_DESC[jiHan] || '';
+        const yearNarr = score >= 3
+            ? `${yr}년(${GAN_KR[stem] || stem}${JI_KR[branch] || branch})은 원국과 조화가 크게 맞아 드는 전면 공세 구간입니다. 천간 쪽 흐름은 ${gLine} 지지 쪽 흐름은 ${jLine} 이 두 축이 동시에 열릴 때가 많으니, 우선순위 자산과 시간을 한곳에 몰아 핵심 승부를 분기 단위로 끊어 실행하십시오. 계약·투자·인맥을 한꺼번에 벌이기보다 순서를 정하면 결과가 더 안정적으로 붙습니다.`
+            : score >= 1
+            ? `${yr}년(${GAN_KR[stem] || stem}${JI_KR[branch] || branch})은 상승 국면에 가깝습니다. ${gLine} ${jLine} 실행 속도를 유지하되, 검증되지 않은 확장은 월 단위로 쪼개 검토하십시오. 대외 계약과 평판 자산을 동시에 다지면 다음 해의 선택지가 넓어집니다.`
+            : score === 0
+            ? `${yr}년(${GAN_KR[stem] || stem}${JI_KR[branch] || branch})은 급격한 길·흉보다 균형에 가깝습니다. ${gLine} ${jLine} 무리한 확장을 멈추고 기존 시스템의 완성도·현금흐름·건강 루틴을 먼저 고정하십시오. 작은 완성을 쌓으면 다음 운에서 폭발력이 커집니다.`
+            : score >= -2
+            ? `${yr}년(${GAN_KR[stem] || stem}${JI_KR[branch] || branch})은 방어와 정리에 무게가 실리는 해입니다. ${gLine} ${jLine} 현금흐름과 수면·검진을 우선 보호하고, 고위험 레버리지·보증·감정적 결정은 가급적 보류하십시오. 꼭 필요한 결정은 전문가 검토와 서면 조항을 거치면 손실 가능성이 줄어듭니다.`
+            : `${yr}년(${GAN_KR[stem] || stem}${JI_KR[branch] || branch})은 긴급 방어가 필요한 구간입니다. ${gLine} ${jLine} 신규 투자와 충동적 확장을 즉시 중단하고, 손실 한도와 회수 가능한 자산부터 정리하십시오. 이 시기를 버티는 것만으로도 다음 길운에 올라탈 체력과 자원을 확보하는 것입니다.`;
+        const yearlyFourStrip = buildYearlyIndicatorsHtml(ykw);
         const yearlyBodyHtml = '<div style="background:rgba(0,0,0,0.2);border-radius:8px;padding:14px 16px;margin-bottom:10px;border:1px solid rgba(255,255,255,0.06);">'
             + '<p class="yearly-description" style="font-size:13px;color:#ddd;line-height:1.85;margin:0;">' + yearNarr + '</p></div>';
-        const wAdv = score>=2?'투자·확장 최적 시기. 새로운 수입원 개척에 나서십시오.':score>=0?'꾸준한 저축과 자산 관리에 집중하십시오.':'대규모 투자와 보증은 피하십시오.';
-        const cAdv = score>=2?'이직·승진·창업 도전을 두려워하지 마십시오. 이 해의 선택이 10년을 결정합니다.':score>=0?'전문성을 높이고 네트워크를 구축하는 시기입니다.':'급격한 직장 변화는 리스크가 큽니다. 내공을 쌓으십시오.';
-        const lAdv = score>=2?'인연의 문이 활짝 열립니다. 새로운 만남에 적극적으로 나서십시오.':score>=0?'기존 관계를 더 깊게 발전시키는 데 집중하십시오.':'인간관계에서 감정적 대응을 자제하고 신중히 소통하십시오.';
-        const hAdv = score>=2?'운동 습관을 구축하기 최적입니다. 적극적으로 활동하십시오.':score>=0?'과로를 경계하고 규칙적인 수면과 식사를 유지하십시오.':'수면 7시간 이상, 알코올 절제, 정기 검진이 필수입니다.';
+        const wAdv = score >= 2
+            ? '수익 채널을 넓히되, 검증된 파이프라인에만 자본을 넣으십시오. 분기마다 손익분기점을 숫자로 재점검하고, 용신 방향의 색·방위를 소비 패턴에 반영하면 심리적 과소비를 줄이는 데에도 도움이 됩니다.'
+            : score >= 0
+            ? '꾸준한 저축·분할 매입·현금 비중을 높이는 전략이 유리합니다. 큰 승부는 내년 이후로 미루고, 이번 해에는 내부 장부와 세금·보험 증빙을 정리해 두십시오.'
+            : '대규모 투자·보증·연대채무는 피하십시오. 현금흐름 방어가 최우선이며, 꼭 필요한 지출만 남기고 나머지는 즉시 줄이십시오.';
+        const cAdv = score >= 2
+            ? '이직·승진·창업 등 방향 전환을 시도하기에 상대적으로 유리한 해입니다. 다만 한 번에 여러 축을 바꾸기보다, 이력·포트폴리오·핵심 성과 지표를 먼저 문서화한 뒤 움직이십시오. 대외 평판이 곧 협상력이 됩니다.'
+            : score >= 0
+            ? '전문성을 높이고 네트워크를 정돈하는 데 집중하십시오. 직함보다 실제 권한 범위와 성과 기준을 명확히 합의해 두면, 내부 정치 속에서도 흔들리지 않습니다.'
+            : '급격한 직장 변화는 리스크가 큽니다. 내공을 쌓고 자격·기술 스택을 보강한 뒤, 시장이 열릴 때를 기다리십시오. 감정적 퇴사는 가급적 피하십시오.';
+        const lAdv = score >= 2
+            ? '새로운 만남과 협력 제안이 늘어날 수 있습니다. 관계의 속도를 조절하고, 약속과 경계를 말로 명확히 밝히면 신뢰가 빨리 쌓입니다. 소개·동호회·업무 파트너십에서 좋은 인연이 생길 가능성이 큽니다.'
+            : score >= 0
+            ? '기존 관계를 깊게 만드는 쪽이 유리합니다. 짧은 대화보다 정기적인 소통 루틴을 만드십시오. 갈등이 생기면 즉답보다 하루 텀을 두고 정리하는 편이 안전합니다.'
+            : '말과 새 인맥 확장은 최소화하고, 이미 신뢰를 쌓은 소수와만 밀도 있게 소통하십시오. 감정적 대응을 자제하면 오해로 번지는 일을 줄일 수 있습니다.';
+        const hAdv = score >= 2
+            ? '운동 습관을 새로 잡기 좋은 해입니다. 주 3회 이상 유산소와 근력을 병행하고, 수면 시간을 고정하십시오. 과로 징후가 보이면 즉시 일정을 덜어내야 합니다.'
+            : score >= 0
+            ? '과로를 경계하고 규칙적인 수면과 식사를 유지하십시오. 스트레스가 쌓이는 달에는 검진 항목 중 간·심혈관을 우선 확인하십시오.'
+            : '수면 7시간 이상, 음주 제한, 정기 검진을 반드시 지키십시오. 무리한 다이어트나 밤샘 작업은 면역과 호르몬 리듬을 무너뜨릴 수 있으니 삼가십시오.';
         rows += `<div style="background:rgba(255,255,255,${isNow?'0.07':'0.03'});border-radius:10px;padding:16px;border:1px solid ${isNow?'var(--gold)':'rgba(255,255,255,0.07)'};break-inside:avoid;">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
                 <div>
@@ -3155,8 +3212,8 @@ function buildWolunLoop(data) {
             : '신규 확장과 고위험 결정은 즉시 멈추고 손실 차단을 우선하십시오.';
         return `<div style="background:rgba(255,255,255,${isNow?'0.07':'0.03'});border-radius:10px;padding:14px 16px;border-left:3px solid ${col};break-inside:avoid;">
             <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
-                <div style="display:flex;align-items:center;gap:8px;">
-                    <span style="font-size:20px;font-weight:240;color:var(--gold);font-family:Noto Serif KR,serif;">${hanja}</span>
+                <div style="display:flex;align-items:center;gap:8px;min-width:0;">
+                    <span style="font-size:20px;font-weight:700;color:var(--gold);font-family:Noto Serif KR,serif;white-space:nowrap;letter-spacing:0.02em;">${hanja}</span>
                     <span style="font-size:12px;color:#aaa;">${yr}.${monthNo}월 (${mJi}월/${BRANCH_ANIMAL[mJi]||'해당'})</span>
                     ${isNow?'<span style="font-size:10px;background:var(--gold);color:#000;padding:1px 7px;border-radius:8px;font-weight:700;">이번달</span>':''}
                 </div>
@@ -3486,11 +3543,15 @@ function buildChapter8_Health(data) {
 // ═══════════════════════════════════════════════════════
 // PART HEADER
 // ═══════════════════════════════════════════════════════
-function buildPartHeader(num,title,subtitle){
-    var c={1:'199,167,106',2:'224,128,128',3:'122,184,212',4:'152,201,138'};
-    var h={1:'#c7a76a',2:'#e08080',3:'#7ab8d4',4:'#98c98a'};
-    var ic={1:'🌿',2:'✦',3:'🕰',4:'🌙'};
-    return'<div class="report-chapter" style="background:linear-gradient(135deg,rgba('+c[num]+',0.09),rgba(0,0,0,0));border-top:2px solid '+h[num]+';border-radius:16px;padding:32px 36px;margin:48px 0 8px;page-break-before:always;"><div style="font-size:11px;color:'+h[num]+';letter-spacing:3px;margin-bottom:10px;font-weight:700;">PART '+num+'</div><div style="font-size:26px;font-weight:700;color:#fff;margin-bottom:8px;">'+ic[num]+' '+title+'</div><div style="font-size:13px;color:rgba(255,255,255,0.4);letter-spacing:1px;">'+subtitle+'</div></div>';
+function buildPartHeader(num, title, subtitle, anchorId) {
+    var c = { 1: '199,167,106', 2: '224,128,128', 3: '122,184,212', 4: '152,201,138', 5: '212,175,95' };
+    var h = { 1: '#c7a76a', 2: '#e08080', 3: '#7ab8d4', 4: '#98c98a', 5: '#d4af37' };
+    var ic = { 1: '🌿', 2: '✦', 3: '🕰', 4: '🌙', 5: '📋' };
+    var idAttr = anchorId ? (' id="' + String(anchorId).replace(/[^a-zA-Z0-9_-]/g, '') + '"') : '';
+    var color = c[num] != null ? c[num] : '199,167,106';
+    var border = h[num] != null ? h[num] : '#c7a76a';
+    var icon = ic[num] != null ? ic[num] : '📌';
+    return '<div' + idAttr + ' class="report-chapter" style="background:linear-gradient(135deg,rgba(' + color + ',0.09),rgba(0,0,0,0));border-top:2px solid ' + border + ';border-radius:16px;padding:32px 36px;margin:48px 0 8px;page-break-before:always;"><div style="font-size:11px;color:' + border + ';letter-spacing:3px;margin-bottom:10px;font-weight:700;">PART ' + num + '</div><div style="font-size:26px;font-weight:700;color:#fff;margin-bottom:8px;">' + icon + ' ' + title + '</div><div style="font-size:13px;color:rgba(255,255,255,0.4);letter-spacing:1px;">' + subtitle + '</div></div>';
 }
 
 // VIP 근거: 원국 8자 표 + 자미두수 명궁 (프리미엄 요약 직후 배치)
@@ -3506,7 +3567,7 @@ function buildVipEvidenceBlock(data) {
     function ohColor(k){ return OH_COL[k]||'#aaa'; }
     function hanCol(h){ return ohColor(STEM_OH[h]||BRNCH_OH[h]||'earth'); }
     var ev = '';
-    ev += '<div class="report-chapter chapter-start vip-evidence-block" style="padding-top:4px;margin-bottom:32px;">';
+    ev += '<div id="sec-vip-evidence" class="report-chapter chapter-start vip-evidence-block" style="padding-top:4px;margin-bottom:32px;">';
     ev += '<div style="font-size:11px;color:rgba(199,167,106,0.75);letter-spacing:3px;margin-bottom:8px;font-weight:700;">DATA · 원국 근거</div>';
     // ── ① 만세력 원국 8자 표 ──
     ev += '<div style="font-size:13px;color:var(--gold);font-weight:800;letter-spacing:1.2px;line-height:1.45;margin-bottom:12px;">① 타고난 8자 — 사주 원국</div>';
@@ -3905,7 +3966,7 @@ function buildPart1_Story(data){
 // Ch.6 올해 세운 거시적
 // ═══════════════════════════════════════════════════════
 function buildChapter6_SeYun(data){
-    var name=data.name||'고객',curY=new Date().getFullYear();
+    var name=data.name||'고객',curY=getReportBaseDate(data).getFullYear();
     if(typeof Solar==='undefined') return typeof buildSewunLoop==='function'?buildSewunLoop(data):'';
     var GA={'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'},JA={'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'},GK={'甲':'갑','乙':'을','丙':'병','丁':'정','戊':'무','己':'기','庚':'경','辛':'신','壬':'임','癸':'계'},JK={'子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해'},OK={wood:'목',fire:'화',earth:'토',metal:'금',water:'수'};
     var yG='',yJ='',yGoh='earth',yJoh='earth',yKor='';
@@ -3916,39 +3977,62 @@ function buildChapter6_SeYun(data){
     var dayStemY=data.dayStem||'甲';
     var sewSipY=(typeof getSipseong==='function')?(getSipseong(dayStemY,yG)||''):'';
     var ykwY=yearlyFourDomainKeywords(scY,sewSipY);
-    var fourStripY='<div style="margin:0 0 16px;border:1px solid rgba(199,167,106,0.28);border-radius:10px;overflow:hidden;background:rgba(0,0,0,0.28);"><div style="border-bottom:1px solid rgba(255,255,255,0.06);padding:10px 12px;font-size:12px;color:#e6e0d6;">[ 💰 재물·투자 : <span style="color:var(--gold);font-weight:800;">'+ykwY.wealth+'</span> ]</div><div style="border-bottom:1px solid rgba(255,255,255,0.06);padding:10px 12px;font-size:12px;color:#e6e0d6;">[ 🏢 직업·합격 : <span style="color:var(--gold);font-weight:800;">'+ykwY.career+'</span> ]</div><div style="border-bottom:1px solid rgba(255,255,255,0.06);padding:10px 12px;font-size:12px;color:#e6e0d6;">[ 📝 문서·계약 : <span style="color:var(--gold);font-weight:800;">'+ykwY.doc+'</span> ]</div><div style="padding:10px 12px;font-size:12px;color:#e6e0d6;">[ ❤ 애정·대인 : <span style="color:var(--gold);font-weight:800;">'+ykwY.love+'</span> ]</div></div>';
+    var fourStripY=buildYearlyIndicatorsHtml(ykwY);
     var luck=ig?'흥(興)의 해':ib?'주의가 필요한 해':'평온한 해',lc=ig?'#c7a76a':ib?'#e08080':'#aaa';
     var D={wood:{m:'새 수입원 개척이 활발합니다.',c:'이직·창업·학습 시작에 강한 에너지.',l:'새 만남이 활발합니다. 능동적으로 움직이면 인연이 옵니다.',h:'간·신경 과부하 주의.'},fire:{m:'수입·지출 모두 증가. 저축 구조를 먼저 만드십시오.',c:'사회적 노출·인정이 절정.',l:'열정적 만남. 감정이 앞서지 않도록 하십시오.',h:'심장·혈관 주의.'},earth:{m:'안정적 수입 지속. 꾸준한 축적이 맞습니다.',c:'현 포지션을 굳히는 해.',l:'안정적 관계가 더 단단해집니다.',h:'소화기·위장 주의.'},metal:{m:'정리와 결산의 해.',c:'전문성이 인정받는 해.',l:'관계의 명확한 정리가 필요합니다.',h:'폐·대장 주의.'},water:{m:'정보·인맥이 돈이 됩니다.',c:'분석·기획 역량이 빛나는 해.',l:'감성적 연결. 기대를 현실적으로 유지하십시오.',h:'신장·방광 주의.'}};
     var d=D[yGoh]||D.earth;
-    var ST={wood:'지금 씨앗을 뿌리는 것이 목표입니다. 3~5년 뒤를 보고 결단하십시오.',fire:'최대한 많이 노출되고 최대한 많이 저장하십시오.',earth:'서두르지 않아도 됩니다. 꾸준히 쌓는 것이 전략입니다.',metal:'가지치기의 해. 불필요한 것을 정리하면 다음 대운이 가벼워집니다.',water:'생각을 행동으로 옮기는 연습이 핵심 포인트입니다. 이제 실행하십시오.'};
+    var STcore={wood:'지금 씨앗을 뿌리는 것이 목표입니다. 3~5년 뒤를 보고 결단하십시오.',fire:'최대한 많이 노출되고 최대한 많이 저장하십시오.',earth:'서두르지 않아도 됩니다. 꾸준히 쌓는 것이 전략입니다.',metal:'가지치기의 해. 불필요한 것을 정리하면 다음 대운이 가벼워집니다.',water:'생각을 행동으로 옮기는 연습이 핵심 포인트입니다. 이제 실행하십시오.'};
+    var scTail=scY>=2?' 올해는 우선순위를 세 개 이내로 줄이고, 분기마다 성과 지표를 숫자로 점검하십시오.':scY>=0?' 올해는 무리한 확장보다 기존 구조의 완성도와 현금흐름을 먼저 다지는 편이 유리합니다.':' 올해는 방어와 정리에 무게를 두고, 보증·레버리지·감정적 결정은 가급적 피하십시오.';
+    var stratBlock='<p style="font-size:13px;color:#ccc;line-height:1.85;margin:0;">'+(STcore[yGoh]||STcore.earth)+scTail+' 월별 실행 타이밍은 아래 월운 섹션과 함께 보시면 일정 조율에 도움이 됩니다.</p>';
     var grid=['💰 재물','🏢 직업','❤ 애정','🌿 건강'].map(function(lb,i){var k=['m','c','l','h'];return'<div style="background:rgba(255,255,255,0.03);border-radius:10px;padding:14px 16px;border:1px solid rgba(255,255,255,0.06);"><div style="font-size:11px;color:var(--gold);margin-bottom:8px;font-weight:700;">'+lb+'</div><p style="font-size:12.5px;color:#ccc;line-height:1.8;margin:0;">'+d[k[i]]+'</p></div>';}).join('');
-    return'<div class="report-chapter chapter-start"><h3 class="ch-title">Chapter 10. '+curY+'년('+yKor+'년) 운세</h3><div style="display:flex;align-items:center;gap:16px;background:rgba(199,167,106,0.07);border-radius:12px;padding:16px 20px;margin-bottom:24px;"><div style="font-size:28px;font-weight:700;color:'+lc+';">'+yKor+'년</div><div><div style="font-size:11px;color:#888;margin-bottom:4px;">종합 판단</div><div style="font-size:15px;font-weight:700;color:'+lc+';">'+luck+'</div></div><div style="margin-left:auto;font-size:12px;color:#888;text-align:right;">천간 <b>'+OK[yGoh]+'</b><br>지지 <b>'+OK[yJoh]+'</b></div></div>'+fourStripY+'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">'+grid+'</div><div style="background:rgba(199,167,106,0.05);border-left:3px solid var(--gold);padding:14px 18px;border-radius:0 10px 10px 0;"><div style="font-size:11px;color:var(--gold);margin-bottom:8px;font-weight:700;">✦ '+name+'님의 '+curY+'년 전략</div><p style="font-size:13px;color:#ccc;line-height:1.85;margin:0;">'+(ST[yGoh]||ST.earth)+'</p></div><div style="margin-top:16px;font-size:11px;color:#666;">▼ 월별 세부 풀이는 Ch.9 월운 섹션을 참조하십시오</div></div>';
+    return'<div class="report-chapter chapter-start"><h3 class="ch-title">Chapter 10. '+curY+'년('+yKor+'년) 운세</h3><div style="display:flex;align-items:center;gap:16px;background:rgba(199,167,106,0.07);border-radius:12px;padding:16px 20px;margin-bottom:24px;"><div style="font-size:28px;font-weight:700;color:'+lc+';">'+yKor+'년</div><div><div style="font-size:11px;color:#888;margin-bottom:4px;">종합 판단</div><div style="font-size:15px;font-weight:700;color:'+lc+';">'+luck+'</div></div><div style="margin-left:auto;font-size:12px;color:#888;text-align:right;">천간 <b>'+OK[yGoh]+'</b><br>지지 <b>'+OK[yJoh]+'</b></div></div>'+fourStripY+'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">'+grid+'</div><div style="background:rgba(199,167,106,0.05);border-left:3px solid var(--gold);padding:14px 18px;border-radius:0 10px 10px 0;"><div style="font-size:11px;color:var(--gold);margin-bottom:8px;font-weight:700;">✦ '+name+'님의 '+curY+'년 전략</div>'+stratBlock+'</div><div style="margin-top:16px;font-size:11px;color:#666;">▼ 월별 세부 풀이는 Ch.9 월운 섹션을 참조하십시오</div></div>';
 }
 
 // ═══════════════════════════════════════════════════════
 // Ch.7 내년·내후년
 // ═══════════════════════════════════════════════════════
 function buildChapter7_NextYears(data){
-    var name=data.name||'고객',curY=new Date().getFullYear();
+    var name=data.name||'고객';
+    var curY=getReportBaseDate(data).getFullYear();
     if(typeof Solar==='undefined') return '';
     var GA={'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'},JA={'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'},GK={'甲':'갑','乙':'을','丙':'병','丁':'정','戊':'무','己':'기','庚':'경','辛':'신','壬':'임','癸':'계'},JK={'子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해'},OK={wood:'목',fire:'화',earth:'토',metal:'금',water:'수'};
-    var yong=data.yong||'wood',gi=data.gi||'metal';
-    function yi(y){var g='',j='',go='earth',jo='earth',k='';try{var L=Solar.fromYmd(y,6,15).getLunar();var gz=L.getYearInGanZhi();g=gz[0];j=gz[1];k=(GK[g]||g)+(JK[j]||j);go=GA[g]||'earth';jo=JA[j]||'earth';}catch(e){}return{goh:go,joh:jo,kor:k};}
-    var ny=yi(curY+1),nny=yi(curY+2);
+    var yong=data.yong||'wood',gi=data.gi||'metal',hee=data.hee||'',goo=data.goo||'';
+    var dayStemY=data.dayStem||'甲';
+    function yi(y){var g='',j='',go='earth',jo='earth',k='';try{var L=Solar.fromYmd(y,6,15).getLunar();var gz=L.getYearInGanZhi();g=gz[0];j=gz[1];k=(GK[g]||g)+(JK[j]||j);go=GA[g]||'earth';jo=JA[j]||'earth';}catch(e){}return{goh:go,joh:jo,kor:k,g:g,j:j};}
     function ev(info){var g=info.goh===yong||info.joh===yong,b=info.goh===gi||info.joh===gi;return g?{l:'흥(興)',c:'#c7a76a'}:b?{l:'주의',c:'#e08080'}:{l:'평온',c:'#aaa'};}
-    var nev=ev(ny),nnev=ev(nny);
-    var BF={wood:'새 시작·확장의 해.',fire:'노출·성취의 해.',earth:'유지·축적의 해.',metal:'정리·전문화의 해.',water:'통찰·네트워크의 해.'};
+    function yScore(info){var sc=0;if(info.goh===yong||info.goh===hee)sc+=2;if(info.goh===gi||info.goh===goo)sc-=2;if(info.joh===yong||info.joh===hee)sc+=2;if(info.joh===gi||info.joh===goo)sc-=2;return sc;}
+    var BF={wood:'새 시작과 확장의 기운이 강해집니다.',fire:'노출·성취·사회적 인정에 무게가 실립니다.',earth:'유지·축적·내실 다지기에 유리합니다.',metal:'정리·전문화·기준 재설정이 핵심입니다.',water:'통찰·네트워크·정보가 자산으로 연결됩니다.'};
     function card(yr,info,ev2){
+        var sc=yScore(info);
+        var sewSip=(typeof getSipseong==='function'&&info.g)?(getSipseong(dayStemY,info.g)||''):'';
+        var ykw=yearlyFourDomainKeywords(sc,sewSip);
+        var strip=buildYearlyIndicatorsHtml(ykw);
+        var tag=BF[info.goh]||BF.earth;
+        var p1,p2;
+        if(ev2.l==='흥(興)'){
+            p1=yr+'년('+info.kor+')은 대외 판이 커지기 쉬운 해입니다. '+tag+' 상반기에 수익·직무·관계의 우선순위를 고정하고, 하반기에 확장 실험을 붙이십시오.';
+            p2='계약은 조건·증빙·납기를 서면으로 명확히 한 뒤 진행하십시오. 체력 루틴(수면·유산소)을 먼저 고정하면 성과가 더 오래 유지됩니다.';
+        }else if(ev2.l==='주의'){
+            p1=yr+'년('+info.kor+')은 부담이 커질 수 있는 해입니다. '+tag+' 무리한 레버리지와 감정적 결정은 가급적 피하십시오.';
+            p2='꼭 필요한 변화라면 전문가 검토와 손실 한도를 먼저 정한 뒤 실행하십시오. 대인 관계에서는 경청과 하루 텀을 두는 것이 안전합니다.';
+        }else{
+            p1=yr+'년('+info.kor+')은 급격한 길·흉보다 균형에 가까운 해입니다. '+tag+' 기존 시스템을 다듬고 작은 완성을 쌓으십시오.';
+            p2='새 프로젝트는 파일럿 규모로 검증한 뒤 키우는 편이 좋습니다. 문서·세무·보험 등 백오피스를 정리해 두면 다음 해 선택지가 넓어집니다.';
+        }
         return '<div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:18px 20px;border:1px solid rgba(255,255,255,0.06);">'
-            +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">'
-            +'<span style="font-size:20px;font-weight:700;color:'+ev2.c+';">'+info.kor+'년</span>'
+            +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap;">'
+            +'<span style="font-size:20px;font-weight:700;color:'+ev2.c+';white-space:nowrap;">'+info.kor+'년</span>'
             +'<span style="font-size:13px;font-weight:600;color:'+ev2.c+';">('+yr+')</span>'
             +'<span style="margin-left:auto;font-size:12px;background:rgba(255,255,255,0.06);padding:3px 10px;border-radius:20px;color:'+ev2.c+';">'+ev2.l+'</span>'
             +'</div>'
-            +'<p style="font-size:12.5px;color:#ccc;line-height:1.8;margin:0;">'+(BF[info.goh]||'')+'</p>'
-            +'<p style="font-size:11px;color:#888;margin:8px 0 0;">천간 '+OK[info.goh]+' · 지지 '+OK[info.joh]+'</p>'
+            +strip
+            +'<p style="font-size:12.5px;color:#ccc;line-height:1.85;margin:0 0 10px;">'+p1+'</p>'
+            +'<p style="font-size:12.5px;color:#bbb;line-height:1.85;margin:0;">'+p2+'</p>'
+            +'<p style="font-size:11px;color:#888;margin:10px 0 0;">천간 '+OK[info.goh]+' · 지지 '+OK[info.joh]+(sewSip?' · 세운 십성 '+sewSip:'')+'</p>'
             +'</div>';
     }
+    var ny=yi(curY+1),nny=yi(curY+2);
+    var nev=ev(ny),nnev=ev(nny);
     return '<div class="report-chapter chapter-start">'
         +'<h3 class="ch-title">Chapter 11. 바로 앞에 다가온 시간 — 내년·내후년 운세</h3>'
         +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">'
@@ -4212,46 +4296,53 @@ function buildForewordPage(data) {
 // buildTOC: 목차 페이지
 // ===================================================================
 function buildTOC(data) {
-    const chapters = [
-        { num:'앞부분', title:'소개', sub:'사주X가 담고 있는 의미', pages:'—' },
-        { num:'표지', title:'고객 맞춤 표지', sub:'고객명 · 일주 · 동물', pages:'—' },
-        { num:'안내', title:'이용 안내', sub:'법적 안내 · 사용법 · 보관 정책', pages:'—' },
-        { num:'요약', title:'맞춤 종합 핵심', sub:'Executive Summary · 링크·열람 안내', pages:'—' },
-        { num:'CH 01', title:'사주 원국 완전 해부', sub:'4주 8자 심층 풀이 · 천간·지지·지장간 · 12운성 · 공망', pages:'8p' },
-        { num:'CH 02', title:'오행 완전 해부', sub:'오행 분포 · 과다 기운 심층 · 부족 기운 보완법 · 건강 연결', pages:'7p' },
-        { num:'CH 03', title:'십성 완전 해부', sub:'주도 십성 심층 · 조합 분석 · 직업·재물·애정에서의 발현', pages:'7p' },
-        { num:'CH 04', title:'재물운 완전 해부', sub:'재물 구조 · 획득 최적 루트 · 대운별 재물 전략 · 투자 조언', pages:'8p' },
-        { num:'CH 05', title:'직업운 완전 해부', sub:'직업 성향 유형 · 추천 직업군 · 커리어 단계별 전략', pages:'7p' },
-        { num:'CH 06', title:'애정운 완전 해부', sub:'연애 패턴 · 이상형 분석 · 결혼 시기 · 배우자 특성', pages:'8p' },
-        { num:'CH 07', title:'지장간 — 숨겨진 기운', sub:'빙산 아래의 욕망 · 잠재 능력 발동 조건과 시점', pages:'5p' },
-        { num:'CH 08', title:'건강운 완전 해부', sub:'취약 장기 · 감정-신체 연결고리 · 맞춤 식이·운동 처방', pages:'7p' },
-        { num:'CH 09', title:'개운법 & 종합 전략', sub:'용신 기반 개운법 · 색상·방위·음식·보석·귀인 처방', pages:'6p' },
-        { num:'CH 10', title:'성격 완전 분석', sub:'강점·약점 심층 · 인간관계 유형 · 호불호 상성 분석', pages:'5p' },
-        { num:'부록 A', title:'대운 80년 완전 해부', sub:'10년 단위 인생 계절 · 길흉 판단 · 분야별 전략', pages:'14p' },
-        { num:'부록 B', title:'세운·월운 심층 분석', sub:'올해 및 향후 10년 세운 예측 · 월별 흐름', pages:'8p' },
+    var gHead = 'font-size:11.5px;font-weight:800;color:rgba(212,175,55,0.98);letter-spacing:0.14em;margin:26px 0 10px;padding-bottom:8px;border-bottom:1px solid rgba(199,167,106,0.28);';
+    var gSub = 'display:block;font-size:10.5px;color:#888;font-weight:600;letter-spacing:0.04em;margin-top:5px;';
+    var row = 'display:flex;align-items:baseline;gap:12px;padding:11px 0 11px 14px;border-bottom:1px solid rgba(255,255,255,0.04);';
+    var groups = [
+        { head: 'Ⅰ. VIP 대시보드', sub: '요약 및 원국', items: [
+            { t: '브랜드 소개 · 고객 표지 · 이용 안내', s: '톤앤매너 · 표지 정보 · 법적·보관 안내', p: '—' },
+            { t: '맞춤 종합 핵심 · 원국 DATA', s: '전략 브리프 · 만세력 근거 · 자미두수', p: '—' },
+            { t: 'PART 1 — 당신이라는 사람', s: '본성 · 환경 · 인생 서사', p: '8p' }
+        ]},
+        { head: 'Ⅱ. 하드웨어 스펙 분석', sub: '오행 및 십성', items: [
+            { t: '오행 완전 해부', s: '분포 · 과다·부족 · 건강 연결', p: '7p' },
+            { t: '십성 완전 해부', s: '주도 십성 · 직업·재물·애정 연결', p: '7p' }
+        ]},
+        { head: 'Ⅲ. 핵심 4대 운 집중 조명', sub: '재물 · 직업 · 애정 · 건강', items: [
+            { t: '재물운', s: '구조 · 획득 루트 · 투자 태도', p: '8p' },
+            { t: '직업운', s: '성향 유형 · 직무군 · 단계별 전략', p: '7p' },
+            { t: '애정운', s: '패턴 · 이상형 · 결혼 시기', p: '8p' },
+            { t: '지장간 · 건강운', s: '숨은 기운 · 취약 축 · 생활 처방', p: '12p' }
+        ]},
+        { head: 'Ⅳ. 타임라인 전략', sub: '대운 · 세운 · 월운', items: [
+            { t: '대운 80년', s: '10년 단위 인생 계절 · 분야별 전략', p: '14p' },
+            { t: '세운 — 올해 · 내년 · 내후년', s: '연도별 거시·전술 해설', p: '6p' },
+            { t: '차기 대운 · 월운 12개월', s: '다음 물결 · 월별 실행 지도', p: '8p' }
+        ]},
+        { head: 'Ⅴ. 최종 실행 지침', sub: '개운법 및 체크리스트', items: [
+            { t: '개운법 · 일상 습관 · 체크리스트', s: '색상·방위·음식 · 실행표', p: '6p' },
+            { t: '성격 완전 분석 (부록)', s: '강약점 · 대인·상성', p: '5p' }
+        ]}
     ];
+    var body = '';
+    groups.forEach(function (grp) {
+        body += '<div style="' + gHead + '">' + grp.head + '<span style="' + gSub + '">' + grp.sub + '</span></div>';
+        grp.items.forEach(function (it) {
+            body += '<div style="' + row + '"><div style="font-size:10px;color:var(--gold);min-width:20px;font-weight:700;">·</div><div style="flex:1;"><div style="font-size:14px;font-weight:600;color:#ddd;margin-bottom:2px;">' + it.t + '</div><div style="font-size:11.5px;color:#777;">' + it.s + '</div></div><div style="font-size:11px;color:rgba(199,167,106,0.4);min-width:32px;text-align:right;">' + it.p + '</div></div>';
+        });
+    });
 
-    const rows = chapters.map((c, i) => `
-        <div style="display:flex;align-items:baseline;gap:16px;padding:13px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
-            <div style="font-size:10px;color:var(--gold);letter-spacing:1px;min-width:52px;font-weight:700;font-family:monospace;">${c.num}</div>
-            <div style="flex:1;">
-                <div style="font-size:14px;font-weight:600;color:#ddd;margin-bottom:2px;">${c.title}</div>
-                <div style="font-size:11.5px;color:#777;">${c.sub}</div>
-            </div>
-            <div style="font-size:11px;color:rgba(199,167,106,0.4);min-width:30px;text-align:right;">${c.pages}</div>
-        </div>`).join('');
-
-    return `<div class="toc-page" style="padding:60px 40px 80px;border-bottom:1px solid rgba(199,167,106,0.1);margin-bottom:48px;">
-        <div style="font-size:10px;letter-spacing:5px;color:rgba(199,167,106,0.5);margin-bottom:14px;">TABLE OF CONTENTS</div>
-        <div style="font-family:Noto Serif KR,serif;font-size:30px;font-weight:700;color:#fff;margin-bottom:6px;">목차</div>
-        <div style="font-size:13px;color:#666;margin-bottom:32px;">X-SAJU MASTER 사주 분석 리포트 전체 구성</div>
-        <div style="width:60px;height:2px;background:var(--gold);margin-bottom:32px;opacity:0.4;"></div>
-        ${rows}
-        <div style="margin-top:36px;padding:18px 20px;background:rgba(199,167,106,0.04);border-radius:10px;border:1px solid rgba(199,167,106,0.1);font-size:12px;color:#777;line-height:1.8;">
-            ※ 이 리포트는 명리학(사주팔자)을 기반으로 작성된 운명 분석서입니다. 각 챕터의 해석은 동양철학의 오행론·십성론·대운론을 근거로 하며, 실제 삶에서의 선택과 노력에 따라 결과는 달라질 수 있습니다. 본 분석은 인생의 방향을 설계하는 참고 자료로 활용하시기 바랍니다.<br><br>
-            ※ 온라인 링크 열람·PDF 저장은 발행 정책에 따릅니다(기본 30일·서버에서 <code style="font-size:11px;">reportExpiresAt</code> 또는 <code style="font-size:11px;">reportIssuedAt</code> 전달 시 안내문이 자동 반영됩니다).
-        </div>
-    </div>`;
+    return '<div class="toc-page" style="padding:60px 40px 80px;border-bottom:1px solid rgba(199,167,106,0.1);margin-bottom:48px;">' +
+        '<div style="font-size:10px;letter-spacing:5px;color:rgba(199,167,106,0.5);margin-bottom:14px;">TABLE OF CONTENTS</div>' +
+        '<div style="font-family:Noto Serif KR,serif;font-size:30px;font-weight:700;color:#fff;margin-bottom:6px;">목차</div>' +
+        '<div style="font-size:13px;color:#666;margin-bottom:32px;">X-SAJU MASTER — 컨설팅 보고서형 5대 파트 구성</div>' +
+        '<div style="width:60px;height:2px;background:var(--gold);margin-bottom:28px;opacity:0.4;"></div>' +
+        body +
+        '<div style="margin-top:36px;padding:18px 20px;background:rgba(199,167,106,0.04);border-radius:10px;border:1px solid rgba(199,167,106,0.1);font-size:12px;color:#777;line-height:1.8;">' +
+        '※ 이 리포트는 명리학(사주팔자)을 기반으로 작성된 운명 분석서입니다. 각 챕터의 해석은 동양철학의 오행론·십성론·대운론을 근거로 하며, 실제 삶에서의 선택과 노력에 따라 결과는 달라질 수 있습니다. 본 분석은 인생의 방향을 설계하는 참고 자료로 활용하시기 바랍니다.<br><br>' +
+        '※ 온라인 링크 열람·PDF 저장은 발행 정책에 따릅니다(기본 30일·서버에서 <code style="font-size:11px;">reportExpiresAt</code> 또는 <code style="font-size:11px;">reportIssuedAt</code> 전달 시 안내문이 자동 반영됩니다).' +
+        '</div></div>';
 }
 
 function buildChapterPersonality(data) {
@@ -6471,16 +6562,16 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
                 if(bClash&&natalB.indexOf(bClash)>=0){var _ck=JK[bClash]||bClash; reacts.push(jTag+getJosa(jTag,'은/는')+' 원국의 '+_ck+getJosa(_ck,'과/와')+' 부딪혀 변경·충돌 이슈를 먼저 관리해야 합니다.');}
                 var reactTxt=reacts.length?reacts.slice(0,2).join(' '):'원국과 큰 충돌이 적어 계획대로 밀어붙일수록 안정적으로 쌓입니다.';
                 var ykwSe=yearlyFourDomainKeywords(s2,ganSip2);
-                var seStrip='<div style="margin:0 0 10px;border:1px solid rgba(199,167,106,0.25);border-radius:8px;overflow:hidden;background:rgba(0,0,0,0.22);"><div style="border-bottom:1px solid rgba(255,255,255,0.06);padding:8px 10px;font-size:11.5px;color:#e6e0d6;">[ 💰 재물·투자 : <span style="color:var(--gold);font-weight:800;">'+ykwSe.wealth+'</span> ]</div><div style="border-bottom:1px solid rgba(255,255,255,0.06);padding:8px 10px;font-size:11.5px;color:#e6e0d6;">[ 🏢 직업·합격 : <span style="color:var(--gold);font-weight:800;">'+ykwSe.career+'</span> ]</div><div style="border-bottom:1px solid rgba(255,255,255,0.06);padding:8px 10px;font-size:11.5px;color:#e6e0d6;">[ 📝 문서·계약 : <span style="color:var(--gold);font-weight:800;">'+ykwSe.doc+'</span> ]</div><div style="padding:8px 10px;font-size:11.5px;color:#e6e0d6;">[ ❤ 애정·대인 : <span style="color:var(--gold);font-weight:800;">'+ykwSe.love+'</span> ]</div></div>';
+                var seStrip=typeof buildYearlyIndicatorsHtml==='function'?buildYearlyIndicatorsHtml(ykwSe):'';
                 var adv=s2>=2
                     ?('올해는 '+gTag+jTag+' 기운이 당신 원국과 잘 맞아, 새 시도·협업·확장이 성과로 이어질 가능성이 높습니다. '+reactTxt+' 다만 한 번에 많이 벌이기보다 우선순위를 먼저 정하면 결과가 더 좋아집니다.')
                     :s2>=0
                     ?('올해는 '+gTag+jTag+' 기운이 급한 변화보다 안정 운영에 힘을 싣는 해입니다. '+reactTxt+' 큰 승부보다 기존 구조를 다듬고 새는 부분을 줄이는 쪽이 유리합니다.')
                     :('올해는 '+gTag+jTag+' 기운이 부담 구간을 건드릴 수 있는 해입니다. '+reactTxt+' 공격적으로 키우기보다 현금흐름 방어와 계약 재검토를 먼저 하면 손실 가능성을 낮출 수 있습니다.');
                 h3+='<div style="margin-bottom:14px;padding:16px;background:rgba(255,255,255,'+(isThis?'0.07':'0.03')+');border:1px solid '+(isThis?'var(--gold)':'rgba(255,255,255,0.07)')+';border-radius:12px;">';
-                h3+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;"><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:20px;font-weight:280;color:var(--gold);font-family:Noto Serif KR,serif;">'+g2+j2+'</span><span style="font-size:14px;color:#bbb;">'+yr+'년'+(isThis?' <span style="font-size:10px;background:var(--gold);color:#000;padding:1px 7px;border-radius:8px;font-weight:700;">올해</span>':'')+'</span></div><span style="font-size:12px;font-weight:700;color:'+col2+';">'+gb(s2)+'</span></div>';
+                h3+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;"><div style="display:flex;align-items:center;gap:8px;min-width:0;flex:1;"><span style="font-size:20px;font-weight:700;color:var(--gold);font-family:Noto Serif KR,serif;white-space:nowrap;letter-spacing:0.02em;">'+g2+j2+'</span><span style="font-size:14px;color:#bbb;white-space:nowrap;">'+yr+'년'+(isThis?' <span style="font-size:10px;background:var(--gold);color:#000;padding:1px 7px;border-radius:8px;font-weight:700;">올해</span>':'')+'</span></div><span style="font-size:12px;font-weight:700;color:'+col2+';white-space:nowrap;">'+gb(s2)+'</span></div>';
                 h3+=seStrip;
-                var ynarr=yr+'년은 '+(GK[g2]||g2)+'('+KN[gOh]+') 기운과 '+(JK[j2]||j2)+'('+KN[jOh]+') 기운이 함께 작동하는 해입니다. '+(s2>=2?'부족했던 부분을 채워 주는 해라, 실행한 일이 결과로 이어질 가능성이 큽니다.':s2>=0?'급하게 키우기보다 차근차근 쌓을 때 더 잘 맞는 해입니다.':'충돌이 커질 수 있는 해라, 결정 속도를 늦추고 안전장치를 먼저 챙기는 편이 좋습니다.');
+                var ynarr=yr+'년은 '+(GK[g2]||g2)+'('+KN[gOh]+') 천간과 '+(JK[j2]||j2)+'('+KN[jOh]+') 지지가 함께 작동하는 해입니다. '+(s2>=2?'원국과의 합이 맞아 드는 편이라 실행한 일이 결과로 이어질 가능성이 큽니다. 상반기에 거점을 고정하고 하반기에 확장을 붙이면 리스크가 줄어듭니다.':s2>=0?'급하게 키우기보다 기존 구조를 다듬고 현금흐름을 먼저 안정시키는 편이 유리합니다. 분기마다 우선순위를 세 개 이내로 압축하십시오.':'부담 구간을 건드릴 수 있으니 결정 속도를 늦추고 안전장치를 먼저 챙기십시오. 보증·레버리지·감정적 확장은 가급적 피하는 것이 좋습니다.')+' '+reactTxt;
                 h3+='<div style="background:rgba(0,0,0,0.15);border-radius:6px;padding:10px;margin-bottom:10px;"><p style="font-size:12px;color:#ddd;line-height:1.75;margin:0;">'+ynarr+'</p></div>';
                 h3+='<div style="background:rgba(199,167,106,0.06);border-radius:6px;padding:10px;border-left:2px solid '+col2+';"><div style="font-size:10px;color:var(--text-dim);margin-bottom:4px;">이 해의 전략</div><p style="font-size:12.5px;color:#ccc;line-height:1.8;margin:0;">'+adv+'</p></div></div>';
             }
@@ -6530,7 +6621,7 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
                     ?`이달은 ${mGTag}${mJTag} 기운이 균형에 가까워, 정리·보완·루틴 강화가 효율적입니다. ${mReactTxt} 작은 완성도를 쌓는 전략이 좋습니다.`
                     :`이달은 ${mGTag}${mJTag} 기운이 부담을 키울 수 있어 속도 조절이 필요합니다. ${mReactTxt} 큰 결정보다 검토·보류를 먼저 하면 안정적으로 넘길 가능성이 높습니다.`;
                 h4+='<div style="margin-bottom:12px;padding:14px;background:rgba(255,255,255,'+(isThisM?'0.07':'0.03')+');border:1px solid '+(isThisM?'var(--gold)':'rgba(255,255,255,0.06)')+';border-radius:10px;">';
-                h4+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:18px;font-weight:900;color:var(--gold);font-family:Noto Serif KR,serif;">'+gm4+jm4+'</span><span style="font-size:13px;color:#bbb;">'+m4+'월'+(isThisM?' <span style="font-size:10px;background:var(--gold);color:#000;padding:1px 6px;border-radius:6px;font-weight:700;">이달</span>':'')+'</span></div><span style="font-size:11px;font-weight:700;color:'+colm+';">'+gb(sm4)+'</span></div>';
+                h4+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:8px;"><div style="display:flex;align-items:center;gap:8px;min-width:0;flex:1;"><span style="font-size:18px;font-weight:900;color:var(--gold);font-family:Noto Serif KR,serif;white-space:nowrap;letter-spacing:0.02em;">'+gm4+jm4+'</span><span style="font-size:13px;color:#bbb;white-space:nowrap;">'+m4+'월'+(isThisM?' <span style="font-size:10px;background:var(--gold);color:#000;padding:1px 6px;border-radius:6px;font-weight:700;">이달</span>':'')+'</span></div><span style="font-size:11px;font-weight:700;color:'+colm+';white-space:nowrap;">'+gb(sm4)+'</span></div>';
                 h4+='<div style="background:rgba(199,167,106,0.05);border-radius:6px;padding:8px 10px;border-left:2px solid '+colm+';"><p style="font-size:12px;color:#bbb;line-height:1.7;margin:0;">'+advm+'</p></div></div>';
             }
             h4+='</div>';
