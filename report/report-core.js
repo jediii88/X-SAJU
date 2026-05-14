@@ -3100,7 +3100,7 @@ function buildChapter2_Wuxing(data) {
         const col = OH_BAR[k] || (isMax ? 'var(--gold)' : isMin ? '#666' : '#aaa');
         const ohChar = {wood:'木',fire:'火',earth:'土',metal:'金',water:'水'}[k]||k;
         const barW = Math.max(2, Math.min(100, pct));
-        return `<div class="wuxing-bar-row" style="display:flex;align-items:center;gap:12px;margin-bottom:11px;"><div style="min-width:52px;text-align:right;font-size:13px;font-weight:${isMax?800:500};color:${isMax?'var(--gold)':'#bbb'};">${ohChar} ${OHKR2[k]}</div><div style="flex:1;background:rgba(255,255,255,0.08);border-radius:6px;height:14px;overflow:hidden;border:1px solid rgba(255,255,255,0.06);"><div style="width:${barW}%;height:100%;background:linear-gradient(90deg,${col},rgba(255,255,255,0.15));border-radius:5px;transition:width .3s;"></div></div><div style="min-width:40px;font-size:13px;font-weight:700;color:${isMax?'var(--gold)':'#999'};">${pct}%</div>${isMax?'<span style="font-size:9px;background:rgba(199,167,106,0.25);color:var(--gold);padding:2px 6px;border-radius:6px;">최다</span>':''}${isMin?'<span style="font-size:9px;color:#666;padding:2px 6px;">최소</span>':''}</div>`;
+        return `<div class="wuxing-bar-row" style="display:flex;align-items:center;gap:12px;margin-bottom:11px;"><div style="min-width:52px;text-align:right;font-size:13px;font-weight:${isMax?800:500};color:${isMax?'var(--gold)':'#bbb'};">${ohChar} ${OHKR2[k]}</div><div style="flex:1;min-width:0;background:rgba(255,255,255,0.08);border-radius:6px;height:14px;overflow:hidden;border:1px solid rgba(255,255,255,0.06);"><div style="width:${barW}%;max-width:100%;height:100%;background:linear-gradient(90deg,${col},rgba(255,255,255,0.15));border-radius:5px;transition:width .3s;"></div></div><div style="min-width:40px;font-size:13px;font-weight:700;color:${isMax?'var(--gold)':'#999'};">${pct}%</div>${isMax?'<span style="font-size:9px;background:rgba(199,167,106,0.25);color:var(--gold);padding:2px 6px;border-radius:6px;">최다</span>':''}${isMin?'<span style="font-size:9px;color:#666;padding:2px 6px;">최소</span>':''}</div>`;
     }).join('');
     return `<div class="report-chapter">
         <h3 class="ch-title">[ 02. 에너지 분석 ] — 내 안의 다섯 물결 — 강점과 빈틈의 균형</h3>
@@ -3202,14 +3202,14 @@ function buildChapter2_Wuxing(data) {
         </div>
 
         <div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:22px;margin:24px 0;">
-            <div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:14px;letter-spacing:1px;">&#9670; 오행 과다의 사회적 발현 — ${maxKr} 기운 과다가 만드는 삶의 패턴</div>
-            <p style="font-size:13.5px;color:#ccc;line-height:1.9;margin:0 0 14px;">${maxKr} 과다는 성격 라벨이 아니라 **반복되는 삶의 각도**입니다. 아래 패턴을 읽고, 한 가지만 고쳐도 비용이 줄어듭니다.</p>
+            <div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:14px;letter-spacing:1px;">&#9670; ${maxKr} 과다가 겉으로 드러날 때 — 생활에서 반복되기 쉬운 패턴</div>
+            <p style="font-size:13.5px;color:#ccc;line-height:1.9;margin:0 0 14px;">${maxKr} 비중이 크다는 말은 ‘나쁜 성격’이 아니라, 비슷한 선택·반응이 **반복되기 쉬운 흐름**이라는 뜻에 가깝습니다. 아래에서 와닿는 한두 줄만 골라 습관으로 고정하면, 같은 마찰과 시간 낭비를 줄일 수 있습니다.</p>
             <div style="display:flex;flex-direction:column;gap:10px;">
-                ${({wood:`<div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:14px;"><div style="font-size:12px;font-weight:700;color:#4fc3a1;margin-bottom:8px;">목 과다 — 패턴</div><p style="font-size:12.5px;color:#bbb;line-height:1.88;margin:0;">시작은 많고 끝은 밀립니다. 아이디어는 인정받는데 실행·마무리 평이 갈립니다. 익숙해지면 흥미가 식는 것도 흔합니다. **동시 진행 3건 한도**만 지키십시오. 마무리 강한 파트너 하나를 붙이십시오.</p></div>`,
-                fire:`<div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:14px;"><div style="font-size:12px;font-weight:700;color:#ff7043;margin-bottom:8px;">화 과다 — 패턴</div><p style="font-size:12.5px;color:#bbb;line-height:1.88;margin:0;">열정이 주변을 압도하고, 번아웃·즉흥 결정이 비용을 만듭니다. 직장에선 분위기 메이커이지만 충돌도 납니다. **감정 결정 24시간 유예**와 **하루 30분 냉각**을 고정하십시오.</p></div>`,
-                earth:`<div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:14px;"><div style="font-size:12px;font-weight:700;color:#ffca28;margin-bottom:8px;">토 과다 — 패턴</div><p style="font-size:12.5px;color:#bbb;line-height:1.88;margin:0;">믿음직하지만 변화가 느리고 팀 속도를 늦춘다는 오해를 삽니다. **작은 시범 하나로만** 변화를 제안하십시오. 새 인맥은 의도적으로 한 명씩만 추가하십시오.</p></div>`,
-                metal:`<div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:14px;"><div style="font-size:12px;font-weight:700;color:#b0bec5;margin-bottom:8px;">금 과다 — 패턴</div><p style="font-size:12.5px;color:#bbb;line-height:1.88;margin:0;">원칙은 세우나 정서선이 차갑게 보입니다. 개인 성과에 몰두해 팀 밀도가 얇아질 수 있습니다. **중요한 피드백은 ‘사실+감정’ 한 문장**으로만 보내십시오.</p></div>`,
-                water:`<div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:14px;"><div style="font-size:12px;font-weight:700;color:#64b5f6;margin-bottom:8px;">수 과다 — 패턴</div><p style="font-size:12.5px;color:#bbb;line-height:1.88;margin:0;">분석이 길어 실행이 늦고, 의심이 관계를 경직시킵니다. **정보 수집 45분 알람** 뒤에는 행동만 하십시오.</p></div>`})[maxW] || `<div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:14px;"><p style="font-size:12.5px;color:#bbb;line-height:1.8;margin:0;">${maxKr} 과다는 통제가 곧 전략입니다. **한 가지 행동 규칙**만 먼저 고르십시오.</p></div>`}
+                ${({wood:`<div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:14px;"><div style="font-size:12px;font-weight:700;color:#4fc3a1;margin-bottom:8px;">목 과다 — 패턴</div><p style="font-size:12.5px;color:#bbb;line-height:1.88;margin:0;">시작은 잦은데 마무리가 밀리고, 아이디어는 통하는데 실행·끝맺음 평가가 엇갈리기도 합니다. 익숙해지면 금방 싫증이 나는 편도 있습니다. **동시에 손에 쥔 일은 세 가지 이하**로 두고, 끝을 책임질 동료 한 명과 짝을 짓십시오.</p></div>`,
+                fire:`<div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:14px;"><div style="font-size:12px;font-weight:700;color:#ff7043;margin-bottom:8px;">화 과다 — 패턴</div><p style="font-size:12.5px;color:#bbb;line-height:1.88;margin:0;">열이 앞서 주변이 지치거나, 번아웃·즉흥 결정으로 비용이 커질 수 있습니다. 분위기는 띄우지만 말이 부딪히는 일도 생깁니다. **감정이 올랐을 때는 하룻밤 넘기고** 말하고, **하루 30분은 의도적으로 비우는 시간**으로 고정하십시오.</p></div>`,
+                earth:`<div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:14px;"><div style="font-size:12px;font-weight:700;color:#ffca28;margin-bottom:8px;">토 과다 — 패턴</div><p style="font-size:12.5px;color:#bbb;line-height:1.88;margin:0;">든든한데 움직임이 느리다는 말을 듣기 쉽고, 팀 속도를 늦춘다는 오해도 납니다. **작은 시범 하나**로만 변화를 제안하고, 새로 만날 사람은 한 번에 한 명씩만 늘리십시오.</p></div>`,
+                metal:`<div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:14px;"><div style="font-size:12px;font-weight:700;color:#b0bec5;margin-bottom:8px;">금 과다 — 패턴</div><p style="font-size:12.5px;color:#bbb;line-height:1.88;margin:0;">원칙은 세우는데 정이 없어 보일 수 있고, 내 성과만 챙긴다는 말을 들을 수도 있습니다. **중요한 말은 ‘사실 한 줄 + 내가 느낀 점 한 줄’**로만 정리해 보내 보십시오.</p></div>`,
+                water:`<div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:14px;"><div style="font-size:12px;font-weight:700;color:#64b5f6;margin-bottom:8px;">수 과다 — 패턴</div><p style="font-size:12.5px;color:#bbb;line-height:1.88;margin:0;">머릿속 정리가 길어지면 몸이 움직이는 시점이 늦어지고, 확인을 거듭하다 보면 상대만 굳어 보이기도 합니다. **자료·정보는 45분으로 끊은 뒤**, 미리 써 둔 **‘다음 행동 한 가지’**만 실행하십시오.</p></div>`})[maxW] || `<div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:14px;"><p style="font-size:12.5px;color:#bbb;line-height:1.8;margin:0;">${maxKr}가 두꺼울 때는 선택과 통제가 핵심입니다. **지키기 쉬운 행동 규칙 하나**만 먼저 고르십시오.</p></div>`}
             </div>
         </div>
     </div>`;
@@ -3237,22 +3237,35 @@ function buildChapter3_Sipseong(data) {
     const sipPersonality = sipDB[mainSip] || sipText;
     const axMain = mainSip;
     const axSec = secondSip || '';
-    const sipRows = sorted.filter(function(x){return x[1]>0;}).map(([k,v]) => {
-        const pct = Math.round(v/total*100); const isMain = k===mainSip;
-        const col = isMain ? 'var(--gold)' : '#8a8a8a';
-        const barW = Math.max(2, Math.min(100, pct));
-        const lab = k;
-        return `<div class="sipseong-bar-row" style="display:flex;align-items:center;gap:12px;margin-bottom:10px;"><div style="min-width:72px;text-align:right;font-size:11.5px;font-weight:${isMain?800:500};color:${col};">${lab}</div><div style="flex:1;background:rgba(255,255,255,0.08);border-radius:6px;height:13px;overflow:hidden;border:1px solid rgba(255,255,255,0.06);"><div style="width:${barW}%;height:100%;background:linear-gradient(90deg,${col},rgba(255,255,255,0.12));border-radius:5px;"></div></div><div style="min-width:38px;font-size:12px;font-weight:700;color:${col};">${pct}%</div></div>`;
+    const SIP_BAR_GROUPS = [
+        { key: '비겁', label: '비겁 (비견/겁재):', keys: ['비견', '겁재'] },
+        { key: '식상', label: '식상 (식신/상관):', keys: ['식신', '상관'] },
+        { key: '재성', label: '재성 (편재/정재):', keys: ['편재', '정재'] },
+        { key: '관성', label: '관성 (편관/정관):', keys: ['편관', '정관'] },
+        { key: '인성', label: '인성 (편인/정인):', keys: ['편인', '정인'] }
+    ];
+    const mainGroupKey = (SIP_BAR_GROUPS.find(function (g) { return g.keys.indexOf(mainSip) !== -1; }) || SIP_BAR_GROUPS[0]).key;
+    const sipRows = SIP_BAR_GROUPS.map(function (g) {
+        var sum = g.keys.reduce(function (s, k) { return s + (Number(sipseong[k]) || 0); }, 0);
+        var pct = Math.round(sum / total * 100);
+        var isMain = g.key === mainGroupKey;
+        var col = isMain ? 'var(--gold)' : '#8a8a8a';
+        var barW = Math.max(0, Math.min(100, pct));
+        return '<div class="sipseong-bar-row" style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">'
+            + '<div style="flex:0 0 auto;min-width:148px;max-width:42%;text-align:left;font-size:11.5px;font-weight:' + (isMain ? 800 : 500) + ';color:' + col + ';line-height:1.38;">' + g.label + '</div>'
+            + '<div style="flex:1;min-width:0;background:rgba(255,255,255,0.08);border-radius:6px;height:13px;overflow:hidden;border:1px solid rgba(255,255,255,0.06);">'
+            + '<div style="width:' + barW + '%;max-width:100%;height:100%;background:linear-gradient(90deg,' + col + ',rgba(255,255,255,0.12));border-radius:5px;"></div></div>'
+            + '<div style="flex:0 0 42px;text-align:right;font-size:12px;font-weight:700;color:' + col + ';">' + pct + '%</div></div>';
     }).join('');
     const sipComboText = secondSip ? `앞장서는 패턴은 **${axMain}**, 바닥에 깔리는 보조 패턴은 **${axSec}**입니다. 위기에서는 ${axMain} 쪽 반응부터 다루고, 평상시에는 ${axSec} 쪽 습관만 다듬으십시오. 둘을 한꺼번에 고치려 하지 마십시오. **충돌할 때는 ${axMain}만, 평소에는 ${axSec}만** 조정하십시오. 파트너는 둘 중 하나라도 덮어주는 사람을 고르십시오.` : '';
     const h3Title = '[ 03. 일하는 방식 지도 ] — ' + axMain + ' 축이 먼저 움직입니다';
     return `<div class="report-chapter">
         <h3 class="ch-title">${h3Title}</h3>
         <div class="sipseong-bar-chart" style="background:rgba(0,0,0,0.22);border:1px solid rgba(199,167,106,0.2);border-radius:12px;padding:18px 20px;margin:0 0 18px;">
-            <div style="font-size:12px;font-weight:800;color:var(--gold);margin-bottom:14px;letter-spacing:0.5px;">업무 스타일 비율 — 가로 막대</div>
+            <div style="font-size:12px;font-weight:800;color:var(--gold);margin-bottom:14px;letter-spacing:0.5px;">업무 스타일 비율 — 비겁·식상·재성·관성·인성</div>
             ${sipRows || '<p style="color:#888;font-size:12px;margin:0;">분포 데이터를 불러오는 중입니다.</p>'}
         </div>
-        <p class="ch-text">에너지가 몸이라면, 아래 비율은 <strong>돈·사람·권위 앞에서 자동으로 튀어나오는 업무 반응 습관</strong>입니다. 성격이라기보다 반복되는 현장 패턴에 가깝습니다.</p>
+        <p class="ch-text">에너지가 몸이라면, 아래 다섯 줄은 <strong>비겁·식상·재성·관성·인성</strong> 각 묶음의 비중입니다. 같은 묶음 안의 두 십성(예: 편관·정관)은 합산되어, 돈·사람·권위 앞에서 자동으로 튀어나오는 업무 반응의 큰 줄기로 읽으면 됩니다.</p>
         <p class="ch-text">지금 가장 두꺼운 층은 <b style="color:var(--gold);">${axMain}</b> 축입니다. 중요한 순간, 설명보다 먼저 움직이는 기준이 여기에 붙습니다.</p>
         <div style="background:rgba(199,167,106,0.07);border-left:3px solid var(--gold);padding:16px 18px;border-radius:0 8px 8px 0;margin:16px 0;">
             <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;letter-spacing:1px;">${axMain} 축 — 현장 해석</div>
