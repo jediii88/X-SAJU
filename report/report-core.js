@@ -1,6 +1,61 @@
 /* report-core.js — 리포트·만세력 공통 엔진 (tools/sync_report_core.py, view.html 기준 추출) */
 /* 로드 순서: lunar.js → klc.min.js → 본 파일 */
 
+/** 마지막 음절 받침 기준 조사. ㄹ 받침은 은/는·이/가·을/를·과/와 에서 받침 없는 쪽(는/가/를/와)을 사용합니다. */
+function getJosa(word, pair) {
+    if (word == null || word === '') return '';
+    var s = String(word).replace(/\s+$/, '');
+    if (!s.length) return '';
+    var last = s.charAt(s.length - 1);
+    var c = last.charCodeAt(0);
+    var jong = 0;
+    if (c >= 0xAC00 && c <= 0xD7A3) jong = (c - 0xAC00) % 28;
+    var hasCons = jong !== 0;
+    var isRieul = jong === 8;
+    var parts = String(pair).split('/');
+    if (parts.length !== 2) return pair;
+    var withC = parts[0];
+    var noC = parts[1];
+    if (pair === '으로/로') return (!hasCons || isRieul) ? noC : withC;
+    if (pair === '은/는' || pair === '이/가' || pair === '을/를' || pair === '과/와' || pair === '이라/라') {
+        if (isRieul) return noC;
+        return hasCons ? withC : noC;
+    }
+    return hasCons ? withC : noC;
+}
+
+/** 세운 연도별 4분야(재물·직업·문서·애정) 동적 키워드 — 용신/기신 점수·세운 십성 반영 */
+function yearlyFourDomainKeywords(score, sewSip) {
+    var sip = sewSip || '';
+    var w, cr, doc, love;
+    if (score >= 3) {
+        w = '확장·다각화 수익 채널 우위';
+        cr = '승진·이직·대외 인정 신호 최상';
+        doc = /식신|상관|편재|정재/.test(sip) ? '계약 체결·정산·저작권 유리' : '문서·증빙을 갖추면 실속이 붙습니다';
+        love = /식신|편재|정재|비견/.test(sip) ? '대인·소개 확장 타이밍' : '신뢰를 쌓는 만남에 집중하십시오';
+    } else if (score >= 1) {
+        w = '소액·분할 투자와 저축 강화 권장';
+        cr = '자격·이력·네트워크 정비 유리';
+        doc = /식신|상관|편인/.test(sip) ? '기안·기획서 선행 시 승인 용이' : '서류·조건 재확인 후 서명하십시오';
+        love = /정재|편관|정관/.test(sip) ? '관계 속도 조절·약속 이행력 강화' : '새 인연보다 질 있는 대화 우선';
+    } else if (score === 0) {
+        w = '무리한 자산 확대 금지, 수지 균형';
+        cr = '현 포지션 유지·내실 커리큘럼';
+        doc = '증빙 스캔·보관 루틴 점검';
+        love = '갈등 대화는 지연하고 경청을 우선하십시오';
+    } else if (score >= -2) {
+        w = '레버리지·보증 중단, 현금 방어';
+        cr = '과로·과 노출 축소, 리스크 관리';
+        doc = '독소 조항·연장 조건 특별 점검';
+        love = '말·새 인맥 확장은 최소화하십시오';
+    } else {
+        w = '손실 차단·생존형 재무 필수';
+        cr = '조직 충돌·정치적 갈등 거리두기';
+        doc = '법적·세무 자문을 선제적으로 확보하십시오';
+        love = '이별·갈등 정리, 주변 관계 정돈';
+    }
+    return { wealth: w, career: cr, doc: doc, love: love };
+}
 
 // ── 신살 상세 설명 DB ──
 window.SHINSAL_DESC = {
@@ -2586,27 +2641,38 @@ function buildChapter4_Wealth(data) {
             ? `${ganKr}${jiKr} 대운(${age}~${endAge}세)은 돈이 새기 쉬워 지키는 힘이 더 중요한 시기입니다.`
             : `${ganKr}${jiKr} 대운(${age}~${endAge}세)은 급하게 키우기보다 안정적으로 굴리는 데 강한 시기입니다.`;
         const action = phase==='open'
-            ? '작게 시작해 반응이 붙는 쪽에 조금씩 더 싣는 방식이 안전하고 빠릅니다.'
+            ? ''
             : phase==='guard'
             ? '새 투자보다 기존 지출 정리, 계약 점검, 비상자금 확보를 먼저 하면 흔들림이 줄어듭니다.'
             : '새 판을 크게 벌이기보다 지금 하는 일을 더 단단하게 다듬으면 다음 상승 구간에서 차이가 커집니다.';
         const roleText = `이번 구간은 앞에서는 ${roleLead} 스타일, 현장에서는 ${roleField} 스타일이 강하게 보입니다.`;
         const reacts = [];
-        if(natalStems.includes(g0)) reacts.push(`태어난 글자에 ${ganKr}가 이미 있어, 이 시기에는 내 성향이 더 강하게 드러납니다.`);
-        if(natalBranches.includes(g1)) reacts.push(`태어난 글자에 ${jiKr}가 겹쳐, 같은 주제가 반복되거나 크게 부각될 가능성이 큽니다.`);
+        if(natalStems.includes(g0)) reacts.push(`태어난 글자에 ${ganKr}${getJosa(ganKr,'이/가')} 이미 있어, 이 시기에는 내 성향이 더 강하게 드러납니다.`);
+        if(natalBranches.includes(g1)) reacts.push(`태어난 글자에 ${jiKr}${getJosa(jiKr,'이/가')} 겹쳐, 같은 주제가 반복되거나 크게 부각될 가능성이 큽니다.`);
         const stemBuddy = STEM_PAIR[g0];
-        if(stemBuddy && natalStems.includes(stemBuddy)) reacts.push(`${ganKr}가 태어난 글자의 ${(HK2[stemBuddy]||stemBuddy)}와 잘 붙어, 사람·기회가 연결되기 쉬운 흐름입니다.`);
+        if(stemBuddy && natalStems.includes(stemBuddy)) {
+            const sbKr = HK2[stemBuddy]||stemBuddy;
+            reacts.push(`${ganKr}${getJosa(ganKr,'이/가')} 태어난 글자의 ${sbKr}${getJosa(sbKr,'과/와')} 잘 붙어, 사람·기회가 연결되기 쉬운 흐름입니다.`);
+        }
         const branchBuddy = BRANCH_PAIR[g1];
-        if(branchBuddy && natalBranches.includes(branchBuddy)) reacts.push(`${jiKr}가 태어난 글자의 ${(HK2[branchBuddy]||branchBuddy)}와 자연스럽게 맞물려, 협업이나 계약이 부드럽게 이어질 수 있습니다.`);
+        if(branchBuddy && natalBranches.includes(branchBuddy)) {
+            const bbKr = HK2[branchBuddy]||branchBuddy;
+            reacts.push(`${jiKr}${getJosa(jiKr,'이/가')} 태어난 글자의 ${bbKr}${getJosa(bbKr,'과/와')} 자연스럽게 맞물려, 협업이나 계약이 부드럽게 이어질 수 있습니다.`);
+        }
         const branchClash = BRANCH_CLASH[g1];
-        if(branchClash && natalBranches.includes(branchClash)) reacts.push(`${jiKr}가 태어난 글자의 ${(HK2[branchClash]||branchClash)}와 부딪히는 자리라, 직장·돈·관계에서 갑작스런 변경 이슈를 먼저 관리해야 합니다.`);
+        if(branchClash && natalBranches.includes(branchClash)) {
+            const bcKr = HK2[branchClash]||branchClash;
+            reacts.push(`${jiKr}${getJosa(jiKr,'이/가')} 태어난 글자의 ${bcKr}${getJosa(bcKr,'과/와')} 부딪히는 자리라, 직장·돈·관계에서 갑작스런 변경 이슈를 먼저 관리해야 합니다.`);
+        }
         const reactionText = reacts.length
             ? reacts.slice(0,2).join(' ')
             : '태어난 글자와 큰 충돌은 적어, 급하게 키우기보다 계획대로 밀어붙일수록 결과가 안정적으로 쌓입니다.';
-        const tail = isStrong
+        const tail = phase==='open'
+            ? ''
+            : (isStrong
             ? '추진력이 좋은 타입이라 한 번에 크게 가기보다 나눠서 실행할 때 돈을 더 오래 지킬 수 있습니다.'
-            : '혼자 버티기보다 주변 도움을 받아 함께 움직일수록 결과가 빨리 붙습니다.';
-        const txt = `${intro} ${reactionText} ${roleText} ${action} ${tail}`;
+            : '혼자 버티기보다 주변 도움을 받아 함께 움직일수록 결과가 빨리 붙습니다.');
+        const txt = [intro, reactionText, roleText, action, tail].filter(Boolean).join(' ');
         const curBadge = isCur ? '<span style="font-size:10px;background:var(--gold);color:#000;padding:1px 6px;border-radius:6px;font-weight:700;">▶ 현재</span>' : '';
         return `<div style="background:rgba(255,255,255,0.03);border-radius:8px;padding:12px 14px;margin-bottom:8px;border-left:3px solid ${isGood ? '#c7a76a' : isBad ? '#e74c3c' : '#555'};">
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
@@ -2916,21 +2982,6 @@ function buildSewunLoop(data) {
         return [...new Set(result)];
     }
 
-    /** 세운 연도 score + 세운 십성 → 4대역 상태 키워드(적극 확장·현상 유지·신중 보류·절대 보류) */
-    function yearlyStatusKeywords(score, sewSip) {
-        var sip = sewSip || '';
-        var docAggressive = /식신|상관|편재|정재/.test(sip);
-        var loveAggressive = /식신|편재|정재|비견/.test(sip);
-        var wealth = score >= 1 ? '적극 확장' : (score === 0 ? '현상 유지' : (score >= -2 ? '신중 보류' : '절대 보류'));
-        var career = score >= 1 ? '적극 확장' : (score === 0 ? '현상 유지' : (score >= -2 ? '현상 유지' : '절대 보류'));
-        var doc = score >= 3 ? '적극 확장' : (score >= 1 ? (docAggressive ? '적극 확장' : '현상 유지') : (score === 0 ? '현상 유지' : '절대 보류'));
-        var love = score >= 1 ? (loveAggressive ? '적극 확장' : '현상 유지') : (score === 0 ? '현상 유지' : (score >= -2 ? '신중 보류' : '절대 보류'));
-        return {
-            wealth: wealth, career: career, doc: doc, love: love,
-            mobility: score >= 1 ? '적극 확장' : (score === 0 ? '현상 유지' : (score >= -2 ? '신중 보류' : '절대 보류')),
-            health: score >= 1 ? '적극 확장' : (score === 0 ? '현상 유지' : (score >= -2 ? '신중 보류' : '절대 보류'))
-        };
-    }
 
     let rows = '';
     for(let i=0; i<10; i++) {
@@ -2950,7 +3001,7 @@ function buildSewunLoop(data) {
         const sewShinsal = getSewunShinsal(stem, branch);
 
         // 세운: 연도 제목 직후 4줄 인디케이터 → 상세 서사
-        const ykw = yearlyStatusKeywords(score, sewSip);
+        const ykw = yearlyFourDomainKeywords(score, sewSip);
         const yearNarr = score>=3
             ? `${yr}년은 전면 공세 구간입니다. 우선순위 자산에 자원을 집중하고 핵심 승부를 즉시 실행하십시오.`
             : score>=1
@@ -3228,11 +3279,11 @@ function buildChapter6_Love(data) {
             <div style="display:flex;flex-direction:column;gap:12px;">
                 <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:14px;">
                     <div style="font-size:12px;font-weight:700;color:#ddd;margin-bottom:6px;">연애 패턴의 반복 구조</div>
-                    <p style="font-size:12.5px;color:#bbb;line-height:1.8;margin:0;">사주에서 일지(日支)는 당신이 반복적으로 경험하는 연애 패턴의 원형이다. 표면적인 이상형과 달리, 실제로 강한 끌림을 느끼는 상대의 유형이 이 자리에 새겨져 있다. 좋고 싫음의 감정이 아니라 에너지 수준에서의 공명이 연애를 지속시킨다. 과거 연애를 돌아보면 일지 기운의 패턴이 반복됨을 발견할 수 있다.</p>
+                    <p style="font-size:12.5px;color:#bbb;line-height:1.8;margin:0;">사주에서 일지(日支)는 당신이 반복적으로 경험하는 연애 패턴의 원형입니다. 표면적인 이상형과 달리, 실제로 강한 끌림을 느끼는 상대의 유형이 이 자리에 새겨져 있습니다. 좋고 싫음의 감정이 아니라 에너지 수준에서의 공명이 연애를 지속시킵니다. 과거 연애를 돌아보면 일지 기운의 패턴이 반복됨을 발견할 수 있습니다.</p>
                 </div>
                 <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:14px;">
                     <div style="font-size:12px;font-weight:700;color:#ddd;margin-bottom:6px;">이상형과 현실형의 간극</div>
-                    <p style="font-size:12.5px;color:#bbb;line-height:1.8;margin:0;">머리로 원하는 이상형(일간과 합이 되는 기운)과 실제로 끌리는 현실형(일지와 충·합이 되는 기운)은 다를 수 있다. 이 간극을 이해하는 것이 연애 전략의 핵심입니다. 이상형을 쫓다가 현실형과 이미 만나고 있는 경우가 많으며, 이 현실형이 실제로 더 깊은 관계로 이어지는 경우가 많다.</p>
+                    <p style="font-size:12.5px;color:#bbb;line-height:1.8;margin:0;">머리로 원하는 이상형(일간과 합이 되는 기운)과 실제로 끌리는 현실형(일지와 충·합이 되는 기운)은 다를 수 있습니다. 이 간극을 이해하는 것이 연애 전략의 핵심입니다. 이상형을 쫓다가 현실형과 이미 만나고 있는 경우가 많으며, 이 현실형이 실제로 더 깊은 관계로 이어지는 경우도 많습니다.</p>
                 </div>
                 <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:14px;">
                     <div style="font-size:12px;font-weight:700;color:#ddd;margin-bottom:6px;">결혼 최적 시기</div>
@@ -3240,7 +3291,7 @@ function buildChapter6_Love(data) {
                 </div>
                 <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:14px;">
                     <div style="font-size:12px;font-weight:700;color:#ddd;margin-bottom:6px;">배우자 특성과 오행 궁합</div>
-                    <p style="font-size:12.5px;color:#bbb;line-height:1.8;margin:0;">당신에게 부족한 오행 기운을 일간으로 가진 상대와 만날 때 가장 강력한 에너지 보완이 이루어진다. 완벽한 사람이 아닌 나를 가장 완성시켜주는 사람 — 그 사람이 당신의 진정한 배우자다. 오행 균형이 맞는 파트너와 함께할 때 두 사람 모두 더 큰 성취를 이룬다.</p>
+                    <p style="font-size:12.5px;color:#bbb;line-height:1.8;margin:0;">당신에게 부족한 오행 기운을 일간으로 가진 상대와 만날 때 가장 강력한 에너지 보완이 이루어집니다. 완벽한 사람이 아닌 나를 가장 완성시켜 주는 사람 — 그 사람이 당신의 진정한 배우자입니다. 오행 균형이 맞는 파트너와 함께할 때 두 사람 모두 더 큰 성취를 이룹니다.</p>
                 </div>
             </div>
         </div>
@@ -3248,10 +3299,10 @@ function buildChapter6_Love(data) {
         <div style="background:rgba(199,167,106,0.05);border-radius:12px;padding:20px;margin:16px 0;border:1px solid rgba(199,167,106,0.1);">
             <div style="font-size:12px;color:var(--gold);margin-bottom:12px;letter-spacing:1px;">&#9670; 인연 활성화 & 관계 개선 전략</div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-                <div style="font-size:12px;color:#bbb;line-height:1.8;"><b style="color:#ddd;">&#10003; 용신 시기 활동 확대</b><br>용신 대운·세운에 새로운 모임 적극 참여 — 인연의 문이 열린다.</div>
-                <div style="font-size:12px;color:#bbb;line-height:1.8;"><b style="color:#ddd;">&#10003; 일지 합 시기 포착</b><br>일지와 합이 되는 지지의 달에 적극적인 소개 활동을 진행하라.</div>
-                <div style="font-size:12px;color:#bbb;line-height:1.8;"><b style="color:#ddd;">&#10003; 연애 함정 인식</b><br>충(沖)이 되는 기운의 상대 — 강한 매력이지만 지속하기 어렵다는 것을 인지하라.</div>
-                <div style="font-size:12px;color:#bbb;line-height:1.8;"><b style="color:#ddd;">&#10003; 기신 시기 감정 관리</b><br>기신 강한 시기에는 감정적 결정을 미루고 관계 안정에 집중하라.</div>
+                <div style="font-size:12px;color:#bbb;line-height:1.8;"><b style="color:#ddd;">&#10003; 용신 시기 활동 확대</b><br>용신 대운·세운에 새로운 모임에 적극 참여하십시오 — 인연의 문이 열립니다.</div>
+                <div style="font-size:12px;color:#bbb;line-height:1.8;"><b style="color:#ddd;">&#10003; 일지 합 시기 포착</b><br>일지와 합이 되는 지지의 달에는 적극적인 소개 활동을 진행하십시오.</div>
+                <div style="font-size:12px;color:#bbb;line-height:1.8;"><b style="color:#ddd;">&#10003; 연애 함정 인식</b><br>충(沖)이 되는 기운의 상대 — 강한 매력이지만 지속하기 어렵다는 점을 인지하십시오.</div>
+                <div style="font-size:12px;color:#bbb;line-height:1.8;"><b style="color:#ddd;">&#10003; 기신 시기 감정 관리</b><br>기신이 강한 시기에는 감정적 결정을 미루고 관계 안정에 집중하십시오.</div>
             </div>
         </div>
         <p class="ch-text" style="margin-top:16px;">사랑은 정답을 찾는 일이 아니라 서로의 리듬을 맞춰가는 과정입니다. 마음이 머무는 속도를 존중할 때 관계는 더 깊어집니다.</p>
@@ -3420,12 +3471,12 @@ function buildChapter8_Health(data) {
 
         <div style="background:rgba(199,167,106,0.05);border-radius:12px;padding:20px;margin:16px 0;border:1px solid rgba(199,167,106,0.1);">
             <div style="font-size:12px;color:var(--gold);margin-bottom:12px;letter-spacing:1px;">&#9670; 대운별 건강 주의사항 & 종합 건강 전략</div>
-            <p style="font-size:13px;color:#bbb;line-height:1.85;margin:0 0 12px;">기신 기운이 강한 대운에서는 면역 밸런스가 흔들릴 가능성이 커집니다. 이 시기에 수면 부족과 과로가 겹치면 큰 병으로 이어질 수 있다. 가능하면 이 시기를 전후해 종합 건강검진을 받고, 평소보다 50% 더 세심한 건강 관리를 실천하라. 반면 용신 대운에는 적극적인 건강 투자(운동 습관 구축, 식단 개선)가 가장 효과를 발휘한다.</p>
+            <p style="font-size:13px;color:#bbb;line-height:1.85;margin:0 0 12px;">기신 기운이 강한 대운에서는 면역 밸런스가 흔들릴 가능성이 큽니다. 이 시기에 수면 부족과 과로가 겹치면 큰 병으로 이어질 수 있습니다. 가능하면 이 시기를 전후해 종합 건강검진을 받고, 평소보다 50% 더 세심한 건강 관리를 실천하십시오. 반면 용신 대운에는 적극적인 건강 투자(운동 습관 구축, 식단 개선)가 가장 효과를 발휘합니다.</p>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
                 <div style="font-size:12px;color:#bbb;line-height:1.8;"><b style="color:#ddd;">&#10003; 기신 대운 필수 수칙</b><br>수면 7시간 이상 · 알코올 절제 · 정기 검진 · 감정 관리</div>
                 <div style="font-size:12px;color:#bbb;line-height:1.8;"><b style="color:#ddd;">&#10003; 용신 대운 건강 투자</b><br>운동 루틴 구축 · 식단 개선 · 의료 검진 최적화</div>
-                <div style="font-size:12px;color:#bbb;line-height:1.8;"><b style="color:#ddd;">&#10003; 감정-신체 연결 관리</b><br>부정적 감정이 오래 쌓이면 취약 장기에 직접 영향을 준다. 감정 표현 채널을 만들어라.</div>
-                <div style="font-size:12px;color:#bbb;line-height:1.8;"><b style="color:#ddd;">&#10003; 계절별 예방 검진</b><br>취약 오행의 계절에 집중적으로 해당 장기 검진을 받아라.</div>
+                <div style="font-size:12px;color:#bbb;line-height:1.8;"><b style="color:#ddd;">&#10003; 감정-신체 연결 관리</b><br>부정적 감정이 오래 쌓이면 취약 장기에 직접 영향을 줍니다. 감정 표현 채널을 마련하십시오.</div>
+                <div style="font-size:12px;color:#bbb;line-height:1.8;"><b style="color:#ddd;">&#10003; 계절별 예방 검진</b><br>취약 오행의 계절에는 해당 장기 검진을 집중적으로 받으십시오.</div>
             </div>
         </div>
         <p class="ch-text" style="margin-top:16px;">건강은 버티는 힘이 아니라, 제때 쉬어가는 감각에서 만들어집니다. 당신의 몸이 보내는 신호를 가장 먼저 믿어주세요.</p>
@@ -3859,14 +3910,19 @@ function buildChapter6_SeYun(data){
     var GA={'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'},JA={'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'},GK={'甲':'갑','乙':'을','丙':'병','丁':'정','戊':'무','己':'기','庚':'경','辛':'신','壬':'임','癸':'계'},JK={'子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해'},OK={wood:'목',fire:'화',earth:'토',metal:'금',water:'수'};
     var yG='',yJ='',yGoh='earth',yJoh='earth',yKor='';
     try{var L=Solar.fromYmd(curY,6,15).getLunar();var gz=L.getYearInGanZhi();yG=gz[0];yJ=gz[1];yKor=(GK[yG]||yG)+(JK[yJ]||yJ);yGoh=GA[yG]||'earth';yJoh=JA[yJ]||'earth';}catch(e){}
-    var yong=data.yong||'wood',gi=data.gi||'metal';
+    var yong=data.yong||'wood',gi=data.gi||'metal',hee=data.hee||'',goo=data.goo||'';
     var ig=yGoh===yong||yJoh===yong,ib=yGoh===gi||yJoh===gi;
+    var scY=0;if(yGoh===yong||yGoh===hee)scY+=2;if(yGoh===gi||yGoh===goo)scY-=2;if(yJoh===yong||yJoh===hee)scY+=2;if(yJoh===gi||yJoh===goo)scY-=2;
+    var dayStemY=data.dayStem||'甲';
+    var sewSipY=(typeof getSipseong==='function')?(getSipseong(dayStemY,yG)||''):'';
+    var ykwY=yearlyFourDomainKeywords(scY,sewSipY);
+    var fourStripY='<div style="margin:0 0 16px;border:1px solid rgba(199,167,106,0.28);border-radius:10px;overflow:hidden;background:rgba(0,0,0,0.28);"><div style="border-bottom:1px solid rgba(255,255,255,0.06);padding:10px 12px;font-size:12px;color:#e6e0d6;">[ 💰 재물·투자 : <span style="color:var(--gold);font-weight:800;">'+ykwY.wealth+'</span> ]</div><div style="border-bottom:1px solid rgba(255,255,255,0.06);padding:10px 12px;font-size:12px;color:#e6e0d6;">[ 🏢 직업·합격 : <span style="color:var(--gold);font-weight:800;">'+ykwY.career+'</span> ]</div><div style="border-bottom:1px solid rgba(255,255,255,0.06);padding:10px 12px;font-size:12px;color:#e6e0d6;">[ 📝 문서·계약 : <span style="color:var(--gold);font-weight:800;">'+ykwY.doc+'</span> ]</div><div style="padding:10px 12px;font-size:12px;color:#e6e0d6;">[ ❤ 애정·대인 : <span style="color:var(--gold);font-weight:800;">'+ykwY.love+'</span> ]</div></div>';
     var luck=ig?'흥(興)의 해':ib?'주의가 필요한 해':'평온한 해',lc=ig?'#c7a76a':ib?'#e08080':'#aaa';
     var D={wood:{m:'새 수입원 개척이 활발합니다.',c:'이직·창업·학습 시작에 강한 에너지.',l:'새 만남이 활발합니다. 능동적으로 움직이면 인연이 옵니다.',h:'간·신경 과부하 주의.'},fire:{m:'수입·지출 모두 증가. 저축 구조를 먼저 만드십시오.',c:'사회적 노출·인정이 절정.',l:'열정적 만남. 감정이 앞서지 않도록 하십시오.',h:'심장·혈관 주의.'},earth:{m:'안정적 수입 지속. 꾸준한 축적이 맞습니다.',c:'현 포지션을 굳히는 해.',l:'안정적 관계가 더 단단해집니다.',h:'소화기·위장 주의.'},metal:{m:'정리와 결산의 해.',c:'전문성이 인정받는 해.',l:'관계의 명확한 정리가 필요합니다.',h:'폐·대장 주의.'},water:{m:'정보·인맥이 돈이 됩니다.',c:'분석·기획 역량이 빛나는 해.',l:'감성적 연결. 기대를 현실적으로 유지하십시오.',h:'신장·방광 주의.'}};
     var d=D[yGoh]||D.earth;
     var ST={wood:'지금 씨앗을 뿌리는 것이 목표입니다. 3~5년 뒤를 보고 결단하십시오.',fire:'최대한 많이 노출되고 최대한 많이 저장하십시오.',earth:'서두르지 않아도 됩니다. 꾸준히 쌓는 것이 전략입니다.',metal:'가지치기의 해. 불필요한 것을 정리하면 다음 대운이 가벼워집니다.',water:'생각을 행동으로 옮기는 연습이 핵심 포인트입니다. 이제 실행하십시오.'};
     var grid=['💰 재물','🏢 직업','❤ 애정','🌿 건강'].map(function(lb,i){var k=['m','c','l','h'];return'<div style="background:rgba(255,255,255,0.03);border-radius:10px;padding:14px 16px;border:1px solid rgba(255,255,255,0.06);"><div style="font-size:11px;color:var(--gold);margin-bottom:8px;font-weight:700;">'+lb+'</div><p style="font-size:12.5px;color:#ccc;line-height:1.8;margin:0;">'+d[k[i]]+'</p></div>';}).join('');
-    return'<div class="report-chapter chapter-start"><h3 class="ch-title">Chapter 10. '+curY+'년('+yKor+'년) 운세</h3><div style="display:flex;align-items:center;gap:16px;background:rgba(199,167,106,0.07);border-radius:12px;padding:16px 20px;margin-bottom:24px;"><div style="font-size:28px;font-weight:700;color:'+lc+';">'+yKor+'년</div><div><div style="font-size:11px;color:#888;margin-bottom:4px;">종합 판단</div><div style="font-size:15px;font-weight:700;color:'+lc+';">'+luck+'</div></div><div style="margin-left:auto;font-size:12px;color:#888;text-align:right;">천간 <b>'+OK[yGoh]+'</b><br>지지 <b>'+OK[yJoh]+'</b></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">'+grid+'</div><div style="background:rgba(199,167,106,0.05);border-left:3px solid var(--gold);padding:14px 18px;border-radius:0 10px 10px 0;"><div style="font-size:11px;color:var(--gold);margin-bottom:8px;font-weight:700;">✦ '+name+'님의 '+curY+'년 전략</div><p style="font-size:13px;color:#ccc;line-height:1.85;margin:0;">'+(ST[yGoh]||ST.earth)+'</p></div><div style="margin-top:16px;font-size:11px;color:#666;">▼ 월별 세부 풀이는 Ch.9 월운 섹션을 참조하십시오</div></div>';
+    return'<div class="report-chapter chapter-start"><h3 class="ch-title">Chapter 10. '+curY+'년('+yKor+'년) 운세</h3><div style="display:flex;align-items:center;gap:16px;background:rgba(199,167,106,0.07);border-radius:12px;padding:16px 20px;margin-bottom:24px;"><div style="font-size:28px;font-weight:700;color:'+lc+';">'+yKor+'년</div><div><div style="font-size:11px;color:#888;margin-bottom:4px;">종합 판단</div><div style="font-size:15px;font-weight:700;color:'+lc+';">'+luck+'</div></div><div style="margin-left:auto;font-size:12px;color:#888;text-align:right;">천간 <b>'+OK[yGoh]+'</b><br>지지 <b>'+OK[yJoh]+'</b></div></div>'+fourStripY+'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">'+grid+'</div><div style="background:rgba(199,167,106,0.05);border-left:3px solid var(--gold);padding:14px 18px;border-radius:0 10px 10px 0;"><div style="font-size:11px;color:var(--gold);margin-bottom:8px;font-weight:700;">✦ '+name+'님의 '+curY+'년 전략</div><p style="font-size:13px;color:#ccc;line-height:1.85;margin:0;">'+(ST[yGoh]||ST.earth)+'</p></div><div style="margin-top:16px;font-size:11px;color:#666;">▼ 월별 세부 풀이는 Ch.9 월운 섹션을 참조하십시오</div></div>';
 }
 
 // ═══════════════════════════════════════════════════════
@@ -5577,7 +5633,8 @@ function runAnalysis(overrideParams) {
         if(wxSummaryEl) {
             const dominantDesc = {wood:'성장·도전 에너지',fire:'열정·표현 에너지',earth:'안정·신용 에너지',metal:'결단·절제 에너지',water:'지혜·유연성 에너지'};
             const lackDesc = wxMin.val < 5 ? `<b>${wxKorMap[wxMin.key]}</b> 기운이 ${wxMin.val}%로 거의 없어 보완이 필요합니다.` : '';
-            wxSummaryEl.innerHTML = `<b>${wxMax.label}</b> 기운이 <b>${wxMax.val}%</b>로 가장 강합니다 — ${dominantDesc[wxMax.key]}가 지배적입니다. ${lackDesc}`;
+            const _dd = dominantDesc[wxMax.key] || '';
+            wxSummaryEl.innerHTML = `<b>${wxMax.label}</b> 기운이 <b>${wxMax.val}%</b>로 가장 강합니다 — ${_dd}${getJosa(_dd,'이/가')} 지배적입니다. ${lackDesc}`;
         }
 
         let wxHtml = '<div class="bar-group">';
@@ -6406,20 +6463,23 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
                 var gTag=(GK[g2]||g2);
                 var jTag=(JK[j2]||j2);
                 var reacts=[];
-                if(natalS.indexOf(g2)>=0) reacts.push(gTag+'가 원국에 겹쳐 같은 성향이 더 강해집니다.');
-                if(natalB.indexOf(j2)>=0) reacts.push(jTag+'가 원국에 겹쳐 같은 이슈가 크게 드러날 수 있습니다.');
+                if(natalS.indexOf(g2)>=0) reacts.push(gTag+getJosa(gTag,'이/가')+' 원국에 겹쳐 같은 성향이 더 강해집니다.');
+                if(natalB.indexOf(j2)>=0) reacts.push(jTag+getJosa(jTag,'이/가')+' 원국에 겹쳐 같은 이슈가 크게 드러날 수 있습니다.');
                 var sPair=STEM_PAIR[g2], bPair=BRANCH_PAIR[j2], bClash=BRANCH_CLASH[j2];
-                if(sPair&&natalS.indexOf(sPair)>=0) reacts.push(gTag+'는 원국의 '+(GK[sPair]||sPair)+'와 잘 붙어 사람·기회 연결이 좋아집니다.');
-                if(bPair&&natalB.indexOf(bPair)>=0) reacts.push(jTag+'는 원국의 '+(JK[bPair]||bPair)+'와 잘 맞아 협업 흐름이 부드럽습니다.');
-                if(bClash&&natalB.indexOf(bClash)>=0) reacts.push(jTag+'는 원국의 '+(JK[bClash]||bClash)+'와 부딪혀 변경·충돌 이슈를 먼저 관리해야 합니다.');
+                if(sPair&&natalS.indexOf(sPair)>=0){var _sk=GK[sPair]||sPair; reacts.push(gTag+getJosa(gTag,'은/는')+' 원국의 '+_sk+getJosa(_sk,'과/와')+' 잘 붙어 사람·기회 연결이 좋아집니다.');}
+                if(bPair&&natalB.indexOf(bPair)>=0){var _bk=JK[bPair]||bPair; reacts.push(jTag+getJosa(jTag,'은/는')+' 원국의 '+_bk+getJosa(_bk,'과/와')+' 잘 맞아 협업 흐름이 부드럽습니다.');}
+                if(bClash&&natalB.indexOf(bClash)>=0){var _ck=JK[bClash]||bClash; reacts.push(jTag+getJosa(jTag,'은/는')+' 원국의 '+_ck+getJosa(_ck,'과/와')+' 부딪혀 변경·충돌 이슈를 먼저 관리해야 합니다.');}
                 var reactTxt=reacts.length?reacts.slice(0,2).join(' '):'원국과 큰 충돌이 적어 계획대로 밀어붙일수록 안정적으로 쌓입니다.';
+                var ykwSe=yearlyFourDomainKeywords(s2,ganSip2);
+                var seStrip='<div style="margin:0 0 10px;border:1px solid rgba(199,167,106,0.25);border-radius:8px;overflow:hidden;background:rgba(0,0,0,0.22);"><div style="border-bottom:1px solid rgba(255,255,255,0.06);padding:8px 10px;font-size:11.5px;color:#e6e0d6;">[ 💰 재물·투자 : <span style="color:var(--gold);font-weight:800;">'+ykwSe.wealth+'</span> ]</div><div style="border-bottom:1px solid rgba(255,255,255,0.06);padding:8px 10px;font-size:11.5px;color:#e6e0d6;">[ 🏢 직업·합격 : <span style="color:var(--gold);font-weight:800;">'+ykwSe.career+'</span> ]</div><div style="border-bottom:1px solid rgba(255,255,255,0.06);padding:8px 10px;font-size:11.5px;color:#e6e0d6;">[ 📝 문서·계약 : <span style="color:var(--gold);font-weight:800;">'+ykwSe.doc+'</span> ]</div><div style="padding:8px 10px;font-size:11.5px;color:#e6e0d6;">[ ❤ 애정·대인 : <span style="color:var(--gold);font-weight:800;">'+ykwSe.love+'</span> ]</div></div>';
                 var adv=s2>=2
-                    ?`올해는 ${gTag}${jTag} 기운이 나와 잘 맞아, 새 시도·협업·확장이 성과로 이어질 가능성이 높습니다. ${reactTxt} 다만 한 번에 많이 벌이기보다 우선순위를 먼저 정하면 결과가 더 좋아집니다.`
+                    ?('올해는 '+gTag+jTag+' 기운이 당신 원국과 잘 맞아, 새 시도·협업·확장이 성과로 이어질 가능성이 높습니다. '+reactTxt+' 다만 한 번에 많이 벌이기보다 우선순위를 먼저 정하면 결과가 더 좋아집니다.')
                     :s2>=0
-                    ?`올해는 ${gTag}${jTag} 기운이 급한 변화보다 안정 운영에 힘을 싣는 해입니다. ${reactTxt} 큰 승부보다 기존 구조를 다듬고 새는 부분을 줄이는 쪽이 유리합니다.`
-                    :`올해는 ${gTag}${jTag} 기운이 부담 구간을 건드릴 수 있는 해입니다. ${reactTxt} 공격적으로 키우기보다 현금흐름 방어와 계약 재검토를 먼저 하면 손실 가능성을 낮출 수 있습니다.`;
+                    ?('올해는 '+gTag+jTag+' 기운이 급한 변화보다 안정 운영에 힘을 싣는 해입니다. '+reactTxt+' 큰 승부보다 기존 구조를 다듬고 새는 부분을 줄이는 쪽이 유리합니다.')
+                    :('올해는 '+gTag+jTag+' 기운이 부담 구간을 건드릴 수 있는 해입니다. '+reactTxt+' 공격적으로 키우기보다 현금흐름 방어와 계약 재검토를 먼저 하면 손실 가능성을 낮출 수 있습니다.');
                 h3+='<div style="margin-bottom:14px;padding:16px;background:rgba(255,255,255,'+(isThis?'0.07':'0.03')+');border:1px solid '+(isThis?'var(--gold)':'rgba(255,255,255,0.07)')+';border-radius:12px;">';
                 h3+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;"><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:20px;font-weight:280;color:var(--gold);font-family:Noto Serif KR,serif;">'+g2+j2+'</span><span style="font-size:14px;color:#bbb;">'+yr+'년'+(isThis?' <span style="font-size:10px;background:var(--gold);color:#000;padding:1px 7px;border-radius:8px;font-weight:700;">올해</span>':'')+'</span></div><span style="font-size:12px;font-weight:700;color:'+col2+';">'+gb(s2)+'</span></div>';
+                h3+=seStrip;
                 var ynarr=yr+'년은 '+(GK[g2]||g2)+'('+KN[gOh]+') 기운과 '+(JK[j2]||j2)+'('+KN[jOh]+') 기운이 함께 작동하는 해입니다. '+(s2>=2?'부족했던 부분을 채워 주는 해라, 실행한 일이 결과로 이어질 가능성이 큽니다.':s2>=0?'급하게 키우기보다 차근차근 쌓을 때 더 잘 맞는 해입니다.':'충돌이 커질 수 있는 해라, 결정 속도를 늦추고 안전장치를 먼저 챙기는 편이 좋습니다.');
                 h3+='<div style="background:rgba(0,0,0,0.15);border-radius:6px;padding:10px;margin-bottom:10px;"><p style="font-size:12px;color:#ddd;line-height:1.75;margin:0;">'+ynarr+'</p></div>';
                 h3+='<div style="background:rgba(199,167,106,0.06);border-radius:6px;padding:10px;border-left:2px solid '+col2+';"><div style="font-size:10px;color:var(--text-dim);margin-bottom:4px;">이 해의 전략</div><p style="font-size:12.5px;color:#ccc;line-height:1.8;margin:0;">'+adv+'</p></div></div>';
@@ -6457,12 +6517,12 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
                 var mGTag=(GK[gm4]||gm4);
                 var mJTag=(JK[jm4]||jm4);
                 var mReacts=[];
-                if(natalS.indexOf(gm4)>=0) mReacts.push(mGTag+'가 원국에 겹쳐 같은 성향이 강해집니다.');
-                if(natalB.indexOf(jm4)>=0) mReacts.push(mJTag+'가 원국에 겹쳐 같은 일이 반복됩니다.');
+                if(natalS.indexOf(gm4)>=0) mReacts.push(mGTag+getJosa(mGTag,'이/가')+' 원국에 겹쳐 같은 성향이 강해집니다.');
+                if(natalB.indexOf(jm4)>=0) mReacts.push(mJTag+getJosa(mJTag,'이/가')+' 원국에 겹쳐 같은 일이 반복됩니다.');
                 var msPair=STEM_PAIR[gm4], mbPair=BRANCH_PAIR[jm4], mbClash=BRANCH_CLASH[jm4];
-                if(msPair&&natalS.indexOf(msPair)>=0) mReacts.push(mGTag+'가 원국의 '+(GK[msPair]||msPair)+'와 잘 붙어 연결 운이 좋아집니다.');
-                if(mbPair&&natalB.indexOf(mbPair)>=0) mReacts.push(mJTag+'가 원국의 '+(JK[mbPair]||mbPair)+'와 잘 맞아 협업이 부드럽습니다.');
-                if(mbClash&&natalB.indexOf(mbClash)>=0) mReacts.push(mJTag+'가 원국의 '+(JK[mbClash]||mbClash)+'와 부딪혀 일정 변경·감정 충돌을 조심해야 합니다.');
+                if(msPair&&natalS.indexOf(msPair)>=0){var _msk=GK[msPair]||msPair; mReacts.push(mGTag+getJosa(mGTag,'이/가')+' 원국의 '+_msk+getJosa(_msk,'과/와')+' 잘 붙어 연결 운이 좋아집니다.');}
+                if(mbPair&&natalB.indexOf(mbPair)>=0){var _mbk=JK[mbPair]||mbPair; mReacts.push(mJTag+getJosa(mJTag,'이/가')+' 원국의 '+_mbk+getJosa(_mbk,'과/와')+' 잘 맞아 협업이 부드럽습니다.');}
+                if(mbClash&&natalB.indexOf(mbClash)>=0){var _mck=JK[mbClash]||mbClash; mReacts.push(mJTag+getJosa(mJTag,'이/가')+' 원국의 '+_mck+getJosa(_mck,'과/와')+' 부딪혀 일정 변경·감정 충돌을 조심해야 합니다.');}
                 var mReactTxt=mReacts.length?mReacts[0]:'원국과 큰 충돌이 적어 계획대로 밀어붙이기 좋은 달입니다.';
                 var advm=sm4>=2
                     ?`이달은 ${mGTag}${mJTag} 기운이 실행 쪽으로 힘을 보태는 달입니다. ${mReactTxt} 중요한 시작·연락·계약 초안을 진행하면 다음 달로 이어질 가능성이 높습니다.`
