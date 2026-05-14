@@ -22,7 +22,7 @@ function buildYearlyIndicatorsHtml(ykw) {
     var row = function (icon, label, val) {
         return '<div style="width:100%;box-sizing:border-box;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.06);">'
             + '<div style="font-size:11px;color:#888;margin-bottom:5px;">' + icon + ' ' + label + '</div>'
-            + '<div style="font-size:14px;font-weight:700;color:#d4af37;line-height:1.45;word-break:keep-all;overflow-wrap:anywhere;width:100%;" title="' + kw(val) + '">' + kw(val) + '</div></div>';
+            + '<div class="yearly-ind-val" style="font-size:14px;font-weight:700;color:#d4af37;line-height:1.45;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;width:100%;box-sizing:border-box;" title="' + kw(val) + '">' + kw(val) + '</div></div>';
     };
     return '<div class="yearly-indicators" style="width:100%;max-width:100%;box-sizing:border-box;margin-bottom:12px;padding:12px 12px;background-color:#1a1a1a;border-radius:6px;border-left:3px solid #d4af37;">'
         + row('💰', '재물·투자', w.wealth)
@@ -30,7 +30,7 @@ function buildYearlyIndicatorsHtml(ykw) {
         + row('📝', '문서·계약', w.doc)
         + '<div style="width:100%;box-sizing:border-box;">'
         + '<div style="font-size:11px;color:#888;margin-bottom:5px;">❤ 애정·대인</div>'
-        + '<div style="font-size:14px;font-weight:700;color:#d4af37;line-height:1.45;word-break:keep-all;overflow-wrap:anywhere;width:100%;">' + kw(w.love) + '</div></div>'
+        + '<div class="yearly-ind-val" style="font-size:14px;font-weight:700;color:#d4af37;line-height:1.45;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;width:100%;box-sizing:border-box;">' + kw(w.love) + '</div></div>'
         + '</div>';
 }
 
@@ -95,9 +95,12 @@ function yearlyFourDomainKeywords(score, sewSip) {
 
 /** 4대 인디케이터용 짧은 키워드(명사형, 최대 10자) — UI 줄바꿈 방지 */
 function clampKeyword10(t) {
-    var s = String(t == null ? '' : t).replace(/\s+/g, '').trim();
+    var s = String(t == null ? '' : t).trim().replace(/\s+/g, ' ');
     if (s.length <= 10) return s;
     return s.substring(0, 10);
+}
+function escHtmlAttr(s) {
+    return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 function yearlyFourDomainIndicators(score, sewSip) {
     var sip = sewSip || '';
@@ -1247,7 +1250,7 @@ function injectSajuxPdfUi() {
     if (!document.getElementById('sajux-report-ui-styles')) {
         var st = document.createElement('style');
         st.id = 'sajux-report-ui-styles';
-        st.textContent = '.month-pillar-title{white-space:nowrap!important;display:inline-block!important;max-width:100%;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom;}.seyun-premium-vertical{display:flex!important;flex-direction:column!important;align-items:stretch!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important;}.seyun-premium-vertical .seyun-year-card,.seyun-premium-vertical>div{width:100%!important;max-width:100%!important;box-sizing:border-box!important;flex:0 0 auto!important;}.sajux-pdf-wide-btn{cursor:pointer;box-sizing:border-box;border:none;font-family:inherit;font-weight:800;font-size:15px;padding:16px 22px;margin:16px 0 18px;border-radius:12px;background:linear-gradient(135deg,#e8c76a,#b8923a);color:#1a1204;letter-spacing:0.02em;box-shadow:0 8px 28px rgba(212,175,55,0.38);width:100%;max-width:100%;} .sajux-pdf-wide-btn:active{transform:translateY(1px);} #sajux-pdf-fab{cursor:pointer;position:fixed;bottom:22px;right:18px;z-index:10001;font-family:inherit;font-weight:800;font-size:14px;padding:14px 20px;border-radius:999px;border:none;background:linear-gradient(135deg,#d4af37,#8a7020);color:#111;box-shadow:0 10px 32px rgba(0,0,0,0.5),0 0 0 1px rgba(255,255,255,0.12);} @media print{#sajux-pdf-fab,.sajux-pdf-wide-btn{display:none !important;}} @media(max-width:600px){#sajux-pdf-fab{bottom:16px;right:12px;padding:12px 16px;font-size:13px;}}';
+        st.textContent = '.month-pillar-title{white-space:nowrap!important;display:inline-block!important;max-width:100%;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom;}.seyun-premium-vertical{display:flex!important;flex-direction:column!important;align-items:stretch!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important;}.seyun-premium-vertical .seyun-year-card,.seyun-premium-vertical>div{width:100%!important;max-width:100%!important;box-sizing:border-box!important;flex:0 0 auto!important;}.yearly-card-container,.monthly-card-container{display:grid!important;grid-template-columns:1fr!important;width:100%!important;max-width:100%!important;gap:20px!important;box-sizing:border-box!important;}.yearly-card-container .fortune-scroll,.monthly-card-container .fortune-scroll{display:flex!important;flex-direction:column!important;overflow-x:visible!important;overflow-y:visible!important;scroll-snap-type:none!important;align-items:stretch!important;width:100%!important;max-width:100%!important;}.yearly-card-container .f-card,.monthly-card-container .f-card{flex:0 0 auto!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important;}.vip-module-stack{display:flex;flex-direction:column;gap:0;}.vip-module-item{margin-bottom:16px;border-left:3px solid #d4af37;padding-left:14px;}.vip-module-title{color:#d4af37;font-weight:700;margin-bottom:6px;font-size:13.5px;font-family:Noto Serif KR,serif;}.vip-module-desc{color:#d8d3c9;line-height:1.88;font-size:13.5px;margin:0;}.yearly-ind-val{white-space:nowrap!important;text-overflow:ellipsis!important;overflow:hidden!important;max-width:100%!important;}.animal-symbol{font-size:15px;color:rgba(228,232,240,0.92);margin-top:10px;font-weight:500;line-height:1.55;}.cover-highlight{color:#d4af37;font-weight:700;}.birth-info{font-size:0.85em;color:#888;margin-top:8px;line-height:1.65;}.sajux-pdf-wide-btn{cursor:pointer;box-sizing:border-box;border:none;font-family:inherit;font-weight:800;font-size:15px;padding:16px 22px;margin:16px 0 18px;border-radius:12px;background:linear-gradient(135deg,#e8c76a,#b8923a);color:#1a1204;letter-spacing:0.02em;box-shadow:0 8px 28px rgba(212,175,55,0.38);width:100%;max-width:100%;} .sajux-pdf-wide-btn:active{transform:translateY(1px);} #sajux-pdf-fab{cursor:pointer;position:fixed;bottom:22px;right:18px;z-index:10001;font-family:inherit;font-weight:800;font-size:14px;padding:14px 20px;border-radius:999px;border:none;background:linear-gradient(135deg,#d4af37,#8a7020);color:#111;box-shadow:0 10px 32px rgba(0,0,0,0.5),0 0 0 1px rgba(255,255,255,0.12);} @media print{#sajux-pdf-fab,.sajux-pdf-wide-btn{display:none !important;}} @media(max-width:600px){#sajux-pdf-fab{bottom:16px;right:12px;padding:12px 16px;font-size:13px;}}';
         document.head.appendChild(st);
     }
     var oldFab = document.getElementById('sajux-pdf-fab');
@@ -1888,7 +1891,7 @@ function getReportBaseDate(data) {
     return new Date();
 }
 
-/** 표지·히어로용 생년월일시 한 줄. coverSolarHH/MM 은 사용자에게 보여줄 시각(경도 보정 전 입력 시각, runAnalysis에서 채움). */
+/** 표지·히어로·birthStr 한 줄. 시·분(coverSolarHH/MM)은 항상 사용자 입력(경도 −32분 보정 전)만 사용합니다. 만세력·시주 등 내부 연산은 별도로 보정 후 시각을 씁니다. */
 function formatCoverBirthLine(data) {
     if (!data) return '';
     if (data.coverBirthLine) return data.coverBirthLine;
@@ -1952,7 +1955,7 @@ function buildSeYunYearCardHtml(data, yr, opt) {
     var yongTag = (OH_KR7[yong] || '용신') + ' 용신';
     var domAdvN = yearlyDomainStrategicAdvices(sc);
     var body = buildYearStrategicNarrative(name, yr, info.kor, ev2.l, sc, sewSip, yongTag, domAdvN);
-    var kwDet = '<div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.08);font-size:11.5px;color:#aaa;line-height:1.85;"><b style="color:#c7a76a;">재물·직장·서류·사람</b> — 재물: ' + ykw.wealth + ' / 직업: ' + ykw.career + ' / 문서: ' + ykw.doc + ' / 애정: ' + ykw.love + '</div>';
+    var kwDet = '<div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.08);font-size:11.5px;color:#aaa;line-height:1.85;"><b style="color:#c7a76a;">재물·직장·서류·사람</b> — 재물: ' + ykwInd.wealth + ' / 직업: ' + ykwInd.career + ' / 문서: ' + ykwInd.doc + ' / 애정: ' + ykwInd.love + '</div>';
     var isThis = !!opt.isThisYear;
     var border = isThis ? 'var(--gold)' : 'rgba(255,255,255,0.06)';
     var bgA = isThis ? '0.05' : '0.03';
@@ -2068,9 +2071,14 @@ function buildPremiumExecutiveSummary(data) {
         '<button type="button" class="sajux-pdf-wide-btn" onclick="window.print()">PDF 저장 (전체 너비)</button>' +
         '<p class="premium-thesis" style="margin:0 0 14px;font-size:14.5px;line-height:1.9;color:#efe9dc;font-weight:600;">' + coreFusion + '</p>' +
         '<div style="font-size:11px;color:var(--gold);letter-spacing:1px;margin:16px 0 8px;">4대 실행 모듈</div>' +
-        '<ul class="premium-points" style="margin:0;padding-left:18px;color:#d8d3c9;line-height:1.9;font-size:13.5px;">' +
-        modules.map(function(m){ return '<li style="margin:0 0 11px;"><strong style="color:#f3e7c8;">' + m.title + '</strong> ' + m.body + '</li>'; }).join('') +
-        '</ul>' +
+        '<div class="vip-module-stack" style="margin:0;">' +
+        modules.map(function(m){
+            return '<div class="vip-module-item" style="margin-bottom:16px;border-left:3px solid #d4af37;padding-left:14px;">'
+                + '<div class="vip-module-title" style="color:#d4af37;font-weight:700;margin-bottom:6px;font-size:13.5px;font-family:\'Noto Serif KR\',serif;letter-spacing:0.02em;">' + escHtmlAttr(m.title) + '</div>'
+                + '<div class="vip-module-desc" style="color:#d8d3c9;line-height:1.88;font-size:13.5px;margin:0;">' + escHtmlAttr(m.body) + '</div>'
+                + '</div>';
+        }).join('') +
+        '</div>' +
         '<div style="margin-top:20px;padding:14px 16px;border-radius:10px;background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.06);font-size:12.5px;line-height:1.78;color:#aaa;">' +
         '<div style="color:#c7a76a;font-weight:700;margin-bottom:6px;">열람·PDF 안내</div>' +
         accessLine + '<br>발행일(출력 기준): ' + reportDateStr + '<br>브라우저에서 <strong>인쇄 → PDF로 저장</strong>을 실행해 전략 문서를 보관하십시오.' +
@@ -3198,10 +3206,10 @@ function buildDaewunLoop(data) {
         const loveAdv = sc>=2 ? '인연의 문이 활짝 열리는 시기입니다. 새로운 만남에 적극적이고, 기존 관계를 더욱 깊게 발전시키기에 최적의 시기입니다.' : sc>=0 ? '관계는 안정적입니다. 서로를 이해하고 신뢰를 쌓는 것에 집중하십시오. 새로운 만남보다 기존 관계의 깊이를 더하는 시기입니다.' : '인간관계에서 오해와 갈등이 생길 수 있습니다. 감정적 대응을 자제하고 신중하게 의사소통하십시오. 중요한 관계 결정을 서두르지 않는 편이 좋습니다.';
 
         const strategy = sc >= 2
-            ? `<div style="background:rgba(0,200,83,0.06);border-radius:8px;padding:14px;margin-top:12px;border:1px solid rgba(0,200,83,0.15);"><b style="color:#00C853;font-size:12px;">✦ 길한 대운 — 4분야 전략</b><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;"><div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;"><div style="font-size:10px;color:#c7a76a;margin-bottom:4px;">💰 재물</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${wealthAdv}</p></div><div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;"><div style="font-size:10px;color:#c7a76a;margin-bottom:4px;">💼 직업</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${careerAdv}</p></div><div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;"><div style="font-size:10px;color:#c7a76a;margin-bottom:4px;">❤️ 애정</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${loveAdv}</p></div><div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;"><div style="font-size:10px;color:#c7a76a;margin-bottom:4px;">🏥 건강</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${healthAdv}</p></div></div></div>`
+            ? `<div style="background:rgba(0,200,83,0.06);border-radius:8px;padding:14px;margin-top:12px;border:1px solid rgba(0,200,83,0.15);"><b style="color:#00C853;font-size:12px;">✦ 길한 대운 — 4분야 전략</b><div class="daeun-four-stack" style="display:grid!important;grid-template-columns:1fr!important;width:100%!important;gap:10px;margin-top:10px;"><div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;border-left:3px solid #c7a76a;"><div style="font-size:10px;color:#c7a76a;margin-bottom:4px;">💰 재물</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${wealthAdv}</p></div><div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;border-left:3px solid #c7a76a;"><div style="font-size:10px;color:#c7a76a;margin-bottom:4px;">💼 직업</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${careerAdv}</p></div><div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;border-left:3px solid #c7a76a;"><div style="font-size:10px;color:#c7a76a;margin-bottom:4px;">❤️ 애정</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${loveAdv}</p></div><div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;border-left:3px solid #c7a76a;"><div style="font-size:10px;color:#c7a76a;margin-bottom:4px;">🏥 건강</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${healthAdv}</p></div></div></div>`
             : sc >= 0
-            ? `<div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:14px;margin-top:12px;"><b style="color:#aaa;font-size:12px;">— 중화 대운 — 4분야 전략</b><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;"><div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;"><div style="font-size:10px;color:#888;margin-bottom:4px;">💰 재물</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${wealthAdv}</p></div><div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;"><div style="font-size:10px;color:#888;margin-bottom:4px;">💼 직업</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${careerAdv}</p></div><div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;"><div style="font-size:10px;color:#888;margin-bottom:4px;">❤️ 애정</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${loveAdv}</p></div><div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;"><div style="font-size:10px;color:#888;margin-bottom:4px;">🏥 건강</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${healthAdv}</p></div></div></div>`
-            : `<div style="background:rgba(255,150,0,0.06);border-radius:8px;padding:14px;margin-top:12px;border:1px solid rgba(255,150,0,0.12);"><b style="color:#ff9800;font-size:12px;">⚠ 흉한 대운 — 4분야 전략</b><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;"><div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;"><div style="font-size:10px;color:#ff9800;margin-bottom:4px;">💰 재물</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${wealthAdv}</p></div><div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;"><div style="font-size:10px;color:#ff9800;margin-bottom:4px;">💼 직업</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${careerAdv}</p></div><div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;"><div style="font-size:10px;color:#ff9800;margin-bottom:4px;">❤️ 애정</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${loveAdv}</p></div><div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;"><div style="font-size:10px;color:#ff9800;margin-bottom:4px;">🏥 건강</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${healthAdv}</p></div></div></div>`;
+            ? `<div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:14px;margin-top:12px;"><b style="color:#aaa;font-size:12px;">— 중화 대운 — 4분야 전략</b><div class="daeun-four-stack" style="display:grid!important;grid-template-columns:1fr!important;width:100%!important;gap:8px;margin-top:10px;"><div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;border-left:3px solid #888;"><div style="font-size:10px;color:#888;margin-bottom:4px;">💰 재물</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${wealthAdv}</p></div><div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;border-left:3px solid #888;"><div style="font-size:10px;color:#888;margin-bottom:4px;">💼 직업</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${careerAdv}</p></div><div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;border-left:3px solid #888;"><div style="font-size:10px;color:#888;margin-bottom:4px;">❤️ 애정</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${loveAdv}</p></div><div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;border-left:3px solid #888;"><div style="font-size:10px;color:#888;margin-bottom:4px;">🏥 건강</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${healthAdv}</p></div></div></div>`
+            : `<div style="background:rgba(255,150,0,0.06);border-radius:8px;padding:14px;margin-top:12px;border:1px solid rgba(255,150,0,0.12);"><b style="color:#ff9800;font-size:12px;">⚠ 흉한 대운 — 4분야 전략</b><div class="daeun-four-stack" style="display:grid!important;grid-template-columns:1fr!important;width:100%!important;gap:8px;margin-top:10px;"><div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;border-left:3px solid #ff9800;"><div style="font-size:10px;color:#ff9800;margin-bottom:4px;">💰 재물</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${wealthAdv}</p></div><div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;border-left:3px solid #ff9800;"><div style="font-size:10px;color:#ff9800;margin-bottom:4px;">💼 직업</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${careerAdv}</p></div><div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;border-left:3px solid #ff9800;"><div style="font-size:10px;color:#ff9800;margin-bottom:4px;">❤️ 애정</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${loveAdv}</p></div><div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;border-left:3px solid #ff9800;"><div style="font-size:10px;color:#ff9800;margin-bottom:4px;">🏥 건강</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${healthAdv}</p></div></div></div>`;
 
         // PERIOD_NARRATIVE: 간지 조합별 종합 서사 (window에 없으면 빈 객체로 폴백)
         const _PN = (typeof window !== 'undefined' && window.PERIOD_NARRATIVE) || {};
@@ -3375,7 +3383,7 @@ function buildSewunLoop(data) {
             ? buildYearStrategicNarrative(nameSe, yr, (GAN_KR[stem] || stem) + (JI_KR[branch] || branch), evLab, score, sewSip, yongTag, domAdv)
             : '<p class="yearly-description" style="font-size:13px;color:#ddd;line-height:1.85;margin:0;">' + yearNarr + '</p>';
         const keywordDetail = isCoreThree
-            ? '<div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.08);font-size:11.5px;color:#aaa;line-height:1.85;"><b style="color:#c7a76a;">재물·직장·서류·사람</b> — 재물: ' + ykw.wealth + ' / 직업: ' + ykw.career + ' / 문서: ' + ykw.doc + ' / 애정: ' + ykw.love + '</div>'
+            ? '<div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.08);font-size:11.5px;color:#aaa;line-height:1.85;"><b style="color:#c7a76a;">재물·직장·서류·사람</b> — 재물: ' + ykwInd.wealth + ' / 직업: ' + ykwInd.career + ' / 문서: ' + ykwInd.doc + ' / 애정: ' + ykwInd.love + '</div>'
             : '';
         const yearlyBodyHtml = '<div style="width:100%;box-sizing:border-box;background:rgba(0,0,0,0.2);border-radius:8px;padding:14px 16px;margin-bottom:10px;border:1px solid rgba(255,255,255,0.06);">'
             + strategicBlock + keywordDetail + '</div>';
@@ -4059,7 +4067,7 @@ function buildVipEvidenceBlock(data) {
         ev += '<span style="font-size:10px;color:#7ab8d4;font-weight:700;">✦ 자미두수 명궁 — 년지 '+(HK_JI[yb]||yb)+'('+yb+')궁</span><br>';
         ev += '<p style="font-size:13px;color:#aad4e8;margin:4px 0 0;line-height:1.75;">'+ziM+'</p>';
         ev += '</div>';
-        ev += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:-6px 0 18px;">';
+        ev += '<div style="display:grid!important;grid-template-columns:1fr!important;width:100%!important;gap:10px;margin:-6px 0 18px;">';
         ev += '<div style="background:rgba(122,184,212,0.05);border:1px solid rgba(122,184,212,0.18);border-radius:8px;padding:10px 11px;"><div style="font-size:10px;color:#7ab8d4;margin-bottom:5px;">자미 커리어 디테일</div><p style="font-size:12px;color:#cfe6f2;line-height:1.72;margin:0;">'+zCareer+'</p></div>';
         ev += '<div style="background:rgba(122,184,212,0.05);border:1px solid rgba(122,184,212,0.18);border-radius:8px;padding:10px 11px;"><div style="font-size:10px;color:#7ab8d4;margin-bottom:5px;">자미 재물 디테일</div><p style="font-size:12px;color:#cfe6f2;line-height:1.72;margin:0;">'+zMoney+'</p></div>';
         ev += '<div style="background:rgba(122,184,212,0.05);border:1px solid rgba(122,184,212,0.18);border-radius:8px;padding:10px 11px;"><div style="font-size:10px;color:#7ab8d4;margin-bottom:5px;">관계/인연 포인트</div><p style="font-size:12px;color:#cfe6f2;line-height:1.72;margin:0;">'+zRel+'</p></div>';
@@ -4542,9 +4550,7 @@ function buildClientCoverPage(data) {
     const iljuAnimalLabel = iljuTitle || animalPlain || '';
     const STEM_COLOR_KR = {'甲':'푸른','乙':'푸른','丙':'붉은','丁':'붉은','戊':'노란','己':'노란','庚':'하얀','辛':'하얀','壬':'검은','癸':'검은'};
     const iljuMeaning = ((STEM_COLOR_KR[ds] || '') + (animalPlain ? (' ' + animalPlain) : '')).trim() || iljuAnimalLabel || animalPlain;
-    const coverAnimalLine = iljuMeaning
-        ? ('당신의 상징 동물은 ' + iljuMeaning + '입니다.')
-        : (animalPlain ? ('당신의 상징 동물은 ' + animalPlain + '입니다.') : '');
+    const animalHighlight = (iljuMeaning || animalPlain || '').trim();
 
     function hc(ch) {
         return (typeof HAN_COLOR !== 'undefined' && HAN_COLOR[ch]) ? HAN_COLOR[ch] : '';
@@ -4562,7 +4568,7 @@ function buildClientCoverPage(data) {
 
     return `<div id="sec-client-cover" class="cover-page chapter-start" style="display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:90vh;padding:78px 28px 72px;text-align:center;border-bottom:1px solid rgba(199,167,106,0.12);margin-bottom:56px;">
         <div class="cover-brush-block" style="margin-top:0;">
-            <p class="cover-brush-name">${name}님의 사주풀이</p>
+            <p class="cover-brush-name">${escHtmlAttr(name)}님의 사주풀이</p>
             
         </div>
 
@@ -4570,8 +4576,8 @@ function buildClientCoverPage(data) {
 
         <div style="width:110px;height:110px;margin:2px auto 12px;display:flex;align-items:center;justify-content:center;"><img src="${animalImage}" alt="${animalPlain || '일주 동물'}" loading="lazy" style="width:100%;height:100%;object-fit:contain;display:block;"/></div>
         <div style="font-size:30px;line-height:1.15;margin:0 0 6px;">${iljuBig}</div>
-        ${coverAnimalLine ? `<div style="font-size:15px;color:rgba(199,167,106,0.92);margin-top:4px;letter-spacing:0.02em;font-weight:600;">${coverAnimalLine}</div>` : ''}
-        ${coverLine ? `<div style="font-size:13px;color:rgba(210,214,223,0.78);margin-top:14px;font-weight:400;line-height:1.65;">${coverLine}</div>` : ''}
+        ${animalHighlight ? `<div class="animal-symbol">당신의 상징 동물은 <span class="cover-highlight">${escHtmlAttr(animalHighlight)}</span>입니다.</div>` : ''}
+        ${coverLine ? `<div class="birth-info">${escHtmlAttr(coverLine)}</div>` : ''}
 
         <div style="margin-top:38px;font-size:10px;color:rgba(210,214,223,0.34);letter-spacing:0.14em;">${formatReportAccessLine(data)}</div>
     </div>`;
@@ -5641,7 +5647,11 @@ function buildBars(targetId, rows, toneMap) {
 }
 
 function buildFortuneCards(targetId, rows) {
-    const html = `<div class="fortune-scroll">
+    const wrapClass = targetId === 'seun-table' ? 'yearly-card-container' : (targetId === 'wolun-table' ? 'monthly-card-container' : '');
+    const wrapOpen = wrapClass ? `<div class="${wrapClass}">` : '';
+    const wrapClose = wrapClass ? '</div>' : '';
+    const stackClass = (targetId === 'seun-table' || targetId === 'wolun-table') ? ' fortune-scroll--stack' : '';
+    const html = `${wrapOpen}<div class="fortune-scroll${stackClass}">
         ${rows.map(row => `
             <div class="f-card">
                 <div class="f-head">${row[0]}</div>
@@ -5651,7 +5661,7 @@ function buildFortuneCards(targetId, rows) {
                 <div class="f-un">${row[4]}</div>
             </div>
         `).join('')}
-    </div>`;
+    </div>${wrapClose}`;
     document.getElementById(targetId).innerHTML = html;
 }
 
@@ -6213,7 +6223,10 @@ function runAnalysis(overrideParams) {
         // inject highlight logic into buildFortuneCards
         window.buildFortuneCards = function(targetId, rows, hIdx = -1) {
             var stackClass = (targetId === 'seun-table' || targetId === 'wolun-table') ? ' fortune-scroll--stack' : '';
-            document.getElementById(targetId).innerHTML = '<div class="fortune-scroll' + stackClass + '">' + rows.map((row, idx) => `
+            var wrapClass = (targetId === 'seun-table') ? 'yearly-card-container' : ((targetId === 'wolun-table') ? 'monthly-card-container' : '');
+            var wrapOpen = wrapClass ? ('<div class="' + wrapClass + '">') : '';
+            var wrapClose = wrapClass ? '</div>' : '';
+            document.getElementById(targetId).innerHTML = wrapOpen + '<div class="fortune-scroll' + stackClass + '">' + rows.map((row, idx) => `
                 <div class="f-card ${idx === hIdx ? 'current-fortune' : ''}">
                     <div class="f-head">${row[0]}</div>
                     <div class="f-sip">${row[1]}</div>
@@ -6221,7 +6234,7 @@ function runAnalysis(overrideParams) {
                     <div class="f-kr">${row[3]}</div>
                     <div class="f-un">${row[4]}</div>
                 </div>
-            `).join('') + '</div>';
+            `).join('') + '</div>' + wrapClose;
         };
 
         const daeunRows2 = daeunData.map(dy => {
@@ -6805,6 +6818,7 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
             coverSolarY: displaySolarY,
             coverSolarM: displaySolarM,
             coverSolarD: displaySolarD,
+            /* 표지/리포트 문구용 시각 = 입력(보정 전). ec·pillars 는 아래 solar(보정 후) 기준 */
             coverSolarHH: !isUnknown ? coverUiHH : null,
             coverSolarMM: !isUnknown ? coverUiMM : null,
             coverLunarY: displayLunarY,
