@@ -131,91 +131,136 @@ function yearlyFourDomainIndicators(score, sewSip) {
     return { wealth: clampKeyword10(w), career: clampKeyword10(cr), doc: clampKeyword10(doc), love: clampKeyword10(love) };
 }
 
-/** 세운 본문용 재물·직업·애정·건강 장문 조언(인디케이터가 아닌 서술 본문에만 사용) */
+/** 세운 본문용 재물·직업·애정·건강 — 메타·이론 없이 행동·사건 중심 */
 function yearlyDomainStrategicAdvices(score) {
     var sc = score;
     return {
         wealth: sc >= 2
-            ? '수익 채널을 넓히되, 검증된 파이프라인에만 자본을 넣으십시오. 분기마다 손익분기점을 숫자로 재점검하고, 용신 방향의 색·방위를 소비 패턴에 반영하면 심리적 과소비를 줄이는 데에도 도움이 됩니다.'
+            ? '외주·보너스·미수 회수 줄이기를 같은 주에 겹치지 말고, “입금 확인 문자 스크린샷”까지 폴더에 쌓으십시오. 통장 잔고만 보지 말고 미수·선급·보증금 세 줄을 매주 금요일 저녁에만 업데이트하는 루틴을 박으십시오.'
             : sc >= 0
-            ? '꾸준한 저축·분할 매입·현금 비중을 높이는 전략이 유리합니다. 큰 승부는 다음 운으로 미루고, 이번 해에는 내부 장부와 세금·보험 증빙을 정리해 두십시오.'
-            : '대규모 투자·보증·연대채무는 피하십시오. 현금흐름 방어가 최우선이며, 꼭 필요한 지출만 남기고 나머지는 즉시 줄이십시오.',
+            ? '카드·자동이체를 주 단위로 끊고, 세금·4대보험 납부일을 캘린더에 빨간색으로 고정하십시오. 큰 지출은 영업일 기준 3일 룰(새벽 결제 금지)을 걸고, 현금 비중만이라도 분기마다 5%씩 올리는 식으로 방어하십시오.'
+            : '연대보증·지분 공동계약·가족 명의 대출은 올해 안에 서명하지 마십시오. 꼭 필요하면 변호사 검토 없이는 두 번째 페이지까지 넘기지 말고, “중도 인출 조건”을 굵은 글씨로 적어 받으십시오.',
         career: sc >= 2
-            ? '이직·승진·창업 등 방향 전환을 시도하기에 상대적으로 유리한 해입니다. 다만 한 번에 여러 축을 바꾸기보다, 이력·포트폴리오·핵심 성과 지표를 먼저 문서화한 뒤 움직이십시오. 대외 평판이 곧 협상력이 됩니다.'
+            ? '승진·이직 제안이 오면 연봉 숫자보다 “직무 범위·보고 라인·야근 유무”를 먼저 이메일로 받아 저장하십시오. 구두 약속만으로 출근하지 말고, 조직도에 이름이 찍히는 날짜를 합의서에 적으십시오.'
             : sc >= 0
-            ? '전문성을 높이고 네트워크를 정돈하는 데 집중하십시오. 직함보다 실제 권한 범위와 성과 기준을 명확히 합의해 두면, 내부 정치 속에서도 흔들리지 않습니다.'
-            : '급격한 직장 변화는 리스크가 큽니다. 내공을 쌓고 자격·기술 스택을 보강한 뒤, 시장이 열릴 때를 기다리십시오. 감정적 퇴사는 가급적 피하십시오.',
+            ? '회의록에 “내 책임 아님”이 섞이지 않게 R&R 한 줄을 매번 적으십시오. 상사가 바뀌거나 프로젝트가 합쳐질 때 성과 지표를 다시 쓰게 하고, 그 전까지는 새로운 업무 착수를 미루십시오.'
+            : '감정적으로 사직서를 쓰기 전에 이력서를 밖에 올리지 말고, 먼저 병가·연차로 호흡을 확보하십시오. 팀 이동이나 내부 전배가 열리면 그쪽으로만 협상하십시오.',
         love: sc >= 2
-            ? '새로운 만남과 협력 제안이 늘어날 수 있습니다. 관계의 속도를 조절하고, 약속과 경계를 말로 명확히 밝히면 신뢰가 빨리 쌓입니다. 소개·동호회·업무 파트너십에서 좋은 인연이 생길 가능성이 큽니다.'
+            ? '소개팅·재회·동업 겸 연애 제안이 겹칠 수 있습니다. 첫 만남 자리에서 돈·지분 이야기가 나오면 그날은 관계만으로 끊고, 지갑·계약은 다음 주 월요일 이후로 미루십시오.'
             : sc >= 0
-            ? '기존 관계를 깊게 만드는 쪽이 유리합니다. 짧은 대화보다 정기적인 소통 루틴을 만드십시오. 갈등이 생기면 즉답보다 하루 텀을 두고 정리하는 편이 안전합니다.'
-            : '말과 새 인맥 확장은 최소화하고, 이미 신뢰를 쌓은 소수와만 밀도 있게 소통하십시오. 감정적 대응을 자제하면 오해로 번지는 일을 줄일 수 있습니다.',
+            ? '연락 빈도를 “주 2회 고정 시간”으로 줄이면 싸움이 반으로 줄어듭니다. 카톡으로 큰 결정을 하지 말고, 만남 자리에서만 현금·이사·결혼 이야기를 하십시오.'
+            : '헤어진 사람·말 많은 지인에게 계좌·사업 이야기를 하지 마십시오. “지금은 답 못 준다” 한 문장만 반복하고, 술자리 계산은 본인 카드로만 마치십시오.',
         health: sc >= 2
-            ? '운동 습관을 새로 잡기 좋은 해입니다. 주 3회 이상 유산소와 근력을 병행하고, 수면 시간을 고정하십시오. 과로 징후가 보이면 즉시 일정을 덜어내야 합니다.'
+            ? '운동을 새로 늘리되 주 4회 이상은 피하십시오. 수면 시간대를 고정하고, 밤 11시 이후 집중 근무를 끊으면 체력이 바로 붙습니다.'
             : sc >= 0
-            ? '과로를 경계하고 규칙적인 수면과 식사를 유지하십시오. 스트레스가 쌓이는 달에는 검진 항목 중 간·심혈관을 우선 확인하십시오.'
-            : '수면 7시간 이상, 음주 제한, 정기 검진을 반드시 지키십시오. 무리한 다이어트나 밤샘 작업은 면역과 호르몬 리듬을 무너뜨릴 수 있으니 삼가십시오.'
+            ? '점심 이후 카페인을 끊고, 주 1회는 반나절 일정을 비우십시오. 검진은 미루지 말고 “한 번에 두 기관”만 예약하십시오.'
+            : '밤샘 두 번 연속이면 다음 날은 반차를 쓰십시오. 음주는 주 2회 이하로 줄이고, 혈압·간 수치가 튀는 달에는 회식을 거절하는 게 손해가 아닙니다.'
     };
 }
 
-/** 올해·내년·내후년 공통: 경영 전략형 장문 본문(현황→스탠스→행동→리스크→월연계 + 선택 분야 통합) */
+/** 세운 연도 본문: 메타·이론 0, 사건·조건·행동만 */
+var SEYUN_SIP_LENS = {
+    '비견': '회의 안건이 비슷한 직급끼리 겹치고, 같은 조건으로 승패가 갈리는 자리가 잦아집니다',
+    '겁재': '돈이 먼저 나가는 일(선납·대납·모임비·공동구매)이 붙어 나가기 쉽고, 누군가가 “같이 하자”며 지갑을 열라고 합니다',
+    '식신': '기획서·원고·코드·영상처럼 손에 쥐는 결과물이 평가 기준이 되고, 발표·내부 공유 일정이 몰립니다',
+    '상관': '지적·감사·클레임 대응으로 말의 날이 세워지고, “왜 그렇게 했냐”는 질문이 반복됩니다',
+    '편재': '외주·부업·미수 회수·투자 제안 문자가 연달아 오고, 통장 입금 알림이 잦아집니다',
+    '정재': '급여·정기 매출·고정비 줄이기가 화두가 되고, 장부 맞추기에 시간이 빼앗깁니다',
+    '편관': '마감·야근·상사 지시량이 늘고, 책임 전가가 생기기 쉽습니다',
+    '정관': '직함·평가·승진 서류가 눈에 띄게 매겨지고, 대외 자리에 세워질 일이 많아집니다',
+    '편인': '자격·이직 준비·학습처럼 겉으로 안 보이는 데 힘 쓰는 일이 늘어납니다',
+    '정인': '계약서·가이드·정책을 읽고 받아쓰는 일이 잦아지고, 서류 검토가 길어집니다'
+};
+
 function buildYearStrategicNarrative(name, yr, kor, evLabel, sc, sewSip, ohTag, domainFour) {
-    var sip = sewSip || '십성';
+    var sip = sewSip || '정재';
     var nm = name || '고객';
-    var situ = '';
-    if (evLabel === '흥(興)') {
-        situ = yr + '년(' + kor + ')은 원국과의 조화가 비교적 좋게 열리는 국면으로, 대외적 성과와 자원 유입이 동시에 늘어날 수 있습니다. 당장 체감되는 일의 밀도가 올라가므로 우선순위를 적어 두지 않으면 중요한 것과 잡음이 한데 섞입니다. 다만 기회가 많을수록 분기별 캐파와 리스크 한도를 숫자로 고정하지 않으면 분산이 과해져 실속이 줄어듭니다.';
-    } else if (evLabel === '주의' || evLabel === '주의가 필요한 해') {
-        situ = yr + '년(' + kor + ')은 부담 요인이 쌓이기 쉬운 해로, 겉으로는 바쁘지만 내부적으로는 체력·현금흐름·조직 정치가 동시에 압박을 줄 수 있습니다. 주변 환경은 빠르게 변하는데 내 결정 속도만 느려지는 착시가 생기기 쉬우니, 판단 기준을 서면으로 고정하는 것이 안전합니다. 감정적 결정이나 단기 성과에 끌려 가면 회복 비용이 큽니다.';
-    } else {
-        situ = yr + '년(' + kor + ')은 급격한 길·흉보다 균형에 가까운 해로, 큰 판을 바꾸기보다 기존 구조를 다듬고 다음 시즌을 준비하는 편이 유리합니다. 겉으로 드러나는 사건은 크지 않아도 내부적으로는 역할·책임 경계를 재정의하는 압력이 들어올 수 있습니다. 변화의 신호는 있으나 속도를 조절하면 오히려 안정적으로 누적됩니다.';
-    }
-    var stance = '';
-    if (sc >= 2) {
-        stance = '재물·투자 측면에서는 검증된 파이프라인에만 자본을 넣고, 신규 채널은 파일럿 예산으로 한정하십시오. 직업적으로는 대외 평판·성과 지표를 문서화해 협상력을 확보하는 것이 우선입니다. 세운 십성(' + sip + ') 흐름상 계약·제안이 빨리 들어올 수 있으니, 조건·납기·지재권을 서면으로 명확히 하십시오.';
-    } else if (sc >= 0) {
-        stance = '재물·투자는 수지 균형과 현금 비중을 우선하며, 큰 승부는 분기 단위로 미루는 편이 안전합니다. 직업적으로는 권한 범위와 성과 기준을 합의에 올려 두고, 과로와 불필요한 노출을 줄이십시오. ' + (ohTag || '용신') + ' 축과 맞물릴 때 작은 완성을 쌓는 전략이 장기적으로 더 큰 레버리지가 됩니다.';
-    } else {
-        stance = '재물·투자는 레버리지·보증·연대채무를 중단하고 손실 한도를 먼저 정하십시오. 직업적으로는 조직 내 충돌 거리두기와 역할 재정의가 필요하며, 이직·창업은 가능한 한 검토 기간을 두십시오. ' + (ohTag || '기신') + ' 압력이 강한 국면에서는 서류·세무·법률 자문을 선제적으로 확보하는 것이 방어의 핵심입니다.';
-    }
+    var yk = kor ? yr + '년(' + kor + ')' : yr + '년';
+    var lens = SEYUN_SIP_LENS[sip] || '견적·정산·승인선이 동시에 걸리는 일정이 잦아집니다';
     var stemCode = (kor && kor.length) ? ((kor.charCodeAt(0) + kor.charCodeAt(kor.length - 1)) | 0) : (yr | 0);
     var mix = (yr * 7 + (sip || '').length * 3 + Math.abs(sc) * 11 + stemCode) % 4;
+    var deferM = ((yr % 12) + 1);
+    if (deferM > 12) deferM = 2;
+
+    var situ = '';
+    if (evLabel === '흥(興)') {
+        var up = [
+            yk + ' 상반기(1~6월)에 ' + lens + '. ' + nm + '님 앞에는 외부 제안서·견적·미팅 초대가 평소보다 빽빽하게 밀려올 가능성이 큽니다. 이때 “한 번에 세 개 이상”을 잡으면 모두 반이 나가기 쉽습니다.',
+            yk + '에는 ' + lens + '. ' + nm + '님은 연초보다 늦어도 4월 전에 첫 성과 지표(매출·인센·승인 건수)가 숫자로 찍히는 쪽으로 흐름이 열립니다. 다만 그 숫자가 나오기 전에 지출부터 늘리면 하반기에 바로 반토막 납니다.',
+            yk + '에 ' + lens + '. ' + nm + '님께는 지인·직장 동료 쪽에서 “같이 하자”는 공동 투자·부업·스터디 겸 모임이 연달아 올 수 있습니다. 겉조건이 좋아 보여도 올해는 자본이 묶이기 쉬운 해에 가깝습니다.',
+            yk + ' 초입부터 ' + lens + '. ' + nm + '님은 회의실·메신저·메일함이 동시에 불타는 한 주가 생길 수 있는데, 그 주에 서명한 문서가 나중에 족쇄가 되기 쉽습니다.'
+        ];
+        situ = up[mix];
+    } else if (evLabel === '주의' || evLabel === '주의가 필요한 해') {
+        var dn = [
+            yk + '에 ' + lens + '. ' + nm + '님은 미수·연체·업무 착오로 인한 야근이 한꺼번에 몰리는 달이 생길 수 있습니다. 그때 “오늘 안에 끝내자”는 말에 끌려 가면 서명·송금 실수가 바로 이어집니다.',
+            yk + '에는 ' + lens + '. ' + nm + '님 주변에서 책임만 넓히고 권한은 줄이는 재배치가 들어올 수 있습니다. 구두로만 전달되는 업무는 이메일로 범위를 쓰게 한 뒤에만 착수하십시오.',
+            yk + '에 ' + lens + '. ' + nm + '님은 가족·연인 쪽에서 돈·부동산 이야기가 겹치기 쉬운 시기를 지나갈 수 있습니다. 감정이 올라온 밤에는 송금·계약 앱을 열지 마십시오.',
+            yk + '에는 ' + lens + '. ' + nm + '님께 건강·수면이 무너지면 그다음 주에 바로 업무 판단이 흐려집니다. 연속 야근이 이틀이면 셋째 날은 반드시 일정을 비우십시오.'
+        ];
+        situ = dn[mix];
+    } else {
+        var md = [
+            yk + '에 ' + lens + '. ' + nm + '님께는 겉으로 드라마틱한 일보다, “조용히 돈·역할이 바뀌는” 쪽 신호가 먼저 옵니다. 계좌·계약서·근무 규정을 한 번씩만 다시 읽어도 손해를 줄일 수 있습니다.',
+            yk + '에는 ' + lens + '. ' + nm + '님은 큰 판보다 기존 거래처 한 곳과 조건을 다시 쓰는 쪽에서 실속이 납니다. 새 제안은 “검토 중”으로 두고 최소 일주일은 숫자만 적어 두십시오.',
+            yk + '에 ' + lens + '. ' + nm + '님은 사람은 바뀌지 않는데 일만 늘어나는 느낌이 들 수 있습니다. 그때는 인맥 확장이 아니라 “거절 한 줄”을 연습하는 쪽이 이득입니다.',
+            yk + '에는 ' + lens + '. ' + nm + '님께 중도금·중간 점검·중간 평가 같은 “중간 관문”에서 갈등이 터지기 쉽습니다. 중간 관문 날짜만 캘린더에 굵게 박아 두십시오.'
+        ];
+        situ = md[mix];
+    }
+
+    var stance = '';
+    if (sc >= 2) {
+        stance = '돈: 검증된 거래처·통장으로만 받고, 새로운 통장·새 앱 결제는 월 1회 한도로 묶으십시오. 일: 계약서에 “추가 업무 시 단가” 한 줄을 넣거나 넣게 요구하십시오. 사람: 첫 술자리에서 사업·투자 이야기가 나오면 그날은 “내일 오전에 답한다”로만 닫으십시오.';
+    } else if (sc >= 0) {
+        stance = '돈: 이번 달 고정비·미수·카드값 세 줄만 매주 금요일에 적으십시오. 일: 새로운 프로젝트는 “기간·인력·예산” 세 칸이 채워진 페이지가 있을 때만 착수하십시오. 사람: 단톡방에서 돈 이야기가 나오면 바로 나가거나 알림을 끄십시오.';
+    } else {
+        stance = '돈: 연대보증·지분·대출 서명은 올해 안에 하지 마십시오. 일: 책임만 넓히는 업무 재배치가 오면 이메일로 범위를 좁히는 답장을 먼저 보내십시오. 사람: 오랜 지인이 급하게 돈을 빌려 달라면 금액 상한을 미리 정해 둔 문장으로만 답하십시오.';
+    }
+
     var actionBank = [
-        yr + '년에는 ①주간 단위로 현금·미수·고정비를 한 장표에 고정하고, ②중요 미팅은 안건·결론·후속 액션을 메모로 남기며, ③신규 인맥 확장보다 기존 신뢰 관계를 한 단계 깊게 만드는 쪽이 ' + nm + '님께 가장 빨리 성과로 붙습니다.',
-        yr + '년에는 ①월초·월말 두 번만이라도 손익·미수·고정비를 숫자로 맞추고, ②계약·제안서는 조항 번호까지 붙여 보관하며, ③같은 해 안에 “끝낼 일 한 가지”를 정해 밀도를 높이십시오. ' + sip + ' 흐름이 강한 해에는 말보다 기록이 협상력이 됩니다.',
-        yr + '년에는 ①분기마다 우선순위 세 줄(해야 할 일·버릴 일·미룰 일)을 갱신하고, ②예산 밖 지출은 48시간 룰을 두며, ③운동·수면 슬롯을 먼저 캘린더에 박아 두십시오. ' + nm + '님의 강점을 한 축에 몰아넣을수록 같은 해 안에 체감 성과가 선명해집니다.',
-        yr + '년에는 ①고객·상사·가족과의 약속을 같은 노트에 모으고 지연 항목만 빨간색으로 표시하며, ②작은 완성을 먼저 공개하고 큰 판은 검증 후에 옮기고, ③‘이번 달 한 가지 실험’만 허용하십시오. 간지 ' + (kor || '해') + '의 기운은 실행 속도보다 완결도에 보상이 붙는 편입니다.'
-    ];
-    var riskBank = [
-        yr + '년 리스크 방어: 감정이 올라온 날의 즉답·즉서명은 24시간 유예 규칙으로 막고, 수면 6시간 미만 연속 근무를 끊는 루틴을 먼저 복구하십시오. 건강·가정 이슈가 겹치는 달에는 일정을 의도적으로 비워 다음 분기 속도를 살리십시오.',
-        yr + '년에는 보증·연대·레버리지를 줄이고, 분쟁이 생길 법한 문자·메일은 바로 정리하지 말고 차용증·계약서 순으로 사실만 남기십시오. ' + (sc < 0 ? '점수가 낮은 해일수록 “증거 우선”이 손실을 가장 많이 줄입니다.' : '평온한 해에도 작은 균열이 크게 번지지 않게 초기에 메모로 고정하십시오.'),
-        yr + '년에는 과로·음주·야근 연속을 끊는 것이 최우선 방패입니다. 기신이 강한 달에는 새로운 사람·새로운 돈이 동시에 들어올 때 한 축만 택하십시오.',
-        yr + '년에는 여행·이사·장비 대형 지출을 같은 분기에 겹치지 않게 흩어 놓으십시오. 세운 십성(' + sip + ')이 자극하는 영역에서만 승부하고 나머지는 방어로 두는 편이 안전합니다.'
-    ];
-    var monthBank = [
-        '월별로는 길운이 몰린 달에 실행·계약을, 기신이 강한 달에는 검토·내부 정리를 배치하십시오. ' + yr + '년 아래 월운 캘린더와 주차 단위 일정을 맞추면 실행 오차가 줄어듭니다.',
-        yr + '년에는 상반기에 거점(돈·사람·시간)을 고정하고 하반기에 확장을 붙이십시오. 월운에서 같은 오행이 연속될 때는 한 가지 테마만 밀어붙이는 편이 유리합니다.',
-        yr + '년 월별 흐름은 “길한 달=외부 공개·계약”, “주의 달=내부 정리·증빙”으로만 나눠도 피로도가 크게 줄어듭니다. 아래 월운과 같은 해의 주간 점검표를 연동해 보십시오.',
-        yr + '년에는 분기 첫 달에 목표를 세 개 이하로 압축하고, 분기 막달에 회고만 남기십시오. 월운 캘린더의 색이 바뀌는 구간마다 우선순위를 한 줄씩만 수정하는 방식이 안정적입니다.'
+        yr + '년에는 ' + nm + '님이 손대는 모든 계약에 “중도 해지 시 위약금·인출 조건” 두 줄을 필기로 적어 받으십시오. 동업·공동 투자 권유는 즉답하지 말고, 적어도 ' + deferM + '월 이후로 일정을 밀고 그 사이에 변호사·세무사 중 한 곳만이라도 확인하십시오.',
+        yr + '년 상반기에 들어온 제안은 “6월 말까지 실행 안 하면 자동 무효” 같은 탈출 조항을 넣고 진행하십시오. ' + nm + '님은 같은 해에 신규 법인·신규 계좌·신규 카드까지 동시에 열면 추적이 꼬입니다. 하나만 열고 나머지는 내년으로 미루십시오.',
+        yr + '년에는 ' + nm + '님의 미수·외상을 주 단위로 독촉 문자 템플릿을 만들어 두십시오. 독촉은 오전 10시 한 번만 보내고, 저녁·주말에는 보내지 마십시오. 상대가 “내일 현금 줄게”라고 하면 문자로만 받고 현금 들어온 날에만 일을 넘기십시오.',
+        yr + '년에는 ' + nm + '님이 직접 서명하는 문서는 PDF로 저장하고 파일명에 날짜를 붙이십시오. 구두로 합의된 금액은 당일 안에 “확인 메일” 한 통으로 고정하십시오. 밤 10시 이후 서명·송금은 전부 다음 날 아침으로 미루십시오.'
     ];
     var action = actionBank[mix];
+
+    var riskBank = [
+        yr + '년 ' + nm + '님께 가장 비싼 실수는 “믿는 사람”과의 연대보증·공동계좌·비상금 대출입니다. 지금 당장 자동이체·정기결제 목록을 캡처해 두고, 불필요한 구독부터 끊으십시오.',
+        yr + '년에는 감정이 올라온 날의 카톡·전화 합의가 나중에 분쟁의 증거가 됩니다. 중요한 약속은 반드시 이메일 한 줄로만 고정하십시오.',
+        yr + '년 ' + nm + '님은 피로가 쌓이면 “작은 손해”를 한꺼번에 감수하는 선택을 하기 쉽습니다. 손해 한도를 숫자로 적어 지갑에 넣어 두십시오.',
+        yr + '년에는 여행·이사·장비 구입을 같은 분기에 겹치지 않게 흩으십시오. 한 분기에 큰 지출은 하나만 허용하십시오.'
+    ];
     var risk = riskBank[(mix + sc + 4) % 4];
-    var monthTie = monthBank[(mix + (evLabel === '흥(興)' ? 1 : evLabel.indexOf('주') >= 0 ? 2 : 0)) % 4];
-    var cause = yr + '년 길흉의 원인은 연간 천간·지지가 일간과 맺는 십성(' + sip + ')과 용신·기신 오행의 합·충 구조에서 설명됩니다. ' + nm + '님께서 ' + yr + '년에 체감하시는 “운이 좋다/나쁘다”는 대개 현금흐름·대외 평판·수면의 세 축이 동시에 움직이기 때문입니다. 같은 사건도 용신이 받쳐 주는 해에는 기회로, 기신이 압박하는 해에는 비용으로 기록되기 쉽습니다. 따라서 ' + yr + '년의 판단은 감정이 아니라 수치(매출·지출·미수·계약 조항)로 남겨 두시는 것이 가장 안전합니다.';
+
+    var monthBank = [
+        yr + '년 아래 월운 표에서 색이 강하게 박힌 달에만 대외 계약·발표를 걸고, 색이 옅은 달에는 내부 정리·세금·증빙만 하십시오. 주차 단위로 “이번 주 끝낼 서류 한 장”만 정하면 실행 오차가 줄어듭니다.',
+        yr + '년에는 분기 첫 달에 돈 나가는 일을 몰아 하고, 분기 마지막 달에는 회수·독촉·정산만 하십시오.',
+        yr + '년 월별로 “이번 달은 사람/돈/서류 중 하나만” 정해 그 축에만 에너지를 쓰십시오.',
+        yr + '년에는 월초 월말 두 번만이라도 통장·미수·고정비를 숫자로 맞추고, 그날 밤에는 새로운 지출 앱을 열지 마십시오.'
+    ];
+    var monthTie = monthBank[(mix + (evLabel === '흥(興)' ? 1 : (evLabel.indexOf('주') >= 0 ? 2 : 0))) % 4];
+
     var integrBank = [
-        nm + '님께서 ' + yr + '년을 운영하실 때에는 주간 단위로 현금·미수·고정비 표를 먼저 고정하십시오. 동일한 숫자를 배우자·동업자와 공유하시면 관계 갈등이 재물 분쟁으로 번지는 일을 줄이실 수 있습니다. 길운이더라도 ' + yr + '년 상반기 안에 핵심 과제 두 가지만 종결하고, 하반기는 검증·정산·회고에 쓰시면 체감 성과가 더 선명해집니다.',
-        nm + '님께서 ' + yr + '년에는 “이번 분기 숫자 한 장”만 공유 대상과 맞추고, 나머지는 내부 기록으로 두십시오. ' + yr + '년 말에 남길 한 줄 평가(잘한 일·그만둔 일·내년에 넘길 일)를 미리 빈칸으로 만들어 두면 회고가 빨라집니다.',
-        nm + '님께서 ' + yr + '년에는 같은 해 안에 브랜드·재무·건강 중 한 축만 대외적으로 키우고 나머지는 유지 보수로 두십시오. ' + yr + '년 ' + (kor || '') + ' 기운은 한 축에 몰아넣을 때 가장 잘 응답하는 편입니다.',
-        nm + '님께서 ' + yr + '년에는 월별로 “완료한 증거”만 모으십시오. 회의록 한 줄, 이체 내역 한 줄, 계약 조항 한 줄이 모이면 ' + yr + '년 말의 자신감이 달라집니다.'
+        nm + '님은 ' + yr + '년 상반기에 끝낼 일 두 가지만 적어 두고, 나머지는 하반기로 넘기십시오. 적어 둔 두 가지가 끝나기 전에는 새로운 동업·투자 미팅에 가지 마십시오.',
+        nm + '님은 ' + yr + '년에 배우자·동업자와 숫자 한 장(월 고정비·목표 저축·외상 한도)만 맞추면 싸움이 반으로 줄어듭니다. 숫자 맞춘 날에는 술자리를 피하십시오.',
+        nm + '님은 ' + yr + '년에 외부에 드러낼 축을 하나만 정하십시오. 나머지 축은 조용히 지키는 쪽이 돈이 덜 새고 말이 덜 꼬입니다.',
+        nm + '님은 ' + yr + '년 말에 “서명한 문서 목록” 스크린샷 한 장만 모아도 다음 해가 훨씬 편해집니다. 지금 폴더 하나 만들어 두십시오.'
     ];
     var integr = integrBank[(mix + yr) % 4];
+
     var domainP = '';
     if (domainFour && (domainFour.wealth || domainFour.career || domainFour.love || domainFour.health)) {
-        domainP = '<p style="margin:0 0 10px;color:#d0d0d0;">분야별 실행 초점은 다음과 같이 묶는 것이 좋습니다. 재물·현금흐름은 ' + (domainFour.wealth || '') + ' 직업·조직·대외 평판은 ' + (domainFour.career || '') + ' 애정·대인 관계는 ' + (domainFour.love || '') + ' 건강·컨디션·회복 루틴은 ' + (domainFour.health || '') + ' 이 네 축이 서로 끌어당기지 않게 분기마다 한 축씩만 “승부 축”으로 정하면 실행 피로가 줄어듭니다.</p>';
+        domainP = '<p style="margin:0 0 10px;color:#d0d0d0;">'
+            + (domainFour.wealth ? '<b>현금·외상</b> — ' + domainFour.wealth + ' ' : '')
+            + (domainFour.career ? '<b>직장·계약</b> — ' + domainFour.career + ' ' : '')
+            + (domainFour.love ? '<b>사람·말</b> — ' + domainFour.love + ' ' : '')
+            + (domainFour.health ? '<b>몸</b> — ' + domainFour.health : '')
+            + '</p>';
     }
     return '<div class="seyun-year-body" style="font-size:12.5px;color:#ccc;line-height:1.9;">'
         + '<p style="margin:0 0 10px;">' + situ + '</p>'
-        + '<p style="margin:0 0 10px;">' + cause + '</p>'
         + '<p style="margin:0 0 10px;">' + stance + '</p>'
         + '<p style="margin:0 0 10px;">' + action + '</p>'
         + '<p style="margin:0 0 10px;">' + risk + '</p>'
@@ -3261,7 +3306,7 @@ function buildSewunLoop(data) {
             ? buildYearStrategicNarrative(nameSe, yr, (GAN_KR[stem] || stem) + (JI_KR[branch] || branch), evLab, score, sewSip, yongTag, domAdv)
             : '<p class="yearly-description" style="font-size:13px;color:#ddd;line-height:1.85;margin:0;">' + yearNarr + '</p>';
         const keywordDetail = isCoreThree
-            ? '<div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.08);font-size:11.5px;color:#aaa;line-height:1.85;"><b style="color:#c7a76a;">4대 분야 키워드 상세</b> — 재물: ' + ykw.wealth + ' / 직업: ' + ykw.career + ' / 문서: ' + ykw.doc + ' / 애정: ' + ykw.love + '</div>'
+            ? '<div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.08);font-size:11.5px;color:#aaa;line-height:1.85;"><b style="color:#c7a76a;">재물·직장·서류·사람</b> — 재물: ' + ykw.wealth + ' / 직업: ' + ykw.career + ' / 문서: ' + ykw.doc + ' / 애정: ' + ykw.love + '</div>'
             : '';
         const yearlyBodyHtml = '<div style="width:100%;box-sizing:border-box;background:rgba(0,0,0,0.2);border-radius:8px;padding:14px 16px;margin-bottom:10px;border:1px solid rgba(255,255,255,0.06);">'
             + strategicBlock + keywordDetail + '</div>';
@@ -3765,7 +3810,7 @@ function buildVipEvidenceBlock(data) {
             if(isUnk&&i===0){ev+='<td style="text-align:center;color:#444;font-size:11px;">미상</td>';return;}
             var g=p.h[0]||''; var col=hanCol(g);
             var gKr=HK_GAN[g]||g;
-            ev+='<td style="padding:6px 6px;text-align:center;vertical-align:middle;"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;line-height:1.05;"><span style="font-size:1.2em;font-weight:800;color:'+col+';font-family:Batang,\'Nanum Myeongjo\',Gungsuh,\'Noto Serif KR\',serif;">'+g+'</span><span style="font-size:11px;color:#aaa;font-weight:600;">'+gKr+'</span></div></td>';
+            ev+='<td style="padding:6px 6px;text-align:center;vertical-align:middle;"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;line-height:1.05;"><span style="font-size:1.2em;font-weight:800;color:'+col+';font-family:\'Noto Sans KR\',sans-serif;">'+g+'</span><span style="font-size:11px;color:#aaa;font-weight:600;">'+gKr+'</span></div></td>';
         });
         ev += '</tr>';
         // 지지
@@ -3775,7 +3820,7 @@ function buildVipEvidenceBlock(data) {
             if(isUnk&&i===0){ev+='<td style="text-align:center;color:#444;font-size:11px;">미상</td>';return;}
             var j=p.h[1]||''; var col=hanCol(j);
             var jKr=HK_JI[j]||j;
-            ev+='<td style="padding:6px 6px;text-align:center;vertical-align:middle;"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;line-height:1.05;"><span style="font-size:1.2em;font-weight:800;color:'+col+';font-family:Batang,\'Nanum Myeongjo\',Gungsuh,\'Noto Serif KR\',serif;">'+j+'</span><span style="font-size:11px;color:#aaa;font-weight:600;">'+jKr+'</span></div></td>';
+            ev+='<td style="padding:6px 6px;text-align:center;vertical-align:middle;"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;line-height:1.05;"><span style="font-size:1.2em;font-weight:800;color:'+col+';font-family:\'Noto Sans KR\',sans-serif;">'+j+'</span><span style="font-size:11px;color:#aaa;font-weight:600;">'+jKr+'</span></div></td>';
         });
         ev += '</tr>';
         // 십성(지지) — 만세력 표와 동일
@@ -3965,8 +4010,6 @@ function buildPart1_Story(data){
     var name = data.name || '고객';
     var html = '<div class="report-chapter chapter-start" style="padding-top:14px;">';
     html += '<h2 style="font-size:20px;font-weight:900;color:var(--gold);letter-spacing:2px;margin:6px 0 10px;border-bottom:2px solid rgba(199,167,106,0.42);padding-bottom:14px;">' + name + '님의 운명 서사</h2>';
-    html += '<p style="font-size:12px;color:#666;margin:0 0 28px;letter-spacing:0.5px;">태어난 순간 새겨진 설계도 — 당신이라는 사람의 완전한 분석</p>';
-    html += '<p style="font-size:12.5px;color:#999;line-height:1.85;margin:0 0 20px;">오행·십성·신강신약·용신·신살·대운·세운·월운의 수치와 전략 해설은 <b style="color:var(--gold);">제 2부</b> 이하에서만 다룹니다. 이 장에서는 위에서 이어진 인생 일대기와 원국 근거만 남깁니다.</p>';
     html += '</div>';
     return html;
 }
@@ -3993,14 +4036,14 @@ function buildChapter6_SeYun(data){
     var yongTag=(OK[yong]||'용신')+' 용신';
     var domAdvY=yearlyDomainStrategicAdvices(scY);
     var narrative=buildYearStrategicNarrative(name,curY,yKor,evLab,scY,sewSipY,yongTag,domAdvY);
-    var keywordDetail='<div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.08);font-size:11.5px;color:#aaa;line-height:1.85;"><b style="color:#c7a76a;">4대 분야 키워드 상세</b> — 재물: '+ykwY.wealth+' / 직업: '+ykwY.career+' / 문서: '+ykwY.doc+' / 애정: '+ykwY.love+'</div>';
-    var bodyWrap='<div style="width:100%;max-width:100%;box-sizing:border-box;background:rgba(199,167,106,0.05);border-left:3px solid var(--gold);padding:14px 18px;border-radius:0 10px 10px 0;"><div style="font-size:11px;color:var(--gold);margin-bottom:8px;font-weight:700;">✦ '+name+'님의 '+curY+'년 경영 전략 해설</div>'+narrative+keywordDetail+'</div>';
+    var keywordDetail='<div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.08);font-size:11.5px;color:#aaa;line-height:1.85;"><b style="color:#c7a76a;">재물·직장·서류·사람</b> — 재물: '+ykwY.wealth+' / 직업: '+ykwY.career+' / 문서: '+ykwY.doc+' / 애정: '+ykwY.love+'</div>';
+    var bodyWrap='<div style="width:100%;max-width:100%;box-sizing:border-box;background:rgba(199,167,106,0.05);border-left:3px solid var(--gold);padding:14px 18px;border-radius:0 10px 10px 0;"><div style="font-size:11px;color:var(--gold);margin-bottom:8px;font-weight:700;">✦ '+name+'님의 '+curY+'년 실행 초안</div>'+narrative+keywordDetail+'</div>';
     var yearHead='<div style="width:100%;max-width:100%;box-sizing:border-box;background:rgba(255,255,255,0.03);border-radius:12px;padding:16px 18px;border:1px solid rgba(255,255,255,0.06);margin-bottom:14px;">'
         +'<div style="display:flex;flex-direction:column;gap:10px;width:100%;align-items:stretch;">'
         +'<div style="font-size:20px;font-weight:800;color:'+lc+';width:100%;line-height:1.35;">'+curY+'년 · '+yKor+'년</div>'
         +'<div style="width:100%;"><span style="display:inline-block;font-size:12px;background:rgba(255,255,255,0.06);padding:6px 14px;border-radius:20px;color:'+lc+';font-weight:700;">'+luck+'</span></div>'
-        +'<p style="font-size:11.5px;color:#999;margin:0;line-height:1.75;width:100%;">이 해의 겉바람은 <b>'+OK[yGoh]+'</b>의 색으로 불고, 땅의 결은 <b>'+OK[yJoh]+'</b>에 가깝게 깔립니다.</p></div></div>';
-    return'<div class="report-chapter chapter-start"><h3 class="ch-title">[ 10. 올해 세운 ] — '+curY+'년('+yKor+'년) 운세</h3>'+yearHead+fourStripY+bodyWrap+'<div style="margin-top:16px;font-size:11px;color:#666;">▼ 월별 세부 풀이는 월운 섹션을 참조하십시오</div></div>';
+        +'<p style="font-size:11.5px;color:#999;margin:0;line-height:1.75;width:100%;">연초엔 조용하다가 중순부터 회의·견적·송금 알림이 겹칠 수 있습니다. 숫자와 날짜만 캘린더에 박아 두십시오.</p></div></div>';
+    return'<div class="report-chapter chapter-start"><h3 class="ch-title">[ 10. 올해 세운 ] — '+curY+'년('+yKor+'년) 운세</h3>'+yearHead+fourStripY+bodyWrap+'<div style="margin-top:16px;font-size:11px;color:#666;">같은 해 안에서는 월마다 “독촉·계약·휴식” 중 하나만 메인으로 두고 나머지는 보조로 두십시오.</div></div>';
 }
 
 // ═══════════════════════════════════════════════════════
@@ -4026,12 +4069,12 @@ function buildChapter7_NextYears(data){
         var yongTag=(OH_KR7[yong]||'용신')+' 용신';
         var domAdvN=yearlyDomainStrategicAdvices(sc);
         var body=buildYearStrategicNarrative(name,yr,info.kor,ev2.l,sc,sewSip,yongTag,domAdvN);
-        var kwDet='<div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.08);font-size:11.5px;color:#aaa;line-height:1.85;"><b style="color:#c7a76a;">4대 분야 키워드 상세</b> — 재물: '+ykw.wealth+' / 직업: '+ykw.career+' / 문서: '+ykw.doc+' / 애정: '+ykw.love+'</div>';
+        var kwDet='<div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.08);font-size:11.5px;color:#aaa;line-height:1.85;"><b style="color:#c7a76a;">재물·직장·서류·사람</b> — 재물: '+ykw.wealth+' / 직업: '+ykw.career+' / 문서: '+ykw.doc+' / 애정: '+ykw.love+'</div>';
         return '<div style="width:100%;max-width:100%;box-sizing:border-box;background:rgba(255,255,255,0.03);border-radius:12px;padding:18px 20px;border:1px solid rgba(255,255,255,0.06);">'
             +'<div style="width:100%;display:flex;flex-direction:column;gap:10px;margin-bottom:12px;align-items:stretch;">'
             +'<div style="font-size:20px;font-weight:800;color:'+ev2.c+';width:100%;line-height:1.35;">'+yr+'년 · '+info.kor+'년</div>'
             +'<div style="width:100%;"><span style="display:inline-block;font-size:12px;background:rgba(255,255,255,0.06);padding:6px 14px;border-radius:20px;color:'+ev2.c+';font-weight:700;">'+ev2.l+'</span></div>'
-            +'<p style="font-size:11.5px;color:#999;margin:0;line-height:1.75;width:100%;">그 해의 겉바람은 <b>'+OK[info.goh]+'</b>, 땅의 결은 <b>'+OK[info.joh]+'</b>에 가깝게 깔립니다.</p></div>'
+            +'<p style="font-size:11.5px;color:#999;margin:0;line-height:1.75;width:100%;">그 해는 겉으로 드러나는 일보다, 돈·서류·사람 약속이 한꺼번에 겹치는 주가 먼저 옵니다. 그 주만 캘린더에 표시해 두십시오.</p></div>'
             +strip
             +'<div style="margin-top:4px;width:100%;">'+body+kwDet+'</div>'
             +'</div>';
@@ -4110,7 +4153,7 @@ function buildChapter9_Remedy(data) {
 
     return `<div class="report-chapter">
         <h3 class="ch-title">[ 09. 일상 개운 ] — 흐름을 바꾸는 작은 습관 — 일상 개운 가이드</h3>
-        <p class="ch-text">사주는 운명의 지도입니다. 지도가 있다면 그 지형에 맞게 전략을 바꿀 수 있습니다. 용신인 <b style="color:var(--gold);">${yongKr}</b> 기운을 생활 속에 쌓아가는 것이 당신 인생의 가장 강력한 개운법입니다. 큰 의식이나 특별한 노력이 필요한 것이 아닙니다. 매일의 선택 — 색깔, 방향, 음식, 인연 — 이 쌓이면 운의 흐름이 바뀝니다.</p>
+        <p class="ch-text">아래 표는 장식이 아니라 <b>실행 체크리스트</b>입니다. 오늘부터 일주일만이라도 색·방향·시간대를 맞춰 보고, 몸이 덜 지치는 조합을 찾아 고정하십시오. ${yongKr} 쪽 색과 방향을 일상에 박아 넣을수록 집중과 수면이 먼저 좋아집니다.</p>
 
         <table class="remedy-checklist-table" style="width:100%;border-collapse:collapse;margin:18px 0;background:rgba(0,0,0,0.22);border:1px solid rgba(199,167,106,0.28);border-radius:12px;overflow:hidden;font-size:12px;">
             <caption style="caption-side:top;text-align:left;padding:0 4px 12px;font-size:11px;color:var(--gold);font-weight:800;letter-spacing:1px;">실행 체크리스트 (모바일 한 화면 캡처용)</caption>
@@ -4134,58 +4177,58 @@ function buildChapter9_Remedy(data) {
         </table>
 
         <div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:22px;margin:24px 0;">
-            <div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:16px;letter-spacing:1px;">&#9670; 오행별 용신 심층 개운법 — 매일의 선택이 운명을 바꾼다</div>
+            <div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:16px;letter-spacing:1px;">&#9670; 오행별 맞춤 루틴 — 매일 고정할 것</div>
             <div style="display:flex;flex-direction:column;gap:12px;">
                 <div style="background:${({wood:'rgba(79,195,161,0.06)',fire:'rgba(255,112,67,0.06)',earth:'rgba(255,202,40,0.06)',metal:'rgba(176,190,197,0.06)',water:'rgba(100,181,246,0.06)'})[yong]||'rgba(255,255,255,0.04)'};border-radius:8px;padding:16px;border-left:3px solid var(--gold);">
-                    <div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:10px;">${yongKr} 용신(用神) — 당신의 운명을 여는 열쇠</div>
+                    <div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:10px;">${yongKr} 쪽으로 몸과 방을 맞추기</div>
                     <p style="font-size:13px;color:#ccc;line-height:1.88;margin:0 0 10px;">${({
-                        wood: '목(木) 용신인 당신에게 초록의 세계는 에너지의 원천입니다. 동쪽을 향한 책상 배치와 침실 방향이 용신 기운을 극대화합니다. 초록·청록·연두 계열의 옷과 소품을 의식적으로 활용하십시오. 봄(3~5월)이 당신의 황금 시즌입니다. 이 시기에 중요한 결정과 계약을 집중하십시오. 나무와 숲 속에서의 시간, 식물 가꾸기, 등산이 목 기운을 보충합니다. 신맛 음식(레몬·식초·매실·녹차)을 규칙적으로 섭취하십시오. 목 기운 일간인 甲(갑)·乙(을) 일간의 사람이 가장 강력한 귀인입니다. 동쪽 방향의 이동과 확장이 길합니다.',
-                        fire: '화(火) 용신인 당신에게 빨강과 열정의 에너지가 운명의 핵심 동력입니다. 남쪽을 향한 방향 배치와 붉은·주황·분홍 계열의 컬러 활용이 화기를 활성화합니다. 여름(6~8월)이 당신의 전성기이며 오전부터 정오까지의 시간대가 최적의 활동 시간입니다. 촛불을 자주 켜거나 따뜻한 조명 환경을 만드는 것이 화 기운을 보충합니다. 쓴맛 음식(녹차·여주·쑥·아메리카노)을 적당히 즐기고 심장 건강에 신경쓰십시오. 화 기운 일간인 丙(병)·丁(정) 일간의 사람이 에너지를 불어넣는 귀인입니다. 열정적이고 사교적인 활동, 무대에 오르는 경험이 운을 활성화합니다.',
-                        earth: '토(土) 용신인 당신에게 황토와 중심의 안정감이 운명의 뿌리입니다. 집이나 사무실의 중앙과 북동·남서 방향이 토 기운의 핵심 방위입니다. 노랑·황토·베이지·오렌지 계열의 색상을 활용하고, 환절기(3·6·9·12월)를 적극 활용하십시오. 황토방·찜질·온천이 토 기운을 충전합니다. 단맛 음식(꿀·고구마·호박·대추)이 에너지를 보충합니다. 토 기운 일간인 戊(무)·己(기) 일간의 사람이 귀인입니다. 안정적이고 장기적인 투자, 부동산 관련 활동이 이 기운을 극대화합니다.',
-                        metal: '금(金) 용신인 당신에게 흰색과 금속의 결단력이 운명의 날입니다. 서쪽과 북서쪽이 행운 방위이며 흰색·금색·은색·회색 계열의 색상이 금 기운을 활성화합니다. 가을(9~11월)이 전성기이며 저녁 시간대가 최적 활동 시간입니다. 금속 소품(시계·반지·목걸이)을 몸에 지니는 것이 금 기운을 보충합니다. 매운맛 음식(생강·마늘·고추·도라지)으로 폐 기운을 강화하십시오. 금 기운 일간인 庚(경)·辛(신) 일간의 사람이 귀인입니다. 단호한 결단과 정리 정돈이 이 기운을 극대화합니다.',
-                        water: '수(水) 용신인 당신에게 검정과 파란색의 지혜 에너지가 운명의 원천입니다. 북쪽이 행운 방위이며 검정·파랑·감색·남색 계열의 색상이 수 기운을 활성화합니다. 겨울(12~2월)과 밤부터 새벽 시간대가 최고의 활동 시간입니다. 수족관·분수·바다·강 근처에서 에너지를 충전하십시오. 짠맛 음식(된장·미역·검은콩·블루베리)이 신장 기운을 보강합니다. 수 기운 일간인 壬(임)·癸(계) 일간의 사람이 지혜를 더해주는 귀인입니다. 분석·연구·학습·명상이 이 기운을 극대화합니다.'
-                    })[yong] || '용신 오행에 맞는 색상·방향·음식을 일상에 적극 활용하십시오. 작은 습관의 변화가 운의 흐름을 바꿉니다.'}</p>
+                        wood: '책상 모니터는 동쪽 벽 쪽으로 두고, 아침 햇볕 15분만이라도 받는 주간 루틴을 고정하십시오. 옷은 초록·청록 중 하나만 주 단위로 통일하면 결정 피로가 줄어듭니다. 신맛(레몬·식초·녹차)은 점심 이후만—저녁엔 끊으십시오. 숲길·공원 산책은 주 1회, 같은 요일·같은 시간에만 잡으십시오.',
+                        fire: '남쪽 창가 자리를 하루 2시간만이라도 확보하고, 조명은 3000K 이상 따뜻한 톤으로 통일하십시오. 붉은 소품은 하나만—여러 개면 잠이 얕아집니다. 쓴맛은 아침 한 잔으로 제한하고, 밤엔 카페인을 끊으십시오. 발표·미팅은 오전 10~12시에만 몰아 넣으십시오.',
+                        earth: '집·사무실 중앙에 쓰레기·낡은 박스를 두지 마십시오. 노랑·베이지 톤은 침구나 커튼처럼 “잠자는 공간”에만 쓰고, 업무 공간은 대비가 약한 색으로 두십시오. 단맛은 저녁 8시 이전에만—그 이후엔 물만 드십시오. 환절기엔 하루 일정을 하나 줄이는 날을 미리 박아 두십시오.',
+                        metal: '서쪽 책상면은 서류만 두고, 잡동사니는 반대편으로 치우십시오. 은·회색 액세서리는 하나만 착용하는 규칙을 두십시오. 매운맛은 점심 한 번—저녁엔 생강·마늘을 빼십시오. 중요한 결정은 해 질 무렵이 아니라 해 질 2시간 전에 끝내십시오.',
+                        water: '북쪽 침대 헤드 근처에 전자기기 충전을 두지 마십시오. 남색·검정은 겉옷 한 벌만 고정하고, 실내는 조도 낮게 유지하십시오. 짠맛은 아침 미역 한 그릇으로 끝—밤엔 짠 국물을 피하십시오. 긴 통화·긴 회의는 오후 5시 이전에 끊으십시오.'
+                    })[yong] || '표의 행운 색·방향·시간대 중 두 가지만 골라 일주일 동안 같은 패턴으로 반복하십시오. 덜 피곤한 조합이 나오면 그대로 고정하십시오.'}</p>
                 </div>
             </div>
         </div>
 
         <div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:22px;margin:24px 0;">
-            <div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:16px;letter-spacing:1px;">&#9670; 귀인 유형과 만남 전략</div>
-            <p style="font-size:13.5px;color:#ccc;line-height:1.9;margin:0 0 14px;">명리학에서 귀인(貴人)이란 단순히 좋은 사람이 아닙니다. 당신의 용신 기운을 보충해주는 오행 에너지를 가진 사람입니다. 같은 직장에 있어도 어떤 사람과 가까이 있느냐에 따라 당신의 에너지 상태가 완전히 달라집니다. 용신 오행의 일간을 가진 사람이 당신의 가장 강력한 귀인입니다. 이 귀인과의 협업은 시너지가 극대화됩니다. 반대로 기신 오행의 일간을 가진 사람과의 지나친 밀착은 에너지를 소진시킵니다. 귀인과의 만남 전략: 용신 오행의 방위(동·남·서·북)에 있는 장소에서의 만남이 더 좋은 인연을 이어줍니다. 용신 계절(봄·여름·가을·겨울)에 중요한 만남의 자리를 만드십시오. 당신이 먼저 용신 에너지를 발산하는 사람이 되면, 비슷한 기운의 귀인이 자연스럽게 끌려옵니다.</p>
+            <div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:16px;letter-spacing:1px;">&#9670; 같이 있으면 덜 지치는 사람 유형</div>
+            <p style="font-size:13.5px;color:#ccc;line-height:1.9;margin:0 0 14px;">표에 적힌 “귀인 조건” 사람과는 <b>업무·돈 이야기를 나누지 말고</b> 산책·식사·짧은 통화만 하십시오. 반대로 표의 주의 색을 즐겨 쓰는 사람과는 밤늦게 술자리만 겹치지 않도록 거리를 두면 체력이 바로 살아납니다. 만남 장소는 표의 방위 쪽 카페·식당을 한 번씩만 골라 보십시오.</p>
         </div>
 
         <div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:22px;margin:24px 0;">
-            <div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:16px;letter-spacing:1px;">&#9670; 인생 시기별 종합 전략 — 20대부터 60대까지의 로드맵</div>
+            <div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:16px;letter-spacing:1px;">&#9670; 나이대별로 손대야 할 것만</div>
             <div style="display:flex;flex-direction:column;gap:8px;">
                 <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:14px;">
-                    <div style="font-size:12px;color:var(--gold);font-weight:700;margin-bottom:6px;">20대 — 기반 구축의 시기</div>
-                    <p style="font-size:12.5px;color:#bbb;line-height:1.8;margin:0;">이 시기의 핵심은 전문성의 씨앗을 심는 것입니다. 용신 오행과 관련된 분야에서 기술과 지식을 쌓으십시오. 20대에 한 분야에 1만 시간을 투자한 사람은 30대에 폭발적 성과를 냅니다. 이 시기의 인간관계는 평생의 귀인이 됩니다. 양보다 질로 깊은 관계를 만드십시오. 재물보다 경험과 실력에 투자하는 것이 이 시기의 정답입니다.</p>
+                    <div style="font-size:12px;color:var(--gold);font-weight:700;margin-bottom:6px;">20대</div>
+                    <p style="font-size:12.5px;color:#bbb;line-height:1.8;margin:0;">한 분야로 이력서 한 장이 꽉 차게 만드십시오. 월급 통장은 생활비만, 저축 통장은 자동이체로 분리하고, 카드는 체크카드 한 장으로 줄이십시오. “나중에” 미루는 자격·포트폴리오는 주말 반나절만이라도 고정 시간에만 하십시오.</p>
                 </div>
                 <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:14px;">
-                    <div style="font-size:12px;color:var(--gold);font-weight:700;margin-bottom:6px;">30대 — 실력 폭발의 시기</div>
-                    <p style="font-size:12.5px;color:#bbb;line-height:1.8;margin:0;">20대에 쌓은 씨앗이 결실을 맺기 시작합니다. 사업이든 커리어든 용신 오행을 활용한 방향으로 집중적인 에너지를 투입하십시오. 이 시기에 핵심 자산(부동산·주식·사업 지분)의 첫 포석을 두어야 합니다. 결혼과 가정을 꾸리는 시기라면 파트너가 귀인인지 확인하십시오. 30대의 가장 큰 실수는 남들의 성공을 부러워하며 자신의 방향을 잃는 것입니다.</p>
+                    <div style="font-size:12px;color:var(--gold);font-weight:700;margin-bottom:6px;">30대</div>
+                    <p style="font-size:12.5px;color:#bbb;line-height:1.8;margin:0;">연봉 협상·이직은 “직무 범위·야근 유무·성과 지표”가 적힌 이메일이 있을 때만 진행하십시오. 부동산·주식·동업은 같은 해에 두 가지 이상 시작하지 마십시오. 배우자와는 월 고정비·외상 한도 숫자 한 장만 맞추고 그날은 술자리를 피하십시오.</p>
                 </div>
                 <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:14px;">
-                    <div style="font-size:12px;color:var(--gold);font-weight:700;margin-bottom:6px;">40대 — 수확과 재정비의 시기</div>
-                    <p style="font-size:12.5px;color:#bbb;line-height:1.8;margin:0;">이 시기는 수확의 계절입니다. 30대에 투자한 것들이 본격적인 결과로 돌아옵니다. 동시에 건강과 체력이 서서히 변화하기 시작합니다. 용신 오행에 맞는 건강 관리가 이 시기의 핵심 투자입니다. 사회적 포지션과 브랜드를 정립하는 시기이며, 선택과 집중으로 에너지를 아끼십시오. 불필요한 인간관계를 정리하고 핵심 귀인과의 관계를 더욱 깊게 만드십시오.</p>
+                    <div style="font-size:12px;color:var(--gold);font-weight:700;margin-bottom:6px;">40대</div>
+                    <p style="font-size:12.5px;color:#bbb;line-height:1.8;margin:0;">검진·수면·주 3회 운동을 먼저 캘린더에 박고, 그다음에 일정을 채우십시오. 인맥은 반으로 줄이고, 남은 사람과는 계약·돈 이야기를 하지 않는 날을 주 1회 만드십시오. 회사 밖 이름(사이드)은 세금·계좌부터 정리한 뒤에만 드러내십시오.</p>
                 </div>
                 <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:14px;">
-                    <div style="font-size:12px;color:var(--gold);font-weight:700;margin-bottom:6px;">50대 이후 — 유산을 만드는 시기</div>
-                    <p style="font-size:12.5px;color:#bbb;line-height:1.8;margin:0;">이 시기에는 자신의 경험과 지혜를 다음 세대에 전달하는 역할이 운을 극대화합니다. 멘토링·교육·저술·강의를 통해 자신의 이름이 남는 일을 하십시오. 재물은 수비 전략으로 지키되, 의미 있는 곳에 투자하십시오. 용신 기운이 남아 있는 한 포기란 없습니다. 인생의 마지막 장이 가장 빛날 수도 있습니다.</p>
+                    <div style="font-size:12px;color:var(--gold);font-weight:700;margin-bottom:6px;">50대 이후</div>
+                    <p style="font-size:12.5px;color:#bbb;line-height:1.8;margin:0;">현금흐름 방어가 최우선입니다. 큰 지출·보증·지분 변경은 자녀나 지인 말이 아니라 서류로만 받으십시오. 가르치고 남기고 싶은 것은 강의 한 번·글 한 편으로 끝내고, 몸이 허락하는 시간만 잡으십시오.</p>
                 </div>
             </div>
         </div>
         <div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:22px;margin:24px 0;">
-            <div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:16px;letter-spacing:1px;">&#9670; 기신 시기 대처법 — 흉한 운에서 살아남는 방법</div>
-            <p style="font-size:13.5px;color:#ccc;line-height:1.9;margin:0 0 14px;">기신 기운이 강해지는 대운과 세운에는 특별한 방어 전략이 필요합니다. 이 시기를 어떻게 보내느냐가 인생 전체의 향방을 결정합니다. 흉한 시기에 무너진 사람과 오히려 내공을 쌓아 도약한 사람의 차이는 단 하나입니다. 기신 시기를 준비 기간으로 활용했느냐입니다.</p>
+            <div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:16px;letter-spacing:1px;">&#9670; 한꺼번에 일이 꼬일 때</div>
+            <p style="font-size:13.5px;color:#ccc;line-height:1.9;margin:0 0 14px;">일이 터지는 달에는 “새로 시작”을 금지하고, 끊고·돌려받고·정리만 하십시오. 그 한 달만 버티면 다음 달에 숨통이 트이는 경우가 많습니다.</p>
             <div style="display:flex;flex-direction:column;gap:10px;">
                 <div style="background:rgba(255,150,0,0.06);border-radius:8px;padding:14px;border:1px solid rgba(255,150,0,0.15);">
-                    <div style="font-size:12px;font-weight:700;color:#ff9800;margin-bottom:8px;">⚠ 기신 시기 가급적 금기 사항</div>
-                    <p style="font-size:13px;color:#bbb;line-height:1.88;margin:0;">대규모 신규 투자 및 사업 확장을 자제하십시오. 보증·연대보증·개인 대출 보증은 가급적 금지입니다. 충동적인 이직과 창업을 삼가십시오. 도박·투기성 투자를 피하십시오. 인간관계에서 주요 결정(결혼·이혼·동업)을 가급적 미루십시오. 기신 기운의 사람이 가져오는 달콤한 제안을 경계하십시오. 이 금기 사항들을 지키는 것만으로도 기신 시기의 손실을 70% 이상 줄이실 수 있습니다.</p>
+                    <div style="font-size:12px;font-weight:700;color:#ff9800;margin-bottom:8px;">⚠ 그달엔 하지 말 것</div>
+                    <p style="font-size:13px;color:#bbb;line-height:1.88;margin:0;">연대보증·지분 계약·신규 대출·야간 송금·카톡으로 받은 구두 합의를 그대로 믿는 일. 충동 이직·충동 창업·도박성 투자. 술자리에서 나온 동업·공동 투자 제안에 바로 답장하는 일.</p>
                 </div>
                 <div style="background:rgba(0,200,83,0.06);border-radius:8px;padding:14px;border:1px solid rgba(0,200,83,0.15);">
-                    <div style="font-size:12px;font-weight:700;color:#00C853;margin-bottom:8px;">✦ 기신 시기 적극 활용 전략</div>
-                    <p style="font-size:13px;color:#bbb;line-height:1.88;margin:0;">기신 시기는 공격이 아닌 내공을 쌓는 시기입니다. 전문 자격증 취득과 학습에 투자하십시오. 용신 기운을 강화하는 색상·방향·음식을 더욱 의식적으로 활용하십시오. 건강 관리에 집중하여 다음 길운 시기를 위한 체력을 비축하십시오. 인간관계를 정리하고 진짜 귀인과의 관계를 깊게 만드십시오. 재물을 공격적으로 불리기보다 현금 흐름을 안정적으로 유지하는 데 집중하십시오. 이 시기에 조용히 준비한 사람이 다음 대운에서 가장 빠르게 도약합니다. 기신 대운 10년이 끝나고 용신 대운이 시작될 때, 이 시기를 어떻게 보냈는지가 폭발력의 크기를 결정합니다.</p>
+                    <div style="font-size:12px;font-weight:700;color:#00C853;margin-bottom:8px;">✦ 그달엔 대신 할 것</div>
+                    <p style="font-size:13px;color:#bbb;line-height:1.88;margin:0;">자격·문서·장부만 정리하고, 수면을 먼저 채우십시오. 표에 적힌 색·방향·시간대를 일주일만이라도 지키면 집중이 돌아옵니다. 현금은 나가는 곳부터 막고, 들어오는 곳은 문자·이메일 증빙으로만 확인하십시오.</p>
                 </div>
             </div>
         </div>
