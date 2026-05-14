@@ -1888,7 +1888,7 @@ function getReportBaseDate(data) {
     return new Date();
 }
 
-/** 표지·히어로용 생년월일시 한 줄 (음력 괄호 포함). data.coverSolar* / coverLunar* / birthTimeKnown 는 runAnalysis·서버 주입 시 채움 */
+/** 표지·히어로용 생년월일시 한 줄. coverSolarHH/MM 은 사용자에게 보여줄 시각(경도 보정 전 입력 시각, runAnalysis에서 채움). */
 function formatCoverBirthLine(data) {
     if (!data) return '';
     if (data.coverBirthLine) return data.coverBirthLine;
@@ -5748,6 +5748,19 @@ function runAnalysis(overrideParams) {
             }
         }
 
+        /** 표지·고객 확인용: 입력(또는 자시 규칙 직후) 시각. 경도 -32분 보정 전 값이어야 입력과 화면이 일치합니다. */
+        var coverUiHH = null;
+        var coverUiMM = null;
+        if (!isUnknown) {
+            try {
+                coverUiHH = solarObj.getHour();
+                coverUiMM = solarObj.getMinute();
+            } catch (eCov) {
+                coverUiHH = hrAdj;
+                coverUiMM = mn;
+            }
+        }
+
         // 2. 경도 보정 (-32분)은 무조건 '양력 시간' 객체를 기준으로 수행
         if ((document.getElementById('adj-l') ? document.getElementById('adj-l').checked : true) && !isUnknown) {
             const baseY = solarObj.getYear(), baseM = solarObj.getMonth(), baseD = solarObj.getDay();
@@ -6792,8 +6805,8 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
             coverSolarY: displaySolarY,
             coverSolarM: displaySolarM,
             coverSolarD: displaySolarD,
-            coverSolarHH: !isUnknown ? solar.getHour() : null,
-            coverSolarMM: !isUnknown ? solar.getMinute() : null,
+            coverSolarHH: !isUnknown ? coverUiHH : null,
+            coverSolarMM: !isUnknown ? coverUiMM : null,
             coverLunarY: displayLunarY,
             coverLunarM: displayLunarM,
             coverLunarD: displayLunarD,
