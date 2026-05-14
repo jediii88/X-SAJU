@@ -17,7 +17,7 @@
       if (exp && Date.now() > parseInt(exp)) {
         document.addEventListener('DOMContentLoaded', function(){
           document.body.innerHTML =
-            '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#080810;color:#888;text-align:center;padding:40px;">' +
+            '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#000;color:#888;text-align:center;padding:40px;">' +
             '<div><div style="font-size:48px;margin-bottom:16px;">⏰</div>' +
             '<div style="font-size:18px;color:#c7a76a;font-weight:700;margin-bottom:8px;">리포트 유효기간 만료</div>' +
             '<div style="font-size:13px;">PDF를 저장하지 않으셨다면 SAJUX에 문의해주세요.</div></div></div>';
@@ -57,7 +57,7 @@
       // 자동실행은 window.load IIFE에서 처리 (하단 스크립트 참조)
     })();
     </script>
-    <meta name="version" content="1778790928">
+    <meta name="version" content="1778792605">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -74,7 +74,7 @@
         }
 
         :root, html[data-theme="dark"] {
-            --bg-primary: #080810;
+            --bg-primary: #000;
             --text-primary: rgba(255,255,255,0.96);
             --card-bg: rgba(255,255,255,0.04);
             --accent-color: #d4af37;
@@ -118,26 +118,31 @@
         body { overflow-x: hidden; background: var(--bg); color: var(--text); }
 
         body.light-mode, html[data-theme="light"] {
-            --bg-primary: #f5f6fb;
-            --text-primary: #1a1a1a;
-            --card-bg: #f5f5f5;
-            --accent-color: #966d2e;
-            --accent-rgb: 150, 109, 46;
-            --border: rgba(15,20,28,0.14);
+            --bg-primary: #faf8f4;
+            --text-primary: #1c1814;
+            --card-bg: #ffffff;
+            --accent-color: #7a5a22;
+            --accent-rgb: 122, 90, 34;
+            --border: rgba(28, 24, 18, 0.12);
             --bg: var(--bg-primary);
-            --panel: rgba(255,255,255,0.98);
-            --panel-2: rgba(246,248,252,0.96);
-            --line: rgba(15,20,28,0.14);
-            --line-soft: rgba(15,20,28,0.09);
+            --panel: #ffffff;
+            --panel-2: #f3f1ec;
+            --line: rgba(28, 24, 18, 0.12);
+            --line-soft: rgba(28, 24, 18, 0.07);
             --text: var(--text-primary);
-            --text-soft: rgba(16,22,32,0.86);
-            --text-dim: rgba(16,22,32,0.55);
-            --glass-bg: rgba(255,255,255,0.94);
-            --glass-hover: rgba(246,248,252,1);
+            --text-soft: rgba(40, 36, 32, 0.78);
+            --text-dim: rgba(40, 36, 32, 0.48);
+            --glass-bg: rgba(255, 255, 255, 0.97);
+            --glass-hover: #ffffff;
             --gold: var(--accent-color);
-            --gold-glow: rgba(150,109,46,0.14);
-            --text-muted: rgba(16,22,32,0.5);
-            --bg-rgb: 245, 246, 251;
+            --gold-glow: rgba(122, 90, 34, 0.12);
+            --text-muted: rgba(40, 36, 32, 0.45);
+            --bg-rgb: 250, 248, 244;
+            --wood: #147a3e;
+            --fire: #b4221a;
+            --earth: #856321;
+            --metal: #3d4c5a;
+            --water: #1e5aa8;
         }
 
         #theme-toggle {
@@ -164,8 +169,12 @@
 
         /* 라이트 모드: 대비·패널 (다크 기준 하드코딩 보완) */
         body.light-mode::before {
-            opacity: 0.16;
-            filter: saturate(0.62) brightness(1.06);
+            background:
+                radial-gradient(ellipse at 22% 12%, rgba(199, 167, 106, 0.1) 0%, transparent 48%),
+                radial-gradient(ellipse at 78% 88%, rgba(122, 90, 34, 0.07) 0%, transparent 52%);
+            opacity: 0.5;
+            filter: saturate(0.72) brightness(1.04);
+            animation: nebula-shift 28s ease-in-out infinite alternate;
         }
         body.light-mode .brand {
             color: rgba(22, 28, 38, 0.88) !important;
@@ -1115,9 +1124,9 @@
         html[data-theme="light"] .yearly-card,
         html[data-theme="light"] .monthly-card,
         html[data-theme="light"] .glass-panel {
-            background: rgba(255, 255, 255, 0.4) !important;
-            border: 1px solid rgba(0, 0, 0, 0.1) !important;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
+            background: #ffffff !important;
+            border: 1px solid rgba(28, 24, 18, 0.09) !important;
+            box-shadow: 0 2px 14px rgba(28, 24, 18, 0.05);
         }
         body:not(.light-mode) .card,
         body:not(.light-mode) .yearly-card,
@@ -1132,9 +1141,9 @@
         }
         body.light-mode .f-card,
         html[data-theme="light"] .f-card {
-            background: rgba(255, 255, 255, 0.4) !important;
-            border: 1px solid rgba(0, 0, 0, 0.1) !important;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
+            background: #ffffff !important;
+            border: 1px solid rgba(28, 24, 18, 0.09) !important;
+            box-shadow: 0 2px 14px rgba(28, 24, 18, 0.05);
         }
         body:not(.light-mode) .f-card,
         html[data-theme="dark"] .f-card {
@@ -1393,9 +1402,9 @@
         html[data-theme="light"] .yearly-card,
         html[data-theme="light"] .monthly-card,
         html[data-theme="light"] .glass-panel {
-            background: rgba(255, 255, 255, 0.4) !important;
-            border: 1px solid rgba(0, 0, 0, 0.1) !important;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
+            background: #ffffff !important;
+            border: 1px solid rgba(28, 24, 18, 0.09) !important;
+            box-shadow: 0 2px 14px rgba(28, 24, 18, 0.05);
         }
         body:not(.light-mode) .card,
         body:not(.light-mode) .yearly-card,
@@ -1410,9 +1419,9 @@
         }
         body.light-mode .f-card,
         html[data-theme="light"] .f-card {
-            background: rgba(255, 255, 255, 0.4) !important;
-            border: 1px solid rgba(0, 0, 0, 0.1) !important;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
+            background: #ffffff !important;
+            border: 1px solid rgba(28, 24, 18, 0.09) !important;
+            box-shadow: 0 2px 14px rgba(28, 24, 18, 0.05);
         }
         body:not(.light-mode) .f-card,
         html[data-theme="dark"] .f-card {
@@ -1657,6 +1666,84 @@
             font-weight: 500;
         }
 
+        /* 라이트 모드: 만세력·입력·VIP 요약·로딩 (대비·톤 통일) */
+        body.light-mode .manse-label,
+        html[data-theme="light"] .manse-label {
+            color: rgba(55, 52, 48, 0.72) !important;
+        }
+        body.light-mode .manse-head,
+        html[data-theme="light"] .manse-head {
+            color: rgba(55, 52, 48, 0.82) !important;
+        }
+        body.light-mode .m-hangul,
+        html[data-theme="light"] .m-hangul {
+            color: rgba(55, 52, 48, 0.62) !important;
+        }
+        body.light-mode .m-badge,
+        html[data-theme="light"] .m-badge {
+            color: var(--text-primary) !important;
+            background: rgba(122, 90, 34, 0.09) !important;
+            border-color: rgba(122, 90, 34, 0.22) !important;
+        }
+        body.light-mode .vip-module-title,
+        html[data-theme="light"] .vip-module-title { color: #6b4f18 !important; }
+        body.light-mode .vip-module-desc,
+        html[data-theme="light"] .vip-module-desc { color: #3a3630 !important; }
+        body.light-mode .animal-symbol,
+        html[data-theme="light"] .animal-symbol { color: rgba(40, 36, 32, 0.88) !important; }
+        body.light-mode .birth-info,
+        html[data-theme="light"] .birth-info { color: rgba(60, 55, 48, 0.58) !important; }
+        body.light-mode .cover-highlight,
+        html[data-theme="light"] .cover-highlight { color: #7a5a22 !important; }
+        body.light-mode .loading,
+        html[data-theme="light"] .loading {
+            background: rgba(250, 248, 244, 0.94) !important;
+        }
+        body.light-mode .btn:not(.btn-toggle):not(.subtle),
+        html[data-theme="light"] .btn:not(.btn-toggle):not(.subtle) {
+            background: #ffffff !important;
+            color: #1c1814 !important;
+            border: 1px solid rgba(28, 24, 18, 0.1) !important;
+            box-shadow: 0 3px 14px rgba(28, 24, 18, 0.07) !important;
+        }
+        body.light-mode .btn.subtle,
+        html[data-theme="light"] .btn.subtle {
+            color: rgba(55, 50, 44, 0.55) !important;
+        }
+        body.light-mode .input-group label,
+        html[data-theme="light"] .input-group label {
+            color: rgba(55, 50, 44, 0.52) !important;
+        }
+        body.light-mode .input-wrapper input,
+        html[data-theme="light"] .input-wrapper input {
+            border-bottom-color: rgba(28, 24, 18, 0.2) !important;
+        }
+        body.light-mode .input-wrapper input::placeholder,
+        html[data-theme="light"] .input-wrapper input::placeholder {
+            color: rgba(55, 50, 44, 0.32) !important;
+        }
+        body.light-mode .underline,
+        html[data-theme="light"] .underline {
+            background-color: var(--gold) !important;
+        }
+        body.light-mode .badge,
+        html[data-theme="light"] .badge {
+            background: #f0ece6 !important;
+            border-color: rgba(28, 24, 18, 0.12) !important;
+            color: rgba(55, 50, 44, 0.72) !important;
+        }
+        body.light-mode .cat-tab,
+        html[data-theme="light"] .cat-tab {
+            background: #eef0f4 !important;
+            border-color: rgba(28, 24, 18, 0.1) !important;
+            color: rgba(55, 50, 44, 0.78) !important;
+        }
+        body.light-mode .lifecycle-card,
+        html[data-theme="light"] .lifecycle-card {
+            background: #ffffff !important;
+            border-color: rgba(28, 24, 18, 0.1) !important;
+        }
+
 </style>
 
     <style>
@@ -1753,23 +1840,20 @@
             width: 100%; height: 100%;
             pointer-events: none;
             z-index: 0;
-            opacity: 0.5;
+            opacity: 0.38;
         }
         .container { position: relative; z-index: 1; }
         
-        /* 성운 배경 */
+        /* 다크: 남색 성운 오버레이 제거 → 순검정에 가깝게. 라이트는 body.light-mode::before에서만 웜톤 */
         body::before {
             content: '';
             position: fixed;
             top: -50%; left: -50%;
             width: 200%; height: 200%;
-            background: 
-                radial-gradient(ellipse at 20% 20%, rgba(88,28,220,0.08) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 80%, rgba(28,88,220,0.06) 0%, transparent 50%),
-                radial-gradient(ellipse at 50% 50%, rgba(140,60,255,0.04) 0%, transparent 60%);
+            background: none;
             pointer-events: none;
             z-index: 0;
-            animation: nebula-shift 20s ease-in-out infinite alternate;
+            animation: none;
         }
         @keyframes nebula-shift {
             0% { transform: translate(0,0) scale(1); }
@@ -1895,7 +1979,7 @@
       if (exp && Date.now() > parseInt(exp)) {
         window.addEventListener('load', function(){
           document.body.innerHTML =
-            '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#080810;color:#888;text-align:center;padding:40px;">' +
+            '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#000;color:#888;text-align:center;padding:40px;">' +
             '<div><div style="font-size:48px;margin-bottom:16px;">&#9200;</div>' +
             '<div style="font-size:18px;color:#c7a76a;font-weight:700;margin-bottom:8px;">리포트 유효기간 만료</div>' +
             '<div style="font-size:13px;">PDF를 저장하지 않으셨다면 SAJUX에 문의해주세요.</div></div></div>';
@@ -1935,8 +2019,8 @@
     </script>
 
 <!-- SAJUX_CACHE_BUSTER_START -->
-<meta name="sajux-build" content="1778790928">
-<script>(function(){var v='1778790928';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
+<meta name="sajux-build" content="1778792605">
+<script>(function(){var v='1778792605';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
 <!-- SAJUX_CACHE_BUSTER_END -->
 </head>
 <body>
@@ -1989,8 +2073,20 @@
     border-top: 1px solid var(--line);
     box-shadow: 0 -6px 24px rgba(0,0,0,0.35);
 }
-html[data-theme="light"] .sticky-part-nav {
-    background: rgba(255,255,255,0.97);
+html[data-theme="light"] .sticky-part-nav,
+body.light-mode .sticky-part-nav {
+    background: rgba(255, 255, 255, 0.98) !important;
+    border-top-color: rgba(28, 24, 18, 0.1) !important;
+    box-shadow: 0 -4px 20px rgba(28, 24, 18, 0.07) !important;
+}
+html[data-theme="light"] .spn-item,
+body.light-mode .spn-item {
+    background: #f4f2ee !important;
+    border-color: rgba(28, 24, 18, 0.11) !important;
+}
+html[data-theme="light"] .spn-sub,
+body.light-mode .spn-sub {
+    color: rgba(55, 50, 44, 0.52) !important;
 }
 .spn-item {
     flex: 1;
@@ -2029,6 +2125,28 @@ html[data-theme="light"] .sticky-part-nav {
         break-after: avoid !important;
     }
 }
+
+        body.light-mode .cat-section,
+        html[data-theme="light"] .cat-section {
+            background: #ffffff !important;
+            box-shadow: 0 2px 14px rgba(28, 24, 18, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(28, 24, 18, 0.07) !important;
+        }
+        body.light-mode .cat-header,
+        html[data-theme="light"] .cat-header {
+            border-bottom-color: rgba(28, 24, 18, 0.1) !important;
+        }
+        body.light-mode .cat-stat,
+        html[data-theme="light"] .cat-stat {
+            background: #f6f4f0 !important;
+            border: 1px solid rgba(28, 24, 18, 0.06);
+        }
+        body.light-mode .inline-interp,
+        html[data-theme="light"] .inline-interp {
+            background: rgba(122, 90, 34, 0.06) !important;
+            border-color: rgba(122, 90, 34, 0.18) !important;
+            box-shadow: 0 1px 10px rgba(28, 24, 18, 0.05) !important;
+        }
 </style>
 <script>
 function applyTheme(mode){
@@ -2675,7 +2793,7 @@ function startReport() {
 <script src="lunar.js"></script>
     <!-- KLC: KASI 기준 한국 음양력 변환 (음력 입력 시 사용) -->
     <script src="klc.min.js"></script>
-    <script src="report-core.js?v=1778790928"></script>
+    <script src="report-core.js?v=1778792605"></script>
 
 
 
