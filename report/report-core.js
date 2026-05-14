@@ -178,11 +178,37 @@ function buildYearStrategicNarrative(name, yr, kor, evLabel, sc, sewSip, ohTag, 
     } else {
         stance = '재물·투자는 레버리지·보증·연대채무를 중단하고 손실 한도를 먼저 정하십시오. 직업적으로는 조직 내 충돌 거리두기와 역할 재정의가 필요하며, 이직·창업은 가능한 한 검토 기간을 두십시오. ' + (ohTag || '기신') + ' 압력이 강한 국면에서는 서류·세무·법률 자문을 선제적으로 확보하는 것이 방어의 핵심입니다.';
     }
-    var action = '구체적으로는 ①주간 단위로 현금·미수·고정비를 점검하고, ②중요 미팅은 안건·결론·후속 액션을 메모로 남기며, ③신규 인맥보다 기존 신뢰 관계를 강화하십시오. ' + nm + '님께서 이미 가진 강점을 한 축에 몰아넣으면 같은 해 안에 가시적 성과가 붙기 쉽습니다.';
-    var risk = '리스크 방어로는 감정이 올라온 날의 즉답·즉서명을 피하고, 수면 6시간 미만 연속 근무를 끊는 루틴을 먼저 복구하십시오. 건강·가정 이슈가 겹치는 달에는 일정을 의도적으로 비우는 것이 오히려 다음 분기 속도를 살립니다.';
-    var monthTie = '월별로는 길운이 몰린 달에 실행·계약을, 기신이 강한 달에는 검토·내부 정리를 배치하십시오. 아래 월운 캘린더와 같은 해의 주차 단위 일정을 맞춰 보면 실행 오차가 줄어듭니다.';
-    var cause = '길흉의 원인은 연간 천간·지지가 일간과 맺는 십성(' + sip + ')과 용신·기신 오행의 합·충 구조에서 설명됩니다. ' + nm + '님께서 체감하시는 “운이 좋다/나쁘다”는 대개 현금흐름·대외 평판·수면의 세 축이 동시에 움직이기 때문입니다. 같은 사건도 용신이 받쳐 주는 해에는 기회로, 기신이 압박하는 해에는 비용으로 기록되기 쉽습니다. 따라서 올해의 판단은 감정이 아니라 수치(매출·지출·미수·계약 조항)로 남겨 두시는 것이 가장 안전합니다.';
-    var integr = nm + '님께서 ' + yr + '년을 운영하실 때에는 주간 단위로 현금·미수·고정비 표를 먼저 고정하십시오. 동일한 숫자를 배우자·동업자와 공유하시면 관계 갈등이 재물 분쟁으로 번지는 일을 줄이실 수 있습니다. 길운이더라도 상반기 안에 핵심 과제 두 가지만 종결하고, 하반기는 검증·정산·회고에 쓰시면 체감 성과가 더 선명해집니다.';
+    var stemCode = (kor && kor.length) ? ((kor.charCodeAt(0) + kor.charCodeAt(kor.length - 1)) | 0) : (yr | 0);
+    var mix = (yr * 7 + (sip || '').length * 3 + Math.abs(sc) * 11 + stemCode) % 4;
+    var actionBank = [
+        yr + '년에는 ①주간 단위로 현금·미수·고정비를 한 장표에 고정하고, ②중요 미팅은 안건·결론·후속 액션을 메모로 남기며, ③신규 인맥 확장보다 기존 신뢰 관계를 한 단계 깊게 만드는 쪽이 ' + nm + '님께 가장 빨리 성과로 붙습니다.',
+        yr + '년에는 ①월초·월말 두 번만이라도 손익·미수·고정비를 숫자로 맞추고, ②계약·제안서는 조항 번호까지 붙여 보관하며, ③같은 해 안에 “끝낼 일 한 가지”를 정해 밀도를 높이십시오. ' + sip + ' 흐름이 강한 해에는 말보다 기록이 협상력이 됩니다.',
+        yr + '년에는 ①분기마다 우선순위 세 줄(해야 할 일·버릴 일·미룰 일)을 갱신하고, ②예산 밖 지출은 48시간 룰을 두며, ③운동·수면 슬롯을 먼저 캘린더에 박아 두십시오. ' + nm + '님의 강점을 한 축에 몰아넣을수록 같은 해 안에 체감 성과가 선명해집니다.',
+        yr + '년에는 ①고객·상사·가족과의 약속을 같은 노트에 모으고 지연 항목만 빨간색으로 표시하며, ②작은 완성을 먼저 공개하고 큰 판은 검증 후에 옮기고, ③‘이번 달 한 가지 실험’만 허용하십시오. 간지 ' + (kor || '해') + '의 기운은 실행 속도보다 완결도에 보상이 붙는 편입니다.'
+    ];
+    var riskBank = [
+        yr + '년 리스크 방어: 감정이 올라온 날의 즉답·즉서명은 24시간 유예 규칙으로 막고, 수면 6시간 미만 연속 근무를 끊는 루틴을 먼저 복구하십시오. 건강·가정 이슈가 겹치는 달에는 일정을 의도적으로 비워 다음 분기 속도를 살리십시오.',
+        yr + '년에는 보증·연대·레버리지를 줄이고, 분쟁이 생길 법한 문자·메일은 바로 정리하지 말고 차용증·계약서 순으로 사실만 남기십시오. ' + (sc < 0 ? '점수가 낮은 해일수록 “증거 우선”이 손실을 가장 많이 줄입니다.' : '평온한 해에도 작은 균열이 크게 번지지 않게 초기에 메모로 고정하십시오.'),
+        yr + '년에는 과로·음주·야근 연속을 끊는 것이 최우선 방패입니다. 기신이 강한 달에는 새로운 사람·새로운 돈이 동시에 들어올 때 한 축만 택하십시오.',
+        yr + '년에는 여행·이사·장비 대형 지출을 같은 분기에 겹치지 않게 흩어 놓으십시오. 세운 십성(' + sip + ')이 자극하는 영역에서만 승부하고 나머지는 방어로 두는 편이 안전합니다.'
+    ];
+    var monthBank = [
+        '월별로는 길운이 몰린 달에 실행·계약을, 기신이 강한 달에는 검토·내부 정리를 배치하십시오. ' + yr + '년 아래 월운 캘린더와 주차 단위 일정을 맞추면 실행 오차가 줄어듭니다.',
+        yr + '년에는 상반기에 거점(돈·사람·시간)을 고정하고 하반기에 확장을 붙이십시오. 월운에서 같은 오행이 연속될 때는 한 가지 테마만 밀어붙이는 편이 유리합니다.',
+        yr + '년 월별 흐름은 “길한 달=외부 공개·계약”, “주의 달=내부 정리·증빙”으로만 나눠도 피로도가 크게 줄어듭니다. 아래 월운과 같은 해의 주간 점검표를 연동해 보십시오.',
+        yr + '년에는 분기 첫 달에 목표를 세 개 이하로 압축하고, 분기 막달에 회고만 남기십시오. 월운 캘린더의 색이 바뀌는 구간마다 우선순위를 한 줄씩만 수정하는 방식이 안정적입니다.'
+    ];
+    var action = actionBank[mix];
+    var risk = riskBank[(mix + sc + 4) % 4];
+    var monthTie = monthBank[(mix + (evLabel === '흥(興)' ? 1 : evLabel.indexOf('주') >= 0 ? 2 : 0)) % 4];
+    var cause = yr + '년 길흉의 원인은 연간 천간·지지가 일간과 맺는 십성(' + sip + ')과 용신·기신 오행의 합·충 구조에서 설명됩니다. ' + nm + '님께서 ' + yr + '년에 체감하시는 “운이 좋다/나쁘다”는 대개 현금흐름·대외 평판·수면의 세 축이 동시에 움직이기 때문입니다. 같은 사건도 용신이 받쳐 주는 해에는 기회로, 기신이 압박하는 해에는 비용으로 기록되기 쉽습니다. 따라서 ' + yr + '년의 판단은 감정이 아니라 수치(매출·지출·미수·계약 조항)로 남겨 두시는 것이 가장 안전합니다.';
+    var integrBank = [
+        nm + '님께서 ' + yr + '년을 운영하실 때에는 주간 단위로 현금·미수·고정비 표를 먼저 고정하십시오. 동일한 숫자를 배우자·동업자와 공유하시면 관계 갈등이 재물 분쟁으로 번지는 일을 줄이실 수 있습니다. 길운이더라도 ' + yr + '년 상반기 안에 핵심 과제 두 가지만 종결하고, 하반기는 검증·정산·회고에 쓰시면 체감 성과가 더 선명해집니다.',
+        nm + '님께서 ' + yr + '년에는 “이번 분기 숫자 한 장”만 공유 대상과 맞추고, 나머지는 내부 기록으로 두십시오. ' + yr + '년 말에 남길 한 줄 평가(잘한 일·그만둔 일·내년에 넘길 일)를 미리 빈칸으로 만들어 두면 회고가 빨라집니다.',
+        nm + '님께서 ' + yr + '년에는 같은 해 안에 브랜드·재무·건강 중 한 축만 대외적으로 키우고 나머지는 유지 보수로 두십시오. ' + yr + '년 ' + (kor || '') + ' 기운은 한 축에 몰아넣을 때 가장 잘 응답하는 편입니다.',
+        nm + '님께서 ' + yr + '년에는 월별로 “완료한 증거”만 모으십시오. 회의록 한 줄, 이체 내역 한 줄, 계약 조항 한 줄이 모이면 ' + yr + '년 말의 자신감이 달라집니다.'
+    ];
+    var integr = integrBank[(mix + yr) % 4];
     var domainP = '';
     if (domainFour && (domainFour.wealth || domainFour.career || domainFour.love || domainFour.health)) {
         domainP = '<p style="margin:0 0 10px;color:#d0d0d0;">분야별 실행 초점은 다음과 같이 묶는 것이 좋습니다. 재물·현금흐름은 ' + (domainFour.wealth || '') + ' 직업·조직·대외 평판은 ' + (domainFour.career || '') + ' 애정·대인 관계는 ' + (domainFour.love || '') + ' 건강·컨디션·회복 루틴은 ' + (domainFour.health || '') + ' 이 네 축이 서로 끌어당기지 않게 분기마다 한 축씩만 “승부 축”으로 정하면 실행 피로가 줄어듭니다.</p>';
@@ -1226,14 +1252,15 @@ function generateDeepReport(data) {
                         .replace(/>\s+</g, '><');
                 }
                 if (out.indexOf('undefined') !== -1) {
-                    return '<div class="report-chapter" style="padding:14px 16px;border:1px solid rgba(199,167,106,0.2);border-radius:10px;margin:10px 0;"><p style="font-size:13px;color:#bbb;line-height:1.85;margin:0;">이 구간은 표시할 데이터가 일부 비어 있어 요약만 남겼습니다. 생년월일시를 확인하신 뒤 다시 분석해 주십시오.</p></div>';
+                    console.warn('generateDeepReport ' + label + ': stripped fragment with undefined');
+                    return '';
                 }
             }
             return out;
         }
         catch (e) {
             console.error('generateDeepReport ' + label + ':', e.message);
-            return '<div class="report-chapter" style="padding:14px 16px;border:1px solid rgba(255,255,255,0.06);border-radius:10px;margin:10px 0;"><p style="font-size:13px;color:#999;line-height:1.85;margin:0;">이 구간은 생략되었습니다. 입력 정보를 저장한 뒤 페이지를 새로고침하여 다시 열어 주십시오.</p></div>';
+            return '';
         }
     }
 
@@ -1287,7 +1314,7 @@ function generateDeepReport(data) {
 
     // 기존 정적 만세력 섹션들 숨김 (report-container가 모든 내용을 포함하므로)
     var staticSecs = ['sec-manse','sec-relation','sec-shinsal','sec-wuxing',
-        'sec-fortune','sec-yonghee','sec-daeun-graph','sec-lifecycle','sec-category'];
+        'sec-fortune','sec-yonghee','sec-daeun-graph','sec-lifecycle','sec-category','sec-legacy-inline-charts'];
     staticSecs.forEach(function(id){
         var el = document.getElementById(id);
         if(el) el.style.display = 'none';
@@ -3738,7 +3765,7 @@ function buildVipEvidenceBlock(data) {
             if(isUnk&&i===0){ev+='<td style="text-align:center;color:#444;font-size:11px;">미상</td>';return;}
             var g=p.h[0]||''; var col=hanCol(g);
             var gKr=HK_GAN[g]||g;
-            ev+='<td style="padding:6px 6px;text-align:center;vertical-align:middle;"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;line-height:1.05;"><span style="font-size:24px;font-weight:800;color:'+col+';font-family:Noto Serif KR,serif;">'+g+'</span><span style="font-size:11px;color:#aaa;font-weight:600;">'+gKr+'</span></div></td>';
+            ev+='<td style="padding:6px 6px;text-align:center;vertical-align:middle;"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;line-height:1.05;"><span style="font-size:1.2em;font-weight:800;color:'+col+';font-family:Batang,\'Nanum Myeongjo\',Gungsuh,\'Noto Serif KR\',serif;">'+g+'</span><span style="font-size:11px;color:#aaa;font-weight:600;">'+gKr+'</span></div></td>';
         });
         ev += '</tr>';
         // 지지
@@ -3748,7 +3775,7 @@ function buildVipEvidenceBlock(data) {
             if(isUnk&&i===0){ev+='<td style="text-align:center;color:#444;font-size:11px;">미상</td>';return;}
             var j=p.h[1]||''; var col=hanCol(j);
             var jKr=HK_JI[j]||j;
-            ev+='<td style="padding:6px 6px;text-align:center;vertical-align:middle;"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;line-height:1.05;"><span style="font-size:24px;font-weight:800;color:'+col+';font-family:Noto Serif KR,serif;">'+j+'</span><span style="font-size:11px;color:#aaa;font-weight:600;">'+jKr+'</span></div></td>';
+            ev+='<td style="padding:6px 6px;text-align:center;vertical-align:middle;"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;line-height:1.05;"><span style="font-size:1.2em;font-weight:800;color:'+col+';font-family:Batang,\'Nanum Myeongjo\',Gungsuh,\'Noto Serif KR\',serif;">'+j+'</span><span style="font-size:11px;color:#aaa;font-weight:600;">'+jKr+'</span></div></td>';
         });
         ev += '</tr>';
         // 십성(지지) — 만세력 표와 동일
@@ -3935,187 +3962,11 @@ function buildVipEvidenceBlock(data) {
 // 제1부 인생 서사 (성격→가족→시기별흐름→자녀→사회이미지)
 // ═══════════════════════════════════════════════════════
 function buildPart1_Story(data){
-    var name=data.name||'고객';
-    var ds=data.dayStem||'丙', db=data.dayBranch||'寅';
-    var pillars=data.pillars||[];
-    var isStrong=(data.strengthText||'').includes('신강');
-    var gongmang=data.gongmang||[];
-    var allShinsal=data.allShinsal||{};
-    var wuxing=data.wuxing||{wood:0,fire:0,earth:0,metal:0,water:0};
-    var yong=data.yong||'', hee=data.hee||'', gi=data.gi||'', goo=data.goo||'';
-    var yb=data.yearBranch||'', tb=data.timeBranch||'';
-    var ZM_P1={
-        '子':'지적·분석적 에너지의 명궁. 전략과 계획에 강하며, 데이터와 논리로 세상을 파악합니다.',
-        '丑':'안정·축적의 명궁. 끈기와 신뢰가 삶의 무기이며 서두르지 않아도 결국 원하는 것을 얻습니다.',
-        '寅':'도전·개척의 명궁. 새로운 판을 먼저 까는 타입으로 변화를 두려워하지 않습니다.',
-        '卯':'감성·인연의 명궁. 인간관계에서 빛을 발하며 사람을 통해 기회와 성취가 찾아옵니다.',
-        '辰':'변화·기회의 명궁. 환경 변화를 기회로 만드는 능력이 뛰어나며 위기에서 강해집니다.',
-        '巳':'열정·집중의 명궁. 하고 싶은 것에 강한 집중력을 발휘하며 전문성으로 승부합니다.',
-        '午':'명예·인정의 명궁. 사회적으로 두각을 나타내려는 본능이 강하며 리더십이 자연스럽습니다.',
-        '未':'복록·조화의 명궁. 자연스럽게 복이 따르며 주변을 조화롭게 만드는 능력이 있습니다.',
-        '申':'이동·변화의 명궁. 다양한 경험을 통해 성장하며 한 곳에 얽매이지 않을 때 빛납니다.',
-        '酉':'완성·전문성의 명궁. 한 분야에서 최고를 추구하며 완성도에 대한 집착이 강점이 됩니다.',
-        '戌':'철학·가치관의 명궁. 깊은 사색과 원칙이 삶을 이끌며 진정성이 신뢰를 만듭니다.',
-        '亥':'지혜·내면의 명궁. 겉보다 속이 훨씬 깊으며 혼자만의 시간에서 최고의 통찰이 나옵니다.'
-    };
-    var ziM = ZM_P1[yb] || '';
-
-    var OH_KR={wood:'목',fire:'화',earth:'토',metal:'금',water:'수'};
-    var STEM_OH={'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
-    var BRNCH_OH={'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'};
-    var OH_COL={wood:'var(--wood)',fire:'var(--fire)',earth:'var(--earth)',metal:'var(--metal)',water:'var(--water)'};
-    function ohColor(k){ return OH_COL[k]||'#aaa'; }
-    function hanCol(h){ return ohColor(STEM_OH[h]||BRNCH_OH[h]||'earth'); }
-
+    var name = data.name || '고객';
     var html = '<div class="report-chapter chapter-start" style="padding-top:14px;">';
-
-    // ── 타이틀 ──
-    html += '<h2 style="font-size:20px;font-weight:900;color:var(--gold);letter-spacing:2px;margin:6px 0 10px;border-bottom:2px solid rgba(199,167,106,0.42);padding-bottom:14px;">'+name+'님의 운명 서사</h2>';
+    html += '<h2 style="font-size:20px;font-weight:900;color:var(--gold);letter-spacing:2px;margin:6px 0 10px;border-bottom:2px solid rgba(199,167,106,0.42);padding-bottom:14px;">' + name + '님의 운명 서사</h2>';
     html += '<p style="font-size:12px;color:#666;margin:0 0 28px;letter-spacing:0.5px;">태어난 순간 새겨진 설계도 — 당신이라는 사람의 완전한 분석</p>';
-
-    // ── ② 오행 에너지 분포 ──
-    html += '<div style="margin:28px 0 10px;font-size:13px;color:var(--gold);font-weight:800;letter-spacing:1.2px;line-height:1.45;">② 에너지 지도 — 오행 분포</div>';
-    var total=Object.values(wuxing).reduce(function(a,b){return a+(b||0);},0)||1;
-    var sortedOh=Object.entries(wuxing).sort(function(a,b){return b[1]-a[1];});
-    var maxOh=sortedOh[0]?sortedOh[0][0]:'wood';
-    var minOh=sortedOh[sortedOh.length-1]?sortedOh[sortedOh.length-1][0]:'metal';
-    html += '<div style="background:rgba(255,255,255,0.02);border-radius:10px;padding:14px 16px;margin-bottom:12px;">';
-    sortedOh.forEach(function(entry){
-        var k=entry[0],v=entry[1]||0;
-        var pct=Math.round(v/total*100);
-        var col=ohColor(k); var kr=OH_KR[k]||k;
-        var isMax=k===maxOh,isMin=k===minOh;
-        html+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">';
-        html+='<div style="width:24px;text-align:right;font-size:12px;font-weight:'+(isMax?'800':'400')+';color:'+(isMax?col:'#666')+';">'+kr+'</div>';
-        html+='<div style="flex:1;background:rgba(255,255,255,0.05);border-radius:3px;height:8px;overflow:hidden;">';
-        html+='<div style="width:'+Math.min(pct,100)+'%;height:100%;background:'+col+';border-radius:3px;"></div></div>';
-        html+='<div style="width:34px;font-size:11px;color:'+(isMax?col:'#555')+';">'+pct+'%</div>';
-        if(isMax) html+='<span style="font-size:9px;background:'+col+';color:#000;padding:1px 5px;border-radius:6px;font-weight:700;">최강</span>';
-        if(isMin) html+='<span style="font-size:9px;background:rgba(255,255,255,0.05);color:#444;padding:1px 5px;border-radius:6px;">부족</span>';
-        html+='</div>';
-    });
-    html += '</div>';
-
-    // 오행 핵심 풀이
-    var ohDesc={
-        wood:name+'님의 사주는 목(나무) 기운이 지배합니다. 끊임없이 성장하고 확장하려는 본능이 가장 강한 동인입니다. 새로운 시작에서 에너지를 얻지만, 마무리가 약한 경향이 있습니다. 간·담낭·신경계를 주기적으로 챙기십시오.',
-        fire:name+'님의 사주는 화(불꽃) 기운이 지배합니다. 열정과 표현력이 넘치며 존재감이 뚜렷합니다. 과열과 번아웃을 조심하고 심장·혈관을 주기적으로 체크하십시오.',
-        earth:name+'님의 사주는 토(대지) 기운이 지배합니다. 안정감과 신뢰가 가장 큰 자산입니다. 변화에 대한 저항이 강하므로 의도적인 도전이 필요합니다. 위장·소화기를 챙기십시오.',
-        metal:name+'님의 사주는 금(쇠) 기운이 지배합니다. 결단력과 완성도 추구가 탁월합니다. 감정 표현을 연습하면 관계가 훨씬 부드러워집니다. 폐·호흡기를 챙기십시오.',
-        water:name+'님의 사주는 수(물) 기운이 지배합니다. 깊은 통찰력과 분석력이 탁월합니다. 결정을 미루는 경향이 기회를 놓치게 만들 수 있습니다. 신장·호르몬을 챙기십시오.'
-    };
-    html += '<p style="font-size:13.5px;color:#ddd;line-height:1.9;margin:0 0 16px;">'+(ohDesc[maxOh]||'')+'</p>';
-
-    // ── ③ 신강신약 + 용신/기신 ──
-    html += '<div style="margin:28px 0 10px;font-size:13px;color:var(--gold);font-weight:800;letter-spacing:1.2px;line-height:1.45;">③ 에너지 강도 — 신강신약</div>';
-    var strVal=isStrong?70:30; var strCol=isStrong?'#ff7043':'#64b5f6';
-    html += '<div style="background:rgba(255,255,255,0.02);border-radius:10px;padding:12px 16px;margin-bottom:12px;">';
-    html += '<div style="display:flex;justify-content:space-between;font-size:10px;color:#555;margin-bottom:4px;"><span>신약 ◀</span><span>▶ 신강</span></div>';
-    html += '<div style="background:rgba(255,255,255,0.07);border-radius:5px;height:12px;overflow:hidden;margin-bottom:8px;">';
-    html += '<div style="width:'+strVal+'%;height:100%;background:linear-gradient(90deg,#64b5f6,'+strCol+');border-radius:5px;"></div></div>';
-    html += '<div style="text-align:center;font-size:14px;font-weight:800;color:'+strCol+';">'+(data.strengthText||'분석 중')+'</div></div>';
-    var strongText=isStrong
-        ?name+'님의 사주는 신강합니다. 일간의 에너지가 강하여 자기 주도적입니다. 방향 선택이 이 사주의 핵심 변수입니다.'
-        :name+'님의 사주는 신약합니다. 좋은 환경과 파트너를 만났을 때 능력이 폭발합니다. 환경 선택이 이 사주의 핵심 변수입니다.';
-    html += '<p style="font-size:13.5px;color:#ddd;line-height:1.9;margin:0 0 16px;">'+strongText+'</p>';
-
-    // ── ④ 용신/기신 4칸 ──
-    html += '<div style="margin:28px 0 10px;font-size:13px;color:var(--gold);font-weight:800;letter-spacing:1.2px;line-height:1.45;">④ 나를 살리는 기운 vs 방해하는 기운</div>';
-    html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;">';
-    [{k:yong,label:'용신 — 수호신',col:'var(--gold)',bg:'rgba(199,167,106,0.08)'},
-     {k:hee,label:'희신 — 조력자',col:'#4a9e6a',bg:'rgba(74,158,106,0.08)'},
-     {k:gi,label:'기신 — 방해자',col:'#e74c3c',bg:'rgba(231,76,60,0.06)'},
-     {k:goo,label:'구신 — 주의',col:'#ff9800',bg:'rgba(255,152,0,0.05)'}].forEach(function(item){
-        html+='<div style="background:'+item.bg+';border-radius:8px;padding:10px 12px;border:1px solid '+item.col+'22;">';
-        html+='<div style="font-size:9px;color:'+item.col+';margin-bottom:4px;">'+item.label+'</div>';
-        html+='<div style="font-size:18px;font-weight:900;color:'+item.col+';">'+(OH_KR[item.k]||item.k||'-')+'</div>';
-        html+='</div>';
-    });
-    html += '</div>';
-    var yongDesc={
-        wood:'목 기운이 강해지는 봄(2~4월), 갑·을 대운/세운에서는 확장 선택이 잘 맞을 가능성이 높습니다.',
-        fire:'화 기운이 강해지는 여름(5~7월), 병·정 대운/세운에서는 추진력이 결과로 연결될 가능성이 큽니다.',
-        earth:'토 기운의 환절기(3·6·9·12월), 무·기 대운/세운에서는 기반 다지기가 성과로 이어질 가능성이 높습니다.',
-        metal:'금 기운의 가을(8~10월), 경·신 대운/세운에서는 정리·결단이 유리하게 작동할 가능성이 큽니다.',
-        water:'수 기운의 겨울(11~1월), 임·계 대운/세운에서는 기획·학습·연결이 다음 기회를 키울 가능성이 높습니다.'
-    };
-    html += '<p style="font-size:13.5px;color:#ddd;line-height:1.9;margin:0 0 16px;">'+(yongDesc[yong]||'용신 기운이 강해지는 시기에는 큰 기회가 들어올 가능성이 상대적으로 커집니다.')+'</p>';
-
-    // ── ⑤ 신살 목록 ──
-    var shArr=Array.isArray(allShinsal)?allShinsal:Object.values(allShinsal).reduce(function(a,v){return a.concat(Array.isArray(v)?v:[]);},[]);
-    var GOOD_SHINSAL=['천을귀인','문곡귀인','학당귀인','천의성','복성귀인','태극귀인','천복귀인','암록','월덕귀인','천덕귀인','문창귀인','식신','정재','정인','정관'];
-    if(shArr.length>0){
-        html += '<div style="margin:28px 0 10px;font-size:13px;color:var(--gold);font-weight:800;letter-spacing:1.2px;line-height:1.45;">⑤ 타고난 특별 코드 — 신살 '+shArr.length+'개</div>';
-        html += '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">';
-        shArr.forEach(function(s){
-            var isG=GOOD_SHINSAL.indexOf(s)>=0; var col=isG?'var(--gold)':'#e74c3c';
-            html+='<span style="font-size:11px;padding:3px 10px;border-radius:10px;border:1px solid '+col+';color:'+col+';">'+s+(isG?' ✦':' ▲')+'</span>';
-        });
-        html += '</div>';
-        var KEY={'천을귀인':'위기 때마다 귀인이 나타납니다.','역마살':'이동과 변화가 핵심 키워드입니다. 이동을 직업으로 만드십시오.','도화살':'사람을 끌어당기는 매력이 있습니다. 대인관계·마케팅에서 빛납니다.','화개살':'예술·철학에 깊은 관심. 혼자만의 시간에서 통찰이 나옵니다.','문곡귀인':'학문·지식 분야에서 남다른 재능. 글쓰기·강의·컨설팅이 강점입니다.','천의성':'의료·상담·치료 분야에서 천부적 재능이 있습니다.','학당귀인':'배울수록 가치가 올라가는 구조입니다. 전문성이 최고의 무기입니다.'};
-        shArr.forEach(function(s){
-            if(KEY[s]){
-                html+='<div style="background:rgba(255,255,255,0.02);border-radius:6px;padding:8px 12px;margin-bottom:6px;border-left:2px solid var(--gold);">';
-                html+='<span style="font-size:12px;color:var(--gold);font-weight:700;">'+s+'</span> <span style="font-size:12px;color:#bbb;">— '+KEY[s]+'</span>';
-                html+='</div>';
-            }
-        });
-    }
-
-    // ── ⑥ 자미두수 부모궁·자녀궁 ──
-    var PE={
-        wood:'목 기운의 가정 — 성장과 도전을 강조하는 환경에서 자라났습니다. 자립심과 추진력이 어릴 때부터 길러졌습니다.',
-        fire:'화 기운의 가정 — 밝고 활발한 분위기에서 자라났습니다. 표현력과 사교성이 자연스럽게 길러졌습니다.',
-        earth:'토 기운의 가정 — 안정을 중시하는 실용적인 환경에서 자라났습니다. 성실함과 책임감이 어릴 때부터 형성됐습니다.',
-        metal:'금 기운의 가정 — 원칙과 기준이 높은 환경에서 자라났습니다. 완벽주의적 분위기에서 높은 기준의식이 형성됐습니다.',
-        water:'수 기운의 가정 — 지적이고 감성적인 환경에서 자라났습니다. 자유로운 사고와 깊은 감수성이 어릴 때부터 길러졌습니다.'
-    };
-    var ZP={'子':'지적이고 유연한 부모님의 영향이 있습니다.','丑':'현실적이고 성실한 부모님의 영향이 깊습니다.','寅':'독립심이 강한 가정환경에서 자랐습니다.','卯':'감성적·예술적 분위기의 가정이었습니다.','辰':'변화가 많은 환경에서 자랐습니다.','巳':'열정적·표현력 강한 부모님의 영향이 있습니다.','午':'밝고 활발한 가정환경에서 자랐습니다.','未':'따뜻하고 포용적인 가정환경이었습니다.','申':'능력·경쟁을 강조하는 환경에서 자랐습니다.','酉':'높은 기준의 완벽주의적 가정이었습니다.','戌':'원칙·가치관을 중시하는 가정환경이었습니다.','亥':'감성적이고 자유로운 가정환경이었습니다.'};
-    var ZC={'子':'총명하고 언어능력이 뛰어난 자녀와의 인연.','丑':'현실적이고 성실한 자녀와 안정적 관계.','寅':'독립심 강하고 개척적인 자녀.','卯':'감성 풍부하고 인기 있는 자녀.','辰':'변화무쌍하지만 재능 있는 자녀.','巳':'집중력과 열정이 강한 자녀.','午':'활발하고 리더십 있는 자녀.','未':'예술·창의 감각이 뛰어난 자녀.','申':'영리하고 행동력 있는 자녀.','酉':'완벽주의적이고 전문성 강한 자녀.','戌':'원칙 있고 철학적인 자녀.','亥':'감성적이고 직관력 강한 자녀.'};
-
-    var ptText=(PE[data.monOh||'earth']||'')+(ZP[yb]?' '+ZP[yb]:'');
-    var zcText=ZC[tb]||'';
-
-    html += '<div style="margin:28px 0 10px;font-size:13px;color:var(--gold);font-weight:800;letter-spacing:1.2px;line-height:1.45;">⑥ 자미두수 보조 분석</div>';
-    html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">';
-    html += '<div style="background:rgba(122,184,212,0.05);border-radius:8px;padding:12px;border:1px solid rgba(122,184,212,0.15);">';
-    html += '<div style="font-size:9px;color:#7ab8d4;margin-bottom:6px;">부모궁 · 가족 환경</div>';
-    html += '<p style="font-size:12px;color:#aad4e8;line-height:1.7;margin:0;">'+ptText+'</p></div>';
-    html += '<div style="background:rgba(122,184,212,0.05);border-radius:8px;padding:12px;border:1px solid rgba(122,184,212,0.15);">';
-    html += '<div style="font-size:9px;color:#7ab8d4;margin-bottom:6px;">자녀궁 · 자녀 인연</div>';
-    html += '<p style="font-size:12px;color:#aad4e8;line-height:1.7;margin:0;">'+zcText+'</p></div>';
-    html += '</div>';
-
-    // ── ⑥-1 자미두수 보정 카드 (보정 전/후 대비 강화) ──
-    var baseThesis = isStrong ? '에너지가 앞서기 쉬운 구조' : '환경과 연결에서 힘이 커지는 구조';
-    var integratedConclusion = ziM ? ('명궁('+yb+') 기준으로 보면 '+ziM+' 따라서 실행 타이밍보다 실행 방식(속도·역할·관계축)을 먼저 맞출수록 결과 안정성이 높아집니다.') : '명궁 흐름을 함께 반영해, 실행 우선순위를 안정적으로 조정하는 편이 유리합니다.';
-    var actionTip = (OH_KR[yong]||yong||'용신') + ' 기운이 필요한 시기라, 확장보다 우선순위를 1~2개로 좁혀 실행하면 체감 성과가 더 안정적으로 쌓입니다.';
-    html += '<div style="margin:28px 0 14px;font-size:13px;color:#8cc9e4;font-weight:800;letter-spacing:1.2px;line-height:1.45;">⑥-1 흐름 통합 해석</div>';
-    html += '<div style="background:rgba(122,184,212,0.06);border:1px solid rgba(122,184,212,0.22);border-radius:10px;padding:12px 14px;margin-bottom:18px;">';
-    html += '<div style="font-size:10px;color:#8bc5de;margin-bottom:10px;">여기서 말하는 자미두수는 사주의 큰 흐름을 조금 더 세밀하게 읽어 주는 보조 해석 도구입니다. 원국과 현재 운의 흐름을 함께 엮어, 지금 어떤 선택이 더 자연스럽게 이어지는지 한 문맥으로 정리해드립니다.</div>';
-    html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">';
-    html += '<div style="background:rgba(231,76,60,0.12);border:1px solid rgba(231,76,60,0.35);border-radius:8px;padding:10px 11px;"><div style="font-size:10px;color:#ff9f9a;margin-bottom:4px;">지금 흐름의 핵심</div><div style="font-size:12px;color:#ffd8d6;line-height:1.72;">'+name+'님은 '+baseThesis+'의 성향을 바탕으로 움직일 때 결과가 더 안정적으로 붙는 편입니다. '+integratedConclusion+'</div></div>';
-    html += '<div style="background:rgba(74,158,106,0.12);border:1px solid rgba(74,158,106,0.35);border-radius:8px;padding:10px 11px;"><div style="font-size:10px;color:#9ee1b6;margin-bottom:4px;">이어지는 결론</div><div style="font-size:12px;color:#d7f3e1;line-height:1.72;">'+((OH_KR[yong]||yong||'용신')+' 기운을 중심축으로 커리어·재물·관계의 순서를 정하면, 같은 기회에서도 성과의 흔들림이 줄고 좋은 흐름이 더 오래 이어질 가능성이 큽니다.')+'</div></div>';
-    html += '</div>';
-    html += '<div style="background:rgba(0,0,0,0.16);border-radius:8px;padding:10px 11px;"><div style="font-size:10px;color:#7ab8d4;margin-bottom:6px;">실행 방향</div><div style="font-size:12px;color:#cfe6f2;line-height:1.8;">지금 시기에는 욕심을 넓히기보다 우선순위를 1~2개로 좁혀 밀도를 높이는 편이 유리합니다. '+actionTip+' 또한 중요한 결정일수록 검토와 실행 사이에 짧은 간격을 두면 실수를 줄이고 흐름을 안정시키는 데 도움이 됩니다.</div></div>';
-    html += '<p style="font-size:10.5px;color:#86aabd;line-height:1.7;margin:9px 0 0;">※ 이 내용은 원국과 운의 흐름, 그리고 자미두수 보조 해석을 함께 엮어 하나의 이야기로 정리한 결과입니다. 핵심은 정답을 단정하는 것이 아니라, 더 안정적으로 성과가 붙을 가능성이 높은 선택 순서를 찾는 데 있습니다.</p>';
-    html += '</div>';
-
-    // ── ⑦ 인생 기승전결 ──
-    html += '<div style="margin:36px 0 10px;font-size:13px;color:var(--gold);font-weight:800;letter-spacing:1.2px;line-height:1.45;border-top:1px solid rgba(199,167,106,0.24);padding-top:26px;">⑦ 인생의 기승전결 — 나이대별 흐름</div>';
-    try {
-        var ch1Html=buildChapter1_Basic(data);
-        // report-chapter wrapper 제거하고 내용만
-        ch1Html=ch1Html.replace(/<div class="report-chapter[^"]*"[^>]*>/,'').replace(/<h3 class="ch-title">[^<]*<\/h3>/,'');
-        // 마지막 닫는 div 제거
-        var lastDiv=ch1Html.lastIndexOf('</div>');
-        if(lastDiv>0) ch1Html=ch1Html.substring(0,lastDiv);
-        html+=ch1Html;
-    } catch(e){
-        html += '<p style="color:#888;font-size:12px;">인생 서사 분석 중 오류: '+e.message+'</p>';
-    }
-
-    html += '<p style="font-size:11px;color:#777;line-height:1.75;margin:14px 0 0;">※ 위 해석은 원국과 운의 상호작용에서 나타나는 "가능성의 방향"을 설명한 것입니다. 같은 구조라도 선택·환경·습관에 따라 결과는 달라질 수 있습니다.</p>';
+    html += '<p style="font-size:12.5px;color:#999;line-height:1.85;margin:0 0 20px;">오행·십성·신강신약·용신·신살·대운·세운·월운의 수치와 전략 해설은 <b style="color:var(--gold);">제 2부</b> 이하에서만 다룹니다. 이 장에서는 위에서 이어진 인생 일대기와 원국 근거만 남깁니다.</p>';
     html += '</div>';
     return html;
 }
@@ -4437,23 +4288,46 @@ function buildLifePanoramaSection(data) {
     var pivotHard = hardAges.length ? hardAges[Math.floor(hardAges.length / 2)] : null;
     var pivotSoft = softAges.length ? softAges[Math.floor(softAges.length / 2)] : null;
 
-    var p2open = '둘째 장면. 살다 보면 누구에게나 겨울이 오듯, 세상과 마주한 첫 긴 터널도 찾아옵니다. ' + nTopic + joToken(nTopic, '은/는') + ' 스무 살 전후부터 마흔 전까지 ';
-    var p2body = '';
-    if (pivotHard != null) {
-        p2body = pivotHard + '세 무렵에는 예고 없이 불어온 찬 바람 때문에 잠시 발걸음을 멈추어야 했을 가능성이 큽니다. '
-            + '그때 겉으로 드러난 직함이 아니라, 어디까지 책임질 것인가를 스스로에게 묻는 밤의 대화가 많아졌을 가능성이 큽니다.';
+    var p2open = '둘째 장면. 살다 보면 누구에게나 겨울이 오듯, 세상과 마주한 첫 긴 터널도 찾아옵니다. ' + nTopic + joToken(nTopic, '은/는') + ' 스무 살 전후부터 마흔 전까지, 아래 서술은 반드시 나이가 오름차순(더 이른 시점 → 더 늦은 시점)으로 이어지도록 정리했습니다. ';
+    var evs = [];
+    if (pivotHard != null && pivotSoft != null && pivotHard === pivotSoft) {
+        evs.push({ age: pivotHard, kind: 'both' });
     } else {
-        p2body = '바깥의 속도가 마음보다 한 박자 빨랐고, 성과가 보이기 전까지는 이름 없는 노력의 연속이었을 가능성이 큽니다.';
+        if (pivotHard != null) evs.push({ age: pivotHard, kind: 'hard' });
+        if (pivotSoft != null) evs.push({ age: pivotSoft, kind: 'soft' });
     }
-    var p2soft = '';
-    if (pivotSoft != null) {
-        p2soft = ' 그러나 ' + pivotSoft + '세 무렵에는 숨 돌릴 틈을 열어 주는 봄비 같은 시절도 스쳐 지나가, 그때 쌓은 신용이 이후의 방패가 되었을 가능성이 큽니다.';
-    } else if (!hard.length) {
-        p2soft = ' 덧붙여, 한결같이 밀어 주는 바람만 있는 삶은 드물기에, 스스로 만든 호흡 조절이 평생의 자산이 되었을 가능성이 큽니다.';
+    evs.sort(function (a, b) { return a.age - b.age; });
+    var p2mid = '';
+    if (!evs.length) {
+        p2mid = '바깥의 속도가 마음보다 한 박자 빨랐고, 성과가 보이기 전까지는 이름 없는 노력의 연속이었을 가능성이 큽니다.';
     } else {
-        p2soft = ' 겨울 사이사이 끼어든 짧은 봄날을 놓치지 않았다면, 그날의 너그러움이 지금의 당신을 버티게 하는 축이 되었을 가능성이 큽니다.';
+        for (var ei = 0; ei < evs.length; ei++) {
+            var ev = evs[ei];
+            var seg = '';
+            if (ev.kind === 'hard') {
+                seg = ev.age + '세 무렵에는 예고 없이 불어온 찬 바람 때문에 잠시 발걸음을 멈추어야 했을 가능성이 큽니다. 그때 겉으로 드러난 직함이 아니라, 어디까지 책임질 것인가를 스스로에게 묻는 밤의 대화가 많아졌을 가능성이 큽니다.';
+            } else if (ev.kind === 'soft') {
+                seg = ev.age + '세 무렵에는 숨 돌릴 틈을 열어 주는 봄비 같은 시절이 스쳐 지나가, 그때 쌓은 신용이 이후의 방패가 되었을 가능성이 큽니다.';
+            } else {
+                seg = ev.age + '세 무렵에는 한꺼번에 찬 바람과 봄비가 겹쳐, 멈춤과 숨 고르기가 같은 계절에 몰려 있었을 가능성이 큽니다. 그때 남긴 기록과 약속이 지금의 버팀목이 되었을 가능성이 큽니다.';
+            }
+            p2mid += (ei ? ' 이어서 ' : '') + seg;
+        }
     }
-    var p2 = p2open + p2body + p2soft;
+    var p2tail = '';
+    var hadSoftInBody = evs.some(function (e) { return e.kind === 'soft' || e.kind === 'both'; });
+    if (!hadSoftInBody && evs.length) {
+        if (!hard.length) {
+            p2tail = ' 덧붙여, 한결같이 밀어 주는 바람만 있는 삶은 드물기에, 스스로 만든 호흡 조절이 평생의 자산이 되었을 가능성이 큽니다.';
+        } else {
+            p2tail = ' 겨울 사이사이 끼어든 짧은 봄날을 놓치지 않았다면, 그날의 너그러움이 지금의 당신을 버티게 하는 축이 되었을 가능성이 큽니다.';
+        }
+    } else if (!evs.length && !hard.length) {
+        p2tail = ' 덧붙여, 한결같이 밀어 주는 바람만 있는 삶은 드물기에, 스스로 만든 호흡 조절이 평생의 자산이 되었을 가능성이 큽니다.';
+    } else if (!evs.length && hard.length) {
+        p2tail = ' 겨울 사이사이 끼어든 짧은 봄날을 놓치지 않았다면, 그날의 너그러움이 지금의 당신을 버티게 하는 축이 되었을 가능성이 큽니다.';
+    }
+    var p2 = p2open + p2mid + p2tail;
 
     var best = null;
     var bestSc = -99;
