@@ -185,10 +185,16 @@ function sipToIndustryWorkStyle(sip) {
     };
     return m[sip] || '**본인의 손끝·말·숫자가 곧 성과로 연결되는 일**';
 }
-/** 만세력 표·운세 카드 배지 — 정통 십성 한글명(비견·식신 등) */
+/** 만세력 표·운세 카드 배지 — 정통 십성 한글명(비견·식신 등). 예전 축약 라벨(동료·경쟁 등)도 여기서 십성으로 복원 */
 function sipToManseBadge(sip, isIlwon) {
     if (isIlwon || sip === '일원') return '일원';
     if (!sip || sip === '-') return '-';
+    var legacy = {
+        '동료·경쟁': '비견', '지출·승부': '겁재', '창작·산출': '식신', '기준·방어': '상관',
+        '거래·기회': '편재', '정산·루틴': '정재', '압박·마감': '편관', '조직·평가': '정관',
+        '학습·준비': '편인', '문서·자격': '정인', '실행': '식신'
+    };
+    if (legacy[sip]) return legacy[sip];
     return sip;
 }
 /** 세운 챕터 제목 — 핵심 행동 한 줄 */
@@ -4074,7 +4080,7 @@ function buildChapter7_Hidden(data) {
         + `</div>`
         + `<div style="background:rgba(199,167,106,0.06);border-radius:8px;padding:16px;border-left:3px solid var(--gold);margin:16px 0;">`
         + `<div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:10px;">지장간과 일간의 관계 — 십성으로 읽는 숨겨진 욕망</div>`
-        + `<p style="font-size:13px;color:#ccc;line-height:1.88;margin:0 0 10px;">지장간이 일간과 맺는 **십성 관계**는 속욕망의 라벨입니다. 비견·겁재는 동료·경쟁, 식신·상관은 표현·기준, 편재·정재는 재물·정리, 편관·정관은 압박·직무, 편인·정인은 학습·보호 축으로 읽습니다.</p>`
+        + `<p style="font-size:13px;color:#ccc;line-height:1.88;margin:0 0 10px;">지장간이 일간과 맺는 관계는 **십성(十星)**으로 읽습니다. 각 숨은 천간마다 비견·겁재·식신·상관·편재·정재·편관·정관·편인·정인 중 하나가 붙습니다.</p>`
         + `<p style="font-size:13px;color:#ccc;line-height:1.88;margin:0;">채워지지 않을 때 불안이 커집니다. 발동 시기를 달력에 표시해 두면 **갈등이 오기 전에 통로**를 만들 수 있습니다.</p>`
         + `</div>`
         + `<div style="background:rgba(255,255,255,0.03);border-radius:10px;padding:18px;margin:16px 0;"><div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:10px;">&#9670; 지장간과 이중 자아</div><p style="font-size:13px;color:#ccc;line-height:1.88;margin:0 0 10px;">천간은 겉의 역할, 지장간은 안의 역할입니다. 둘이 멀수록 **내적 마찰**이 큽니다. 억압보다 **안전한 출구**(운동·기록·소수 만남)를 하나 고정하십시오.</p><p style="font-size:13px;color:#ccc;line-height:1.88;margin:0;">겹침을 결함이 아니라 **다층 능력**으로 읽으십시오. 둘이 맞물릴 때 가장 강합니다.</p></div>`
@@ -4227,12 +4233,12 @@ function buildVipEvidenceBlock(data) {
             ev += '<td style="padding:6px 8px;text-align:center;color:var(--gold);font-size:11px;font-weight:500;">'+h+'</td>';
         });
         ev += '</tr>';
-        // 천간 십성(고객 면 라벨)
+        // 천간 십성 — 만세력과 동일(정통 십성 한글)
         ev += '<tr style="border-bottom:1px solid rgba(255,255,255,0.04);">';
         ev += '<td style="padding:4px;color:#555;font-size:10px;">십성</td>';
         pillars.forEach(function(p,i){
-            var sp=(isUnk&&i===0)?'-':(p.n==='일주'?'일원':(typeof getSipseong==='function'?getSipseong(ds,p.h[0]):''));
-            var spShow = sp || '-';
+            var spRaw=(isUnk&&i===0)?'-':(p.n==='일주'?'일원':(typeof getSipseong==='function'?getSipseong(ds,p.h[0]):''));
+            var spShow=(spRaw==='-')?'-':(typeof sipToManseBadge==='function'?sipToManseBadge(spRaw,p.n==='일주'):(spRaw||'-'));
             ev+='<td style="padding:4px 8px;text-align:center;"><span style="font-size:10px;background:rgba(199,167,106,0.08);padding:1px 6px;border-radius:8px;color:#ccc;">'+spShow+'</span></td>';
         });
         ev += '</tr>';
@@ -4260,8 +4266,8 @@ function buildVipEvidenceBlock(data) {
         ev += '<tr style="border-bottom:1px solid rgba(255,255,255,0.04);">';
         ev += '<td style="padding:4px;color:#555;font-size:10px;">십성</td>';
         pillars.forEach(function(p,i){
-            var sp=(isUnk&&i===0)?'-':(typeof getSipseong==='function'?getSipseong(ds,p.h[1]):'');
-            var spShow = sp || '-';
+            var spRaw=(isUnk&&i===0)?'-':(typeof getSipseong==='function'?getSipseong(ds,p.h[1]):'');
+            var spShow=(spRaw==='-')?'-':(typeof sipToManseBadge==='function'?sipToManseBadge(spRaw,false):(spRaw||'-'));
             ev+='<td style="padding:4px 8px;text-align:center;"><span style="font-size:10px;background:rgba(199,167,106,0.08);padding:1px 6px;border-radius:8px;color:#ccc;">'+spShow+'</span></td>';
         });
         ev += '</tr>';
@@ -4336,12 +4342,6 @@ function buildVipEvidenceBlock(data) {
         ev += '</table></div>';
     }
 
-    // 일주 풀이
-    var iProf=typeof getIljuProfile==='function'?getIljuProfile(ds,db):null;
-    var dayOhK=OH_KR[STEM_OH[ds]||'fire']||'';
-    if(iProf && iProf.image){
-        ev += '<p style="font-size:13.5px;color:#ddd;line-height:1.95;margin:0 0 6px;"><b style="color:var(--gold);">' + formatGanzhiPair(ds, db) + ' 일주</b> — '+iProf.image+'.</p>';
-    }
     ev += '</div>';
     return ev;
 }
@@ -5703,7 +5703,8 @@ function getUnsung(stem, branch) {
 function getHidden(branch, dayStem) {
     return (BRANCH_HIDDEN[branch] || []).map(ch => {
         const ss = getSipseong(dayStem, ch);
-        return `<div style="margin-bottom:4px;"><span class="${HAN_COLOR[ch]}">${ch}</span> <span style="font-size:10px; color:#777; background:#111; padding:2px 4px; border-radius:3px;">${ss}</span></div>`;
+        const lab = typeof sipToManseBadge === 'function' ? sipToManseBadge(ss, false) : ss;
+        return `<div style="margin-bottom:4px;"><span class="${HAN_COLOR[ch]}">${ch}</span> <span style="font-size:10px; color:#777; background:#111; padding:2px 4px; border-radius:3px;">${lab}</span></div>`;
     }).join('');
 }
 
