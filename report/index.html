@@ -53,7 +53,7 @@
       // 자동실행은 window.load IIFE에서 처리 (하단 스크립트 참조)
     })();
     </script>
-    <meta name="version" content="1778782512">
+    <meta name="version" content="1778782990">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -1258,6 +1258,14 @@
             .pillar-card { break-inside: avoid; }
             .interp-box { break-inside: avoid; min-height: 0; }
             .bar-group, .manse-table, .table, table, .cat-section { break-inside: avoid; page-break-inside: avoid; }
+            table, .card, .module-item, .yearly-card-container, .monthly-card-container, .seyun-year-card, .f-card {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+            h2, h3, .section-title, .ch-title {
+                page-break-after: avoid !important;
+                break-after: avoid !important;
+            }
             .inline-interp { background: #f9f9f9 !important; border-color: #999 !important; }
             .ii-text, .ch-text { color: #333 !important; }
             .ii-title, .ch-title { color: #111 !important; border-bottom: 2px solid #c7a76a !important; }
@@ -1316,6 +1324,14 @@
 @media print {
     #floating-toc, #sajux-pdf-fab { display:none !important; }
     .cat-section, .cat-content { display:block !important; page-break-inside:avoid; }
+    table, .card, .module-item, .yearly-card-container, .monthly-card-container, .seyun-year-card, .f-card {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+    h2, h3, .section-title, .ch-title {
+        page-break-after: avoid !important;
+        break-after: avoid !important;
+    }
 }
 </style>
 <script>
@@ -1954,7 +1970,7 @@ function startReport() {
 <script src="lunar.js"></script>
     <!-- KLC: KASI 기준 한국 음양력 변환 (음력 입력 시 사용) -->
     <script src="klc.min.js"></script>
-    <script src="report-core.js?v=1778782512"></script>
+    <script src="report-core.js?v=1778782990"></script>
 
 
     <script>
