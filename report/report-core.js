@@ -4337,7 +4337,7 @@ function buildChapter9_Remedy(data) {
     </div>`;
 }
 
-/** 원국 간지·오행 편중·방합·대운 간지·시주를 맞춘 개인 통변 대서사시 */
+/** 범용 인생 대서사시 — 일간·월지·기운 밀도·열 해 무대·시주 조합(본문에 전문 용어 비노출) */
 function buildLifePanoramaSection(data) {
     var GAN_KR = {'甲':'갑','乙':'을','丙':'병','丁':'정','戊':'무','己':'기','庚':'경','辛':'신','壬':'임','癸':'계'};
     var JI_KR = {'子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해'};
@@ -4345,100 +4345,167 @@ function buildLifePanoramaSection(data) {
     var ST_OH = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
     var name = data.name || '고객';
     var ds = data.dayStem || '', db = data.dayBranch || '';
-    var iljuKr = (GAN_KR[ds] || '') + (JI_KR[db] || '');
-    var iljuFull = iljuKr && ds && db ? iljuKr + '(' + ds + db + ')' : (ds + db);
-    var wux = data.wuxing || { wood: 0, fire: 0, earth: 0, metal: 0, water: 0 };
-    var OHN = { wood: '목', fire: '화', earth: '토', metal: '금', water: '수' };
-    var sorted = [['wood', wux.wood || 0], ['fire', wux.fire || 0], ['earth', wux.earth || 0], ['metal', wux.metal || 0], ['water', wux.water || 0]].sort(function (a, b) { return b[1] - a[1]; });
-    var topKey = sorted[0][0];
+    var mb = data.monthBranch || '';
+    var hee = data.hee || '';
+    var goo = data.goo || '';
     var yong = data.yong || 'wood';
     var gi = data.gi || 'metal';
-    var hee = data.hee || '';
-    var yKr = OHN[yong] || '용신';
-    var gKr = OHN[gi] || '기신';
-    var pillars = data.pillars || [];
-    var branches = [];
-    for (var pi = 0; pi < pillars.length; pi++) {
-        var ph = pillars[pi] && pillars[pi].h;
-        if (ph && ph[1]) branches.push(ph[1]);
-    }
-    var inMyoJin = branches.indexOf('寅') >= 0 && branches.indexOf('卯') >= 0 && branches.indexOf('辰') >= 0;
-    var saomiBang = branches.indexOf('巳') >= 0 && branches.indexOf('午') >= 0 && branches.indexOf('未') >= 0;
-    var sinYuSul = branches.indexOf('申') >= 0 && branches.indexOf('酉') >= 0 && branches.indexOf('戌') >= 0;
-    var haeJaChuk = branches.indexOf('亥') >= 0 && branches.indexOf('子') >= 0 && branches.indexOf('丑') >= 0;
-    var metaCore = {
-        wood: '거대한 밀림이 서로의 줄기를 올려 받치듯, 성장·확장·침투 압력이 사방에서 몰려오는 구조입니다.',
-        fire: '대장간의 불길처럼 드러나기·증명하기·승부하기의 장면이 반복됩니다.',
-        earth: '두꺼운 성벽과 들판처럼 안전·신뢰·누적을 최우선 가치로 읽게 됩니다.',
-        metal: '쇠를 벼리는 공방처럼 기준·결단·마무리가 삶의 전면에 섭니다.',
-        water: '깊은 수로와 야간의 항해처럼 관찰·축적·회피가 먼저 발동합니다.'
-    };
-    var topMeta = metaCore[topKey] || metaCore.wood;
-    var bh = '';
-    if (inMyoJin) bh += ' 원국 안에 인(寅)·묘(卯)·진(辰) 목국의 방합이 열려 있어, 초년부터 “끊임없이 벌이는 판”이 잡히기 쉽습니다.';
-    if (saomiBang) bh += ' 사(巳)·오(午)·미(未) 화국의 방합이 함께 얹혀 열기와 과시가 폭발할 수 있는 층이 있습니다.';
-    if (sinYuSul) bh += ' 신(申)·유(酉)·술(戌) 금국의 방합이 깔려 있어, 날카로운 완성도 압력이 인생 전반에 스며듭니다.';
-    if (haeJaChuk) bh += ' 해(亥)·자(子)·축(丑) 수국의 방합이 보이므로, 내부 정보·감정 축적이 외부로 드러나기 전까지 깊게 저장됩니다.';
-    var yb = data.yearBranch || '';
-    var mb = data.monthBranch || '';
-    var yKrB = JI_KR[yb] || yb;
-    var mbStr = mb ? (JI_KR[mb] || mb) + '(' + mb + ')' : '';
-    var p1 = '[초년] ' + name + '님은 일주 ' + iljuFull + '를 들고 세상에 섰습니다. 이 팔자의 가장 두꺼운 공기층은 ' + OHN[topKey] + ' 오행으로, ' + topMeta + ' 년지는 ' + (yKrB + (yb ? '(' + yb + ')' : '')) + ', 월지는 ' + (mbStr || '월주 지지') + '가 부모·초기 교육의 온도를 고정합니다.' + bh + ' 그러므로 ' + name + '님에게 “환경”이란 추상적인 운이 아니라, 누가 얼마나 빠르게 지분을 나누었는지 자본이 어디로 새는지가 곧바로 정서로 치환되었을 가능성이 큽니다. 이 장면은 ' + name + '님께서 실제로 겪으신 첫 직장·첫 월급·첫 채무 서명의 패턴으로 남습니다.';
 
-    var rows = data.daeunRows || data.daewunList || [];
-    var dwSeg = [];
-    var dwGi = [];
-    var dwYong = [];
-    for (var di = 0; di < rows.length && di < 9; di++) {
-        var r = rows[di];
+    function joToken(krToken, pair) {
+        if (!krToken) return getJosa('', pair);
+        var last = String(krToken).replace(/\s/g, '').slice(-1);
+        if (JOSA_MAP_22[last] && (pair === '이/가' || pair === '과/와')) {
+            return pair === '이/가' ? JOSA_MAP_22[last].i : JOSA_MAP_22[last].wa;
+        }
+        return getJosa(krToken, pair);
+    }
+
+    var iljuKr = (GAN_KR[ds] || '') + (JI_KR[db] || '');
+    var iljuLabel = iljuKr && ds && db ? (iljuKr + '(' + ds + db + ')') : (ds + db);
+    var wux = data.wuxing || { wood: 0, fire: 0, earth: 0, metal: 0, water: 0 };
+    var sorted = [['wood', wux.wood || 0], ['fire', wux.fire || 0], ['earth', wux.earth || 0], ['metal', wux.metal || 0], ['water', wux.water || 0]].sort(function (a, b) { return b[1] - a[1]; });
+    var topKey = sorted[0][0];
+    var dayOh = ST_OH[ds] || 'earth';
+
+    var HERO = { wood: '끝까지 솟는 한 그루 거목', fire: '저물지 않는 한 덩이 태양', earth: '묵직하게 받쳐 주는 한 겹 대지', metal: '날카롭게 벼려진 한 자루 장검', water: '밤바다 아래로 깊어지는 한 줄기 심해' };
+    var ENV = { wood: '끝없이 들어찬 숲과 덩굴', fire: '눈을 부시게 하는 한여름의 광장', earth: '성벽처럼 둘러선 들판', metal: '바람이 부딪쳐 소리 내는 절벽', water: '자꾸만 차오르는 장맛물과 저수지' };
+    var monthWomb = {
+        '子': '깊은 밤처럼 고요한 요람', '丑': '얼었다 녹는 땅의 요람', '寅': '막 솟는 숲의 요람', '卯': '새싹이 겹치는 봄의 요람',
+        '辰': '바람이 방향을 바꾸는 언덕의 요람', '巳': '열이 오르는 한낮의 요람', '午': '불빛이 먼저 닿는 마당의 요람', '未': '풀내음이 배인 언덕의 요람',
+        '申': '날이 갈라진 듯한 바람길의 요람', '酉': '해가 기울 때 소리가 맑아지는 장의 요람', '戌': '먼지가 가라앉는 저녁 언덕의 요람', '亥': '물줄기가 모이는 하구의 요람'
+    }[mb] || '계절이 처음 제 모습을 드러낸 요람';
+
+    var rel = (function () {
+        var a = topKey, b = dayOh;
+        if (a === b) return 'same';
+        var feed = { wood: 'fire', fire: 'earth', earth: 'metal', metal: 'water', water: 'wood' };
+        var ctrl = { wood: 'earth', earth: 'water', water: 'fire', fire: 'metal', metal: 'wood' };
+        if (feed[a] === b) return 'feed';
+        if (ctrl[a] === b) return 'choke';
+        if (ctrl[b] === a) return 'tame';
+        return 'cross';
+    })();
+    var relSentence = {
+        same: '주인공과 배경이 같은 색으로 겹쳐, 숨 쉬는 속도가 비교적 고르게 맞춰졌을 가능성이 큽니다.',
+        feed: '배경이 주인공을 조용히 밀어 올려, 어릴 때부터 배움이 성과로 바뀌기 쉬운 흐름이 열렸을 가능성이 큽니다.',
+        choke: '배경이 주인공을 짓눌러, 어릴 적부터 겉으로는 바쁜데 속은 무겁다는 체감을 밟으셨을 가능성이 큽니다.',
+        tame: '주인공이 배경을 길들이는 데 에너지를 썼으므로, 일찍부터 책임이 성과보다 먼저 찾아왔을 가능성이 큽니다.',
+        cross: '주인공과 배경이 서로 다른 속도를 내어, 초년에는 방향을 여러 번 고치게 되는 각이 섰을 가능성이 큽니다.'
+    }[rel];
+
+    var hero = HERO[dayOh] || HERO.earth;
+    var env = ENV[topKey] || ENV.earth;
+    var p1 = '[① 탄생의 풍경과 기질적 뿌리] ' + name + '님' + joToken(name + '님', '은/는') + ' 이야기의 한가운데에 ' + iljuLabel + '를 두고 태어나셨습니다. '
+        + '그중심에는 ' + hero + getJosa(hero, '이/가') + ' 서 있었고, 부모의 품은 ' + monthWomb + '에 가깝습니다. '
+        + '주변 공기의 무게는 ' + env + '처럼 쌓여 있었습니다. '
+        + relSentence + ' 이 풍경은 사회에 처음 발을 내딛을 때의 관계 밀도와 돈의 속도에도 그대로 스며듭니다.';
+
+    function rowScore(g1, j1) {
+        var s = 0;
+        var go = ST_OH[g1];
+        var jo = BR_OH[j1];
+        if (go === yong || go === hee) s += 2;
+        if (go === gi || go === goo) s -= 2;
+        if (jo === yong || jo === hee) s += 2;
+        if (jo === gi || jo === goo) s -= 2;
+        return s;
+    }
+
+    function parseRow(r, idx) {
         var gz = (r && (r.name || (r.gz && (r.gz[0] + r.gz[1])))) || '';
         var g1 = gz.charAt(0);
         var j1 = gz.charAt(1);
-        var lab = (GAN_KR[g1] || '') + (JI_KR[j1] || '') + (gz.length > 1 ? '(' + gz + ')' : '');
         var ag = r && (r.age != null ? r.age : r.startAge);
-        ag = ag != null ? Number(ag) : di * 10;
-        dwSeg.push(ag + '세 전후·' + lab + ' 대운');
-        var go = ST_OH[g1];
-        var jo = BR_OH[j1];
-        if (go === gi || jo === gi) dwGi.push(lab);
-        if (go === yong || jo === yong || go === hee || jo === hee) dwYong.push(lab);
+        ag = ag != null ? Number(ag) : idx * 10;
+        var lab = (GAN_KR[g1] || '') + (JI_KR[j1] || '') + (gz.length > 1 ? '(' + gz + ')' : '');
+        return { age: ag, gz: gz, g1: g1, j1: j1, lab: lab, sc: gz.length > 1 ? rowScore(g1, j1) : 0 };
     }
-    var dwLine = dwSeg.length ? dwSeg.join(' → ') : '대운 행이 연결되면 같은 문단에 간지가 자동으로 채워집니다.';
-    var giWarn = dwGi.length ? (' 기신(' + gKr + ')이 천간·지지에 붙은 ' + dwGi.join('·') + ' 구간에서는 계약·보증·레버리지가 동시에 흔들리기 쉬우므로, “겉 활동”을 줄이고 현금·수면부터 복구하는 편이 유리합니다.') : (' 기신(' + gKr + ')이 두드러지는 대운에서는 평소보다 방어 비중을 높이십시오.');
-    var yongPush = dwYong.length ? (' 반대로 용신·희신(' + yKr + ' 계열)이 열리는 ' + dwYong.join('·') + ' 줄에서는 같은 노력도 배수로 돌아오기 쉬우니, 직장·사업·투자의 승부수를 모읍니다.') : (' 용신(' + yKr + ') 축이 살아나는 대운에서는 커리어·재물의 확장 거리를 넓히셔도 안전 마진만 지키면 됩니다.');
-    var p2 = '[대운 기복] ' + name + '님의 80년 곡선은 ' + dwLine + ' 순으로 전개됩니다.' + giWarn + yongPush + ' 무너짐은 보통 “잠든 줄 알았던 기신”이 청구서·보증·감정으로 동시에 들이닥칠 때 오고, 일어섬은 용신 줄에서 현금흐름을 먼저 바로잡았을 때 가장 빠르게 회복됩니다.';
 
-    var p3 = '[중년·성취] 용신 ' + yKr + ' 기운이 대운과 세운에서 동시에 살아나는 시기가 ' + name + '님의 황금 서사입니다. 이 때는 브랜드보다 “남는 현금”과 “서명된 권한”이 승패를 가릅니다. 수익원을 여럿으로 나누되, 각 원에 손실 한도를 붙이지 않으면 중년 성과가 한 번에 반전될 수 있습니다. 가족·동업자와 숫자를 공유하지 않은 채 확장 속도만 높이면, 성취가 오히려 관계를 태울 수 있으니 배분 규칙을 먼저 고정하십시오.';
+    var rows = data.daeunRows || data.daewunList || [];
+    var parsed = [];
+    for (var di = 0; di < rows.length; di++) {
+        parsed.push(parseRow(rows[di], di));
+    }
 
+    var youth = parsed.filter(function (x) { return x.age >= 8 && x.age < 40; });
+    var hard = youth.filter(function (x) { return x.sc <= 0; });
+    var soft = youth.filter(function (x) { return x.sc >= 2; });
+    var hardStr = hard.map(function (x) { return x.age + '세 전후·' + x.lab; }).join(', ');
+    var softStr = soft.map(function (x) { return x.age + '세 전후·' + x.lab; }).join(', ');
+    var p2mid = '';
+    if (hardStr) {
+        p2mid = '열 해 무대가 거칠게 돌아가던 ' + hardStr + ' 구간에서는 자아를 세우느라 체력과 명예가 동시에 깎였을 가능성이 큽니다.';
+    } else {
+        p2mid = '사회 초년에는 책임이 성과보다 먼저 도착하는 장면이 반복되었을 가능성이 큽니다.';
+    }
+    var p2tail = '';
+    if (softStr) {
+        p2tail = ' 그 사이에도 ' + softStr + '처럼 바람이 등을 밀어 주던 창이 열려, 그때 쌓은 신용이 이후의 방패가 되었을 가능성이 큽니다.';
+    } else {
+        p2tail = ' 그때 견딘 침묵이 곧 이후에 펼칠 판의 두께를 결정했을 가능성이 큽니다.';
+    }
+    var p2 = '[② 성장의 고통과 투쟁의 과정] ' + name + '님' + joToken(name + '님', '은/는') + ' 스무 살 전후부터 마흔 전까지, 세상과 맞닿는 첫 굴곡을 지나셨습니다. '
+        + p2mid + p2tail + ' 그 연대기는 겉으로 드러난 직함이 아니라, 어디까지 책임을 질 것인가를 스스로에게 묻는 밤의 기록으로 남았을 가능성이 큽니다.';
+
+    var best = null;
+    var bestSc = -99;
+    for (var bi = 0; bi < parsed.length; bi++) {
+        var p = parsed[bi];
+        if (p.age < 24) continue;
+        if (p.sc > bestSc) {
+            bestSc = p.sc;
+            best = p;
+        }
+    }
+    var WEAPON = { wood: '뻗는 손과 사람을 잇는 네트워크', fire: '이름을 밝히는 용기와 무대의 중심', earth: '누적된 신뢰와 제도를 지키는 직관', metal: '잘라 내는 결단과 품질의 날', water: '흐름을 읽는 통찰과 숫자에 대한 감각' };
+    var weapon = WEAPON[yong] || WEAPON.earth;
+    var p3 = '';
+    if (best && bestSc >= 2) {
+        p3 = '[③ 인생의 전성기와 황금의 계절] ' + name + '님' + joToken(name + '님', '은/는') + ' ' + best.age + '세 전후부터 약 열 해 동안, 인생에서 가장 크게 빛을 모으는 계절을 맞으실 가능성이 큽니다. '
+            + '그때 쥐게 되실 무기는 ' + weapon + '입니다. '
+            + '같은 노력이라도 그 시즌에는 결과가 배로 붙으니, 계약과 자산의 경계를 서면으로 고정하신 뒤 승부수를 모으십시오. '
+            + '황금의 계절은 영원하지 않으므로, 그때 만든 현금흐름과 평판이 이후의 방패가 되도록 남겨 두십시오.';
+    } else if (best && bestSc >= 0) {
+        p3 = '[③ 인생의 전성기와 황금의 계절] ' + name + '님' + joToken(name + '님', '은/는') + ' ' + best.age + '세 전후에 비교적 숨이 트이는 무대가 열리나, 폭발적인 한 방보다는 층층이 쌓는 방식이 맞습니다. '
+            + '그때 쥐게 되실 무기는 ' + weapon + '입니다. '
+            + '작은 완성을 여러 번 남기면, 이후에 더 큰 창이 열릴 때 그 층고가 자산이 됩니다.';
+    } else {
+        p3 = '[③ 인생의 전성기와 황금의 계절] ' + name + '님' + joToken(name + '님', '은/는') + ' 황금의 계절을 하늘이 정해 주기보다, 스스로 만든 시즌카드에 더 가깝게 열립니다. '
+            + '무기는 ' + weapon + '입니다. '
+            + '숫자로 남긴 성과와 남은 현금이 쌓이는 방향으로만 무대를 잡으시면, 전성기는 늦게 도착해도 더 오래 머뭅니다.';
+    }
+
+    var pillars = data.pillars || [];
     var sh = (pillars[0] && pillars[0].h && pillars[0].h[0]) || '';
     var sj = (pillars[0] && pillars[0].h && pillars[0].h[1]) || data.timeBranch || '';
     var sijuKr = (GAN_KR[sh] || '') + (JI_KR[sj] || '');
-    var sijuFull = sh && sj ? sijuKr + '(' + sh + sj + ')' : (sijuKr || '시주');
-    var lastLab = '';
-    if (rows.length) {
-        var lr = rows[rows.length - 1];
-        var lg = (lr && (lr.name || (lr.gz && (lr.gz[0] + lr.gz[1])))) || '';
-        if (lg.length > 1) {
-            lastLab = (GAN_KR[lg.charAt(0)] || '') + (JI_KR[lg.charAt(1)] || '') + '(' + lg + ')';
-        }
-    }
-    var tailWater = {
-        '子': '자(子) 수기운은 말간 정적과 청산, 유산·명세·의료 선택이 중심이 됩니다. 길하면 지혜로운 수습, 흉하면 고립·순환계 급경고로 번집니다.',
-        '亥': '해(亥)는 넘치는 물길처럼 감정·기억이 한꺼번에 밀려와, 남김과 비움의 담력이 최종 성적표가 됩니다.',
-        '丑': '축(丑) 토는 마지막 땅다짐과 채무 정리를 요구합니다. 미완 서류가 남으면 흉, 정리되면 길합니다.',
-        '寅': '인(寅) 목은 끝까지 솟는 싹처럼 자존심이 살아 있으므로 존엄·자기결정권이 죽음의 품질을 가릅니다.',
-        '卯': '묘(卯) 목은 사람의 손길을 먼저 찾습니다. 관계가 정리되면 길, 미정리 갈등은 흉으로 남습니다.',
-        '辰': '진(辰) 토는 마지막 변곡을 허용합니다. 급진적 처방보다 유연한 제도 정리가 유리합니다.',
-        '巳': '사(巳) 화는 의식·명예를 태웁니다. 과시적 장면의 언쟁만 피하면 길흉이 고르게 묶입니다.',
-        '午': '오(午) 화는 빛을 모으는 형국입니다. 공적 기록이 깨끗하면 길, 오만만 남으면 흉입니다.',
-        '未': '미(未) 토는 온기와 양육의 잔여분을 나눕니다. 유언·양육비 합의가 선명하면 길합니다.',
-        '申': '신(申) 금은 차갑게 잘립니다. 법·세무 선이 바르면 길, 미정리 분쟁은 흉으로 이어집니다.',
-        '酉': '유(酉) 금은 날카로운 완결입니다. 남긴 결과물의 품질이 최종 평판을 결정합니다.',
-        '戌': '술(戌) 토는 가치를 묻습니다. 신념이 일관되면 길, 이중잣대는 흉입니다.'
-    }[sj] || ('시지 ' + (JI_KR[sj] || '') + '(' + sj + ') 기운이 말년 총체감을 덮습니다.');
-    var p4 = '[죽음·마무리] 말년 무대는 시주 ' + sijuFull + '와 ' + (lastLab ? '말년 대운 축인 ' + lastLab : '말년 대운 축') + '가 겹쳐 그려집니다. ' + tailWater + ' 이 결말은 장면이 아니라 수치입니다. 남는 빚·남는 이름·남는 말의 무게를 스스로 통제하셨다면 마지막 장면은 길하고, 숨긴 채무와 숨긴 약속만 남았다면 흉으로 굳습니다. ' + name + '님께서는 지금부터 그 수치를 적시는 것만으로도 말년 길흉의 절반을 결정하십시오.';
+    var sijuLabel = sh && sj ? (sijuKr + '(' + sh + sj + ')') : (sijuKr || '태어난 시각의 기둥');
 
-    var p5 = '[길흉 줄기] ' + name + '님의 서사는 한 줄 결론이 아니라 간지와 숫자가 맞부딪치는 연속입니다. 용신(' + yKr + ') 줄에서는 과감한 실행이, 기신(' + gKr + ') 줄에서는 멈춤·감면만이 결국 다음 기회 비용을 깎습니다.';
+    var late = parsed.filter(function (x) { return x.age >= 60; });
+    var lateTone = '';
+    if (late.length) {
+        var av = late.reduce(function (a, x) { return a + x.sc; }, 0) / late.length;
+        if (av >= 1) lateTone = '예순 이후 무대는 고요한 명예와 정리의 색이 짙어집니다.';
+        else if (av <= -1) lateTone = '예순 이후 무대는 몸과 서류를 동시에 다독여야 하는 방어의 색이 짙어집니다.';
+        else lateTone = '예순 이후 무대는 화려함보다 균형과 회복의 색이 짙어집니다.';
+    } else {
+        lateTone = '말년 무대는 시각의 기둥과 마지막 열 해 무대가 겹쳐 그려집니다.';
+    }
+
+    var LEGACY = {
+        wood: '사람을 키우는 방식과 끊기지 않는 배움의 습관',
+        fire: '이름을 걸고 남긴 사건과 무대의 기록',
+        earth: '돌아가며 쉴 수 있는 제도와 저축의 뼈대',
+        metal: '남은 결과물의 품질과 기준이 되는 원칙',
+        water: '다음 세대가 읽을 지혜와 데이터가 된 기억'
+    };
+    var legacy = LEGACY[dayOh] || LEGACY.earth;
+
+    var p4 = '[④ 말년의 형상과 후대에 남길 유산] ' + lateTone + ' '
+        + sijuLabel + joToken((sijuKr && sijuKr.length ? sijuKr : sijuLabel), '은/는') + ' 생의 막바람이 불어올 때 어떤 온도로 방을 닫을지를 가늠하게 합니다. '
+        + name + '님' + joToken(name + '님', '이/가') + ' 후대에 남기실 유산은 ' + legacy + '입니다. '
+        + '남는 것이 돈이면 제도로 묶으시고, 남는 것이 이름이면 기록으로 묶으시며, 남는 것이 지혜면 사람에게 넘기십시오. '
+        + '그렇게 마침표를 찍으실 때, 삶은 흉한 사건이 아니라 품격 있는 정리의 연속으로 남습니다.';
 
     return '<div id="sec-life-panorama" class="report-chapter chapter-start" style="margin:28px 0 40px;padding:22px 20px;border-radius:14px;border:1px solid rgba(199,167,106,0.28);background:linear-gradient(180deg,rgba(199,167,106,0.08),rgba(0,0,0,0.12));">'
         + '<div style="font-size:11px;letter-spacing:0.2em;color:rgba(199,167,106,0.85);margin-bottom:10px;font-weight:700;">인생 일대기</div>'
@@ -4446,8 +4513,7 @@ function buildLifePanoramaSection(data) {
         + '<p style="font-size:13.5px;color:#ddd;line-height:2;margin:0 0 14px;">' + p1 + '</p>'
         + '<p style="font-size:13.5px;color:#ddd;line-height:2;margin:0 0 14px;">' + p2 + '</p>'
         + '<p style="font-size:13.5px;color:#ddd;line-height:2;margin:0 0 14px;">' + p3 + '</p>'
-        + '<p style="font-size:13.5px;color:#ddd;line-height:2;margin:0 0 14px;">' + p4 + '</p>'
-        + '<p style="font-size:13.5px;color:#ddd;line-height:2;margin:0;">' + p5 + '</p>'
+        + '<p style="font-size:13.5px;color:#ddd;line-height:2;margin:0;">' + p4 + '</p>'
         + '</div>';
 }
 
