@@ -3978,7 +3978,7 @@ function buildPartHeader(num, title, subtitle, anchorId, opts) {
     var color = c[num] != null ? c[num] : '199,167,106';
     var border = h[num] != null ? h[num] : '#c7a76a';
     var icon = ic[num] != null ? ic[num] : '📌';
-    return '<div' + idAttr + ' class="report-chapter" style="background:linear-gradient(135deg,rgba(' + color + ',0.09),rgba(0,0,0,0));border-top:2px solid ' + border + ';border-radius:16px;padding:32px 36px;margin:' + marginTop + ' 0 8px;page-break-before:' + pageBreak + ';"><div style="font-size:11px;color:' + border + ';letter-spacing:0.12em;margin-bottom:10px;font-weight:700;">[ 제 ' + num + '부 ]</div><div style="font-size:26px;font-weight:700;color:#fff;margin-bottom:8px;">' + icon + ' ' + title + '</div><div style="font-size:13px;color:rgba(255,255,255,0.4);letter-spacing:1px;">' + subtitle + '</div></div>';
+    return '<div' + idAttr + ' class="report-chapter" style="background:linear-gradient(135deg,rgba(' + color + ',0.09),rgba(0,0,0,0));border-top:2px solid ' + border + ';border-radius:16px;padding:32px 36px;margin:' + marginTop + ' 0 8px;page-break-before:' + pageBreak + ';"><div style="font-size:11px;color:' + border + ';letter-spacing:0.12em;margin-bottom:10px;font-weight:700;">[ 제 ' + num + '부 ]</div><div style="font-size:26px;font-weight:700;color:var(--text-primary);margin-bottom:8px;">' + icon + ' ' + title + '</div><div style="font-size:13px;color:var(--text-dim);letter-spacing:1px;">' + subtitle + '</div></div>';
 }
 
 // VIP 근거: 원국 8자 표 + 자미두수 명궁 (프리미엄 요약 직후 배치)
