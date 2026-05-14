@@ -135,6 +135,14 @@ function mentorBreakSentences(htmlish) {
 function boldStarsToStrong(s) {
     return String(s == null ? '' : s).replace(/\*\*([\s\S]*?)\*\*/g, '<strong>$1</strong>');
 }
+/** 세운 본문 등에 남은 고정 변명 문구(옛 프롬프트·캐시 잔재) 제거 */
+function stripSeYunMacroLeaks(html) {
+    var s = String(html == null ? '' : html);
+    s = s.replace(/이는\s*성격\s*탓이\s*아니라,\s*그\s*해의\s*기운이\s*원국과\s*맞물린\s*결과입니다\.?/gi, '');
+    s = s.replace(/그\s*해의\s*기운이\s*원국과\s*맞물린\s*결과입니다\.?/gi, '');
+    s = s.replace(/성격\s*탓이\s*아니라,\s*그\s*해의\s*기운이\s*원국과\s*맞물린/gi, '');
+    return s;
+}
 function yearlyFourDomainIndicators(score, sewSip) {
     var sip = sewSip || '';
     var w, cr, doc, love;
@@ -227,7 +235,7 @@ function buildYearStrategicNarrative(name, yr, kor, evLabel, sc, sewSip, ohTag, 
     var nm = name || '고객';
     var yk = kor ? (yr + '년 ' + kor + '년') : (yr + '년');
     var lens = SEYUN_SIP_LENS[sip] || '견적·정산·승인선이 동시에 걸리는 일정이 잦아집니다';
-    var soul = SEYUN_SIP_SOUL_METAPHOR[sip] || '원국과 세운이 맞물리며, 겉으로는 잔잔해도 속으로는 자원이 재배치되는 해입니다.';
+    var soul = SEYUN_SIP_SOUL_METAPHOR[sip] || (yr + '년 세운에서는 ' + sip + ' 기운이 일정·돈·관계에 겹쳐 들어와, 같은 습관도 다른 빈도로 되돌아오기 쉽습니다.');
     var stemCode = (kor && kor.length) ? ((kor.charCodeAt(0) + kor.charCodeAt(kor.length - 1)) | 0) : (yr | 0);
     var mix = (yr * 7 + (sip || '').length * 3 + Math.abs(sc) * 11 + stemCode) % 4;
     var deferM = ((yr % 12) + 1);
@@ -326,7 +334,7 @@ function buildYearStrategicNarrative(name, yr, kor, evLabel, sc, sewSip, ohTag, 
             + '</div>';
     }
 
-    return '<div class="seyun-year-body" style="font-size:12.5px;color:#ccc;line-height:1.9;">'
+    return stripSeYunMacroLeaks('<div class="seyun-year-body" style="font-size:12.5px;color:#ccc;line-height:1.9;">'
         + '<p style="margin:0 0 10px;line-height:1.85;">' + step1 + '</p>'
         + '<p style="margin:0 0 10px;line-height:1.85;">' + step2 + '</p>'
         + '<p style="margin:0 0 10px;line-height:1.85;"><strong>실행 선언.</strong> ' + boldStarsToStrong(stanceLine) + '</p>'
@@ -335,7 +343,7 @@ function buildYearStrategicNarrative(name, yr, kor, evLabel, sc, sewSip, ohTag, 
         + '<p style="margin:0 0 10px;line-height:1.85;">' + integr + '</p>'
         + '<p style="margin:0 0 12px;line-height:1.85;">' + monthTie + '</p>'
         + wcBlock
-        + '</div>';
+        + '</div>');
 }
 
 /** 연도별 간지 정보 (Solar 필요) */
@@ -1325,7 +1333,7 @@ function injectSajuxPdfUi() {
     if (!document.getElementById('sajux-report-ui-styles')) {
         var st = document.createElement('style');
         st.id = 'sajux-report-ui-styles';
-        st.textContent = '.month-pillar-title{white-space:nowrap!important;display:inline-block!important;max-width:100%;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom;}.seyun-premium-vertical{display:flex!important;flex-direction:column!important;align-items:stretch!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important;}.seyun-premium-vertical .seyun-year-card,.seyun-premium-vertical>div{width:100%!important;max-width:100%!important;box-sizing:border-box!important;flex:0 0 auto!important;}.yearly-card-container,.monthly-card-container{display:grid!important;grid-template-columns:1fr!important;width:100%!important;max-width:100%!important;gap:20px!important;box-sizing:border-box!important;}.yearly-card-container .fortune-scroll,.monthly-card-container .fortune-scroll{display:flex!important;flex-direction:column!important;overflow-x:visible!important;overflow-y:visible!important;scroll-snap-type:none!important;align-items:stretch!important;width:100%!important;max-width:100%!important;}.yearly-card-container .f-card,.monthly-card-container .f-card{flex:0 0 auto!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important;}.vip-module-stack{display:flex;flex-direction:column;gap:0;}.vip-module-item{margin-bottom:16px;border-left:3px solid #d4af37;padding-left:14px;}.vip-module-title{color:#d4af37;font-weight:700;margin-bottom:6px;font-size:13.5px;font-family:Noto Serif KR,serif;}.vip-module-desc{color:#d8d3c9;line-height:1.88;font-size:13.5px;margin:0;}.yearly-ind-val{white-space:nowrap!important;text-overflow:ellipsis!important;overflow:hidden!important;max-width:100%!important;}.animal-symbol{font-size:15px;color:rgba(228,232,240,0.92);margin-top:10px;font-weight:500;line-height:1.55;}.cover-highlight{color:#d4af37;font-weight:700;}.birth-info{font-size:0.85em;color:#888;margin-top:8px;line-height:1.65;}.sajux-pdf-wide-btn{cursor:pointer;box-sizing:border-box;border:none;font-family:inherit;font-weight:800;font-size:15px;padding:16px 22px;margin:16px 0 18px;border-radius:12px;background:linear-gradient(135deg,#e8c76a,#b8923a);color:#1a1204;letter-spacing:0.02em;box-shadow:0 8px 28px rgba(212,175,55,0.38);width:100%;max-width:100%;} .sajux-pdf-wide-btn:active{transform:translateY(1px);} #sajux-pdf-fab{cursor:pointer;position:fixed;bottom:22px;right:18px;z-index:10001;font-family:inherit;font-weight:800;font-size:14px;padding:14px 20px;border-radius:999px;border:none;background:linear-gradient(135deg,#d4af37,#8a7020);color:#111;box-shadow:0 10px 32px rgba(0,0,0,0.5),0 0 0 1px rgba(255,255,255,0.12);} @media print{#sajux-pdf-fab,.sajux-pdf-wide-btn{display:none !important;}} @media(max-width:600px){#sajux-pdf-fab{bottom:16px;right:12px;padding:12px 16px;font-size:13px;}}';
+        st.textContent = '.month-pillar-title{white-space:nowrap!important;display:inline-block!important;max-width:100%;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom;}.seyun-premium-vertical{display:flex!important;flex-direction:column!important;align-items:stretch!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important;}.seyun-premium-vertical .seyun-year-card,.seyun-premium-vertical>div{width:100%!important;max-width:100%!important;box-sizing:border-box!important;flex:0 0 auto!important;}.yearly-card-container,.monthly-card-container{display:grid!important;grid-template-columns:1fr!important;width:100%!important;max-width:100%!important;gap:20px!important;box-sizing:border-box!important;}.yearly-card-container .fortune-scroll,.monthly-card-container .fortune-scroll{display:flex!important;flex-direction:column!important;overflow-x:visible!important;overflow-y:visible!important;scroll-snap-type:none!important;align-items:stretch!important;width:100%!important;max-width:100%!important;}.yearly-card-container .f-card,.monthly-card-container .f-card{flex:0 0 auto!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important;}.vip-module-stack{display:flex;flex-direction:column;gap:0;}.vip-module-item{margin-bottom:16px;border-left:3px solid #d4af37;padding-left:14px;}.vip-module-title{color:#d4af37;font-weight:700;margin-bottom:6px;font-size:13.5px;font-family:Noto Serif KR,serif;}.vip-module-desc{color:#d8d3c9;line-height:1.88;font-size:13.5px;margin:0;}.yearly-ind-val{white-space:nowrap!important;text-overflow:ellipsis!important;overflow:hidden!important;max-width:100%!important;}.animal-symbol{font-size:15px;color:rgba(228,232,240,0.92);margin-top:10px;font-weight:500;line-height:1.55;}.cover-highlight{color:#d4af37;font-weight:700;}.birth-info{font-size:0.85em;color:#888;margin-top:8px;line-height:1.65;}.sajux-pdf-wide-btn{cursor:pointer;box-sizing:border-box;border:none;font-family:inherit;font-weight:800;font-size:15px;padding:16px 22px;margin:16px 0 18px;border-radius:12px;background:linear-gradient(135deg,#e8c76a,#b8923a);color:#1a1204;letter-spacing:0.02em;box-shadow:0 8px 28px rgba(212,175,55,0.38);width:100%;max-width:100%;} .sajux-pdf-wide-btn:active{transform:translateY(1px);} #sajux-pdf-fab{cursor:pointer;position:fixed;bottom:22px;right:18px;z-index:10001;font-family:inherit;font-weight:800;font-size:14px;padding:14px 20px;border-radius:999px;border:none;background:linear-gradient(135deg,#d4af37,#8a7020);color:#111;box-shadow:0 10px 32px rgba(0,0,0,0.5),0 0 0 1px rgba(255,255,255,0.12);} @media print{#sajux-pdf-fab,.sajux-pdf-wide-btn{display:none !important;}table,.card,.module-item,.yearly-card-container,.monthly-card-container,.seyun-year-card,.f-card,.vip-module-item,.manse-table{page-break-inside:avoid!important;break-inside:avoid!important}h2,h3,.section-title,.ch-title{page-break-after:avoid!important;break-after:avoid!important}} @media(max-width:600px){#sajux-pdf-fab{bottom:16px;right:12px;padding:12px 16px;font-size:13px;}}';
         document.head.appendChild(st);
     }
     var oldFab = document.getElementById('sajux-pdf-fab');
@@ -3078,17 +3086,6 @@ function buildChapter4_Wealth(data) {
         const isCur = i === actIdx;
         const score = isGood ? '🟢 재물 상승기' : isBad ? '🔴 수비 필요' : '🟡 유지기';
         const phase = isGood ? 'open' : (isBad ? 'guard' : 'steady');
-        const easyRole = function(tag){
-            if(!tag) return '균형형';
-            if(tag==='비견'||tag==='겁재') return '경쟁형';
-            if(tag==='식신'||tag==='상관') return '표현형';
-            if(tag==='정재'||tag==='편재') return '수익형';
-            if(tag==='정관'||tag==='편관') return '관리형';
-            if(tag==='정인'||tag==='편인') return '기획형';
-            return '균형형';
-        };
-        const roleLead = easyRole(ganSip);
-        const roleField = easyRole(jiSip);
         const intro = phase==='open'
             ? `${ganKr}${jiKr}(${age}~${endAge}세) — 흐름이 열립니다. **알트·테마주·온체인** 등 변동성 파이프라인에서 리스크 리워드가 열리나, **청산가·손실 한도** 없이는 승부하지 마십시오.`
             : phase==='guard'
@@ -3098,7 +3095,7 @@ function buildChapter4_Wealth(data) {
             `${ganKr}${jiKr}(${age}~${endAge}세) 때는 제안이 겹치기 쉬우니, **견적 회신은 48시간 유예**를 기본으로 두고 즉답은 피하십시오.`,
             `${age}~${endAge}세 **${ganKr}${jiKr}** 구간에서는 **손실 한도·청산 규칙**을 먼저 적은 뒤에만 변동성 자산을 소액으로 다루십시오.`,
             `열린 ${age}~${endAge}세 흐름(${ganKr}${jiKr})에서는 **현금 비중**을 한 단계 올리고, 새 카드·신규 계좌는 이 구간 동안 **한 건**으로 제한하십시오.`,
-            `${ganKr}${jiKr}(${age}~${endAge}세)에서는 ${roleLead}·${roleField} 기질이 강해지니, **메인 수익 파이프 한 가지**만 캘린더에 고정하고 나머지는 자동이체로 묶으십시오.`,
+            `${ganKr}${jiKr}(${age}~${endAge}세)에서는 천간·지지가 동시에 당겨지기 쉬우니, **메인 수익 파이프 한 가지**만 캘린더에 고정하고 나머지는 자동이체로 묶으십시오.`,
             `${age}~${endAge}세 **${ganKr}${jiKr}**에는 기회 신호가 빠릅니다. **야간 주문·감정 매매**를 막기 위해 증권·코인 앱 알림을 주간 리포트로만 바꾸십시오.`,
             `${ganKr}${jiKr}(${age}~${endAge}세) 때는 외부 미팅이 늘기 쉬우니, **주당 대면 약속 횟수**를 숫자로 제한하고 빈 칸을 비워 두십시오.`,
             `${age}~${endAge}세 **${ganKr}${jiKr}** 활성기에는 분산보다 **검증된 코어 자산**에 비중을 몰고, 실험 비중은 정해둔 비율 이하로만 두십시오.`,
@@ -3110,7 +3107,17 @@ function buildChapter4_Wealth(data) {
             : phase==='guard'
             ? '**비상자금·계약 만기·고정비** 세 줄만 먼저 표에 적으십시오.'
             : '**수익원 정리·내부 매뉴얼·팀 역할** 중 하나만 완성도로 밀십시오.';
-        const roleText = `이번 구간은 앞에서는 ${roleLead} 스타일, 현장에서는 ${roleField} 스타일이 강하게 보입니다.`;
+        const midLife = Math.floor((age + endAge) / 2);
+        const lifeArc =
+            midLife < 22 ? '배움과 정체성을 다지는 시기로 읽히고'
+            : midLife < 34 ? '속도와 실험이 크게 열리는 시기로 읽히고'
+            : midLife < 50 ? '책임·구조·자산이 무게 중심을 잡는 시기로 읽히고'
+            : midLife < 66 ? '전성기의 결실과 방어를 같이 묶어야 하는 시기로 읽히고'
+            : '정리와 전달에 마음이 기우는 시기로 읽히고';
+        const ohPair = (ganOh && jiOh && OHKR[ganOh] && OHKR[jiOh]) ? (OHKR[ganOh] + '·' + OHKR[jiOh] + ' 기운이 겹쳐') : '대운 기운이 겹쳐';
+        const ganLine = ganSip ? ('겉의 제목·대외 일정 쪽에 ' + ganSip + ' 성격이') : '천간 쪽 흐름이';
+        const jiLine = jiSip ? ('현장·생활 토대에는 ' + jiSip + ' 성격이') : '지지 쪽 흐름이';
+        const essayBridge = `${age}~${endAge}세 구간은 ${lifeArc}, ${ohPair} ${ganLine} 붙고 ${jiLine} 붙기 쉽습니다. 한 줄로 압축하면 같은 수익이라도 “선언되는 일”과 “손에 쥐는 일”의 간격이 벌어져 보이니, 검증·증빙을 길게 두는 편이 손해를 줄입니다.`;
         const reacts = [];
         if(natalStems.includes(g0)) reacts.push(`태어난 글자에 ${ganKr}${getJosa(ganKr,'이/가')} 이미 있어, 이 시기에는 내 성향이 더 강하게 드러납니다.`);
         if(natalBranches.includes(g1)) reacts.push(`태어난 글자에 ${jiKr}${getJosa(jiKr,'이/가')} 겹쳐, 같은 주제가 반복되거나 크게 부각될 가능성이 큽니다.`);
@@ -3137,7 +3144,7 @@ function buildChapter4_Wealth(data) {
             : (isStrong
             ? '한 번에 크게 가면 되돌리기 비쌉니다. **같은 목표도 단계를 세 개**로 나누십시오.'
             : '버티기만 하면 기회가 스칩니다. **도움을 요청할 사람 한 명**만 미리 지정하십시오.');
-        const txt = [intro, reactionText, roleText, action, tail].filter(Boolean).join(' ');
+        const txt = [intro, reactionText, essayBridge, action, tail].filter(Boolean).join(' ');
         const curBadge = isCur ? '<span style="font-size:10px;background:var(--gold);color:#000;padding:1px 6px;border-radius:6px;font-weight:700;">▶ 현재</span>' : '';
         return `<div style="background:rgba(255,255,255,0.03);border-radius:8px;padding:12px 14px;margin-bottom:8px;border-left:3px solid ${isGood ? '#c7a76a' : isBad ? '#e74c3c' : '#555'};">
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
