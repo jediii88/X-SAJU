@@ -57,7 +57,7 @@
       // 자동실행은 window.load IIFE에서 처리 (하단 스크립트 참조)
     })();
     </script>
-    <meta name="version" content="1778770310">
+    <meta name="version" content="1778771597">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -1082,6 +1082,70 @@
             box-sizing: border-box;
             scroll-snap-align: none;
         }
+
+        .yearly-card-container,
+        .monthly-card-container {
+            display: grid !important;
+            grid-template-columns: 1fr !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            gap: 20px !important;
+            box-sizing: border-box !important;
+        }
+        .yearly-card-container .fortune-scroll,
+        .monthly-card-container .fortune-scroll {
+            display: flex !important;
+            flex-direction: column !important;
+            overflow-x: visible !important;
+            overflow-y: visible !important;
+            scroll-snap-type: none !important;
+            align-items: stretch !important;
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+        .yearly-card-container .f-card,
+        .monthly-card-container .f-card {
+            flex: 0 0 auto !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            box-sizing: border-box !important;
+        }
+        .vip-module-stack { display: flex; flex-direction: column; gap: 0; }
+        .vip-module-item {
+            margin-bottom: 16px;
+            border-left: 3px solid #d4af37;
+            padding-left: 14px;
+        }
+        .vip-module-title {
+            color: #d4af37;
+            font-weight: 700;
+            margin-bottom: 6px;
+            font-size: 13.5px;
+            font-family: 'Noto Serif KR', serif;
+            letter-spacing: 0.02em;
+        }
+        .vip-module-desc { color: #d8d3c9; line-height: 1.88; font-size: 13.5px; margin: 0; }
+        .animal-symbol {
+            font-size: 15px;
+            color: rgba(228, 232, 240, 0.92);
+            margin-top: 10px;
+            font-weight: 500;
+            line-height: 1.55;
+        }
+        .cover-highlight { color: #d4af37; font-weight: 700; }
+        .birth-info {
+            font-size: 0.85em;
+            color: #888;
+            margin-top: 10px;
+            line-height: 1.65;
+        }
+        .yearly-ind-val {
+            white-space: nowrap !important;
+            text-overflow: ellipsis !important;
+            overflow: hidden !important;
+            max-width: 100% !important;
+        }
+
         .report-pillar-hanja {
             font-family: Batang, "Nanum Myeongjo", Gungsuh, serif !important;
         }
@@ -1305,6 +1369,70 @@
             box-sizing: border-box;
             scroll-snap-align: none;
         }
+
+        .yearly-card-container,
+        .monthly-card-container {
+            display: grid !important;
+            grid-template-columns: 1fr !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            gap: 20px !important;
+            box-sizing: border-box !important;
+        }
+        .yearly-card-container .fortune-scroll,
+        .monthly-card-container .fortune-scroll {
+            display: flex !important;
+            flex-direction: column !important;
+            overflow-x: visible !important;
+            overflow-y: visible !important;
+            scroll-snap-type: none !important;
+            align-items: stretch !important;
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+        .yearly-card-container .f-card,
+        .monthly-card-container .f-card {
+            flex: 0 0 auto !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            box-sizing: border-box !important;
+        }
+        .vip-module-stack { display: flex; flex-direction: column; gap: 0; }
+        .vip-module-item {
+            margin-bottom: 16px;
+            border-left: 3px solid #d4af37;
+            padding-left: 14px;
+        }
+        .vip-module-title {
+            color: #d4af37;
+            font-weight: 700;
+            margin-bottom: 6px;
+            font-size: 13.5px;
+            font-family: 'Noto Serif KR', serif;
+            letter-spacing: 0.02em;
+        }
+        .vip-module-desc { color: #d8d3c9; line-height: 1.88; font-size: 13.5px; margin: 0; }
+        .animal-symbol {
+            font-size: 15px;
+            color: rgba(228, 232, 240, 0.92);
+            margin-top: 10px;
+            font-weight: 500;
+            line-height: 1.55;
+        }
+        .cover-highlight { color: #d4af37; font-weight: 700; }
+        .birth-info {
+            font-size: 0.85em;
+            color: #888;
+            margin-top: 10px;
+            line-height: 1.65;
+        }
+        .yearly-ind-val {
+            white-space: nowrap !important;
+            text-overflow: ellipsis !important;
+            overflow: hidden !important;
+            max-width: 100% !important;
+        }
+
         .report-pillar-hanja {
             font-family: Batang, "Nanum Myeongjo", Gungsuh, serif !important;
         }
@@ -1776,8 +1904,8 @@
     </script>
 
 <!-- SAJUX_CACHE_BUSTER_START -->
-<meta name="sajux-build" content="1778770310">
-<script>(function(){var v='1778770310';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
+<meta name="sajux-build" content="1778771597">
+<script>(function(){var v='1778771597';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
 <!-- SAJUX_CACHE_BUSTER_END -->
 </head>
 <body>
@@ -2330,7 +2458,7 @@ function startReport() {
 <script src="lunar.js"></script>
     <!-- KLC: KASI 기준 한국 음양력 변환 (음력 입력 시 사용) -->
     <script src="klc.min.js"></script>
-    <script src="report-core.js?v=1778770310"></script>
+    <script src="report-core.js?v=1778771597"></script>
 
 
 
