@@ -978,8 +978,8 @@ function buildRelPanels(params, a, b, result) {
   const HAP_PAIRS = [['子','丑'],['寅','亥'],['卯','戌'],['辰','酉'],['巳','申'],['午','未']];
   const CHUNG_PAIRS = [['子','午'],['丑','未'],['寅','申'],['卯','酉'],['辰','戌'],['巳','亥']];
 
-  const aTB = getEcTimeBranch(sajuA.ec) || (sajuA.pillars && sajuA.pillars[0] && sajuA.pillars[0].h && sajuA.pillars[0].h[1]) || '子';
-  const bTB = getEcTimeBranch(sajuB.ec) || (sajuB.pillars && sajuB.pillars[0] && sajuB.pillars[0].h && sajuB.pillars[0].h[1]) || '子';
+  const aTB = getEcTimeBranch(a.ec) || (a.pillars && a.pillars[0] && a.pillars[0].h && a.pillars[0].h[1]) || '子';
+  const bTB = getEcTimeBranch(b.ec) || (b.pillars && b.pillars[0] && b.pillars[0].h && b.pillars[0].h[1]) || '子';
 
   const aChild = ZIWEI_CHILD[aTB] || ZIWEI_CHILD['子'];
   const bChild = ZIWEI_CHILD[bTB] || ZIWEI_CHILD['子'];
