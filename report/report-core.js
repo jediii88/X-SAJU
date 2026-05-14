@@ -1651,7 +1651,6 @@ function generateDeepReport(data) {
     html += safeCall(()=>buildPartHeader(1,'당신이라는 사람','타고난 8자 · 인생 일대기','sec-part1-narrative',{noPageBreak:true}), 'part1header');
     html += safeCall(()=>buildVipEvidenceBlock(data), 'vipEvidence');
     html += safeCall(()=>buildLifePanoramaSection(data), 'lifepano');
-    html += safeCall(()=>buildPart1_Story(data), 'part1');
 
     // PHASE 2: 하드웨어 스펙 분석
     html += safeCall(()=>buildPartHeader(2,'하드웨어 스펙 분석','에너지 분포 · 일하는 방식 패턴','sec-part2-hardware'), 'part2header');
@@ -4445,18 +4444,6 @@ function buildZiWeiDestinyBlueprintSection(data) {
         + '<div style="background:rgba(122,184,212,0.07);border:1px solid rgba(122,184,212,0.22);border-radius:12px;padding:18px 20px;">'
         + boldStarsToStrong(p1) + boldStarsToStrong(p2) + boldStarsToStrong(p3)
         + '</div></div>';
-}
-
-// ═══════════════════════════════════════════════════════
-// 제1부 인생 서사 (성격→가족→시기별흐름→자녀→사회이미지)
-// ═══════════════════════════════════════════════════════
-function buildPart1_Story(data){
-    var name = data.name || '고객';
-    var html = '<div class="report-chapter chapter-start" style="padding-top:14px;">';
-    html += '<h2 style="font-size:20px;font-weight:900;color:var(--gold);letter-spacing:2px;margin:6px 0 10px;border-bottom:2px solid rgba(199,167,106,0.42);padding-bottom:14px;">' + name + '님의 운명 서사</h2>';
-    html += '<p class="subtitle-desc" style="color: var(--text-muted); font-size: 0.9em; margin-bottom: 16px;">사주 원국과 대운의 흐름을 하나의 스토리로 통합하여 삶의 궤적을 설명합니다.</p>';
-    html += '</div>';
-    return html;
 }
 
 // ═══════════════════════════════════════════════════════
