@@ -53,7 +53,7 @@
       // 자동실행은 window.load IIFE에서 처리 (하단 스크립트 참조)
     })();
     </script>
-    <meta name="version" content="1778786458">
+    <meta name="version" content="1778787656">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -70,6 +70,8 @@
             --text-dim: rgba(255,255,255,0.42);
             --gold: #c7a76a;
             --gold-glow: rgba(199,167,106,0.25);
+            --accent-rgb: 199, 167, 106;
+            --text-primary: var(--text);
             --glass-bg: rgba(255,255,255,0.03);
             --glass-border: transparent;
             --glass-hover: rgba(255,255,255,0.06);
@@ -111,6 +113,11 @@
 
         .page { display: none; }
         .page.active { display: block; }
+
+        body.light-mode {
+            --accent-rgb: 139, 105, 20;
+            --text-primary: #111111;
+        }
 
         /* --- 입력 폼 (점신 스타일) --- */
         .input-group {
@@ -850,8 +857,21 @@
         }
         .m-badge {
             font-size: 10px;
-            color: rgba(193,198,208,0.72);
+            font-weight: 500;
+            color: var(--text-primary);
+            background: rgba(var(--accent-rgb), 0.15);
+            border: 1px solid rgba(var(--accent-rgb), 0.22);
+            border-radius: 8px;
+            padding: 4px 8px;
             margin-bottom: 4px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-sizing: border-box;
+        }
+        .m-badge.m-badge--gongmang-hit {
+            background: rgba(var(--accent-rgb), 0.28);
+            color: var(--text-primary);
+            font-weight: 700;
         }
         .m-hanja {
             font-size: 34px;
@@ -1330,6 +1350,7 @@
             /* 배경/색상 */
             @page { size: A4; margin: 14mm 12mm 16mm; }
             body { background: #fff !important; color: #111 !important; margin: 0 !important; }
+            html { background: #fff !important; --text-primary: #111 !important; --accent-rgb: 139, 105, 20 !important; }
             .container { max-width: 100% !important; padding: 0 !important; }
             #step-2, .step-content, #sec-report-full { padding: 0 !important; margin: 0 !important; }
             /* 리포트 챕터 스타일 */
@@ -1348,7 +1369,7 @@
                 page-break-inside: avoid !important;
                 break-inside: avoid !important;
             }
-            h2, h3, .section-title, .ch-title {
+            h1, h2, h3, .section-title, .ch-title {
                 page-break-inside: avoid !important;
                 break-inside: avoid !important;
                 page-break-after: avoid !important;
@@ -1416,7 +1437,7 @@
         page-break-inside: avoid !important;
         break-inside: avoid !important;
     }
-    h2, h3, .section-title, .ch-title {
+    h1, h2, h3, .section-title, .ch-title {
         page-break-inside: avoid !important;
         break-inside: avoid !important;
         page-break-after: avoid !important;
@@ -2060,7 +2081,7 @@ function startReport() {
 <script src="lunar.js"></script>
     <!-- KLC: KASI 기준 한국 음양력 변환 (음력 입력 시 사용) -->
     <script src="klc.min.js"></script>
-    <script src="report-core.js?v=1778786458"></script>
+    <script src="report-core.js?v=1778787656"></script>
 
 
     <script>
