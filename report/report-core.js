@@ -252,7 +252,7 @@ function buildYearStrategicNarrative(name, yr, kor, evLabel, sc, sewSip, ohTag, 
         step1 = d[mix];
     }
 
-    var step2 = yk + '에는 ' + lens + ' ' + soul + ' <strong>이는 성격 탓이 아니라, 그 해의 기운이 원국과 맞물린 결과입니다.</strong> 그래서 겉과 속이 어긋난 느낌이 들 수 있었습니다.';
+    var step2 = yk + '에는 ' + lens + ' ' + soul + ' <strong>이는 성격 탓이 아니라, ' + yk + '의 흐름이 원국과 맞물린 결과입니다.</strong> 그래서 겉과 속이 어긋난 느낌이 들 수 있었습니다.';
 
     var stanceLine = '';
     if (sc >= 2) {
@@ -1367,6 +1367,7 @@ function generateDeepReport(data) {
     html += safeCall(()=>buildPremiumExecutiveSummary(data), 'premium');
     html += safeCall(()=>buildPartHeader(1,'당신이라는 사람','타고난 8자 · 자미두수 명궁 · 인생 일대기','sec-part1-narrative',{noPageBreak:true}), 'part1header');
     html += safeCall(()=>buildVipEvidenceBlock(data), 'vipEvidence');
+    html += safeCall(()=>buildZiWeiDestinyBlueprintSection(data), 'ziweiBlueprint');
     html += safeCall(()=>buildLifePanoramaSection(data), 'lifepano');
     html += safeCall(()=>buildPart1_Story(data), 'part1');
 
@@ -1969,6 +1970,30 @@ function formatCoverBirthLine(data) {
     return '양력 ' + y + '년 ' + m + '월 ' + d + '일 ' + pad2(hh) + '시 ' + pad2(mm) + '분' + lunarPart;
 }
 
+/** 세운 카드 상단 한 줄 — 연도·간지 주어 고정, 12종 로테이션(동일 리포트 내 중복 최소화) */
+function pickSeYunYearHookParagraph(name, yr, gHan, jHan, evLabel, sc) {
+    var nm = name || '고객';
+    var yk = formatYearWithGanzhi(yr, gHan, jHan);
+    var tag = String(evLabel || '평온');
+    var s = Number(sc) || 0;
+    var salt = Math.abs((yr * 17 + (yk || '').length * 3 + tag.length * 5 + s * 11 + hashSeed(nm + (gHan || '') + (jHan || '')))) % 12;
+    var hooks = [
+        function () { return yk + '의 흐름은 **계약·송금·사람 약속**이 같은 주에 겹치기 쉬운 타입입니다. ' + nm + '님은 그 주 시작요일만 캘린더에 먼저 박으십시오.'; },
+        function () { return '올해 ' + nm + '님의 기조는, ' + yk + ' 에너지가 **우선순위 한 줄**을 강요하는 쪽에 가깝습니다. 화제가 많아 보여도 실행은 **돈·서류·회의** 세 갈래로만 나누십시오.'; },
+        function () { return yk + '에는 **파이프라인이 갈라지는 달**이 분명히 있습니다. ' + nm + '님은 그 달의 월요일 아침에만 “메인 한 가지”를 적고, 나머지 제안은 다음 주로 넘기십시오.'; },
+        function () { return nm + '님께 ' + yk + '는 겉이 조용해도 **내부 정산·평가**가 도는 해에 가깝습니다. 숫자가 움직이는 주간만 알림을 켜 두십시오.'; },
+        function () { return yk + '의 전개는 **“한 번에 다”가 아니라 “한 번에 셋”**에 가깝습니다. ' + nm + '님은 돈·서류·사람 중 **하나만 메인**으로 정한 주를 월 2회만 만드십시오.'; },
+        function () { return nm + '님의 ' + yk + ' 체크포인트는 **서명 전 주말**입니다. 금요일 저녁에 조건 세 줄을 적고, 월요일 오전에만 회신하십시오.'; },
+        function () { return yk + '에는 **이동·역할 변경**과 지출 신호가 같이 오는 구간이 있습니다. ' + nm + '님은 비행기표·계약서·통장 알림이 같은 날 뜨면 그날은 결정을 쪼개십시오.'; },
+        function () { return nm + '님께 ' + yk + '는 **대외 일정**이 먼저 밀려오고 뒤늦게 내부 정리가 따라붙는 패턴입니다. 겉 일정표와 속 장부를 **주간 한 번**만 맞추십시오.'; },
+        function () { return yk + '의 흐름은 **짧은 급습**과 **긴 유지**가 교차합니다. ' + nm + '님은 “이번 주 승부”와 “이번 분기 방어”를 번갈아 적어 두십시오.'; },
+        function () { return nm + '님의 올해 리듬은 ' + yk + '가 **증빙·세무·보증** 쪽으로 먼저 손을 뻗는 해입니다. 새로운 지출 앱·자동이체는 **영업일 점심 이전**에만 열어보십시오.'; },
+        function () { return yk + '에는 **말로 합의된 일**이 서류로 돌아오는 시기가 있습니다. ' + nm + '님은 카톡·메일을 PDF 한 폴더로만 모으고, 그 폴더 이름에 연도를 붙이십시오.'; },
+        function () { return nm + '님께 ' + yk + '는 **사람 약속**이 먼저 쌓이고 **돈 숫자**가 나중에 따라붙는 해입니다. 약속은 주 2회 고정 슬롯으로만 잡으십시오.'; }
+    ];
+    return hooks[salt]();
+}
+
 /** 세운 연도 카드 HTML — 올해(Ch.6)와 내년·내후년(Ch.7) 동일 레이아웃 */
 function buildSeYunYearCardHtml(data, yr, opt) {
     opt = opt || {};
@@ -2016,9 +2041,9 @@ function buildSeYunYearCardHtml(data, yr, opt) {
     var badge = isThis ? ' <span style="font-size:10px;background:var(--gold);color:#000;padding:2px 8px;border-radius:8px;font-weight:700;">▶ 올해</span>' : '';
     return '<div style="width:100%;max-width:100%;box-sizing:border-box;background:rgba(255,255,255,' + bgA + ');border-radius:12px;padding:18px 20px;border:1px solid ' + border + ';">'
         + '<div style="width:100%;display:flex;flex-direction:column;gap:10px;margin-bottom:12px;align-items:stretch;">'
-        + '<div style="font-size:20px;font-weight:800;color:' + ev2.c + ';width:100%;line-height:1.35;">' + formatYearWithGanzhi(yr, info.g, info.j) + badge + '</div>'
+        + '<div style="font-size:20px;font-weight:800;color:' + ev2.c + ';width:100%;line-height:1.35;font-family:\'Noto Serif KR\',\'Nanum Myeongjo\',\'Batang\',\'Apple SD Gothic Neo\',serif;letter-spacing:0.04em;">' + formatYearWithGanzhi(yr, info.g, info.j) + badge + '</div>'
         + '<div style="width:100%;"><span style="display:inline-block;font-size:12px;background:rgba(255,255,255,0.06);padding:6px 14px;border-radius:20px;color:' + ev2.c + ';font-weight:700;">' + ev2.l + '</span></div>'
-        + '<p style="font-size:11.5px;color:#999;margin:0;line-height:1.75;width:100%;">그 해는 겉으로 드러나는 일보다, 돈·서류·사람 약속이 한꺼번에 겹치는 주가 먼저 옵니다. 그 주만 캘린더에 표시해 두십시오.</p></div>'
+        + '<p style="font-size:11.5px;color:#999;margin:0;line-height:1.75;width:100%;">' + boldStarsToStrong(pickSeYunYearHookParagraph(name, yr, info.g, info.j, ev2.l, sc)) + '</p></div>'
         + strip
         + '<div style="margin-top:4px;width:100%;">' + body + kwDet + '</div>'
         + '</div>';
@@ -3550,7 +3575,7 @@ function buildWolunLoop(data) {
         return `<div style="width:100%;box-sizing:border-box;background:rgba(255,255,255,${isNow?'0.07':'0.03'});border-radius:10px;padding:14px 16px;border-left:3px solid ${col};break-inside:avoid;">
             <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
                 <div style="display:flex;align-items:center;gap:8px;min-width:0;flex-wrap:wrap;">
-                    <span class="month-pillar-title" style="font-size:18px;font-weight:700;color:var(--gold);font-family:Noto Serif KR,serif;letter-spacing:0.02em;">${pillarTitle}</span>
+                    <span class="month-pillar-title" style="font-size:18px;font-weight:700;color:var(--gold);font-family:'Noto Serif KR','Nanum Myeongjo','Batang',serif;letter-spacing:0.02em;">${pillarTitle}</span>
                     <span style="font-size:12px;color:#aaa;">양력 ${yr}.${monthNo}월 · ${mJiKr}월(${BRANCH_ANIMAL[mJiHj]||'해당'})</span>
                     ${isNow?'<span style="font-size:10px;background:var(--gold);color:#000;padding:1px 7px;border-radius:8px;font-weight:700;">이번달</span>':''}
                 </div>
@@ -3562,7 +3587,7 @@ function buildWolunLoop(data) {
     }).join('');
 
     return `<div class="report-chapter">
-        <h3 class="ch-title">[ 13. 월운 12개월 ] — ${yr}년 열두 달의 전략 지도</h3>
+        <h3 class="ch-title" style="font-family:'Noto Serif KR','Nanum Myeongjo','Batang',serif;">[ 13. 월운 12개월 ] — ${yr}년 열두 달의 전략 지도</h3>
         <p class="ch-text">세운이 해의 날씨라면 월운은 **시간대**입니다. 용신 달에는 밀고, 기신 달에는 **일정 30%를 비우십시오.**</p>
         <div style="display:flex;flex-direction:column;gap:10px;width:100%;">
             ${rows}
@@ -4131,6 +4156,65 @@ function buildVipEvidenceBlock(data) {
     return ev;
 }
 
+/** 자미두수 심층 서사 — 명궁(년지 근사) · 재백·관록 · 천이·노복 (3단: 공감→팩트→실행) */
+function buildZiWeiDestinyBlueprintSection(data) {
+    var nm = data.name || '고객';
+    var yb = data.yearBranch || '午';
+    var HK = { '子': '자', '丑': '축', '寅': '인', '卯': '묘', '辰': '진', '巳': '사', '午': '오', '未': '미', '申': '신', '酉': '유', '戌': '술', '亥': '해' };
+    var seed = Math.abs(hashSeed((nm || '') + '|ZW|' + (data.dayStem || '') + (data.dayBranch || '') + yb + (data.birthYear || ''))) % 14;
+    var Z = [
+        { k: '자미', h: '紫微', p: '겉으로는 무난한 리더 연기를 하면서도, 속으로는 순위와 체면을 동시에 지키려는 욕망이 큽니다.', f1: '단기 변동성(비트코인·테마주)에 손이 가도, 결실은 나스닥·배당 ETF 같은 **시스템형 자산**에서 완성됩니다.', f2: '플랫폼 비즈니스·OKR 설계처럼 **규칙이 곧 수익**인 자리에 서면 관록이 살아납니다.', o: '밖으로 나갈수록 알고리즘이 개입합니다. 대면 모임보다 **인스타 DM·링크드인**으로 퍼스널 브랜딩을 쌓는 편이 몸값을 올리는 지름길입니다.', a: '이번 분기 **성과 숫자 한 줄**만 공개 채널에 고정하고, 나머지는 비공개 노션에 두십시오.' },
+        { k: '천기', h: '天机', p: '끊임없이 시나리오를 바꾸는 두뇌형 페르소나입니다. 안정을 원해도 머리는 먼저 움직입니다.', f1: '정보 비대칭을 줄이는 트레이드(옵션·코인)에 끌리기 쉬우나, 현금흐름은 **ETF 적립·파이프라인 자동화**로 묶어야 합니다.', f2: '관록은 **데이터·프롬프트·자동화 스택**이 곧 직함이 되는 구조입니다.', o: '이직·해외·SNS 실험이 겹칠 때 **노복궁(팀·커뮤니티)**이 필터입니다. 오픈채·디스코드에서 동료를 고르십시오.', a: '주 1회, **의사결정 로그**를 슬랙에 남겨 “왜 그랬는지”를 미래의 자신에게 넘기십시오.' },
+        { k: '태양', h: '太阳', p: '드러날수록 살아나는 사회적 페르소나입니다. 인정 욕구가 연료이자 부담입니다.', f1: '노출형 수익(크리에이터·강연)과 **나스닥 성장주**가 잘 맞고, 비상금은 **단기채·MMF**로 빼 두십시오.', f2: '관록은 **대외 발표·브랜드 캠페인**이 직급을 대신 증명합니다.', o: '천이궁이 밝을수록 **숏폼·라이브** 채널에서 기회가 붙습니다. 데이팅 앱 프로필도 “직무 한 줄”로 통일하십시오.', a: '밤 10시 이후 **DM·댓글 응답 금지**를 알림으로 박으십시오.' },
+        { k: '무곡', h: '武曲', p: '말보다 숫자와 실행으로 말하는 타입입니다. 감정 표현은 적어도 책임은 큽니다.', f1: '리스크 리워드를 즐기는 **선물·코인** 축과, 방어된 **리츠·배당** 축을 동시에 갖추면 재백이 안정됩니다.', f2: '관록은 **현장 통제·원가 절감**에서 올라갑니다.', o: '이동·출장이 잦을수록 **노복궁의 지인 네트워크**가 안전벨트입니다.', a: '지출 앱을 **주 단위로만** 열고, 나머지는 잠그십시오.' },
+        { k: '천동', h: '天同', p: '평화를 원하지만, 속으로는 누구보다 민감한 조율자입니다.', f1: '사람 따라 흐르는 지출이 생깁니다. **구독·모임비**를 끊고, 코어는 **ETF**로만 유지하십시오.', f2: '관록은 **케어·HR·CS**처럼 관계가 곧 KPI인 자리에서 빛납니다.', o: '천이에서 **유료 커뮤니티**가 열리면, 그 안에서만 인연을 깊게 가져가십시오.', a: '“거절 한 문장”을 메모에 고정하고 복붙하십시오.' },
+        { k: '염정', h: '廉贞', p: '날카로운 미감과 기준이 겹쳐, 스스로를 자주 시험대에 올립니다.', f1: '짧은 승부(테마주·옵션)에 끌리기 쉬우나, 실제 완성은 **브랜딩·지적재산**에서 납니다.', f2: '관록은 **감사·품질·컴플라이언스** 축이 강합니다.', o: '도화 기운이 온라인에 배치되어, **인스타 DM**으로 비즈니스 제안이 들어올 수 있습니다. 조건을 먼저 쓰십시오.', a: '첫 답장에 **가격·기간·범위** 세 줄을 넣는 템플릿을 만들십시오.' },
+        { k: '천부', h: '天府', p: '겉으로는 온화한 관리자처럼 보이나, 속으로는 시스템 전체를 통제하려는 욕망이 큽니다.', f1: '단기 코인보다 **배당·리츠·현금흐름 표**가 재백의 본체입니다.', f2: '관록은 **백오피스·재무·운영**에서 커집니다.', o: '이직 제안은 **추천인·사내 멘토**를 통해 오는 편이 안전합니다.', a: '분기마다 **자산·부채 한 장**만 상사·파트너와 공유하십시오.' },
+        { k: '태음', h: '太阴', p: '겉으로 조용하지만, 속으로는 정교하게 계산하는 기질입니다.', f1: '감정 매매를 피하려면 **ETF·적립**을 자동화하고, 투기는 **한도 숫자** 아래로만 두십시오.', f2: '관록은 **리서치·기획·콘텐츠 아카이브**가 평가로 연결됩니다.', o: '야간 SNS가 천이를 흔듭니다. **오전 한 시간만** 알림을 켜십시오.', a: '밤에는 **읽기 전용** 모드로 두고, 발행은 아침에만 하십시오.' },
+        { k: '탐랑', h: '贪狼', p: '호기심과 욕망의 멀티플레이어입니다. 새 채널을 동시에 열기 쉽습니다.', f1: '단기 변동성과 **플랫폼 사업**이 맞물리면 수익이 크게 튀지만, **코어 10%**는 나스닥·ETF에 남겨 두십시오.', f2: '관록은 **사업개발·파트너십**에서 열립니다.', o: '도화가 알고리즘에 붙어 **데이팅 앱·라이브커머스**에서 귀인이 나올 수 있습니다.', a: '새 파이프라인은 **월 1개**만 열고 나머지는 큐에 넣으십시오.' },
+        { k: '거문', h: '巨门', p: '말과 글이 곧 무기인 타입입니다. 오해 비용이 크게 나올 수 있습니다.', f1: '논쟁으로 번지는 계약을 피하고, **ETF·지수**처럼 규칙이 명확한 상품으로 재백을 정돈하십시오.', f2: '관록은 **법무·PR·위기대응**에서 빛납니다.', o: '천이에서 **오픈채·스레드**가 사건을 키울 수 있으니, 중요한 합의는 메일로만 고정하십시오.', a: '감정 올라온 날 **발송 지연 24시간**을 앱에 켜십시오.' },
+        { k: '천상', h: '天相', p: '조율과 중재에 강한 “공식 얼굴” 페르소나입니다.', f1: '재백은 **신용·담보·보증**이 리스크입니다. 대신 **대형주·채권형 ETF**로 방어하십시오.', f2: '관록은 **PMO·운영총괄**에서 올라갑니다.', o: '천이에서 **소개·추천**이 들어오면, 조건표를 먼저 주고 만나십시오.', a: '회의 전 **안건 세 줄**만 상대에게 보내십시오.' },
+        { k: '천량', h: '天梁', p: '남을 챙기며 자기를 뒤로 미루는 보호자 기질입니다.', f1: '누군가의 투자 권유에 끌리기 쉬우니, **본인 명의 파이프라인**만 남기십시오. 코어는 ETF입니다.', f2: '관록은 **멘토·교육·정책** 축이 맞습니다.', o: '천이에서 **봉사·모임**이 인연을 부릅니다. 디지털 명함을 한 문장으로 고정하십시오.', a: '“지금은 답 못 준다” 한 문장을 즐겨찾기에 두십시오.' },
+        { k: '칠살', h: '七杀', p: '겉으로는 과감한 승부사, 속으로는 끊임없이 방패를 드는 긴장형입니다.', f1: '리스크를 즐기는 **칠살** 기질은 코인·선물 단타에 끌리기 쉬우나, 결실은 **천부형 시스템**(리츠·배당·부동산 현금흐름)에서 완성됩니다.', f2: '관록은 **위기관리·보안·군사적 리더십**이 비유로 작동합니다. 실무에서는 **장애대응·SRE**가 맞습니다.', o: '밖으로 나갈수록 **SNS 알고리즘**이 도화처럼 작동합니다. 숏폼 팔로워보다 **포트폴리오 링크**가 우선입니다.', a: '손실 한도를 앱에 숫자로 박고, 그 위로는 레버리지를 열지 마십시오.' },
+        { k: '파군', h: '破军', p: '부수고 다시 짓는 루프에 익숙한 혁신가입니다.', f1: '파괴적 리밸런싱(올인·청산)을 피하려면 **ETF·나스닥 코어 70%**를 먼저 잠그십시오.', f2: '관록은 **신사업·POC**에서 이름이 오릅니다.', o: '천이에서 **해외·원격** 제안이 들어오면, 계약 관할을 먼저 쓰십시오.', a: '“이번 달 깨는 것 한 가지”만 캘린더에 적으십시오.' }
+    ];
+    var M = Z[seed];
+    var C = Z[(seed + 4) % 14];
+    var G = Z[(seed + 7) % 14];
+    var T = Z[(seed + 2) % 14];
+    var N = Z[(seed + 8) % 14];
+    var ybKr = HK[yb] || yb;
+    var p1 = '<p style="margin:0 0 14px;line-height:1.92;color:#ddd;font-size:13.5px;">'
+        + '<span style="color:#9dd3ff;font-size:11px;font-weight:700;letter-spacing:0.06em;">[공감]</span> '
+        + nm + '님은 혼자서도 많이 견디셨을지 모릅니다. <span style="color:#9dd3ff;font-size:11px;font-weight:700;letter-spacing:0.06em;">[팩트]</span> '
+        + '사주가 당신의 계절이라면, 자미두수는 그 계절을 살아가는 방식입니다. '
+        + '년지를 명궁으로 두는 이 근사 모형에서, 당신의 중심에는 <strong>' + M.k + '(' + M.h + ')</strong>의 별이 박혀 있어 '
+        + M.p + ' '
+        + '<span style="color:#9dd3ff;font-size:11px;font-weight:700;letter-spacing:0.06em;">[실행]</span> '
+        + M.a + '</p>';
+    var p2 = '<p style="margin:0 0 14px;line-height:1.92;color:#ddd;font-size:13.5px;">'
+        + '<span style="color:#9dd3ff;font-size:11px;font-weight:700;letter-spacing:0.06em;">[공감]</span> '
+        + '돈과 직함이 따로 노는 듯할 때가 많습니다. <span style="color:#9dd3ff;font-size:11px;font-weight:700;letter-spacing:0.06em;">[팩트]</span> '
+        + '재백궁에는 <strong>' + C.k + '(' + C.h + ')</strong>의 심리 금융 패턴이 깔리고, 관록궁에는 <strong>' + G.k + '(' + G.h + ')</strong>의 무대가 겹칩니다. '
+        + C.f1 + ' ' + G.f2 + ' '
+        + '<span style="color:#9dd3ff;font-size:11px;font-weight:700;letter-spacing:0.06em;">[실행]</span> '
+        + '**비트코인·테마주**는 손실 한도 아래로만 두고, **나스닥·배당 ETF**로 월급 다음 층을 먼저 쌓으십시오.</p>';
+    var p3 = '<p style="margin:0;line-height:1.92;color:#ddd;font-size:13.5px;">'
+        + '<span style="color:#9dd3ff;font-size:11px;font-weight:700;letter-spacing:0.06em;">[공감]</span> '
+        + '밖으로 나가야만 숨이 트이기도 합니다. <span style="color:#9dd3ff;font-size:11px;font-weight:700;letter-spacing:0.06em;">[팩트]</span> '
+        + '천이궁에는 <strong>' + T.k + '(' + T.h + ')</strong>의 이동·노출 기운, 노복궁에는 <strong>' + N.k + '(' + N.h + ')</strong>의 팀·팔로워 기운이 겹칩니다. '
+        + T.o + ' ' + N.o + ' '
+        + '<span style="color:#9dd3ff;font-size:11px;font-weight:700;letter-spacing:0.06em;">[실행]</span> '
+        + '**데이팅 앱·인스타 DM·오픈채**는 필터(직무·가치관)를 먼저 쓰고, 대면은 영상통화 1회 뒤로 미루십시오.</p>';
+    return '<div id="sec-ziwei-blueprint" class="report-chapter chapter-start" style="padding-top:8px;margin-bottom:8px;">'
+        + '<div style="font-size:11px;color:rgba(122,184,212,0.85);letter-spacing:0.14em;margin-bottom:8px;font-weight:800;">[ 자미두수 심층 분석 ]</div>'
+        + '<h3 class="ch-title" style="border-bottom-color:rgba(122,184,212,0.35);font-family:\'Noto Serif KR\',\'Nanum Myeongjo\',\'Batang\',serif;">당신의 운명 설계도</h3>'
+        + '<p style="font-size:12px;color:#8ab4c7;margin:0 0 16px;line-height:1.75;">명궁은 년지 <strong>' + ybKr + '(' + yb + ')궁</strong>을 전면에 둔 근사 해석입니다. 전통 자미두수의 월·시 배치와 다를 수 있으나, <strong>사회적 페르소나 vs 내면 욕망</strong> 축을 정밀하게 가르는 용도로 쓰십시오.</p>'
+        + '<div style="background:rgba(122,184,212,0.07);border:1px solid rgba(122,184,212,0.22);border-radius:12px;padding:18px 20px;">'
+        + boldStarsToStrong(p1) + boldStarsToStrong(p2) + boldStarsToStrong(p3)
+        + '</div></div>';
+}
+
 // ═══════════════════════════════════════════════════════
 // 제1부 인생 서사 (성격→가족→시기별흐름→자녀→사회이미지)
 // ═══════════════════════════════════════════════════════
@@ -4149,7 +4233,7 @@ function buildChapter6_SeYun(data){
     var curY=getReportBaseDate(data).getFullYear();
     if(typeof Solar==='undefined') return typeof buildSewunLoop==='function'?buildSewunLoop(data):'';
     var inner = buildSeYunYearCardHtml(data, curY, { isThisYear: true });
-    return '<div class="report-chapter chapter-start"><h3 class="ch-title">[ 10. 올해 세운 ] — '+curY+'년 운세</h3>'
+    return '<div class="report-chapter chapter-start"><h3 class="ch-title" style="font-family:\'Noto Serif KR\',\'Nanum Myeongjo\',\'Batang\',serif;">[ 10. 올해 세운 ] — '+curY+'년 운세</h3>'
         + '<div style="width:100%;box-sizing:border-box;display:flex;flex-direction:column;gap:16px;">' + inner + '</div>'
         + '<div style="margin-top:16px;font-size:11px;color:#666;">같은 해 안에서는 월마다 “독촉·계약·휴식” 중 하나만 메인으로 두고 나머지는 보조로 두십시오.</div></div>';
 }
@@ -4852,7 +4936,7 @@ var HELP_DATA = {
     },
     seun: {
         title: "세운 (1년 단위의 흐름)",
-        desc: "매년 들어오는 운세입니다. 대운이 큰 환경이라면, 세운은 그 해에 일어나는 구체적인 사건과 체감되는 변화를 의미합니다."
+        desc: "매년 들어오는 운세입니다. 대운이 큰 환경이라면, 세운은 해당 연도에 일어나는 구체적인 사건과 체감되는 변화를 의미합니다."
     },
     wolun: {
         title: "월운 (한 달 단위의 흐름)",
@@ -6785,7 +6869,7 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
                 var d=document.createElement('div');
                 d.style.cssText='padding:12px;background:rgba(255,255,255,'+(isThis?'0.07':'0.03')+');border:1px solid '+(isThis?'var(--gold)':'rgba(255,255,255,0.07)')+';border-radius:10px;';
                 d.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px;">'+
-                    '<div style="display:flex;align-items:center;gap:7px;"><span style="font-size:18px;font-weight:900;color:var(--gold);font-family:Noto Serif KR,serif;">'+g+j+'</span><span style="font-size:13px;font-weight:600;color:#ccc;">('+((HAN_KOR&&HAN_KOR[g])||g)+((HAN_KOR&&HAN_KOR[j])||j)+')</span>'+
+                    '<div style="display:flex;align-items:center;gap:7px;"><span style="font-size:18px;font-weight:900;color:var(--gold);font-family:\'Noto Serif KR\',\'Nanum Myeongjo\',\'Batang\',serif;">'+g+j+'</span><span style="font-size:13px;font-weight:600;color:#ccc;">('+((HAN_KOR&&HAN_KOR[g])||g)+((HAN_KOR&&HAN_KOR[j])||j)+')</span>'+
                     '<span style="font-size:13px;color:#bbb;">'+yr+'년'+(isThis?' <span style="font-size:10px;background:var(--gold);color:#000;padding:1px 6px;border-radius:6px;font-weight:700;">올해</span>':'')+'</span></div>'+
                     '<span style="font-size:11px;font-weight:700;color:'+col+';">'+gb(s)+'</span></div>'+
                     '<div style="background:rgba(199,167,106,0.05);border-radius:6px;padding:8px 10px;border-left:2px solid '+col+';"><p style="font-size:12px;color:#ccc;line-height:1.75;margin:0;">'+adv+'</p></div>';
@@ -6846,7 +6930,7 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
                 var d=document.createElement('div');
                 d.style.cssText='padding:11px;background:rgba(255,255,255,'+(isThis?'0.07':'0.02')+');border:1px solid '+(isThis?'var(--gold)':'rgba(255,255,255,0.06)')+';border-radius:8px;';
                 d.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;">'+
-                    '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;"><span style="font-size:15px;font-weight:800;color:var(--gold);font-family:Noto Serif KR,serif;">'+formatMonthWithGanzhi(m,g,j)+'</span>'+
+                    '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;"><span style="font-size:15px;font-weight:800;color:var(--gold);font-family:\'Noto Serif KR\',\'Nanum Myeongjo\',\'Batang\',serif;">'+formatMonthWithGanzhi(m,g,j)+'</span>'+
                     '<span style="font-size:12px;color:#bbb;">'+wY+'.'+m+'월'+(isThis?' <span style="font-size:10px;background:var(--gold);color:#000;padding:1px 5px;border-radius:5px;font-weight:700;">이달</span>':'')+'</span></div>'+
                     '<span style="font-size:11px;font-weight:700;color:'+col+';">'+gb(s)+'</span></div>'+
                     '<div style="background:rgba(199,167,106,0.04);border-radius:5px;padding:7px 9px;border-left:2px solid '+col+';"><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">'+advm+'</p></div>';
@@ -7024,18 +7108,19 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
                 if(bPair&&natalB.indexOf(bPair)>=0){var _bk=JK[bPair]||bPair; reacts.push(jTag+getJosa(jTag,'은/는')+' 원국의 '+_bk+getJosa(_bk,'과/와')+' 잘 맞아 협업 흐름이 부드럽습니다.');}
                 if(bClash&&natalB.indexOf(bClash)>=0){var _ck=JK[bClash]||bClash; reacts.push(jTag+getJosa(jTag,'은/는')+' 원국의 '+_ck+getJosa(_ck,'과/와')+' 부딪혀 변경·충돌 이슈를 먼저 관리해야 합니다.');}
                 var reactTxt=reacts.length?reacts.slice(0,2).join(' '):'원국과 큰 충돌이 적어 계획대로 밀어붙일수록 안정적으로 쌓입니다.';
+                var ykSe=(typeof formatYearWithGanzhi==='function')?formatYearWithGanzhi(yr,g2,j2):(String(yr)+'년');
                 var ykwSe=yearlyFourDomainKeywords(s2,ganSip2);
                 var ykwSeInd=yearlyFourDomainIndicators(s2,ganSip2);
                 var seStrip=typeof buildYearlyIndicatorsHtml==='function'?buildYearlyIndicatorsHtml(ykwSeInd):'';
                 var adv=s2>=2
-                    ?('올해는 '+gTag+jTag+' 기운이 당신 원국과 잘 맞아, 새 시도·협업·확장이 성과로 이어질 가능성이 높습니다. '+reactTxt+' 다만 한 번에 많이 벌이기보다 우선순위를 먼저 정하면 결과가 더 좋아집니다.')
+                    ?(ykSe+'의 흐름은 '+gTag+jTag+' 기운이 당신 원국과 잘 맞아, 새 시도·협업·확장이 성과로 이어질 가능성이 높습니다. '+reactTxt+' 다만 한 번에 많이 벌이기보다 우선순위를 먼저 정하면 결과가 더 좋아집니다.')
                     :s2>=0
-                    ?('올해는 '+gTag+jTag+' 기운이 급한 변화보다 안정 운영에 힘을 싣는 해입니다. '+reactTxt+' 큰 승부보다 기존 구조를 다듬고 새는 부분을 줄이는 쪽이 유리합니다.')
-                    :('올해는 '+gTag+jTag+' 기운이 부담 구간을 건드릴 수 있는 해입니다. '+reactTxt+' 공격적으로 키우기보다 현금흐름 방어와 계약 재검토를 먼저 하면 손실 가능성을 낮출 수 있습니다.');
+                    ?(ykSe+'의 흐름은 '+gTag+jTag+' 기운이 급한 변화보다 안정 운영에 힘을 싣는 편에 가깝습니다. '+reactTxt+' 큰 승부보다 기존 구조를 다듬고 새는 부분을 줄이는 쪽이 유리합니다.')
+                    :(ykSe+'의 흐름은 '+gTag+jTag+' 기운이 부담 구간을 건드릴 수 있습니다. '+reactTxt+' 공격적으로 키우기보다 현금흐름 방어와 계약 재검토를 먼저 하면 손실 가능성을 낮출 수 있습니다.');
                 h3+='<div style="margin-bottom:14px;padding:16px;background:rgba(255,255,255,'+(isThis?'0.07':'0.03')+');border:1px solid '+(isThis?'var(--gold)':'rgba(255,255,255,0.07)')+';border-radius:12px;">';
-                h3+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;"><div style="display:flex;align-items:center;gap:8px;min-width:0;flex:1;"><span style="font-size:20px;font-weight:700;color:var(--gold);font-family:Noto Serif KR,serif;white-space:nowrap;letter-spacing:0.02em;">'+g2+j2+'</span><span style="font-size:14px;color:#bbb;white-space:nowrap;">'+yr+'년'+(isThis?' <span style="font-size:10px;background:var(--gold);color:#000;padding:1px 7px;border-radius:8px;font-weight:700;">올해</span>':'')+'</span></div><span style="font-size:12px;font-weight:700;color:'+col2+';white-space:nowrap;">'+gb(s2)+'</span></div>';
+                h3+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;"><div style="display:flex;align-items:center;gap:8px;min-width:0;flex:1;"><span style="font-size:20px;font-weight:700;color:var(--gold);font-family:\'Noto Serif KR\',\'Nanum Myeongjo\',\'Batang\',serif;white-space:nowrap;letter-spacing:0.02em;">'+g2+j2+'</span><span style="font-size:14px;color:#bbb;white-space:nowrap;">'+yr+'년'+(isThis?' <span style="font-size:10px;background:var(--gold);color:#000;padding:1px 7px;border-radius:8px;font-weight:700;">올해</span>':'')+'</span></div><span style="font-size:12px;font-weight:700;color:'+col2+';white-space:nowrap;">'+gb(s2)+'</span></div>';
                 h3+=seStrip;
-                var ynarr=yr+'년은 '+(GK[g2]||g2)+'('+KN[gOh]+') 천간과 '+(JK[j2]||j2)+'('+KN[jOh]+') 지지가 함께 작동하는 해입니다. '+(s2>=2?'원국과의 합이 맞아 드는 편이라 실행한 일이 결과로 이어질 가능성이 큽니다. 상반기에 거점을 고정하고 하반기에 확장을 붙이면 리스크가 줄어듭니다.':s2>=0?'급하게 키우기보다 기존 구조를 다듬고 현금흐름을 먼저 안정시키는 편이 유리합니다. 분기마다 우선순위를 세 개 이내로 압축하십시오.':'부담 구간을 건드릴 수 있으니 결정 속도를 늦추고 안전장치를 먼저 챙기십시오. 보증·레버리지·감정적 확장은 가급적 피하는 것이 좋습니다.')+' '+reactTxt;
+                var ynarr=ykSe+'의 흐름은 '+(GK[g2]||g2)+'('+KN[gOh]+') 천간과 '+(JK[j2]||j2)+'('+KN[jOh]+') 지지가 겹쳐 나타납니다. '+(s2>=2?'원국과의 합이 맞아 드는 편이라 실행한 일이 결과로 이어질 가능성이 큽니다. 상반기에 거점을 고정하고 하반기에 확장을 붙이면 리스크가 줄어듭니다.':s2>=0?'급하게 키우기보다 기존 구조를 다듬고 현금흐름을 먼저 안정시키는 편이 유리합니다. 분기마다 우선순위를 세 개 이내로 압축하십시오.':'부담 구간을 건드릴 수 있으니 결정 속도를 늦추고 안전장치를 먼저 챙기십시오. 보증·레버리지·감정적 확장은 가급적 피하는 것이 좋습니다.')+' '+reactTxt;
                 h3+='<div style="background:rgba(0,0,0,0.15);border-radius:6px;padding:10px;margin-bottom:10px;"><p style="font-size:12px;color:#ddd;line-height:1.75;margin:0;">'+ynarr+'</p></div>';
                 h3+='<div style="background:rgba(199,167,106,0.06);border-radius:6px;padding:10px;border-left:2px solid '+col2+';"><div style="font-size:10px;color:var(--text-dim);margin-bottom:4px;">이 해의 전략</div><p style="font-size:12.5px;color:#ccc;line-height:1.8;margin:0;">'+adv+'</p></div></div>';
             }
@@ -7060,7 +7145,7 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
             function gc(s){return s>=3?'#c7a76a':s>=1?'#00C853':s===0?'#888':s>=-2?'#ff9800':'#e74c3c';}
             function gb(s){return s>=3?'🌟 대길':s>=1?'✦ 길':s===0?'— 평':s>=-2?'⚠ 주의':'❌ 흉';}
             var curY3=new Date().getFullYear();var curM3=new Date().getMonth()+1;
-            var h4='<div class="report-chapter"><h3 class="ch-title">월운 12개월 — 이달의 기운 완전 해부</h3><p class="ch-text">월운은 그달의 날씨입니다. 언제 액셀을 밟고 언제 브레이크를 밟아야 하는지 — 달력처럼 활용하십시오.</p>';
+            var h4='<div class="report-chapter"><h3 class="ch-title" style="font-family:\'Noto Serif KR\',\'Nanum Myeongjo\',\'Batang\',serif;">월운 12개월 — 이달의 기운 완전 해부</h3><p class="ch-text">월운은 그달의 날씨입니다. 언제 액셀을 밟고 언제 브레이크를 밟아야 하는지 — 달력처럼 활용하십시오.</p>';
             for(var m4=1;m4<=12;m4++){
                 var mS=Solar.fromYmd(curY3,m4,15);
                 var mE=mS.getLunar().getEightChar();
@@ -7079,14 +7164,30 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
                 if(mbPair&&natalB.indexOf(mbPair)>=0){var _mbk=JK[mbPair]||mbPair; mReacts.push(mJTag+getJosa(mJTag,'이/가')+' 원국의 '+_mbk+getJosa(_mbk,'과/와')+' 잘 맞아 협업이 부드럽습니다.');}
                 if(mbClash&&natalB.indexOf(mbClash)>=0){var _mck=JK[mbClash]||mbClash; mReacts.push(mJTag+getJosa(mJTag,'이/가')+' 원국의 '+_mck+getJosa(_mck,'과/와')+' 부딪혀 일정 변경·감정 충돌을 조심해야 합니다.');}
                 var mReactTxt=mReacts.length?mReacts[0]:'원국과 큰 충돌이 적어 계획대로 밀어붙이기 좋은 달입니다.';
+                var mKey=(typeof formatMonthWithGanzhi==='function')?formatMonthWithGanzhi(m4,gm4,jm4):(String(m4)+'월 '+gm4+jm4);
+                var mSalt=(curY3*17+m4*5+(gm4.charCodeAt(0)||0)+(jm4.charCodeAt(0)||0))%12;
+                var mTail=[
+                    '이번 달 말미에는 지출 앱을 열지 마십시오.',
+                    '월 중 한 번만 통장 숫자를 부모·파트너와 맞추십시오.',
+                    '회의 초대는 **주 2회**를 넘기지 마십시오.',
+                    '계약 서명은 **영업일 이틀 유예**를 기본값으로 두십시오.',
+                    '새 투자 제안 문자는 **금요일 오전**에만 일괄 답하십시오.',
+                    '이달은 **노션·슬랙**에 결정 로그 한 줄만 남기십시오.',
+                    '야근이 잦으면 **ETF·현금** 비중만이라도 올리십시오.',
+                    '데이팅 앱·DM은 **필터 문장**을 먼저 고치는 달입니다.',
+                    '이직·이사 카톡은 **다음 달 월요일**로 미루십시오.',
+                    '미수 독촉은 **오전 10시 한 번**만 보내십시오.',
+                    '코인·선물 앱은 **주말 잠금**을 켜 두십시오.',
+                    '오픈채 링크는 **취향 태그**가 맞을 때만 들어가십시오.'
+                ][mSalt];
                 var advm=sm4>=2
-                    ?`이달은 ${mGTag}${mJTag} 기운이 실행 쪽으로 힘을 보태는 달입니다. ${mReactTxt} 중요한 시작·연락·계약 초안을 진행하면 다음 달로 이어질 가능성이 높습니다.`
+                    ?(mKey+'에는 기운이 실행 쪽으로 힘이 실립니다. '+mReactTxt+' 중요한 시작·연락·계약 초안을 진행하면 다음 달로 이어질 가능성이 높습니다. '+mTail)
                     :sm4>=0
-                    ?`이달은 ${mGTag}${mJTag} 기운이 균형에 가까워, 정리·보완·루틴 강화가 효율적입니다. ${mReactTxt} 작은 완성도를 쌓는 전략이 좋습니다.`
-                    :`이달은 ${mGTag}${mJTag} 기운이 부담을 키울 수 있어 속도 조절이 필요합니다. ${mReactTxt} 큰 결정보다 검토·보류를 먼저 하면 안정적으로 넘길 가능성이 높습니다.`;
+                    ?(mKey+'에는 속도보다 정확도가 이깁니다. '+mReactTxt+' 정리·보완·루틴 강화가 효율적입니다. '+mTail)
+                    :(mKey+'에는 부담 신호가 먼저 올 수 있습니다. '+mReactTxt+' 큰 결정보다 검토·보류를 먼저 하면 안정적으로 넘길 가능성이 높습니다. '+mTail);
                 h4+='<div style="margin-bottom:12px;padding:14px;background:rgba(255,255,255,'+(isThisM?'0.07':'0.03')+');border:1px solid '+(isThisM?'var(--gold)':'rgba(255,255,255,0.06)')+';border-radius:10px;">';
-                h4+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:8px;"><div style="display:flex;align-items:center;gap:8px;min-width:0;flex:1;"><span style="font-size:18px;font-weight:900;color:var(--gold);font-family:Noto Serif KR,serif;white-space:nowrap;letter-spacing:0.02em;">'+gm4+jm4+'</span><span style="font-size:13px;color:#bbb;white-space:nowrap;">'+m4+'월'+(isThisM?' <span style="font-size:10px;background:var(--gold);color:#000;padding:1px 6px;border-radius:6px;font-weight:700;">이달</span>':'')+'</span></div><span style="font-size:11px;font-weight:700;color:'+colm+';white-space:nowrap;">'+gb(sm4)+'</span></div>';
-                h4+='<div style="background:rgba(199,167,106,0.05);border-radius:6px;padding:8px 10px;border-left:2px solid '+colm+';"><p style="font-size:12px;color:#bbb;line-height:1.7;margin:0;">'+advm+'</p></div></div>';
+                h4+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:8px;"><div style="display:flex;align-items:center;gap:8px;min-width:0;flex:1;"><span style="font-size:18px;font-weight:900;color:var(--gold);font-family:\'Noto Serif KR\',\'Nanum Myeongjo\',\'Batang\',serif;white-space:nowrap;letter-spacing:0.02em;">'+mKey+'</span><span style="font-size:13px;color:#bbb;white-space:nowrap;">'+m4+'월'+(isThisM?' <span style="font-size:10px;background:var(--gold);color:#000;padding:1px 6px;border-radius:6px;font-weight:700;">이달</span>':'')+'</span></div><span style="font-size:11px;font-weight:700;color:'+colm+';white-space:nowrap;">'+gb(sm4)+'</span></div>';
+                h4+='<div style="background:rgba(199,167,106,0.05);border-radius:6px;padding:8px 10px;border-left:2px solid '+colm+';"><p style="font-size:12px;color:#bbb;line-height:1.7;margin:0;">'+advm.replace(/\*\*([\s\S]*?)\*\*/g,'<strong>$1</strong>')+'</p></div></div>';
             }
             h4+='</div>';
             var rc3=document.getElementById('report-container');
