@@ -175,12 +175,14 @@ function buildYearStrategicNarrative(name, yr, kor, evLabel, sc, sewSip, ohTag, 
     var action = '구체적으로는 ①주간 단위로 현금·미수·고정비를 점검하고, ②중요 미팅은 안건·결론·후속 액션을 메모로 남기며, ③신규 인맥보다 기존 신뢰 관계를 강화하십시오. ' + nm + '님께서 이미 가진 강점을 한 축에 몰아넣으면 같은 해 안에 가시적 성과가 붙기 쉽습니다.';
     var risk = '리스크 방어로는 감정이 올라온 날의 즉답·즉서명을 피하고, 수면 6시간 미만 연속 근무를 끊는 루틴을 먼저 복구하십시오. 건강·가정 이슈가 겹치는 달에는 일정을 의도적으로 비우는 것이 오히려 다음 분기 속도를 살립니다.';
     var monthTie = '월별로는 길운이 몰린 달에 실행·계약을, 기신이 강한 달에는 검토·내부 정리를 배치하십시오. 아래 월운 캘린더와 같은 해의 주차 단위 일정을 맞춰 보면 실행 오차가 줄어듭니다.';
+    var cause = '길흉의 원인은 연간 천간·지지가 일간과 맺는 십성(' + sip + ')과 용신·기신 오행의 합·충 구조에서 설명됩니다. ' + nm + '님께서 체감하시는 “운이 좋다/나쁘다”는 대개 현금흐름·대외 평판·수면의 세 축이 동시에 움직이기 때문입니다. 같은 사건도 용신이 받쳐 주는 해에는 기회로, 기신이 압박하는 해에는 비용으로 기록되기 쉽습니다. 따라서 올해의 판단은 감정이 아니라 수치(매출·지출·미수·계약 조항)로 남겨 두시는 것이 가장 안전합니다.';
     var domainP = '';
     if (domainFour && (domainFour.wealth || domainFour.career || domainFour.love || domainFour.health)) {
         domainP = '<p style="margin:0 0 10px;color:#d0d0d0;">분야별 실행 초점은 다음과 같이 묶는 것이 좋습니다. 재물·현금흐름은 ' + (domainFour.wealth || '') + ' 직업·조직·대외 평판은 ' + (domainFour.career || '') + ' 애정·대인 관계는 ' + (domainFour.love || '') + ' 건강·컨디션·회복 루틴은 ' + (domainFour.health || '') + ' 이 네 축이 서로 끌어당기지 않게 분기마다 한 축씩만 “승부 축”으로 정하면 실행 피로가 줄어듭니다.</p>';
     }
     return '<div class="seyun-year-body" style="font-size:12.5px;color:#ccc;line-height:1.9;">'
         + '<p style="margin:0 0 10px;">' + situ + '</p>'
+        + '<p style="margin:0 0 10px;">' + cause + '</p>'
         + '<p style="margin:0 0 10px;">' + stance + '</p>'
         + '<p style="margin:0 0 10px;">' + action + '</p>'
         + '<p style="margin:0 0 10px;">' + risk + '</p>'
@@ -1205,8 +1207,17 @@ function generateDeepReport(data) {
     if(!data || !data.dayStem) return;
 
     function safeCall(fn, label) {
-        try { return fn() || ''; }
-        catch(e) { console.error('generateDeepReport '+label+':', e.message); return ''; }
+        try {
+            var out = fn() || '';
+            if (typeof out === 'string' && out.indexOf('undefined') !== -1) {
+                return '<div class="report-chapter" style="padding:18px;border:1px solid rgba(199,167,106,0.25);border-radius:12px;margin:12px 0;"><div style="font-size:13px;font-weight:800;color:var(--gold);margin-bottom:8px;">[ 최종 실행 지침 ]</div><p style="font-size:13px;color:#bbb;line-height:1.85;margin:0;">이 구간의 일부 값이 올바르게 표시되지 않았습니다. 생년월일시를 다시 확인하신 뒤 분석을 재실행하시거나, PDF로 저장하여 오프라인에서 열람해 보십시오.</p></div>';
+            }
+            return out;
+        }
+        catch(e) {
+            console.error('generateDeepReport '+label+':', e.message);
+            return '<div class="report-chapter" style="padding:18px;border:1px solid rgba(255,152,0,0.35);border-radius:12px;margin:12px 0;"><div style="font-size:14px;font-weight:800;color:#ff9800;">[ 최종 실행 지침 ]</div><p style="font-size:13px;color:#bbb;line-height:1.85;margin:0;">리포트의 한 구간을 만드는 중 오류가 발생했습니다. 입력 정보를 확인한 뒤 다시 시도해 주십시오. 문제가 반복되면 SAJUX에 문의해 주십시오.</p></div>';
+        }
     }
 
     // ── 각 만세력 섹션 아래에 직접 주입 ──
@@ -1223,6 +1234,7 @@ function generateDeepReport(data) {
     html += safeCall(()=>buildForewordPage(data), 'foreword');
     html += safeCall(()=>buildPremiumExecutiveSummary(data), 'premium');
     html += safeCall(()=>buildVipEvidenceBlock(data), 'vipEvidence');
+    html += safeCall(()=>buildLifePanoramaSection(data), 'lifepano');
     html += safeCall(()=>buildPartHeader(1,'당신이라는 사람','타고난 본성 · 자라온 환경 · 인생의 기승전결','sec-part1-narrative'), 'part1header');
     html += safeCall(()=>buildPart1_Story(data), 'part1');
 
@@ -1241,8 +1253,10 @@ function generateDeepReport(data) {
     // PHASE 4: 타임라인 전략 상황실
     html += safeCall(()=>buildPartHeader(4,'타임라인 전략','대운 · 세운 · 월운','sec-part4-timeline'), 'part4header');
     html += safeCall(()=>buildDaewunLoop(data), 'daewunloop');
+    html += '<div class="seyun-premium-vertical" style="display:flex;flex-direction:column;gap:24px;width:100%;max-width:100%;box-sizing:border-box;">';
     html += safeCall(()=>buildChapter6_SeYun(data), 'ch6seyun');
     html += safeCall(()=>buildChapter7_NextYears(data), 'ch7next');
+    html += '</div>';
     html += safeCall(()=>buildChapter8_NextDaewun(data), 'ch8dw');
     html += safeCall(()=>buildChapter9_Monthly(data), 'ch9monthly');
 
@@ -1880,10 +1894,10 @@ function buildPremiumExecutiveSummary(data) {
     var pick = hashText([iljuKey, daeunLabel, curY, curM, palaceBranch].join('|')) % pools.length;
     var chosen = pools[pick];
     var modules = [
-        { title: 'Module 1: 테제 & 에너지 엔진', body: chosen.m1 },
-        { title: 'Module 2: 10년의 거시 전략 (' + daeunLabel + ')', body: chosen.m2 },
-        { title: 'Module 3: 올해의 전술적 기회 (' + curY + '년)', body: chosen.m3 },
-        { title: 'Module 4: 이번 달의 핀포인트 조언', body: chosen.m4 }
+        { title: '[ 01. 테제·에너지 엔진 ]', body: chosen.m1 },
+        { title: '[ 02. 10년 거시 전략 ] (' + daeunLabel + ')', body: chosen.m2 },
+        { title: '[ 03. 올해 전술 ] (' + curY + '년)', body: chosen.m3 },
+        { title: '[ 04. 이번 달 실행 ]', body: chosen.m4 }
     ];
 
     var accessLine = formatReportAccessLine(data);
@@ -1891,13 +1905,13 @@ function buildPremiumExecutiveSummary(data) {
     var reportDateStr = reportDate.getFullYear() + '년 ' + (reportDate.getMonth() + 1) + '월 ' + reportDate.getDate() + '일';
 
     return '<div id="sec-premium-summary" class="report-chapter premium-executive-summary chapter-start" style="margin-bottom:40px;padding:22px 20px;border-radius:14px;border:1px solid rgba(199,167,106,0.35);background:linear-gradient(165deg,rgba(199,167,106,0.12)0%,rgba(0,0,0,0.15)55%);">' +
-        '<div style="font-size:10px;letter-spacing:4px;color:rgba(199,167,106,0.7);margin-bottom:8px;">PREMIUM SUMMARY · STRATEGIC BRIEF</div>' +
-        '<h2 style="font-family:\'Noto Serif KR\',serif;font-size:22px;font-weight:700;color:#f5f0e6;margin:0 0 12px;line-height:1.45;">' + nm + '님 맞춤 종합 핵심</h2>' +
-        '<button type="button" class="sajux-pdf-wide-btn" onclick="window.print()">PDF 다운로드 및 영구 보관</button>' +
+        '<div style="font-size:10px;letter-spacing:0.18em;color:rgba(199,167,106,0.72);margin-bottom:10px;font-weight:700;">사주X 프리미엄 브리프</div>' +
+        '<h2 style="font-family:\'Noto Serif KR\',serif;font-size:22px;font-weight:700;color:#f5f0e6;margin:0 0 14px;line-height:1.45;">[ VIP 종합 전략 요약 ]</h2>' +
+        '<button type="button" class="sajux-pdf-wide-btn" onclick="window.print()">PDF로 저장 (와이드)</button>' +
         '<p class="premium-thesis" style="margin:0 0 14px;font-size:14.5px;line-height:1.9;color:#efe9dc;font-weight:600;">' + coreFusion + '</p>' +
-        '<div style="font-size:11px;color:var(--gold);letter-spacing:1px;margin:16px 0 8px;">최종 전략 지침서 · 4대 모듈</div>' +
+        '<div style="font-size:11px;color:var(--gold);letter-spacing:1px;margin:16px 0 8px;">4대 실행 모듈</div>' +
         '<ul class="premium-points" style="margin:0;padding-left:18px;color:#d8d3c9;line-height:1.9;font-size:13.5px;">' +
-        modules.map(function(m){ return '<li style="margin:0 0 11px;"><strong style="color:#f3e7c8;">[' + m.title + ']</strong> ' + m.body + '</li>'; }).join('') +
+        modules.map(function(m){ return '<li style="margin:0 0 11px;"><strong style="color:#f3e7c8;">' + m.title + '</strong> ' + m.body + '</li>'; }).join('') +
         '</ul>' +
         '<div style="margin-top:20px;padding:14px 16px;border-radius:10px;background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.06);font-size:12.5px;line-height:1.78;color:#aaa;">' +
         '<div style="color:#c7a76a;font-weight:700;margin-bottom:6px;">열람·PDF 안내</div>' +
@@ -2506,7 +2520,7 @@ ${name}님은 ${seasonKr}에 태어났습니다. 이 계절의 기운이 사주 
     const hH = hPillar.h ? (typeof hPillar.h==='string' ? hPillar.h : hPillar.h.join('')) : '';
 
     return `<div class="report-chapter chapter-start">
-        <h3 class="ch-title">Chapter 1. 태어난 순간의 별자리 지도 — ${name}님의 인생 흐름</h3>
+        <h3 class="ch-title">[ 01. 원국 해부 ] — 태어난 순간의 별자리 지도 — ${name}님의 인생 흐름</h3>
 
 
         <div style="background:rgba(199,167,106,0.07);border-left:4px solid var(--gold);padding:20px 22px;border-radius:0 12px 12px 0;margin:24px 0;">
@@ -2568,7 +2582,7 @@ function buildChapter2_Wuxing(data) {
         return `<div class="wuxing-bar-row" style="display:flex;align-items:center;gap:12px;margin-bottom:11px;"><div style="min-width:52px;text-align:right;font-size:13px;font-weight:${isMax?800:500};color:${isMax?'var(--gold)':'#bbb'};">${ohChar} ${OHKR2[k]}</div><div style="flex:1;background:rgba(255,255,255,0.08);border-radius:6px;height:14px;overflow:hidden;border:1px solid rgba(255,255,255,0.06);"><div style="width:${barW}%;height:100%;background:linear-gradient(90deg,${col},rgba(255,255,255,0.15));border-radius:5px;transition:width .3s;"></div></div><div style="min-width:40px;font-size:13px;font-weight:700;color:${isMax?'var(--gold)':'#999'};">${pct}%</div>${isMax?'<span style="font-size:9px;background:rgba(199,167,106,0.25);color:var(--gold);padding:2px 6px;border-radius:6px;">최다</span>':''}${isMin?'<span style="font-size:9px;color:#666;padding:2px 6px;">최소</span>':''}</div>`;
     }).join('');
     return `<div class="report-chapter">
-        <h3 class="ch-title">Chapter 2. 내 안의 다섯 물결 — 강점과 빈틈의 균형</h3>
+        <h3 class="ch-title">[ 02. 에너지 분석 ] — 내 안의 다섯 물결 — 강점과 빈틈의 균형</h3>
         <div class="wuxing-bar-chart" style="background:rgba(0,0,0,0.22);border:1px solid rgba(199,167,106,0.2);border-radius:12px;padding:18px 20px;margin:0 0 20px;">
             <div style="font-size:12px;font-weight:800;color:var(--gold);margin-bottom:14px;letter-spacing:0.5px;">오행 비율 — 가로 막대 그래프</div>
             ${balanceRows}
@@ -2633,7 +2647,7 @@ function buildChapter2_Wuxing(data) {
 
         <div style="background:rgba(199,167,106,0.05);border-radius:12px;padding:22px;margin:24px 0;border:1px solid rgba(199,167,106,0.1);">
             <div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:18px;letter-spacing:1px;">&#9670; 오행 균형을 잡는 개운법 — ${minKr} 기운 보충 처방</div>
-            <p style="font-size:13.5px;color:#ccc;line-height:1.9;margin:0 0 16px;">부족한 오행을 보완하는 것이 가장 빠른 개운법입니다. 색깔·방향·음식·직업 환경을 통해 일상에서 자연스럽게 보충가능합니다. 즉시 실행하십시오. 의식하지 않으면 평생 결핍의 그림자를 달고 삽니다. 의식하면 그 결핍이 성장 동력으로 전환됩니다.</p>
+            <p style="font-size:13.5px;color:#ccc;line-height:1.9;margin:0 0 16px;">부족한 오행을 보완하는 것이 가장 빠른 개운법입니다. 색깔·방향·음식·직업 환경을 통해 일상에서 자연스럽게 보완하실 수 있습니다. 의식하지 않으면 평생 결핍의 그림자를 달고 삽니다. 의식하면 그 결핍이 성장 동력으로 전환됩니다. 색과 방향을 바꾸는 것만으로도 마음의 속도가 느려져 실수 비용이 줄어듭니다.</p>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
                 ${({wood:`
                 <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:12px;"><div style="font-size:11px;color:#4fc3a1;margin-bottom:6px;">목 기운 보충 — 색상·방향</div><p style="font-size:12.5px;color:#bbb;line-height:1.8;margin:0;">초록색·청색·청록색 계열의 옷과 인테리어를 적극 활용하십시오. 동쪽·동남쪽 방향의 사무실·침실 배치가 목 기운을 강화합니다. 봄에는 특히 녹색 식물을 가까이 두십시오.</p></div>
@@ -2705,7 +2719,7 @@ function buildChapter3_Sipseong(data) {
     }).join('');
     const sipComboText = secondSip ? `주도 기질 [${mainSip}]에 보조 기질 [${secondSip}]이 결합된 당신은 단순한 한 가지 유형을 넘어선 다층적 인물입니다. 결정적인 순간에는 ${mainSip}의 본능이 발동하고, 일상적 상호작용에서는 ${secondSip}의 패턴이 자연스럽게 드러납니다. 예를 들어 식신+상관의 조합은 창의력(식신)에 혁신성(상관)이 더해져 기존 틀을 완전히 새롭게 재창조하는 능력이 있습니다. 정재+정관 조합은 안정적 재물 감각(정재)에 사회적 명예(정관)가 결합하여 조직 내 재무 전문가로 독보적 위치를 만듭니다. 이 두 기질의 시너지를 이해하면 자신의 행동 패턴을 훨씬 더 정확하게 예측하고 제어가능합니다. 즉시 실행하십시오. 파트너나 동료를 선택할 때도 이 두 기질을 동시에 보완해줄 수 있는 사람을 찾으십시오.` : '';
     return `<div class="report-chapter">
-        <h3 class="ch-title">Chapter 3. 마음의 열 가지 얼굴 — 사회의 나, 내면의 나</h3>
+        <h3 class="ch-title">[ 03. 십성 구조 ] — 마음의 열 가지 얼굴 — 사회의 나, 내면의 나</h3>
         <div class="sipseong-bar-chart" style="background:rgba(0,0,0,0.22);border:1px solid rgba(199,167,106,0.2);border-radius:12px;padding:18px 20px;margin:0 0 18px;">
             <div style="font-size:12px;font-weight:800;color:var(--gold);margin-bottom:14px;letter-spacing:0.5px;">십성 비율 — 가로 막대 그래프</div>
             ${sipRows || '<p style="color:#888;font-size:12px;margin:0;">십성 분포 데이터를 불러오는 중입니다.</p>'}
@@ -2858,7 +2872,7 @@ function buildChapter4_Wealth(data) {
     }).join('');
 
     return `<div class="report-chapter">
-        <h3 class="ch-title">Chapter 4. 돈의 흐름이 열리는 때 — 쌓이고 번지는 재물운</h3>
+        <h3 class="ch-title">[ 04. 재물 전략 ] — 돈의 흐름이 열리는 때 — 쌓이고 번지는 재물운</h3>
         ${buildDomainSummaryTable({
             boxTitle:'재물운 핵심 요약',
             keyword:'현금흐름 · 리스크 한도 · 실행 타이밍',
@@ -3228,7 +3242,7 @@ function buildSewunLoop(data) {
     }
 
     return `<div class="report-chapter">
-        <h3 class="ch-title">Chapter 10. 앞으로 10년의 바람결 — 세운 흐름 읽기</h3>
+        <h3 class="ch-title">[ 10. 세운 십년 ] — 앞으로 10년의 바람결 — 세운 흐름 읽기</h3>
         <p class="ch-text">대운이 10년의 기후라면, 세운은 그해의 날씨입니다. 올해부터 향후 10년간 당신에게 어떤 바람이 불고 어떤 해가 뜰지 예측합니다. 매년 당신의 원국 기운이 그해의 기운과 충돌하며 만들어내는 서사입니다. 용신 기운이 들어오는 해는 집중 공략하고, 기신 기운의 해는 수비에 집중하십시오.</p>
 
         <div style="background:rgba(199,167,106,0.06);border-radius:10px;padding:18px;margin:20px 0;border:1px solid rgba(199,167,106,0.15);">
@@ -3328,7 +3342,7 @@ function buildWolunLoop(data) {
     }).join('');
 
     return `<div class="report-chapter">
-        <h3 class="ch-title">Chapter 11. ${yr}년, 열두 달의 감정 곡선 — 월운 캘린더</h3>
+        <h3 class="ch-title">[ 13. 월운 12개월 ] — ${yr}년 열두 달의 전략 지도</h3>
         <p class="ch-text">세운이 한 해의 날씨라면, 월운은 그날의 시간별 일기예보입니다. 언제 액셀을 밟고 언제 브레이크를 밟아야 하는지 — 12개월 전략 지도를 활용하십시오. 용신 기운의 달에는 중요한 결정과 행동을, 기신 기운의 달에는 수비와 내공 축적에 집중하십시오.</p>
         <div style="display:flex;flex-direction:column;gap:10px;width:100%;">
             ${rows}
@@ -3358,7 +3372,7 @@ function buildChapter5_Career(data) {
         ? '재성이 없는 구조입니다. 돈을 직접 쫓기보다 명예·전문성·브랜드 가치를 올릴 때 돈이 그림자처럼 따라옵니다.'
         : '재성이 적정 수준입니다. 안정적 수입 기반 위에 전문성을 쌓는 것이 재물 성장의 핵심 포인트입니다.';
     return `<div class="report-chapter">
-        <h3 class="ch-title">Chapter 5. 나를 빛나게 하는 무대 — 일과 소명의 방향</h3>
+        <h3 class="ch-title">[ 05. 직업·소명 ] — 나를 빛나게 하는 무대 — 일과 소명의 방향</h3>
         ${buildDomainSummaryTable({
             boxTitle:'직업운 핵심 요약',
             keyword:'권한 범위 · 성과 기준 · 평판 자산',
@@ -3414,7 +3428,7 @@ function buildChapter6_Love(data) {
     const meetTiming = name+'님에게 인연의 문이 열리는 시기는 대운과 세운의 흐름에 따라 달라집니다. 중요한 것은 타이밍이 왔을 때 사회적 활동 반경이 충분히 열려 있어야 한다는 점입니다. 평소보다 새로운 사람을 만나는 기회를 의식적으로 늘리는 것이 가장 실질적인 전략입니다.';
 
     return `<div class="report-chapter">
-        <h3 class="ch-title">Chapter 6. 마음이 머무는 자리 — 인연과 사랑의 결</h3>
+        <h3 class="ch-title">[ 06. 애정·인연 ] — 마음이 머무는 자리 — 인연과 사랑의 결</h3>
         ${buildDomainSummaryTable({
             boxTitle:'애정운 핵심 요약',
             keyword:'리듬 합 · 대화 규칙 · 장기 신뢰',
@@ -3503,11 +3517,12 @@ function buildChapter7_Hidden(data) {
             + `<div><span style="font-size:11px;color:var(--gold);letter-spacing:1px;">${p.n} — ${BKR[ji]||ji}(${ji})</span>`
             + `<div style="font-size:17px;font-weight:700;color:#ddd;margin-top:4px;">숨겨진 천간: ${hiddenKr}</div></div>`
             + `<span style="font-size:12px;color:#888;">지장간 ${hidden.length}개</span></div>`
-            + `<p style="font-size:13.5px;color:#bbb;line-height:1.9;margin:0;">${meaning}</p>`
+            + `<p style="font-size:13.5px;color:#ddd;line-height:1.9;margin:0 0 14px;">${meaning}</p>`
+            + `<p style="font-size:12.8px;color:#aaa;line-height:1.88;margin:0;">직업적으로는 이 지장간이 발동하는 해·월에 갑자기 “평소와 다른 나”가 나타날 수 있습니다. 돈과 관련해서는 검증되지 않은 제안이나 단기 수익 유혹이 들어올 때 내면의 욕망이 커지기 쉬우니, 계약서·지분·정산 조항을 반드시 거치십시오. 관계에서는 숨겨진 기대가 표면으로 떠오르며 오해가 커질 수 있으니, 감정이 올라온 날의 큰 결정은 하루 미루십시오.</p>`
             + `</div>`;
     }).filter(Boolean).join("");
     return `<div class="report-chapter chapter-start">`
-        + `<h3 class="ch-title">Chapter 7. 보이지 않는 뿌리의 힘 — 숨은 재능과 내면의 결</h3>`
+        + `<h3 class="ch-title">[ 07. 지장간·내면 ] — 보이지 않는 뿌리의 힘 — 숨은 재능과 내면의 결</h3>`
         + `<p class="ch-text">지장간은 겉으로 보이지 않는 마음의 뿌리입니다. 조용하지만 오래 남는 선택, 설명하기 어려운 끌림, 반복되는 감정의 방향은 대개 이 깊은 층에서 시작됩니다.</p>`
         + `<p class="ch-text">지장간은 평소에는 조용히 잠들어 있지만 세 가지 상황에서 강렬하게 발동합니다. 첫째, 해당 지장간 오행과 같은 대운이나 세운이 들어올 때입니다. 둘째, 인생의 극한 위기 상황에서 숨겨진 에너지가 폭발합니다. 셋째, 지장간 오행을 가진 특정 인물과의 만남이 이 에너지를 자극합니다. 지장간의 발동 시점을 파악하면 예상치 못한 자신의 모습이 언제 나타날지 미리 알 수 있습니다.</p>`
         + `<div style="background:rgba(199,167,106,0.07);border-left:3px solid var(--gold);padding:16px 20px;border-radius:0 10px 10px 0;margin:20px 0;">`
@@ -3540,7 +3555,7 @@ function buildChapter7_Hidden(data) {
         + `<p style="font-size:13px;color:#ccc;line-height:1.88;margin:0;">이 욕망이 채워지지 않을 때 사람은 불안하고, 채워질 때 진정한 만족을 느낍니다. 지장간의 발동 시점을 정확히 파악하면, 자신의 인생에서 언제 잠재력이 폭발하고 언제 내면의 갈등이 극대화되는지 미리 알 수 있습니다. 이것이 지장간 분석의 진짜 가치입니다.</p>`
         + `</div>`
         + `<div style="background:rgba(255,255,255,0.03);border-radius:10px;padding:18px;margin:16px 0;"><div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:10px;">&#9670; 지장간이 만드는 이중적 자아 — 왜 상황에 따라 다른 사람이 되는가</div><p style="font-size:13px;color:#ccc;line-height:1.88;margin:0 0 10px;">많은 사람들이 "나는 왜 상황에 따라 전혀 다른 사람이 되는 것 같은가?"라는 질문을 합니다. 회사에서는 조직적이고 논리적이지만 집에서는 감성적이고 즉흥적인 자신을 발견합니다. 이것이 지장간의 작동 원리입니다. 원국 천간에 드러난 기운이 사회적 페르소나라면, 지장간의 기운은 내면의 진짜 자아입니다. 두 자아 사이의 간격이 클수록 삶에서 더 큰 내적 갈등을 경험합니다. 이 갈등을 해소하는 방법은 지장간의 욕구를 억압하는 것이 아니라, 안전한 방식으로 표현하는 통로를 만드는 것입니다.</p><p style="font-size:13px;color:#ccc;line-height:1.88;margin:0;">지장간을 이해하면 자신의 이중적 모습을 결함이 아닌 다층적 능력으로 바라볼 수 있게 됩니다. 표면의 자아와 내면의 자아가 조화를 이룰 때, 당신은 가장 강력한 버전의 자신이 됩니다.</p></div>`
-        + `<p class="ch-text" style="margin-top:20px;">지장간은 대운이나 세운의 특정 기운이 들어올 때 활성화됩니다. 평소에 잠들어 있던 지장간의 에너지가 외부 기운과 만나 반응하면서 예상치 못한 사건과 기회가 생깁니다. 특히 지장간의 여기(餘氣), 중기(中氣), 정기(正氣) 순서로 에너지가 발현되는 시점을 이해하면 10년 단위 대운의 흐름 속에서 언제 어떤 일이 일어날지 더 정확하게 예측가능합니다. 즉시 실행하십시오.</p>`
+        + `<p class="ch-text" style="margin-top:20px;">지장간은 대운이나 세운의 특정 기운이 들어올 때 활성화됩니다. 평소에 잠들어 있던 지장간의 에너지가 외부 기운과 만나 반응하면서 예상치 못한 사건과 기회가 생깁니다. 특히 지장간의 여기(餘氣), 중기(中氣), 정기(正氣) 순서로 에너지가 발현되는 시점을 이해하면 10년 단위 대운의 흐름 속에서 언제 어떤 일이 일어날지 더 정확하게 읽으실 수 있습니다. 실행 일정은 달력에 옮겨 적고, 발동 시기 전후 2주는 회의·지출·관계 결정을 가볍게 유지하십시오.</p>`
         + `</div>`;
 }
 
@@ -3576,7 +3591,7 @@ function buildChapter8_Health(data) {
     }[maxWuxing] || '전반적인 건강 검진을 연 1회 이상 받으십시오.';
 
     return `<div class="report-chapter">
-        <h3 class="ch-title">Chapter 8. 몸이 보내는 조용한 신호 — 건강의 리듬과 회복</h3>
+        <h3 class="ch-title">[ 08. 건강·회복 ] — 몸이 보내는 조용한 신호 — 건강의 리듬과 회복</h3>
         ${buildDomainSummaryTable({
             boxTitle:'건강운 핵심 요약',
             keyword:'수면 리듬 · 검진 루틴 · 회복 탄력',
@@ -3584,8 +3599,7 @@ function buildChapter8_Health(data) {
             caution:'과로·야간 음주·통증 방치를 절대 지속하지 마십시오'
         })}
         <p class="ch-text">건강운은 몸만의 이야기가 아니라 마음의 날씨까지 함께 읽어야 풀립니다. 같은 피로도 어떤 사람에게는 지나가지만, 어떤 사람에게는 오래 남는 이유가 여기 숨어 있습니다.</p>
-
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0;">
+        <p class="ch-text">직장에서는 과로가 이어질수록 협상력과 숫자 감각이 흐려져 재물 손실로 이어지기 쉽습니다. 관계에서는 컨디션이 무너질 때 사소한 말다툼이 큰 갈등으로 비약하는 경우가 많으니, 수면·식사·운동을 가계부처럼 관리하십시오.</p>
             <div style="background:rgba(231,76,60,0.07);border-radius:10px;padding:16px;">
                 <div style="font-size:11px;color:rgba(255,120,120,0.8);margin-bottom:8px;letter-spacing:1px;">⚠ 평생 주요 취약 장기</div>
                 <div style="font-size:17px;font-weight:700;color:#ff8a80;margin-bottom:6px;">${organ}</div>
@@ -3654,7 +3668,7 @@ function buildPartHeader(num, title, subtitle, anchorId) {
     var color = c[num] != null ? c[num] : '199,167,106';
     var border = h[num] != null ? h[num] : '#c7a76a';
     var icon = ic[num] != null ? ic[num] : '📌';
-    return '<div' + idAttr + ' class="report-chapter" style="background:linear-gradient(135deg,rgba(' + color + ',0.09),rgba(0,0,0,0));border-top:2px solid ' + border + ';border-radius:16px;padding:32px 36px;margin:48px 0 8px;page-break-before:always;"><div style="font-size:11px;color:' + border + ';letter-spacing:3px;margin-bottom:10px;font-weight:700;">PART ' + num + '</div><div style="font-size:26px;font-weight:700;color:#fff;margin-bottom:8px;">' + icon + ' ' + title + '</div><div style="font-size:13px;color:rgba(255,255,255,0.4);letter-spacing:1px;">' + subtitle + '</div></div>';
+    return '<div' + idAttr + ' class="report-chapter" style="background:linear-gradient(135deg,rgba(' + color + ',0.09),rgba(0,0,0,0));border-top:2px solid ' + border + ';border-radius:16px;padding:32px 36px;margin:48px 0 8px;page-break-before:always;"><div style="font-size:11px;color:' + border + ';letter-spacing:0.12em;margin-bottom:10px;font-weight:700;">[ 제 ' + num + '부 ]</div><div style="font-size:26px;font-weight:700;color:#fff;margin-bottom:8px;">' + icon + ' ' + title + '</div><div style="font-size:13px;color:rgba(255,255,255,0.4);letter-spacing:1px;">' + subtitle + '</div></div>';
 }
 
 // VIP 근거: 원국 8자 표 + 자미두수 명궁 (프리미엄 요약 직후 배치)
@@ -3671,7 +3685,7 @@ function buildVipEvidenceBlock(data) {
     function hanCol(h){ return ohColor(STEM_OH[h]||BRNCH_OH[h]||'earth'); }
     var ev = '';
     ev += '<div id="sec-vip-evidence" class="report-chapter chapter-start vip-evidence-block" style="padding-top:4px;margin-bottom:32px;">';
-    ev += '<div style="font-size:11px;color:rgba(199,167,106,0.75);letter-spacing:3px;margin-bottom:8px;font-weight:700;">DATA · 원국 근거</div>';
+    ev += '<div style="font-size:11px;color:rgba(199,167,106,0.75);letter-spacing:0.12em;margin-bottom:8px;font-weight:700;">[ 원국 근거·만세력 데이터 ]</div>';
     // ── ① 만세력 원국 8자 표 ──
     ev += '<div style="font-size:13px;color:var(--gold);font-weight:800;letter-spacing:1.2px;line-height:1.45;margin-bottom:12px;">① 타고난 8자 — 사주 원국</div>';
     if(pillars.length>=2){
@@ -3856,18 +3870,18 @@ function buildVipEvidenceBlock(data) {
         '亥':'정서적 안전감이 최우선입니다. 혼자 회복하는 시간을 존중받을 때 관계 만족도가 높아집니다.'
     };
     var ZM_RISK={
-        '子':'과분석으로 실행 시점을 놓치기 쉽습니다. 결정 마감 시간을 먼저 정하세요.',
-        '丑':'안전지향이 지나치면 기회를 늦게 잡습니다. 소규모 실험으로 속도를 보완하세요.',
-        '寅':'초반 가속이 과하면 후반 체력이 떨어집니다. 시작 전에 자원 배분을 고정하세요.',
+        '子':'과분석으로 실행 시점을 놓치기 쉽습니다. 결정 마감 시간을 먼저 정하십시오.',
+        '丑':'안전지향이 지나치면 기회를 늦게 잡습니다. 소규모 실험으로 속도를 보완하십시오.',
+        '寅':'초반 가속이 과하면 후반 체력이 떨어집니다. 시작 전에 자원 배분을 고정하십시오.',
         '卯':'관계 피로 누적을 주의해야 합니다. 회복 시간 없는 사교는 성과 효율을 낮춥니다.',
-        '辰':'변동 대응 중 기준이 흔들릴 수 있습니다. 손절·유지 기준을 숫자로 미리 정하세요.',
-        '巳':'몰입 과열로 시야가 좁아질 수 있습니다. 주 1회 외부 피드백 루틴을 두세요.',
-        '午':'성과 피크 구간 과부하를 주의해야 합니다. 일정의 20%는 회복 슬롯으로 비워 두세요.',
-        '未':'배려 과다로 자기 우선순위가 밀릴 수 있습니다. 의사결정 기준 1순위를 명확히 두세요.',
-        '申':'기회 과다로 집중력이 분산됩니다. 분기마다 핵심 목표를 2개 이하로 고정하세요.',
-        '酉':'완벽주의로 완료가 늦어질 수 있습니다. 충분히 좋음 기준을 먼저 합의하세요.',
-        '戌':'원칙 고수로 유연성이 떨어질 수 있습니다. 예외 처리 규칙을 사전에 정해두세요.',
-        '亥':'내면 소모가 쌓이면 회피 성향이 커집니다. 정기적인 리셋 루틴을 일정에 박아두세요.'
+        '辰':'변동 대응 중 기준이 흔들릴 수 있습니다. 손절·유지 기준을 숫자로 미리 정하십시오.',
+        '巳':'몰입 과열로 시야가 좁아질 수 있습니다. 주 1회 외부 피드백 루틴을 두십시오.',
+        '午':'성과 피크 구간 과부하를 주의해야 합니다. 일정의 20%는 회복 슬롯으로 비워 두십시오.',
+        '未':'배려 과다로 자기 우선순위가 밀릴 수 있습니다. 의사결정 기준 1순위를 명확히 두십시오.',
+        '申':'기회 과다로 집중력이 분산됩니다. 분기마다 핵심 목표를 2개 이하로 고정하십시오.',
+        '酉':'완벽주의로 완료가 늦어질 수 있습니다. 충분히 좋음 기준을 먼저 합의하십시오.',
+        '戌':'원칙 고수로 유연성이 떨어질 수 있습니다. 예외 처리 규칙을 사전에 정해 두십시오.',
+        '亥':'내면 소모가 쌓이면 회피 성향이 커집니다. 정기적인 리셋 루틴을 일정에 박아 두십시오.'
     };
     var zCareer=ZM_CAREER[yb]||'';
     var zMoney=ZM_MONEY[yb]||'';
@@ -4095,7 +4109,7 @@ function buildChapter6_SeYun(data){
         +'<span style="font-size:20px;font-weight:800;color:'+lc+';">'+curY+'년 · '+yKor+'년</span>'
         +'<span style="margin-left:auto;font-size:12px;background:rgba(255,255,255,0.06);padding:4px 12px;border-radius:20px;color:'+lc+';font-weight:700;">'+luck+'</span></div>'
         +'<p style="font-size:11px;color:#888;margin:0;line-height:1.6;width:100%;">천간 <b>'+OK[yGoh]+'</b> · 지지 <b>'+OK[yJoh]+'</b>'+(sewSipY?' · 세운 십성 <b>'+sewSipY+'</b>':'')+'</p></div></div>';
-    return'<div class="report-chapter chapter-start"><h3 class="ch-title">Chapter 10. '+curY+'년('+yKor+'년) 운세</h3>'+yearHead+fourStripY+bodyWrap+'<div style="margin-top:16px;font-size:11px;color:#666;">▼ 월별 세부 풀이는 월운 섹션을 참조하십시오</div></div>';
+    return'<div class="report-chapter chapter-start"><h3 class="ch-title">[ 10. 올해 세운 ] — '+curY+'년('+yKor+'년) 운세</h3>'+yearHead+fourStripY+bodyWrap+'<div style="margin-top:16px;font-size:11px;color:#666;">▼ 월별 세부 풀이는 월운 섹션을 참조하십시오</div></div>';
 }
 
 // ═══════════════════════════════════════════════════════
@@ -4135,7 +4149,7 @@ function buildChapter7_NextYears(data){
     var ny=yi(curY+1),nny=yi(curY+2);
     var nev=ev(ny),nnev=ev(nny);
     return '<div class="report-chapter chapter-start">'
-        +'<h3 class="ch-title">Chapter 11. 바로 앞에 다가온 시간 — 내년·내후년 운세</h3>'
+        +'<h3 class="ch-title">[ 11. 내년·내후년 ] — 바로 앞에 다가온 시간 — 내년·내후년 운세</h3>'
         +'<div style="width:100%;box-sizing:border-box;display:flex;flex-direction:column;gap:16px;">'
         +card(curY+1,ny,nev)+card(curY+2,nny,nnev)
         +'</div>'
@@ -4163,7 +4177,7 @@ function buildChapter8_NextDaewun(data){
     var judge=isGood?'황금 대운':isBad?'조심 대운':'안정 대운';
     var judgeColor=isGood?'#c7a76a':isBad?'#e08080':'#aaa';
     var DWNEXT={wood:name+'님의 다음 대운은 목(木)의 기운입니다. 새로운 도전과 시작의 에너지가 10년을 지배합니다. 이직·창업·학습·이사 — 새로운 판을 까는 모든 결정이 이 시기에 힘을 받습니다. 단, 너무 많은 것을 동시에 시작하려는 충동을 제어해야 합니다.',fire:name+'님의 다음 대운은 화(火)의 기운입니다. 사회적 인정과 성취의 에너지가 10년을 지배합니다. 가장 많이 노출되고 가장 많이 인정받는 10년입니다. 번영의 시기이나 건강과 재무 관리를 소홀히 하면 한 번에 무너질 수 있습니다.',earth:name+'님의 다음 대운은 토(土)의 기운입니다. 안정과 축적의 에너지가 10년을 지배합니다. 서두르지 않아도 됩니다. 지금까지 쌓아온 것들이 결실을 맺는 10년입니다.',metal:name+'님의 다음 대운은 금(金)의 기운입니다. 전문성과 결단의 에너지가 10년을 지배합니다. 한 분야에 집중하면 타의 추종을 불허하는 전문가가 되는 10년입니다.',water:name+'님의 다음 대운은 수(水)의 기운입니다. 통찰과 지혜의 에너지가 10년을 지배합니다. 정보와 인맥이 재산이 되는 10년입니다.'};
-    return '<div class="report-chapter chapter-start"><h3 class="ch-title">Chapter 12. 다음 물결을 타는 법 — 차기 대운 집중 해석</h3>'
+    return '<div class="report-chapter chapter-start"><h3 class="ch-title">[ 12. 차기 대운 ] — 다음 물결을 타는 법 — 차기 대운 집중 해석</h3>'
         +'<div style="display:flex;align-items:center;gap:16px;background:rgba(199,167,106,0.07);border-radius:12px;padding:16px 20px;margin-bottom:20px;">'
         +'<div style="font-size:28px;font-weight:700;color:'+judgeColor+';">'+nextDW.name+'</div>'
         +'<div><div style="font-size:11px;color:#888;margin-bottom:4px;">'+nextDW.age+'세부터 10년</div>'
@@ -4178,7 +4192,7 @@ function buildChapter8_NextDaewun(data){
 function buildChapter9_Monthly(data){
     var name=data.name||'고객';
     if(typeof buildWolunLoop==='function') return buildWolunLoop(data);
-    return '<div class="report-chapter chapter-start"><h3 class="ch-title">Chapter 13. 달마다 달라지는 결 — 월운 12개월</h3><p style="color:#aaa;">월운 데이터를 불러오는 중입니다.</p></div>';
+    return '<div class="report-chapter chapter-start"><h3 class="ch-title">[ 13. 월운 12개월 ] — 달마다 달라지는 결 — 월운 12개월</h3><p style="color:#aaa;">월운 데이터를 불러오는 중입니다.</p></div>';
 }
 
 // ═══════════════════════════════════════════════════════
@@ -4205,7 +4219,7 @@ function buildChapter9_Remedy(data) {
     }[yong] || {good:'흰색',bad:'검정',dir:'서쪽',num:'4, 9',gem:'백수정',food:'매운맛',time:'가을',guien:'토 기운 일간'};
 
     return `<div class="report-chapter">
-        <h3 class="ch-title">Chapter 9. 흐름을 바꾸는 작은 습관 — 일상 개운 가이드</h3>
+        <h3 class="ch-title">[ 09. 일상 개운 ] — 흐름을 바꾸는 작은 습관 — 일상 개운 가이드</h3>
         <p class="ch-text">사주는 운명의 지도입니다. 지도가 있다면 그 지형에 맞게 전략을 바꿀 수 있습니다. 용신인 <b style="color:var(--gold);">${yongKr}</b> 기운을 생활 속에 쌓아가는 것이 당신 인생의 가장 강력한 개운법입니다. 큰 의식이나 특별한 노력이 필요한 것이 아닙니다. 매일의 선택 — 색깔, 방향, 음식, 인연 — 이 쌓이면 운의 흐름이 바뀝니다.</p>
 
         <table class="remedy-checklist-table" style="width:100%;border-collapse:collapse;margin:18px 0;background:rgba(0,0,0,0.22);border:1px solid rgba(199,167,106,0.28);border-radius:12px;overflow:hidden;font-size:12px;">
@@ -4288,6 +4302,49 @@ function buildChapter9_Remedy(data) {
     </div>`;
 }
 
+/** 원국·80년 대운 기반 인생 대서사시 (만세력 원국 표 직후 배치) */
+function buildLifePanoramaSection(data) {
+    var name = data.name || '고객';
+    var pillars = data.pillars || [];
+    var yong = data.yong || 'wood';
+    var gi = data.gi || 'metal';
+    var OHK = { wood: '목', fire: '화', earth: '토', metal: '금', water: '수' };
+    var yKr = OHK[yong] || '용신';
+    var gKr = OHK[gi] || '기신';
+    var rows = data.daeunRows || data.daewunList || [];
+    var stem = data.dayStem || '';
+    var branch = data.dayBranch || '';
+    var yb = data.yearBranch || '';
+    var mb = data.monthBranch || '';
+    var env = yb ? ('년지 기운이 초년 환경의 뼈대를 이루며, ' + (mb ? '월지는 부모·직업 초기 무대의 온도를 형성합니다.' : '월지는 사회 첫 무대의 온도를 형성합니다.')) : '원국 사주는 태어난 시점의 우주 배치를 고스란히 담고 있습니다.';
+    var dwN = Array.isArray(rows) ? rows.length : 0;
+    var dwBrief = '';
+    if (dwN > 0) {
+        var pick = Math.min(8, dwN);
+        for (var i = 0; i < pick; i++) {
+            var r = rows[i];
+            var nm = (r && (r.name || (r.gz && r.gz[0] + r.gz[1]) || '')) || '';
+            var ag = (r && (r.age != null ? r.age : r.startAge)) != null ? String(r.age != null ? r.age : r.startAge) : String(i * 10);
+            dwBrief += ' ' + ag + '세부터 약 10년간 ' + nm + ' 대운이 이어지며, 그 구간마다 재물·직업·관계의 우선순위가 바뀝니다.';
+        }
+        if (dwN > 8) dwBrief += ' 이후 대운도 같은 방식으로 계절이 바뀌므로, 80년 전체를 한 줄기로 읽으시면 큰 그림이 선명해집니다.';
+    } else {
+        dwBrief = ' 대운 데이터가 연결되면 10년 단위로 인생 계절이 더 선명하게 드러납니다. 만세력에서 대운표를 확인하신 뒤 이 장을 다시 읽으시면 서사의 밀도가 높아집니다.';
+    }
+    var p1 = '[초년·환경] ' + name + '님께서 첫 숨을 내쉰 시점의 간지 구조는 ' + stem + branch + ' 일간을 중심으로 세워져 있습니다. ' + env + ' 가정의 경제적·정서적 밀도, 어른들의 기대, 그리고 언어와 규범이 처음 각인되는 방식까지 이 초기 층위에 포함됩니다. 이 뿌리는 이후 직업에서의 권한 감각, 재물에 대한 안전 욕구, 관계에서의 거리 설정에 그림자처럼 따라붙습니다. 초년을 “운명의 선언”이 아니라 “해석 가능한 출발 조건”으로 읽으실 때, 이후 선택의 책임을 스스로 짊어지기가 한결 수월해집니다. 실제 직장·재무·관계에서 이는 “첫 직장·첫 월급·첫 대출”의 심리적 각도까지 함께 형성됩니다.';
+    var p2 = '[청년·투쟁] 사회에 발을 들이며 겪는 첫 번째 기복은 대운의 천간·지지가 일간과 맺는 십성 관계에서 비롯됩니다.' + dwBrief + ' 청년기에는 검증 가능한 실력과 문서화된 성과가 곧 신용으로 전환되므로, 감정적 확장보다 계약·이력·정산 체계를 먼저 고정하십시오. 기신(' + gKr + ') 기운이 강하게 개입하는 10년에는 승진이나 창업보다 손실 한도와 수면 루틴을 지키는 것이 장기적으로 더 큰 도약의 발판이 됩니다. 동업 제안·연애 속도·친구 보증은 이 시기에 특히 비용이 크게 붙을 수 있으니, 서면·한도·회수 조건을 선제적으로 고정하십시오.';
+    var p3 = '[중년·성취] 용신(' + yKr + ') 기운이 대운·세운에서 동시에 받쳐 주는 구간이 인생의 황금기로 열리는 경우가 많습니다. 이 시기에는 수익 파이프라인을 넓히되, 검증된 채널에만 자본을 묶고 조직 내에서의 역할·권한 범위를 서면으로 명확히 하십시오. 배우자·동업자와의 현금흐름 규칙을 미리 합의해 두면 애정과 재물이 서로 깎아먹지 않습니다. 황금기는 “모든 것을 얻는 때”가 아니라 “선택의 질이 평생 자산으로 남는 때”로 이해하시는 편이 안전합니다. 커리어에서는 브랜드·직함보다 현금흐름과 핵심 고객의 재구매율이 우선 지표가 되어야 합니다.';
+    var p4 = '[말년·귀결] 말년운은 시주와 말년 대운의 기운이 함께 말해 줍니다. 죽음은 흉한 사건이 아니라 생의 마지막 전환으로, 원국에서 과다했던 오행이나 공망이 걸린 기둥이 “비워지는 경험”을 어떻게 받아들일지와 연결됩니다. 이 시기에는 남겨질 사람들에게 남는 부담을 줄이기 위해 의료·유언·자산 명세를 차분히 정리하십시오. 삶의 마무리는 패배가 아니라, 지금까지 쌓아 온 서사를 한 권의 책으로 엮어 내리는 과정입니다. 말년에야 비로소 드러나는 평판과 관계의 결은, 중년까지 쌓아 온 신용의 총합이라는 점을 잊지 마십시오.';
+    return '<div id="sec-life-panorama" class="report-chapter chapter-start" style="margin:28px 0 40px;padding:22px 20px;border-radius:14px;border:1px solid rgba(199,167,106,0.28);background:linear-gradient(180deg,rgba(199,167,106,0.08),rgba(0,0,0,0.12));">'
+        + '<div style="font-size:11px;letter-spacing:0.2em;color:rgba(199,167,106,0.85);margin-bottom:10px;font-weight:700;">인생 일대기</div>'
+        + '<h2 style="font-family:Noto Serif KR,serif;font-size:22px;font-weight:800;color:#f5f0e6;margin:0 0 16px;line-height:1.45;">당신의 대서사시 — 태어남에서 귀결까지</h2>'
+        + '<p style="font-size:13.5px;color:#ddd;line-height:2;margin:0 0 14px;">' + p1 + '</p>'
+        + '<p style="font-size:13.5px;color:#ddd;line-height:2;margin:0 0 14px;">' + p2 + '</p>'
+        + '<p style="font-size:13.5px;color:#ddd;line-height:2;margin:0 0 14px;">' + p3 + '</p>'
+        + '<p style="font-size:13.5px;color:#ddd;line-height:2;margin:0;">' + p4 + '</p>'
+        + '</div>';
+}
+
 // ===================================================================
 // buildCoverPage: 표지 페이지
 // ===================================================================
@@ -4302,7 +4359,7 @@ function buildCoverPage(data) {
 // ===================================================================
 function buildBookIntroPage(data) {
     return `<div id="sec-book-intro" class="toc-page chapter-start book-intro-page" style="padding:88px 42px 96px;border-bottom:1px solid rgba(199,167,106,0.12);margin-bottom:56px;max-width:760px;margin-left:auto;margin-right:auto;text-align:center;">
-        <div style="font-size:10px;letter-spacing:0.35em;color:rgba(199,167,106,0.45);margin-bottom:28px;font-weight:600;">INTRODUCTION</div>
+        <div style="font-size:10px;letter-spacing:0.2em;color:rgba(199,167,106,0.75);margin-bottom:28px;font-weight:700;">[ 사주X 분석 개요 ]</div>
         <p style="font-size:15px;color:rgba(228,232,240,0.92);line-height:2.02;margin:0;font-weight:300;letter-spacing:0.01em;">
             사주X는 X-파일처럼, 고객님의 깊은 내면과 흐름을 조용히 비춰보는 비밀문서입니다.<br/><br/>또한 사주X의 X는 사주를 이루는 네 개의 기둥이 서로 이어져 완성되는, 한 사람의 운명 구조를 상징합니다.
         </p>
@@ -4371,7 +4428,7 @@ function buildForewordPage(data) {
     const name = data.name || '고객';
     const accessLine = formatReportAccessLine(data);
     return `<div id="sec-book-foreword" class="toc-page chapter-start book-foreword-page" style="padding:56px 36px 72px;border-bottom:1px solid rgba(199,167,106,0.12);margin-bottom:40px;max-width:700px;margin-left:auto;margin-right:auto;">
-        <div style="font-size:10px;letter-spacing:0.35em;color:rgba(199,167,106,0.45);margin-bottom:16px;font-weight:600;">GUIDE & NOTICE</div>
+        <div style="font-size:10px;letter-spacing:0.2em;color:rgba(199,167,106,0.75);margin-bottom:16px;font-weight:700;">[ 이용 안내 ]</div>
         <h2 style="font-family:Noto Serif KR,serif;font-size:28px;font-weight:700;color:#fff;margin:0 0 18px;">이용 안내</h2>
 
         <div style="text-align:left;padding:16px 18px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(199,167,106,0.14);margin-bottom:14px;">
@@ -4404,7 +4461,7 @@ function buildTOC(data) {
         { head: 'Ⅰ. VIP 대시보드', sub: '요약 및 원국', items: [
             { t: '브랜드 소개 · 고객 표지 · 이용 안내', s: '톤앤매너 · 표지 정보 · 법적·보관 안내', p: '—' },
             { t: '맞춤 종합 핵심 · 원국 DATA', s: '전략 브리프 · 만세력 근거 · 자미두수', p: '—' },
-            { t: 'PART 1 — 당신이라는 사람', s: '본성 · 환경 · 인생 서사', p: '8p' }
+            { t: '[ 제 1부 ] 당신이라는 사람', s: '본성 · 환경 · 인생 서사', p: '8p' }
         ]},
         { head: 'Ⅱ. 하드웨어 스펙 분석', sub: '오행 및 십성', items: [
             { t: '오행 완전 해부', s: '분포 · 과다·부족 · 건강 연결', p: '7p' },
@@ -4435,7 +4492,7 @@ function buildTOC(data) {
     });
 
     return '<div class="toc-page" style="padding:60px 40px 80px;border-bottom:1px solid rgba(199,167,106,0.1);margin-bottom:48px;">' +
-        '<div style="font-size:10px;letter-spacing:5px;color:rgba(199,167,106,0.5);margin-bottom:14px;">TABLE OF CONTENTS</div>' +
+        '<div style="font-size:10px;letter-spacing:0.22em;color:rgba(199,167,106,0.75);margin-bottom:14px;font-weight:700;">[ 리포트 핵심 목차 ]</div>' +
         '<div style="font-family:Noto Serif KR,serif;font-size:30px;font-weight:700;color:#fff;margin-bottom:6px;">목차</div>' +
         '<div style="font-size:13px;color:#666;margin-bottom:32px;">X-SAJU MASTER — 컨설팅 보고서형 5대 파트 구성</div>' +
         '<div style="width:60px;height:2px;background:var(--gold);margin-bottom:28px;opacity:0.4;"></div>' +
@@ -4447,6 +4504,7 @@ function buildTOC(data) {
 }
 
 function buildChapterPersonality(data) {
+    const name = data.name || '고객';
     const stemEl = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'}[data.dayStem] || 'earth';
     const iljuKey = (data.dayStem || '') + (data.dayBranch || '');
     const dbEntry = window.SAJU_DB && window.SAJU_DB.ILJU && window.SAJU_DB.ILJU[iljuKey] ? window.SAJU_DB.ILJU[iljuKey] : {};
@@ -4487,8 +4545,9 @@ function buildChapterPersonality(data) {
     const iljuTitle = dbEntry.title || '당신의 일주';
 
     return `<div class="report-chapter" id="sec-personality">
-        <h3 class="ch-title">Chapter 10. 당신이라는 결 — 성향의 온도와 결</h3>
-        <p class="ch-text" style="margin-bottom:20px;">[${iljuTitle}]을 타고난 당신. 사주에서 성격은 선천적으로 새겨진 코드입니다. 이 코드를 정확히 아는 사람과 모르는 사람 사이에는, 같은 상황에서도 전혀 다른 결과가 나옵니다.</p>
+        <h3 class="ch-title">[ 부록 A. 성향 분석 ] — 당신이라는 결 — 성향의 온도와 결</h3>
+        <p class="ch-text" style="margin-bottom:14px;">일간 오행은 직장에서의 판단 속도, 재물에서의 리스크 취향, 관계에서의 거리 설정까지 한꺼번에 묶인 기질 축입니다. 아래 강·약점은 “성격 유행어”가 아니라, ${name}님께서 실제로 겪으실 마찰 패턴(보고 체계·회의 문화·돈 쓰는 순서·연락 빈도)을 기준으로 읽으시면 됩니다.</p>
+        <p class="ch-text" style="margin-bottom:20px;">[${iljuTitle}]${typeof getJosa === 'function' ? getJosa(iljuTitle, '을/를') : '을'} 타고난 당신. 사주에서 성격은 선천적으로 새겨진 코드입니다. 이 코드를 정확히 아는 사람과 모르는 사람 사이에는, 같은 상황에서도 전혀 다른 결과가 나옵니다. 커리어에서는 이 코드가 “승진 타이밍”보다 “번아웃 시점”을 더 정확히 예측하는 경우가 많으며, 재물에서는 충동 소비·투자 확대의 속도 조절과 직결됩니다. 관계에서는 애정 표현 방식과 갈등 회피 패턴으로 드러나므로, 상대에게 요구할 것과 스스로 줄일 것을 구분해 두십시오.</p>
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
             <div style="background:rgba(0,200,83,0.06);border-radius:12px;padding:18px;">
