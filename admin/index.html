@@ -126,6 +126,14 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--go
         <div class="hint">경도 보정은 정밀 시각 계산에 사용됩니다</div>
       </div>
       <hr class="divider">
+      <div class="form-row">
+        <div>
+          <label>고객 링크 발행 표기 (실명은 URL에 넣지 않음)</label>
+          <input type="text" id="issuer-name" placeholder="장경현" maxlength="40" onblur="saveIssuerName()">
+          <div class="hint">리포트·궁합 고객용 링크에 <code>by=장*현</code> 형태로 붙습니다. 이 브라우저에 저장됩니다.</div>
+        </div>
+      </div>
+      <hr class="divider">
       <button class="btn" onclick="saveCustomer()">💾 고객 저장</button>
     </div>
     <div class="card">
@@ -207,10 +215,20 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--go
           <select id="couple-expire"><option value="7">7일</option><option value="30" selected>30일</option><option value="60">60일</option><option value="0">무제한</option></select>
         </div>
       </div>
-      <button class="btn purple" onclick="generateCoupleLink()">💞 궁합 링크 생성</button>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button type="button" class="btn sec" onclick="previewCoupleReport()" style="flex:1;">👁 새 탭에서 궁합 미리보기</button>
+        <button type="button" class="btn purple" onclick="generateCoupleLink()" style="flex:1;">💞 궁합 링크 생성</button>
+      </div>
       <div id="couple-result" style="display:none;">
         <div class="link-box" id="couple-url-text"></div>
         <div style="margin-top:10px;font-size:12px;color:#888;">만료일: <span id="couple-expiry" style="color:var(--gold);"></span></div>
+        <div id="couple-preview-wrap" style="display:none;margin-top:14px;">
+          <button type="button" onclick="window.open(document.getElementById('couple-preview-wrap').dataset.url,'_blank','noopener,noreferrer')"
+            style="width:100%;padding:14px;background:rgba(124,141,255,0.12);border:1px solid var(--purple);border-radius:10px;color:#b0b8ff;font-size:14px;font-weight:600;cursor:pointer;">
+            👁 새 탭에서 궁합 미리보기 (만료 없음)
+          </button>
+          <div style="font-size:11px;color:#666;margin-top:8px;text-align:center;">확인 후 아래 링크를 고객에게 보내세요</div>
+        </div>
         <button class="btn sec" style="margin-top:10px;" onclick="copyLink('couple-url-text')">📋 링크 복사</button>
       </div>
     </div>
@@ -311,7 +329,45 @@ function dDayBadge(expAt){
   return '<span class="badge ok">D-'+diff+'</span>';
 }
 
-// ── 링크 빌더
+// ── 링크 빌더 (고객 전달용: 담당자 표기 마스킹 by=)
+function maskNameForLink(name){
+  const s=String(name||'').trim();
+  if(!s)return'';
+  if(s.length<=1)return'*';
+  if(s.length===2)return s.charAt(0)+'*';
+  return s.charAt(0)+'*'+s.charAt(s.length-1);
+}
+function saveIssuerName(){
+  try{
+    const el=document.getElementById('issuer-name');
+    if(el)localStorage.setItem('sajux_issuer_name',(el.value||'').trim()||'장경현');
+  }catch(e){}
+}
+function getIssuerMasked(){
+  saveIssuerName();
+  try{
+    const el=document.getElementById('issuer-name');
+    const raw=(el&&el.value.trim())||localStorage.getItem('sajux_issuer_name')||'장경현';
+    return maskNameForLink(raw);
+  }catch(e2){return maskNameForLink('장경현');}
+}
+function appendIssuerParam(p){
+  const m=getIssuerMasked();
+  if(m)p.set('by',m);
+}
+function appendCoupleSide(prefix,cust,p){
+  p.set(prefix+'_n',cust.name);
+  p.set(prefix+'_g',cust.gender);
+  p.set(prefix+'_c',cust.cal);
+  p.set(prefix+'_y',cust.y);p.set(prefix+'_mo',cust.mo);p.set(prefix+'_d',cust.d);
+  if(cust.unknown){
+    p.set(prefix+'_unk','1');
+    p.set(prefix+'_h',12);p.set(prefix+'_mi',0);
+  }else{
+    p.set(prefix+'_h',cust.h!=null?cust.h:12);
+    p.set(prefix+'_mi',cust.mi!=null?cust.mi:0);
+  }
+}
 function buildReportUrl(cust,expAt,unknown){
   const base='https://sajux.com/report/saju.html';
   const p=new URLSearchParams();
@@ -323,19 +379,19 @@ function buildReportUrl(cust,expAt,unknown){
   if(!unknown)p.set('mi',cust.mi);
   if(unknown)p.set('unk','1');
   if(expAt)p.set('exp',expAt);
-  p.set('v', Date.now()); // 캐시버스터
+  appendIssuerParam(p);
+  p.set('v', Date.now());
   return base+'?'+p.toString();
 }
 function buildCoupleUrl(a,b,expAt){
   const base='https://sajux.com/couple/';
   const p=new URLSearchParams();
-  p.set('a_n',a.name);p.set('a_g',a.gender);p.set('a_c',a.cal);
-  p.set('a_y',a.y);p.set('a_mo',a.mo);p.set('a_d',a.d);
-  p.set('a_h',a.h);p.set('a_mi',a.mi);
-  p.set('b_n',b.name);p.set('b_g',b.gender);p.set('b_c',b.cal);
-  p.set('b_y',b.y);p.set('b_mo',b.mo);p.set('b_d',b.d);
-  p.set('b_h',b.h);p.set('b_mi',b.mi);
+  appendCoupleSide('a',a,p);
+  appendCoupleSide('b',b,p);
+  p.set('rel','lover');
   if(expAt)p.set('exp',expAt);
+  appendIssuerParam(p);
+  p.set('v', Date.now());
   return base+'?'+p.toString();
 }
 
@@ -481,16 +537,26 @@ function selectCoupleB(id){
   document.getElementById('couple-b-info').textContent=selectedCoupleB?'선택됨: '+selectedCoupleB.name+' ('+fmtDate(selectedCoupleB)+', '+fmtTime(selectedCoupleB)+')':'선택 안 됨';
   renderCoupleList();
 }
+function previewCoupleReport(){
+  if(!selectedCoupleA)return alert('A 사람을 선택하세요');
+  if(!selectedCoupleB)return alert('B 사람을 선택하세요');
+  if(selectedCoupleA.id===selectedCoupleB.id)return alert('서로 다른 고객을 선택하세요');
+  const url=buildCoupleUrl(selectedCoupleA,selectedCoupleB,0);
+  window.open(url,'_blank','noopener,noreferrer');
+}
 function generateCoupleLink(){
   if(!selectedCoupleA)return alert('A 사람을 선택하세요');
   if(!selectedCoupleB)return alert('B 사람을 선택하세요');
   if(selectedCoupleA.id===selectedCoupleB.id)return alert('서로 다른 고객을 선택하세요');
   const expDays=parseInt(document.getElementById('couple-expire').value);
   const expAt=expDays?calcExpAt(expDays):0;
+  const previewUrl=buildCoupleUrl(selectedCoupleA,selectedCoupleB,0);
   const url=buildCoupleUrl(selectedCoupleA,selectedCoupleB,expAt);
   document.getElementById('couple-url-text').textContent=url;
   document.getElementById('couple-expiry').textContent=fmtExpAt(expAt);
   document.getElementById('couple-result').style.display='block';
+  const cw=document.getElementById('couple-preview-wrap');
+  if(cw){cw.style.display='block';cw.dataset.url=previewUrl;}
   const linkObj={id:Date.now(),customerId:selectedCoupleA.id,type:'couple',url,expAt,createdAt:today(),bCustomerId:selectedCoupleB.id};
   const links=getLinks();links.push(linkObj);saveLinks(links);
 }
@@ -554,6 +620,13 @@ function copyLinkDirect(url){
 
 // ── 전체 렌더
 function renderAll(){
+  try{
+    const ie=document.getElementById('issuer-name');
+    if(ie&&!ie.dataset.hydrated){
+      ie.value=localStorage.getItem('sajux_issuer_name')||'장경현';
+      ie.dataset.hydrated='1';
+    }
+  }catch(e){}
   renderRegCustomerList();
   renderLinkCustomerList();
   renderCoupleList();
