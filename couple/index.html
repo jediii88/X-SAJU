@@ -295,7 +295,7 @@ body { overflow-x: hidden; }
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/lunar-javascript/lunar.js"></script>
+<script src="../report/lunar.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/korean-lunar-calendar/dist/korean-lunar-calendar.min.js"></script>
 <script>
 if (typeof KoreanLunarCalendar === 'undefined') {
@@ -305,7 +305,7 @@ if (typeof KoreanLunarCalendar === 'undefined') {
   };
 }
 </script>
-<script src="../klc.min.js"></script>
+<script src="../report/klc.min.js"></script>
 <script>
 // ══════════════════════════════════════
 // 기초 상수
@@ -330,6 +330,20 @@ const OH_POSITIVE = {wood:true, fire:true, earth:true, metal:true, water:true}; 
 // ══════════════════════════════════════
 // URL 파라미터 파싱
 // ══════════════════════════════════════
+/** 시주 지지(자녀궁 근사) — ec.getTime()이 문자열·배열 모두 오면 안전 처리 */
+function getEcTimeBranch(ec) {
+  try {
+    if (!ec || typeof ec.getTime !== 'function') return null;
+    var t = ec.getTime();
+    if (t == null) return null;
+    if (Array.isArray(t)) return (t[1] || t[0] || '').toString() || null;
+    var s = String(t);
+    return s.length >= 2 ? s.charAt(1) : null;
+  } catch (e1) {
+    return null;
+  }
+}
+
 function parseParams() {
   const sp = new URLSearchParams(location.search);
   const g = (k,d='') => sp.get(k) || d;
@@ -964,8 +978,8 @@ function buildRelPanels(params, a, b, result) {
   const HAP_PAIRS = [['子','丑'],['寅','亥'],['卯','戌'],['辰','酉'],['巳','申'],['午','未']];
   const CHUNG_PAIRS = [['子','午'],['丑','未'],['寅','申'],['卯','酉'],['辰','戌'],['巳','亥']];
 
-  const aTB = sajuA.ec ? sajuA.ec.getTime()[1] : (sajuA.pillars&&sajuA.pillars[0]&&sajuA.pillars[0].h[1])||'子';
-  const bTB = sajuB.ec ? sajuB.ec.getTime()[1] : (sajuB.pillars&&sajuB.pillars[0]&&sajuB.pillars[0].h[1])||'子';
+  const aTB = getEcTimeBranch(sajuA.ec) || (sajuA.pillars && sajuA.pillars[0] && sajuA.pillars[0].h && sajuA.pillars[0].h[1]) || '子';
+  const bTB = getEcTimeBranch(sajuB.ec) || (sajuB.pillars && sajuB.pillars[0] && sajuB.pillars[0].h && sajuB.pillars[0].h[1]) || '子';
 
   const aChild = ZIWEI_CHILD[aTB] || ZIWEI_CHILD['子'];
   const bChild = ZIWEI_CHILD[bTB] || ZIWEI_CHILD['子'];
@@ -1076,6 +1090,9 @@ window.addEventListener('DOMContentLoaded', () => setTimeout(init, 500));
 
 function init() {
   try {
+    if (typeof Solar === 'undefined' || typeof Solar.fromYmdHms !== 'function') {
+      throw new Error('SOLAR_LOAD');
+    }
     const params = parseParams();
     const sajuA = calcSaju(params.a);
     const sajuB = calcSaju(params.b);
@@ -1098,22 +1115,16 @@ function init() {
     st.textContent = '.bg-wood{background:var(--wood)}.bg-fire{background:var(--fire)}.bg-earth{background:var(--earth)}.bg-metal{background:var(--metal)}.bg-water{background:var(--water)}';
     document.head.appendChild(st);
 
-    // 기본 탭 활성화 (rel 파라미터 기준)
-    const rel = params.rel;
-    if (['lover','married','friend','business'].includes(rel)) {
-      document.querySelectorAll('.rel-tab').forEach(t=>t.classList.remove('active'));
-      document.querySelectorAll('.rel-panel').forEach(p=>p.classList.remove('active'));
-      document.querySelectorAll('.rel-tab').forEach(t=>{ if(t.getAttribute('onclick').includes("'"+rel+"'")) t.classList.add('active'); });
-      const panel = document.getElementById('panel-'+rel);
-      if (panel) panel.classList.add('active');
-    }
-
     document.getElementById('loading-screen').style.display = 'none';
     document.getElementById('main-content').style.display  = 'block';
   } catch(e) {
     console.error(e);
     document.getElementById('loading-screen').style.display = 'none';
     document.getElementById('error-screen').style.display   = 'block';
+    var ep = document.querySelector('#error-screen p');
+    if (ep && e && (e.message === 'SOLAR_LOAD' || String(e.message || '').indexOf('Solar') >= 0)) {
+      ep.innerHTML = '사주 계산 모듈을 불러오지 못했습니다.<br>페이지를 새로고침하거나, 다른 브라우저·네트워크에서 다시 열어 주세요.';
+    }
   }
 }
 </script>
