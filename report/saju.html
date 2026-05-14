@@ -57,7 +57,7 @@
       // 자동실행은 window.load IIFE에서 처리 (하단 스크립트 참조)
     })();
     </script>
-    <meta name="version" content="1778740778">
+    <meta name="version" content="1778743539">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -1741,8 +1741,8 @@
     </script>
 
 <!-- SAJUX_CACHE_BUSTER_START -->
-<meta name="sajux-build" content="1778740778">
-<script>(function(){var v='1778740778';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
+<meta name="sajux-build" content="1778743539">
+<script>(function(){var v='1778743539';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
 <!-- SAJUX_CACHE_BUSTER_END -->
 </head>
 <body>
@@ -1752,18 +1752,31 @@
 <!-- 플로팅 목차 네비게이터 (웹 전용, PDF 숨김) -->
 <div id="floating-toc" style="display:none; position:fixed; right:12px; top:50%; transform:translateY(-50%); z-index:9999; background:rgba(0,0,0,0.75); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border-radius:14px; padding:10px 6px; box-shadow:0 8px 32px rgba(0,0,0,0.6); max-width:44px; overflow:hidden; transition:max-width 0.3s, padding 0.3s;" onmouseenter="expandToc()" onmouseleave="collapseToc()">
     <div style="font-size:10px; color:rgba(199,167,106,0.8); text-align:center; margin-bottom:8px; letter-spacing:1px; white-space:nowrap;">☰</div>
-    <div id="toc-links" style="display:flex; flex-direction:column; gap:4px; min-width:120px;">
-        <a onclick="tocGo('sec-cover')" class="toc-link">커버</a>
+    <div id="toc-links" style="display:flex; flex-direction:column; gap:2px; min-width:132px;">
+        <div class="toc-group-h">Ⅰ VIP 대시보드</div>
         <a onclick="tocGo('sec-book-intro')" class="toc-link">브랜드 소개</a>
-        <a onclick="tocGo('sec-premium-summary')" class="toc-link">고객 맞춤 요약</a>
-        <a onclick="tocGo('sec-book-foreword')" class="toc-link">안내문</a>
+        <a onclick="tocGo('sec-client-cover')" class="toc-link">고객 표지</a>
+        <a onclick="tocGo('sec-book-foreword')" class="toc-link">이용 안내</a>
+        <a onclick="tocGo('sec-premium-summary')" class="toc-link">맞춤 종합 핵심</a>
+        <a onclick="tocGo('sec-vip-evidence')" class="toc-link">원국 DATA</a>
+        <div class="toc-group-h">Ⅱ 하드웨어 스펙</div>
+        <a onclick="tocGo('sec-part2-hardware')" class="toc-link">오행 · 십성</a>
+        <div class="toc-group-h">Ⅲ 4대 운</div>
+        <a onclick="tocGo('sec-part3-four')" class="toc-link">재물·직업·애정·건강</a>
+        <div class="toc-group-h">Ⅳ 타임라인</div>
+        <a onclick="tocGo('sec-part4-timeline')" class="toc-link">대운·세운·월운</a>
+        <div class="toc-group-h">Ⅴ 실행 지침</div>
+        <a onclick="tocGo('sec-part5-final')" class="toc-link">개운법·체크리스트</a>
         <a onclick="tocGo('sec-personality')" class="toc-link">성격 분석</a>
-        <a onclick="tocGo('report-container')" class="toc-link">본문 시작</a>
-        <div style="border-top:1px solid rgba(255,255,255,0.1); margin:4px 0;"></div>
-        <a onclick="window.print()" class="toc-link" style="color:rgba(199,167,106,0.9);">🖨 PDF 저장</a>
-    </div></div>
+        <div style="border-top:1px solid rgba(255,255,255,0.1); margin:6px 0 4px;"></div>
+        <a onclick="window.print()" class="toc-link" style="color:rgba(212,175,55,0.95); font-weight:700;">🖨 PDF 저장</a>
+    </div>
 </div>
 <style>
+.toc-group-h {
+    font-size:9px; letter-spacing:0.12em; color:rgba(199,167,106,0.55);
+    font-weight:800; margin:10px 10px 4px; text-transform:uppercase;
+}
 .toc-link {
     font-size:12px; color:rgba(255,255,255,0.7); cursor:pointer;
     padding:5px 10px; border-radius:6px; white-space:nowrap;
@@ -1777,7 +1790,7 @@
     #floating-toc { display:none !important; }
 }
 @media print {
-    #theme-toggle, #floating-toc { display:none !important; }
+    #theme-toggle, #floating-toc, #sajux-pdf-fab { display:none !important; }
     .cat-section, .cat-content { display:block !important; page-break-inside:avoid; }
 }
 </style>
@@ -1814,7 +1827,7 @@ function tocGo(id) {
 }
 function expandToc() {
     var t = document.getElementById('floating-toc');
-    t.style.maxWidth = '160px';
+    t.style.maxWidth = '240px';
     t.style.padding = '10px 8px';
 }
 function collapseToc() {
@@ -2281,7 +2294,7 @@ function startReport() {
 <script src="lunar.js"></script>
     <!-- KLC: KASI 기준 한국 음양력 변환 (음력 입력 시 사용) -->
     <script src="klc.min.js"></script>
-    <script src="report-core.js?v=1778740778"></script>
+    <script src="report-core.js?v=1778743539"></script>
 
 
 
