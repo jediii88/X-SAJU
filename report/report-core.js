@@ -186,6 +186,12 @@ function sipIndustryAxisLabel(sip) {
     var m = { '비견': '동료·경쟁', '겁재': '지출·승부', '식신': '창작·산출', '상관': '기준·방어', '편재': '거래·기회', '정재': '정산·루틴', '편관': '압박·마감', '정관': '조직·평가', '편인': '학습·준비', '정인': '문서·자격' };
     return m[sip] || '실행';
 }
+/** 만세력 표·운세 카드 배지 — 전문 십성 한글명 비노출(일원 유지) */
+function sipToManseBadge(sip, isIlwon) {
+    if (isIlwon || sip === '일원') return '일원';
+    if (!sip || sip === '-') return '-';
+    return sipIndustryAxisLabel(sip);
+}
 /** 세운 챕터 제목 — 핵심 행동 한 줄 */
 function formatSeYunChapterH3(partNo, yr, sc, evLabel) {
     var isXing = (evLabel === '흥(興)');
@@ -3509,8 +3515,8 @@ function buildDaewunLoop(data) {
                         <div style="font-size:18px;font-weight:800;color:var(--gold);">${age}세 ~ ${age+9}세</div>
                         <div style="font-size:12px;color:rgba(199,167,106,0.6);margin-top:2px;">${ganKr}${jiKr}운</div>
                         <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:4px;">
-                            ${(typeof getUnsung==='function'&&data.dayStem) ? `<span style="font-size:10px;background:rgba(255,255,255,0.1);color:#bbb;padding:1px 7px;border-radius:8px;">12운성: ${getUnsung(data.dayStem,ji)||'-'}</span>` : ''}
-                            ${(typeof getSipseong==='function'&&data.dayStem) ? `<span style="font-size:10px;background:rgba(199,167,106,0.12);color:#c7a76a;padding:1px 7px;border-radius:8px;">${getSipseong(data.dayStem,gan)||''}</span>` : ''}
+                            ${(typeof getUnsung==='function'&&data.dayStem) ? `<span style="font-size:10px;background:rgba(255,255,255,0.1);color:#bbb;padding:1px 7px;border-radius:8px;">흐름: ${getUnsung(data.dayStem,ji)||'-'}</span>` : ''}
+                            ${(typeof getSipseong==='function'&&data.dayStem) ? `<span style="font-size:10px;background:rgba(199,167,106,0.12);color:#c7a76a;padding:1px 7px;border-radius:8px;">${sipToManseBadge(getSipseong(data.dayStem,gan), false)}</span>` : ''}
                         </div>
                         ${isCurrent?'<span style="font-size:10px;background:var(--gold);color:#000;padding:2px 8px;border-radius:8px;font-weight:700;display:inline-block;margin-top:4px;">▶ 지금 이 시기</span>':''}
                     </div>
@@ -4034,8 +4040,8 @@ function buildChapter7_Hidden(data) {
         + `</div>`
         + `</div>`
         + `<div style="background:rgba(199,167,106,0.06);border-radius:8px;padding:16px;border-left:3px solid var(--gold);margin:16px 0;">`
-        + `<div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:10px;">지장간과 일간의 관계 — 십성으로 읽는 숨겨진 욕망</div>`
-        + `<p style="font-size:13px;color:#ccc;line-height:1.88;margin:0 0 10px;">지장간이 일간과 맺는 십성은 **속욕망의 라벨**입니다. 비겁은 독립·경쟁, 식상은 표현, 재성은 물질·통제, 관성은 인정·규범, 인성은 지식·안식을 끌어당깁니다.</p>`
+        + `<div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:10px;">지장간과 일간의 관계 — 역할 패턴으로 읽는 숨겨진 욕망</div>`
+        + `<p style="font-size:13px;color:#ccc;line-height:1.88;margin:0 0 10px;">지장간이 일간과 맺는 **역할 각도**는 속욕망의 라벨입니다. 동료·경쟁 축은 독립·경쟁, 표현·산출 축은 창작, 성과 축은 물질·통제, 조직 축은 인정·규범, 학습 축은 지식·안식을 끌어당깁니다.</p>`
         + `<p style="font-size:13px;color:#ccc;line-height:1.88;margin:0;">채워지지 않을 때 불안이 커집니다. 발동 시기를 달력에 표시해 두면 **갈등이 오기 전에 통로**를 만들 수 있습니다.</p>`
         + `</div>`
         + `<div style="background:rgba(255,255,255,0.03);border-radius:10px;padding:18px;margin:16px 0;"><div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:10px;">&#9670; 지장간과 이중 자아</div><p style="font-size:13px;color:#ccc;line-height:1.88;margin:0 0 10px;">천간은 겉의 역할, 지장간은 안의 역할입니다. 둘이 멀수록 **내적 마찰**이 큽니다. 억압보다 **안전한 출구**(운동·기록·소수 만남)를 하나 고정하십시오.</p><p style="font-size:13px;color:#ccc;line-height:1.88;margin:0;">겹침을 결함이 아니라 **다층 능력**으로 읽으십시오. 둘이 맞물릴 때 가장 강합니다.</p></div>`
@@ -4969,7 +4975,7 @@ function buildTOC(data) {
         '<div style="width:60px;height:2px;background:var(--gold);margin-bottom:28px;opacity:0.4;"></div>' +
         body +
         '<div style="margin-top:36px;padding:18px 20px;background:rgba(199,167,106,0.04);border-radius:10px;border:1px solid rgba(199,167,106,0.1);font-size:12px;color:#777;line-height:1.8;">' +
-        '※ 이 리포트는 명리학(사주팔자)을 기반으로 작성된 운명 분석서입니다. 각 챕터의 해석은 동양철학의 오행론·십성론·대운론을 근거로 하며, 실제 삶에서의 선택과 노력에 따라 결과는 달라질 수 있습니다. 본 분석은 인생의 방향을 설계하는 참고 자료로 활용하시기 바랍니다.<br><br>' +
+        '※ 이 리포트는 명리학(사주팔자)을 기반으로 작성된 운명 분석서입니다. 각 챕터의 해석은 동양철학의 오행·역할 패턴·대운 흐름을 근거로 하며, 실제 삶에서의 선택과 노력에 따라 결과는 달라질 수 있습니다. 본 분석은 인생의 방향을 설계하는 참고 자료로 활용하시기 바랍니다.<br><br>' +
         '※ 온라인 링크 열람·PDF 저장은 발행 정책에 따릅니다(기본 30일·서버에서 <code style="font-size:11px;">reportExpiresAt</code> 또는 <code style="font-size:11px;">reportIssuedAt</code> 전달 시 안내문이 자동 반영됩니다).' +
         '</div></div>';
 }
@@ -5072,12 +5078,12 @@ var HELP_DATA = {
         desc: "우주를 구성하는 5가지 에너지가 내게 얼마나 골고루 분포되어 있는지 보여줍니다.<br><br>• <b>목</b>: 성장, 시작, 기획력<br>• <b>화</b>: 발산, 열정, 표현력<br>• <b>토</b>: 수용, 중재, 신용<br>• <b>금</b>: 결단, 규칙, 맺고 끊음<br>• <b>수</b>: 지혜, 유연성, 휴식"
     },
     sipseong: {
-        title: "십성 분포 (육친)",
-        desc: "오행을 인간관계와 사회적 역할로 변환한 지표입니다.<br><br>• <b>비겁</b>: 자아, 주체성, 동료, 경쟁<br>• <b>식상</b>: 표현력, 재능, 창의력, 부하<br>• <b>재성</b>: 결과, 목표 달성, 재물, 아버지/아내<br>• <b>관성</b>: 규칙, 직장, 명예, 책임감, 남편<br>• <b>인성</b>: 수용성, 학문, 문서, 인내, 어머니"
+        title: "역할 패턴 분포",
+        desc: "오행을 **일하는 방식·관계 각도**로 읽은 지표입니다. 아래는 같은 축을 다른 이름으로 설명한 것입니다.<br><br>• <b>자아·동료 축</b>: 주체성, 협업, 경쟁<br>• <b>표현·산출 축</b>: 재능, 창의, 말과 결과물<br>• <b>성과·현금 축</b>: 목표, 정산, 거래<br>• <b>조직·규범 축</b>: 직장, 명예, 책임<br>• <b>학습·지지 축</b>: 배움, 문서, 인내"
     },
     strength: {
         title: "신강 · 신약 판단",
-        desc: "내 사주에서 나를 돕는 기운(인성, 비겁)과 내 기운을 빼앗는 기운(식상, 재성, 관성)의 비율을 계산한 결과입니다.<br><br>• <b>신강</b>: 자기 주관이 뚜렷하고 밀어붙이는 힘이 강함. 외부의 압력을 잘 버팀.<br>• <b>신약</b>: 주변 환경과 타인에게 잘 맞추는 유연성과 타협성이 뛰어남.<br>• <b>중화</b>: 기운의 밸런스가 좋아 안정적임."
+        desc: "나를 돕는 쪽(자아·학습 축)과 에너지를 쓰게 만드는 쪽(표현·성과·조직 축)의 비율을 계산한 결과입니다.<br><br>• <b>신강</b>: 자기 주관이 뚜렷하고 밀어붙이는 힘이 강함. 외부의 압력을 잘 버팀.<br>• <b>신약</b>: 주변 환경과 타인에게 잘 맞추는 유연성과 타협성이 뛰어남.<br>• <b>중화</b>: 기운의 밸런스가 좋아 안정적임."
     },
     daeun: {
         title: "대운 (10년 단위의 큰 흐름)",
@@ -5092,8 +5098,8 @@ var HELP_DATA = {
         desc: "올해 1월부터 12월까지 매달 들어오는 운세입니다. 단기적인 계획을 세우거나 조심해야 할 달을 파악할 때 사용합니다."
     },
     yonghee: {
-        title: "용희기구한 (용신과 기신)",
-        desc: "내 사주를 돕거나 해치는 기운을 5가지로 분류한 것입니다.<br><br>• <b>용신</b>: 내 사주를 중화시키고 가장 크게 돕는 수호신<br>• <b>희신</b>: 용신을 도와 나에게 좋은 작용을 하는 기운<br>• <b>기신</b>: 내 사주의 밸런스를 깨고 방해하는 나쁜 기운<br>• <b>구신</b>: 기신을 도와 나쁜 작용을 거드는 기운<br>• <b>한신</b>: 운에 따라 좋게도 나쁘게도 작용하는 평범한 기운"
+        title: "맞는 기운 · 부딪히는 기운",
+        desc: "목·화·토·금·수 다섯 축이 나에게 **맞는지·부딪히는지**를 나눈 요약입니다.<br><br>• <b>핵심 보완</b>: 가장 크게 도움이 되는 축<br>• <b>보조 보완</b>: 핵심을 돕는 축<br>• <b>방해 축</b>: 밸런스를 흔들기 쉬운 축<br>• <b>보조 방해</b>: 방해를 키우기 쉬운 축<br>• <b>중간 축</b>: 운에 따라 좋을 때도 나쁠 때도 있는 축"
     }
 };
 
@@ -6234,7 +6240,7 @@ function runAnalysis(overrideParams) {
 
         const manseHtml = [
             headerRow,
-            bRow('십성', p => `<div class="m-badge">${p.n === '일주' ? '일원' : getSipseong(dayStem, p.h[0])}</div>`),
+            bRow('역할(천)', p => `<div class="m-badge">${sipToManseBadge(getSipseong(dayStem, p.h[0]), p.n === '일주')}</div>`),
             bRow('천간', p => `
                 <div class="m-hanja ${HAN_COLOR[p.h[0]] || ''}" style="font-weight:900;text-shadow:0 0 0.01px currentColor;">${p.h[0]}</div>
                 <div class="m-hangul">${HAN_KOR[p.h[0]] || p.h[0]}</div>
@@ -6243,18 +6249,18 @@ function runAnalysis(overrideParams) {
                 <div class="m-hanja ${HAN_COLOR[p.h[1]] || ''}" style="font-weight:900;text-shadow:0 0 0.01px currentColor;">${p.h[1]}</div>
                 <div class="m-hangul">${HAN_KOR[p.h[1]] || p.h[1]}</div>
             `),
-            bRow('십성', p => `<div class="m-badge">${getSipseong(dayStem, p.h[1])}</div>`),
-            bRow('지장간', p => `<div class="m-badge">${getHidden(p.h[1], dayStem).replace(/<br>/g, '')}</div>`),
-            bRow('12운성', p => `<div class="m-badge">${getUnsung(dayStem, p.h[1]) || '-'}</div>`),
-            bRow('12신살', p => shinsalBadgeHtml(allTwelveShinsal[p.n])),
-            bRow('기타신살', p => shinsalBadgeHtml(allExtraShinsal[p.n])),
-            bRow('공망', p => {
+            bRow('역할(지)', p => `<div class="m-badge">${sipToManseBadge(getSipseong(dayStem, p.h[1]), false)}</div>`),
+            bRow('숨은 기둥', p => `<div class="m-badge">${getHidden(p.h[1], dayStem).replace(/<br>/g, '')}</div>`),
+            bRow('흐름 리듬', p => `<div class="m-badge">${getUnsung(dayStem, p.h[1]) || '-'}</div>`),
+            bRow('지지 신호', p => shinsalBadgeHtml(allTwelveShinsal[p.n])),
+            bRow('추가 신호', p => shinsalBadgeHtml(allExtraShinsal[p.n])),
+            bRow('빈 공간', p => {
                 const ilju = dayStem + ((pillars[1] && pillars[1].h && pillars[1].h[1]) ? pillars[1].h[1] : ((ec.getDay && ec.getDay()[1]) || ''));
                 const gmStr = getGongmang(ilju);
                 const KR2HJ2 = {'자':'子','축':'丑','인':'寅','묘':'卯','진':'辰','사':'巳','오':'午','미':'未','신':'申','유':'酉','술':'戌','해':'亥'};
                 const gmHanja = gmStr ? [...gmStr].map(c => KR2HJ2[c]||c) : [];
                 const isGm = gmHanja.includes(p.h[1]);
-                return `<div class="m-badge" style="${isGm ? 'color:var(--fire);font-weight:700;' : ''}">${isGm ? '공망' : '-'}</div>`;
+                return `<div class="m-badge" style="${isGm ? 'color:var(--fire);font-weight:700;' : ''}">${isGm ? '해당' : '-'}</div>`;
             })
         ].join('');
         document.getElementById('manse-table').innerHTML = manseHtml;
@@ -6308,11 +6314,11 @@ function runAnalysis(overrideParams) {
             return `<div class="info-card">
                 <div class="info-label">${p.n}</div>
                 <div style="margin-top:6px;">
-                    <div style="font-size:10px;color:var(--gold);letter-spacing:1px;margin-bottom:3px;">12신살</div>
+                    <div style="font-size:10px;color:var(--gold);letter-spacing:1px;margin-bottom:3px;">지지 신호</div>
                     <div class="info-value" style="margin-bottom:8px;">${isUnk ? '알 수 없음' : (twl.join(', ') || '-')}</div>
-                    <div style="font-size:10px;color:#64b5f6;letter-spacing:1px;margin-bottom:3px;">12운성</div>
+                    <div style="font-size:10px;color:#64b5f6;letter-spacing:1px;margin-bottom:3px;">흐름 리듬</div>
                     <div class="info-value" style="margin-bottom:8px;">${isUnk ? '알 수 없음' : uns}</div>
-                    <div style="font-size:10px;color:#9b59b6;letter-spacing:1px;margin-bottom:3px;">기타신살</div>
+                    <div style="font-size:10px;color:#9b59b6;letter-spacing:1px;margin-bottom:3px;">추가 신호</div>
                     <div class="info-value">${isUnk ? '알 수 없음' : (ext.join(', ') || '-')}</div>
                 </div>
             </div>`;
@@ -6435,7 +6441,7 @@ function runAnalysis(overrideParams) {
             편인:{main:'편인', sub:'영감·편법'}, 정인:{main:'정인', sub:'학문·배움'}
         };
         const sipDom = Object.entries(sipCounts).sort((a,b)=>b[1]-a[1]);
-        const sipSummaryLines = sipDom.filter(e=>e[1]>0).slice(0,3).map(e=>`<b>${e[0]}</b>`).join(' · ');
+        const sipSummaryLines = sipDom.filter(e=>e[1]>0).slice(0,3).map(e=>`<b>${sipIndustryAxisLabel(e[0])}</b>`).join(' · ');
         const sipSummaryEl = document.getElementById('sipseong-summary');
         if(sipSummaryEl && sipDom[0][1] > 0) {
             const sipDescMap = {
@@ -6445,12 +6451,12 @@ function runAnalysis(overrideParams) {
                 편관:'압박 속에서 오히려 빛나는 타입입니다', 정관:'안정적인 사회적 지위를 추구합니다',
                 편인:'독학과 영감으로 돌파하는 유형입니다', 정인:'깊은 학문과 배움으로 성장합니다'
             };
-            sipSummaryEl.innerHTML = `지배적 십성 : ${sipSummaryLines} — ${sipDescMap[sipDom[0][0]] || ''}`;
+            sipSummaryEl.innerHTML = `지배적 역할 패턴 : ${sipSummaryLines} — ${sipDescMap[sipDom[0][0]] || ''}`;
         }
         buildBars('sipseong-bars', Object.keys(sipCounts).map(key => ({
             key,
-            label: (SIP_LABEL[key]?.main) || key,
-            labelMain: (SIP_LABEL[key]?.main) || key,
+            label: sipIndustryAxisLabel(key),
+            labelMain: sipIndustryAxisLabel(key),
             labelSub: SIP_LABEL[key]?.sub || '',
             value: percent(sipCounts[key], sipTotalWeight)
         })), () => 'bg-earth');
@@ -6529,9 +6535,10 @@ function runAnalysis(overrideParams) {
         const allDaYun = yun.getDaYun().slice(1).filter(dy => dy.getStartAge()-1 <= 120);
         const daeunRows = allDaYun.map(dy => {
             const gz = dy.getGanZhi();
+            const _dSip = getSipseong(dayStem, gz[0]);
             return [
                 (dy.getStartAge()-1) + '세',
-                getSipseong(dayStem, gz[0]),
+                sipToManseBadge(_dSip, false),
                 `${gz[0]}${gz[1]}`,
                 `${HAN_KOR[gz[0]]}${HAN_KOR[gz[1]]}`,
                 getUnsung(dayStem, gz[1]) || '-'
@@ -6571,7 +6578,8 @@ function runAnalysis(overrideParams) {
 
         const daeunRows2 = daeunData.map(dy => {
             const gz = dy.getGanZhi();
-            return [ (dy.getStartAge()-1) + '세', getSipseong(dayStem, gz[0]), `${gz[0]}${gz[1]}`, `${HAN_KOR[gz[0]]}${HAN_KOR[gz[1]]}`, getUnsung(dayStem, gz[1]) || '-' ];
+            const _ds = getSipseong(dayStem, gz[0]);
+            return [ (dy.getStartAge()-1) + '세', sipToManseBadge(_ds, false), `${gz[0]}${gz[1]}`, `${HAN_KOR[gz[0]]}${HAN_KOR[gz[1]]}`, getUnsung(dayStem, gz[1]) || '-' ];
         });
         buildFortuneCards('daeun-table', daeunRows2, activeDaeunIdx);
         // ===== 대운 표 아래 풀이 주입 =====
@@ -6889,9 +6897,9 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
                 <div class="cat-header"><span class="cat-icon">🏆</span><span class="cat-title">직업운 심층 분석</span></div>
                 <div class="cat-body">
                     <div class="cat-stat-row">
-                        <div class="cat-stat"><span class="cat-stat-label">관성 비중</span><span class="cat-stat-val">${pct(gwanC)}%</span></div>
-                        <div class="cat-stat"><span class="cat-stat-label">식상 비중</span><span class="cat-stat-val">${pct(sikC)}%</span></div>
-                        <div class="cat-stat"><span class="cat-stat-label">인성 비중</span><span class="cat-stat-val">${pct(inC)}%</span></div>
+                        <div class="cat-stat"><span class="cat-stat-label">조직·책임 비중</span><span class="cat-stat-val">${pct(gwanC)}%</span></div>
+                        <div class="cat-stat"><span class="cat-stat-label">산출·표현 비중</span><span class="cat-stat-val">${pct(sikC)}%</span></div>
+                        <div class="cat-stat"><span class="cat-stat-label">학습·지지 비중</span><span class="cat-stat-val">${pct(inC)}%</span></div>
                     </div>
                     <p class="cat-text">${careerMain}</p>
                     <div class="cat-highlight">
@@ -6906,12 +6914,12 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
             const loveText2 = dbEntry2.love || '일지에 각인된 인연의 코드에 따라 맞는 사람이 다릅니다.';
             const loveType = gwanC > 0 ? 'active' : inC > sipTotalWeight*0.3 ? 'passive' : 'self';
             const loveMain = {
-                active: `관성이 있는 당신에게 이성 인연은 자연스럽게 찾아오는 편입니다. 사회적 활동이 활발한 시기에 인연이 집중됩니다. 다만 관성이 강할수록 상대를 통제하려는 욕구가 관계를 경직시킵니다. '내 방식으로 사랑하는 것'과 '상대가 원하는 방식으로 사랑받는 것'의 차이를 이해하는 것이 관계의 핵심 과제입니다.`,
-                passive: `인성이 강한 당신은 사랑에서 헌신적입니다. 상대를 위해 자신을 희생하는 것을 마다하지 않습니다. 그러나 이 헌신이 때로 집착이나 의존으로 바뀌기 쉽습니다. 자기 자신을 먼저 돌보는 연습을 하십시오. 그것이 역설적으로 가장 건강한 관계를 만드는 길입니다.`,
-                self: `당신의 인연은 스스로 만들어가는 스타일입니다. 수동적으로 기다리기보다 적극적으로 만남을 만들어야 합니다. 용신 운이 들어오는 대운과 세운에 인연이 활성화됩니다. 해당 시기에 사회적 활동 반경을 의도적으로 넓히는 것이 전략입니다.`
+                active: `조직·책임 축이 있는 당신에게 이성 인연은 자연스럽게 찾아오는 편입니다. 사회적 활동이 활발한 시기에 인연이 집중됩니다. 다만 이 축이 강할수록 상대를 통제하려는 욕구가 관계를 경직시킵니다. '내 방식으로 사랑하는 것'과 '상대가 원하는 방식으로 사랑받는 것'의 차이를 이해하는 것이 관계의 핵심 과제입니다.`,
+                passive: `학습·지지 축이 강한 당신은 사랑에서 헌신적입니다. 상대를 위해 자신을 희생하는 것을 마다하지 않습니다. 그러나 이 헌신이 때로 집착이나 의존으로 바뀌기 쉽습니다. 자기 자신을 먼저 돌보는 연습을 하십시오. 그것이 역설적으로 가장 건강한 관계를 만드는 길입니다.`,
+                self: `당신의 인연은 스스로 만들어가는 스타일입니다. 수동적으로 기다리기보다 적극적으로 만남을 만들어야 합니다. 기운이 맞는 대운과 세운에 인연이 활성화됩니다. 해당 시기에 사회적 활동 반경을 의도적으로 넓히는 것이 전략입니다.`
             }[loveType];
 
-            const loveFlowHint = `${flowAnchor} 애정운은 원국의 일지 성향과 현재 운의 십성 자극이 겹칠 때 사건화가 빨라집니다. 중요한 관계 결정은 흐름이 완화되는 달에 잡는 편이 안정적입니다.`;
+            const loveFlowHint = `${flowAnchor} 애정운은 원국의 일지 성향과 현재 운의 역할 패턴 자극이 겹칠 때 사건화가 빨라집니다. 중요한 관계 결정은 흐름이 완화되는 달에 잡는 편이 안정적입니다.`;
             document.getElementById('cat-love').innerHTML = `
                 <div class="cat-header"><span class="cat-icon">❤️</span><span class="cat-title">애정운 심층 분석</span></div>
                 <div class="cat-body">
@@ -6930,7 +6938,7 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
                 : passType==='유지'
                 ? '지금은 합격운이 중간 구간이라, 한 번에 큰 점프보다 누적이 중요합니다. 매일 같은 시간에 같은 루틴으로 공부 리듬을 고정하면 점수 흔들림을 줄일 수 있습니다.'
                 : '지금은 합격운 보완이 필요한 구간입니다. 실력을 새로 만들기보다 틀리는 패턴을 줄이는 데 집중하면 단기간에도 체감 점수를 올릴 수 있습니다.';
-            const passFlowHint = `${flowAnchor} 시험운은 "집중력(인성) + 실행력(식상) + 실전 안정감(관성)"의 합으로 읽습니다. 중요한 시험일수록 직전 2주 루틴을 고정해 컨디션 변수를 줄이는 편이 좋습니다.`;
+            const passFlowHint = `${flowAnchor} 시험운은 **집중·복습 리듬 + 산출·풀이 속도 + 실전 안정감**의 합으로 읽습니다. 중요한 시험일수록 직전 2주 루틴을 고정해 컨디션 변수를 줄이는 편이 좋습니다.`;
             const passAction = passType==='상승'
                 ? '실전 모의고사 비중을 높이고, 약점 2개만 정해 집중 보완하십시오.'
                 : passType==='유지'
@@ -6969,7 +6977,7 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
             const curSip = getSipseong(dayStem, curGz[0]);
             const curKr = `${HAN_KOR[curGz[0]]}${HAN_KOR[curGz[1]]}`;
             const dwEndAge = activeDaeunIdx < daeunData.length-1 ? (daeunData[activeDaeunIdx+1].getStartAge()-1) : (curDW.getStartAge()-1)+10;
-            daeunSummaryEl.innerHTML = `현재 <b>${curDW.getStartAge()-1}세 ~ ${dwEndAge}세</b> · <b style="color:var(--gold);">${curGz[0]}${curGz[1]}(${curKr})</b> 대운 진행 중 &nbsp;·&nbsp; 십성 <b>${curSip}</b>의 기운이 10년을 지배합니다.`;
+            daeunSummaryEl.innerHTML = `현재 <b>${curDW.getStartAge()-1}세 ~ ${dwEndAge}세</b> · <b style="color:var(--gold);">${curGz[0]}${curGz[1]}(${curKr})</b> 대운 진행 중 &nbsp;·&nbsp; 역할 패턴 <b>${sipIndustryAxisLabel(curSip)}</b> 축이 10년을 이끕니다.`;
         } else if(daeunSummaryEl) {
             daeunSummaryEl.innerHTML = '대운 흐름을 확인하십시오. 현재 진행 중인 대운이 굵게 표시됩니다.';
         }
@@ -6979,9 +6987,10 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
             const yLunar = Solar.fromYmd(year, 6, 15).getLunar();
             const yEc = yLunar.getEightChar();
             const gz = yEc.getYear();
+            const _ySip = getSipseong(dayStem, gz[0]);
             seunRows.push([
                 year + '년',
-                getSipseong(dayStem, gz[0]),
+                sipToManseBadge(_ySip, false),
                 `${gz[0]}${gz[1]}`,
                 `${HAN_KOR[gz[0]]}${HAN_KOR[gz[1]]}`,
                 getUnsung(dayStem, gz[1]) || '-'
@@ -7031,7 +7040,7 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
         const seunSummaryEl = document.getElementById('seun-summary');
         if(seunSummaryEl && seunRows.length > 0) {
             const thisYear = seunRows[0];
-            seunSummaryEl.innerHTML = `올해 ${currentYear}년 세운 : <b style="color:var(--gold);">${thisYear[2]}(${thisYear[3]})</b> &nbsp;·&nbsp; 십성 <b>${thisYear[1]}</b> · 12운성 <b>${thisYear[4]}</b>의 기운이 한 해를 이끕니다.`;
+            seunSummaryEl.innerHTML = `올해 ${currentYear}년 세운 : <b style="color:var(--gold);">${thisYear[2]}(${thisYear[3]})</b> &nbsp;·&nbsp; 역할 패턴 <b>${thisYear[1]}</b> · 흐름 리듬 <b>${thisYear[4]}</b>이 한 해를 이끕니다.`;
         }
 
         // 월운: 현재 달부터 12개월
@@ -7044,9 +7053,10 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
             const mSolar = Solar.fromYmd(wYear, wMonth, 15);
             const mEc = mSolar.getLunar().getEightChar();
             const gz = mEc.getMonth();
+            const _mSipW = getSipseong(dayStem, gz[0]);
             wolunRows.push([
                 wYear + '.' + wMonth + '월',
-                getSipseong(dayStem, gz[0]),
+                sipToManseBadge(_mSipW, false),
                 `${gz[0]}${gz[1]}`,
                 `${HAN_KOR[gz[0]]}${HAN_KOR[gz[1]]}`,
                 getUnsung(dayStem, gz[1]) || '-'
