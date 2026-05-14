@@ -2,6 +2,23 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
+<script>
+(function () {
+  try {
+    var p = new URLSearchParams(location.search);
+    var exp = p.get('exp');
+    if (exp && /^\d+$/.test(String(exp)) && Date.now() > parseInt(exp, 10)) {
+      document.addEventListener('DOMContentLoaded', function () {
+        document.body.innerHTML =
+          '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#080810;color:#888;font-family:\'Noto Sans KR\',sans-serif;text-align:center;padding:40px;">' +
+          '<div><div style="font-size:48px;margin-bottom:16px;">⏰</div>' +
+          '<div style="font-size:18px;color:#c7a76a;font-weight:700;margin-bottom:8px;">리포트 유효기간 만료</div>' +
+          '<div style="font-size:13px;">다시 발급받으려면 담당자에게 문의해 주세요.</div></div></div>';
+      });
+    }
+  } catch (e) {}
+})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>X-사주 궁합 리포트</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -207,6 +224,7 @@ body { overflow-x: hidden; }
     <div class="brand">X-SAJU · 궁합 리포트</div>
     <h1>두 사람의 사주 궁합</h1>
     <div class="rel-badge" id="rel-badge">연인 궁합</div>
+    <div id="couple-issuer-hint" style="font-size:10px;color:var(--text-dim);margin-top:10px;letter-spacing:0.06em;"></div>
   </div>
 
   <div class="container">
@@ -315,22 +333,35 @@ const OH_POSITIVE = {wood:true, fire:true, earth:true, metal:true, water:true}; 
 function parseParams() {
   const sp = new URLSearchParams(location.search);
   const g = (k,d='') => sp.get(k) || d;
+  const dec = (k, d) => {
+    const raw = g(k, d);
+    try {
+      return decodeURIComponent(String(raw).replace(/\+/g, ' '));
+    } catch (e) {
+      return String(raw);
+    }
+  };
+  const unkA = g('a_unk', '') === '1';
+  const unkB = g('b_unk', '') === '1';
   return {
     a: {
-      name:   decodeURIComponent(g('a_n','첫번째')),
-      gender: g('a_g','male'),
-      cal:    g('a_c','solar'),
-      year:   parseInt(g('a_y',1990)), month: parseInt(g('a_mo',1)),
-      day:    parseInt(g('a_d',1)),   hour:  parseInt(g('a_h',12)),
+      name:   dec('a_n', '첫번째'),
+      gender: g('a_g', 'male'),
+      cal:    g('a_c', 'solar'),
+      year:   parseInt(g('a_y', 1990), 10), month: parseInt(g('a_mo', 1), 10),
+      day:    parseInt(g('a_d', 1), 10),   hour:  parseInt(g('a_h', 12), 10),
+      unknown: unkA
     },
     b: {
-      name:   decodeURIComponent(g('b_n','두번째')),
-      gender: g('b_g','female'),
-      cal:    g('b_c','solar'),
-      year:   parseInt(g('b_y',1992)), month: parseInt(g('b_mo',1)),
-      day:    parseInt(g('b_d',1)),   hour:  parseInt(g('b_h',12)),
+      name:   dec('b_n', '두번째'),
+      gender: g('b_g', 'female'),
+      cal:    g('b_c', 'solar'),
+      year:   parseInt(g('b_y', 1992), 10), month: parseInt(g('b_mo', 1), 10),
+      day:    parseInt(g('b_d', 1), 10),   hour:  parseInt(g('b_h', 12), 10),
+      unknown: unkB
     },
-    rel: g('rel','lover')
+    rel: g('rel', 'lover'),
+    by:  dec('by', '')
   };
 }
 
@@ -338,27 +369,29 @@ function parseParams() {
 // 사주 계산
 // ══════════════════════════════════════
 function calcSaju(info) {
+  const unknown = !!info.unknown;
   const {year:y, month:m, day:d, hour:hr, cal, gender} = info;
+  const hrUse = unknown ? 12 : (parseInt(hr, 10) || 12);
   let solarObj;
 
   try {
     if (cal === 'solar') {
-      solarObj = Solar.fromYmdHms(y, m, d, hr, 0, 0);
+      solarObj = Solar.fromYmdHms(y, m, d, hrUse, 0, 0);
     } else {
       try {
         const klc = new KoreanLunarCalendar();
         const ok = klc.setLunarDate(y, m, d, false);
         if (ok) {
           const s = klc.getSolarCalendar();
-          solarObj = Solar.fromYmdHms(s.year, s.month, s.day, hr, 0, 0);
+          solarObj = Solar.fromYmdHms(s.year, s.month, s.day, hrUse, 0, 0);
         } else throw '';
       } catch(e) {
-        const lObj = Lunar.fromYmdHms(y, m, d, hr, 0, 0);
+        const lObj = Lunar.fromYmdHms(y, m, d, hrUse, 0, 0);
         solarObj = lObj.getSolar();
       }
     }
   } catch(e) {
-    solarObj = Solar.fromYmdHms(y, m, d, hr, 0, 0);
+    solarObj = Solar.fromYmdHms(y, m, d, hrUse, 0, 0);
   }
 
   const lunar = solarObj.getLunar();
@@ -1050,6 +1083,9 @@ function init() {
 
     const relLabels = {lover:'💕 연인 궁합',married:'💍 부부 궁합',friend:'🤝 친구 궁합',business:'💼 비즈니스 궁합'};
     document.getElementById('rel-badge').textContent = relLabels[params.rel] || '궁합 리포트';
+
+    const byHint = document.getElementById('couple-issuer-hint');
+    if (byHint && params.by) byHint.textContent = '발행 · ' + params.by;
 
     renderPersonCard('a', params.a, sajuA);
     renderPersonCard('b', params.b, sajuB);
