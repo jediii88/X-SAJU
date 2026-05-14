@@ -250,21 +250,11 @@ function buildYearStrategicNarrative(name, yr, kor, evLabel, sc, sewSip, ohTag, 
     ];
     var integr = integrBank[(mix + yr) % 4];
 
-    var domainP = '';
-    if (domainFour && (domainFour.wealth || domainFour.career || domainFour.love || domainFour.health)) {
-        domainP = '<p style="margin:0 0 10px;color:#d0d0d0;">'
-            + (domainFour.wealth ? '<b>현금·외상</b> — ' + domainFour.wealth + ' ' : '')
-            + (domainFour.career ? '<b>직장·계약</b> — ' + domainFour.career + ' ' : '')
-            + (domainFour.love ? '<b>사람·말</b> — ' + domainFour.love + ' ' : '')
-            + (domainFour.health ? '<b>몸</b> — ' + domainFour.health : '')
-            + '</p>';
-    }
     return '<div class="seyun-year-body" style="font-size:12.5px;color:#ccc;line-height:1.9;">'
         + '<p style="margin:0 0 10px;">' + situ + '</p>'
         + '<p style="margin:0 0 10px;">' + stance + '</p>'
         + '<p style="margin:0 0 10px;">' + action + '</p>'
         + '<p style="margin:0 0 10px;">' + risk + '</p>'
-        + domainP
         + '<p style="margin:0 0 10px;">' + integr + '</p>'
         + '<p style="margin:0;">' + monthTie + '</p>'
         + '</div>';
@@ -1896,6 +1886,85 @@ function getReportBaseDate(data) {
         if (!isNaN(d.getTime())) return d;
     }
     return new Date();
+}
+
+/** 표지·히어로용 생년월일시 한 줄 (음력 괄호 포함). data.coverSolar* / coverLunar* / birthTimeKnown 는 runAnalysis·서버 주입 시 채움 */
+function formatCoverBirthLine(data) {
+    if (!data) return '';
+    if (data.coverBirthLine) return data.coverBirthLine;
+    var y = data.coverSolarY;
+    var m = data.coverSolarM;
+    var d = data.coverSolarD;
+    if (y == null || m == null || d == null) return data.birthStr || '';
+    var ly = data.coverLunarY;
+    var lm = data.coverLunarM;
+    var ld = data.coverLunarD;
+    var lunarPart = '';
+    if (ly != null && lm != null && ld != null) {
+        lunarPart = ' (음력 ' + ly + '.' + lm + '.' + ld + (data.coverLunarLeap ? ' 윤' : '') + ')';
+    }
+    if (data.birthTimeKnown === false) {
+        return '양력 ' + y + '년 ' + m + '월 ' + d + '일' + lunarPart + ' 생시 알 수 없음';
+    }
+    var hh = data.coverSolarHH != null ? Number(data.coverSolarHH) : 0;
+    var mm = data.coverSolarMM != null ? Number(data.coverSolarMM) : 0;
+    var pad2 = function (n) { return String(n).length < 2 ? '0' + n : String(n); };
+    return '양력 ' + y + '년 ' + m + '월 ' + d + '일 ' + pad2(hh) + '시 ' + pad2(mm) + '분' + lunarPart;
+}
+
+/** 세운 연도 카드 HTML — 올해(Ch.6)와 내년·내후년(Ch.7) 동일 레이아웃 */
+function buildSeYunYearCardHtml(data, yr, opt) {
+    opt = opt || {};
+    if (typeof Solar === 'undefined') return '';
+    var name = data.name || '고객';
+    var dayStemY = data.dayStem || '甲';
+    var yong = data.yong || 'wood';
+    var gi = data.gi || 'metal';
+    var hee = data.hee || '';
+    var goo = data.goo || '';
+    var GA = { '甲': 'wood', '乙': 'wood', '丙': 'fire', '丁': 'fire', '戊': 'earth', '己': 'earth', '庚': 'metal', '辛': 'metal', '壬': 'water', '癸': 'water' };
+    var JA = { '子': 'water', '丑': 'earth', '寅': 'wood', '卯': 'wood', '辰': 'earth', '巳': 'fire', '午': 'fire', '未': 'earth', '申': 'metal', '酉': 'metal', '戌': 'earth', '亥': 'water' };
+    var GK = { '甲': '갑', '乙': '을', '丙': '병', '丁': '정', '戊': '무', '己': '기', '庚': '경', '辛': '신', '壬': '임', '癸': '계' };
+    var JK = { '子': '자', '丑': '축', '寅': '인', '卯': '묘', '辰': '진', '巳': '사', '午': '오', '未': '미', '申': '신', '酉': '유', '戌': '술', '亥': '해' };
+    var OH_KR7 = { wood: '목', fire: '화', earth: '토', metal: '금', water: '수' };
+    var info = { goh: 'earth', joh: 'earth', kor: '', g: '', j: '' };
+    try {
+        var L = Solar.fromYmd(yr, 6, 15).getLunar();
+        var gz = L.getYearInGanZhi();
+        info.g = gz[0];
+        info.j = gz[1];
+        info.kor = (GK[info.g] || info.g) + (JK[info.j] || info.j);
+        info.goh = GA[info.g] || 'earth';
+        info.joh = JA[info.j] || 'earth';
+    } catch (e1) { }
+    var evUp = info.goh === yong || info.joh === yong;
+    var evDn = info.goh === gi || info.joh === gi;
+    var ev2 = evUp ? { l: '흥(興)', c: '#c7a76a' } : (evDn ? { l: '주의', c: '#e08080' } : { l: '평온', c: '#aaa' });
+    var sc = 0;
+    if (info.goh === yong || info.goh === hee) sc += 2;
+    if (info.goh === gi || info.goh === goo) sc -= 2;
+    if (info.joh === yong || info.joh === hee) sc += 2;
+    if (info.joh === gi || info.joh === goo) sc -= 2;
+    var sewSip = (typeof getSipseong === 'function' && info.g) ? (getSipseong(dayStemY, info.g) || '') : '';
+    var ykw = yearlyFourDomainKeywords(sc, sewSip);
+    var ykwInd = yearlyFourDomainIndicators(sc, sewSip);
+    var strip = buildYearlyIndicatorsHtml(ykwInd);
+    var yongTag = (OH_KR7[yong] || '용신') + ' 용신';
+    var domAdvN = yearlyDomainStrategicAdvices(sc);
+    var body = buildYearStrategicNarrative(name, yr, info.kor, ev2.l, sc, sewSip, yongTag, domAdvN);
+    var kwDet = '<div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.08);font-size:11.5px;color:#aaa;line-height:1.85;"><b style="color:#c7a76a;">재물·직장·서류·사람</b> — 재물: ' + ykw.wealth + ' / 직업: ' + ykw.career + ' / 문서: ' + ykw.doc + ' / 애정: ' + ykw.love + '</div>';
+    var isThis = !!opt.isThisYear;
+    var border = isThis ? 'var(--gold)' : 'rgba(255,255,255,0.06)';
+    var bgA = isThis ? '0.05' : '0.03';
+    var badge = isThis ? ' <span style="font-size:10px;background:var(--gold);color:#000;padding:2px 8px;border-radius:8px;font-weight:700;">▶ 올해</span>' : '';
+    return '<div style="width:100%;max-width:100%;box-sizing:border-box;background:rgba(255,255,255,' + bgA + ');border-radius:12px;padding:18px 20px;border:1px solid ' + border + ';">'
+        + '<div style="width:100%;display:flex;flex-direction:column;gap:10px;margin-bottom:12px;align-items:stretch;">'
+        + '<div style="font-size:20px;font-weight:800;color:' + ev2.c + ';width:100%;line-height:1.35;">' + yr + '년 · <span class="report-pillar-hanja">' + info.g + info.j + '</span>년 · ' + info.kor + '년' + badge + '</div>'
+        + '<div style="width:100%;"><span style="display:inline-block;font-size:12px;background:rgba(255,255,255,0.06);padding:6px 14px;border-radius:20px;color:' + ev2.c + ';font-weight:700;">' + ev2.l + '</span></div>'
+        + '<p style="font-size:11.5px;color:#999;margin:0;line-height:1.75;width:100%;">그 해는 겉으로 드러나는 일보다, 돈·서류·사람 약속이 한꺼번에 겹치는 주가 먼저 옵니다. 그 주만 캘린더에 표시해 두십시오.</p></div>'
+        + strip
+        + '<div style="margin-top:4px;width:100%;">' + body + kwDet + '</div>'
+        + '</div>';
 }
 
 function buildPremiumExecutiveSummary(data) {
@@ -4018,32 +4087,12 @@ function buildPart1_Story(data){
 // Ch.6 올해 세운 거시적
 // ═══════════════════════════════════════════════════════
 function buildChapter6_SeYun(data){
-    var name=data.name||'고객',curY=getReportBaseDate(data).getFullYear();
+    var curY=getReportBaseDate(data).getFullYear();
     if(typeof Solar==='undefined') return typeof buildSewunLoop==='function'?buildSewunLoop(data):'';
-    var GA={'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'},JA={'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'},GK={'甲':'갑','乙':'을','丙':'병','丁':'정','戊':'무','己':'기','庚':'경','辛':'신','壬':'임','癸':'계'},JK={'子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해'},OK={wood:'목',fire:'화',earth:'토',metal:'금',water:'수'};
-    var yG='',yJ='',yGoh='earth',yJoh='earth',yKor='';
-    try{var L=Solar.fromYmd(curY,6,15).getLunar();var gz=L.getYearInGanZhi();yG=gz[0];yJ=gz[1];yKor=(GK[yG]||yG)+(JK[yJ]||yJ);yGoh=GA[yG]||'earth';yJoh=JA[yJ]||'earth';}catch(e){}
-    var yong=data.yong||'wood',gi=data.gi||'metal',hee=data.hee||'',goo=data.goo||'';
-    var ig=yGoh===yong||yJoh===yong,ib=yGoh===gi||yJoh===gi;
-    var scY=0;if(yGoh===yong||yGoh===hee)scY+=2;if(yGoh===gi||yGoh===goo)scY-=2;if(yJoh===yong||yJoh===hee)scY+=2;if(yJoh===gi||yJoh===goo)scY-=2;
-    var dayStemY=data.dayStem||'甲';
-    var sewSipY=(typeof getSipseong==='function')?(getSipseong(dayStemY,yG)||''):'';
-    var ykwY=yearlyFourDomainKeywords(scY,sewSipY);
-    var ykwIndY=yearlyFourDomainIndicators(scY,sewSipY);
-    var fourStripY=buildYearlyIndicatorsHtml(ykwIndY);
-    var luck=ig?'흥(興)의 해':ib?'주의가 필요한 해':'평온한 해',lc=ig?'#c7a76a':ib?'#e08080':'#aaa';
-    var evLab=ig?'흥(興)':(ib?'주의':'평온');
-    var yongTag=(OK[yong]||'용신')+' 용신';
-    var domAdvY=yearlyDomainStrategicAdvices(scY);
-    var narrative=buildYearStrategicNarrative(name,curY,yKor,evLab,scY,sewSipY,yongTag,domAdvY);
-    var keywordDetail='<div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.08);font-size:11.5px;color:#aaa;line-height:1.85;"><b style="color:#c7a76a;">재물·직장·서류·사람</b> — 재물: '+ykwY.wealth+' / 직업: '+ykwY.career+' / 문서: '+ykwY.doc+' / 애정: '+ykwY.love+'</div>';
-    var bodyWrap='<div style="width:100%;max-width:100%;box-sizing:border-box;background:rgba(199,167,106,0.05);border-left:3px solid var(--gold);padding:14px 18px;border-radius:0 10px 10px 0;"><div style="font-size:11px;color:var(--gold);margin-bottom:8px;font-weight:700;">✦ '+name+'님의 '+curY+'년 실행 초안</div>'+narrative+keywordDetail+'</div>';
-    var yearHead='<div style="width:100%;max-width:100%;box-sizing:border-box;background:rgba(255,255,255,0.03);border-radius:12px;padding:16px 18px;border:1px solid rgba(255,255,255,0.06);margin-bottom:14px;">'
-        +'<div style="display:flex;flex-direction:column;gap:10px;width:100%;align-items:stretch;">'
-        +'<div style="font-size:20px;font-weight:800;color:'+lc+';width:100%;line-height:1.35;">'+curY+'년 · '+yKor+'년</div>'
-        +'<div style="width:100%;"><span style="display:inline-block;font-size:12px;background:rgba(255,255,255,0.06);padding:6px 14px;border-radius:20px;color:'+lc+';font-weight:700;">'+luck+'</span></div>'
-        +'<p style="font-size:11.5px;color:#999;margin:0;line-height:1.75;width:100%;">연초엔 조용하다가 중순부터 회의·견적·송금 알림이 겹칠 수 있습니다. 숫자와 날짜만 캘린더에 박아 두십시오.</p></div></div>';
-    return'<div class="report-chapter chapter-start"><h3 class="ch-title">[ 10. 올해 세운 ] — '+curY+'년('+yKor+'년) 운세</h3>'+yearHead+fourStripY+bodyWrap+'<div style="margin-top:16px;font-size:11px;color:#666;">같은 해 안에서는 월마다 “독촉·계약·휴식” 중 하나만 메인으로 두고 나머지는 보조로 두십시오.</div></div>';
+    var inner = buildSeYunYearCardHtml(data, curY, { isThisYear: true });
+    return '<div class="report-chapter chapter-start"><h3 class="ch-title">[ 10. 올해 세운 ] — '+curY+'년 운세</h3>'
+        + '<div style="width:100%;box-sizing:border-box;display:flex;flex-direction:column;gap:16px;">' + inner + '</div>'
+        + '<div style="margin-top:16px;font-size:11px;color:#666;">같은 해 안에서는 월마다 “독촉·계약·휴식” 중 하나만 메인으로 두고 나머지는 보조로 두십시오.</div></div>';
 }
 
 // ═══════════════════════════════════════════════════════
@@ -4059,32 +4108,15 @@ function buildChapter7_NextYears(data){
     function yi(y){var g='',j='',go='earth',jo='earth',k='';try{var L=Solar.fromYmd(y,6,15).getLunar();var gz=L.getYearInGanZhi();g=gz[0];j=gz[1];k=(GK[g]||g)+(JK[j]||j);go=GA[g]||'earth';jo=JA[j]||'earth';}catch(e){}return{goh:go,joh:jo,kor:k,g:g,j:j};}
     function ev(info){var g=info.goh===yong||info.joh===yong,b=info.goh===gi||info.joh===gi;return g?{l:'흥(興)',c:'#c7a76a'}:b?{l:'주의',c:'#e08080'}:{l:'평온',c:'#aaa'};}
     function yScore(info){var sc=0;if(info.goh===yong||info.goh===hee)sc+=2;if(info.goh===gi||info.goh===goo)sc-=2;if(info.joh===yong||info.joh===hee)sc+=2;if(info.joh===gi||info.joh===goo)sc-=2;return sc;}
-    var OH_KR7={wood:'목',fire:'화',earth:'토',metal:'금',water:'수'};
-    function card(yr,info,ev2){
-        var sc=yScore(info);
-        var sewSip=(typeof getSipseong==='function'&&info.g)?(getSipseong(dayStemY,info.g)||''):'';
-        var ykw=yearlyFourDomainKeywords(sc,sewSip);
-        var ykwInd=yearlyFourDomainIndicators(sc,sewSip);
-        var strip=buildYearlyIndicatorsHtml(ykwInd);
-        var yongTag=(OH_KR7[yong]||'용신')+' 용신';
-        var domAdvN=yearlyDomainStrategicAdvices(sc);
-        var body=buildYearStrategicNarrative(name,yr,info.kor,ev2.l,sc,sewSip,yongTag,domAdvN);
-        var kwDet='<div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.08);font-size:11.5px;color:#aaa;line-height:1.85;"><b style="color:#c7a76a;">재물·직장·서류·사람</b> — 재물: '+ykw.wealth+' / 직업: '+ykw.career+' / 문서: '+ykw.doc+' / 애정: '+ykw.love+'</div>';
-        return '<div style="width:100%;max-width:100%;box-sizing:border-box;background:rgba(255,255,255,0.03);border-radius:12px;padding:18px 20px;border:1px solid rgba(255,255,255,0.06);">'
-            +'<div style="width:100%;display:flex;flex-direction:column;gap:10px;margin-bottom:12px;align-items:stretch;">'
-            +'<div style="font-size:20px;font-weight:800;color:'+ev2.c+';width:100%;line-height:1.35;">'+yr+'년 · '+info.kor+'년</div>'
-            +'<div style="width:100%;"><span style="display:inline-block;font-size:12px;background:rgba(255,255,255,0.06);padding:6px 14px;border-radius:20px;color:'+ev2.c+';font-weight:700;">'+ev2.l+'</span></div>'
-            +'<p style="font-size:11.5px;color:#999;margin:0;line-height:1.75;width:100%;">그 해는 겉으로 드러나는 일보다, 돈·서류·사람 약속이 한꺼번에 겹치는 주가 먼저 옵니다. 그 주만 캘린더에 표시해 두십시오.</p></div>'
-            +strip
-            +'<div style="margin-top:4px;width:100%;">'+body+kwDet+'</div>'
-            +'</div>';
+    function card(yr){
+        return buildSeYunYearCardHtml(data, yr, {});
     }
     var ny=yi(curY+1),nny=yi(curY+2);
     var nev=ev(ny),nnev=ev(nny);
     return '<div class="report-chapter chapter-start">'
         +'<h3 class="ch-title">[ 11. 내년·내후년 ] — 바로 앞에 다가온 시간 — 내년·내후년 운세</h3>'
         +'<div style="width:100%;box-sizing:border-box;display:flex;flex-direction:column;gap:16px;">'
-        +card(curY+1,ny,nev)+card(curY+2,nny,nnev)
+        +card(curY+1)+card(curY+2)
         +'</div>'
         +'</div>';
 }
@@ -4422,7 +4454,6 @@ function buildLifePanoramaSection(data) {
         '戌': '먼지가 가라앉는 저녁 시간대의 기운은, 신의와 뼈대 같은 약속을 남기려 합니다.',
         '亥': '물결 소리가 잦아드는 시간대의 기운은, 지혜와 이야기를 조용히 건네고 떠나려 합니다.'
     };
-    var closeScene = closeSceneByHour[sj] || '하루를 마무리짓는 그 긴 호흡은, 마지막 장면에서도 품격 있는 정리를 남기려 합니다.';
 
     var late = parsed.filter(function (x) { return x.age >= 60; });
     var lateMood = '';
@@ -4443,10 +4474,18 @@ function buildLifePanoramaSection(data) {
         water: '다음 세대가 읽을 지혜와 데이터로 남는 기억'
     };
     var legacy = legacyByDayOh[dayOh] || legacyByDayOh.earth;
+    var closeScene = closeSceneByHour[sj] || '하루를 마무리짓는 그 긴 호흡은, 마지막 장면에서도 품격 있는 정리를 남기려 합니다.';
+    if (data.birthTimeKnown === false) {
+        closeScene = '태어난 시각을 특정할 수 없어 시간대별 상징은 열어 두고, 말년의 온도는 삼주(여섯 글자)가 쌓아 온 패턴으로 읽는 편이 맞습니다.';
+    }
     var p4 = '마지막 장면. ' + lateMood + ' ' + closeScene
         + ' 인생의 마침표를 찍는 순간, ' + nTopic + joToken(nTopic, '은/는') + ' 평생 일군 성벽과 그 안에 담긴 온기를 선물처럼 남기고 떠나게 됩니다. '
         + nTopic + joToken(nTopic, '이/가') + ' 후손과 이웃에 남기실 유산은 ' + legacy + '입니다. '
         + '세상은 당신이 남긴 온기를 오랫동안 기억할 것입니다.';
+
+    var timeFoot = (data.birthTimeKnown === false)
+        ? '<p style="font-size:11px;color:rgba(180,186,198,0.72);line-height:1.75;margin:14px 0 0;">*(태어난 시간을 알 수 없어, 삼주(여섯 글자)의 누적된 기운을 바탕으로 말년의 방향성을 도출했습니다.)</p>'
+        : '';
 
     return '<div id="sec-life-panorama" class="report-chapter chapter-start" style="margin:28px 0 40px;padding:22px 20px;border-radius:14px;border:1px solid rgba(199,167,106,0.28);background:linear-gradient(180deg,rgba(199,167,106,0.08),rgba(0,0,0,0.12));">'
         + '<div style="font-size:11px;letter-spacing:0.2em;color:rgba(199,167,106,0.85);margin-bottom:10px;font-weight:700;">인생 일대기</div>'
@@ -4455,6 +4494,7 @@ function buildLifePanoramaSection(data) {
         + '<p style="font-size:13.5px;color:#ddd;line-height:2;margin:0 0 14px;">' + p2 + '</p>'
         + '<p style="font-size:13.5px;color:#ddd;line-height:2;margin:0 0 14px;">' + p3 + '</p>'
         + '<p style="font-size:13.5px;color:#ddd;line-height:2;margin:0;">' + p4 + '</p>'
+        + timeFoot
         + '</div>';
 }
 
@@ -4485,7 +4525,7 @@ function buildBookIntroPage(data) {
 function buildClientCoverPage(data) {
     const name = data.name || '사주 분석 대상자';
     const iljuKey = (data.dayStem||'') + (data.dayBranch||'');
-    const birthStr = data.birthStr || '';
+    const coverLine = formatCoverBirthLine(data) || (data.birthStr || '');
     const dbEntry = window.SAJU_DB?.ILJU?.[iljuKey] || {};
     const iljuTitle = dbEntry.title || iljuKey;
     const ILJU_ANIMAL = {'甲子':'쥐(자)','乙丑':'소(축)','丙寅':'호랑이(인)','丁卯':'토끼(묘)','戊辰':'용(진)','己巳':'뱀(사)','庚午':'말(오)','辛未':'양(미)','壬申':'원숭이(신)','癸酉':'닭(유)','甲戌':'개(술)','乙亥':'돼지(해)','丙子':'쥐(자)','丁丑':'소(축)','戊寅':'호랑이(인)','己卯':'토끼(묘)','庚辰':'용(진)','辛巳':'뱀(사)','壬午':'말(오)','癸未':'양(미)','甲申':'원숭이(신)','乙酉':'닭(유)','丙戌':'개(술)','丁亥':'돼지(해)','戊子':'쥐(자)','己丑':'소(축)','庚寅':'호랑이(인)','辛卯':'토끼(묘)','壬辰':'용(진)','癸巳':'뱀(사)','甲午':'말(오)','乙未':'양(미)','丙申':'원숭이(신)','丁酉':'닭(유)','戊戌':'개(술)','己亥':'돼지(해)','庚子':'쥐(자)','辛丑':'소(축)','壬寅':'호랑이(인)','癸卯':'토끼(묘)','甲辰':'용(진)','乙巳':'뱀(사)','丙午':'말(오)','丁未':'양(미)','戊申':'원숭이(신)','己酉':'닭(유)','庚戌':'개(술)','辛亥':'돼지(해)','壬子':'쥐(자)','癸丑':'소(축)','甲寅':'호랑이(인)','乙卯':'토끼(묘)','丙辰':'용(진)','丁巳':'뱀(사)','戊午':'말(오)','己未':'양(미)','庚申':'원숭이(신)','辛酉':'닭(유)','壬戌':'개(술)','癸亥':'돼지(해)'};
@@ -4502,6 +4542,9 @@ function buildClientCoverPage(data) {
     const iljuAnimalLabel = iljuTitle || animalPlain || '';
     const STEM_COLOR_KR = {'甲':'푸른','乙':'푸른','丙':'붉은','丁':'붉은','戊':'노란','己':'노란','庚':'하얀','辛':'하얀','壬':'검은','癸':'검은'};
     const iljuMeaning = ((STEM_COLOR_KR[ds] || '') + (animalPlain ? (' ' + animalPlain) : '')).trim() || iljuAnimalLabel || animalPlain;
+    const coverAnimalLine = iljuMeaning
+        ? ('당신의 상징 동물은 ' + iljuMeaning + '입니다.')
+        : (animalPlain ? ('당신의 상징 동물은 ' + animalPlain + '입니다.') : '');
 
     function hc(ch) {
         return (typeof HAN_COLOR !== 'undefined' && HAN_COLOR[ch]) ? HAN_COLOR[ch] : '';
@@ -4527,8 +4570,8 @@ function buildClientCoverPage(data) {
 
         <div style="width:110px;height:110px;margin:2px auto 12px;display:flex;align-items:center;justify-content:center;"><img src="${animalImage}" alt="${animalPlain || '일주 동물'}" loading="lazy" style="width:100%;height:100%;object-fit:contain;display:block;"/></div>
         <div style="font-size:30px;line-height:1.15;margin:0 0 6px;">${iljuBig}</div>
-        <div style="font-size:15px;color:rgba(199,167,106,0.92);margin-top:4px;letter-spacing:0.02em;font-weight:600;">${iljuKorean} - ${iljuMeaning}</div>
-        ${birthStr ? `<div style="font-size:13px;color:rgba(210,214,223,0.58);margin-top:16px;font-weight:300;">${birthStr}</div>` : ''}
+        ${coverAnimalLine ? `<div style="font-size:15px;color:rgba(199,167,106,0.92);margin-top:4px;letter-spacing:0.02em;font-weight:600;">${coverAnimalLine}</div>` : ''}
+        ${coverLine ? `<div style="font-size:13px;color:rgba(210,214,223,0.78);margin-top:14px;font-weight:400;line-height:1.65;">${coverLine}</div>` : ''}
 
         <div style="margin-top:38px;font-size:10px;color:rgba(210,214,223,0.34);letter-spacing:0.14em;">${formatReportAccessLine(data)}</div>
     </div>`;
@@ -5444,14 +5487,14 @@ const FORTUNE_TEXT_DB = {
     },
     action: {
         favorable: [
-            '용신 흐름입니다. 핵심 과제에 자본과 시간을 집중 투입하십시오.',
-            '상승 구간입니다. 미뤄둔 결정을 이번에 종결하십시오.',
-            '실행 우위 구간입니다. 성과가 나는 축에 인력과 예산을 몰아주십시오.'
+            '이번 달은 입금 확인·견적 회신·승인선 정리 세 가지만 캘린더에 고정하고, 그 외 신규 제안은 다음 달로 미루십시오.',
+            '미뤄둔 계약 서명·연장 통보·세금 납부를 같은 주에 겹치지 않게 날짜를 쪼개서 끝내십시오.',
+            '성과가 나는 거래처 한 곳에만 주간 보고를 보내고, 나머지 채널은 알림을 끄십시오.'
         ],
         cautious: [
-            '기신 압박 구간입니다. 손실 가능성이 큰 선택을 즉시 차단하십시오.',
-            '방어 모드로 전환해야 합니다. 현금 보전과 고정비 절감을 먼저 실행하십시오.',
-            '리스크 우세 구간입니다. 보증·레버리지·무리한 확장을 무조건 피해야 합니다.'
+            '현금이 먼저 나가는 조건(선납·연대·지분)이 붙은 제안은 이번 달 서명 목록에서 바로 제외하십시오.',
+            '고정비·미수·카드값 세 줄만 적는 금요일 30분을 만들고, 그날은 새로운 지출 앱을 열지 마십시오.',
+            '보증·레버리지·야간 송금은 이번 달 전부 금지하고, 꼭 필요한 지출은 영업일 점심 이전에만 처리하십시오.'
         ]
     }
 };
@@ -5622,8 +5665,22 @@ function runAnalysis(overrideParams) {
 
     showLoading('만세력을 정밀 계산하는 중입니다', () => {
         const name = (_op && _op.name) || (ni && ni.value) || '고객';
-        const _t = (_op && _op.birthTime) || (ti && ti.value) || '0000';
-        let tVal = _t.replace(/\D/g, '') || '0000';
+        var noTimeEl = typeof document !== 'undefined' && document.getElementById('no-time');
+        var noTimeChk = noTimeEl ? !!noTimeEl.checked : false;
+        var birthTimeRaw = '';
+        if (_op && Object.prototype.hasOwnProperty.call(_op, 'birthTime')) {
+            birthTimeRaw = _op.birthTime == null ? '' : String(_op.birthTime).trim();
+        } else if (ti && ti.value != null) {
+            birthTimeRaw = String(ti.value).trim();
+        }
+        var birthTimeNullish = birthTimeRaw === '' || String(birthTimeRaw).toLowerCase() === 'null' || /^모름/i.test(birthTimeRaw);
+        var isUnknown = toBool(_op && _op.unknown, noTimeChk) || birthTimeNullish;
+        var tVal = '';
+        if (!isUnknown) {
+            tVal = birthTimeRaw.replace(/\D/g, '') || '0000';
+        } else {
+            tVal = '1200';
+        }
         if (tVal.length < 4) tVal = tVal.padStart(4, '0');
 
         let y = parseInt(dVal.slice(0,4));
@@ -5646,7 +5703,6 @@ function runAnalysis(overrideParams) {
 
         const genderRaw = (_op && _op.gender != null) ? String(_op.gender).toUpperCase() : String(document.getElementById('gender').value || 'F').toUpperCase();
         const gender = (genderRaw === 'M' || genderRaw === 'MALE' || genderRaw === '남' || genderRaw === '남성') ? 'M' : 'F';
-        const isUnknown = toBool(_op && _op.unknown, document.getElementById('no-time').checked);
         const calRaw = _op && _op.cal != null ? String(_op.cal).toLowerCase() : '';
         const isSolar = _op ? !(calRaw === 'lunar' || calRaw === 'l') : (document.getElementById('cal-type').value === 'S');
         const isLeap = toBool(_op && _op.yundal, (document.getElementById('is-leap').value === 'true'));
@@ -5720,29 +5776,28 @@ function runAnalysis(overrideParams) {
         const allExtraShinsal = getAllExtraShinsal(pillars, ec, isUnknown);
 
         // 동물 아바타 및 배지 업데이트
-        const elType = HAN_COLOR[dayStem] || 'wood';
         const animalInfo = ANIMAL_SPRITE[pillars[1].h[1]] || ANIMAL_SPRITE['인'];
         
         document.getElementById('av-name').innerText = name + "님";
         var heroBrushTitle = document.getElementById('hero-brush-title');
         if (heroBrushTitle) heroBrushTitle.innerText = name + ' 고객님의 사주풀이 비밀문서';
         
-        const krColor = COLOR_KR_MAP[elType];
-        
+        const colorInfo = ANIMAL_COLOR[dayStem] || ANIMAL_COLOR['병'];
+        var animalSentence = ('당신의 상징 동물은 ' + String(colorInfo.label || '').trim() + ' ' + String(animalInfo.kr || '').trim() + '입니다.').replace(/\s+/g, ' ').trim();
+
         const descHanja = document.getElementById('av-desc-hanja');
         const descHangul = document.getElementById('av-desc-hangul');
         if (descHanja && descHangul) {
             descHanja.innerHTML = `<span class="${HAN_COLOR[dayStem]}">${dayStem}</span><span class="${HAN_COLOR[pillars[1].h[1]]}">${pillars[1].h[1]}</span>`;
-            descHangul.innerText = `${krColor} ${animalInfo.kr}`;
+            descHangul.innerText = animalSentence;
         } else {
             // Fallback if elements not found
             const fallback = document.getElementById('av-desc');
-            if(fallback) fallback.innerText = `${dayStem}${pillars[1].h[1]} (${krColor} ${animalInfo.kr})`;
+            if(fallback) fallback.innerText = `${dayStem}${pillars[1].h[1]} — ${animalSentence}`;
         }
         
         const circle = document.getElementById('av-circle');
         if(circle) {
-            const colorInfo = ANIMAL_COLOR[dayStem] || ANIMAL_COLOR['병'];
             // flaticon 팔각형 이미지 그대로 사용 (원형 프레임 없음)
             circle.style.cssText = `background:transparent; border:none; box-shadow:none; width:110px; height:110px; margin:0 auto 10px; display:flex; align-items:center; justify-content:center;`;
             const STEM_EN = {"甲":"jia","乙":"yi","丙":"bing","丁":"ding","戊":"wu","己":"ji","庚":"geng","辛":"xin","壬":"ren","癸":"gui"};
@@ -5750,8 +5805,7 @@ function runAnalysis(overrideParams) {
             const enName = (STEM_EN[dayStem]||'bing') + '_' + (BRANCH_EN[pillars[1].h[1]]||'yin');
             circle.innerHTML = `<img src="../zodiac_en/${enName}.png" style="width:100%;height:100%;object-fit:contain;display:block;" alt="${animalInfo.kr}">`;
             circle.className = 'avatar-circle';
-            // 색상 라벨 업데이트
-            if(descHangul) descHangul.innerText = `${colorInfo.label} ${animalInfo.kr}`;
+            if (descHangul) descHangul.innerText = animalSentence;
         }
         
         let lMon = displayLunarM || (typeof lunar.getMonth === 'function' ? Math.abs(lunar.getMonth()) : 1);
@@ -5787,7 +5841,7 @@ function runAnalysis(overrideParams) {
         const buildRow = (label, renderer) => `
             <div class="row">
                 <div class="cell row-label">${label}</div>
-                ${pillars.map((p, idx) => `<div class="cell">${isUnknown && idx === 0 ? '<span class="tiny-dim">미상</span>' : renderer(p, idx)}</div>`).join('')}
+                ${pillars.map((p, idx) => `<div class="cell">${isUnknown && idx === 0 ? '<span class="tiny-dim">알 수 없음</span>' : renderer(p, idx)}</div>`).join('')}
             </div>`;
 
 
@@ -5820,7 +5874,7 @@ function runAnalysis(overrideParams) {
         const bRow = (lbl, fn) => `
             <div class="manse-row">
                 <div class="manse-cell manse-label">${lbl}</div>
-                ${pillars.map((p, i) => `<div class="manse-cell">${(isUnknown && i===0) ? '<span style="color:#555;font-size:11px;">미상</span>' : fn(p, i)}</div>`).join('')}
+                ${pillars.map((p, i) => `<div class="manse-cell">${(isUnknown && i===0) ? '<span style="color:#555;font-size:11px;">알 수 없음</span>' : fn(p, i)}</div>`).join('')}
             </div>`;
 
         const manseHtml = [
@@ -5900,11 +5954,11 @@ function runAnalysis(overrideParams) {
                 <div class="info-label">${p.n}</div>
                 <div style="margin-top:6px;">
                     <div style="font-size:10px;color:var(--gold);letter-spacing:1px;margin-bottom:3px;">12신살</div>
-                    <div class="info-value" style="margin-bottom:8px;">${isUnk ? '시간 미상' : (twl.join(', ') || '-')}</div>
+                    <div class="info-value" style="margin-bottom:8px;">${isUnk ? '알 수 없음' : (twl.join(', ') || '-')}</div>
                     <div style="font-size:10px;color:#64b5f6;letter-spacing:1px;margin-bottom:3px;">12운성</div>
-                    <div class="info-value" style="margin-bottom:8px;">${isUnk ? '시간 미상' : uns}</div>
+                    <div class="info-value" style="margin-bottom:8px;">${isUnk ? '알 수 없음' : uns}</div>
                     <div style="font-size:10px;color:#9b59b6;letter-spacing:1px;margin-bottom:3px;">기타신살</div>
-                    <div class="info-value">${isUnk ? '시간 미상' : (ext.join(', ') || '-')}</div>
+                    <div class="info-value">${isUnk ? '알 수 없음' : (ext.join(', ') || '-')}</div>
                 </div>
             </div>`;
         }).join('');
@@ -5979,7 +6033,6 @@ function runAnalysis(overrideParams) {
             }
         });
 
-        const total = isUnknown ? 6 : 8;
         const wxData = [
             { key:'wood', label:'목', val: percent(counts.wood, wuxingTotalWeight) },
             { key:'fire', label:'화', val: percent(counts.fire, wuxingTotalWeight) },
@@ -6146,11 +6199,12 @@ function runAnalysis(overrideParams) {
         }
         // inject highlight logic into buildFortuneCards
         window.buildFortuneCards = function(targetId, rows, hIdx = -1) {
-            document.getElementById(targetId).innerHTML = '<div class="fortune-scroll">' + rows.map((row, idx) => `
+            var stackClass = (targetId === 'seun-table' || targetId === 'wolun-table') ? ' fortune-scroll--stack' : '';
+            document.getElementById(targetId).innerHTML = '<div class="fortune-scroll' + stackClass + '">' + rows.map((row, idx) => `
                 <div class="f-card ${idx === hIdx ? 'current-fortune' : ''}">
                     <div class="f-head">${row[0]}</div>
                     <div class="f-sip">${row[1]}</div>
-                    <div class="f-hz"><span class="${HAN_COLOR[row[2][0]]||''}">${row[2][0]}</span><br><span class="${HAN_COLOR[row[2][1]]||''}">${row[2][1]}</span></div>
+                    <div class="f-hz"><span class="report-pillar-hanja ${HAN_COLOR[row[2][0]]||''}">${row[2][0]}</span><br><span class="report-pillar-hanja ${HAN_COLOR[row[2][1]]||''}">${row[2][1]}</span></div>
                     <div class="f-kr">${row[3]}</div>
                     <div class="f-un">${row[4]}</div>
                 </div>
@@ -6667,7 +6721,7 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
                 var d=document.createElement('div');
                 d.style.cssText='padding:11px;background:rgba(255,255,255,'+(isThis?'0.07':'0.02')+');border:1px solid '+(isThis?'var(--gold)':'rgba(255,255,255,0.06)')+';border-radius:8px;';
                 d.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;">'+
-                    '<div style="display:flex;align-items:center;gap:6px;"><span style="font-size:16px;font-weight:900;color:var(--gold);font-family:Noto Serif KR,serif;">'+g+j+'</span><span style="font-size:12px;font-weight:600;color:#ccc;">('+((HAN_KOR&&HAN_KOR[g])||g)+((HAN_KOR&&HAN_KOR[j])||j)+')</span>'+
+                    '<div style="display:flex;align-items:center;gap:6px;"><span class="report-pillar-hanja" style="font-size:16px;font-weight:900;color:var(--gold);">'+g+j+'</span><span style="font-size:12px;font-weight:600;color:#ccc;">('+((HAN_KOR&&HAN_KOR[g])||g)+((HAN_KOR&&HAN_KOR[j])||j)+')</span>'+
                     '<span style="font-size:12px;color:#bbb;">'+wY+'.'+m+'월'+(isThis?' <span style="font-size:10px;background:var(--gold);color:#000;padding:1px 5px;border-radius:5px;font-weight:700;">이달</span>':'')+'</span></div>'+
                     '<span style="font-size:11px;font-weight:700;color:'+col+';">'+gb(s)+'</span></div>'+
                     '<div style="background:rgba(199,167,106,0.04);border-radius:5px;padding:7px 9px;border-left:2px solid '+col+';"><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">'+advm+'</p></div>';
@@ -6733,8 +6787,19 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
                 return [...gmStr].map(c => KR2HJ[c] || c);
             })(),
             allTwelveShinsal: allTwelveShinsal,
-            allExtraShinsal: allExtraShinsal
+            allExtraShinsal: allExtraShinsal,
+            birthTimeKnown: !isUnknown,
+            coverSolarY: displaySolarY,
+            coverSolarM: displaySolarM,
+            coverSolarD: displaySolarD,
+            coverSolarHH: !isUnknown ? solar.getHour() : null,
+            coverSolarMM: !isUnknown ? solar.getMinute() : null,
+            coverLunarY: displayLunarY,
+            coverLunarM: displayLunarM,
+            coverLunarD: displayLunarD,
+            coverLunarLeap: !!displayLunarLeap
         };
+        globalSajuData.birthStr = formatCoverBirthLine(globalSajuData);
 
         // ─── 레거시 추가 주입(비활성) ───
         var USE_LEGACY_APPEND = false;
@@ -6813,7 +6878,7 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
             function gs(g,j){return (sc[OH[g]]||0)+(sc[JO[j]]||0);}
             function gc(s){return s>=3?'#c7a76a':s>=1?'#00C853':s===0?'#888':s>=-2?'#ff9800':'#e74c3c';}
             function gb(s){return s>=3?'🌟 대길':s>=1?'✦ 길':s===0?'— 평':s>=-2?'⚠ 주의':'❌ 흉';}
-            var curY2=new Date().getFullYear();
+            var curY2=getReportBaseDate(globalSajuData||{}).getFullYear();
             var h3='<div class="report-chapter"><h3 class="ch-title">세운 10년 — 연도별 완전 분석</h3><p class="ch-text">세운은 그해의 날씨입니다. 용신 기운이 강한 해에 중요한 행동을 집중하고, 기신 기운의 해에는 수비 전략을 택하십시오.</p>';
             for(var yr=curY2;yr<curY2+10;yr++){
                 var yL2=Solar.fromYmd(yr,6,15).getLunar();
