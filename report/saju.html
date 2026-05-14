@@ -57,7 +57,7 @@
       // 자동실행은 window.load IIFE에서 처리 (하단 스크립트 참조)
     })();
     </script>
-    <meta name="version" content="1778789125">
+    <meta name="version" content="1778789351">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -1921,8 +1921,8 @@
     </script>
 
 <!-- SAJUX_CACHE_BUSTER_START -->
-<meta name="sajux-build" content="1778789125">
-<script>(function(){var v='1778789125';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
+<meta name="sajux-build" content="1778789351">
+<script>(function(){var v='1778789351';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
 <!-- SAJUX_CACHE_BUSTER_END -->
 </head>
 <body>
@@ -2661,7 +2661,7 @@ function startReport() {
 <script src="lunar.js"></script>
     <!-- KLC: KASI 기준 한국 음양력 변환 (음력 입력 시 사용) -->
     <script src="klc.min.js"></script>
-    <script src="report-core.js?v=1778789125"></script>
+    <script src="report-core.js?v=1778789351"></script>
 
 
 
@@ -2717,9 +2717,24 @@ function startReport() {
     color: var(--text-primary) !important;
     border: 1px solid rgba(128, 128, 128, 0.2);
 }
-.pdf-btn {
-    background: rgba(128, 128, 128, 0.2) !important;
-    backdrop-filter: blur(5px);
+.pdf-btn,
+.sajux-pdf-wide-btn,
+#sajux-pdf-fab {
+    background: rgba(128, 128, 128, 0.22) !important;
+    color: var(--text-primary) !important;
+    box-shadow: none !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+}
+html[data-theme="light"] .sajux-pdf-wide-btn,
+body.light-mode .sajux-pdf-wide-btn,
+html[data-theme="light"] #sajux-pdf-fab,
+body.light-mode #sajux-pdf-fab {
+    background: rgba(0, 0, 0, 0.07) !important;
+    color: var(--text-primary) !important;
+    border-color: rgba(0, 0, 0, 0.12) !important;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08) !important;
 }
 .card, .yearly-card, .monthly-card, .module-item {
     background: rgba(var(--bg-rgb, 128, 128, 128), 0.1) !important;
