@@ -10,7 +10,7 @@
     if (exp && /^\d+$/.test(String(exp)) && Date.now() > parseInt(exp, 10)) {
       document.addEventListener('DOMContentLoaded', function () {
         document.body.innerHTML =
-          '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#080810;color:#888;font-family:\'Noto Sans KR\',sans-serif;text-align:center;padding:40px;">' +
+          '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#000;color:#888;font-family:\'Noto Sans KR\',sans-serif;text-align:center;padding:40px;">' +
           '<div><div style="font-size:48px;margin-bottom:16px;">⏰</div>' +
           '<div style="font-size:18px;color:#c7a76a;font-weight:700;margin-bottom:8px;">리포트 유효기간 만료</div>' +
           '<div style="font-size:13px;">다시 발급받으려면 담당자에게 문의해 주세요.</div></div></div>';
@@ -25,14 +25,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;700;900&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #080810;
+  --bg: #000;
   --panel: rgba(255,255,255,0.04);
   --line: rgba(255,255,255,0.10);
   --text: rgba(255,255,255,0.96);
   --text-soft: rgba(255,255,255,0.70);
   --text-dim: rgba(255,255,255,0.42);
   --gold: #c7a76a;
-  --purple: #7c8dff;
+  --gold-soft: #9d8f72;
   --wood: #52b36a;
   --fire: #d45a52;
   --earth: #c9a24c;
@@ -48,6 +48,29 @@ html, body {
   min-height: 100vh;
 }
 body { overflow-x: hidden; }
+
+/* 개인 만세력(report)과 동일: 순검정 + 별 입자 */
+#star-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.38;
+}
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: none;
+  pointer-events: none;
+  z-index: 0;
+}
+#main-content,
+#error-screen {
+  position: relative;
+  z-index: 1;
+}
 
 #loading-screen {
   position: fixed; inset: 0;
@@ -88,15 +111,18 @@ body { overflow-x: hidden; }
 .container { max-width: 500px; margin: 0 auto; padding: 0 18px 80px; }
 
 .duo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 24px 0; }
-.person-card { border-radius: 12px; padding: 16px 12px; border: 1px solid; }
-.person-card.a { background: rgba(199,167,106,0.06); border-color: rgba(199,167,106,0.25); }
-.person-card.b { background: rgba(124,141,255,0.06); border-color: rgba(124,141,255,0.25); }
+.person-card {
+  border-radius: 12px;
+  padding: 16px 12px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.035);
+}
+.person-card.a { border-left: 3px solid rgba(199,167,106,0.55); }
+.person-card.b { border-left: 3px solid rgba(199,167,106,0.28); }
 .person-label { font-size: 10px; letter-spacing: 0.2em; margin-bottom: 8px; font-weight: 500; }
 .person-card.a .person-label { color: var(--gold); }
-.person-card.b .person-label { color: var(--purple); }
-.person-name { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
-.person-card.a .person-name { color: var(--gold); }
-.person-card.b .person-name { color: var(--purple); }
+.person-card.b .person-label { color: var(--gold-soft); }
+.person-name { font-size: 18px; font-weight: 700; margin-bottom: 4px; color: var(--text); }
 .person-ilju { font-size: 22px; font-weight: 300; letter-spacing: 0.05em; margin: 8px 0; }
 .person-meta { font-size: 11px; color: var(--text-dim); line-height: 1.6; }
 .pillar-mini { display: flex; gap: 3px; margin-top: 10px; }
@@ -165,7 +191,7 @@ body { overflow-x: hidden; }
   color: var(--gold); font-size: 10px;
   padding: 2px 8px; border-radius: 10px; letter-spacing: 0.1em;
 }
-.tag.purple { background: rgba(124,141,255,0.12); color: var(--purple); }
+.tag.purple { background: rgba(199,167,106,0.1); color: var(--gold-soft); }
 .tag.green  { background: rgba(82,179,106,0.12);  color: #52b36a; }
 .tag.red    { background: rgba(212,90,82,0.12);   color: #d45a52; }
 
@@ -208,6 +234,49 @@ body { overflow-x: hidden; }
 </style>
 </head>
 <body>
+
+<canvas id="star-canvas"></canvas>
+<script>
+(function() {
+  var canvas = document.getElementById('star-canvas');
+  if (!canvas || !canvas.getContext) return;
+  var ctx = canvas.getContext('2d');
+  var stars = [];
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  function initStars() {
+    stars = [];
+    for (var i = 0; i < 160; i++) {
+      stars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 1.2 + 0.2,
+        alpha: Math.random(),
+        speed: Math.random() * 0.003 + 0.001,
+        phase: Math.random() * Math.PI * 2
+      });
+    }
+  }
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    var t = Date.now() * 0.001;
+    stars.forEach(function(s) {
+      var a = 0.3 + 0.7 * (0.5 + 0.5 * Math.sin(t * s.speed * 60 + s.phase));
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255,248,220,' + a + ')';
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize', function() { resize(); initStars(); });
+  resize();
+  initStars();
+  draw();
+})();
+</script>
 
 <div id="loading-screen">
   <div class="spin"></div>
@@ -554,7 +623,7 @@ function analyzeCoupling(a, b) {
   else if (score >= 30) { grade='도전 궁합 ⚡'; sub='마찰이 있으나 극복하면 단단해집니다.'; }
   else                  { grade='어려운 인연 🔥'; sub='강한 에너지 충돌. 상호 이해와 배려가 핵심입니다.'; }
 
-  const ringColor = score >= 75 ? '#c7a76a' : score >= 55 ? '#7c8dff' : score >= 40 ? '#c9a24c' : '#d45a52';
+  const ringColor = score >= 75 ? '#c7a76a' : score >= 55 ? '#9a9082' : score >= 40 ? '#c9a24c' : '#d45a52';
   return { score, grade, sub, breakdown, ringColor, isHap, isChung, samhapScore, ssScore, aOh, bOh, shengAB, shengBA };
 }
 
@@ -738,8 +807,8 @@ function buildRelPanels(params, a, b, result) {
       ▸ <strong>조심할 것:</strong> ${a.strength==='신강' ? '고집이 세져 타인의 의견을 무시하거나, 에너지를 분산시키는 과욕.' : '우유부단하거나 타인의 말에 너무 영향을 받을 수 있습니다.'}
       </span>
     </div>`,
-    `<div class="insight-card" style="border-left:3px solid var(--purple);">
-      <div class="tag" style="background:rgba(124,141,255,0.15);color:var(--purple);">💜 ${bName}님 — 타고난 성격과 기질</div><br>
+    `<div class="insight-card" style="border-left:3px solid var(--gold-soft);">
+      <div class="tag" style="background:rgba(199,167,106,0.12);color:var(--gold-soft);">✦ ${bName}님 — 타고난 성격과 기질</div><br>
       <span style="font-size:12px;color:#888;">일주: ${b.dayStem}${bDB} · ${b.strength}</span><br><br>
       ${bChar}
       <br><br>
@@ -937,8 +1006,8 @@ function buildRelPanels(params, a, b, result) {
       ${aSpouse}
       <br><br><span style="font-size:11px;color:#777;">※ 배우자궁은 내가 무의식적으로 끌리는 이성의 특징을 나타냅니다.</span>
     </div>`,
-    `<div class="insight-card" style="border-left:3px solid var(--purple);">
-      <div class="tag" style="background:rgba(124,141,255,0.15);color:var(--purple);">💜 ${bName}님이 끌어당기는 이성</div><br>
+    `<div class="insight-card" style="border-left:3px solid var(--gold-soft);">
+      <div class="tag" style="background:rgba(199,167,106,0.12);color:var(--gold-soft);">✦ ${bName}님이 끌어당기는 이성</div><br>
       <strong>일지(배우자궁): ${bDB}(${HAN_KOR[bDB]||bDB})</strong><br><br>
       ${bSpouse}
       <br><br><span style="font-size:11px;color:#777;">※ 배우자궁은 내가 무의식적으로 끌리는 이성의 특징을 나타냅니다.</span>
