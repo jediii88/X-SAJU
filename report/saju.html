@@ -57,7 +57,7 @@
       // 자동실행은 window.load IIFE에서 처리 (하단 스크립트 참조)
     })();
     </script>
-    <meta name="version" content="1778781254">
+    <meta name="version" content="1778782512">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -1807,8 +1807,8 @@
     </script>
 
 <!-- SAJUX_CACHE_BUSTER_START -->
-<meta name="sajux-build" content="1778781254">
-<script>(function(){var v='1778781254';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
+<meta name="sajux-build" content="1778782512">
+<script>(function(){var v='1778782512';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
 <!-- SAJUX_CACHE_BUSTER_END -->
 </head>
 <body>
@@ -2085,7 +2085,7 @@ function collapseToc() {
         </div>
 
         <button class="btn subtle" onclick="addUserForm()" style="margin-bottom:15px; border:1px dashed var(--gold); color:var(--gold);">+ 인원 추가 (최대 4인)</button>
-        <button class="btn" onclick="runAnalysis()">만세력 결과 보기</button>
+        <button type="button" class="btn" id="btn-run-analysis" onclick="runAnalysisEntry()">만세력 결과 보기</button>
 
 <script>
 function toggleSwitch(cbId, labelId) {
@@ -2096,57 +2096,199 @@ function toggleSwitch(cbId, labelId) {
     else lbl.classList.remove('on');
 }
 globalSajuData = {};
+var __slotTimeUnknown = {};
 let userCount = 1;
+
+function maskNameForLink(name) {
+    var s = String(name || '').trim();
+    if (!s) return '';
+    if (s.length <= 1) return '*';
+    if (s.length === 2) return s.charAt(0) + '*';
+    return s.charAt(0) + '*' + s.charAt(s.length - 1);
+}
+function issuerMaskedForLink() {
+    try {
+        var raw = localStorage.getItem('sajux_issuer_name');
+        if (!raw || !String(raw).trim()) raw = '장경현';
+        return maskNameForLink(raw);
+    } catch (e) { return maskNameForLink('장경현'); }
+}
+function getCouplePageBase() {
+    try {
+        var u = new URL('../couple/index.html', location.href);
+        return u.href.replace(/[?#].*$/, '');
+    } catch (e2) {
+        return 'https://sajux.com/couple/index.html';
+    }
+}
+function mapGenderToCouple(v) {
+    var s = String(v || '').toUpperCase();
+    if (s === 'M' || s === 'MALE' || s === '남' || s === '남성') return 'male';
+    return 'female';
+}
+function mapCalToCouple(v) {
+    return String(v) === 'L' ? 'lunar' : 'solar';
+}
+function parseBirthDigitsForCouple(slot) {
+    if (slot === 1) {
+        var raw = String((document.getElementById('birth-date') || {}).value || '').replace(/\D/g, '');
+        if (raw.length !== 8) return null;
+        return { y: parseInt(raw.slice(0, 4), 10), mo: parseInt(raw.slice(4, 6), 10), d: parseInt(raw.slice(6, 8), 10) };
+    }
+    var el = document.getElementById('birth-date-' + slot);
+    if (!el || !el.value) return null;
+    var m = String(el.value).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (!m) return null;
+    return { y: parseInt(m[1], 10), mo: parseInt(m[2], 10), d: parseInt(m[3], 10) };
+}
+function parseTimeForCouple(slot) {
+    if (slot === 1) {
+        var unk = document.getElementById('no-time') && document.getElementById('no-time').checked;
+        if (unk) return { h: 12, mi: 0, unknown: true };
+        var t = String((document.getElementById('birth-time') || {}).value || '').replace(/\D/g, '');
+        t = (t + '0000').slice(0, 4);
+        return { h: parseInt(t.slice(0, 2), 10) || 0, mi: parseInt(t.slice(2, 4), 10) || 0, unknown: false };
+    }
+    if (__slotTimeUnknown[slot]) return { h: 12, mi: 0, unknown: true };
+    var tv = (document.getElementById('birth-time-' + slot) || {}).value || '';
+    if (!tv) return { h: 12, mi: 0, unknown: true };
+    var parts = String(tv).split(':');
+    if (parts.length < 2) return { h: 12, mi: 0, unknown: true };
+    return { h: parseInt(parts[0], 10) || 12, mi: parseInt(parts[1], 10) || 0, unknown: false };
+}
+function appendPersonCoupleParams(px, prefix, rec) {
+    px.set(prefix + '_n', rec.name || (prefix === 'a' ? 'A' : 'B'));
+    px.set(prefix + '_g', rec.gender);
+    px.set(prefix + '_c', rec.cal);
+    px.set(prefix + '_y', String(rec.y));
+    px.set(prefix + '_mo', String(rec.mo));
+    px.set(prefix + '_d', String(rec.d));
+    if (rec.unknown) {
+        px.set(prefix + '_unk', '1');
+        px.set(prefix + '_h', '12');
+        px.set(prefix + '_mi', '0');
+    } else {
+        px.set(prefix + '_h', String(rec.h != null ? rec.h : 12));
+        px.set(prefix + '_mi', String(rec.mi != null ? rec.mi : 0));
+    }
+}
+function buildCouplePayloadFromReportForms() {
+    var da = parseBirthDigitsForCouple(1);
+    var db = parseBirthDigitsForCouple(2);
+    if (!da) { alert('첫 번째 분 생년월일 8자리를 확인해 주세요.'); return null; }
+    if (!db) { alert('두 번째 분 생년월일(달력)을 선택해 주세요.'); return null; }
+    var ta = parseTimeForCouple(1);
+    var tb = parseTimeForCouple(2);
+    var name1 = String((document.getElementById('user-name') || {}).value || '').trim() || 'A';
+    var name2 = String((document.getElementById('name-2') || {}).value || '').trim() || 'B';
+    return {
+        a: { name: name1, gender: mapGenderToCouple((document.getElementById('gender') || {}).value), cal: mapCalToCouple((document.getElementById('cal-type') || {}).value), y: da.y, mo: da.mo, d: da.d, h: ta.h, mi: ta.mi, unknown: ta.unknown },
+        b: { name: name2, gender: mapGenderToCouple((document.getElementById('gender-2') || {}).value), cal: mapCalToCouple((document.getElementById('cal-type-2') || {}).value), y: db.y, mo: db.mo, d: db.d, h: tb.h, mi: tb.mi, unknown: tb.unknown }
+    };
+}
+function openCouplePreviewFromReport() {
+    var rec = buildCouplePayloadFromReportForms();
+    if (!rec) return;
+    var p = new URLSearchParams();
+    appendPersonCoupleParams(p, 'a', rec.a);
+    appendPersonCoupleParams(p, 'b', rec.b);
+    p.set('rel', 'lover');
+    var m = issuerMaskedForLink();
+    if (m) p.set('by', m);
+    p.set('v', String(Date.now()));
+    var url = getCouplePageBase() + '?' + p.toString();
+    window.open(url, '_blank', 'noopener,noreferrer');
+}
+function runAnalysisEntry() {
+    if (userCount === 2) {
+        openCouplePreviewFromReport();
+        return;
+    }
+    if (userCount > 2) {
+        alert('3인 이상은 이 화면에서 한 번에 분석하지 않습니다. 궁합은 인원을 2명으로 맞추면 새 탭에서 열립니다.');
+        return;
+    }
+    runAnalysis();
+}
+
+function setGenderExtra(btn, val, slot) {
+    var grp = btn.parentElement;
+    if (grp) grp.querySelectorAll('.toggle-btn').forEach(function (b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    var h = document.getElementById('gender-' + slot);
+    if (h) h.value = val;
+}
+function setCalendarExtra(btn, mode, slot) {
+    var grp = btn.parentElement;
+    if (grp) grp.querySelectorAll('.toggle-btn').forEach(function (b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    var h = document.getElementById('cal-type-' + slot);
+    if (h) h.value = mode === 'lunar' ? 'L' : 'S';
+}
+function toggleTimeUnknown(slot) {
+    __slotTimeUnknown[slot] = !__slotTimeUnknown[slot];
+    var tIn = document.getElementById('birth-time-' + slot);
+    var b = document.getElementById('time-unknown-btn-' + slot);
+    if (tIn) {
+        tIn.disabled = !!__slotTimeUnknown[slot];
+        if (__slotTimeUnknown[slot]) tIn.value = '';
+    }
+    if (b) {
+        b.style.borderColor = __slotTimeUnknown[slot] ? '#c7a76a' : '#444';
+        b.style.color = __slotTimeUnknown[slot] ? '#c7a76a' : '#888';
+    }
+}
+
 function addUserForm() {
     if (userCount >= 4) {
         alert("최대 4명까지만 분석 가능합니다.");
         return;
     }
     userCount++;
-    
+    var n = userCount;
     const container = document.getElementById('step-1');
     const newForm = document.createElement('div');
     newForm.className = 'input-group';
-    newForm.id = 'user-form-' + userCount;
+    newForm.id = 'user-form-' + n;
     newForm.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-            <label style="font-size:14px; color:var(--gold);">인원 ${userCount} 정보</label>
-            <button onclick="removeUserForm(${userCount})" style="background:none; border:none; color:#888; font-size:12px; cursor:pointer;">✕ 삭제</button>
+            <label style="font-size:14px; color:var(--gold);">인원 ${n} 정보</label>
+            <button type="button" onclick="removeUserForm(${n})" style="background:none; border:none; color:#888; font-size:12px; cursor:pointer;">✕ 삭제</button>
         </div>
         <div class="row">
-            <input type="text" id="name-${userCount}" placeholder="이름 (선택)" style="flex:1;">
+            <input type="text" id="name-${n}" placeholder="이름 (선택)" style="flex:1;">
         </div>
         <div class="row">
-            <input type="date" id="birth-date-${userCount}" style="flex:1;">
-            <input type="time" id="birth-time-${userCount}" style="flex:1;">
-            <button class="btn" id="time-unknown-btn-${userCount}" onclick="toggleTimeUnknown(${userCount})" style="flex:0.5; padding:0 10px; font-size:12px; background:var(--card-bg); border:1px solid #444; color:#888;">시간모름</button>
+            <input type="date" id="birth-date-${n}" style="flex:1;">
+            <input type="time" id="birth-time-${n}" style="flex:1;">
+            <button type="button" class="btn" id="time-unknown-btn-${n}" onclick="toggleTimeUnknown(${n})" style="flex:0.5; padding:0 10px; font-size:12px; background:var(--card-bg); border:1px solid #444; color:#888;">시간모름</button>
         </div>
         <div class="row">
             <div class="toggle-group" style="flex:1;">
-                <div class="toggle-btn active" onclick="setGender(this, 'F', ${userCount})">여성</div>
-                <div class="toggle-btn" onclick="setGender(this, 'M', ${userCount})">남성</div>
+                <div class="toggle-btn active" onclick="setGenderExtra(this, 'F', ${n})">여성</div>
+                <div class="toggle-btn" onclick="setGenderExtra(this, 'M', ${n})">남성</div>
             </div>
             <div class="toggle-group" style="flex:1;">
-                <div class="toggle-btn active" onclick="setCalendar(this, 'solar', ${userCount})">양력</div>
-                <div class="toggle-btn" onclick="setCalendar(this, 'lunar', ${userCount})">음력</div>
+                <div class="toggle-btn active" onclick="setCalendarExtra(this, 'solar', ${n})">양력</div>
+                <div class="toggle-btn" onclick="setCalendarExtra(this, 'lunar', ${n})">음력</div>
             </div>
         </div>
+        <input type="hidden" id="gender-${n}" value="F">
+        <input type="hidden" id="cal-type-${n}" value="S">
     `;
-    
-    // 버튼 앞에 삽입
     const addBtn = document.querySelector('button[onclick="addUserForm()"]');
     if (addBtn && container.contains(addBtn)) {
         container.insertBefore(newForm, addBtn);
     } else {
         container.appendChild(newForm);
     }
-    
     updateTierUI();
 }
 
 function removeUserForm(id) {
     const el = document.getElementById('user-form-' + id);
     if(el) {
+        delete __slotTimeUnknown[id];
         el.remove();
         userCount--;
         updateTierUI();
@@ -2154,11 +2296,12 @@ function removeUserForm(id) {
 }
 
 function updateTierUI() {
-    const btn = document.querySelector('button[onclick="runAnalysis()"]');
+    const btn = document.getElementById('btn-run-analysis') || document.querySelector('button[onclick="runAnalysisEntry()"]');
+    if (!btn) return;
     if(userCount === 1) {
         btn.innerHTML = '만세력 결과 보기 <span style="font-size:11px; opacity:0.7;">(개인)</span>';
     } else if(userCount === 2) {
-        btn.innerHTML = '만세력 결과 보기 <span style="font-size:11px; color:var(--gold);">(커플 궁합 연산)</span>';
+        btn.innerHTML = '만세력 결과 보기 <span style="font-size:11px; color:var(--gold);">(커플 궁합 · 새 탭)</span>';
     } else {
         btn.innerHTML = '만세력 결과 보기 <span style="font-size:11px; color:#ff6b6b;">(그룹/가족 다중 연산)</span>';
     }
@@ -2394,7 +2537,7 @@ function startReport() {
 <script src="lunar.js"></script>
     <!-- KLC: KASI 기준 한국 음양력 변환 (음력 입력 시 사용) -->
     <script src="klc.min.js"></script>
-    <script src="report-core.js?v=1778781254"></script>
+    <script src="report-core.js?v=1778782512"></script>
 
 
 
