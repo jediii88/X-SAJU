@@ -57,7 +57,7 @@
       // 자동실행은 window.load IIFE에서 처리 (하단 스크립트 참조)
     })();
     </script>
-    <meta name="version" content="1778765193">
+    <meta name="version" content="1778766694">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -1228,8 +1228,8 @@
         }
         .m-hanja {
             font-size: 37px;
-            font-weight: 780;
-            font-family: 'Noto Sans KR', sans-serif;
+            font-weight: 800;
+            font-family: Batang, 'Nanum Myeongjo', Gungsuh, 'Noto Serif KR', serif;
             line-height: 1.1;
             margin-bottom: 2px;
         }
@@ -1741,8 +1741,8 @@
     </script>
 
 <!-- SAJUX_CACHE_BUSTER_START -->
-<meta name="sajux-build" content="1778765193">
-<script>(function(){var v='1778765193';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
+<meta name="sajux-build" content="1778766694">
+<script>(function(){var v='1778766694';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
 <!-- SAJUX_CACHE_BUSTER_END -->
 </head>
 <body>
@@ -2159,14 +2159,6 @@ function startReport() {
             <div id="wuxing-inline-summary" class="section-interp"></div>
         </div>
 
-        <div class="section">
-            <div class="section-title"><div class="title-left"><span>십성 분포</span><span class="help-icon" onclick="openHelp('sipseong')">?</span></div><span>사회적 역할과 관계 패턴</span></div>
-            <div id="sipseong-summary" style="font-size:12px;color:var(--text-soft);margin-bottom:12px;padding:8px 12px;background:#111;border-radius:8px;border-left:3px solid #8a9bb5;line-height:1.6;"></div>
-            <div class="bar-group" id="sipseong-bars"></div>
-            <div id="sipseong-inline-summary" class="section-interp"></div>
-        </div>
-
-
         <div class="section" id="sec-yonghee" style="display:none;">
             <div class="section-title"><div class="title-left"><span>나의 수호 기운</span><span class="help-icon" onclick="openHelp('yonghee')">?</span></div><span>나를 돕는 기운 vs 방해하는 기운</span></div>
             <div class="pill-grid" id="yonghee-grid">
@@ -2210,6 +2202,14 @@ function startReport() {
             </div>
         </div>
 
+        <div id="sec-legacy-inline-charts">
+        <div class="section">
+            <div class="section-title"><div class="title-left"><span>십성 분포</span><span class="help-icon" onclick="openHelp('sipseong')">?</span></div><span>사회적 역할과 관계 패턴</span></div>
+            <div id="sipseong-summary" style="font-size:12px;color:var(--text-soft);margin-bottom:12px;padding:8px 12px;background:#111;border-radius:8px;border-left:3px solid #8a9bb5;line-height:1.6;"></div>
+            <div class="bar-group" id="sipseong-bars"></div>
+            <div id="sipseong-inline-summary" class="section-interp"></div>
+        </div>
+
         <div id="strength-inline-summary" style="margin:0 0 8px 0;"></div>
         <div class="section">
             <div class="section-title"><div class="title-left"><span>대운</span><span class="help-icon" onclick="openHelp('daeun')">?</span></div><span>10년 단위 운의 흐름</span></div>
@@ -2226,6 +2226,7 @@ function startReport() {
         <div class="section">
             <div class="section-title"><div class="title-left"><span>월운</span><span class="help-icon" onclick="openHelp('wolun')">?</span></div><span>이달의 기운</span></div>
             <div class="fortune-table" id="wolun-table"></div>
+        </div>
         </div>
 
         
@@ -2294,7 +2295,7 @@ function startReport() {
 <script src="lunar.js"></script>
     <!-- KLC: KASI 기준 한국 음양력 변환 (음력 입력 시 사용) -->
     <script src="klc.min.js"></script>
-    <script src="report-core.js?v=1778765193"></script>
+    <script src="report-core.js?v=1778766694"></script>
 
 
 
