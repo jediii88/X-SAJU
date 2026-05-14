@@ -272,6 +272,42 @@ function johoMergeRiskFromData(data) {
     if (!j) return false;
     return /(없으면|절실히\s*필요|필수\s*조후|마릅니다|증발|초조하고)/.test(j);
 }
+/** 제1부 딥훅 — 공망이 실제로 걸린 기둥(년·월·일·시)별로 구체 서술 */
+function buildGongmangDeepHookCopy(data) {
+    var name = (data && data.name) || '당신';
+    var gm = (data && data.gongmang) || [];
+    var pillars = (data && data.pillars) || [];
+    if (!gm.length) return '';
+    var hit = [];
+    for (var i = 0; i < pillars.length; i++) {
+        var p = pillars[i];
+        if (!p || !p.h) continue;
+        var br = typeof p.h === 'string' ? p.h[1] : p.h[1];
+        if (br && gm.indexOf(br) !== -1) hit.push(p);
+    }
+    if (!hit.length) return '';
+    var HK = {'子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해'};
+    var gmLabel = gm.map(function (b) { return b + '(' + (HK[b] || '') + ')'; }).join('·');
+    var tagByN = {'년주': '년주(년지)', '월주': '월주(월지)', '일주': '일주(일지)', '시주': '시주(시지)'};
+    var order = {'년주': 0, '월주': 1, '일주': 2, '시주': 3};
+    hit.sort(function (a, b) { return (order[a.n] || 9) - (order[b.n] || 9); });
+    var pillarTags = hit.map(function (p) { return tagByN[p.n] || p.n; }).join('·');
+    var lineByPillar = {
+        '년주': '**년지 공망**은 가문·조상·사회적 출발선에서 인정이나 지지를 끌어와도 금방 허전해지거나, 채우려 할수록 형식만 남는 느낌이 나기 쉽습니다.',
+        '월주': '**월지 공망**은 부모·직업·초년 환경 축에서 노력과 보상의 비가 맞지 않거나, 메우려 할수록 더 비어 보이는 패턴에 가깝습니다.',
+        '일주': '**일지 공망**은 배우자궁·내적 자아에서 “채웠는데도 속이 차지 않는다”는 감각이 반복되기 쉽습니다. 관계나 자기 약속을 억지로 늘리기보다 간격을 두는 편이 낫습니다.',
+        '시주': '**시지 공망**은 자녀·말년·결과가 겉으로는 있는데도 끝맺음이 애매하거나, 성과가 비어 보이는 식으로 읽히기도 합니다.'
+    };
+    var lines = [];
+    for (var j = 0; j < hit.length; j++) {
+        var key = hit[j].n || '';
+        if (lineByPillar[key]) lines.push(lineByPillar[key]);
+    }
+    if (!lines.length) return '';
+    return name + '님의 원국 **' + pillarTags + '**에 공망이 걸려 있습니다. 일간으로 정한 공망 두 지지는 **' + gmLabel + '**입니다. '
+        + lines.join(' ')
+        + ' 공망은 “부족하니 메우라”는 신호라기보다, **억지로 채울수록 실속이 빠지기 쉬운 빈자리**로 보는 편이 맞습니다. 인맥·물건·일정으로 구멍을 억지로 메우려 하지 말고, **비워도 된다고 인정한 뒤** 속도·환경·거리를 조절해 보십시오.';
+}
 function computeDeepHookSignals(data) {
     var sip = data.sipseong || {};
     var ss = (Number(sip['식신']) || 0) + (Number(sip['상관']) || 0);
@@ -293,18 +329,27 @@ function buildPart1DeepHookHTML(data) {
     var box = 'margin-top:22px;padding:18px 20px;border-radius:14px;border:1px solid rgba(199,167,106,0.32);background:rgba(199,167,106,0.08);break-inside:avoid;page-break-inside:avoid;';
     var titleSt = 'font-size:11px;letter-spacing:0.14em;color:rgba(199,167,106,0.95);font-weight:800;margin-bottom:10px;';
     var bodySt = 'font-size:13.5px;color:#e8e2d8;line-height:1.95;margin:0;';
-    var unified = '당신의 산만함은 뇌의 빠른 회전에서 비롯되는 경우가 많고, 알 수 없는 공허함은 사주의 빈 공간(공망)으로 바람이 지나가는 듯한 순간에도 가깝습니다. 한곳에만 매달리기보다 밖으로 나가 리듬을 바꿔 보십시오.';
+    var bodyStMult = bodySt + 'white-space:pre-line;';
+    var gmParagraph = buildGongmangDeepHookCopy(data);
+    var focusParagraph = '';
+    if (sig.triggerFocusScatter) {
+        focusParagraph = '집중력이 부족한 것이 아니라, 뇌의 회전이 빨라 활자보다 직관적인 정보를 선호하는 편입니다. 긴 글보다 요약·도표·한 화면에 정리된 근거를 택하면 같은 에너지로 훨씬 더 잘 흡수됩니다.';
+    }
+    var unifiedParts = [];
+    if (focusParagraph) unifiedParts.push(focusParagraph);
+    if (gmParagraph) unifiedParts.push(gmParagraph);
+    var unified = unifiedParts.length ? unifiedParts.join('\n\n') : '한곳에만 매달리기보다 리듬을 바꿔 보십시오.';
     var T1 = '집중력이 부족한 것이 아니라, 뇌의 회전이 빨라 활자보다 직관적인 정보를 선호하는 것입니다. 긴 글보다 요약·도표·한 화면에 정리된 근거를 택하면 같은 에너지로 훨씬 더 잘 흡수됩니다.';
-    var T2 = '이유 없는 공포는 당신이 약해서가 아니라, 사주의 비어 있는 공간(공망)으로 찬바람이 지나가는 순간일 뿐입니다. 원인을 찾으려 하지 말고 스위치를 끄고 밖으로 나가십시오.';
+    var T2 = '이유 없는 공허함이나 불안이 들 때, 원인을 끝까지 캐내려 하기보다 **몸의 리듬(수면·빛·이동)**을 먼저 바꿔 보십시오. 사주에서 말하는 빈자리(공망·귀문 등)는 성격 결함이 아니라, **채우려 할수록 형식만 남기 쉬운 자리**로 읽는 경우가 많습니다.';
     var html = '<div style="' + titleSt + '">현실 심리 · 행동 패턴 메모</div>';
     if (sig.triggerUnifiedEmpathy) {
-        html += '<div class="deep-hook-panel card glass-panel" style="' + box + 'margin-bottom:14px;"><p style="' + bodySt + '">' + unified + '</p></div>';
+        html += '<div class="deep-hook-panel card glass-panel" style="' + box + 'margin-bottom:14px;"><p style="' + bodyStMult + '">' + boldStarsToStrong(unified) + '</p></div>';
     } else {
         if (sig.triggerFocusScatter) {
-            html += '<div class="deep-hook-panel card glass-panel" style="' + box + 'margin-bottom:14px;"><p style="' + bodySt + '">' + T1 + '</p></div>';
+            html += '<div class="deep-hook-panel card glass-panel" style="' + box + 'margin-bottom:14px;"><p style="' + bodySt + '">' + boldStarsToStrong(T1) + '</p></div>';
         }
         if (sig.triggerVoidWave) {
-            html += '<div class="deep-hook-panel card glass-panel" style="' + box + '"><p style="' + bodySt + '">' + T2 + '</p></div>';
+            html += '<div class="deep-hook-panel card glass-panel" style="' + box + '"><p style="' + bodySt + '">' + boldStarsToStrong(T2) + '</p></div>';
         }
     }
     return html;
@@ -3079,8 +3124,10 @@ function buildChapter2_Wuxing(data) {
         <div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:22px;margin:24px 0;">
             <div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:18px;letter-spacing:1px;">&#9670; ${name}님이 가장 주의해야 할 건강 신호</div>
             ${(()=>{
-                const MAX_OH = data.wuxing ? Object.entries(data.wuxing).sort((a,b)=>b[1]-a[1])[0]?.[0] : (dayOh||'fire');
-                const MIN_OH = data.wuxing ? Object.entries(data.wuxing).sort((a,b)=>a[1]-b[1])[0]?.[0] : 'metal';
+                const hasWx = data.wuxing && Object.keys(data.wuxing).length > 0;
+                /* 상단 막대·'○○ 우세'와 동일 키(reduce). sort로 재계산하면 동점 시 다른 오행이 나와 건강 제목과 엇갈릴 수 있음 */
+                const MAX_OH = hasWx ? maxW : (dayOh || 'fire');
+                const MIN_OH = hasWx ? minW : 'metal';
                 const HEALTH_DESC = {
                     wood: { col:'#4fc3a1', title:'간·담낭·신경계',
                         strong:`${name}님의 사주에는 목(나무) 기운이 강하게 집중되어 있습니다. 이 기운이 넘칠 때 몸이 가장 먼저 보내는 신호가 있습니다 — 눈의 피로, 편두통, 근육 경련, 그리고 이유 없는 분노감입니다. 특히 봄(3~5월)과 스트레스가 극심한 시기에 이 증상이 몰려옵니다. 술을 조심하십시오. 간이 가장 먼저 과부하를 받습니다. 레몬·매실·녹색 채소를 자주 드시고, 자정 전 취침을 지키십시오. 분노와 억울함을 내면에 쌓아두지 말고 운동이나 표현으로 풀어내는 루틴을 만드십시오.`,
@@ -3105,8 +3152,9 @@ function buildChapter2_Wuxing(data) {
                 };
                 const maxData = HEALTH_DESC[MAX_OH] || HEALTH_DESC.fire;
                 const minData = HEALTH_DESC[MIN_OH];
-                const isStrong2 = (data.strengthText||"").includes("신강") || (data.strengthText||"").includes("강");
-                const mainTxt = isStrong2 ? maxData.strong : maxData.weak;
+                /* MAX_OH = 원국 오행 비중 최댓값(상단 '○○ 우세'와 동일). 이 박스는 과다·집중 시 나타나는 건강 리스크를 다루므로 항상 strong 문구를 씁니다.
+                   신약/중화일 때 weak를 붙이면 '수 우세'와 '수 기운이 약합니다'가 동시에 나와 논리가 어긋납니다. */
+                const mainTxt = maxData.strong;
                 let html = '<div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:16px;border-left:3px solid '+maxData.col+';">';
                 html += '<div style="font-size:12px;font-weight:700;color:'+maxData.col+';margin-bottom:8px;">⚠ 우선 챙겨야 할 건강 영역 — '+maxData.title+'</div>';
                 html += '<p style="font-size:13px;color:#ccc;line-height:1.85;margin:0;">'+mainTxt+'</p>';
