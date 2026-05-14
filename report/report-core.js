@@ -206,7 +206,7 @@ var SEYUN_SIP_SOUL_METAPHOR = {
 function buildYearStrategicNarrative(name, yr, kor, evLabel, sc, sewSip, ohTag, domainFour) {
     var sip = sewSip || '정재';
     var nm = name || '고객';
-    var yk = kor ? yr + '년(' + kor + ')' : yr + '년';
+    var yk = kor ? (yr + '년 ' + kor + '년') : (yr + '년');
     var lens = SEYUN_SIP_LENS[sip] || '견적·정산·승인선이 동시에 걸리는 일정이 잦아집니다';
     var soul = SEYUN_SIP_SOUL_METAPHOR[sip] || '원국과 세운이 맞물리며, 겉으로는 잔잔해도 속으로는 자원이 재배치되는 해입니다.';
     var stemCode = (kor && kor.length) ? ((kor.charCodeAt(0) + kor.charCodeAt(kor.length - 1)) | 0) : (yr | 0);
@@ -1393,7 +1393,7 @@ function generateDeepReport(data) {
     html += safeCall(()=>buildChapter9_Monthly(data), 'ch9monthly');
 
     // PHASE 5: 최종 실행 지침
-    html += safeCall(()=>buildPartHeader(5,'최종 실행 지침 (마무리)','개운법 · 체크리스트 · 실행 우선순위','sec-part5-final'), 'part5header');
+    html += safeCall(()=>buildPartHeader(5,'최종 실행 지침 (개운법 및 체크리스트)','실행 우선순위 · 마무리','sec-part5-final'), 'part5header');
     html += safeCall(()=>buildChapter9_Remedy(data), 'ch9remedy');
 
     document.getElementById('report-container').innerHTML = html;
@@ -1488,7 +1488,7 @@ function injectSectionInterpretations(data) {
         </div>
     </div>`);
     // 8. 인생 시기별 아래 → 재물+직업+애정
-    setEl('lifecycle-inline-summary', () => buildChapter4_Wealth(data) + buildChapter5_Career(data) + buildChapter6_Love(data) + buildChapter8_Health(data) + buildChapter9_Remedy(data));
+    setEl('lifecycle-inline-summary', () => buildChapter4_Wealth(data) + buildChapter5_Career(data) + buildChapter6_Love(data) + buildChapter8_Health(data));
 }
 
 function injectBelow(id, html_content) {
@@ -1748,7 +1748,7 @@ function buildCurrentPeriodSummary(data) {
         const _dEndY = _dStartY + 9;
         daeunHtml = `<div style="margin-bottom:12px;padding:14px;background:rgba(199,167,106,0.06);border:1px solid var(--gold);border-radius:10px;">
             <div style="font-size:11px;color:var(--gold);font-weight:700;margin-bottom:8px;letter-spacing:1px;">▶ 현재 대운 — ${curDaeun.age}세~${curDaeun.age+9}세 · 지금 진행 중인 10년 운세</div>
-            <div style="font-size:18px;font-weight:900;color:var(--gold);font-family:Noto Serif KR,serif;margin-bottom:6px;"><span style="font-family:Noto Serif KR,serif;">${dg}${dj}</span> <span style="font-size:14px;font-weight:600;color:#ddd;">(${HAN_KOR[dg]||dg}${HAN_KOR[dj]||dj})</span> <span style="font-size:13px;color:#bbb;font-weight:400;">${KN[dOh]||''} + ${KN[djOh]||''} 기운</span></div>
+            <div style="font-size:18px;font-weight:900;color:var(--gold);font-family:Noto Serif KR,serif;margin-bottom:6px;"><span style="font-family:Noto Serif KR,serif;">${formatGanzhiPair(dg, dj)}</span> <span style="font-size:13px;color:#bbb;font-weight:400;">${KN[dOh]||''}·${KN[djOh]||''}</span></div>
             <p style="font-size:13px;color:#ddd;line-height:1.8;margin:0 0 8px;">${dStrat}</p>
             <span style="font-size:12px;font-weight:700;color:${dcol};">${gb(ds)}</span>
         </div>`;
@@ -1765,7 +1765,7 @@ function buildCurrentPeriodSummary(data) {
         const sOh = OH[sg]||'earth'; const sjOh = JO[sj]||'earth';
         const curDGan = curDaeun ? (curDaeun.gz ? curDaeun.gz[0] : curDaeun.gan||'') : '';
         const curDJi  = curDaeun ? (curDaeun.gz ? curDaeun.gz[1] : curDaeun.ji||'') : '';
-        const daeunCtx = curDGan ? `현재 ${HAN_KOR&&HAN_KOR[curDGan]?HAN_KOR[curDGan]:curDGan}${HAN_KOR&&HAN_KOR[curDJi]?HAN_KOR[curDJi]:curDJi} 대운` : '현재 대운';
+        const daeunCtx = curDGan ? ('현재 ' + formatGanzhiPair(curDGan, curDJi) + ' 대운') : '현재 대운';
         const sAdv = ss>=2
             ?`올해 ${curY}년, 잠을 줄이며 기회를 붙잡으려 했을 수 있습니다. ${daeunCtx}과 올해 세운이 원국을 돕는 구조에 가깝습니다. <strong>오래 미뤄온 결정이 있다면 올해 안에 실행하되, 한 번에 올인은 금지하십시오.</strong>
 
@@ -1799,8 +1799,8 @@ function buildCurrentPeriodSummary(data) {
         // curDGan, curDJi는 sAdv에서 이미 선언됨
         const crossText = '';  // 교차 설명은 sAdv에 통합됨
         sewunHtml = `<div style="margin-bottom:12px;padding:14px;background:rgba(74,158,106,0.05);border:1px solid rgba(74,158,106,0.3);border-radius:10px;">
-            <div style="font-size:11px;color:#4a9e6a;font-weight:700;margin-bottom:8px;letter-spacing:1px;">▶ ${curY}년 세운 · 지금 현재의 연운</div>
-            <div style="font-size:17px;font-weight:900;color:#4a9e6a;font-family:Noto Serif KR,serif;margin-bottom:6px;"><span style="font-family:Noto Serif KR,serif;">${sg}${sj}</span> <span style="font-size:13px;font-weight:600;color:#ddd;">(${HAN_KOR[sg]||sg}${HAN_KOR[sj]||sj})</span> <span style="font-size:13px;color:#bbb;font-weight:400;">${KN[sOh]||''} + ${KN[sjOh]||''} 기운</span></div>
+            <div style="font-size:11px;color:#4a9e6a;font-weight:700;margin-bottom:8px;letter-spacing:1px;">▶ ${formatYearWithGanzhi(curY, sg, sj)} 세운 · 지금 현재의 연운</div>
+            <div style="font-size:17px;font-weight:900;color:#4a9e6a;font-family:Noto Serif KR,serif;margin-bottom:6px;"><span style="font-family:Noto Serif KR,serif;">${formatGanzhiPair(sg, sj)}</span> <span style="font-size:13px;color:#bbb;font-weight:400;">${KN[sOh]||''}·${KN[sjOh]||''}</span></div>
             ${crossText ? `<p style="font-size:12.5px;color:#aaa;line-height:1.75;margin:0 0 8px;border-left:2px solid #4a9e6a;padding-left:10px;">${crossText}</p>` : ''}
             <p style="font-size:13px;color:#ddd;line-height:1.8;margin:0 0 8px;">${sAdv}</p>
             <span style="font-size:12px;font-weight:700;color:${scol};">${gb(ss)}</span>
@@ -1837,8 +1837,8 @@ function buildCurrentPeriodSummary(data) {
             ?`평온하게 흐르는 달입니다. 새 도전보다 <strong>【진행 중인 일 한 건의 마감】</strong>에만 집중하십시오. 루틴을 깨는 일정 추가는 하지 마십시오.`
             :`주의가 필요한 달입니다. 큰 결정은 <strong>【영업일 이틀 유예】</strong>하십시오. 다툼·충동 지출·야간 문자는 이번 달 금지입니다. 내공은 수면으로만 쌓으십시오.`;
         wolunHtml = `<div style="padding:14px;background:rgba(74,114,198,0.05);border:1px solid rgba(74,114,198,0.3);border-radius:10px;">
-            <div style="font-size:11px;color:#5b7fc4;font-weight:700;margin-bottom:8px;letter-spacing:1px;">▶ ${curY2}년 ${curM2}월 월운 · 지금 이 달의 기운</div>
-            <div style="font-size:16px;font-weight:900;color:#5b7fc4;font-family:Noto Serif KR,serif;margin-bottom:6px;"><span style="font-family:Noto Serif KR,serif;">${mg}${mj}</span> <span style="font-size:13px;font-weight:600;color:#ddd;">(${HAN_KOR[mg]||mg}${HAN_KOR[mj]||mj})</span> <span style="font-size:13px;color:#bbb;font-weight:400;">${KN[mOh]||''} + ${KN[mjOh]||''} 기운</span></div>
+            <div style="font-size:11px;color:#5b7fc4;font-weight:700;margin-bottom:8px;letter-spacing:1px;">▶ ${curY2}년 ${formatMonthWithGanzhi(curM2, mg, mj)} · 지금 이 달의 기운</div>
+            <div style="font-size:16px;font-weight:900;color:#5b7fc4;font-family:Noto Serif KR,serif;margin-bottom:6px;"><span style="font-family:Noto Serif KR,serif;">${formatGanzhiPair(mg, mj)}</span> <span style="font-size:13px;color:#bbb;font-weight:400;">${KN[mOh]||''}·${KN[mjOh]||''}</span></div>
             <p style="font-size:13px;color:#ddd;line-height:1.8;margin:0 0 6px;">${WL[mj]||'이달의 기운입니다.'}</p>
             <p style="font-size:12.5px;color:#bbb;line-height:1.75;margin:0 0 8px;">${mAdv}</p>
             <span style="font-size:12px;font-weight:700;color:${mcol};">${gb(ms)}</span>
@@ -2008,7 +2008,7 @@ function buildSeYunYearCardHtml(data, yr, opt) {
     var strip = buildYearlyIndicatorsHtml(ykwInd);
     var yongTag = (OH_KR7[yong] || '용신') + ' 용신';
     var domAdvN = yearlyDomainStrategicAdvices(sc);
-    var body = buildYearStrategicNarrative(name, yr, info.kor, ev2.l, sc, sewSip, yongTag, domAdvN);
+    var body = buildYearStrategicNarrative(name, yr, formatGanzhiPair(info.g, info.j), ev2.l, sc, sewSip, yongTag, domAdvN);
     var kwDet = '<div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.08);font-size:11.5px;color:#aaa;line-height:1.85;"><b style="color:#c7a76a;">재물·직장·서류·사람</b> — 재물: ' + ykwInd.wealth + ' / 직업: ' + ykwInd.career + ' / 문서: ' + ykwInd.doc + ' / 애정: ' + ykwInd.love + '</div>';
     var isThis = !!opt.isThisYear;
     var border = isThis ? 'var(--gold)' : 'rgba(255,255,255,0.06)';
@@ -2016,7 +2016,7 @@ function buildSeYunYearCardHtml(data, yr, opt) {
     var badge = isThis ? ' <span style="font-size:10px;background:var(--gold);color:#000;padding:2px 8px;border-radius:8px;font-weight:700;">▶ 올해</span>' : '';
     return '<div style="width:100%;max-width:100%;box-sizing:border-box;background:rgba(255,255,255,' + bgA + ');border-radius:12px;padding:18px 20px;border:1px solid ' + border + ';">'
         + '<div style="width:100%;display:flex;flex-direction:column;gap:10px;margin-bottom:12px;align-items:stretch;">'
-        + '<div style="font-size:20px;font-weight:800;color:' + ev2.c + ';width:100%;line-height:1.35;">' + yr + '년 · <span class="report-pillar-hanja">' + info.g + info.j + '</span>년 · ' + info.kor + '년' + badge + '</div>'
+        + '<div style="font-size:20px;font-weight:800;color:' + ev2.c + ';width:100%;line-height:1.35;">' + formatYearWithGanzhi(yr, info.g, info.j) + badge + '</div>'
         + '<div style="width:100%;"><span style="display:inline-block;font-size:12px;background:rgba(255,255,255,0.06);padding:6px 14px;border-radius:20px;color:' + ev2.c + ';font-weight:700;">' + ev2.l + '</span></div>'
         + '<p style="font-size:11.5px;color:#999;margin:0;line-height:1.75;width:100%;">그 해는 겉으로 드러나는 일보다, 돈·서류·사람 약속이 한꺼번에 겹치는 주가 먼저 옵니다. 그 주만 캘린더에 표시해 두십시오.</p></div>'
         + strip
@@ -2064,7 +2064,7 @@ function buildPremiumExecutiveSummary(data) {
     var dj = curDaeun && (curDaeun.gz ? curDaeun.gz[1] : (curDaeun.ji || ''));
     var dScore = curDaeun ? gs(dg, dj) : 0;
     var dTrend = trendLabel(dScore);
-    var daeunLabel = curDaeun ? ((HAN_KOR[dg] || dg) + (HAN_KOR[dj] || dj) + ' 대운') : '현재 대운';
+    var daeunLabel = curDaeun ? (formatGanzhiPair(dg, dj) + ' 대운') : '현재 대운';
 
     var baseDate = getReportBaseDate(data);
     var curY = baseDate.getFullYear();
@@ -3414,14 +3414,14 @@ function buildSewunLoop(data) {
         const gLine = GAN_DESC[stemHan] || '';
         const jLine = JI_DESC[jiHan] || '';
         const yearNarr = score >= 3
-            ? `${yr}년(${GAN_KR[stem] || stem}${JI_KR[branch] || branch})은 원국과 크게 맞는 해입니다. 천간은 ${gLine} 지지는 ${jLine} **우선순위 한 줄만 정하고, 분기마다 숫자로 리뷰**하십시오.`
+            ? `${formatYearWithGanzhi(yr, stemHan, jiHan)}은 원국과 크게 맞는 해입니다. 천간은 ${gLine} 지지는 ${jLine} **우선순위 한 줄만 정하고, 분기마다 숫자로 리뷰**하십시오.`
             : score >= 1
-            ? `${yr}년(${GAN_KR[stem] || stem}${JI_KR[branch] || branch})은 상승에 가깝습니다. ${gLine} ${jLine} **검증된 것만 속도를 올리고, 미검증 확장은 월 단위로 쪼개** 검토하십시오.`
+            ? `${formatYearWithGanzhi(yr, stemHan, jiHan)}은 상승에 가깝습니다. ${gLine} ${jLine} **검증된 것만 속도를 올리고, 미검증 확장은 월 단위로 쪼개** 검토하십시오.`
             : score === 0
-            ? `${yr}년(${GAN_KR[stem] || stem}${JI_KR[branch] || branch})은 급격한 길·흉보다 균형에 가깝습니다. ${gLine} ${jLine} **확장은 멈추고 현금흐름·건강 루틴만** 고정하십시오.`
+            ? `${formatYearWithGanzhi(yr, stemHan, jiHan)}은 급격한 길·흉보다 균형에 가깝습니다. ${gLine} ${jLine} **확장은 멈추고 현금흐름·건강 루틴만** 고정하십시오.`
             : score >= -2
-            ? `${yr}년(${GAN_KR[stem] || stem}${JI_KR[branch] || branch})은 방어와 정리에 무게가 실립니다. ${gLine} ${jLine} **현금·수면·검진을 먼저 지키고, 보증·레버리지·감정 결정은 보류**하십시오.`
-            : `${yr}년(${GAN_KR[stem] || stem}${JI_KR[branch] || branch})은 긴급 방어가 필요합니다. ${gLine} ${jLine} **신규 투자·충동 확장은 즉시 끊고, 손실 한도 안에서만** 움직이십시오.`;
+            ? `${formatYearWithGanzhi(yr, stemHan, jiHan)}은 방어와 정리에 무게가 실립니다. ${gLine} ${jLine} **현금·수면·검진을 먼저 지키고, 보증·레버리지·감정 결정은 보류**하십시오.`
+            : `${formatYearWithGanzhi(yr, stemHan, jiHan)}은 긴급 방어가 필요합니다. ${gLine} ${jLine} **신규 투자·충동 확장은 즉시 끊고, 손실 한도 안에서만** 움직이십시오.`;
         const gohY = STEM_OH[stemHan]; const johY = BRANCH_OH[jiHan];
         const evUp = (gohY === yong || johY === yong);
         const evDn = (gohY === gi || johY === gi);
@@ -3431,7 +3431,7 @@ function buildSewunLoop(data) {
         const yearlyFourStrip = buildYearlyIndicatorsHtml(ykwInd);
         const domAdv = yearlyDomainStrategicAdvices(score);
         const strategicBlock = isCoreThree
-            ? buildYearStrategicNarrative(nameSe, yr, (GAN_KR[stem] || stem) + (JI_KR[branch] || branch), evLab, score, sewSip, yongTag, domAdv)
+            ? buildYearStrategicNarrative(nameSe, yr, formatGanzhiPair(stemHan, jiHan), evLab, score, sewSip, yongTag, domAdv)
             : '<p class="yearly-description" style="font-size:13px;color:#ddd;line-height:1.85;margin:0;">' + yearNarr + '</p>';
         const keywordDetail = isCoreThree
             ? '<div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.08);font-size:11.5px;color:#aaa;line-height:1.85;"><b style="color:#c7a76a;">재물·직장·서류·사람</b> — 재물: ' + ykwInd.wealth + ' / 직업: ' + ykwInd.career + ' / 문서: ' + ykwInd.doc + ' / 애정: ' + ykwInd.love + '</div>'
@@ -3442,8 +3442,7 @@ function buildSewunLoop(data) {
             <div style="display:flex;flex-direction:column;align-items:flex-start;width:100%;gap:8px;margin-bottom:10px;">
                 <div style="width:100%;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;">
                 <div>
-                    <div style="font-size:17px;font-weight:800;color:var(--gold);">${yr}년</div>
-                    <div style="font-size:11px;color:rgba(199,167,106,0.6);margin-top:2px;">${stemHan}${jiHan}년 (${GAN_KR[stem]||stem}${JI_KR[branch]||branch})</div>
+                    <div style="font-size:17px;font-weight:800;color:var(--gold);">${formatYearWithGanzhi(yr, stemHan, jiHan)}</div>
                     <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:4px;">
                         ${sewSip ? `<span style="font-size:10px;background:rgba(199,167,106,0.15);color:#c7a76a;padding:1px 7px;border-radius:8px;">${sewSip}</span>` : ''}
                         ${sewShinsal.map(s=>`<span style="font-size:10px;background:rgba(255,255,255,0.08);color:#aaa;padding:1px 7px;border-radius:8px;">${s}</span>`).join('')}
@@ -3535,11 +3534,11 @@ function buildWolunLoop(data) {
         const mGanKr = GAN[mGanIdx];
         const mGanHj = GAN_HJ[mGanKr] || '';
         const mJiHj = JI_HJ[mJiKr] || '';
-        const pillarLabel = mGanKr + '(' + mGanHj + ')' + mJiKr + '(' + mJiHj + ')';
+        const monthNo = i + 1;
+        const pillarTitle = formatMonthWithGanzhi(monthNo, mGanHj, mJiHj);
         const score = mScore(mGanHj, mJiHj);
         const col = mColor(score); const badge = mBadge(score);
         const isNow = i === curMonth;
-        const monthNo = i + 1;
         const mSip = (typeof getSipseong==='function' && mGanHj) ? (getSipseong(data.dayStem||'', mGanHj) || '비견') : '비견';
         const mUns = (typeof getUnsung==='function' && mJiHj) ? (getUnsung(data.dayStem||'', mJiHj) || '-') : '-';
         const dynText = renderFortuneText({ sip:mSip, uns:mUns, score:score, idx:i, scope:'month' });
@@ -3550,9 +3549,9 @@ function buildWolunLoop(data) {
             : '신규 확장과 고위험 결정은 즉시 멈추고 손실 차단을 우선하십시오.';
         return `<div style="width:100%;box-sizing:border-box;background:rgba(255,255,255,${isNow?'0.07':'0.03'});border-radius:10px;padding:14px 16px;border-left:3px solid ${col};break-inside:avoid;">
             <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
-                <div style="display:flex;align-items:center;gap:8px;min-width:0;">
-                    <span class="month-pillar-title" style="font-size:18px;font-weight:700;color:var(--gold);font-family:Noto Serif KR,serif;letter-spacing:0.02em;">${pillarLabel}</span>
-                    <span style="font-size:12px;color:#aaa;">${yr}.${monthNo}월 (${mJiKr}월/${BRANCH_ANIMAL[mJiHj]||'해당'})</span>
+                <div style="display:flex;align-items:center;gap:8px;min-width:0;flex-wrap:wrap;">
+                    <span class="month-pillar-title" style="font-size:18px;font-weight:700;color:var(--gold);font-family:Noto Serif KR,serif;letter-spacing:0.02em;">${pillarTitle}</span>
+                    <span style="font-size:12px;color:#aaa;">양력 ${yr}.${monthNo}월 · ${mJiKr}월(${BRANCH_ANIMAL[mJiHj]||'해당'})</span>
                     ${isNow?'<span style="font-size:10px;background:var(--gold);color:#000;padding:1px 7px;border-radius:8px;font-weight:700;">이번달</span>':''}
                 </div>
                 <span style="font-size:16px;">${badge}</span>
@@ -4035,7 +4034,7 @@ function buildVipEvidenceBlock(data) {
     var iProf=typeof getIljuProfile==='function'?getIljuProfile(ds,db):null;
     var dayOhK=OH_KR[STEM_OH[ds]||'fire']||'';
     if(iProf && iProf.image){
-        ev += '<p style="font-size:13.5px;color:#ddd;line-height:1.95;margin:0 0 6px;"><b style="color:var(--gold);">'+(HK_GAN[ds]||ds)+(HK_JI[db]||db)+'('+ds+db+') 일주</b> — '+iProf.image+'.</p>';
+        ev += '<p style="font-size:13.5px;color:#ddd;line-height:1.95;margin:0 0 6px;"><b style="color:var(--gold);">' + formatGanzhiPair(ds, db) + ' 일주</b> — '+iProf.image+'.</p>';
     }
 
     // 자미두수 명궁
@@ -4229,6 +4228,31 @@ function buildChapter10_Legacy(data){
     return '';
 }
 
+/** 개운법: 용신·희신 오행을 채우는 심리·행동 심층 (합쇼체, **강조**) */
+function buildRemedyYongHeeMindsetHTML(data) {
+    var ohKr = { wood: '목', fire: '화', earth: '토', metal: '금', water: '수' };
+    var mindset = {
+        wood: '단순히 초록을 입는 것을 넘어, 목(木)의 기운인 **방향 고정과 끈기**를 실천하십시오. 새 일은 **한 달에 시작 하나**만 허가하십시오. 물러서야 할 선을 **문자 한 줄**로 먼저 적으십시오. 뿌리를 세운 뒤에만 가지를 넓히는 것이 가장 강력한 개운(開運)입니다.',
+        fire: '단순히 붉은색을 더하는 것을 넘어, 화(火)의 기운인 **표현의 선명함과 과열 차단**을 실천하십시오. 보여 주기 전에 **한 페이지 요약**만 먼저 남기십시오. 밤 10시 이후 지시·연락은 **익일 오전**으로만 미루십시오. 불을 덜어도 빛이 나게 다스리는 것이 가장 강력한 개운입니다.',
+        earth: '단순히 노란 소품을 두는 것을 넘어, 토(土)의 기운인 **끝까지 받쳐 주는 리듬**을 실천하십시오. 식사·수면 시각을 **주 5일 동일**하게 고정하십시오. 서랍·계좌·약속 중 하나를 **주말 반나절**마다 비우십시오. 흔들리지 않는 루틴이 당신에게 가장 강력한 개운입니다.',
+        metal: "단순히 흰색 옷을 입는 것을 넘어, 금(金)의 기운인 '마무리와 맺고 끊음'을 실천해야 합니다. 시작만 하고 끝내지 못한 취미나 프로젝트가 있다면 당장 하나를 골라 **완전히 종료**하십시오. 거절해야 할 제안에는 **24시간 안에** 명확히 '아니오'라고 말하는 연습을 하십시오. 마음의 결단력을 벼리는 것, 그것이 당신에게 가장 강력한 개운(開運)입니다.",
+        water: '단순히 검정을 입는 것을 넘어, 수(水)의 기운인 **흐름 읽기와 말 줄이기**를 실천하십시오. 중요한 대화 전에 **세 줄 메모**만 적고 들어가십시오. 탭·정보 채널을 **절반으로** 줄이십시오. 듣고 기록한 뒤에만 움직이는 것이 가장 강력한 개운입니다.'
+    };
+    var yong = data.yong || 'wood';
+    var hee = data.hee || '';
+    var yk = ohKr[yong] || '목';
+    var blockY = mindset[yong] || mindset.earth;
+    var html = '<div style="background:rgba(199,167,106,0.07);border-radius:12px;padding:22px;margin:20px 0;border:1px solid rgba(199,167,106,0.22);">'
+        + '<div style="font-size:13px;font-weight:800;color:var(--gold);margin-bottom:14px;letter-spacing:1px;">&#9670; 부족한 기운을 채우는 행동과 마음가짐 (용신·희신)</div>'
+        + '<p style="font-size:13.5px;color:#ddd;line-height:1.92;margin:0 0 14px;"><strong>용신 ' + yk + '</strong> — ' + boldStarsToStrong(blockY) + '</p>';
+    if (hee && hee !== yong && mindset[hee]) {
+        var hk = ohKr[hee] || '';
+        html += '<p style="font-size:13.2px;color:#ccc;line-height:1.9;margin:0;"><strong>희신 ' + hk + '</strong> — ' + boldStarsToStrong(mindset[hee]) + '</p>';
+    }
+    html += '</div>';
+    return html;
+}
+
 
 function buildChapter9_Remedy(data) {
     const stemEl = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'}[data.dayStem] || 'earth';
@@ -4243,9 +4267,10 @@ function buildChapter9_Remedy(data) {
         water:{good:'검정·파랑·감색·보라·남색',bad:'노랑·황토·갈색',dir:'북쪽',num:'1, 6',gem:'흑요석·사파이어·아쿠아마린·청금석',food:'짠맛 음식 — 된장·미역·검은콩·블루베리·흑임자',time:'겨울(12~2월), 밤~새벽 시간대',guien:'금 기운 일간(경·신)을 가진 사람'}
     }[yong] || {good:'흰색',bad:'검정',dir:'서쪽',num:'4, 9',gem:'백수정',food:'매운맛',time:'가을',guien:'토 기운 일간'};
 
-    return `<div class="report-chapter">
-        <h3 class="ch-title">[ 09. 일상 개운 ] — 흐름을 바꾸는 작은 습관 — 일상 개운 가이드</h3>
+    return `<div class="report-chapter" id="sec-remedy-final">
+        <h3 class="ch-title">[ 09. 최종 실행 지침 (개운법) ] — 행동 · 마음가짐 · 체크리스트</h3>
         <p class="ch-text">아래 표는 장식이 아닙니다. **일주일만** 색·방향·시간대를 고정해 보고, 덜 지친 조합을 달력에 붙이십시오. ${yongKr}을 몸에 입히면 **수면과 집중**이 먼저 돌아옵니다.</p>
+        ${typeof buildRemedyYongHeeMindsetHTML === 'function' ? buildRemedyYongHeeMindsetHTML(data) : ''}
 
         <table class="remedy-checklist-table" style="width:100%;border-collapse:collapse;margin:18px 0;background:rgba(0,0,0,0.22);border:1px solid rgba(199,167,106,0.28);border-radius:12px;overflow:hidden;font-size:12px;">
             <caption style="caption-side:top;text-align:left;padding:0 4px 12px;font-size:11px;color:var(--gold);font-weight:800;letter-spacing:1px;">실행 체크리스트 (모바일 한 화면 캡처용)</caption>
@@ -4859,6 +4884,23 @@ function closeHelp(e) {
 
 var HAN_COLOR = {"甲":"wood","乙":"wood","寅":"wood","卯":"wood","丙":"fire","丁":"fire","巳":"fire","午":"fire","戊":"earth","己":"earth","辰":"earth","戌":"earth","丑":"earth","未":"earth","庚":"metal","辛":"metal","申":"metal","酉":"metal","壬":"water","癸":"water","亥":"water","子":"water"};
 var HAN_KOR = {"甲":"갑","乙":"을","丙":"병","丁":"정","戊":"무","己":"기","庚":"경","辛":"신","壬":"임","癸":"계","子":"자","丑":"축","寅":"인","卯":"묘","辰":"진","巳":"사","午":"오","未":"미","申":"신","酉":"유","戌":"술","亥":"해"};
+/** 간지 한 덩어리: 병오(丙午) — 한글(한자한자) */
+function formatGanzhiPair(gStemHan, jBranchHan) {
+    var g = String(gStemHan || '');
+    var j = String(jBranchHan || '');
+    if (!g || !j) return '';
+    return (HAN_KOR[g] || g) + (HAN_KOR[j] || j) + '(' + g + j + ')';
+}
+/** 예: 2026년 병오(丙午)년 */
+function formatYearWithGanzhi(yr, gStemHan, jBranchHan) {
+    var p = formatGanzhiPair(gStemHan, jBranchHan);
+    return p ? (String(yr) + '년 ' + p + '년') : (String(yr) + '년');
+}
+/** 예: 10월 무술(戊戌)월 */
+function formatMonthWithGanzhi(monthNum, gStemHan, jBranchHan) {
+    var p = formatGanzhiPair(gStemHan, jBranchHan);
+    return p ? (String(monthNum) + '월 ' + p + '월') : (String(monthNum) + '월');
+}
 var STEM_YANG = ["갑","병","무","경","임"];
 var BRANCH_YANG = ["자","인","진","오","신","술"];
 // 한자 간지(만세력 엔진 출력) — 음양 판별용
@@ -6799,7 +6841,7 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
                 var d=document.createElement('div');
                 d.style.cssText='padding:11px;background:rgba(255,255,255,'+(isThis?'0.07':'0.02')+');border:1px solid '+(isThis?'var(--gold)':'rgba(255,255,255,0.06)')+';border-radius:8px;';
                 d.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;">'+
-                    '<div style="display:flex;align-items:center;gap:6px;"><span class="report-pillar-hanja" style="font-size:16px;font-weight:900;color:var(--gold);">'+g+j+'</span><span style="font-size:12px;font-weight:600;color:#ccc;">('+((HAN_KOR&&HAN_KOR[g])||g)+((HAN_KOR&&HAN_KOR[j])||j)+')</span>'+
+                    '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;"><span style="font-size:15px;font-weight:800;color:var(--gold);font-family:Noto Serif KR,serif;">'+formatMonthWithGanzhi(m,g,j)+'</span>'+
                     '<span style="font-size:12px;color:#bbb;">'+wY+'.'+m+'월'+(isThis?' <span style="font-size:10px;background:var(--gold);color:#000;padding:1px 5px;border-radius:5px;font-weight:700;">이달</span>':'')+'</span></div>'+
                     '<span style="font-size:11px;font-weight:700;color:'+col+';">'+gb(s)+'</span></div>'+
                     '<div style="background:rgba(199,167,106,0.04);border-radius:5px;padding:7px 9px;border-left:2px solid '+col+';"><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">'+advm+'</p></div>';
