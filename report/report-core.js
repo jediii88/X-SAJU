@@ -65,6 +65,25 @@ function getJosa(word, pair) {
     return hasCons ? withC : noC;
 }
 
+/**
+ * 십성(두 글자 명) 뒤 조사 — 비견·겁재·식신·상관·편인·정인·편관·정관은 이/은/과/을 쪽,
+ * 편재·정재만 가/는/와/를 쪽(리포트 톤 통일용; 일반 한글 받침 규칙과 의도적으로 다를 수 있음).
+ */
+function getJosaSipseong(sip, pair) {
+    sip = String(sip == null ? '' : sip).replace(/\s+$/, '');
+    if (!sip.length) return '';
+    var weak = sip === '편재' || sip === '정재';
+    var parts = String(pair).split('/');
+    if (parts.length !== 2) return getJosa(sip, pair);
+    var withC = parts[0];
+    var noC = parts[1];
+    if (pair === '으로/로') return getJosa(sip, pair);
+    if (pair === '은/는' || pair === '이/가' || pair === '을/를' || pair === '과/와' || pair === '이라/라') {
+        return weak ? noC : withC;
+    }
+    return getJosa(sip, pair);
+}
+
 /** 세운 연도별 4분야(재물·직업·문서·애정) 동적 키워드 — 용신/기신 점수·세운 십성 반영 */
 function yearlyFourDomainKeywords(score, sewSip) {
     var sip = sewSip || '';
@@ -252,7 +271,13 @@ function buildYearStrategicNarrative(name, yr, kor, evLabel, sc, sewSip, ohTag, 
         step1 = d[mix];
     }
 
-    var step2 = yk + '에는 ' + lens + ' ' + soul + ' <strong>이는 성격 탓이 아니라, ' + yk + '의 흐름이 원국과 맞물린 결과입니다.</strong> 그래서 겉과 속이 어긋난 느낌이 들 수 있었습니다.';
+    var step2Tails = [
+        '<strong>' + nm + '님께는 이때 들어오는 일정을 주간 한 장에만 적어 두면, 겹침을 줄이는 데 큰 도움이 됩니다.</strong>',
+        '<strong>계약·송금·대면 미팅이 같은 주에 몰리지 않게, 요일을 한 칸씩 띄우십시오.</strong>',
+        '<strong>‘나중에’ 대신 ‘다음 주 월요일’ 한 줄로 미루는 습관만 있어도 손실이 줄어듭니다.</strong>',
+        '<strong>이 해에는 통장·캘린더 숫자를 먼저 맞추는 쪽이, 감정의 기복보다 실속이 남습니다.</strong>'
+    ];
+    var step2 = yk + '에는 ' + lens + ' ' + soul + ' ' + step2Tails[mix];
 
     var stanceLine = '';
     if (sc >= 2) {
@@ -2962,7 +2987,7 @@ function buildChapter3_Sipseong(data) {
         const barW = Math.max(2, Math.min(100, pct));
         return `<div class="sipseong-bar-row" style="display:flex;align-items:center;gap:12px;margin-bottom:10px;"><div style="min-width:56px;text-align:right;font-size:12px;font-weight:${isMain?800:500};color:${col};">${k}</div><div style="flex:1;background:rgba(255,255,255,0.08);border-radius:6px;height:13px;overflow:hidden;border:1px solid rgba(255,255,255,0.06);"><div style="width:${barW}%;height:100%;background:linear-gradient(90deg,${col},rgba(255,255,255,0.12));border-radius:5px;"></div></div><div style="min-width:38px;font-size:12px;font-weight:700;color:${col};">${pct}%</div></div>`;
     }).join('');
-    const sipComboText = secondSip ? `맨 앞은 [${mainSip}], 뒤에서 깔리는 건 [${secondSip}]입니다. 위기에서는 ${mainSip}가 먼저 움직이고, 일상에서는 ${secondSip}가 습관을 만듭니다. 둘을 한꺼번에 고치려 하지 마십시오. **충돌할 때는 ${mainSip}만, 평소에는 ${secondSip}만** 조정하십시오. 파트너는 둘 중 하나라도 덮어주는 사람을 고르십시오.` : '';
+    const sipComboText = secondSip ? `맨 앞은 [${mainSip}], 뒤에서 깔리는 건 [${secondSip}]입니다. 위기에서는 ${mainSip}${getJosaSipseong(mainSip, '이/가')} 먼저 움직이고, 일상에서는 ${secondSip}${getJosaSipseong(secondSip, '이/가')} 습관을 만듭니다. 둘을 한꺼번에 고치려 하지 마십시오. **충돌할 때는 ${mainSip}만, 평소에는 ${secondSip}만** 조정하십시오. 파트너는 둘 중 하나라도 덮어주는 사람을 고르십시오.` : '';
     return `<div class="report-chapter">
         <h3 class="ch-title">[ 03. 십성 구조 ] — 마음의 열 가지 얼굴 — 사회의 나, 내면의 나</h3>
         <div class="sipseong-bar-chart" style="background:rgba(0,0,0,0.22);border:1px solid rgba(199,167,106,0.2);border-radius:12px;padding:18px 20px;margin:0 0 18px;">
@@ -3069,8 +3094,19 @@ function buildChapter4_Wealth(data) {
             : phase==='guard'
             ? `${ganKr}${jiKr}(${age}~${endAge}세) — 새는 구간입니다. **레버리지·코인 P2P·보증**부터 잠그고, **미국 대형주·배당 ETF**로 코어를 묶으십시오.`
             : `${ganKr}${jiKr}(${age}~${endAge}세) — **수익 파이프라인을 고르는 시기**입니다. 판 키우기보다 **지금 현금흐름이 나는 채널**을 단단히 하십시오.`;
+        const openActionPool = [
+            `${ganKr}${jiKr}(${age}~${endAge}세) 때는 제안이 겹치기 쉬우니, **견적 회신은 48시간 유예**를 기본으로 두고 즉답은 피하십시오.`,
+            `${age}~${endAge}세 **${ganKr}${jiKr}** 구간에서는 **손실 한도·청산 규칙**을 먼저 적은 뒤에만 변동성 자산을 소액으로 다루십시오.`,
+            `열린 ${age}~${endAge}세 흐름(${ganKr}${jiKr})에서는 **현금 비중**을 한 단계 올리고, 새 카드·신규 계좌는 이 구간 동안 **한 건**으로 제한하십시오.`,
+            `${ganKr}${jiKr}(${age}~${endAge}세)에서는 ${roleLead}·${roleField} 기질이 강해지니, **메인 수익 파이프 한 가지**만 캘린더에 고정하고 나머지는 자동이체로 묶으십시오.`,
+            `${age}~${endAge}세 **${ganKr}${jiKr}**에는 기회 신호가 빠릅니다. **야간 주문·감정 매매**를 막기 위해 증권·코인 앱 알림을 주간 리포트로만 바꾸십시오.`,
+            `${ganKr}${jiKr}(${age}~${endAge}세) 때는 외부 미팅이 늘기 쉬우니, **주당 대면 약속 횟수**를 숫자로 제한하고 빈 칸을 비워 두십시오.`,
+            `${age}~${endAge}세 **${ganKr}${jiKr}** 활성기에는 분산보다 **검증된 코어 자산**에 비중을 몰고, 실험 비중은 정해둔 비율 이하로만 두십시오.`,
+            `${ganKr}${jiKr}(${age}~${endAge}세)에서는 좋은 소식과 부담이 함께 올 수 있으니, **연대·보증·지분**이 들어간 제안은 원칙적으로 거절하십시오.`
+        ];
+        const oi = Math.abs((i * 17 + age * 3 + endAge + (g0.charCodeAt(0) | 0) * 5 + (g1.charCodeAt(0) | 0) * 7 + String(ganSip || '').length * 11) % openActionPool.length);
         const action = phase==='open'
-            ? '**이 구간에만** 테마주 단타·스테이킹 등 **공격 한 방**을 미리 골라 두십시오.'
+            ? openActionPool[oi]
             : phase==='guard'
             ? '**비상자금·계약 만기·고정비** 세 줄만 먼저 표에 적으십시오.'
             : '**수익원 정리·내부 매뉴얼·팀 역할** 중 하나만 완성도로 밀십시오.';
@@ -3567,11 +3603,36 @@ function buildWolunLoop(data) {
         const mSip = (typeof getSipseong==='function' && mGanHj) ? (getSipseong(data.dayStem||'', mGanHj) || '비견') : '비견';
         const mUns = (typeof getUnsung==='function' && mJiHj) ? (getUnsung(data.dayStem||'', mJiHj) || '-') : '-';
         const dynText = renderFortuneText({ sip:mSip, uns:mUns, score:score, idx:i, scope:'month' });
+        const highOrdPool = [
+            '중요 계약·핵심 미팅은 조건·한도를 서면으로 정리한 뒤 일정을 잡으십시오.',
+            '길운이 실릴 때는 **새 시작**을 밀되, 서명 전 **이탈 조항** 두 줄을 반드시 받아 적으십시오.',
+            '이번 달은 **대외 발표·견적 제출**에 힘을 실으십시오. 구두 합의는 같은 날 메일로만 고정하십시오.',
+            '큰 안건은 **요일을 쪼개** 하루에 하나만 진행하고, 나머지는 전날 밤까지 자료만 마련하십시오.'
+        ];
+        const neuOrdPool = [
+            `${monthNo}월에는 **고정비·구독·보험** 세 줄을 다시 읽고, 끊을 항목에만 체크하십시오.`,
+            `${mGanKr}${mJiKr}월 기운에서는 **견적·회신**을 하루 한 번 묶어 처리하고 그 외 시간엔 집중 업무로 돌아가십시오.`,
+            `${monthNo}월 초·말에만 통장 숫자를 맞추고, 그 사이에는 **새 투자 앱**을 설치하지 마십시오.`,
+            `${MONTH_NAME[i]} **${mGanKr}${mJiKr}**에는 약속을 **주 2회 상한**으로 두고, 초과분은 익월 첫 주로 미루십시오.`,
+            `${monthNo}월에는 문서 파일명에 **날짜**를 붙이는 규칙만 지켜도 혼선이 크게 줄어듭니다.`,
+            `${mGanKr}${mJiKr} 월운에서는 **노션·슬랙** 중 한 곳에만 결정 로그를 남기고 나머지 채널은 알림을 끄십시오.`,
+            `${monthNo}월 **미수·미회신** 목록을 월요일 오전에만 처리하고, 금요일엔 새로 열지 마십시오.`,
+            `${MONTH_NAME[i]}에는 **수면 시간 한 줄**만 달력에 박고, 그 밖의 자기계발은 한 코스로 제한하십시오.`
+        ];
+        const lowOrdPool = [
+            '신규 확장과 고위험 결정은 즉시 멈추고 손실 차단을 우선하십시오.',
+            `${monthNo}월에는 **레버리지·보증·야간 송금**을 금지하고, 꼭 필요한 지출은 영업일 점심 이전에만 처리하십시오.`,
+            `${mGanKr}${mJiKr} 흉운에서는 **계약 수정 요청**을 문자로만 받고, 전화 합의는 다음 날 아침으로 미루십시오.`,
+            `${MONTH_NAME[i]} **대면 미팅**은 주 1회로 줄이고, 나머지는 비동기 자료로만 주고받으십시오.`
+        ];
+        const hiIx = Math.abs((monthNo * 13 + score * 3 + hashSeed((mSip || '') + '|hi')) % highOrdPool.length);
+        const neIx = Math.abs((monthNo * 19 + score * 7 + hashSeed((mGanHj || '') + (mJiHj || '') + '|ne') + i * 3) % neuOrdPool.length);
+        const loIx = Math.abs((monthNo * 11 + score * 5 + hashSeed((mJiHj || '') + '|lo')) % lowOrdPool.length);
         const ordText = score>=2
-            ? '중요 계약·핵심 미팅은 조건·한도를 서면으로 정리한 뒤 일정을 잡으십시오.'
+            ? highOrdPool[hiIx]
             : score>=0
-            ? '정리·보완·검토를 완료하고 다음 달 실행 준비를 고정하십시오.'
-            : '신규 확장과 고위험 결정은 즉시 멈추고 손실 차단을 우선하십시오.';
+            ? neuOrdPool[neIx]
+            : lowOrdPool[loIx];
         return `<div style="width:100%;box-sizing:border-box;background:rgba(255,255,255,${isNow?'0.07':'0.03'});border-radius:10px;padding:14px 16px;border-left:3px solid ${col};break-inside:avoid;">
             <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
                 <div style="display:flex;align-items:center;gap:8px;min-width:0;flex-wrap:wrap;">
@@ -4532,7 +4593,7 @@ function buildLifePanoramaSection(data) {
     var pivotHard = hardAges.length ? hardAges[Math.floor(hardAges.length / 2)] : null;
     var pivotSoft = softAges.length ? softAges[Math.floor(softAges.length / 2)] : null;
 
-    var p2open = '둘째 장면. 긴 터널은 누구에게나 옵니다. ' + nTopic + joToken(nTopic, '은/는') + ' 스무 살 전후~마흔 전, 아래는 **나이 오름차순**으로만 읽으십시오. ';
+    var p2open = '둘째 장면. 긴 터널은 누구에게나 옵니다. ' + nTopic + joToken(nTopic, '은/는') + ' 스무 살 전후~마흔 전, ';
     var evs = [];
     if (pivotHard != null && pivotSoft != null && pivotHard === pivotSoft) {
         evs.push({ age: pivotHard, kind: 'both' });
@@ -7180,10 +7241,16 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
                     '코인·선물 앱은 **주말 잠금**을 켜 두십시오.',
                     '오픈채 링크는 **취향 태그**가 맞을 때만 들어가십시오.'
                 ][mSalt];
+                var mNeuBodies=[
+                    mKey+'에는 속도보다 정확도가 이깁니다. '+mReactTxt+' **우선순위 한 장**만 월요일에 고치십시오. '+mTail,
+                    mKey+'에는 밖보다 속 정비가 이깁니다. '+mReactTxt+' **한 가지 반복 루틴만** 유지하고 새 시도는 다음 달로 미루십시오. '+mTail,
+                    mKey+'에는 잡음을 줄이는 쪽이 실속입니다. '+mReactTxt+' **알림 채널 하나**만 남기고 나머지는 끄십시오. '+mTail,
+                    mKey+'에는 결정을 잠시 늦추는 편이 안전합니다. '+mReactTxt+' **48시간 유예** 규칙만 지켜도 손실이 줄어듭니다. '+mTail
+                ];
                 var advm=sm4>=2
                     ?(mKey+'에는 기운이 실행 쪽으로 힘이 실립니다. '+mReactTxt+' 중요한 시작·연락·계약 초안을 진행하면 다음 달로 이어질 가능성이 높습니다. '+mTail)
                     :sm4>=0
-                    ?(mKey+'에는 속도보다 정확도가 이깁니다. '+mReactTxt+' 정리·보완·루틴 강화가 효율적입니다. '+mTail)
+                    ?mNeuBodies[mSalt % 4]
                     :(mKey+'에는 부담 신호가 먼저 올 수 있습니다. '+mReactTxt+' 큰 결정보다 검토·보류를 먼저 하면 안정적으로 넘길 가능성이 높습니다. '+mTail);
                 h4+='<div style="margin-bottom:12px;padding:14px;background:rgba(255,255,255,'+(isThisM?'0.07':'0.03')+');border:1px solid '+(isThisM?'var(--gold)':'rgba(255,255,255,0.06)')+';border-radius:10px;">';
                 h4+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:8px;"><div style="display:flex;align-items:center;gap:8px;min-width:0;flex:1;"><span style="font-size:18px;font-weight:900;color:var(--gold);font-family:\'Noto Serif KR\',\'Nanum Myeongjo\',\'Batang\',serif;white-space:nowrap;letter-spacing:0.02em;">'+mKey+'</span><span style="font-size:13px;color:#bbb;white-space:nowrap;">'+m4+'월'+(isThisM?' <span style="font-size:10px;background:var(--gold);color:#000;padding:1px 6px;border-radius:6px;font-weight:700;">이달</span>':'')+'</span></div><span style="font-size:11px;font-weight:700;color:'+colm+';white-space:nowrap;">'+gb(sm4)+'</span></div>';
