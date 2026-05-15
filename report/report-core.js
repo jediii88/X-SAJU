@@ -203,16 +203,16 @@ function voiceObserveEnd(seed) {
 function buildChapterHead(metaphorTitle, sectionLabel, opts) {
     opts = opts || {};
     var extra = opts.extraStyle || '';
-    return '<h3 class="ch-title" style="font-family:\'Noto Serif KR\',serif;font-size:20px;font-weight:800;line-height:1.45;margin:0 0 6px;' + extra + '">'
+    return '<h3 class="ch-title" style="font-family:\'Noto Sans KR\',sans-serif;font-size:20px;font-weight:800;line-height:1.45;margin:0 0 6px;' + extra + '">'
         + escHtmlAttr(metaphorTitle) + '</h3>'
         + (sectionLabel ? '<p class="ch-section-label" style="font-size:11px;letter-spacing:0.1em;color:rgba(199,167,106,0.75);margin:0 0 14px;font-weight:700;">' + escHtmlAttr(sectionLabel) + '</p>' : '');
 }
 
 var SAJUX_SURFACE_LINES = [
-    '겉으로는 듬직해 보이지만, 속으로는 누구보다 치열하게 고민하는 편이시군요.',
-    '겉맛은 차분한데, 속은 늘 바쁘게 돌아가는 타입이시군요.',
-    '말수는 적어 보여도, 마음속 계산은 쉬지 않는 편이시네요.',
-    '남들이 보기엔 여유로운데, 본인만 아는 압박감이 있는 격이네요.'
+    '겉으로는 듬직해 보이지만, 속으로는 누구보다 치열하게 고민하는 편입니다.',
+    '겉맛은 차분한데, 속은 늘 바쁘게 돌아가는 타입입니다.',
+    '말수는 적어 보여도, 마음속 계산은 쉬지 않는 편입니다.',
+    '남들이 보기엔 여유로운데, 본인만 아는 압박감이 있는 형국입니다.'
 ];
 
 function getWuxingPctMap(data) {
@@ -1097,6 +1097,17 @@ function voicePolishParagraph(data, text) {
     s = s.replace(/풍요롭은/g, '풍요로운');
     s = s.replace(/풍요로운의/g, '풍요로움의');
     s = s.replace(/([가-힣]+)롭은(?=\s|분|것|형|인|자|때|데|며|고|\.|,|$)/g, '$1로운');
+    // Remove a known repeated/macro sentence if present (defensive).
+    s = s.replace(/겉으로는 듬직해 보이지만, 속으로는 누구보다 치열하게 고민하는 편[^\n\<\>]{0,120}/g, '');
+    // Explain technical terms for non-expert readers when not already explained.
+    s = s.replace(/기신(?!\s*\()/g, '기신(나를 지치게 하는 기운)');
+    s = s.replace(/용신(?!\s*\()/g, '용신(균형을 돕는 기운)');
+    s = s.replace(/십성(?!\s*\()/g, '십성(사주에서의 역할을 뜻하는 열 가지 개념)');
+    // Convert light/casual sentence endings to formal tone suitable for premium reports.
+    s = s.replace(/이시군요/g, '입니다');
+    s = s.replace(/네요/g, '입니다');
+    s = s.replace(/이에요/g, '입니다');
+    s = s.replace(/이군요/g, '입니다');
     return s;
 }
 
@@ -3273,7 +3284,7 @@ function injectInlineSummaries(data) {
 }
 function buildSectionHeader(title) {
     return `<div style="margin: 60px 0 30px 0; padding-bottom: 15px; border-bottom: 2px solid var(--gold);">
-            <h2 style="color: var(--gold); font-size: 24px; font-family: 'Noto Serif KR', serif; letter-spacing: 2px;">${title}</h2>
+            <h2 style="color: var(--gold); font-size: 24px; font-family: 'Noto Sans KR', sans-serif; letter-spacing: 2px;">${title}</h2>
         </div>`;
 }
 
@@ -3319,7 +3330,7 @@ function buildCurrentPeriodSummary(data) {
 ❤️ 애정 — 새 자극보다 <strong>대화 한 번의 질</strong>을 올리면 갈등 비용이 줄고 신뢰가 쌓입니다.
 
 🏥 건강 — 규칙 루틴이 성과를 좌우합니다. <strong>기상·취침 시각만</strong> 고정해도 체력 바닥이 올라갑니다.`
-            :`말 한마디에 책임이 몰려 억울한 밤이 있었을 수 있습니다. 그건 당신이 약해서가 아니라, 기신·구신 압력이 이 10년에 두껍게 깔린 탓에 가깝습니다. <strong>공격보다 손실 관리가 결과를 지킵니다.</strong>
+            :`말 한마디에 책임이 몰려 억울한 밤이 있었을 수 있습니다. 그건 당신이 약해서가 아니라, 기신(나를 지치게 하는 기운)·구신(기신을 돕는 기운) 압력이 이 10년에 두껍게 깔린 탓에 가깝습니다. <strong>공격보다 손실 관리가 결과를 지킵니다.</strong>
 
 💰 재물 — 큰 돈 나가는 투자·보증·월 고정비 늘리기는 잠시 멈추십시오. **비상금으로 쓸 생활비 몇 달 치**만 숫자로 적어 두십시오.
 
