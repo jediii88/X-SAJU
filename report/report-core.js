@@ -16,7 +16,7 @@ var JOSA_MAP_22 = {
     '오': { i: '가', wa: '와' }, '미': { i: '가', wa: '와' }, '유': { i: '가', wa: '와' }, '술': { i: '이', wa: '과' }, '해': { i: '가', wa: '와' }
 };
 
-/** 부록 B 등 세운 상세 직전 4대 지표 블록 (디자인 고정, 값만 동적) — 키워드는 항상 10자 이내 명사형 */
+/** 부록 B 등 세운 상세 직전 4대 지표 블록 — 2×2(모바일)·4열(넓은 화면) 그리드 */
 function buildYearlyIndicatorsHtml(ykw) {
     var w = ykw || { wealth: '-', career: '-', doc: '-', love: '-' };
     function esc(t) {
@@ -25,21 +25,19 @@ function buildYearlyIndicatorsHtml(ykw) {
     var kw = function (x) {
         return esc(typeof clampKeyword10 === 'function' ? clampKeyword10(x) : String(x == null ? '' : x).substring(0, 10));
     };
-    var row = function (icon, label, val) {
-        return '<div style="width:100%;box-sizing:border-box;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.06);">'
-            + '<div style="font-size:11px;color:#5c5348;margin-bottom:5px;">' + icon + ' ' + label + '</div>'
-            + '<div class="yearly-ind-val" style="font-size:14px;font-weight:700;color:#6b5420;line-height:1.45;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;width:100%;box-sizing:border-box;" title="' + kw(val) + '">' + kw(val) + '</div></div>';
+    var cell = function (icon, label, val) {
+        return '<div class="yearly-ind-cell" style="box-sizing:border-box;min-width:0;padding:10px 8px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.03);">'
+            + '<div style="font-size:10px;color:#8a8278;margin-bottom:6px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + icon + ' ' + label + '</div>'
+            + '<div class="yearly-ind-val" style="font-size:13px;font-weight:700;color:#e8dcc8;line-height:1.4;word-break:keep-all;" title="' + kw(val) + '">' + kw(val) + '</div></div>';
     };
-    return '<div class="yearly-indicators sajux-panel-plain" style="width:100%;max-width:100%;box-sizing:border-box;margin-bottom:12px;padding:12px 12px;background:transparent;border-radius:6px;border:1px solid rgba(199,167,106,0.32);border-left:3px solid #8b6914;">'
-        + row('💰', '재물·투자', w.wealth)
-        + row('🏢', '직업·합격', w.career)
-        + row('📝', '문서·계약', w.doc)
-        + '<div style="width:100%;box-sizing:border-box;">'
-        + '<div style="font-size:11px;color:#5c5348;margin-bottom:5px;">❤ 애정·대인</div>'
-        + '<div class="yearly-ind-val" style="font-size:14px;font-weight:700;color:#6b5420;line-height:1.45;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;width:100%;box-sizing:border-box;">' + kw(w.love) + '</div></div>'
-        + '</div>';
+    return '<div class="yearly-indicators sajux-panel-plain" style="width:100%;max-width:100%;box-sizing:border-box;margin-bottom:12px;padding:12px 10px;background:transparent;border-radius:6px;border:1px solid rgba(199,167,106,0.32);border-left:3px solid #8b6914;">'
+        + '<div class="yearly-indicators-grid" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 10px;width:100%;">'
+        + cell('💰', '재물·투자', w.wealth)
+        + cell('🏢', '직업·합격', w.career)
+        + cell('📝', '문서·계약', w.doc)
+        + cell('❤', '애정·대인', w.love)
+        + '</div></div>';
 }
-
 /** 마지막 음절 받침 기준 조사. ㄹ 받침은 은/는·이/가·을/를·과/와 에서 받침 없는 쪽(는/가/를/와)을 사용합니다. */
 function getJosa(word, pair) {
     if (word == null || word === '') return '';
@@ -2698,7 +2696,9 @@ function ensureSajuxReadablePanelStyles() {
         ".m-hanja,.vip-hanja,.report-pillar-hanja,.hanja-main,.f-hz .report-pillar-hanja{font-family:'Noto Sans KR',sans-serif!important;}",
         ".sajux-panel-plain,.yearly-indicators,.deep-hook-panel,.premium-executive-summary,#sec-life-panorama.report-chapter,.sajux-gongmang-note{background:transparent!important;background-color:transparent!important;}",
         "body:not(.light-mode) .deep-hook-panel p,html[data-theme=dark] .deep-hook-panel p,body:not(.light-mode) .sajux-gongmang-note p,html[data-theme=dark] .sajux-gongmang-note p{color:#ddd!important;}",
-        "body:not(.light-mode) .yearly-indicators .yearly-ind-val,html[data-theme=dark] .yearly-indicators .yearly-ind-val{color:#e8dcc8!important;}"
+        "body:not(.light-mode) .yearly-indicators .yearly-ind-val,html[data-theme=dark] .yearly-indicators .yearly-ind-val{color:#e8dcc8!important;}",
+        ".yearly-indicators-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px 10px!important;width:100%!important;}",
+        "@media (min-width:520px){.yearly-indicators-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;}}"
     ].join('');
     document.head.appendChild(st);
 }
