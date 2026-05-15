@@ -546,8 +546,8 @@ function buildVipModuleTitles(data, daeunLabel, curY, curM) {
 
 function buildInlineIljuSummaryHtml(data) {
     var iljuKey = (data.dayStem || '') + (data.dayBranch || '');
-    var db = window.SAJU_DB?.ILJU?.[iljuKey] || {};
-    var prof = getIljuProfile(data.dayStem, data.dayBranch);
+    var db = getIljuDbEntry(data, iljuKey);
+    var prof = getIljuProfilePolished(data, data.dayStem, data.dayBranch);
     var metaphor = buildMetaphorHookTitle(data);
     var core = db.core || (prof && prof.core) || '원국에 쌓인 기운이 삶의 방향을 이끕니다.';
     var inner = pickVoiceLine([
@@ -922,7 +922,7 @@ function buildTopicOpenerInner(topic, data) {
         ],
         basic: [
             function () {
-                var prof = getIljuProfile(data.dayStem, data.dayBranch);
+                var prof = getIljuProfilePolished(data, data.dayStem, data.dayBranch);
                 if (prof && prof.core) return String(prof.core).split('.')[0] + '이라고 볼 수 있어요.';
                 return '원국에 쌓인 기운이 삶의 방향을 이끕니다.';
             }
@@ -974,7 +974,7 @@ function buildSajuKidStyleOpener(data, innerLine) {
     var surface = pickVoiceLine(SAJUX_SURFACE_LINES, nm + 'opener');
     var open = surface + ' ' + nm + '님은 일주 ' + iljuKr + '의 기운을 타고나, ';
     if (innerLine) return open + innerLine;
-    var prof = getIljuProfile(ds, db);
+    var prof = getIljuProfilePolished(data, ds, db);
     if (prof && prof.core) {
         var coreShort = String(prof.core).split('.')[0];
         return open + coreShort + '이라고 볼 수 있어요.';
@@ -1045,6 +1045,7 @@ function voicePolishParagraph(data, text) {
     s = s.replace(/당신을/g, nmEulReul(nm));
     s = s.replace(/당신께/g, nmKke(nm));
     s = s.replace(/당신께는/g, nmKkeEunNeun(nm));
+    s = s.replace(/당신(?![은이가을의께는])/g, nmDnim(nm));
     s = s.replace(/\bIT\b/g, '전문');
     s = s.replace(/파이프라인/g, '수입 줄기');
     s = s.replace(/메시지·문의/g, '문의·연락');
@@ -2821,13 +2822,14 @@ function injectSajuxPdfUi() {
     try { ensureSajuxPdfPrintForceStyles(); ensureCoverLogoForPrint(); } catch (e) {}
 }
 
-function getDBText(category, key, fallback) {
+function getDBText(category, key, fallback, data) {
     if(window.SAJU_DB && window.SAJU_DB[category] && window.SAJU_DB[category][key]) {
         let val = window.SAJU_DB[category][key];
         if(typeof val === 'object') {
-            return val.core + " " + val.weapon;
+            var t = val.core + " " + val.weapon;
+            return data ? voicePolishParagraph(data, t) : t;
         }
-        return val;
+        return data ? voicePolishParagraph(data, val) : val;
     }
     return fallback || "이 시기에는 잠재력을 발휘해야 합니다.";
 }
@@ -3793,6 +3795,30 @@ function getIljuProfile(dayStem, dayBranch) {
     return ILJU_60_DB[key] || null;
 }
 
+/** SAJU_DB.ILJU — 렌더 시 이름·톤 정리 */
+function getIljuDbEntry(data, iljuKey) {
+    var key = iljuKey || ((data && data.dayStem && data.dayBranch) ? (data.dayStem + data.dayBranch) : '');
+    var raw = (window.SAJU_DB && window.SAJU_DB.ILJU && window.SAJU_DB.ILJU[key]) || {};
+    if (!raw || typeof raw !== 'object') return {};
+    var out = {};
+    ['title', 'core', 'weapon', 'love'].forEach(function (f) {
+        if (raw[f] != null && raw[f] !== '') out[f] = voicePolishParagraph(data, raw[f]);
+    });
+    return out;
+}
+
+/** ILJU_60_DB — 렌더 시 이름·톤 정리 */
+function getIljuProfilePolished(data, dayStem, dayBranch) {
+    var prof = getIljuProfile(dayStem, dayBranch);
+    if (!prof) return null;
+    var out = {};
+    ['core', 'strength', 'weakness', 'love', 'career'].forEach(function (f) {
+        if (prof[f] != null && prof[f] !== '') out[f] = voicePolishParagraph(data, prof[f]);
+    });
+    if (prof.image) out.image = prof.image;
+    return out;
+}
+
 
 // ══════════════════════════════════════════════════════
 // ② 십성 × 나이대 사건 예측 DB
@@ -3872,7 +3898,7 @@ function buildChapter1_Basic(data) {
     const name = data.name || '고객';
     const pillars = data.pillars || [];
     const iljuKey = (data.dayStem||'') + (data.dayBranch||'');
-    const dbEntry = window.SAJU_DB?.ILJU?.[iljuKey] || {};
+    const dbEntry = getIljuDbEntry(data, iljuKey);
     const isStrong = data.strengthText && (data.strengthText.includes('신강') || data.strengthText.includes('강'));
     const gongmangBranches = data.gongmang || [];
     const birthYear = data.birthYear || new Date(data.birthDate||'1988-01-01').getFullYear() || 1988;
@@ -3912,7 +3938,7 @@ function buildChapter1_Basic(data) {
         var sipseong = data.sipseong || {};
         var sortedSip = Object.entries(sipseong).sort(function(a,b){return b[1]-a[1];});
         var mainSip = sortedSip.length>0 ? sortedSip[0][0] : null;
-        var iProf = (typeof getIljuProfile === 'function') ? getIljuProfile(dStem, dBr) : null;
+        var iProf = (typeof getIljuProfilePolished === 'function') ? getIljuProfilePolished(data, dStem, dBr) : null;
 
         // 60일주 물상 핵심 한 줄
         var iljuImage = iProf ? iProf.image : '';
@@ -4080,7 +4106,7 @@ function buildChapter1_Basic(data) {
             var descTxt = iljuImgData ? iljuImgData.d : '';
             narr += nmUi(name)+' 사주는 그림으로 표현하면 — 「'+imgTxt+'」입니다.\n';
             if(descTxt) narr += descTxt + '\n';
-            if(iljuCore) narr += iljuCore.replace(/당신/g, nmDnim(name)) + ' **일주의 무게를 탓하지 마십시오. 한 달에 바깥에 꺼낼 목표는 하나만 고르십시오.**\n\n';
+            if(iljuCore) narr += iljuCore + ' **일주의 무게를 탓하지 마십시오. 한 달에 바깥에 꺼낼 목표는 하나만 고르십시오.**\n\n';
         }
 
         // 2) 신강/신약 + 오행 핵심
@@ -5286,8 +5312,8 @@ function buildChapter5_Career(data) {
 function buildChapter6_Love(data) {
     const name = data.name || '고객';
     const iljuKey = (data.dayStem||'') + (data.dayBranch||'');
-    const dbEntry = window.SAJU_DB?.ILJU?.[iljuKey] || {};
-    const loveText = dbEntry.love || "당신의 템포를 묵묵히 맞춰주고 지지해줄 수 있는 안정적인 인연이 닿습니다.";
+    const dbEntry = getIljuDbEntry(data, iljuKey);
+    const loveText = dbEntry.love || voicePolishParagraph(data, nmUi(name) + ' 템포를 묵묵히 맞춰 주고 지지해 줄 수 있는 안정적인 인연이 닿습니다.');
     const sipseong = data.sipseong || {};
     const gwanC = (sipseong['정관']||0) + (sipseong['편관']||0);
     const inC = (sipseong['정인']||0) + (sipseong['편인']||0);
@@ -6247,7 +6273,7 @@ function buildClientCoverPage(data) {
     const name = data.name || '사주 분석 대상자';
     const iljuKey = (data.dayStem||'') + (data.dayBranch||'');
     const coverLine = formatCoverBirthLine(data) || (data.birthStr || '');
-    const dbEntry = window.SAJU_DB?.ILJU?.[iljuKey] || {};
+    const dbEntry = getIljuDbEntry(data, iljuKey);
     const iljuTitle = dbEntry.title || iljuKey;
     const ILJU_ANIMAL = {'甲子':'쥐(자)','乙丑':'소(축)','丙寅':'호랑이(인)','丁卯':'토끼(묘)','戊辰':'용(진)','己巳':'뱀(사)','庚午':'말(오)','辛未':'양(미)','壬申':'원숭이(신)','癸酉':'닭(유)','甲戌':'개(술)','乙亥':'돼지(해)','丙子':'쥐(자)','丁丑':'소(축)','戊寅':'호랑이(인)','己卯':'토끼(묘)','庚辰':'용(진)','辛巳':'뱀(사)','壬午':'말(오)','癸未':'양(미)','甲申':'원숭이(신)','乙酉':'닭(유)','丙戌':'개(술)','丁亥':'돼지(해)','戊子':'쥐(자)','己丑':'소(축)','庚寅':'호랑이(인)','辛卯':'토끼(묘)','壬辰':'용(진)','癸巳':'뱀(사)','甲午':'말(오)','乙未':'양(미)','丙申':'원숭이(신)','丁酉':'닭(유)','戊戌':'개(술)','己亥':'돼지(해)','庚子':'쥐(자)','辛丑':'소(축)','壬寅':'호랑이(인)','癸卯':'토끼(묘)','甲辰':'용(진)','乙巳':'뱀(사)','丙午':'말(오)','丁未':'양(미)','戊申':'원숭이(신)','己酉':'닭(유)','庚戌':'개(술)','辛亥':'돼지(해)','壬子':'쥐(자)','癸丑':'소(축)','甲寅':'호랑이(인)','乙卯':'토끼(묘)','丙辰':'용(진)','丁巳':'뱀(사)','戊午':'말(오)','己未':'양(미)','庚申':'원숭이(신)','辛酉':'닭(유)','壬戌':'개(술)','癸亥':'돼지(해)'};
     const animal = ILJU_ANIMAL[iljuKey] || '';
@@ -6289,7 +6315,7 @@ function buildClientCoverPage(data) {
 
         <div style="width:110px;height:110px;margin:2px auto 12px;display:flex;align-items:center;justify-content:center;"><img src="${animalImage}" alt="${animalPlain || '일주 동물'}" loading="lazy" style="width:100%;height:100%;object-fit:contain;display:block;"/></div>
         <div style="font-size:30px;line-height:1.15;margin:0 0 6px;">${iljuBig}</div>
-        ${animalHighlight ? `<div class="animal-symbol">당신의 상징 동물은 <span class="cover-highlight">${escHtmlAttr(animalHighlight)}</span>입니다.</div>` : ''}
+        ${animalHighlight ? `<div class="animal-symbol">${nmUi(name)} 상징 동물은 <span class="cover-highlight">${escHtmlAttr(animalHighlight)}</span>입니다.</div>` : ''}
         ${coverLine ? `<div class="birth-info">${escHtmlAttr(coverLine)}</div><p style="margin:10px 0 0;font-size:11px;line-height:1.6;color:rgba(180,185,195,0.75);">※ 대운·연령 표기는 만 나이(양력 생일 기준)입니다.</p>` : `<p style="margin:10px 0 0;font-size:11px;line-height:1.6;color:rgba(180,185,195,0.75);">※ 대운·연령 표기는 만 나이(양력 생일 기준)입니다.</p>`}
 
         <div style="margin-top:38px;font-size:10px;color:rgba(210,214,223,0.34);letter-spacing:0.14em;">${formatReportAccessLine(data)}</div>
@@ -6386,7 +6412,7 @@ function buildChapterPersonality(data) {
     const name = data.name || '고객';
     const stemEl = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'}[data.dayStem] || 'earth';
     const iljuKey = (data.dayStem || '') + (data.dayBranch || '');
-    const dbEntry = window.SAJU_DB && window.SAJU_DB.ILJU && window.SAJU_DB.ILJU[iljuKey] ? window.SAJU_DB.ILJU[iljuKey] : {};
+    const dbEntry = getIljuDbEntry(data, iljuKey);
 
     const PROS = {
         wood: ['목표를 향해 흔들림 없이 나아가는 불굴의 추진력','새로운 시작을 두려워하지 않는 개척자 정신','타인에 대한 따뜻한 공감과 진심 어린 배려','한 번 믿으면 끝까지 믿는 강한 의리와 신뢰'],
@@ -6419,9 +6445,9 @@ function buildChapterPersonality(data) {
 
     const pros = PROS[stemEl] || PROS['earth'];
     const cons = CONS[stemEl] || CONS['earth'];
-    const goodMatch = GOOD_MATCH[stemEl] || '';
-    const badMatch = BAD_MATCH[stemEl] || '';
-    const iljuTitle = dbEntry.title || '당신의 일주';
+    const goodMatch = voicePolishParagraph(data, GOOD_MATCH[stemEl] || '');
+    const badMatch = voicePolishParagraph(data, BAD_MATCH[stemEl] || '');
+    const iljuTitle = dbEntry.title || (nmUi(name) + ' 일주');
 
     var chHeadA = buildChapterHead(buildTopicMetaphorTitle('appendix', data), SAJUX_SECTION_LABELS.appendix);
     var chIntroA = buildChapterIntroHtml(data, 'appendix');
@@ -6429,11 +6455,11 @@ function buildChapterPersonality(data) {
         ${chHeadA}
         ${chIntroA}
         <p class="ch-text" style="margin-bottom:14px;">일간 오행은 **판단 속도·리스크 취향·관계 거리**를 한 번에 묶은 축입니다. 아래는 그 축에서 나오는 마찰입니다.</p>
-        <p class="ch-text" style="margin-bottom:20px;">[${iljuTitle}]${typeof getJosa === 'function' ? getJosa(iljuTitle, '을/를') : '을'} 타고난 당신에게 성격은 낙인이 아니라 **반복 패턴의 이름**입니다. 이 표를 읽고 **한 가지만** 고치면 체감이 납니다.</p>
+        <p class="ch-text" style="margin-bottom:20px;">[${iljuTitle}]${typeof getJosa === 'function' ? getJosa(iljuTitle, '을/를') : '을'} 타고난 ${nmKkeEunNeun(name)} 성격은 낙인이 아니라 **반복 패턴의 이름**입니다. 이 표를 읽고 **한 가지만** 고치면 체감이 납니다.</p>
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
             <div style="background:rgba(0,200,83,0.06);border-radius:12px;padding:18px;">
-                <div style="font-size:13px;font-weight:700;color:#00C853;margin-bottom:12px;letter-spacing:1px;">✦ 강점 (당신만의 무기)</div>
+                <div style="font-size:13px;font-weight:700;color:#00C853;margin-bottom:12px;letter-spacing:1px;">✦ 강점 (${nmUi(name)} 무기)</div>
                 ${pros.map((p,i) => '<div style="display:flex;gap:8px;margin-bottom:10px;"><span style="color:#00C853;font-weight:700;flex-shrink:0;">' + (i+1) + '.</span><span style="font-size:13.5px;color:#ddd;line-height:1.7;">' + p + '</span></div>').join('')}
             </div>
             <div style="background:rgba(231,76,60,0.06);border-radius:12px;padding:18px;">
@@ -7550,7 +7576,7 @@ function runAnalysis(overrideParams) {
         if (heroBrushTitle) heroBrushTitle.innerText = name + ' 고객님의 사주풀이 비밀문서';
         
         const colorInfo = ANIMAL_COLOR[dayStem] || ANIMAL_COLOR['병'];
-        var animalSentence = ('당신의 상징 동물은 ' + String(colorInfo.label || '').trim() + ' ' + String(animalInfo.kr || '').trim() + '입니다.').replace(/\s+/g, ' ').trim();
+        var animalSentence = (nmUi(name) + ' 상징 동물은 ' + String(colorInfo.label || '').trim() + ' ' + String(animalInfo.kr || '').trim() + '입니다.').replace(/\s+/g, ' ').trim();
 
         const descHanja = document.getElementById('av-desc-hanja');
         const descHangul = document.getElementById('av-desc-hangul');
@@ -8319,14 +8345,16 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
 
             // ── 애정운 상세 ──
             const iljuKey2 = dayStem + (pillars&&pillars[1]?pillars[1].h[1]:'인');
-            const dbEntry2 = window.SAJU_DB?.ILJU?.[iljuKey2] || {};
+            const _loveData = globalSajuData || { name: name };
+            const dbEntry2 = getIljuDbEntry(_loveData, iljuKey2);
             const loveText2 = dbEntry2.love || '일지에 각인된 인연의 코드에 따라 맞는 사람이 다릅니다.';
             const loveType = gwanC > 0 ? 'active' : inC > sipTotalWeight*0.3 ? 'passive' : 'self';
-            const loveMain = {
+            const loveMainRaw = {
                 active: `조직·책임 축이 있는 당신에게 이성 인연은 자연스럽게 찾아오는 편입니다. 사회적 활동이 활발한 시기에 인연이 집중됩니다. 다만 이 축이 강할수록 상대를 통제하려는 욕구가 관계를 경직시킵니다. '내 방식으로 사랑하는 것'과 '상대가 원하는 방식으로 사랑받는 것'의 차이를 이해하는 것이 관계의 핵심 과제입니다.`,
                 passive: `학습·지지 축이 강한 당신은 사랑에서 헌신적입니다. 상대를 위해 자신을 희생하는 것을 마다하지 않습니다. 그러나 이 헌신이 때로 집착이나 의존으로 바뀌기 쉽습니다. 자기 자신을 먼저 돌보는 연습을 하십시오. 그것이 역설적으로 가장 건강한 관계를 만드는 길입니다.`,
                 self: `당신의 인연은 스스로 만들어가는 스타일입니다. 수동적으로 기다리기보다 적극적으로 만남을 만들어야 합니다. 기운이 맞는 대운과 세운에 인연이 활성화됩니다. 해당 시기에 사회적 활동 반경을 의도적으로 넓히는 것이 전략입니다.`
-            }[loveType];
+            };
+            const loveMain = voicePolishParagraph(_loveData, loveMainRaw[loveType] || '');
 
             const loveFlowHint = `${flowAnchor} 애정운은 원국의 일지 성향과 현재 운의 십성 자극이 겹칠 때 사건화가 빨라집니다. 중요한 관계 결정은 흐름이 완화되는 달에 잡는 편이 안정적입니다.`;
             document.getElementById('cat-love').innerHTML = `
