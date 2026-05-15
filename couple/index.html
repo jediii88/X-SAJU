@@ -332,6 +332,8 @@ body::before {
       <div class="breakdown-grid" id="breakdown-grid"></div>
     </div>
 
+    <div id="compat-voice-overview" class="compat-voice-wrap" style="margin:20px 0 8px;"></div>
+
     <div id="section-personality">
       <div style="font-size:14px;font-weight:700;color:var(--gold);margin:24px 0 12px;padding:10px 0;border-bottom:1px solid rgba(199,167,106,0.2);">🌟 두 사람의 타고난 성격과 기질</div>
       <div id="panel-personality" class="rel-panel"></div>
@@ -375,6 +377,7 @@ if (typeof KoreanLunarCalendar === 'undefined') {
 }
 </script>
 <script src="../report/klc.min.js"></script>
+<script src="../report/report-core.js"></script>
 <script>
 // ══════════════════════════════════════
 // 기초 상수
@@ -780,7 +783,26 @@ function nameTag(name, gender) {
 // ══════════════════════════════════════
 // 관계 유형별 패널
 // ══════════════════════════════════════
+function buildCompatCtx(params, a, b, result) {
+  return {
+    a: a, b: b,
+    aName: params.a.name || (params.a.gender === 'male' ? '남성' : '여성'),
+    bName: params.b.name || (params.b.gender === 'male' ? '남성' : '여성'),
+    isHap: result.isHap, isChung: result.isChung,
+    score: result.score, shengAB: result.shengAB, shengBA: result.shengBA,
+    result: result
+  };
+}
+function compatVoiceLead(topic, ctx) {
+  return (typeof buildCompatVoiceSection === 'function') ? buildCompatVoiceSection(topic, ctx) : '';
+}
+
 function buildRelPanels(params, a, b, result) {
+  const compatCtx = buildCompatCtx(params, a, b, result);
+  window.__compatCtx = compatCtx;
+  const voice = function(topic) { return compatVoiceLead(topic, compatCtx); };
+  const overviewEl = document.getElementById('compat-voice-overview');
+  if (overviewEl) overviewEl.innerHTML = voice('overview');
   const aName = params.a.name || (params.a.gender==='male'?'남성':'여성');
   const bName = params.b.name || (params.b.gender==='male'?'남성':'여성');
   const isHap = result.isHap, isChung = result.isChung;
@@ -827,7 +849,7 @@ function buildRelPanels(params, a, b, result) {
       }
     </div>`
   ];
-  document.getElementById('panel-personality').innerHTML = charHtml.join('');
+  document.getElementById('panel-personality').innerHTML = voice('personality') + charHtml.join('');
 
   // ── 연인 ──
   const loverBadges = [];
@@ -864,7 +886,7 @@ function buildRelPanels(params, a, b, result) {
     <strong>${aDB}·${bDB} 충</strong> — 배우자궁의 충돌은 생활 방식과 가치관의 마찰로 나타납니다.
     그러나 강한 마찰은 강한 끌림의 이면이기도 합니다. 서로의 다름을 인정하고 존중하는 의식적 노력이 관계를 지속시킵니다.
   </div>`);
-  document.getElementById('panel-lover').innerHTML =
+  document.getElementById('panel-lover').innerHTML = voice('lover') +
     `<div class="special-badges">${loverBadges.join('')}</div>` + loverInsights.join('');
 
   // ── 부부 ──
@@ -941,7 +963,7 @@ function buildRelPanels(params, a, b, result) {
       return childAges.length>0 ? '특히 <strong>'+aName+'님의 '+childAges.join(', ')+'</strong> 구간이 자녀 인연이 열리기 좋은 시기입니다.' : '두 사람의 목화 에너지 대운이 겹치는 구간을 자녀 계획의 최적 시기로 보십시오.';
     })()}
   </div>`);
-  document.getElementById('panel-married').innerHTML = marriedInsights.join('');
+  document.getElementById('panel-married').innerHTML = voice('married') + marriedInsights.join('');
 
   // ── 친구 ──
   const friendInsights = [];
@@ -957,7 +979,7 @@ function buildRelPanels(params, a, b, result) {
     result.score>=60 ? '오행 보완이 잘 이루어져 '+aName+'님과 '+bName+'님은 서로에게 영감을 주는 장기적 인연입니다.' :
     '에너지 차이가 있어 의도적 연락과 노력이 필요합니다. 공통 관심사를 찾는 것이 우정 유지의 핵심입니다.'}
   </div>`);
-  document.getElementById('panel-friend').innerHTML = friendInsights.join('');
+  document.getElementById('panel-friend').innerHTML = voice('friend') + friendInsights.join('');
 
   // ── 비즈니스 ──
   const bizInsights = [];
@@ -978,7 +1000,7 @@ function buildRelPanels(params, a, b, result) {
     <strong>${bName}님</strong>(${b.strength}): ${getStyleDesc(b.strength)}<br><br>
     ${a.strength!==b.strength ? '서로 다른 결정 스타일이 상호 보완적으로 작용합니다. 중요 결정 전 반드시 상의하세요.' : '비슷한 스타일로 빠른 합의가 가능하지만 외부 검토자가 필요합니다.'}
   </div>`);
-  document.getElementById('panel-business').innerHTML = bizInsights.join('');
+  document.getElementById('panel-business').innerHTML = voice('business') + bizInsights.join('');
 
   // ── 배우자궁 분석 ──
   const ILJI_SPOUSE = {
@@ -1019,7 +1041,7 @@ function buildRelPanels(params, a, b, result) {
       `두 사람의 배우자궁이 직접적 합충은 없지만, 오행 보완을 통해 서로에게 필요한 에너지를 채워주는 관계입니다.`}
     </div>`
   ];
-  document.getElementById('panel-spouse').innerHTML = spouseHtml.join('');
+  document.getElementById('panel-spouse').innerHTML = voice('spouse') + spouseHtml.join('');
 
   // ─── 자미두수 자녀 분석 섹션 ───
   const ZIWEI_CHILD = {
@@ -1088,6 +1110,19 @@ function buildRelPanels(params, a, b, result) {
 // 대운 싱크 타임라인
 // ══════════════════════════════════════
 function buildTimeline(a, b, aInfo, bInfo, params) {
+  const tlSec = document.querySelector('.timeline-section');
+  if (tlSec && typeof buildCompatVoiceSection === 'function') {
+    let tlLead = tlSec.querySelector('.compat-timeline-voice');
+    if (!tlLead) {
+      tlLead = document.createElement('div');
+      tlLead.className = 'compat-voice-wrap compat-timeline-voice';
+      tlLead.style.marginBottom = '14px';
+      const ts = document.getElementById('timeline-scroll');
+      if (ts) tlSec.insertBefore(tlLead, ts);
+    }
+    const ctx = window.__compatCtx || buildCompatCtx(params, a, b, { isHap: false, isChung: false, score: 0, shengAB: false, shengBA: false });
+    tlLead.innerHTML = buildCompatVoiceSection('timeline', ctx);
+  }
   const aDaYun = a.allDaYun;
   const bDaYun = b.allDaYun;
   const currYear = new Date().getFullYear();
