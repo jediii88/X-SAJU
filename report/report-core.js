@@ -188,8 +188,17 @@ function stripSeyunZombiePhrases(html) {
     s = s.replace(/성격\s*탓이\s*아니라[\s\S]{0,160}?(\.(?=\s|<|$)|$)/gi, '');
     return s;
 }
+/** LLM·프롬프트 잔여 브래킷 태그 — UI·PDF에 노출 금지 */
+function stripPromptBracketTags(html) {
+    var s = String(html == null ? '' : html);
+    s = s.replace(/\[(?:공감|팩트|실행)(?:\s*[·•\/]\s*[^\]]+)?\]/gi, '');
+    s = s.replace(/\[1\s*공감[^\]]*\]/gi, '');
+    s = s.replace(/\[2\s*(?:명리|팩트)[^\]]*\]/gi, '');
+    s = s.replace(/\[3\s*(?:단호한\s*)?실행[^\]]*\]/gi, '');
+    return s;
+}
 function stripTimelineMacroLeaks(html) {
-    var s = stripSeYunMacroLeaks(html);
+    var s = stripPromptBracketTags(stripSeYunMacroLeaks(html));
     s = s.replace(/캘린더에\s*표시해\s*두십시오/gi, '');
     s = s.replace(/주간\s*한\s*장에만\s*적어\s*두면/gi, '일정 겹침을 줄이려면');
     s = s.replace(/통장·캘린더\s*숫자/gi, '통장·지출 숫자');
@@ -198,11 +207,98 @@ function stripTimelineMacroLeaks(html) {
     s = s.replace(/고정비·회수·수면\s*슬롯을[^\n<]*?(\.|$)/gi, '');
     s = s.replace(/현금이\s*먼저\s*나가는\s*조건[^\n<]*?(\.|$)/gi, '');
     s = s.replace(/고정비·미수·회수만\s*주간\s*점검[^\n<]*?(\.|$)/gi, '');
+    s = s.replace(/생활\s*리듬과\s*지출·회수의\s*균형을[\s\S]*?(\.(?=\s|<|$)|$)/gi, '');
+    s = s.replace(/선납·연대·지분처럼[\s\S]*?(\.(?=\s|<|$)|$)/gi, '');
     s = stripSeyunZombiePhrases(s);
     return s;
 }
 function stripReportMacroLeaks(html) {
     return stripTimelineMacroLeaks(html);
+}
+/** 월간지·천간지지 → 달의 대표 오행(지지 우선) */
+function monthDominantOh(mGanHj, mJiHj) {
+    var STEM_OH = { '甲': 'wood', '乙': 'wood', '丙': 'fire', '丁': 'fire', '戊': 'earth', '己': 'earth', '庚': 'metal', '辛': 'metal', '壬': 'water', '癸': 'water' };
+    var BRANCH_OH = { '子': 'water', '丑': 'earth', '寅': 'wood', '卯': 'wood', '辰': 'earth', '巳': 'fire', '午': 'fire', '未': 'earth', '申': 'metal', '酉': 'metal', '戌': 'earth', '亥': 'water' };
+    return BRANCH_OH[mJiHj] || STEM_OH[mGanHj] || 'earth';
+}
+var WOLUN_NEUTRAL_BY_OH = {
+    wood: [
+        '이번 달은 새 일을 벌이기보다 **이미 시작한 일의 마무리**에 무게를 두면 실속이 남습니다.',
+        '목(木) 기운 달에는 **일정을 두 줄로 줄이고**, 남는 시간에만 새 제안을 검토하십시오.',
+        '확장보다 **연락·미팅 정리**가 먼저입니다. 끊을 약속부터 적어 보십시오.',
+        '아이디어가 많아지는 달입니다. **메모는 하되 실행은 하나**만 달력에 넣으십시오.'
+    ],
+    fire: [
+        '화(火) 기운 달에는 **대외 일정**이 늘기 쉽습니다. 밤 일정은 주 2회 상한으로 두십시오.',
+        '인정받고 싶은 마음이 앞설 수 있습니다. **중요한 말은 아침에**, 감정적인 답장은 다음 날로 미루십시오.',
+        '노출이 늘면 지출도 따라옵니다. **이번 달 외식·모임비 상한**을 숫자로 먼저 정하십시오.',
+        '열이 오를 때 **운동·수면 리듬**을 지키는 것이 돈보다 먼저입니다.'
+    ],
+    earth: [
+        '토(土) 기운 달에는 **고정비·구독·할부** 목록을 한 번만 펼쳐 보십시오. 끊을 항목에만 체크하십시오.',
+        '안정을 쌓는 달입니다. **통장 잔고와 카드값**을 월초·월말 두 번만 맞추십시오.',
+        '약속을 많이 잡기보다 **집·사무실 정리 한 코너**를 끝내는 쪽이 체감이 큽니다.',
+        '서두르지 않아도 됩니다. **이미 맡은 계약의 조건**만 다시 읽어도 손실이 줄어듭니다.'
+    ],
+    metal: [
+        '금(金) 기운 달에는 **서류·견적·승인**이 먼저 옵니다. 구두 합의는 같은 날 메일로만 고정하십시오.',
+        '기준이 높아지기 쉬운 달입니다. **완벽보다 80% 제출**로 마감을 지키십시오.',
+        '잘라내기가 이깁니다. **이번 달에 끊을 일 한 가지**를 적고 실행하십시오.',
+        '결정을 미루면 기회만 지나갑니다. **오전 한 시간**만 서명·회신에 쓰십시오.'
+    ],
+    water: [
+        '수(水) 기운 달에는 **정보가 많아 혼선**이 옵니다. 읽을 자료는 하루 45분으로 끊으십시오.',
+        '생각이 길어지기 쉽습니다. **다음 행동 한 줄**을 적은 뒤에만 자료를 더 보십시오.',
+        '감정이 몸으로 내려오기 쉽습니다. **산책·수면**을 먼저 맞추고 큰 결정은 주말 이후로 미루십시오.',
+        '미수·회수·답장 밀림을 **월요일 오전 한 블록**으로만 처리하십시오.'
+    ]
+};
+var FORTUNE_ACTION_CAUTIOUS_BY_OH = {
+    wood: [
+        '이번 달은 **새 동업·선납 조건**이 붙은 제안을 서명 목록에서 먼저 빼십시오.',
+        '목 기운 달에는 **동시에 여는 일**이 체력을 깎습니다. 손에 쥔 프로젝트는 세 개 이하로 두십시오.',
+        '확장 제안이 들어와도 **이번 달은 검토만** 하고 실행은 다음 달 첫 주로 미루십시오.'
+    ],
+    fire: [
+        '감정이 올라온 날 **큰 지출·보증·야간 송금**은 금지하십시오. 영업일 점심 이전에만 처리하십시오.',
+        '화 기운 달에는 **충동 구매·과한 모임비**가 새어 나가기 쉽습니다. 이번 주 외식 횟수를 먼저 정하십시오.',
+        '대외 약속이 겹치면 돈도 새어 나갑니다. **주 2회 상한**으로 잡고 나머지는 다음 주로 넘기십시오.'
+    ],
+    earth: [
+        '**먼저 통장에서 빠져나가는 조건**(선납·연대·지분 약속)이 붙은 계약은 이번 달 서명하지 마십시오.',
+        '토 기운 달에는 **구독·자동이체**를 한 번만 점검하십시오. 그날은 새 결제 수단을 열지 마십시오.',
+        '안정만 추구하다 기회를 놓치지 않으려면, **검토할 제안은 메모만** 하고 답은 이틀 뒤에 하십시오.'
+    ],
+    metal: [
+        '**보증·레버리지·야간 송금**은 이번 달 전부 금지하고, 꼭 필요한 지출은 영업일 점심 이전에만 하십시오.',
+        '금 기운 달에는 **조항을 읽지 않은 서명**이 손해로 이어지기 쉽습니다. 해지·한도 조항부터 확인하십시오.',
+        '고변동 투자 **충동 매수**는 금지 — **지수형 정기 적립**만 허용하십시오.'
+    ],
+    water: [
+        '말로만 합의된 **돈·투자·동업**은 서류 없이 진행하지 마십시오. 카톡·메일을 PDF로만 모으십시오.',
+        '수 기운 달에는 **불안으로 지갑이 열리기** 쉽습니다. “이만큼만” 숫자를 적고 그 위로는 움직이지 마십시오.',
+        '정보가 많을수록 손이 빨라집니다. **새 지출 앱·자동이체**는 이번 달 열지 마십시오.'
+    ]
+};
+/** 대운·세운 카드용 애정 한 줄 — 점수·간지 시드로 로테이션 */
+function pickLoveAdviceByScore(sc, seedKey) {
+    var hi = [
+        '취미·직무가 맞는 **소규모 모임**에 월 한두 번만 나가 보십시오. 첫 만남에서 돈·투자 이야기가 나오면 그날은 관계만으로 끊으십시오.',
+        '지인 소개나 독서·운동 모임처럼 **대화가 자연스럽게 이어지는 자리**에만 시간을 쓰십시오. 상대의 일과 가치관을 묻는 질문 두 가지를 미리 적어 가십시오.',
+        '만남이 잦아지는 시기입니다. **주말 오후 한 슬롯**만 연애용으로 비우고, 나머지 약속은 일·휴식으로 채우십시오.'
+    ];
+    var mid = [
+        '안정 국면입니다. **영상통화 한 번**으로 분위기를 확인한 뒤, 편한 카페에서 천천히 만나 보십시오.',
+        '연락이 잦을수록 오해가 쌓입니다. **대화 시간을 주 2회**로 고정하고, 그 밖의 시간에는 답장을 짧게 유지하십시오.',
+        '관계를 지키려면 속도보다 **약속 이행**이 먼저입니다. 약속한 시간·장소를 바꿀 때는 하루 전에 말로 확인하십시오.'
+    ];
+    var low = [
+        '오해가 쌓이기 쉬운 때입니다. **감정이 올라온 날**에는 헤어짐·동거·결혼 얘기를 하지 마십시오.',
+        '단체 대화방·전 연인·지인에게 **돈·투자 이야기**를 하지 마십시오. “지금은 답 못 준다” 한 문장만 반복하십시오.',
+        '말이 통하지 않았다고 자책하지 마십시오. **중요한 말은 다음 날 아침**에 짧은 문자로 정리하십시오.'
+    ];
+    var pool = sc >= 2 ? hi : sc >= 0 ? mid : low;
+    return pool[Math.abs(hashSeed(String(seedKey || 'love'))) % pool.length];
 }
 /** 십성 코드 → 고객 면 산업/일 방식(한글 명칭 비노출, **볼드** 유지) */
 function sipToIndustryWorkStyle(sip) {
@@ -278,12 +374,17 @@ function formatSeYunCardOneLineConclusion(evLabel, sc) {
     if (s >= 0) return '반복 지출·미수금·회수 일정을 한 번씩만 점검해도 실속이 남습니다.';
     return '현금 버퍼·서면 범위를 최우선으로 두십시오.';
 }
-/** 월운 카드 — 핵심 결론 1줄(제목·본문 정합) */
-function formatWolunCardOneLineConclusion(score) {
+/** 월운 카드 — 핵심 결론 1줄(점수 + 월간 오행으로 로테이션) */
+function formatWolunCardOneLineConclusion(score, mGanHj, mJiHj, monthNo) {
     var s = Number(score) || 0;
+    var oh = monthDominantOh(mGanHj, mJiHj);
+    var seed = (mGanHj || '') + (mJiHj || '') + '|' + String(monthNo || 0) + '|' + oh;
     if (s >= 3) return '대외·계약·런칭에 속도를 올려도 되는 달입니다. 단, 증빙·한도는 먼저 고정하십시오.';
     if (s >= 1) return '검증된 축만 밀고, 새로운 확장은 한 갈래로만 가져가십시오.';
-    if (s >= 0) return '생활 리듬과 지출·회수의 균형을 먼저 맞추면 실속이 남는 달입니다.';
+    if (s >= 0) {
+        var pool = WOLUN_NEUTRAL_BY_OH[oh] || WOLUN_NEUTRAL_BY_OH.earth;
+        return pool[Math.abs(hashSeed(seed + '|n')) % pool.length];
+    }
     if (s >= -2) return '빌린 돈으로 버는 투자·보증·감정으로 내리는 큰 결정은 줄이고, 통장·빚부터 정리하는 쪽에 무게를 두십시오.';
     return '손실 한도 안에서만 움직이고, 신규 확장은 즉시 멈추십시오.';
 }
@@ -484,11 +585,7 @@ function yearlyDomainStrategicAdvices(score) {
             : sc >= 0
             ? '조용히 해도 일만 늘었다면 **역할이 흐린 자리**에 선 경우가 많습니다. 회의가 끝날 때마다 **“나는 여기까지” 한 줄**만 남기고, 분기마다 **내가 한 일 한 가지**를 문서로 적어 두십시오. 상사가 바뀌거나 일이 합쳐질 때는, **새 일을 잡기 전에 범위를 다시 적게** 하십시오.'
             : '속으로는 여러 번 그만두고 싶었을 수 있습니다. 그래도 버틴 것입니다. **구직 사이트는 비공개**로만 열고, 연차나 병가로 숨을 돌린 뒤 **내가 만든 결과(숫자·파일·후기) 한 가지**를 종이로 남기십시오. 그다음에만 내부 전배나 이직을 이야기하십시오.',
-        love: sc >= 2
-            ? '알고리즘 기반 **매칭·소개 서비스**나 **메시지·비대면 접점**이 열리면, 의외의 귀인이 붙기 쉽습니다. 자만추만 고집하지 마십시오. 첫 만남에서 **돈·투자·지분** 이야기가 나오면 그날은 관계만으로 끊으십시오.'
-            : sc >= 0
-            ? '연락이 잦을수록 오해가 쌓입니다. **온라인 소그룹·팀 채널**은 취향 필터가 맞을 때만, 짧은 음성·영상통화 1회 후 대면으로 넘기십시오. **주 2회 고정 시간** 외 알림은 끄십시오.'
-            : '말이 통하지 않았다고 탓하지 마십시오. **헤어진 이·단체 대화방·메시지 속 지인**에게 지갑·투자 이야기를 하지 마십시오. “지금은 답 못 준다” 한 문장만 반복하십시오.',
+        love: pickLoveAdviceByScore(sc, 'seyun-love|' + sc),
         health: sc >= 2
             ? '몸이 따라주지 않는다고 느꼈을 수 있습니다. 그건 나약함이 아니라, 불이 너무 밝았기 때문입니다. **운동은 주 4회 이상 늘리지 마십시오.** 밤 11시 이후 집중 근무를 끊으면 체력이 바로 붙습니다.'
             : sc >= 0
@@ -3638,7 +3735,7 @@ function buildDaewunLoop(data) {
         // 건강 조언
         const healthAdv = sc>=2 ? '체력이 받쳐줍니다. **운동·수면 루틴**을 이때 고정하십시오. 무리한 밤만 줄이면 됩니다.' : sc>=0 ? '무난합니다. **수면 7시간·검진 예약**만 지키십시오.' : '면역이 얇습니다. **술·철야·과로**를 먼저 끊고 검진을 당기십시오.';
         // 애정 조언
-        const loveAdv = sc>=2 ? '**소셜 네트워크 및 취향 기반 커뮤니티**에서 의미 있는 관계의 접점이 열립니다. **기준 한 줄**을 프로필에 먼저 쓰십시오.' : sc>=0 ? '안정 국면입니다. **영상통화 1회 후 대면**·대화 시간 고정이 관계를 지킵니다.' : '오해 비용이 큽니다. **문자·단체 대화**는 증빙으로 남기고 감정 결정은 유예하십시오.';
+        const loveAdv = pickLoveAdviceByScore(sc, 'daeun-love|' + gan + ji + '|' + age);
 
         const strategy = sc >= 2
             ? `<div style="background:rgba(0,200,83,0.06);border-radius:8px;padding:14px;margin-top:12px;border:1px solid rgba(0,200,83,0.15);"><b style="color:#00C853;font-size:12px;">✦ 길한 대운 — 4분야 전략</b><div class="daeun-four-stack" style="display:grid!important;grid-template-columns:1fr!important;width:100%!important;gap:10px;margin-top:10px;"><div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;border-left:3px solid #c7a76a;"><div style="font-size:10px;color:#c7a76a;margin-bottom:4px;">💰 재물</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${wealthAdv}</p></div><div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;border-left:3px solid #c7a76a;"><div style="font-size:10px;color:#c7a76a;margin-bottom:4px;">💼 직업</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${careerAdv}</p></div><div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;border-left:3px solid #c7a76a;"><div style="font-size:10px;color:#c7a76a;margin-bottom:4px;">❤️ 애정</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${loveAdv}</p></div><div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;border-left:3px solid #c7a76a;"><div style="font-size:10px;color:#c7a76a;margin-bottom:4px;">🏥 건강</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${healthAdv}</p></div></div></div>`
@@ -3931,7 +4028,7 @@ function buildWolunLoop(data) {
         const isNow = i === curMonth;
         const mSip = (typeof getSipseong==='function' && mGanHj) ? (getSipseong(data.dayStem||'', mGanHj) || '비견') : '비견';
         const mUns = (typeof getUnsung==='function' && mJiHj) ? (getUnsung(data.dayStem||'', mJiHj) || '-') : '-';
-        const dynText = renderFortuneText({ sip:mSip, uns:mUns, score:score, idx:i, scope:'month' });
+        const dynText = renderFortuneText({ sip:mSip, uns:mUns, score:score, idx:i, scope:'month', mGanHj:mGanHj, mJiHj:mJiHj });
         const highOrdPool = [
             '중요 계약·핵심 미팅은 조건·한도를 서면으로 정리한 뒤 일정을 잡으십시오.',
             '길운이 실릴 때는 **새 시작**을 밀되, 서명 전 **이탈 조항** 두 줄을 반드시 받아 적으십시오.',
@@ -3962,7 +4059,7 @@ function buildWolunLoop(data) {
             : score>=0
             ? neuOrdPool[neIx]
             : lowOrdPool[loIx];
-        const wolOneLine = formatWolunCardOneLineConclusion(score);
+        const wolOneLine = formatWolunCardOneLineConclusion(score, mGanHj, mJiHj, monthNo);
         const mSipAxis = mSip ? mSip : '';
         return `<div class="monthly-card glass-panel" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,${isNow?'0.07':'0.03'});border-radius:10px;padding:14px 16px;border-left:3px solid ${col};break-inside:avoid;">
             <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
@@ -4065,14 +4162,14 @@ function buildChapter6_Love(data) {
         ? '배려·지지·학습 축이 두껍습니다. 주는 쪽으로 익숙합니다. 헌신이 집착으로 바뀌기 쉽습니다. **나를 챙기는 시간 블록**을 먼저 달력에 넣으십시오.'
         : '독립 기운이 갑니다. 붙는 것보다 **거리와 자율**이 숨이 트입니다. 상대에게도 같은 거리를 허용하십시오.';
 
-    const meetTiming = nmUi(name) + ' 인연은 운이 열릴 때만 오는 것이 아닙니다. **소개·모임**과 **의미 있는 관계를 만드는 만남과 이별의 패턴**이 열려 있어야 인연이 머무를 자리가 생깁니다. 기운이 맞는 해·달에만 **직무·취향이 맞는 소규모 커뮤니티** 참여를 늘리십시오.';
+    const meetTiming = nmUi(name) + ' 인연은 운이 열릴 때만 오는 것이 아닙니다. **지인 소개·취미 모임·직무가 맞는 소규모 모임**에 나가는 패턴이 열려 있어야 만남이 이어집니다. 기운이 맞는 해·달에는 **한 달에 새로운 자리 하나**만 추가하고, 나머지는 기존 관계에 시간을 쓰십시오.';
 
     return `<div class="report-chapter">
         <h3 class="ch-title">[ 06. 애정·인연 ] — 마음이 머무는 자리 — 인연과 사랑의 결</h3>
         ${buildDomainSummaryTable({
             boxTitle: nmEulReul(name) + ' 위한 애정 전략',
-            keyword:'소셜 네트워크 · 만남의 리듬 · 리스크 관리',
-            route:'소개와 가치관 필터를 정리한 뒤 비대면 확인 한 차례를 고정하십시오',
+            keyword:'만남의 리듬 · 소개 경로 · 관계 경계',
+            route:'취미·직무가 맞는 모임을 고르고, 첫 만남은 가벼운 대화로 확인한 뒤 대면으로 넘기십시오',
             caution:'감정 최고점·투자·지분 이야기가 겹친 날의 관계 결정은 유예하십시오'
         })}
         <p class="ch-text">애정은 횟수가 아니라 **리듬**입니다. 만난 지 얼마 안 됐거나 다툰 직후처럼 **감정이 가장 높은 날**에는, 동거·결혼 준비 서류·**큰 돈이 오가는 차용 증서**·부동산·맞벌·지분처럼 **나중에 철회하기 어려운 약속**은 날짜를 미루십시오. 여기서 말하는 것은 **법적·재정 구속이 생기는 서명**이며, 단순 앱 결제나 일상적인 이름 적기와는 다릅니다.</p>
@@ -4113,8 +4210,8 @@ function buildChapter6_Love(data) {
         <div style="background:rgba(199,167,106,0.05);border-radius:12px;padding:20px;margin:16px 0;border:1px solid rgba(199,167,106,0.1);">
             <div style="font-size:12px;color:var(--gold);margin-bottom:12px;letter-spacing:1px;">&#9670; 인연 활성화 & 관계 개선 전략</div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-                <div style="font-size:12px;color:#bbb;line-height:1.8;"><b style="color:#ddd;">&#10003; 순풍 시기 활동 확대</b><br>맞는 기운의 대운·세운에 **앱 프로필·DM 응답 SLA**를 켜십시오 — 알고리즘이 귀인을 밀어줍니다.</div>
-                <div style="font-size:12px;color:#bbb;line-height:1.8;"><b style="color:#ddd;">&#10003; 일지 합 시기 포착</b><br>일지와 합이 되는 지지의 달에는 **소개팅 앱 부스트·공모형 소셜 이벤트**를 한 번만 쓰십시오.</div>
+                <div style="font-size:12px;color:#bbb;line-height:1.8;"><b style="color:#ddd;">&#10003; 순풍 시기 활동 확대</b><br>맞는 기운의 대운·세운에는 **지인에게 소개를 부탁**하거나 **취미 모임에 한 번** 나가 보십시오. 첫 만남은 짧은 카페 대화로 충분합니다.</div>
+                <div style="font-size:12px;color:#bbb;line-height:1.8;"><b style="color:#ddd;">&#10003; 일지 합 시기 포착</b><br>일지와 합이 되는 지지의 달에는 **독서회·운동 모임·직무 소모임**에 한 번만 참여해 보십시오.</div>
                 <div style="font-size:12px;color:#bbb;line-height:1.8;"><b style="color:#ddd;">&#10003; 연애 함정 인식</b><br>정반대로 끌리는 타입 — 강한 매력이지만 지속하기 어렵다는 점을 인지하십시오.</div>
                 <div style="font-size:12px;color:#bbb;line-height:1.8;"><b style="color:#ddd;">&#10003; 역풍 시기 감정 관리</b><br>부딪히는 기운이 강한 시기에는 감정적 결정을 미루고 관계 안정에 집중하십시오.</div>
             </div>
@@ -4465,17 +4562,17 @@ function buildZiWeiDestinyBlueprintSection(data) {
     var seed = Math.abs(hashSeed((nm || '') + '|ZW|' + (data.dayStem || '') + (data.dayBranch || '') + yb + (data.birthYear || ''))) % 14;
     var Z = [
         { k: '자미', h: '紫微', p: '겉으로는 무난한 리더 연기를 하면서도, 속으로는 순위와 체면을 동시에 지키려는 욕망이 큽니다.', f1: '단기 변동성 자산에 손이 가도, 결실은 **배당·지수형 등 규칙이 분명한 장기 코어**에서 완성되는 편입니다.', f2: '플랫폼 비즈니스·목표·지표 설계처럼 **규칙이 곧 수익**인 자리에 서면 관록이 살아납니다.', o: '밖으로 나갈수록 노출 채널이 커집니다. 대면 모임보다 **검증 가능한 이력·실적 요약**으로 평판을 쌓는 편이 몸값을 올리는 지름길입니다.', a: '이번 분기 **성과 숫자 한 줄**만 대외에 고정하고, 나머지는 내부 문서에 두십시오.' },
-        { k: '천기', h: '天机', p: '끊임없이 시나리오를 바꾸는 두뇌형 페르소나입니다. 안정을 원해도 머리는 먼저 움직입니다.', f1: '정보 비대칭을 줄이는 단기 매매에 끌리기 쉬우나, 현금흐름은 **정기 적립·업무 파이프라인 자동화**로 묶어야 합니다.', f2: '관록은 **데이터·업무 자동화 역량**이 곧 직함으로 연결되는 구조입니다.', o: '이직·해외·온라인 실험이 겹칠 때 **노복궁(팀·커뮤니티)**이 필터입니다. 동료·협업 채널에서 사람을 고르십시오.', a: '주 1회, **의사결정 요약**을 내부 메모에 남겨 “왜 그랬는지”를 미래의 자신에게 넘기십시오.' },
+        { k: '천기', h: '天机', p: '끊임없이 시나리오를 바꾸는 두뇌형 페르소나입니다. 안정을 원해도 머리는 먼저 움직입니다.', f1: '정보 비대칭을 줄이는 단기 매매에 끌리기 쉬우나, 현금흐름은 **월 고정 저축·생활비 정산**으로 묶어야 합니다.', f2: '관록은 **전문 자격·실무 성과**가 곧 직함으로 연결되는 구조입니다.', o: '이직·해외·온라인 실험이 겹칠 때 **노복궁(팀·커뮤니티)**이 필터입니다. 동료·협업 채널에서 사람을 고르십시오.', a: '주 1회, **의사결정 요약**을 내부 메모에 남겨 “왜 그랬는지”를 미래의 자신에게 넘기십시오.' },
         { k: '태양', h: '太阳', p: '드러날수록 살아나는 사회적 페르소나입니다. 인정 욕구가 연료이자 부담입니다.', f1: '노출형 수익(강연·대외 활동)과 **성장 축 우량 자산**이 잘 맞고, 비상금은 **단기성 예금·단기 채권형**으로 빼 두십시오.', f2: '관록은 **대외 발표·브랜드 캠페인**이 직급을 대신 증명합니다.', o: '천이궁이 밝을수록 **짧은 영상·라이브** 채널에서 기회가 붙습니다. 프로필도 “직무 한 줄”로 통일하십시오.', a: '밤 10시 이후 **메시지·댓글 응답 금지**를 알림으로 박으십시오.' },
         { k: '무곡', h: '武曲', p: '말보다 숫자와 실행으로 말하는 타입입니다. 감정 표현은 적어도 책임은 큽니다.', f1: '리스크 대비 수익을 즐기는 축과, 방어된 **부동산 수익·배당** 축을 동시에 갖추면 재백이 안정됩니다.', f2: '관록은 **현장 통제·원가 절감**에서 올라갑니다.', o: '이동·출장이 잦을수록 **노복궁의 지인 네트워크**가 안전벨트입니다.', a: '지출 내역을 **주 단위로만** 열어보고, 나머지는 잠그십시오.' },
         { k: '천동', h: '天同', p: '평화를 원하지만, 속으로는 누구보다 민감한 조율자입니다.', f1: '사람 따라 흐르는 지출이 생깁니다. **구독·모임비**를 끊고, 코어는 **지수형·배당형**으로만 유지하십시오.', f2: '관록은 **케어·HR·고객 응대**처럼 관계가 곧 성과인 자리에서 빛납니다.', o: '천이에서 **유료 모임·동호회**가 열리면, 그 안에서만 인연을 깊게 가져가십시오.', a: '“거절 한 문장”을 메모에 고정하고 복붙하십시오.' },
         { k: '염정', h: '廉贞', p: '날카로운 미감과 기준이 겹쳐, 스스로를 자주 시험대에 올립니다.', f1: '짧은 승부(파생·고변동)에 끌리기 쉬우나, 실제 완성은 **브랜딩·지적재산**에서 납니다.', f2: '관록은 **감사·품질·규정 준수** 축이 강합니다.', o: '도화 기운이 온라인에 배치되어, **메시지·문의**로 비즈니스 제안이 들어올 수 있습니다. 조건을 먼저 쓰십시오.', a: '첫 답장에 **가격·기간·범위** 세 줄을 넣는 템플릿을 만들십시오.' },
         { k: '천부', h: '天府', p: '겉으로는 온화한 관리자처럼 보이나, 속으로는 시스템 전체를 통제하려는 욕망이 큽니다.', f1: '단기 투기보다 **배당·부동산 수익·현금흐름 표**가 재백의 본체입니다.', f2: '관록은 **백오피스·재무·운영**에서 커집니다.', o: '이직 제안은 **추천인·사내 멘토**를 통해 오는 편이 안전합니다.', a: '분기마다 **자산·부채 한 장**만 상사·파트너와 공유하십시오.' },
         { k: '태음', h: '太阴', p: '겉으로 조용하지만, 속으로는 정교하게 계산하는 기질입니다.', f1: '감정 매매를 피하려면 **정기 적립·지수형**을 자동화하고, 투기는 **한도 숫자** 아래로만 두십시오.', f2: '관록은 **리서치·기획·자료 아카이브**가 평가로 연결됩니다.', o: '야간 온라인 활동이 천이를 흔듭니다. **오전 한 시간만** 알림을 켜십시오.', a: '밤에는 **읽기 전용**으로 두고, 발행은 아침에만 하십시오.' },
-        { k: '탐랑', h: '贪狼', p: '호기심과 욕망의 멀티플레이어입니다. 새 채널을 동시에 열기 쉽습니다.', f1: '단기 변동성과 **플랫폼 사업**이 맞물리면 수익이 크게 튀이지만, **코어 10%**는 대형 우량·배당형에 남겨 두십시오.', f2: '관록은 **사업개발·파트너십**에서 열립니다.', o: '도화가 노출 채널에 붙어 **매칭·라이브 커머스**에서 귀인이 나올 수 있습니다.', a: '새 파이프라인은 **월 1개**만 열고 나머지는 큐에 넣으십시오.' },
+        { k: '탐랑', h: '贪狼', p: '호기심과 욕망의 멀티플레이어입니다. 새 채널을 동시에 열기 쉽습니다.', f1: '단기 변동성과 **새 사업·부업**이 맞물리면 수익이 크게 튀이지만, **코어 10%**는 대형 우량·배당형에 남겨 두십시오.', f2: '관록은 **사업개발·파트너십**에서 열립니다.', o: '도화가 노출 채널에 붙어 **취미 모임·소개 자리**에서 귀인이 나올 수 있습니다.', a: '새 만남·사업 기회는 **월 1개**만 열고 나머지는 다음 달로 미루십시오.' },
         { k: '거문', h: '巨门', p: '말과 글이 곧 무기인 타입입니다. 오해 비용이 크게 나올 수 있습니다.', f1: '논쟁으로 번지는 계약을 피하고, **지수형**처럼 규칙이 명확한 상품으로 재백을 정돈하십시오.', f2: '관록은 **법무·대외 커뮤니케이션·위기대응**에서 빛납니다.', o: '천이에서 **단체 대화방**이 사건을 키울 수 있으니, 중요한 합의는 **공식 메일**로만 고정하십시오.', a: '감정 올라온 날 **발송 지연 24시간**을 켜십시오.' },
         { k: '천상', h: '天相', p: '조율과 중재에 강한 “공식 얼굴” 페르소나입니다.', f1: '재백은 **신용·담보·보증**이 리스크입니다. 대신 **대형 우량·채권 성격 펀드**로 방어하십시오.', f2: '관록은 **PMO·운영총괄**에서 올라갑니다.', o: '천이에서 **소개·추천**이 들어오면, 조건표를 먼저 주고 만나십시오.', a: '회의 전 **안건 세 줄**만 상대에게 보내십시오.' },
-        { k: '천량', h: '天梁', p: '남을 챙기며 자기를 뒤로 미루는 보호자 기질입니다.', f1: '누군가의 투자 권유에 끌리기 쉬우니, **본인 명의 파이프라인**만 남기십시오. 코어는 지수·배당형입니다.', f2: '관록은 **멘토·교육·정책** 축이 맞습니다.', o: '천이에서 **봉사·모임**이 인연을 부릅니다. 연락처 한 줄 소개를 고정하십시오.', a: '“지금은 답 못 준다” 한 문장을 즐겨찾기에 두십시오.' },
+        { k: '천량', h: '天梁', p: '남을 챙기며 자기를 뒤로 미루는 보호자 기질입니다.', f1: '누군가의 투자 권유에 끌리기 쉬우니, **본인 명의 계좌·수입 통로**만 남기십시오. 코어는 지수·배당형입니다.', f2: '관록은 **멘토·교육·정책** 축이 맞습니다.', o: '천이에서 **봉사·모임**이 인연을 부릅니다. 연락처 한 줄 소개를 고정하십시오.', a: '“지금은 답 못 준다” 한 문장을 즐겨찾기에 두십시오.' },
         { k: '칠살', h: '七杀', p: '겉으로는 과감한 승부사, 속으로는 끊임없이 방패를 드는 긴장형입니다.', f1: '리스크를 즐기는 기질은 단기·고레버리지에 끌리기 쉬우나, 결실은 **현금흐름이 보이는 방어 자산**(배당·부동산 수익)에서 완성됩니다.', f2: '관록은 **위기관리·보안**이 비유로 작동합니다. 실무에서는 **장애 대응·안정 운영**이 맞습니다.', o: '밖으로 나갈수록 **추천·알림**이 도화처럼 작동합니다. 팔로워 수보다 **실적·포트폴리오 요약**이 우선입니다.', a: '손실 한도를 숫자로 박고, 그 위로는 레버리지를 열지 마십시오.' },
         { k: '파군', h: '破军', p: '부수고 다시 짓는 루프에 익숙한 혁신가입니다.', f1: '파괴적 리밸런싱(올인·청산)을 피하려면 **지수·우량 코어 70%**를 먼저 잠그십시오.', f2: '관록은 **신사업·시범 과제**에서 이름이 오릅니다.', o: '천이에서 **해외·원격** 제안이 들어오면, 계약 관할을 먼저 쓰십시오.', a: '“이번 달 손볼 일 한 가지”만 메모 상단에 두십시오.' }
     ];
@@ -4495,12 +4592,12 @@ function buildZiWeiDestinyBlueprintSection(data) {
         + '돈과 직함이 따로 노는 듯할 때가 많습니다. '
         + '재백궁에는 <strong>' + C.k + '(' + C.h + ')</strong>의 심리 금융 패턴이 깔리고, 관록궁에는 <strong>' + G.k + '(' + G.h + ')</strong>의 무대가 겹칩니다. '
         + C.f1 + ' ' + G.f2 + ' '
-        + '**변동성이 큰 자산**은 손실 한도 아래로만 두고, **디지털 자산의 안정적 관리**와 우량 배당 축으로 월 현금흐름의 다음 층을 먼저 쌓으십시오.</p>';
+        + '**변동성이 큰 투자**는 손실 한도 아래로만 두고, **정기 저축·배당·월세** 축으로 월 생활비의 다음 층을 먼저 쌓으십시오.</p>';
     var p3 = '<p style="margin:0;line-height:1.92;color:#ddd;font-size:13.5px;">'
         + '밖으로 나가야만 숨이 트이기도 합니다. '
         + '천이궁에는 <strong>' + T.k + '(' + T.h + ')</strong>의 이동·노출 기운, 노복궁에는 <strong>' + N.k + '(' + N.h + ')</strong>의 팀·팔로워 기운이 겹칩니다. '
         + T.o + ' ' + N.o + ' '
-        + '**소셜 네트워크 및 취향 기반 커뮤니티**에는 직무·가치관 필터를 먼저 적고, 대면은 비대면으로 한 차례 확인한 뒤로 미루십시오.</p>';
+        + '**취미·직무가 맞는 소모임**에는 먼저 **서로의 일과 생활 리듬**을 묻고, 편할 때 **짧은 대면 한 번**으로 분위기를 확인한 뒤 관계를 이어 가십시오.</p>';
     return '<div id="sec-ziwei-appendix" class="report-chapter chapter-start appendix-ziwei" style="padding-top:8px;margin-bottom:8px;">'
         + '<div style="font-size:12px;color:#9dd3ff;font-weight:900;letter-spacing:0.06em;margin-bottom:10px;line-height:1.55;">[별첨] 자미두수로 보는 운명 설계도</div>'
         + '<p style="font-size:13px;color:#b8d4e8;margin:0 0 18px;line-height:1.85;">자미두수는 <strong>대만·중국 등지에서 발전한 별자리(자리배치) 기반 점성술</strong>로, 사주와 별개로 내면 반응·관계·일의 강약을 읽는 보조 프레임입니다. 사주를 대체하지 않고, 같은 인생을 다른 렌즈로 점검하는 <strong>별첨</strong>입니다.</p>'
@@ -5961,14 +6058,9 @@ const FORTUNE_TEXT_DB = {
             '이번 달은 입금 확인·견적 회신·승인선 정리 세 가지만 **일정표 한 줄**에만 고정하고, 그 외 신규 제안은 다음 달로 미루십시오.',
             '미뤄둔 계약 서명·연장 통보·세금 납부를 같은 주에 겹치지 않게 날짜를 쪼개서 끝내십시오.',
             '성과가 나는 거래처 한 곳에만 주간 보고를 보내고, 나머지 채널은 알림을 끄십시오.',
-            '길운이 몰리는 달에는 **공모주·테마 성격 단기 매매** 한 파이프라인만 열고 나머지는 잠그십시오.'
+            '길운이 몰리는 달에는 **단기 변동 테마** 한 갈래만 열고 나머지 투자 제안은 잠그십시오.'
         ],
-        cautious: [
-            '선납·연대·지분처럼 **먼저 현금이 빠져나가는 조건**이 붙은 제안은 이번 달 서명 목록에서 바로 제외하십시오.',
-            '반복 지출·미수·카드 사용 내역을 가볍게 점검하는 시간을 한 번 잡고, 그날은 새로운 지출 앱을 열지 마십시오.',
-            '보증·레버리지·야간 송금은 이번 달 전부 금지하고, 꼭 필요한 지출은 영업일 점심 이전에만 처리하십시오.',
-            '고변동 자산 **충동 매수**는 이번 달 금지 — **지수형 정기 적립**만 허용하십시오.'
-        ]
+        cautious: []
     }
 };
 
@@ -5996,11 +6088,15 @@ function renderFortuneText(opts) {
     const idx = Number(opts.idx || 0);
     const phase = classifyUnsungLevel(uns);
     const resultKey = score >= 1 ? 'favorable' : 'cautious';
-    const seed = hashSeed(`${sip}|${uns}|${resultKey}|${idx}`);
+    const oh = monthDominantOh(opts.mGanHj, opts.mJiHj);
+    const seed = hashSeed(`${sip}|${uns}|${resultKey}|${idx}|${oh}`);
 
     const a = pickVariant(FORTUNE_TEXT_DB.sipseong[sip] || FORTUNE_TEXT_DB.sipseong['비견'], seed + idx);
     const b = pickVariant(FORTUNE_TEXT_DB.unsung[phase], seed + idx * 3 + 1);
-    const c = pickVariant(FORTUNE_TEXT_DB.action[resultKey], seed + idx * 5 + 2);
+    var actionPool = resultKey === 'cautious'
+        ? (FORTUNE_ACTION_CAUTIOUS_BY_OH[oh] || FORTUNE_ACTION_CAUTIOUS_BY_OH.earth)
+        : FORTUNE_TEXT_DB.action.favorable;
+    const c = pickVariant(actionPool, seed + idx * 5 + 2);
     return stripReportMacroLeaks(`${a} ${b} ${c}`);
 }
 
