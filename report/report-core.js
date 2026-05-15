@@ -125,8 +125,8 @@ function nmDnimEun(name) {
  * - 은유 제목 · 님은 호칭 · 명리 용어 유지 · 행동 지침은 구체적으로
  */
 var SAJUX_VOICE = {
-    endings: { observe: ['네요', '군요', '이시군요', '것 같아요'], advise: '하십시오' },
-    mingliBridge: ['명리학적으로는', '사주 구조만 놓고 보면', '원국만 짚어보면']
+    endings: { observe: ['입니다', '입니다', '보입니다', '것 같습니다'], advise: '하십시오' },
+    mingliBridge: ['명리학적으로 보면', '사주 구조만 놓고 보면', '원국을 짚어보면']
 };
 
 /** 일주 image 뒤쪽 형용사(풍요롭다 등) → 관형사(풍요로운) */
@@ -169,18 +169,18 @@ function buildMetaphorHookTitle(data) {
     var parts = getIljuImageParts(data);
     if (!parts.scene) {
         var nm = nmNormalize(data.name || '') || '당신';
-        return nm + '님, 겉과 속이 다른 매력이 겹쳐 있는 격이네요';
+        return nm + '님, 겉과 속이 다른 매력이 겹쳐 있는 격입니다';
     }
-    if (parts.trait) return parts.scene + '이신데, ' + parts.trait + ' 분이시군요';
-    return parts.scene + '이신 격이네요';
+    if (parts.trait) return parts.scene + '이신데, ' + parts.trait + ' 분입니다';
+    return parts.scene + '이신 격입니다';
 }
 /** 인생 일대기 등 — 은유 훅과 겹치지 않는 섹션 제목 */
 function buildLifePanoramaTitle(data) {
     var nm = nmNormalize(data.name || '') || '고객';
     return pickVoiceLine([
-        nm + '님, 태어남에서 귀결까지 네 장의 풍경이에요',
-        '인생은 한 권의 대서사 — 지금 읽을 장면이 정해져 있어요',
-        '원국이 그려 주는 인생의 네 계절, 차례대로 짚어 볼게요'
+        nm + '님, 태어남에서 귀결까지 네 장의 풍경입니다',
+        '인생은 한 권의 대서사 — 지금 읽을 장면이 정해져 있습니다',
+        '원국이 그려 주는 인생의 네 계절, 차례대로 짚어 보겠습니다'
     ], (data.dayStem || '') + (data.dayBranch || '') + 'lifePanorama');
 }
 
@@ -1013,7 +1013,7 @@ function buildSajuKidStyleOpener(data, innerLine) {
     var prof = getIljuProfilePolished(data, ds, db);
     if (prof && prof.core) {
         var coreShort = String(prof.core).split('.')[0];
-        return open + coreShort + '이라고 볼 수 있어요.';
+        return open + coreShort + '이라고 볼 수 있습니다.';
     }
     return open + '원국에 쌓인 기운이 삶의 방향을 이끕니다.';
 }
@@ -1023,30 +1023,30 @@ function yearlyFourDomainKeywords(score, sewSip) {
     var sip = sewSip || '';
     var w, cr, doc, love;
     if (score >= 3) {
-        w = '변동성 구간 — 손실 한도 안에서만 공격';
-        cr = '대외 브랜딩·역할 확장 축 이직·승진 신호';
-        doc = /식신|상관|편재|정재/.test(sip) ? '계약·저작권·장기 약정 체결에 유리' : '메일·문서 증빙만 정리해도 실속';
-        love = /식신|편재|정재|비견/.test(sip) ? '소개·모임 인연 접점↑' : '추천 모임에서 신뢰를 쌓기';
+        w = '큰 변동 구간 — 잃을 수 있는 범위 안에서만 움직이십시오';
+        cr = '외부 이미지·역할 확장에 유리한 시기, 이직·승진 신호';
+        doc = /식신|상관|편재|정재/.test(sip) ? '계약·저작권·장기 약정 체결에 유리한 때입니다' : '메일·문서 증빙만 정리해도 큰 실속입니다';
+        love = /식신|편재|정재|비견/.test(sip) ? '소개·모임에서 새 인연이 닿을 수 있습니다' : '추천 모임에서 천천히 신뢰를 쌓으십시오';
     } else if (score >= 1) {
-        w = '분할 매입·배당·현금흐름 우선, 고변동 자산은 소액만';
-        cr = '역할·야근 경쟁 속 실적 정리';
-        doc = /식신|상관|편인/.test(sip) ? '요구사항·명세 선행 시 승인이 빨라짐' : '계약 조항·증빙 확인 후 서명';
-        love = /정재|편관|정관/.test(sip) ? '직장·소개 경로는 조건을 먼저 적어 두기' : '화상 1회 후 대면 — 신원·조건 확인';
+        w = '나눠서 투자·배당 수익 우선, 가격이 크게 오르내리는 자산은 소액만';
+        cr = '야근·경쟁 속에서도 실적을 꼼꼼히 정리해 두는 시기입니다';
+        doc = /식신|상관|편인/.test(sip) ? '요구사항을 먼저 정리해두면 승인이 빨라집니다' : '계약 조항과 증빙을 꼭 확인하고 서명하십시오';
+        love = /정재|편관|정관/.test(sip) ? '직장·소개 경로에서 만날 때는 조건을 먼저 적어 두십시오' : '영상 통화 한 번 후 대면 — 기본 정보를 확인하십시오';
     } else if (score === 0) {
-        w = '레버리지 금지, 현금·우량 코어 유지';
-        cr = '현 포지션 유지·자격 1과목만';
-        doc = '증빙·세무 서류 스캔 루틴 점검';
-        love = '단체 채팅 과몰입 줄이고 경청 우선';
+        w = '빚을 써서 키우는 투자는 쉬고, 현금과 안전한 자산을 유지하십시오';
+        cr = '지금 자리를 지키며 자격증 하나만 집중하십시오';
+        doc = '세금·증빙 서류를 정리해 두는 루틴을 만드십시오';
+        love = '단체 채팅보다 한 사람씩 깊이 경청하십시오';
     } else if (score >= -2) {
-        w = '고변동 자산 비중 축소, 방어형 펀드로 재편';
-        cr = '불필요한 대내 정치 노출 최소화, 리스크 목록 관리';
-        doc = '구독·자동연장 조항·해지일 점검';
-        love = '새 소개·단체 초대 대량 추가 중단';
+        w = '가격이 크게 오르내리는 자산 비중을 줄이고, 안전한 펀드로 재편하십시오';
+        cr = '불필요한 내부 갈등 노출을 피하고, 위험 요소를 미리 목록으로 관리하십시오';
+        doc = '구독·자동연장 조항과 해지일을 점검하십시오';
+        love = '새 소개·단체 초대를 한꺼번에 늘리는 것은 잠시 멈추십시오';
     } else {
-        w = '손절 기준·생존 현금흐름';
-        cr = '조직 갈등 거리두기, 규정 선제 대응';
-        doc = '법무·세무 자문 확보';
-        love = '알림 정리 후 관계 정돈';
+        w = '손실을 막는 기준선과 최소 생활비를 먼저 확보하십시오';
+        cr = '조직 갈등에서는 거리를 두고, 규정에 따라 선제적으로 대응하십시오';
+        doc = '법무·세무 전문가의 조언을 미리 받아두십시오';
+        love = '알림을 정리하고, 중요한 관계부터 다시 정돈하십시오';
     }
     return { wealth: w, career: cr, doc: doc, love: love };
 }
@@ -1099,15 +1099,45 @@ function voicePolishParagraph(data, text) {
     s = s.replace(/([가-힣]+)롭은(?=\s|분|것|형|인|자|때|데|며|고|\.|,|$)/g, '$1로운');
     // Remove a known repeated/macro sentence if present (defensive).
     s = s.replace(/겉으로는 듬직해 보이지만, 속으로는 누구보다 치열하게 고민하는 편[^\n\<\>]{0,120}/g, '');
-    // Explain technical terms for non-expert readers when not already explained.
-    s = s.replace(/기신(?!\s*\()/g, '기신(나를 지치게 하는 기운)');
-    s = s.replace(/용신(?!\s*\()/g, '용신(균형을 돕는 기운)');
-    s = s.replace(/십성(?!\s*\()/g, '십성(사주에서의 역할을 뜻하는 열 가지 개념)');
-    // Convert light/casual sentence endings to formal tone suitable for premium reports.
+
+    // ─── 전문 용어 쉬운 풀이 (일반 독자용) ───
+    s = s.replace(/기신(?!\s*[\(（])/g, '기신(나를 지치게 하는 기운)');
+    s = s.replace(/용신(?!\s*[\(（])/g, '용신(나를 돕는 핵심 기운)');
+    s = s.replace(/십성(?!\s*[\(（])/g, '십성(사주 속 나의 역할과 관계 방식)');
+    s = s.replace(/구신(?!\s*[\(（])/g, '구신(기신을 더 강하게 만드는 기운)');
+    s = s.replace(/일주(?!\s*[\(（])/g, '일주(태어난 날의 두 글자)');
+    s = s.replace(/대운(?!\s*[\(（수])/g, '대운(10년 단위로 바뀌는 운의 흐름)');
+    s = s.replace(/세운(?!\s*[\(（])/g, '세운(그해 한 해의 운)');
+    s = s.replace(/원국(?!\s*[\(（])/g, '원국(태어날 때 정해진 나의 사주 구조)');
+    s = s.replace(/일간(?!\s*[\(（])/g, '일간(사주에서 나를 나타내는 글자)');
+
+    // ─── 어려운 표현 → 쉬운 말 ───
+    s = s.replace(/레버리지/g, '빚을 써서 키우는 투자');
+    s = s.replace(/포지션/g, '현재 위치·역할');
+    s = s.replace(/리스크/g, '위험');
+    s = s.replace(/고변동\s*자산/g, '가격이 크게 오르내리는 자산');
+    s = s.replace(/손절/g, '손실을 막기 위한 정리');
+    s = s.replace(/분할 매입/g, '나눠서 사기');
+    s = s.replace(/배당/g, '배당(투자한 회사가 주는 수익)');
+
+    // ─── 말투 교정: 캐주얼 → 격식·따뜻한 문체 ───
     s = s.replace(/이시군요/g, '입니다');
-    s = s.replace(/네요/g, '입니다');
-    s = s.replace(/이에요/g, '입니다');
     s = s.replace(/이군요/g, '입니다');
+    s = s.replace(/이네요/g, '입니다');
+    s = s.replace(/하네요/g, '합니다');
+    s = s.replace(/네요/g, '습니다');
+    s = s.replace(/이에요/g, '입니다');
+    s = s.replace(/예요/g, '입니다');
+    s = s.replace(/있어요/g, '있습니다');
+    s = s.replace(/없어요/g, '없습니다');
+    s = s.replace(/볼 수 있어요/g, '볼 수 있습니다');
+    s = s.replace(/같아요/g, '같습니다');
+    s = s.replace(/볼게요/g, '보겠습니다');
+    s = s.replace(/할게요/g, '하겠습니다');
+    s = s.replace(/갈림길이에요/g, '갈림길입니다');
+    s = s.replace(/좋아요/g, '좋습니다');
+    s = s.replace(/돼요/g, '됩니다');
+    s = s.replace(/돼요\./g, '됩니다.');
     return s;
 }
 
@@ -4507,7 +4537,7 @@ function buildChapter2_Wuxing(data) {
     return `<div class="report-chapter">
         ${chHead2}
         ${chIntro2}
-        <div class="wuxing-bar-chart" style="background:rgba(0,0,0,0.22);border:1px solid rgba(199,167,106,0.2);border-radius:12px;padding:18px 20px;margin:0 0 20px;">
+        <div class="wuxing-bar-chart" style="background:var(--panel,rgba(0,0,0,0.22));border:1px solid rgba(199,167,106,0.2);border-radius:12px;padding:18px 20px;margin:0 0 20px;">
             <div style="font-size:12px;font-weight:800;color:var(--gold);margin-bottom:14px;letter-spacing:0.5px;">오행 비율 — 가로 막대 그래프</div>
             ${balanceRows}
         </div>
