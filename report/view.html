@@ -57,7 +57,7 @@
       // 자동실행은 window.load IIFE에서 처리 (하단 스크립트 참조)
     })();
     </script>
-    <meta name="version" content="1778828502">
+    <meta name="version" content="1778829279">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -2159,8 +2159,8 @@
     </script>
 
 <!-- SAJUX_CACHE_BUSTER_START -->
-<meta name="sajux-build" content="1778828502">
-<script>(function(){var v='1778828502';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
+<meta name="sajux-build" content="1778829279">
+<script>(function(){var v='1778829279';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
 <!-- SAJUX_CACHE_BUSTER_END -->
 </head>
 <body>
@@ -3069,5 +3069,52 @@ body.light-mode #sajux-pdf-fab {
     }
 }
 </style>
+<style id="sajux-pdf-print-force">
+/* =========================================
+   [사주X PDF 인쇄 전용 강제 스타일링]
+========================================= */
+@media print {
+  /* 1. 모든 배경을 흰색으로, 그림자와 반투명 효과 완벽 제거 */
+  body, .card, .yearly-card, .monthly-card, .module-item, .dashboard-container, .zami-card {
+    background-color: #ffffff !important;
+    background: none !important;
+    border: 1px solid #ced4da !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* 2. 모든 글자색을 가장 진한 검정색(#111)으로 통일 (가독성 100% 확보) */
+  *, p, h1, h2, h3, h4, h5, h6, span, div, li, th, td {
+    color: #111111 !important;
+    text-shadow: none !important;
+  }
+
+  /* 3. 만세력 지장간/십성 등 작은 배지의 칙칙한 배경색 제거 및 밝게 처리 */
+  .badge, .tag, .jijanggan, .highlight {
+    background-color: #f8f9fa !important;
+    color: #000000 !important;
+    border: 1px solid #adb5bd !important;
+  }
+
+  /* 4. PDF 페이지 넘어갈 때 카드나 표가 반으로 찢어지는 현상 방어 */
+  .card, .yearly-card, .monthly-card, .module-item, table, h1, h2, h3 {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* 5. 표(Table) 내부 여백 및 테두리 깔끔하게 정리 */
+  table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+  }
+  th, td {
+    border: 1px solid #dee2e6 !important;
+    padding: 10px !important;
+    background-color: #ffffff !important;
+  }
+}
+</style>
+<link rel="stylesheet" href="report-print.css">
 </body>
 </html>
