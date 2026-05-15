@@ -5222,7 +5222,10 @@ function buildLifePanoramaSection(data) {
 function buildCoverPage(data) {
     return `<div id="sec-cover" class="cover-page chapter-start" style="display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:90vh;padding:72px 28px 56px;text-align:center;border-bottom:1px solid rgba(199,167,106,0.12);margin-bottom:56px;">
         <div class="sajux-logo-wrap" style="width:100%;max-width:90vw;margin:0 auto;display:flex;flex-direction:column;justify-content:center;align-items:center;">
-            <div style="display:flex;justify-content:center;align-items:center;"><img class="sajux-logo dark" src="assets/sajux-logo-dark.png" alt="SAJU X 로고" loading="lazy" style="width:clamp(420px,58vw,630px);max-width:100%;margin:0 auto;" /><img class="sajux-logo light" src="assets/sajux-logo-light.png" alt="SAJU X 로고" loading="lazy" style="width:clamp(420px,58vw,630px);max-width:100%;margin:0 auto;" /></div>
+            <div class="sajux-logo-cover-row" style="display:flex;justify-content:center;align-items:center;width:100%;">
+                <img class="sajux-logo sajux-logo-cover-print" src="assets/sajux-logo-light.png" alt="SAJU X 로고" loading="eager" decoding="sync" style="width:clamp(320px,55vw,600px);max-width:100%;height:auto;margin:0 auto;" />
+                <img class="sajux-logo dark sajux-logo-cover-screen" src="assets/sajux-logo-dark.png" alt="SAJU X 로고" loading="eager" decoding="sync" style="width:clamp(320px,55vw,600px);max-width:100%;height:auto;margin:0 auto;" />
+            </div>
             <div id="sec-book-intro" class="sajux-intro-block" style="width:100%;max-width:760px;margin:24px auto 0;text-align:center;">
                 <div class="sajux-intro-heading" style="font-size:13px;letter-spacing:0.12em;color:rgba(199,167,106,0.9);margin-bottom:16px;font-weight:700;">사주X란?</div>
                 <div class="intro-text-container">
