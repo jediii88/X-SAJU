@@ -546,7 +546,7 @@ function buildCompatSajuKidOpener(ctx, innerLine) {
     var surface = pickVoiceLine(SAJUX_SURFACE_LINES, nA + nB + 'compatOpener');
     var open = surface + ' ' + nA + '님과 ' + nB + '님은 ';
     if (innerLine) return open + innerLine;
-    return open + '서로 다른 기운이 맞닿을 때 시너지가 커지는 구조라고 볼 수 있어요.';
+    return open + '서로 다른 기운이 맞닿을 때 시너지가 커지는 구조입니다.';
 }
 
 function buildCompatChapterIntro(ctx, topic) {
@@ -567,16 +567,16 @@ function buildVipModuleTitles(data, daeunLabel, curY, curM) {
     var seed = (data.dayStem || '') + (data.dayBranch || '') + daeunLabel + curY;
     return [
         pickVoiceLine([
-            '모듈 1 · 지금은 과열이 아니라 방향을 고르는 해예요',
-            '모듈 1 · 에너지는 충분한데, 한 갈래로만 모으십시오',
-            nm + '님, 쏠림을 줄이는 게 먼저예요'
+            '모듈 1 · 방향 선택',
+            '모듈 1 · 에너지 응축',
+            nm + '님, 쏠림을 줄이는 것이 우선입니다'
         ], seed + 'v1'),
         pickVoiceLine([
-            '모듈 2 · ' + (daeunLabel || '현재 대운') + ' — 10년 리듬을 한 장으로',
-            '모듈 2 · 앞으로 10년, 구조를 먼저 세우는 구간이에요'
+            '모듈 2 · 10년 구조 설계',
+            '모듈 2 · 구조 설계 시기'
         ], seed + 'v2'),
-        '모듈 3 · ' + curY + '년 — 연간 전술을 하나로만 고르세요',
-        '모듈 4 · ' + curM + '월 — 실행만 압축, 감정 약속은 잠시 닫으세요'
+        '모듈 3 · 연간 전술 선택',
+        '모듈 4 · 실행 압축'
     ];
 }
 
@@ -587,8 +587,8 @@ function buildInlineIljuSummaryHtml(data) {
     var metaphor = buildMetaphorHookTitle(data);
     var core = db.core || (prof && prof.core) || '원국에 쌓인 기운이 삶의 방향을 이끕니다.';
     var inner = pickVoiceLine([
-        String(core).split('.')[0] + '이라고 볼 수 있어요.',
-        voiceMingliLine('일주는 하루의 중심 기둥입니다.') + ' ' + String(core).split('.')[0] + '의 결이 느껴지시군요.'
+        String(core).split('.')[0] + '이라고 볼 수 있습니다.',
+        voiceMingliLine('일주는 하루의 중심 기둥입니다.') + ' ' + String(core).split('.')[0] + '의 결이 느껴집니다.'
     ], iljuKey + 'ilju');
     var opener = buildSajuKidStyleOpener(data, inner);
     return voiceInlineInterpHeader('basic', data)
