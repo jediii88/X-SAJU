@@ -180,4 +180,34 @@
   .m-badge {
     color: #444444 !important;
   }
+
+  .vip-manse-keep-group {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+  .vip-manse-title {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+  }
+
+  /* 표지 로고 — img 실패 시 CSS 배경 fallback */
+  .cover-page .sajux-logo-wrap::before {
+    content: '';
+    display: block !important;
+    width: min(420px, 72vw) !important;
+    height: 100px !important;
+    margin: 0 auto 16px !important;
+    background: url('https://sajux.com/report/assets/sajux-logo-light.png') center / contain no-repeat !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .cover-page .sajux-logo-cover-row {
+    display: block !important;
+  }
+  .cover-page .sajux-logo-cover-print {
+    display: block !important;
+    max-width: 420px !important;
+    width: 72% !important;
+    margin: 0 auto !important;
+  }
 }
