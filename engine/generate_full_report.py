@@ -369,7 +369,18 @@ class FullReportGenerator:
         </body>
         </html>
         """
-        return html_content
+        # Append an appendix with reference tables (do not modify the tables themselves)
+        try:
+            from engine.engine.saju_tables import EMPTY_MAP, SIPSEONG
+            empty_map_html = '<div class="appendix"><h3>참고표: 전통적 공망(空亡) 매핑</h3><ul>'
+            for stems, branches in EMPTY_MAP.items():
+                empty_map_html += f"<li>{','.join(stems)} → {','.join(branches)}</li>"
+            empty_map_html += '</ul></div>'
+        except Exception:
+            empty_map_html = ''
+
+        final_html = html_content.replace('</body>', f'{empty_map_html}</body>')
+        return final_html
 
 if __name__ == "__main__":
     import sys

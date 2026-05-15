@@ -7,6 +7,29 @@ class Interpreter:
         self.day_stem = won_guk['day'][0]
         self.day_branch = won_guk['day'][1]
         self.pillars = won_guk # {'year': [stem, branch], ...}
+        # Human-friendly location labels for pillars
+        self.location_labels = {
+            "year": "초년기·가족·사회적 배경",
+            "month": "청년기·부모·직업 환경",
+            "day": "중년기·배우자·내면",
+            "time": "말년기·자녀·최종 결과물"
+        }
+        # Map common sipseong roles to practical life domains (for "void" checks)
+        self.role_domain = {
+            "정재": "money", "편재": "money",
+            "정관": "career", "편관": "career",
+            "정인": "learning", "편인": "learning",
+            "식신": "expression", "상관": "expression",
+            "비견": "self", "겁재": "self"
+        }
+        # Domain → representative element (simple heuristic)
+        self.domain_element = {
+            "money": "金",
+            "career": "土",
+            "learning": "水",
+            "expression": "火",
+            "self": "木"
+        }
 
     def analyze_pillars(self):
         analysis = {}
@@ -23,6 +46,141 @@ class Interpreter:
                 "unsung_text": UNSUNG_MASTER_TEXTS.get(unsung, ""),
                 "sipseong_advice": SIPSEONG_ADVICE.get(sipseong, "")
             }
+        # Add location-aware, user-facing labels and detect domain "voids"
+        counts, percentages = self.get_element_balance()
+        for p_name in analysis.keys():
+            role = analysis[p_name]['sipseong']
+            # location label
+            analysis[p_name]['location_label'] = self.location_labels.get(p_name, p_name)
+            # domain mapping
+            domain = self.role_domain.get(role, None)
+            analysis[p_name]['domain'] = domain
+            # simple "void" (functional emptiness) detection:
+            void_flag = False
+            void_reason = ''
+            if domain:
+                elem = self.domain_element.get(domain)
+                if elem:
+                    # if element count is very low, treat as functional void for that domain
+                    if counts.get(elem, 0) <= 1 or percentages.get(elem, 0) < 10:
+                        void_flag = True
+                        void_reason = f"{analysis[p_name]['location_label']}에서 기대되는 에너지원({elem})이 약해, 즉각적인 성과보다 긴 호흡과 시스템 설계가 유리합니다."
+            # Traditional 空亡 (공망) detection using table from saju_tables.EMPTY_MAP
+            try:
+                from .saju_tables import EMPTY_MAP
+            except Exception:
+                EMPTY_MAP = {}
+            traditional_void = False
+            # day_stem determines which branches are traditionally void
+            ds = self.day_stem
+            for stems, branches in EMPTY_MAP.items():
+                if ds in stems:
+                    if analysis[p_name]['branch'] in branches:
+                        traditional_void = True
+                        break
+            analysis[p_name]['traditional_void'] = traditional_void
+            analysis[p_name]['functional_void'] = void_flag
+            analysis[p_name]['void_reason'] = void_reason
+            # user-friendly, location-aware sipseong interpretation (no technical terms)
+            base_advice = analysis[p_name]['sipseong_advice'] or ''
+            # Translate role into practical phrasing depending on pillar location
+            loc = analysis[p_name]['location_label']
+            # Empathetic, user-facing phrasing. If functional void exists, use gentle comforting tone.
+            # Build kid-friendly, engaging phrasings.
+            # Short playful intro + clear concrete feeling + gentle reassurance + one small suggested action.
+            if void_flag:
+                # Empathetic fragment examples (do NOT mention internal labels here)
+                feeling_examples = "'사랑을 못 받은 것 같아요' 또는 '거리감이 있어요'처럼 느껴질 수 있습니다."
+                reassure = "그런 감정이 있어도 당신의 가치는 변하지 않습니다."
+                suggestion = "오늘은 아주 작은 행동 하나를 시도해보세요: 짧은 문자 한 통이나 사진 한 장을 보내보세요."
+            else:
+                feeling_examples = ""
+                reassure = ""
+                suggestion = ""
+
+            # Simple domain-aware phrasing (avoid technical nouns entirely)
+            if role in ("정재","편재"):
+                if p_name == 'month':
+                    loc_phrase = "직장이나 밖에서 벌어들이는 돈"
+                    action = "월 단위 자동 저축이나 작은 정기 수입을 하나 만들어 보세요."
+                elif p_name == 'day':
+                    loc_phrase = "집안에서의 돈 문제나 배우자 관련 재정"
+                    action = "가벼운 가계 점검(한 장의 메모로 수입·지출 정리)을 권합니다."
+                else:
+                    loc_phrase = loc
+                    action = "당장 큰 결정보다는 작은 루틴을 만들어 보세요."
+                main = f"{loc_phrase}에 관해선, {base_advice} {action}"
+            else:
+                # Generic friendly phrasing
+                main = f"{loc}에선 이렇게 읽힙니다: {base_advice}"
+
+            # Create natural-language location phrase (avoid technical tokens)
+            loc_label = analysis[p_name]['location_label']
+            if '부모' in loc_label:
+                human_loc = '부모님과의 관계'
+            elif '배우자' in loc_label:
+                human_loc = '배우자와의 관계'
+            elif '자녀' in loc_label or '말년' in loc_label:
+                human_loc = '자녀와의 관계'
+            elif '가족' in loc_label:
+                human_loc = '가족과의 관계'
+            else:
+                human_loc = loc_label
+
+            # Compose final friendly paragraph using counselor templates when available.
+            # Build normalized components
+            feeling_examples = ""
+            # feeling_examples already prepared above (no internal labels)
+            feeling_examples = feeling_examples.strip()
+            reassure_txt = reassure or "그 감정은 당신의 잘못이 아닙니다."
+            suggestion_txt = suggestion or suggestion
+            extra = ""
+            # pick domain template key
+            domain_key = None
+            if '부모' in human_loc:
+                domain_key = 'parent'
+            elif '배우자' in human_loc:
+                domain_key = 'spouse'
+            elif domain == 'money':
+                domain_key = 'finance'
+
+            rendered = None
+            try:
+                if domain_key:
+                    from engine.templates_text import TEMPLATES
+                    tpl = TEMPLATES.get(domain_key, {}).get('counselor')
+                    if tpl:
+                        subject = f"당신은 {human_loc}에서"
+                        action = ""
+                        # decide small concrete action based on domain
+                        if domain_key == 'parent':
+                            action = "짧은 안부 문자 한 통이나 사진 한 장을 보내 보세요."
+                        elif domain_key == 'spouse':
+                            action = "이번 주에 짧은 대화 시간을 한 번 마련해 보세요."
+                        elif domain_key == 'finance':
+                            action = "먼저 자동 저축이나 소액 정기 투자를 하나 시작해 보세요."
+                        rendered = tpl.format(subject=subject,
+                                              feeling_examples=feeling_examples,
+                                              reassure=reassure_txt,
+                                              action=action,
+                                              extra=extra)
+            except Exception:
+                rendered = None
+
+            if rendered:
+                analysis[p_name]['user_facing_advice'] = ' '.join(rendered.split())
+            else:
+                # Fallback: plain composed sentence
+                parts = []
+                if feeling_examples: parts.append(feeling_examples)
+                parts.append(main)
+                if reassure_txt: parts.append(reassure_txt)
+                if suggestion_txt: parts.append(suggestion_txt)
+                body = " ".join([p for p in parts if p]).strip()
+                if not body.startswith('당신'):
+                    analysis[p_name]['user_facing_advice'] = f"당신은 {human_loc}에서 {body}"
+                else:
+                    analysis[p_name]['user_facing_advice'] = body
         return analysis
 
     def get_element_balance(self):
@@ -58,10 +216,21 @@ class Interpreter:
             p_names = ["연주 (뿌리)", "월주 (환경)", "일주 (본체)", "시주 (열매)"]
             p_key = ["year", "month", "day", "time"][page_num-2]
             info = pillar_info[p_key]
+            # Use user-facing, location-aware advice and avoid technical terms in output
+            advice = info.get('user_facing_advice', info.get('sipseong_advice', ''))
+            # If functional void detected, add premium framing
+            if info.get('functional_void'):
+                void_note = ("이 부분은 즉각적인 결과보다 시스템 설계와 긴 호흡이 유리합니다. "
+                             "단기적 소유보다 장기적 구조를 갖추는 전략을 권합니다.")
+            else:
+                void_note = ""
+            # Short noun-style title (e.g., "연주") and full explanatory paragraph as content
+            short_title = p_names[page_num-2].split()[0]  # e.g., "연주"
+            content_paragraph = f"{self.location_labels.get(p_key, p_key)} 관점에서 보자면, {advice} {void_note} {info.get('unsung_text','')}"
             return {
-                "category": f"Pillar Depth / {p_names[page_num-2]}",
-                "title": f"{p_names[page_num-2]}의 정밀 분석: {info['stem']}{info['branch']}",
-                "content": f"이 기둥에 깃든 {info['sipseong']}의 에너지는 당신의 삶에서 {info['sipseong_advice']}와 같은 양상으로 나타납니다. 특히 {info['unsung']}의 단계에 머물러 있어, {info['unsung_text']}"
+                "category": f"Pillar Depth / {short_title}",
+                "title": short_title,
+                "content": content_paragraph
             }
             
         # Element Balance (Pages 6-10)

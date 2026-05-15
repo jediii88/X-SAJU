@@ -1,0 +1,263 @@
+/* =========================================
+   [사주X PDF 인쇄 — 배경만 화이트닝, 오행 글자색 유지]
+========================================= */
+@media print {
+  body, html {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+  }
+
+  /* 십성·신살 배지 — 인쇄용 밝은 배경 (지장간 태그는 제외) */
+  .badge:not(.jijanggan-tag), .tag:not(.jijanggan-tag),
+  .m-badge:not(.jijanggan-tag), .m-badge-shinsal, .m-badge--gongmang-hit,
+  .highlight, [class*="badge"]:not(.jijanggan-tag), [class*="tag"]:not(.jijanggan-tag) {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    border: 1px solid #999999 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* VIP 만세력 — 지장간: 오행 한자색 + 십성 라벨 검정 */
+  .vip-evidence-block .jijanggan-tag {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+  .vip-evidence-block .jijanggan-tag .wood,
+  .vip-evidence-block .jijanggan-tag .fire,
+  .vip-evidence-block .jijanggan-tag .earth,
+  .vip-evidence-block .jijanggan-tag .metal,
+  .vip-evidence-block .jijanggan-tag .water {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    font-weight: 700 !important;
+  }
+  .vip-evidence-block .jijanggan-sip,
+  .vip-evidence-block .vip-sip-cell {
+    color: #1a1a1a !important;
+    font-weight: 600 !important;
+  }
+
+  /* 카드·내부 박스 — 배경만 (글자색 건드리지 않음) */
+  .card, .yearly-card, .monthly-card, .module-item,
+  .inner-card, .detail-box, .content-box,
+  .sajux-print-surface, .report-inner-box,
+  .vip-evidence-block table,
+  .manse-cell, .manse-table,
+  [class*="box"]:not(.checkbox):not(.search-box),
+  [class*="card"] {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    border: 1px solid #cccccc !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* report-core 인라인 반투명 박스 */
+  #report-container div[style*="background:rgba(255,255,255"],
+  #report-container div[style*="background:rgba(0,0,0"],
+  #report-container div[style*="background:rgba(199,167,106"],
+  #report-container div[style*="background:rgba(231,76,60"],
+  .sajux-panel-plain, .deep-hook-panel, .premium-executive-summary,
+  #sec-life-panorama, .sajux-gongmang-note {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    border: 1px solid #cccccc !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  .m-hanja, .vip-hanja, .report-pillar-hanja, .hanja-main {
+    font-family: 'Noto Sans KR', sans-serif !important;
+  }
+
+  /* 오행 한자·천간지지 색상 보존 */
+  .wood, .fire, .earth, .metal, .water,
+  .m-hanja, .m-hanja.wood, .m-hanja.fire, .m-hanja.earth, .m-hanja.metal, .m-hanja.water,
+  .vip-hanja, .vip-evidence-block .vip-hanja,
+  .rel-char span, [class*="han-"] {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* 단락 제목 고립 방지 */
+  .section-title, .part-title, .part-header-label, .part-header-block,
+  .report-chapter, .ch-title, h1, h2, h3, .title-card {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    margin-bottom: 10px !important;
+  }
+
+  .report-container, #report-container, .print-container, .layout-wrapper,
+  .seyun-premium-vertical, .part-header-block, .cover-page {
+    display: block !important;
+  }
+
+  /* 만세력 그리드 — block으로 바꾸면 표가 깨짐 */
+  .manse-table {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+  }
+  .manse-row {
+    display: grid !important;
+    grid-template-columns: 60px repeat(4, 1fr) !important;
+    gap: 4px !important;
+  }
+  .manse-cell {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  /* 제N부 헤더 — 위 내용과 분리(새 페이지), 아래 본문과는 붙임 */
+  .part-header-block {
+    page-break-before: always !important;
+    break-before: page !important;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+    margin-top: 0 !important;
+    margin-bottom: 4px !important;
+  }
+  .part-follow-content > *:first-child,
+  .part-follow-content > .report-chapter:first-child {
+    page-break-before: avoid !important;
+    break-before: avoid !important;
+  }
+
+  table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+  th, td {
+    border: 1px solid #dee2e6 !important;
+    padding: 10px !important;
+    background-color: #ffffff !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* VIP 만세력표 — PDF에서 과대 확대 방지 */
+  .vip-evidence-block table th,
+  .vip-evidence-block table td {
+    padding: 3px 5px !important;
+    font-size: 10px !important;
+    line-height: 1.35 !important;
+  }
+  .vip-evidence-block table td div span[style*="font-size:1.2em"],
+  .vip-evidence-block table .vip-hanja {
+    font-size: 15px !important;
+    line-height: 1.1 !important;
+  }
+  .vip-evidence-block table td span[style*="color:#aaa"] {
+    font-size: 10px !important;
+    color: #555 !important;
+  }
+
+  .remedy-checklist-table,
+  .remedy-checklist-table thead,
+  .remedy-checklist-table tbody {
+    display: table !important;
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+  .remedy-checklist-table tr { display: table-row !important; }
+  .remedy-checklist-table th,
+  .remedy-checklist-table td {
+    display: table-cell !important;
+    vertical-align: top !important;
+  }
+
+  #floating-toc, #theme-toggle, #sticky-part-nav, #sajux-pdf-fab,
+  .pdf-btn, .nav-floating, .sajux-pdf-wide-btn {
+    display: none !important;
+  }
+  #sec-cover, .cover-page { background: #ffffff !important; }
+  .cover-page .sajux-logo-cover-screen,
+  .sajux-logo.dark { display: none !important; visibility: hidden !important; mix-blend-mode: normal !important; }
+  .cover-page .sajux-logo-cover-print,
+  .sajux-logo.light,
+  .sajux-logo-cover-print {
+    display: block !important;
+    visibility: visible !important;
+    mix-blend-mode: normal !important;
+    opacity: 1 !important;
+    filter: none !important;
+    max-width: 520px !important;
+    width: 72% !important;
+    height: auto !important;
+    margin: 0 auto 12px !important;
+  }
+  .sajux-logo-wrap img {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* 어두운 인라인 패널 → 밝은 용지용 (오행 한자색은 유지) */
+  .yearly-indicators,
+  .sajux-print-panel-inner,
+  #report-container div[style*="background:rgba(0,0,0"],
+  .daeun-decade-card,
+  .seyun-year-card {
+    background: #f7f7f7 !important;
+    background-color: #f7f7f7 !important;
+    border-color: #cccccc !important;
+  }
+
+  .m-hangul,
+  .yearly-ind-val,
+  .vip-evidence-block td,
+  .remedy-checklist-table td,
+  .remedy-checklist-table th {
+    color: #333333 !important;
+  }
+  .part-header-sub,
+  .m-badge:not(.jijanggan-tag) {
+    color: #444444 !important;
+  }
+
+  /* 어두운 패널·카드 — 밝은 용지 + 진한 글자 */
+  .sajux-access-note,
+  .deep-hook-panel,
+  .deep-hook-panel p,
+  .premium-executive-summary .vip-module-desc,
+  .premium-executive-summary p,
+  #report-container div[style*="background:rgba(0,0,0"] p,
+  #report-container div[style*="background:rgba(0,0,0"] {
+    color: #333333 !important;
+  }
+
+  .vip-manse-keep-group {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+  .vip-manse-title {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+  }
+
+  .cover-page .sajux-logo-cover-row {
+    display: block !important;
+  }
+  .cover-page .sajux-logo-cover-print {
+    display: block !important;
+    max-width: 420px !important;
+    width: 72% !important;
+    margin: 0 auto !important;
+  }
+}

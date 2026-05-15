@@ -173,3 +173,14 @@ FINAL_ADVICE = {
     "변화": "운명은 정해진 지도가 아니라 당신이 그려나가는 항로입니다. 오늘의 선택이 내일의 기운을 결정함을 잊지 마십시오.",
     "평온": "마음의 평온함이 곧 최상의 운입니다. 외부의 소음에 흔들리지 말고 내면의 소리에 집중하여 흔들림 없는 삶을 영위하십시오."
 }
+
+# Traditional 空亡 (common mapping)
+# Pairing by Heavenly Stem groups -> corresponding empty Earthly Branches
+# Source: commonly used traditional mapping
+EMPTY_MAP = {
+    ("甲","乙"): ["戌","亥"],
+    ("丙","丁"): ["申","酉"],
+    ("戊","己"): ["午","未"],
+    ("庚","辛"): ["辰","巳"],
+    ("壬","癸"): ["寅","卯"],
+}

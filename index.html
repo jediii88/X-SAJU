@@ -68,6 +68,42 @@ footer{position:relative;z-index:1;border-top:1px solid rgba(255,255,255,0.05);p
 footer a{color:#666;text-decoration:none;}
 @media(max-width:480px){.bank-info{grid-template-columns:1fr;}.pricing{grid-template-columns:1fr;}}
 </style>
+<style>
+/* Light-mode readability overrides */
+html[data-theme="light"], body.light-mode {
+  color: #222 !important;
+  --text: #222 !important;
+}
+html[data-theme="light"] p, body.light-mode p,
+html[data-theme="light"] .section-title, body.light-mode .section-title,
+html[data-theme="light"] .section-sub, body.light-mode .section-sub,
+html[data-theme="light"] .feature-card p, body.light-mode .feature-card p {
+  color: #222 !important;
+}
+html[data-theme="light"] [style*="color:#ddd"], body.light-mode [style*="color:#ddd"] { color: #333 !important; }
+html[data-theme="light"] [style*="color:#ccc"], body.light-mode [style*="color:#ccc"] { color: #444 !important; }
+html[data-theme="light"] [style*="color:#bbb"], body.light-mode [style*="color:#bbb"] { color: #444 !important; }
+</style>
+<style type="text/css" media="print">
+  .card, .yearly-card, .monthly-card, .inner-card, .detail-box, 
+  .jijanggan, .jijanggan span, .badge, .tag, div[class*="box"], div[class*="card"] {
+      background: #ffffff !important;
+      background-color: #ffffff !important;
+      border: 1px solid #cccccc !important;
+      box-shadow: none !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+  }
+  h1, h2, h3, h4, h5, .section-title, .part-title, .title-card {
+      page-break-after: avoid !important;
+      break-after: avoid !important;
+      page-break-inside: avoid !important;
+      margin-bottom: 20px !important;
+  }
+  .report-container, .print-container, .layout-wrapper, .card-wrapper, body, main {
+      display: block !important;
+  }
+</style>
 </head>
 <body>
 <div class="stars" id="stars"></div>

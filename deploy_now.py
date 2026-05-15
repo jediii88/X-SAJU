@@ -32,6 +32,12 @@ def bump_build_version():
         out = re.sub(r'(<meta\s+name="sajux-build"\s+content=")\d+(">)', rf'\g<1>{build_v}\2', out)
         # var v='...';  (cache-buster 스크립트)
         out = re.sub(r"(var\s+v=')\d+(')", rf"\g<1>{build_v}\2", out)
+        # report-core.js (tools/sync_report_core.py)
+        out = re.sub(
+            r'(<script\s+src="report-core\.js\?v=)\d+(")',
+            rf"\g<1>{build_v}\2",
+            out,
+        )
 
         if out != src:
             with open(path, 'w', encoding='utf-8') as f:
@@ -45,13 +51,33 @@ def sync_report_bundle():
     out_dir = os.path.join(ROOT, 'sajux_deploy', 'report')
     os.makedirs(out_dir, exist_ok=True)
 
-    for name in ('index.html', 'view.html', 'saju.html'):
+    for name in ('index.html', 'view.html', 'saju.html', 'report-core.js', 'report-print.css'):
         src = os.path.join(report_dir, name)
         dst = os.path.join(out_dir, name)
         if not os.path.isfile(src):
             raise SystemExit(f'report/{name} 이 없습니다.')
         shutil.copy(src, dst)
         print(f'  [sync] report/{name} -> sajux_deploy/report/{name}')
+
+    comp_src = os.path.join(report_dir, 'compatibility')
+    comp_dst = os.path.join(out_dir, 'compatibility')
+    if os.path.isdir(comp_src):
+        if os.path.exists(comp_dst):
+            shutil.rmtree(comp_dst)
+        shutil.copytree(comp_src, comp_dst)
+        print('  [sync] report/compatibility/ -> sajux_deploy/report/compatibility/')
+
+    assets_src = os.path.join(report_dir, 'assets')
+    assets_dst = os.path.join(out_dir, 'assets')
+    if os.path.isdir(assets_src):
+        os.makedirs(assets_dst, exist_ok=True)
+        for fn in os.listdir(assets_src):
+            if fn.startswith('.'):
+                continue
+            s = os.path.join(assets_src, fn)
+            if os.path.isfile(s):
+                shutil.copy2(s, os.path.join(assets_dst, fn))
+        print('  [sync] report/assets/ -> sajux_deploy/report/assets/')
 
     idx_path = os.path.join(out_dir, 'index.html')
     with open(idx_path, 'r', encoding='utf-8') as f:
@@ -159,6 +185,9 @@ def main():
         (f'{deploy_dir}/report/index.html', 'report/index.html'),
         (f'{deploy_dir}/report/view.html', 'report/view.html'),
         (f'{deploy_dir}/report/saju.html', 'report/saju.html'),
+        (f'{deploy_dir}/report/report-core.js', 'report/report-core.js'),
+        (f'{deploy_dir}/report/report-print.css', 'report/report-print.css'),
+        (f'{deploy_dir}/report/compatibility/index.html', 'report/compatibility/index.html'),
         (f'{deploy_dir}/admin/index.html', 'admin/index.html'),
         (f'{deploy_dir}/couple/index.html', 'couple/index.html'),
     ]
@@ -168,6 +197,15 @@ def main():
         if os.path.exists(src):
             shutil.copy(src, f'{deploy_dir}/report/{js}')
             files.append((f'{deploy_dir}/report/{js}', f'report/{js}'))
+
+    assets_dir = os.path.join(deploy_dir, 'report', 'assets')
+    if os.path.isdir(assets_dir):
+        for fn in sorted(os.listdir(assets_dir)):
+            if fn.startswith('.'):
+                continue
+            local = os.path.join(assets_dir, fn)
+            if os.path.isfile(local):
+                files.append((local, f'report/assets/{fn}'))
 
     print('배포 시작...')
     for local, gh in files:

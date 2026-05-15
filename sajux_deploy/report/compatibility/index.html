@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>사주X 궁합 리포트 (프리뷰)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&family=Noto+Serif+KR:wght@600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root, html[data-theme="dark"] {
+      --bg-primary: #0a0a10;
+      --text-primary: #f0f0f0;
+      --card-bg: #16161e;
+      --accent-color: #d4af37;
+      --line: rgba(255,255,255,0.1);
+    }
+    html[data-theme="light"] {
+      --bg-primary: #ffffff;
+      --text-primary: #1a1a1a;
+      --card-bg: #f5f5f5;
+      --accent-color: #d4af37;
+      --line: rgba(0,0,0,0.12);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.65;
+      padding: 24px 18px 48px;
+      max-width: 720px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    h1 {
+      font-family: 'Noto Serif KR', serif;
+      font-size: 1.35rem;
+      color: var(--accent-color);
+      margin: 0 0 8px;
+    }
+    .sub { font-size: 0.85rem; opacity: 0.75; margin-bottom: 28px; }
+    a.back { color: var(--accent-color); text-decoration: none; font-size: 0.9rem; }
+    section {
+      background: var(--card-bg);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 18px 20px;
+      margin-bottom: 18px;
+    }
+    section h2 {
+      margin: 0 0 12px;
+      font-size: 1rem;
+      color: var(--accent-color);
+      font-family: 'Noto Serif KR', serif;
+    }
+    .tag { font-size: 0.7rem; letter-spacing: 0.12em; opacity: 0.65; display: block; margin-bottom: 6px; }
+    .dual-bars { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: end; }
+    .person-label { font-size: 0.8rem; font-weight: 700; margin-bottom: 8px; text-align: center; color: var(--accent-color); }
+    .bar-track { height: 10px; border-radius: 6px; background: rgba(128,128,128,0.25); overflow: hidden; margin-bottom: 6px; }
+    .bar-fill { height: 100%; border-radius: 6px; background: linear-gradient(90deg, var(--accent-color), rgba(212,175,55,0.45)); }
+    .vals { display: flex; justify-content: space-between; font-size: 0.75rem; opacity: 0.8; }
+    .cards { display: flex; flex-direction: column; gap: 10px; }
+    .mini-card {
+      border-left: 3px solid var(--accent-color);
+      padding: 10px 12px;
+      background: rgba(212,175,55,0.06);
+      border-radius: 0 8px 8px 0;
+      font-size: 0.88rem;
+    }
+    .year-row { display: flex; justify-content: space-between; font-size: 0.85rem; padding: 8px 0; border-bottom: 1px solid var(--line); }
+    .year-row:last-child { border-bottom: none; }
+    ul.chk { margin: 0; padding-left: 18px; font-size: 0.88rem; }
+    ul.chk li { margin: 6px 0; }
+  </style>
+</head>
+<body>
+  <a class="back" href="../view.html">← 개인 리포트로</a>
+  <h1>궁합 리포트 (더미 프리뷰)</h1>
+  <p class="sub">차기 <code>/report/compatibility/</code> — personA · personB 객체를 연결하면 아래 5단계가 실데이터로 채워집니다.</p>
+
+  <div id="compat-root"></div>
+
+  <script src="../report-core.js"></script>
+  <script>
+  (function () {
+    var personA = { name: '민수', dayStem: '甲', dayBranch: '子', wuxing: { wood: 38, fire: 12, earth: 18, metal: 22, water: 10 } };
+    var personB = { name: '지은', dayStem: '辛', dayBranch: '酉', wuxing: { wood: 15, fire: 20, earth: 25, metal: 28, water: 12 } };
+
+    function compatCtx(a, b, extra) {
+      extra = extra || {};
+      return {
+        a: a, b: b, aName: a.name, bName: b.name,
+        isHap: !!extra.isHap, isChung: !!extra.isChung,
+        score: extra.score == null ? 68 : extra.score,
+        shengAB: !!extra.shengAB, shengBA: !!extra.shengBA
+      };
+    }
+    function voice(topic, a, b, extra) {
+      return (typeof buildCompatVoiceSection === 'function')
+        ? buildCompatVoiceSection(topic, compatCtx(a, b, extra)) : '';
+    }
+
+    function pct(w, k) { return Math.round((w[k] || 0)); }
+
+    function phase1(a, b) {
+      return '<section id="compat-phase-1">' + voice('brief', a, b) + '<span class="tag">PHASE 1</span><h2>VIP 관계 브리프</h2>'
+        + '<p><strong>' + a.name + '</strong>님은 추진·개척 축, <strong>' + b.name + '</strong>님은 정밀·완성 축으로 요약됩니다. '
+        + '주도권은 사안별로 교대하는 구조가 유리하고, 시너지는 **공동 목표 한 줄**을 문장으로 고정할 때 가장 큽니다.</p></section>';
+    }
+
+    function phase2Bars(label, w, flip) {
+      var keys = ['wood','fire','earth','metal','water'];
+      var kr = { wood: '목', fire: '화', earth: '토', metal: '금', water: '수' };
+      var html = '<div><div class="person-label">' + label + '</div>';
+      keys.forEach(function (k) {
+        var v = pct(w, k);
+        html += '<div class="vals"><span>' + kr[k] + '</span><span>' + v + '%</span></div>';
+        html += '<div class="bar-track"><div class="bar-fill" style="width:' + v + '%;' + (flip ? 'margin-left:auto;' : '') + '"></div></div>';
+      });
+      html += '</div>';
+      return html;
+    }
+
+    function phase2(a, b) {
+      return '<section id="compat-phase-2">' + voice('wuxing', a, b) +
+        '<span class="tag">PHASE 2</span><h2>오행 대칭 — 에너지 보완</h2>'
+        + '<div class="dual-bars">' + phase2Bars(a.name + ' · 일간 ' + a.dayStem, a.wuxing, false) + phase2Bars(b.name + ' · 일간 ' + b.dayStem, b.wuxing, true) + '</div>'
+        + '<p style="font-size:0.85rem;margin-top:14px;opacity:0.85;">좌우 대칭 막대는 동일 스케일 비교용 더미입니다. 실서비스에서는 원국 가중·용신 교차로 색과 폭이 달라집니다.</p></section>';
+    }
+
+    function phase3(a, b) {
+      return '<section id="compat-phase-3">' + voice('strategy', a, b) +
+        '<span class="tag">PHASE 3</span><h2>3대 전장 전략</h2><div class="cards">'
+        + '<div class="mini-card"><strong>소통</strong> — 감정이 아니라 **일정·돈 숫자**부터 맞출 때 마찰이 줄어듭니다.</div>'
+        + '<div class="mini-card"><strong>동업</strong> — 역할을 **한 문장**으로 나누지 않으면 금방 엇박이 납니다.</div>'
+        + '<div class="mini-card"><strong>속궁합</strong> — 피로가 쌓인 주에는 새 규칙 대신 **휴식 슬롯**만 고정하십시오.</div>'
+        + '</div></section>';
+    }
+
+    function phase4(a, b) {
+      return '<section id="compat-phase-4">' + voice('timeline', a, b) +
+        '<span class="tag">PHASE 4</span><h2>위기 타임라인 (더미 연도)</h2>'
+        + '<div class="year-row"><span>2026</span><span>기신 겹침 · 계약·지출 동시 주의 (예시)</span></div>'
+        + '<div class="year-row"><span>2028</span><span>세운 충 · 대외 일정 과밀 (예시)</span></div>'
+        + '<div class="year-row"><span>2031</span><span>양쪽 대운 전환기 — 재정리 권장 (예시)</span></div>'
+        + '</section>';
+    }
+
+    function phase5(a, b) {
+      return '<section id="compat-phase-5">' + voice('caution', a, b) +
+        '<span class="tag">PHASE 5</span><h2>취급 주의서</h2><ul class="chk">'
+        + '<li><strong>' + b.name + '</strong>님 앞에서 ' + a.name + '님의 과거 실패담을 **교훈 없이** 늘어놓지 마십시오.</li>'
+        + '<li>둘 다 지친 날엔 **즉석 합의** 대신 다음 날 아침으로만 결론 내리십시오.</li>'
+        + '<li>제3자 전달(친구·가족)로 **중요한 돈 약속**을 돌리지 마십시오.</li>'
+        + '</ul></section>';
+    }
+
+    function renderCompatibilityReport(personA, personB) {
+      return phase1(personA, personB) + phase2(personA, personB) + phase3(personA, personB) + phase4(personA, personB) + phase5(personA, personB);
+    }
+
+    document.getElementById('compat-root').innerHTML = renderCompatibilityReport(personA, personB);
+  })();
+  </script>
+</body>
+</html>
