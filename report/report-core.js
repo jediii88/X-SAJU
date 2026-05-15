@@ -6798,7 +6798,8 @@ function runAnalysis(overrideParams) {
         const currentYearObj = getReportBaseDate(globalSajuData || {});
         const currentYear = currentYearObj.getFullYear();
         const currentMonth = currentYearObj.getMonth() + 1;
-        const currentAge = currentYear - y + 1; // Korean age approximation
+        // 만 나이(양력 생일 기준 근사)만 사용
+        const currentAge = getClientAgeYearsAtReport(globalSajuData || {});
         
         // Find active Daeun
         let activeDaeunIdx = -1;
