@@ -152,20 +152,38 @@ function normalizeIljuTraitForHook(trait) {
         return dictAdjToModifier(seg.trim());
     }).join('').replace(/\s+/g, ' ').trim();
 }
-/** 60일주 물상 → 사주아이식 한 줄 훅 제목 */
-function buildMetaphorHookTitle(data) {
+function getIljuImageParts(data) {
     var prof = (typeof getIljuProfile === 'function')
         ? getIljuProfile(data.dayStem, data.dayBranch) : null;
     var img = prof && prof.image ? String(prof.image).trim() : '';
-    if (!img) {
+    if (!img) return { scene: '', trait: '' };
+    var parts = img.split(/[—\-–]/);
+    return {
+        scene: (parts[0] || img).replace(/\s+/g, ' ').trim(),
+        trait: normalizeIljuTraitForHook(parts[1] || '')
+    };
+}
+function getIljuScenePhrase(data) {
+    return getIljuImageParts(data).scene;
+}
+/** 60일주 물상 → 사주아이식 한 줄 훅 제목 (표지·프리미엄 브리프 1회용) */
+function buildMetaphorHookTitle(data) {
+    var parts = getIljuImageParts(data);
+    if (!parts.scene) {
         var nm = nmNormalize(data.name || '') || '당신';
         return nm + '님, 겉과 속이 다른 매력이 겹쳐 있는 격이네요';
     }
-    var parts = img.split(/[—\-–]/);
-    var scene = (parts[0] || img).replace(/\s+/g, ' ').trim();
-    var traitAdj = normalizeIljuTraitForHook(parts[1] || '');
-    if (traitAdj) return scene + '이신데, ' + traitAdj + ' 분이시군요';
-    return scene + '이신 격이네요';
+    if (parts.trait) return parts.scene + '이신데, ' + parts.trait + ' 분이시군요';
+    return parts.scene + '이신 격이네요';
+}
+/** 인생 일대기 등 — 은유 훅과 겹치지 않는 섹션 제목 */
+function buildLifePanoramaTitle(data) {
+    var nm = nmNormalize(data.name || '') || '고객';
+    return pickVoiceLine([
+        nm + '님, 태어남에서 귀결까지 네 장의 풍경이에요',
+        '인생은 한 권의 대서사 — 지금 읽을 장면이 정해져 있어요',
+        '원국이 그려 주는 인생의 네 계절, 차례대로 짚어 볼게요'
+    ], (data.dayStem || '') + (data.dayBranch || '') + 'lifePanorama');
 }
 
 /** 명리 브릿지 한 줄 + 본문 */
@@ -548,20 +566,19 @@ function buildCompatVoiceSection(topic, ctx) {
 
 function buildVipModuleTitles(data, daeunLabel, curY, curM) {
     var nm = nmNormalize(data.name || '') || '고객';
-    var prof = getIljuProfile(data.dayStem, data.dayBranch);
-    var img = prof && prof.image ? String(prof.image).split(/[—\-–]/)[0].trim() : '';
     var seed = (data.dayStem || '') + (data.dayBranch || '') + daeunLabel + curY;
     return [
         pickVoiceLine([
-            img ? img + '의 엔진, 지금은 과열이 아니라 방향 문제예요' : nm + '님, 에너지는 충분한데 쏠림이 관건이네요',
-            '한 줄 테제 — ' + (img || '일주') + '의 힘을 한 갈래로만 모으는 해예요'
+            '모듈 1 · 지금은 과열이 아니라 방향을 고르는 해예요',
+            '모듈 1 · 에너지는 충분한데, 한 갈래로만 모으십시오',
+            nm + '님, 쏠림을 줄이는 게 먼저예요'
         ], seed + 'v1'),
         pickVoiceLine([
-            (daeunLabel || '현재 대운') + '은 계절표의 한 칸이에요',
-            '앞으로 10년, ' + (daeunLabel || '대운') + '이 삶의 리듬을 잡습니다'
+            '모듈 2 · ' + (daeunLabel || '현재 대운') + ' — 10년 리듬을 한 장으로',
+            '모듈 2 · 앞으로 10년, 구조를 먼저 세우는 구간이에요'
         ], seed + 'v2'),
-        curY + '년은 날씨가 바뀌는 해 — 전술을 한 가지로만 고르세요',
-        curM + '월은 실행을 압축하는 달 — 감정 약속은 잠시 닫아 두세요'
+        '모듈 3 · ' + curY + '년 — 연간 전술을 하나로만 고르세요',
+        '모듈 4 · ' + curM + '월 — 실행만 압축, 감정 약속은 잠시 닫으세요'
     ];
 }
 
@@ -1080,6 +1097,7 @@ function voicePolishParagraph(data, text) {
     s = s.replace(/새 온라인 채널/g, '새 소개 경로');
     s = s.replace(/플랫폼/g, '무대');
     s = s.replace(/풍요롭은/g, '풍요로운');
+    s = s.replace(/풍요로운의/g, '풍요로움의');
     s = s.replace(/([가-힣]+)롭은(?=\s|분|것|형|인|자|때|데|며|고|\.|,|$)/g, '$1로운');
     return s;
 }
@@ -1354,7 +1372,7 @@ function johoMergeRiskFromData(data) {
     if (!j) return false;
     return /(없으면|절실히\s*필요|필수\s*조후|마릅니다|증발|초조하고)/.test(j);
 }
-/** 제1부 딥훅 — 공망이 실제로 걸린 기둥(년·월·일·시)별로 구체 서술 */
+/** 공망 — 원리 설명 없이, 걸린 자리별 결과·행동만 */
 function buildGongmangDeepHookCopy(data) {
     var name = (data && data.name) || '당신';
     var gm = (data && data.gongmang) || [];
@@ -1368,27 +1386,25 @@ function buildGongmangDeepHookCopy(data) {
         if (br && gm.indexOf(br) !== -1) hit.push(p);
     }
     if (!hit.length) return '';
-    var HK = {'子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해'};
-    var gmLabel = gm.map(function (b) { return b + '(' + (HK[b] || '') + ')'; }).join('·');
-    var tagByN = {'년주': '년주(년지)', '월주': '월주(월지)', '일주': '일주(일지)', '시주': '시주(시지)'};
+    var tagByN = {'년주': '년지(가문·출발)', '월주': '월지(부모·직업)', '일주': '일지(배우자·자아)', '시주': '시지(자녀·말년)'};
     var order = {'년주': 0, '월주': 1, '일주': 2, '시주': 3};
     hit.sort(function (a, b) { return (order[a.n] || 9) - (order[b.n] || 9); });
     var pillarTags = hit.map(function (p) { return tagByN[p.n] || p.n; }).join('·');
-    var lineByPillar = {
-        '년주': '**년지 공망**은 가문·조상·사회적 출발선에서 인정이나 지지를 끌어와도 금방 허전해지거나, 채우려 할수록 형식만 남는 느낌이 나기 쉽습니다.',
-        '월주': '**월지 공망**은 부모·직업·초년 환경 축에서 노력과 보상의 비가 맞지 않거나, 메우려 할수록 더 비어 보이는 패턴에 가깝습니다.',
-        '일주': '**일지 공망**은 배우자궁·내적 자아에서 “채웠는데도 속이 차지 않는다”는 감각이 반복되기 쉽습니다. 관계나 자기 약속을 억지로 늘리기보다 간격을 두는 편이 낫습니다.',
-        '시주': '**시지 공망**은 자녀·말년·결과가 겉으로는 있는데도 끝맺음이 애매하거나, 성과가 비어 보이는 식으로 읽히기도 합니다.'
+    var resultByPillar = {
+        '년주': '**년지** — 인정·지지를 끌어와도 금방 허전해지고, 억지로 채울수록 형식만 남기 쉽습니다.',
+        '월주': '**월지** — 노력 대비 보상 체감이 어긋나고, 더 메우려 할수록 비어 보이는 날이 반복됩니다.',
+        '일주': '**일지** — 관계·약속을 늘려도 속이 차지 않는 감각이 길어지기 쉽습니다. 간격을 두는 편이 낫습니다.',
+        '시주': '**시지** — 자녀·말년·성과가 겉과 속이 다르게 읽히고, 끝맺음이 애매하게 남을 수 있습니다.'
     };
     var lines = [];
     for (var j = 0; j < hit.length; j++) {
         var key = hit[j].n || '';
-        if (lineByPillar[key]) lines.push(lineByPillar[key]);
+        if (resultByPillar[key]) lines.push(resultByPillar[key]);
     }
     if (!lines.length) return '';
-    return nmUi(name) + ' 원국 **' + pillarTags + '**에 공망이 걸려 있습니다. 일간으로 정한 공망 두 지지는 **' + gmLabel + '**입니다. '
+    return nmDnimEunNeun(name) + ' **' + pillarTags + '**에서 공망이 읽혀요. '
         + lines.join(' ')
-        + ' 공망은 “부족하니 메우라”는 신호라기보다, **억지로 채울수록 실속이 빠지기 쉬운 빈자리**로 보는 편이 맞습니다. 인맥·물건·일정으로 구멍을 억지로 메우려 하지 말고, **비워도 된다고 인정한 뒤** 속도·환경·거리를 조절해 보십시오.';
+        + ' **이번 달은 한 축만** 비워 두고, 인맥·일정·지출로 구멍을 억지로 메우지 마십시오. 대운·세운이 이 기운을 강하게 밟을 때는 중요한 결정을 서두르지 않는 편이 낫습니다.';
 }
 function computeDeepHookSignals(data) {
     var sip = data.sipseong || {};
@@ -1423,15 +1439,25 @@ function buildPart1DeepHookHTML(data) {
     var unified = unifiedParts.length ? unifiedParts.join('\n\n') : '한곳에만 매달리기보다 리듬을 바꿔 보십시오.';
     var T1 = '집중력이 부족한 것이 아니라, 뇌의 회전이 빨라 활자보다 직관적인 정보를 선호하는 것입니다. 긴 글보다 요약·도표·한 화면에 정리된 근거를 택하면 같은 에너지로 훨씬 더 잘 흡수됩니다.';
     var T2 = '이유 없는 공허함이나 불안이 들 때, 원인을 끝까지 캐내려 하기보다 **몸의 리듬(수면·빛·이동)**을 먼저 바꿔 보십시오. 사주에서 말하는 빈자리(공망·귀문 등)는 성격 결함이 아니라, **채우려 할수록 형식만 남기 쉬운 자리**로 읽는 경우가 많습니다.';
-    var html = '<div style="' + titleSt + '">' + escHtmlAttr(buildMetaphorHookTitle(data)) + '</div>';
+    var html = '';
     if (sig.triggerUnifiedEmpathy) {
-        html += '<div class="deep-hook-panel card glass-panel" style="' + box + 'margin-bottom:14px;"><p style="' + bodyStMult + '">' + boldStarsToStrong(unified) + '</p></div>';
+        if (focusParagraph) {
+            html += '<div class="deep-hook-panel card glass-panel" style="' + box + 'margin-bottom:14px;"><p style="' + bodySt + '">' + boldStarsToStrong(focusParagraph) + '</p></div>';
+        }
+        if (gmParagraph) {
+            html += '<div style="' + titleSt + 'margin-top:22px;">공망이 걸린 자리</div>';
+            html += '<div class="deep-hook-panel card glass-panel sajux-gongmang-note" style="' + box + '"><p style="' + bodyStMult + '">' + boldStarsToStrong(gmParagraph) + '</p></div>';
+        }
+        if (!gmParagraph && !focusParagraph) {
+            html += '<div class="deep-hook-panel card glass-panel" style="' + box + '"><p style="' + bodySt + '">' + boldStarsToStrong(unified) + '</p></div>';
+        }
     } else {
         if (sig.triggerFocusScatter) {
             html += '<div class="deep-hook-panel card glass-panel" style="' + box + 'margin-bottom:14px;"><p style="' + bodySt + '">' + boldStarsToStrong(T1) + '</p></div>';
         }
         if (sig.triggerVoidWave) {
-            html += '<div class="deep-hook-panel card glass-panel" style="' + box + '"><p style="' + bodySt + '">' + boldStarsToStrong(T2) + '</p></div>';
+            var voidBody = gmParagraph || T2;
+            html += '<div class="deep-hook-panel card glass-panel sajux-gongmang-note" style="' + box + '"><p style="' + bodyStMult + '">' + boldStarsToStrong(voidBody) + '</p></div>';
         }
     }
     return html;
@@ -3672,7 +3698,7 @@ function buildPremiumExecutiveSummary(data) {
     var isStrong = ((data.strengthText || '').indexOf('신강') >= 0 || (data.strengthText || '').indexOf('강') >= 0);
     var iljuKey = (data.dayStem || '') + (data.dayBranch || '');
     var ilju = (typeof ILJU_60_DB !== 'undefined' && ILJU_60_DB[iljuKey]) ? ILJU_60_DB[iljuKey] : null;
-    var iljuImage = (ilju && ilju.image) ? ilju.image : ('일주 ' + (HAN_KOR[data.dayStem] || data.dayStem) + (HAN_KOR[data.dayBranch] || data.dayBranch));
+    var iljuScene = getIljuScenePhrase(data) || ('일주 ' + (HAN_KOR[data.dayStem] || data.dayStem) + (HAN_KOR[data.dayBranch] || data.dayBranch));
     var metaphorLead = buildMetaphorHookTitle(data);
 
     var PALACE = {
@@ -3712,19 +3738,19 @@ function buildPremiumExecutiveSummary(data) {
 
     var pools = [
         {
-            m1: nmEunNeun(nm) + ' ' + iljuImage + '의 구조를 가진 고출력 엔진과도 같습니다. 연료가 넘칠수록 과열이 걱정되었을 수 있습니다. 【확장은 멈추고 ' + yongKr + ' 냉각만 가동】하십시오. ' + giKr + ' 방향의 충동 확장은 즉시 끊으십시오.',
+            m1: nmEunNeun(nm) + ' ' + iljuScene + '처럼 한 갈래로 에너지가 모이는 고출력 타입입니다. 연료가 넘칠수록 과열이 걱정되었을 수 있습니다. 【확장은 멈추고 ' + yongKr + ' 냉각만 가동】하십시오. ' + giKr + ' 방향의 충동 확장은 즉시 끊으십시오.',
             m2: daeunLabel + '은 ' + dTrend + ' 국면입니다. 후퇴가 아니라 다음 20년 현금흐름을 위한 성벽입니다. 【인력·원가·의사결정 표준화 한 장】을 먼저 완성하십시오. 무리한 재진출보다 내부 시스템 고도화를 우선하십시오.',
             m3: curY + '년(' + yLabel + ')은 ' + yTrend + ' 전술 구간입니다. 【11월 전까지 계약·브랜드 포지션·핵심 인맥 중 하나만】 종결하십시오. 미집행 데이터와 미완료 안건은 이번 주 안에 정리하십시오.',
             m4: curM + '월은 ' + mTrend + ' 흐름입니다. 【다음 분기 실행 목록 3개로 압축】하십시오. 일정 블록·현금 점검·건강 루틴을 고정하고, 감정성 약속은 이번 달에는 열지 마십시오.'
         },
         {
-            m1: '한 줄 테제는 분명합니다. ' + iljuImage + '의 추진력은 이미 준비되어 있습니다. 산만한 시도가 아니라 ' + yongKr + ' 중심의 선택과 집중이 필요합니다. 【이번 주 신규 시도 0건】으로 시작하십시오.',
+            m1: '한 줄 테제는 분명합니다. ' + iljuScene + '의 추진력은 이미 준비되어 있습니다. 산만한 시도가 아니라 ' + yongKr + ' 중심의 선택과 집중이 필요합니다. 【이번 주 신규 시도 0건】으로 시작하십시오.',
             m2: daeunLabel + '은 향후 20년 복리 성과를 설계하는 구간입니다. 방어의 목적은 버티기가 아니라 재현 가능한 수익 모델입니다. 【조직 규칙·거래 기준·리스크 한도를 문서 한 장】에 적으십시오.',
             m3: curY + '년(' + yLabel + ')은 실행 압축의 해입니다. 【계약·핵심 파트너·외부 신뢰 자산 중 하나만】 올해 안에 끝내십시오. 실행 없는 기획은 즉시 종료하십시오.',
             m4: curM + '월은 다음 점프를 위한 준비 월입니다. 【회의·지출·관계를 각각 절반으로】 줄이십시오. 실행 전 검토표를 만들어 실수 비용을 선제적으로 차단하십시오.'
         },
         {
-            m1: '현재 엔진은 과열이 아니라 과분산이 문제입니다. ' + iljuImage + '의 강점을 하나의 수익 축으로 묶으십시오. ' + yongKr + ' 보강은 필수이며, ' + giKr + ' 방향의 감정적 확장은 즉시 멈추십시오. 【수익 축 이름을 한 단어로 적고 그 외는 거절】하십시오.',
+            m1: '현재 엔진은 과열이 아니라 과분산이 문제입니다. ' + iljuScene + '의 강점을 하나의 수익 축으로 묶으십시오. ' + yongKr + ' 보강은 필수이며, ' + giKr + ' 방향의 감정적 확장은 즉시 멈추십시오. 【수익 축 이름을 한 단어로 적고 그 외는 거절】하십시오.',
             m2: daeunLabel + '의 핵심 과제는 생존이 아니라 구조 업그레이드입니다. 방어는 공격 준비를 위한 정비 단계입니다. 【채널 축소·원가 숫자·역할 책임을 한 표에】 고정하십시오.',
             m3: curY + '년(' + yLabel + ')은 시장 접점을 넓힐 타이밍입니다. 【제안서·가격·메시지 중 하나만】 이번 해 안에 재정렬하십시오. 실행 없는 기획은 부채이므로 즉시 종료하십시오.',
             m4: curM + '월에는 가속보다 정렬이 우선입니다. 【연락처·계약서·결제 흐름 선점검】만 하십시오. 체력과 수면 리듬을 무너뜨리는 일정은 즉시 삭제하십시오.'
@@ -6283,7 +6309,7 @@ function buildLifePanoramaSection(data) {
 
     return '<div id="sec-life-panorama" class="report-chapter chapter-start sajux-panel-plain" style="margin:28px 0 40px;padding:22px 20px;border-radius:14px;border:1px solid rgba(199,167,106,0.28);background:transparent;">'
         + '<div style="font-size:11px;letter-spacing:0.2em;color:rgba(199,167,106,0.85);margin-bottom:10px;font-weight:700;">인생 일대기</div>'
-        + '<h2 style="font-family:Noto Serif KR,serif;font-size:22px;font-weight:800;color:#f5f0e6;margin:0 0 8px;line-height:1.45;">' + escHtmlAttr(buildMetaphorHookTitle(data)) + '</h2>'
+        + '<h2 style="font-family:Noto Serif KR,serif;font-size:22px;font-weight:800;color:#f5f0e6;margin:0 0 8px;line-height:1.45;">' + escHtmlAttr(buildLifePanoramaTitle(data)) + '</h2>'
         + '<p style="font-size:12px;color:rgba(199,167,106,0.75);margin:0 0 16px;letter-spacing:0.04em;">' + escHtmlAttr(nmDnim(name) + '의 대서사시 — 태어남에서 귀결까지') + '</p>'
         + '<p style="font-size:13.5px;color:#ddd;line-height:2;margin:0 0 14px;">' + _lp(p1) + '</p>'
         + '<p style="font-size:13.5px;color:#ddd;line-height:2;margin:0 0 14px;">' + _lp(p2) + '</p>'
