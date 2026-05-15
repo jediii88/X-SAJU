@@ -27,16 +27,16 @@ function buildYearlyIndicatorsHtml(ykw) {
     };
     var row = function (icon, label, val) {
         return '<div style="width:100%;box-sizing:border-box;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.06);">'
-            + '<div style="font-size:11px;color:#888;margin-bottom:5px;">' + icon + ' ' + label + '</div>'
-            + '<div class="yearly-ind-val" style="font-size:14px;font-weight:700;color:#d4af37;line-height:1.45;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;width:100%;box-sizing:border-box;" title="' + kw(val) + '">' + kw(val) + '</div></div>';
+            + '<div style="font-size:11px;color:#5c5348;margin-bottom:5px;">' + icon + ' ' + label + '</div>'
+            + '<div class="yearly-ind-val" style="font-size:14px;font-weight:700;color:#6b5420;line-height:1.45;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;width:100%;box-sizing:border-box;" title="' + kw(val) + '">' + kw(val) + '</div></div>';
     };
-    return '<div class="yearly-indicators" style="width:100%;max-width:100%;box-sizing:border-box;margin-bottom:12px;padding:12px 12px;background-color:#1a1a1a;border-radius:6px;border-left:3px solid #d4af37;">'
+    return '<div class="yearly-indicators" style="width:100%;max-width:100%;box-sizing:border-box;margin-bottom:12px;padding:12px 12px;background:rgba(255,255,255,0.06);border-radius:6px;border-left:3px solid #8b6914;">'
         + row('💰', '재물·투자', w.wealth)
         + row('🏢', '직업·합격', w.career)
         + row('📝', '문서·계약', w.doc)
         + '<div style="width:100%;box-sizing:border-box;">'
-        + '<div style="font-size:11px;color:#888;margin-bottom:5px;">❤ 애정·대인</div>'
-        + '<div class="yearly-ind-val" style="font-size:14px;font-weight:700;color:#d4af37;line-height:1.45;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;width:100%;box-sizing:border-box;">' + kw(w.love) + '</div></div>'
+        + '<div style="font-size:11px;color:#5c5348;margin-bottom:5px;">❤ 애정·대인</div>'
+        + '<div class="yearly-ind-val" style="font-size:14px;font-weight:700;color:#6b5420;line-height:1.45;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;width:100%;box-sizing:border-box;">' + kw(w.love) + '</div></div>'
         + '</div>';
 }
 
@@ -1811,9 +1811,18 @@ function ensureSajuxPdfPrintForceStyles() {
   }
 
   .report-container, #report-container, .print-container, .layout-wrapper,
-  .seyun-premium-vertical, .part-header-block, .cover-page, .manse-table, .manse-row {
+  .seyun-premium-vertical, .part-header-block, .cover-page {
     display: block !important;
   }
+  .manse-table { display: flex !important; flex-direction: column !important; gap: 4px !important; }
+  .manse-row { display: grid !important; grid-template-columns: 60px repeat(4, 1fr) !important; gap: 4px !important; }
+  .manse-cell { display: flex !important; flex-direction: column !important; align-items: center !important; }
+  .part-header-block { page-break-before: auto !important; page-break-after: avoid !important; break-after: avoid !important; }
+  .part-follow-content > *:first-child { page-break-before: avoid !important; break-before: avoid !important; }
+  .yearly-indicators, .sajux-print-panel-inner, .daeun-decade-card, .seyun-year-card {
+    background: #f7f7f7 !important; border-color: #cccccc !important;
+  }
+  .m-hangul, .yearly-ind-val, .vip-evidence-block td { color: #333333 !important; }
 
   table {
     border-collapse: collapse !important;
@@ -1943,25 +1952,28 @@ function generateDeepReport(data) {
     html += safeCall(()=>buildTOC(data), 'toc');
     html += safeCall(()=>buildForewordPage(data), 'foreword');
     html += safeCall(()=>buildPremiumExecutiveSummary(data), 'premium');
-    html += safeCall(()=>buildPartHeader(1,'당신이라는 사람','타고난 8자 · 인생 일대기','sec-part1-narrative',{noPageBreak:true}), 'part1header');
-    html += safeCall(()=>buildVipEvidenceBlock(data), 'vipEvidence');
-    html += safeCall(()=>buildLifePanoramaSection(data), 'lifepano');
+    html += safeCall(()=>wrapPartSection(
+        buildPartHeader(1,'당신이라는 사람','타고난 8자 · 인생 일대기','sec-part1-narrative',{noPageBreak:true}),
+        (buildVipEvidenceBlock(data)||'') + (buildLifePanoramaSection(data)||'')
+    ), 'part1section');
 
     // PHASE 2: 하드웨어 스펙 분석
-    html += safeCall(()=>buildPartHeader(2,'하드웨어 스펙 분석','에너지 분포 · 일하는 방식 패턴','sec-part2-hardware'), 'part2header');
-    html += safeCall(()=>buildChapter2_Wuxing(data), 'ch2wuxing');
-    html += safeCall(()=>buildChapter3_Sipseong(data), 'ch3sipseong');
+    html += safeCall(()=>wrapPartSection(
+        buildPartHeader(2,'하드웨어 스펙 분석','에너지 분포 · 일하는 방식 패턴','sec-part2-hardware'),
+        (buildChapter2_Wuxing(data)||'') + (buildChapter3_Sipseong(data)||'')
+    ), 'part2section');
 
     // PHASE 3: 도메인별 심층 해부
-    html += safeCall(()=>buildPartHeader(3,'핵심 4대 운 집중 조명','재물 · 직업 · 애정 · 건강','sec-part3-four'), 'part3header');
-    html += safeCall(()=>buildChapter4_Wealth(data), 'ch4');
-    html += safeCall(()=>buildChapter5_Career(data), 'ch5');
-    html += safeCall(()=>buildChapter6_Love(data), 'ch6love');
-    html += safeCall(()=>buildChapter8_Health(data), 'ch8health');
+    html += safeCall(()=>wrapPartSection(
+        buildPartHeader(3,'핵심 4대 운 집중 조명','재물 · 직업 · 애정 · 건강','sec-part3-four'),
+        (buildChapter4_Wealth(data)||'') + (buildChapter5_Career(data)||'') + (buildChapter6_Love(data)||'') + (buildChapter8_Health(data)||'')
+    ), 'part3section');
 
     // PHASE 4: 타임라인 전략 상황실
-    html += safeCall(()=>buildPartHeader(4,'타임라인 전략','대운 · 세운 · 월운','sec-part4-timeline'), 'part4header');
-    html += safeCall(()=>buildDaewunLoop(data), 'daewunloop');
+    html += safeCall(()=>wrapPartSection(
+        buildPartHeader(4,'타임라인 전략','대운 · 세운 · 월운','sec-part4-timeline'),
+        buildDaewunLoop(data)||''
+    ), 'part4headerBlock');
     html += '<div class="seyun-premium-vertical" style="display:flex;flex-direction:column;gap:24px;width:100%;max-width:100%;box-sizing:border-box;">';
     html += safeCall(()=>buildChapter6_SeYun(data), 'ch6seyun');
     html += safeCall(()=>buildChapter7_NextYears(data), 'ch7next');
@@ -1971,8 +1983,10 @@ function generateDeepReport(data) {
 
     // PHASE 5: 별첨(자미두수) + 최종 실행 지침
     html += safeCall(()=>buildZiWeiDestinyBlueprintSection(data), 'ziweiAppendix');
-    html += safeCall(()=>buildPartHeader(5,'최종 실행 지침 (개운법 및 체크리스트)','실행 우선순위 · 마무리','sec-part5-final'), 'part5header');
-    html += safeCall(()=>buildChapter9_Remedy(data), 'ch9remedy');
+    html += safeCall(()=>wrapPartSection(
+        buildPartHeader(5,'최종 실행 지침 (개운법 및 체크리스트)','실행 우선순위 · 마무리','sec-part5-final'),
+        buildChapter9_Remedy(data)||''
+    ), 'part5section');
 
     document.getElementById('report-container').innerHTML = html;
 
@@ -3943,10 +3957,10 @@ function buildDaewunLoop(data) {
         const loveAdv = pickLoveAdviceByScore(sc, 'daeun-love|' + gan + ji + '|' + age);
 
         const strategy = sc >= 2
-            ? `<div style="background:rgba(0,200,83,0.06);border-radius:8px;padding:14px;margin-top:12px;border:1px solid rgba(0,200,83,0.15);"><b style="color:#00C853;font-size:12px;">✦ 길한 대운 — 4분야 전략</b><div class="daeun-four-stack" style="display:grid!important;grid-template-columns:1fr!important;width:100%!important;gap:10px;margin-top:10px;"><div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;border-left:3px solid #c7a76a;"><div style="font-size:10px;color:#c7a76a;margin-bottom:4px;">💰 재물</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${wealthAdv}</p></div><div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;border-left:3px solid #c7a76a;"><div style="font-size:10px;color:#c7a76a;margin-bottom:4px;">💼 직업</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${careerAdv}</p></div><div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;border-left:3px solid #c7a76a;"><div style="font-size:10px;color:#c7a76a;margin-bottom:4px;">❤️ 애정</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${loveAdv}</p></div><div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;border-left:3px solid #c7a76a;"><div style="font-size:10px;color:#c7a76a;margin-bottom:4px;">🏥 건강</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${healthAdv}</p></div></div></div>`
+            ? `<div style="background:rgba(0,200,83,0.06);border-radius:8px;padding:14px;margin-top:12px;border:1px solid rgba(0,200,83,0.15);"><b style="color:#00C853;font-size:12px;">✦ 길한 대운 — 4분야 전략</b><div class="daeun-four-stack" style="display:grid!important;grid-template-columns:1fr!important;width:100%!important;gap:10px;margin-top:10px;"><div style="background:rgba(255,255,255,0.08);border-radius:6px;padding:8px 10px;border:1px solid rgba(199,167,106,0.18);border-left:3px solid #c7a76a;"><div style="font-size:10px;color:#c7a76a;margin-bottom:4px;">💰 재물</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${wealthAdv}</p></div><div style="background:rgba(255,255,255,0.08);border-radius:6px;padding:8px 10px;border:1px solid rgba(199,167,106,0.18);border-left:3px solid #c7a76a;"><div style="font-size:10px;color:#c7a76a;margin-bottom:4px;">💼 직업</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${careerAdv}</p></div><div style="background:rgba(255,255,255,0.08);border-radius:6px;padding:8px 10px;border:1px solid rgba(199,167,106,0.18);border-left:3px solid #c7a76a;"><div style="font-size:10px;color:#c7a76a;margin-bottom:4px;">❤️ 애정</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${loveAdv}</p></div><div style="background:rgba(255,255,255,0.08);border-radius:6px;padding:8px 10px;border:1px solid rgba(199,167,106,0.18);border-left:3px solid #c7a76a;"><div style="font-size:10px;color:#c7a76a;margin-bottom:4px;">🏥 건강</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${healthAdv}</p></div></div></div>`
             : sc >= 0
-            ? `<div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:14px;margin-top:12px;"><b style="color:#aaa;font-size:12px;">— 중화 대운 — 4분야 전략</b><div class="daeun-four-stack" style="display:grid!important;grid-template-columns:1fr!important;width:100%!important;gap:8px;margin-top:10px;"><div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;border-left:3px solid #888;"><div style="font-size:10px;color:#888;margin-bottom:4px;">💰 재물</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${wealthAdv}</p></div><div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;border-left:3px solid #888;"><div style="font-size:10px;color:#888;margin-bottom:4px;">💼 직업</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${careerAdv}</p></div><div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;border-left:3px solid #888;"><div style="font-size:10px;color:#888;margin-bottom:4px;">❤️ 애정</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${loveAdv}</p></div><div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;border-left:3px solid #888;"><div style="font-size:10px;color:#888;margin-bottom:4px;">🏥 건강</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${healthAdv}</p></div></div></div>`
-            : `<div style="background:rgba(255,150,0,0.06);border-radius:8px;padding:14px;margin-top:12px;border:1px solid rgba(255,150,0,0.12);"><b style="color:#ff9800;font-size:12px;">⚠ 흉한 대운 — 4분야 전략</b><div class="daeun-four-stack" style="display:grid!important;grid-template-columns:1fr!important;width:100%!important;gap:8px;margin-top:10px;"><div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;border-left:3px solid #ff9800;"><div style="font-size:10px;color:#ff9800;margin-bottom:4px;">💰 재물</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${wealthAdv}</p></div><div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;border-left:3px solid #ff9800;"><div style="font-size:10px;color:#ff9800;margin-bottom:4px;">💼 직업</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${careerAdv}</p></div><div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;border-left:3px solid #ff9800;"><div style="font-size:10px;color:#ff9800;margin-bottom:4px;">❤️ 애정</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${loveAdv}</p></div><div style="background:rgba(0,0,0,0.2);border-radius:6px;padding:8px 10px;border-left:3px solid #ff9800;"><div style="font-size:10px;color:#ff9800;margin-bottom:4px;">🏥 건강</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${healthAdv}</p></div></div></div>`;
+            ? `<div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:14px;margin-top:12px;"><b style="color:#aaa;font-size:12px;">— 중화 대운 — 4분야 전략</b><div class="daeun-four-stack" style="display:grid!important;grid-template-columns:1fr!important;width:100%!important;gap:8px;margin-top:10px;"><div style="background:rgba(255,255,255,0.08);border-radius:6px;padding:8px 10px;border:1px solid rgba(199,167,106,0.18);border-left:3px solid #888;"><div style="font-size:10px;color:#888;margin-bottom:4px;">💰 재물</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${wealthAdv}</p></div><div style="background:rgba(255,255,255,0.08);border-radius:6px;padding:8px 10px;border:1px solid rgba(199,167,106,0.18);border-left:3px solid #888;"><div style="font-size:10px;color:#888;margin-bottom:4px;">💼 직업</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${careerAdv}</p></div><div style="background:rgba(255,255,255,0.08);border-radius:6px;padding:8px 10px;border:1px solid rgba(199,167,106,0.18);border-left:3px solid #888;"><div style="font-size:10px;color:#888;margin-bottom:4px;">❤️ 애정</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${loveAdv}</p></div><div style="background:rgba(255,255,255,0.08);border-radius:6px;padding:8px 10px;border:1px solid rgba(199,167,106,0.18);border-left:3px solid #888;"><div style="font-size:10px;color:#888;margin-bottom:4px;">🏥 건강</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${healthAdv}</p></div></div></div>`
+            : `<div style="background:rgba(255,150,0,0.06);border-radius:8px;padding:14px;margin-top:12px;border:1px solid rgba(255,150,0,0.12);"><b style="color:#ff9800;font-size:12px;">⚠ 흉한 대운 — 4분야 전략</b><div class="daeun-four-stack" style="display:grid!important;grid-template-columns:1fr!important;width:100%!important;gap:8px;margin-top:10px;"><div style="background:rgba(255,255,255,0.08);border-radius:6px;padding:8px 10px;border:1px solid rgba(199,167,106,0.18);border-left:3px solid #ff9800;"><div style="font-size:10px;color:#ff9800;margin-bottom:4px;">💰 재물</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${wealthAdv}</p></div><div style="background:rgba(255,255,255,0.08);border-radius:6px;padding:8px 10px;border:1px solid rgba(199,167,106,0.18);border-left:3px solid #ff9800;"><div style="font-size:10px;color:#ff9800;margin-bottom:4px;">💼 직업</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${careerAdv}</p></div><div style="background:rgba(255,255,255,0.08);border-radius:6px;padding:8px 10px;border:1px solid rgba(199,167,106,0.18);border-left:3px solid #ff9800;"><div style="font-size:10px;color:#ff9800;margin-bottom:4px;">❤️ 애정</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${loveAdv}</p></div><div style="background:rgba(255,255,255,0.08);border-radius:6px;padding:8px 10px;border:1px solid rgba(199,167,106,0.18);border-left:3px solid #ff9800;"><div style="font-size:10px;color:#ff9800;margin-bottom:4px;">🏥 건강</div><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">${healthAdv}</p></div></div></div>`;
 
         // PERIOD_NARRATIVE: 간지 조합별 종합 서사 (window에 없으면 빈 객체로 폴백)
         const _PN = (typeof window !== 'undefined' && window.PERIOD_NARRATIVE) || {};
@@ -3970,7 +3984,7 @@ function buildDaewunLoop(data) {
                 </div>
                 <span style="font-size:13px;font-weight:700;color:${c};padding:4px 12px;border-radius:20px;background:rgba(255,255,255,0.05);">${b}</span>
             </div>
-            <div style="background:rgba(0,0,0,0.2);border-radius:8px;padding:14px;margin-bottom:12px;">
+            <div style="background:rgba(255,255,255,0.06);border-radius:8px;padding:14px;margin-bottom:12px;border:1px solid rgba(199,167,106,0.15);">
                 <p style="font-size:13.5px;color:#ddd;line-height:1.85;margin:0;">${periodNarr}</p>
             </div>
             ${strategy}
@@ -4123,7 +4137,7 @@ function buildSewunLoop(data) {
         const keywordDetail = isCoreThree
             ? '<div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.08);font-size:11.5px;color:#aaa;line-height:1.85;"><b style="color:#c7a76a;">재물·직장·서류·사람</b> — 재물: ' + ykwInd.wealth + ' / 직업: ' + ykwInd.career + ' / 문서: ' + ykwInd.doc + ' / 애정: ' + ykwInd.love + '</div>'
             : '';
-        const yearlyBodyHtml = '<div style="width:100%;box-sizing:border-box;background:rgba(0,0,0,0.2);border-radius:8px;padding:14px 16px;margin-bottom:10px;border:1px solid rgba(255,255,255,0.06);">'
+        const yearlyBodyHtml = '<div style="width:100%;box-sizing:border-box;background:rgba(255,255,255,0.06);border-radius:8px;padding:14px 16px;margin-bottom:10px;border:1px solid rgba(199,167,106,0.2);">'
             + strategicBlock + keywordDetail + '</div>';
         rows += `<div class="seyun-year-card yearly-card glass-panel" style="width:100%;max-width:100%;box-sizing:border-box;background:rgba(255,255,255,${isNow?'0.07':'0.03'});border-radius:10px;padding:16px;border:1px solid ${isNow?'var(--gold)':'rgba(255,255,255,0.07)'};break-inside:avoid;">
             <div style="display:flex;flex-direction:column;align-items:flex-start;width:100%;gap:8px;margin-bottom:10px;">
@@ -4598,12 +4612,17 @@ function buildChapter8_Health(data) {
 }
 
 // ═══════════════════════════════════════════════════════
-// PART HEADER
+// PART HEADER — 제목 카드는 바로 아래 본문과 같은 페이지에 묶음
 // ═══════════════════════════════════════════════════════
+function wrapPartFollowContent(bodyHtml) {
+    return '<div class="part-follow-content">' + (bodyHtml || '') + '</div>';
+}
+function wrapPartSection(headerHtml, bodyHtml) {
+    return '<div class="part-header-keep-group">' + (headerHtml || '') + wrapPartFollowContent(bodyHtml) + '</div>';
+}
 function buildPartHeader(num, title, subtitle, anchorId, opts) {
     opts = opts || {};
-    var pageBreak = opts.noPageBreak ? 'auto' : 'always';
-    var marginTop = opts.noPageBreak ? '20px' : '48px';
+    var marginTop = opts.noPageBreak ? '20px' : '40px';
     var c = { 1: '199,167,106', 2: '224,128,128', 3: '122,184,212', 4: '152,201,138', 5: '212,175,95' };
     var h = { 1: '#c7a76a', 2: '#e08080', 3: '#7ab8d4', 4: '#98c98a', 5: '#d4af37' };
     var ic = { 1: '🌿', 2: '✦', 3: '🕰', 4: '🌙', 5: '📋' };
@@ -4611,7 +4630,15 @@ function buildPartHeader(num, title, subtitle, anchorId, opts) {
     var color = c[num] != null ? c[num] : '199,167,106';
     var border = h[num] != null ? h[num] : '#c7a76a';
     var icon = ic[num] != null ? ic[num] : '📌';
-    return '<div' + idAttr + ' class="part-header-block report-chapter sajux-print-surface" style="display:block;background:linear-gradient(135deg,rgba(' + color + ',0.09),rgba(0,0,0,0));border-top:2px solid ' + border + ';border-radius:16px;padding:32px 36px;margin:' + marginTop + ' 0 8px;page-break-before:' + pageBreak + ';page-break-inside:avoid;break-inside:avoid;"><div class="part-header-label part-title" style="display:block;font-size:11px;color:' + border + ';letter-spacing:0.12em;margin-bottom:10px;font-weight:700;page-break-after:avoid !important;break-after:avoid !important;">[ 제 ' + num + '부 ]</div><div class="part-header-title" style="display:block;font-size:26px;font-weight:700;color:var(--text-primary);margin-bottom:8px;page-break-after:avoid !important;break-after:avoid !important;">' + icon + ' ' + title + '</div><div class="part-header-sub" style="display:block;font-size:13px;color:var(--text-dim);letter-spacing:1px;">' + subtitle + '</div></div>';
+    return '<div' + idAttr + ' class="part-header-block report-chapter sajux-print-surface" style="display:block;background:linear-gradient(135deg,rgba(' + color + ',0.09),rgba(255,255,255,0));border-top:2px solid ' + border + ';border-radius:16px;padding:28px 32px;margin:' + marginTop + ' 0 4px;page-break-before:auto;page-break-inside:avoid;break-inside:avoid;page-break-after:avoid;break-after:avoid;"><div class="part-header-label part-title" style="display:block;font-size:11px;color:' + border + ';letter-spacing:0.12em;margin-bottom:10px;font-weight:700;">[ 제 ' + num + '부 ]</div><div class="part-header-title" style="display:block;font-size:26px;font-weight:700;color:var(--text-primary);margin-bottom:8px;">' + icon + ' ' + title + '</div><div class="part-header-sub" style="display:block;font-size:13px;color:var(--text-dim);letter-spacing:1px;">' + subtitle + '</div></motion>';
+}
+
+function formatJijangganCellHtml(hiddenRaw) {
+    var raw = String(hiddenRaw || '-').replace(/<br\s*\/?>/gi, ' ').trim();
+    if (!raw || raw === '-') return '-';
+    return String(raw).split(/\s+/).filter(Boolean).map(function (chunk) {
+        return '<span class="m-badge badge tag jijanggan" style="display:inline-block;margin:2px 3px;font-size:10px;line-height:1.4;">' + chunk + '</span>';
+    }).join(' ');
 }
 
 // VIP 근거: 원국 8자 만세력 표 (프리미엄 요약 직후 배치)
@@ -4686,7 +4713,7 @@ function buildVipEvidenceBlock(data) {
         pillars.forEach(function(p,i){
             if(isUnk&&i===0){ev+='<td style="text-align:center;color:#444;">-</td>';return;}
             var hid=(typeof getHidden==='function'?getHidden(p.h[1],ds):'')||'-';
-            ev+='<td class="jijanggan badge tag sajux-print-surface" style="padding:4px 8px;text-align:center;font-size:10px;line-height:1.35;">'+String(hid).replace(/<br\s*\/?>/gi,' ')+'</td>';
+            ev+='<td style="padding:6px 8px;text-align:center;vertical-align:middle;">'+formatJijangganCellHtml(hid)+'</td>';
         });
         ev += '</tr>';
         // 12운성
@@ -4935,7 +4962,7 @@ function buildChapter9_Remedy(data) {
         <p class="ch-text">아래 표는 장식이 아닙니다. **일주일만** 색·방향·시간대를 고정해 보고, 덜 지친 조합을 달력에 붙이십시오. ${yongKr}을 몸에 입히면 **수면과 집중**이 먼저 돌아옵니다.</p>
         ${typeof buildRemedyYongHeeMindsetHTML === 'function' ? buildRemedyYongHeeMindsetHTML(data) : ''}
 
-        <table class="remedy-checklist-table" style="width:100%;border-collapse:collapse;margin:18px 0;background:rgba(0,0,0,0.22);border:1px solid rgba(199,167,106,0.28);border-radius:12px;overflow:hidden;font-size:12px;">
+        <table class="remedy-checklist-table" style="width:100%;border-collapse:collapse;margin:18px 0;background:rgba(255,255,255,0.04);border:1px solid rgba(199,167,106,0.35);border-radius:12px;overflow:hidden;font-size:12px;">
             <caption style="caption-side:top;text-align:left;padding:0 4px 12px;font-size:11px;color:var(--gold);font-weight:800;letter-spacing:1px;">실행 체크리스트 (모바일 한 화면 캡처용)</caption>
             <thead>
                 <tr style="background:rgba(199,167,106,0.14);color:#f0e6d2;">
@@ -4945,14 +4972,14 @@ function buildChapter9_Remedy(data) {
                 </tr>
             </thead>
             <tbody>
-                <tr><td style="padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);color:#c9c9c9;vertical-align:top;">행운 색상</td><td style="padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);color:#e8dfcf;font-weight:600;">${colorDB.good}<div style="font-size:11px;color:#888;font-weight:400;margin-top:4px;">의복·소품·배경에 반영</div></td><td style="padding:10px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.06);color:#7a8494;">□</td></tr>
-                <tr><td style="padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);color:#c9c9c9;vertical-align:top;">주의 색상</td><td style="padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);color:#e8b8b0;font-weight:600;">${colorDB.bad}<div style="font-size:11px;color:#888;font-weight:400;margin-top:4px;">과다 노출 최소화</div></td><td style="padding:10px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.06);color:#7a8494;">□</td></tr>
-                <tr><td style="padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);color:#c9c9c9;vertical-align:top;">행운 방위</td><td style="padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);color:#e8dfcf;font-weight:600;">${colorDB.dir}<div style="font-size:11px;color:#888;font-weight:400;margin-top:4px;">책상·침실 동선</div></td><td style="padding:10px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.06);color:#7a8494;">□</td></tr>
-                <tr><td style="padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);color:#c9c9c9;vertical-align:top;">행운 숫자</td><td style="padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);color:#e8dfcf;font-weight:600;">${colorDB.num}<div style="font-size:11px;color:#888;font-weight:400;margin-top:4px;">일정·번호 규칙에 활용</div></td><td style="padding:10px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.06);color:#7a8494;">□</td></tr>
-                <tr><td style="padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);color:#c9c9c9;vertical-align:top;">행운 보석</td><td style="padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);color:#e8dfcf;font-weight:600;">${colorDB.gem}<div style="font-size:11px;color:#888;font-weight:400;margin-top:4px;">지니거나 책상 위 배치</div></td><td style="padding:10px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.06);color:#7a8494;">□</td></tr>
-                <tr><td style="padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);color:#c9c9c9;vertical-align:top;">식이 개운법</td><td style="padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);color:#ddd;">${colorDB.food}</td><td style="padding:10px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.06);color:#7a8494;">□</td></tr>
-                <tr><td style="padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);color:#c9c9c9;vertical-align:top;">최적 시간대</td><td style="padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);color:#ddd;">${colorDB.time}</td><td style="padding:10px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.06);color:#7a8494;">□</td></tr>
-                <tr><td style="padding:10px;color:#c9c9c9;vertical-align:top;">귀인 조건</td><td style="padding:10px;color:#ddd;">${colorDB.guien}</td><td style="padding:10px;text-align:center;color:#7a8494;">□</td></tr>
+                <tr><td style="padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);color:#4a4a4a;vertical-align:top;">행운 색상</td><td style="padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);color:#3d3428;font-weight:600;">${colorDB.good}<div style="font-size:11px;color:#888;font-weight:400;margin-top:4px;">의복·소품·배경에 반영</div></td><td style="padding:10px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.06);color:#7a8494;">□</td></tr>
+                <tr><td style="padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);color:#4a4a4a;vertical-align:top;">주의 색상</td><td style="padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);color:#e8b8b0;font-weight:600;">${colorDB.bad}<div style="font-size:11px;color:#888;font-weight:400;margin-top:4px;">과다 노출 최소화</div></td><td style="padding:10px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.06);color:#7a8494;">□</td></tr>
+                <tr><td style="padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);color:#4a4a4a;vertical-align:top;">행운 방위</td><td style="padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);color:#3d3428;font-weight:600;">${colorDB.dir}<div style="font-size:11px;color:#888;font-weight:400;margin-top:4px;">책상·침실 동선</div></td><td style="padding:10px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.06);color:#7a8494;">□</td></tr>
+                <tr><td style="padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);color:#4a4a4a;vertical-align:top;">행운 숫자</td><td style="padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);color:#3d3428;font-weight:600;">${colorDB.num}<div style="font-size:11px;color:#888;font-weight:400;margin-top:4px;">일정·번호 규칙에 활용</div></td><td style="padding:10px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.06);color:#7a8494;">□</td></tr>
+                <tr><td style="padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);color:#4a4a4a;vertical-align:top;">행운 보석</td><td style="padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);color:#3d3428;font-weight:600;">${colorDB.gem}<div style="font-size:11px;color:#888;font-weight:400;margin-top:4px;">지니거나 책상 위 배치</div></td><td style="padding:10px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.06);color:#7a8494;">□</td></tr>
+                <tr><td style="padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);color:#4a4a4a;vertical-align:top;">식이 개운법</td><td style="padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);color:#ddd;">${colorDB.food}</td><td style="padding:10px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.06);color:#7a8494;">□</td></tr>
+                <tr><td style="padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);color:#4a4a4a;vertical-align:top;">최적 시간대</td><td style="padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);color:#ddd;">${colorDB.time}</td><td style="padding:10px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.06);color:#7a8494;">□</td></tr>
+                <tr><td style="padding:10px;color:#4a4a4a;vertical-align:top;">귀인 조건</td><td style="padding:10px;color:#ddd;">${colorDB.guien}</td><td style="padding:10px;text-align:center;color:#7a8494;">□</td></tr>
             </tbody>
         </table>
 
