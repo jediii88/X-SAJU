@@ -482,7 +482,7 @@ function buildCompatOpenerInner(topic, ctx) {
         ],
         strategy: [
             '소통은 감정 맞추기보다 **일정·돈 숫자**부터 맞출 때 비용이 줄어요.',
-            '동업은 KPI 한 줄, 친밀은 피로 주 **휴식 슬롯** — 세 가지를 따로 관리하십시오.'
+            '동업은 역할 한 줄, 친밀은 피로 주 **휴식 슬롯** — 세 가지를 따로 관리하십시오.'
         ],
         timeline: [
             voiceMingliLine('대운 싱크는 두 사람의 10년 계절이 겹치는지 봅니다.') + ' 초록·빨강 카드만 골라 일정을 잡으세요.',
@@ -1033,6 +1033,37 @@ function mentorBreakSentences(htmlish) {
 function boldStarsToStrong(s) {
     return String(s == null ? '' : s).replace(/\*\*([\s\S]*?)\*\*/g, '<strong>$1</strong>');
 }
+
+/** 사주아이형 톤 정리 — VIP·카드·고정문 공통 (【】·당신→님은·IT슬랭 완화) */
+function voicePolishParagraph(data, text) {
+    var s = String(text == null ? '' : text);
+    var nm = nmNormalize(data && data.name) || '고객';
+    s = s.replace(/【/g, '**').replace(/】/g, '**');
+    s = s.replace(/당신의/g, nmUi(nm));
+    s = s.replace(/당신은/g, nmDnim(nm) + '은');
+    s = s.replace(/당신이/g, nmIGa(nm));
+    s = s.replace(/당신을/g, nmEulReul(nm));
+    s = s.replace(/당신께/g, nmKke(nm));
+    s = s.replace(/당신께는/g, nmKkeEunNeun(nm));
+    s = s.replace(/\bIT\b/g, '전문');
+    s = s.replace(/파이프라인/g, '수입 줄기');
+    s = s.replace(/메시지·문의/g, '문의·연락');
+    s = s.replace(/메시지·댓글/g, '문자·댓글');
+    s = s.replace(/온라인 실험/g, '새 시도');
+    s = s.replace(/온라인에 배치/g, '밖으로 드러나');
+    s = s.replace(/온라인 모임/g, '모임');
+    s = s.replace(/KPI/g, '역할 한 줄');
+    s = s.replace(/고변동/g, '변동 큰');
+    s = s.replace(/테마 성격 자산/g, '변동 큰 자산');
+    s = s.replace(/새 온라인 채널/g, '새 소개 경로');
+    s = s.replace(/플랫폼/g, '무대');
+    return s;
+}
+
+function voicePolishHtml(data, html) {
+    return String(html == null ? '' : html);
+}
+
 /** 세운 본문 등에 남은 고정 변명 문구(옛 입력·캐시 잔재) 제거 */
 function stripSeYunMacroLeaks(html) {
     var s = String(html == null ? '' : html);
@@ -3072,7 +3103,7 @@ function buildShinsalSummary(data) {
         const info = window.SHINSAL_DESC?.[s] || {cat:'신살', color:'#aaa', short:s, detail:''};
         const catColor = goodCats.includes(info.cat) ? '#c7a76a' : info.color || '#e74c3c';
         const isGood = goodCats.includes(info.cat);
-        const personalTip = personalTips[s] || '';
+        const personalTip = voicePolishParagraph(data, personalTips[s] || '');
         const baseDetail = info.detail || '';
         return `<div style="background:rgba(255,255,255,0.03);border-radius:10px;padding:16px 18px;margin-bottom:14px;border-left:3px solid ${catColor};">
             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;">
@@ -3202,7 +3233,7 @@ function buildCurrentPeriodSummary(data) {
         daeunHtml = `<div style="margin-bottom:12px;padding:14px;background:rgba(199,167,106,0.06);border:1px solid var(--gold);border-radius:10px;">
             <div style="font-size:11px;color:var(--gold);font-weight:700;margin-bottom:8px;letter-spacing:1px;">▶ 현재 대운 — ${curDaeun.age}세~${curDaeun.age+9}세 · 지금 진행 중인 10년 운세</div>
             <div style="font-size:18px;font-weight:900;color:var(--gold);font-family:Noto Serif KR,serif;margin-bottom:6px;"><span style="font-family:Noto Serif KR,serif;">${formatGanzhiPair(dg, dj)}</span> <span style="font-size:13px;color:#bbb;font-weight:400;">${KN[dOh]||''}·${KN[djOh]||''}</span></div>
-            <p style="font-size:13px;color:#ddd;line-height:1.8;margin:0 0 8px;">${dStrat}</p>
+            <p style="font-size:13px;color:#ddd;line-height:1.8;margin:0 0 8px;">${voicePolishParagraph(data, dStrat)}</p>
             <span style="font-size:12px;font-weight:700;color:${dcol};">${gb(ds)}</span>
         </div>`;
     }
@@ -3255,7 +3286,7 @@ function buildCurrentPeriodSummary(data) {
             <div style="font-size:11px;color:#4a9e6a;font-weight:700;margin-bottom:8px;letter-spacing:1px;">▶ ${formatYearWithGanzhi(curY, sg, sj)} 세운 · 지금 현재의 연운</div>
             <div style="font-size:17px;font-weight:900;color:#4a9e6a;font-family:Noto Serif KR,serif;margin-bottom:6px;"><span style="font-family:Noto Serif KR,serif;">${formatGanzhiPair(sg, sj)}</span> <span style="font-size:13px;color:#bbb;font-weight:400;">${KN[sOh]||''}·${KN[sjOh]||''}</span></div>
             ${crossText ? `<p style="font-size:12.5px;color:#aaa;line-height:1.75;margin:0 0 8px;border-left:2px solid #4a9e6a;padding-left:10px;">${crossText}</p>` : ''}
-            <p style="font-size:13px;color:#ddd;line-height:1.8;margin:0 0 8px;">${sAdv}</p>
+            <p style="font-size:13px;color:#ddd;line-height:1.8;margin:0 0 8px;">${voicePolishParagraph(data, sAdv)}</p>
             <span style="font-size:12px;font-weight:700;color:${scol};">${gb(ss)}</span>
         </div>`;
     } catch(e) {}
@@ -3293,7 +3324,7 @@ function buildCurrentPeriodSummary(data) {
             <div style="font-size:11px;color:#5b7fc4;font-weight:700;margin-bottom:8px;letter-spacing:1px;">▶ ${curY2}년 ${formatMonthWithGanzhi(curM2, mg, mj)} · 지금 이 달의 기운</div>
             <div style="font-size:16px;font-weight:900;color:#5b7fc4;font-family:Noto Serif KR,serif;margin-bottom:6px;"><span style="font-family:Noto Serif KR,serif;">${formatGanzhiPair(mg, mj)}</span> <span style="font-size:13px;color:#bbb;font-weight:400;">${KN[mOh]||''}·${KN[mjOh]||''}</span></div>
             <p style="font-size:13px;color:#ddd;line-height:1.8;margin:0 0 6px;">${WL[mj]||'이달의 기운입니다.'}</p>
-            <p style="font-size:12.5px;color:#bbb;line-height:1.75;margin:0 0 8px;">${mAdv}</p>
+            <p style="font-size:12.5px;color:#bbb;line-height:1.75;margin:0 0 8px;">${boldStarsToStrong(voicePolishParagraph(data, mAdv))}</p>
             <span style="font-size:12px;font-weight:700;color:${mcol};">${gb(ms)}</span>
         </div>`;
     } catch(e) {}
@@ -3668,7 +3699,7 @@ function buildPremiumExecutiveSummary(data) {
         modules.map(function(m){
             return '<div class="vip-module-item" style="margin-bottom:16px;border-left:3px solid #d4af37;padding-left:14px;">'
                 + '<div class="vip-module-title" style="color:#d4af37;font-weight:700;margin-bottom:6px;font-size:13.5px;font-family:\'Noto Serif KR\',serif;letter-spacing:0.02em;">' + escHtmlAttr(m.title) + '</div>'
-                + '<div class="vip-module-desc" style="color:#d8d3c9;line-height:1.88;font-size:13.5px;margin:0;">' + escHtmlAttr(m.body) + '</div>'
+                + '<div class="vip-module-desc" style="color:#d8d3c9;line-height:1.88;font-size:13.5px;margin:0;">' + boldStarsToStrong(voicePolishParagraph(data, m.body)) + '</div>'
                 + '</div>';
         }).join('') +
         '</div>' +
@@ -4465,7 +4496,7 @@ function buildChapter3_Sipseong(data) {
     const sipText = window.SAJU_DB?.SIPSEONG?.[mainSip] || '주도적으로 판을 짜는 기질입니다.';
     const total = Math.max(Object.values(sipseong).reduce((a,b)=>a+b,0),1);
     const sipDB = {
-        '비견':'**동료·경쟁이 잦은 조직**에서 지는 걸 견디기 어렵고, 내 방식이 먼저 나옵니다. 동업에서 역할이 겹치면 마찰이 납니다. **역할·KPI를 문장으로 고정**하고 들어가십시오. 독립·세일즈·프로덕트에 강합니다.',
+        '비견':'**동료·경쟁이 잦은 조직**에서 지는 걸 견디기 어렵고, 내 방식이 먼저 나옵니다. 동업에서 역할이 겹치면 마찰이 납니다. **역할을 문장으로 고정**하고 들어가십시오. 독립·세일즈·프로덕트에 강합니다.',
         '겁재':'**선납·승부·지출 신호**가 강합니다. 위기와 협상에서 깨어나지만, 돈은 속도가 아니라 통제에서 남습니다. **충동 지출·보증은 원칙적으로 거절**하십시오. 영업·투자·위기 대응에 쓰면 무기가 됩니다.',
         '식신':'**콘텐츠·디자인·기획**처럼 손끝 산출물이 평가로 바로 붙는 일에서 살아납니다. 재능이 곧 수입이 되도록 **‘판매 가능한 산출물’ 한 종류**만 먼저 고르십시오.',
         '상관':'**기준·감사·브랜드 방어** 쪽으로 뇌가 먼저 돌아갑니다. 조직 규율과 정면으로 부딪히면 비용이 큽니다. **자율 계약·프로젝트 단위**로 일하십시오.',
@@ -5718,18 +5749,18 @@ function buildZiWeiDestinyBlueprintSection(data) {
     var p1 = '<p style="margin:0 0 14px;line-height:1.92;color:#ddd;font-size:13.5px;">'
         + nmEunNeun(nm) + ' 혼자서도 많이 견디셨을지 모릅니다. '
         + '출생 차트가 계절이라면, 자미두수는 그 계절을 살아가는 방식입니다. '
-        + '년지를 명궁으로 두는 이 근사 모형에서, 당신의 중심에는 <strong>' + M.k + '(' + M.h + ')</strong>의 별이 박혀 있어 '
-        + M.p + ' '
-        + M.a + '</p>';
+        + '년지를 명궁으로 두는 이 근사 모형에서, ' + nmEunNeun(nm) + ' 중심에는 <strong>' + M.k + '(' + M.h + ')</strong>의 별이 박혀 있어 '
+        + voicePolishParagraph(data, M.p) + ' '
+        + voicePolishParagraph(data, M.a) + '</p>';
     var p2 = '<p style="margin:0 0 14px;line-height:1.92;color:#ddd;font-size:13.5px;">'
         + '돈과 직함이 따로 노는 듯할 때가 많습니다. '
         + '재백궁에는 <strong>' + C.k + '(' + C.h + ')</strong>의 심리 금융 패턴이 깔리고, 관록궁에는 <strong>' + G.k + '(' + G.h + ')</strong>의 무대가 겹칩니다. '
-        + C.f1 + ' ' + G.f2 + ' '
-        + '**변동성이 큰 투자**는 손실 한도 아래로만 두고, **정기 저축·배당·월세** 축으로 월 생활비의 다음 층을 먼저 쌓으십시오.</p>';
+        + voicePolishParagraph(data, C.f1) + ' ' + voicePolishParagraph(data, G.f2) + ' '
+        + '**변동 큰 투자**는 손실 한도 아래로만 두고, **정기 저축·배당·월세** 축으로 월 생활비의 다음 층을 먼저 쌓으십시오.</p>';
     var p3 = '<p style="margin:0;line-height:1.92;color:#ddd;font-size:13.5px;">'
         + '밖으로 나가야만 숨이 트이기도 합니다. '
         + '천이궁에는 <strong>' + T.k + '(' + T.h + ')</strong>의 이동·노출 기운, 노복궁에는 <strong>' + N.k + '(' + N.h + ')</strong>의 팀·팔로워 기운이 겹칩니다. '
-        + T.o + ' ' + N.o + ' '
+        + voicePolishParagraph(data, T.o) + ' ' + voicePolishParagraph(data, N.o) + ' '
         + '**취미·직무가 맞는 소모임**에는 먼저 **서로의 일과 생활 리듬**을 묻고, 편할 때 **짧은 대면 한 번**으로 분위기를 확인한 뒤 관계를 이어 가십시오.</p>';
     var zwLead = buildMetaphorHookTitle(data);
     return '<div id="sec-ziwei-appendix" class="report-chapter chapter-start appendix-ziwei" style="padding-top:8px;margin-bottom:8px;">'
