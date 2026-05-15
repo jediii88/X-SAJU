@@ -54,3 +54,15 @@ html:not([data-theme="light"]) .brand {
   text-shadow: none !important;
 }
 
+/* Light mode: wuxing bar chart — clean white card */
+html[data-theme="light"] .wuxing-bar-chart {
+  background: #ffffff !important;
+  border: 1px solid rgba(199,167,106,0.3) !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06) !important;
+}
+html[data-theme="light"] .wuxing-bar-chart .wuxing-bar-row > div:first-child,
+html[data-theme="light"] .ch-text,
+html[data-theme="light"] .ch-text b {
+  color: #1c1814 !important;
+}
+
