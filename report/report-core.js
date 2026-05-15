@@ -2363,24 +2363,31 @@ function formatReportAccessLine(data) {
     return '본 링크는 발행 기준 ' + days + '일간 열람·PDF 저장이 가능합니다. (서버에서 발행일·만료일을 넘기면 이 문구가 자동으로 바뀝니다.)';
 }
 
-// 리포트 기준 시각(내부 시계): 서버가 넘긴 기준일이 있으면 우선 사용
-function getReportBaseDate(data) {
-    var raw = data && (data.reportBaseAt || data.reportIssuedAt || data.analysisAt || data.serverNow);
-    if (raw && /^\d+$/.test(String(raw))) {
-        var n = parseInt(String(raw), 10);
-        if (String(raw).length === 10) raw = n * 1000;
-    }
-    if (raw) {
+/** Date 보장 — ISO 문자열·타임스탬프·Date 객체 모두 허용 */
+function ensureValidDate(val) {
+    if (val instanceof Date && !isNaN(val.getTime())) return val;
+    if (val != null && val !== '') {
+        var raw = val;
+        if (/^\d+$/.test(String(raw))) {
+            var n = parseInt(String(raw), 10);
+            if (String(raw).length === 10) raw = n * 1000;
+        }
         var d = new Date(raw);
         if (!isNaN(d.getTime())) return d;
     }
     return new Date();
 }
 
+// 리포트 기준 시각(내부 시계): 서버가 넘긴 기준일이 있으면 우선 사용
+function getReportBaseDate(data) {
+    var raw = data && (data.reportBaseAt || data.reportIssuedAt || data.analysisAt || data.serverNow);
+    return ensureValidDate(raw);
+}
+
 /** 리포트 기준일 시점 만 나이(양력 생일 기준 근사). */
 function getClientAgeYearsAtReport(data) {
     if (!data) return 0;
-    var ref = getReportBaseDate(data);
+    var ref = ensureValidDate(getReportBaseDate(data));
     var y = data.coverSolarY != null ? Number(data.coverSolarY) : (data.birthYear != null ? Number(data.birthYear) : (data.birthDate && String(data.birthDate).length >= 4 ? parseInt(String(data.birthDate).substring(0, 4), 10) : 1988));
     var m = data.coverSolarM != null ? Number(data.coverSolarM) : 1;
     var d = data.coverSolarD != null ? Number(data.coverSolarD) : 1;
@@ -5858,7 +5865,8 @@ function showLoading(msg, callback) {
         try { callback(); } catch(e) {
             console.error('분석 오류:', e);
             if(loadEl) loadEl.style.display = 'none';
-            alert('분석 중 오류가 발생했습니다:\n' + e.message + '\n\n' + (e.stack||'').split('\n').slice(0,3).join('\n'));
+            var _bv = (typeof window !== 'undefined' && window.__SAJUX_CORE_V__) ? window.__SAJUX_CORE_V__ : '';
+            alert('분석 중 오류가 발생했습니다:\n' + e.message + '\n\n' + (e.stack||'').split('\n').slice(0,3).join('\n') + (_bv ? '\n\n[빌드 ' + _bv + '] 캐시일 수 있습니다. Cmd+Shift+R(맥) 또는 Ctrl+F5로 새로고침 후 다시 시도하세요.' : '\n\nCmd+Shift+R(맥) 또는 Ctrl+F5로 강력 새로고침 후 다시 시도하세요.'));
         }
         if(loadEl) loadEl.style.display = 'none';
     }, 100);
