@@ -106,12 +106,21 @@
   .pdf-btn, .nav-floating, .sajux-pdf-wide-btn {
     display: none !important;
   }
-  .sajux-logo.dark { display: none !important; mix-blend-mode: normal !important; }
-  .sajux-logo.light {
+  #sec-cover, .cover-page { background: #ffffff !important; }
+  .cover-page .sajux-logo-cover-screen,
+  .sajux-logo.dark { display: none !important; visibility: hidden !important; mix-blend-mode: normal !important; }
+  .cover-page .sajux-logo-cover-print,
+  .sajux-logo.light,
+  .sajux-logo-cover-print {
     display: block !important;
+    visibility: visible !important;
     mix-blend-mode: normal !important;
     opacity: 1 !important;
     filter: none !important;
+    max-width: 520px !important;
+    width: 72% !important;
+    height: auto !important;
+    margin: 0 auto 12px !important;
   }
   .sajux-logo-wrap img {
     -webkit-print-color-adjust: exact !important;
