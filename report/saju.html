@@ -57,7 +57,7 @@
       // 자동실행은 window.load IIFE에서 처리 (하단 스크립트 참조)
     })();
     </script>
-    <meta name="version" content="1778833286">
+    <meta name="version" content="1778833650">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -660,11 +660,13 @@
         }
         .sajux-logo.light { display: none; }
 
-        /* 표지: 화면=다크 로고(screen), 인쇄=라이트 로고(백지용) — mix-blend screen은 PDF에서 사라짐 */
-        .cover-page .sajux-logo-cover-print { display: none !important; }
-        .cover-page .sajux-logo-cover-screen { display: block; mix-blend-mode: screen; opacity: 0.96; }
-        body.light-mode .cover-page .sajux-logo-cover-screen { display: none !important; }
-        body.light-mode .cover-page .sajux-logo-cover-print { display: block !important; mix-blend-mode: normal !important; opacity: 1 !important; }
+        /* 표지: 화면 전용 — 인쇄 시에는 @media print 규칙 사용 (screen 숨김이 print에 남지 않게) */
+        @media screen {
+            .cover-page .sajux-logo-cover-print { display: none !important; }
+            .cover-page .sajux-logo-cover-screen { display: block; mix-blend-mode: screen; opacity: 0.96; }
+            body.light-mode .cover-page .sajux-logo-cover-screen { display: none !important; }
+            body.light-mode .cover-page .sajux-logo-cover-print { display: block !important; mix-blend-mode: normal !important; opacity: 1 !important; }
+        }
 
         /* Light mode: use black logo, remove white matte */
         body.light-mode .sajux-logo.dark { display: none; }
@@ -1958,14 +1960,19 @@
             /* PDF=밝은 용지: 표지·전역 로고 — screen 블렌드는 백지에서 사라지므로 라이트 PNG 강제 */
             #sec-cover, .cover-page { background: #ffffff !important; }
             .cover-page .sajux-logo-cover-screen,
-            .sajux-logo.dark { display: none !important; }
+            .sajux-logo.dark { display: none !important; visibility: hidden !important; mix-blend-mode: normal !important; }
             .cover-page .sajux-logo-cover-print,
-            .sajux-logo.light {
+            .sajux-logo.light,
+            .sajux-logo-cover-print {
                 display: block !important;
                 visibility: visible !important;
                 mix-blend-mode: normal !important;
                 opacity: 1 !important;
                 filter: none !important;
+                max-width: 520px !important;
+                width: 72% !important;
+                height: auto !important;
+                margin: 0 auto 12px !important;
             }
             .sajux-logo-wrap img { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             .sajux-pdf-wide-btn { display: none !important; }
@@ -2072,8 +2079,8 @@
     </script>
 
 <!-- SAJUX_CACHE_BUSTER_START -->
-<meta name="sajux-build" content="1778833286">
-<script>(function(){var v='1778833286';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
+<meta name="sajux-build" content="1778833650">
+<script>(function(){var v='1778833650';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
 <!-- SAJUX_CACHE_BUSTER_END -->
 </head>
 <body>
@@ -2966,12 +2973,21 @@ body.light-mode #sajux-pdf-fab {
         break-after: avoid !important;
     }
     .pdf-btn, .nav-floating { display: none !important; }
-    .sajux-logo.dark { display: none !important; mix-blend-mode: normal !important; }
-    .sajux-logo.light {
+    #sec-cover, .cover-page { background: #ffffff !important; }
+    .cover-page .sajux-logo-cover-screen,
+    .sajux-logo.dark { display: none !important; visibility: hidden !important; mix-blend-mode: normal !important; }
+    .cover-page .sajux-logo-cover-print,
+    .sajux-logo.light,
+    .sajux-logo-cover-print {
         display: block !important;
+        visibility: visible !important;
         mix-blend-mode: normal !important;
         opacity: 1 !important;
         filter: none !important;
+        max-width: 520px !important;
+        width: 72% !important;
+        height: auto !important;
+        margin: 0 auto 12px !important;
     }
     .sajux-logo-wrap img { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
     .card, .yearly-card, .monthly-card, .module-item, table, h1, h2, h3 {
@@ -3089,12 +3105,21 @@ body.light-mode #sajux-pdf-fab {
   .pdf-btn, .nav-floating, .sajux-pdf-wide-btn {
     display: none !important;
   }
-  .sajux-logo.dark { display: none !important; mix-blend-mode: normal !important; }
-  .sajux-logo.light {
+  #sec-cover, .cover-page { background: #ffffff !important; }
+  .cover-page .sajux-logo-cover-screen,
+  .sajux-logo.dark { display: none !important; visibility: hidden !important; mix-blend-mode: normal !important; }
+  .cover-page .sajux-logo-cover-print,
+  .sajux-logo.light,
+  .sajux-logo-cover-print {
     display: block !important;
+    visibility: visible !important;
     mix-blend-mode: normal !important;
     opacity: 1 !important;
     filter: none !important;
+    max-width: 520px !important;
+    width: 72% !important;
+    height: auto !important;
+    margin: 0 auto 12px !important;
   }
   .sajux-logo-wrap img {
     -webkit-print-color-adjust: exact !important;
