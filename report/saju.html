@@ -57,7 +57,7 @@
       // 자동실행은 window.load IIFE에서 처리 (하단 스크립트 참조)
     })();
     </script>
-    <meta name="version" content="1778860769">
+    <meta name="version" content="1778860910">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -2082,8 +2082,8 @@
     </script>
 
 <!-- SAJUX_CACHE_BUSTER_START -->
-<meta name="sajux-build" content="1778860769">
-<script>(function(){var v='1778860769';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
+<meta name="sajux-build" content="1778860910">
+<script>(function(){var v='1778860910';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
 <!-- SAJUX_CACHE_BUSTER_END -->
 </head>
 <body>
@@ -2418,12 +2418,15 @@ globalSajuData = {};
 var __slotTimeUnknown = {};
 let userCount = 1;
 
+/** URL용 이름: 첫·끝만 남기고 가운데는 * */
 function maskNameForLink(name) {
     var s = String(name || '').trim();
     if (!s) return '';
     if (s.length <= 1) return '*';
     if (s.length === 2) return s.charAt(0) + '*';
-    return s.charAt(0) + '*' + s.charAt(s.length - 1);
+    var mid = '';
+    for (var i = 0; i < s.length - 2; i++) mid += '*';
+    return s.charAt(0) + mid + s.charAt(s.length - 1);
 }
 function issuerMaskedForLink() {
     try {
@@ -2476,7 +2479,7 @@ function parseTimeForCouple(slot) {
     return { h: parseInt(parts[0], 10) || 12, mi: parseInt(parts[1], 10) || 0, unknown: false };
 }
 function appendPersonCoupleParams(px, prefix, rec) {
-    px.set(prefix + '_n', rec.name || (prefix === 'a' ? 'A' : 'B'));
+    px.set(prefix + '_n', maskNameForLink(rec.name || (prefix === 'a' ? 'A' : 'B')));
     px.set(prefix + '_g', rec.gender);
     px.set(prefix + '_c', rec.cal);
     px.set(prefix + '_y', String(rec.y));
