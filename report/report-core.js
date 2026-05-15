@@ -3815,8 +3815,8 @@ function buildPremiumExecutiveSummary(data) {
                 + '</div>';
         }).join('') +
         '</div>' +
-        '<div class="sajux-access-note" style="margin-top:20px;padding:14px 16px;border-radius:10px;background:rgba(248,246,242,0.98);border:1px solid rgba(199,167,106,0.35);font-size:12.5px;line-height:1.78;color:#333;">' +
-        '<div style="color:#8b6914;font-weight:700;margin-bottom:6px;">열람·PDF 안내</div>' +
+        '<div class="sajux-access-note" style="margin-top:20px;padding:14px 16px;border-radius:10px;background:rgba(20,18,14,0.85);border:1px solid rgba(199,167,106,0.25);font-size:12.5px;line-height:1.78;color:#c8c0b0;">' +
+        '<div style="color:#c9a55a;font-weight:700;margin-bottom:6px;">열람·PDF 안내</div>' +
         accessLine + '<br>발행일(출력 기준): ' + reportDateStr + '<br>브라우저에서 <strong>인쇄 → PDF로 저장</strong>을 실행해 전략 문서를 보관하십시오.' +
         '</div>' +
         '<p class="premium-disclaimer" style="margin:16px 0 0;font-size:11.5px;line-height:1.75;color:#777;">본 리포트는 전통 명리학 기반의 전략 해석 자료입니다. 의학·법률·투자 자문이 아니며, 실제 실행 판단과 책임은 본인에게 있습니다.<br><span style="display:block;margin-top:8px;">' + getAgeBasisNoteHtml('disclaimer') + '</span></p>' +
