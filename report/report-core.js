@@ -481,7 +481,7 @@ function buildPart1DeepHookHTML(data) {
     if (!sig.triggerUnifiedEmpathy && !sig.triggerFocusScatter && !sig.triggerVoidWave) return '';
     var box = 'margin-top:22px;padding:18px 20px;border-radius:14px;border:1px solid rgba(199,167,106,0.32);background:rgba(199,167,106,0.08);break-inside:avoid;page-break-inside:avoid;';
     var titleSt = 'font-size:11px;letter-spacing:0.14em;color:rgba(199,167,106,0.95);font-weight:800;margin-bottom:10px;';
-    var bodySt = 'font-size:13.5px;color:#e8e2d8;line-height:1.95;margin:0;';
+    var bodySt = 'font-size:13.5px;color:#333;line-height:1.95;margin:0;';
     var bodyStMult = bodySt + 'white-space:pre-line;';
     var gmParagraph = buildGongmangDeepHookCopy(data);
     var focusParagraph = '';
@@ -1736,6 +1736,7 @@ function getReportAssetUrl(file) {
 }
 
 function ensureSajuxPdfPrintForceStyles() {
+    if (document.querySelector('link[href*="report-print.css"]')) return;
     if (document.getElementById('sajux-pdf-print-force') || document.getElementById('sajux-pdf-print-force-dynamic')) return;
     var st = document.createElement('style');
     st.id = 'sajux-pdf-print-force-dynamic';
@@ -1977,7 +1978,7 @@ function generateDeepReport(data) {
     html += safeCall(()=>buildForewordPage(data), 'foreword');
     html += safeCall(()=>buildPremiumExecutiveSummary(data), 'premium');
     html += safeCall(()=>wrapPartSection(
-        buildPartHeader(1,'당신이라는 사람','타고난 8자 · 인생 일대기','sec-part1-narrative',{noPageBreak:true}),
+        buildPartHeader(1,'당신이라는 사람','타고난 8자 · 인생 일대기','sec-part1-narrative'),
         (buildVipEvidenceBlock(data)||'') + (buildLifePanoramaSection(data)||'')
     ), 'part1section');
 
@@ -2825,8 +2826,8 @@ function buildPremiumExecutiveSummary(data) {
                 + '</div>';
         }).join('') +
         '</div>' +
-        '<div style="margin-top:20px;padding:14px 16px;border-radius:10px;background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.06);font-size:12.5px;line-height:1.78;color:#aaa;">' +
-        '<div style="color:#c7a76a;font-weight:700;margin-bottom:6px;">열람·PDF 안내</div>' +
+        '<div class="sajux-access-note" style="margin-top:20px;padding:14px 16px;border-radius:10px;background:rgba(248,246,242,0.98);border:1px solid rgba(199,167,106,0.35);font-size:12.5px;line-height:1.78;color:#333;">' +
+        '<div style="color:#8b6914;font-weight:700;margin-bottom:6px;">열람·PDF 안내</div>' +
         accessLine + '<br>발행일(출력 기준): ' + reportDateStr + '<br>브라우저에서 <strong>인쇄 → PDF로 저장</strong>을 실행해 전략 문서를 보관하십시오.' +
         '</div>' +
         '<p class="premium-disclaimer" style="margin:16px 0 0;font-size:11.5px;line-height:1.75;color:#777;">본 리포트는 전통 명리학 기반의 전략 해석 자료입니다. 의학·법률·투자 자문이 아니며, 실제 실행 판단과 책임은 본인에게 있습니다.<br><span style="display:block;margin-top:8px;">' + getAgeBasisNoteHtml('disclaimer') + '</span></p>' +
@@ -4646,7 +4647,6 @@ function wrapPartSection(headerHtml, bodyHtml) {
 }
 function buildPartHeader(num, title, subtitle, anchorId, opts) {
     opts = opts || {};
-    var marginTop = opts.noPageBreak ? '20px' : '40px';
     var c = { 1: '199,167,106', 2: '224,128,128', 3: '122,184,212', 4: '152,201,138', 5: '212,175,95' };
     var h = { 1: '#c7a76a', 2: '#e08080', 3: '#7ab8d4', 4: '#98c98a', 5: '#d4af37' };
     var ic = { 1: '🌿', 2: '✦', 3: '🕰', 4: '🌙', 5: '📋' };
@@ -4654,7 +4654,7 @@ function buildPartHeader(num, title, subtitle, anchorId, opts) {
     var color = c[num] != null ? c[num] : '199,167,106';
     var border = h[num] != null ? h[num] : '#c7a76a';
     var icon = ic[num] != null ? ic[num] : '📌';
-    return '<div' + idAttr + ' class="part-header-block report-chapter sajux-print-surface" style="display:block;background:linear-gradient(135deg,rgba(' + color + ',0.09),rgba(255,255,255,0));border-top:2px solid ' + border + ';border-radius:16px;padding:28px 32px;margin:' + marginTop + ' 0 4px;page-break-before:auto;page-break-inside:avoid;break-inside:avoid;page-break-after:avoid;break-after:avoid;"><div class="part-header-label part-title" style="display:block;font-size:11px;color:' + border + ';letter-spacing:0.12em;margin-bottom:10px;font-weight:700;">[ 제 ' + num + '부 ]</div><div class="part-header-title" style="display:block;font-size:26px;font-weight:700;color:var(--text-primary);margin-bottom:8px;">' + icon + ' ' + title + '</div><div class="part-header-sub" style="display:block;font-size:13px;color:var(--text-dim);letter-spacing:1px;">' + subtitle + '</div></div>';
+    return '<div' + idAttr + ' class="part-header-block report-chapter sajux-print-surface" style="display:block;background:linear-gradient(135deg,rgba(' + color + ',0.09),rgba(255,255,255,0));border-top:2px solid ' + border + ';border-radius:16px;padding:28px 32px;margin:40px 0 4px;page-break-before:always;break-before:page;page-break-inside:avoid;break-inside:avoid;page-break-after:avoid;break-after:avoid;"><div class="part-header-label part-title" style="display:block;font-size:11px;color:' + border + ';letter-spacing:0.12em;margin-bottom:10px;font-weight:700;">[ 제 ' + num + '부 ]</div><div class="part-header-title" style="display:block;font-size:26px;font-weight:700;color:var(--text-primary);margin-bottom:8px;">' + icon + ' ' + title + '</div><div class="part-header-sub" style="display:block;font-size:13px;color:var(--text-dim);letter-spacing:1px;">' + subtitle + '</div></div>';
 }
 
 function getHiddenVipTableCell(branch, dayStem) {
@@ -4664,8 +4664,9 @@ function getHiddenVipTableCell(branch, dayStem) {
         var ss = getSipseong(dayStem, ch);
         var lab = typeof sipToManseBadge === 'function' ? sipToManseBadge(ss, false) : (ss || '');
         var cls = HAN_COLOR[ch] || '';
-        return '<span class="m-badge badge tag jijanggan ' + cls + '" style="display:inline-block;margin:2px 2px;font-size:10px;line-height:1.35;">'
-            + ch + ' <span style="font-size:9px;opacity:0.9;">' + lab + '</span></span>';
+        return '<span class="jijanggan-tag" style="display:inline-flex;align-items:center;gap:3px;margin:2px 3px;font-size:10px;line-height:1.35;">'
+            + '<span class="vip-hanja ' + cls + '" style="font-weight:700;">' + ch + '</span>'
+            + '<span class="jijanggan-sip" style="font-size:9px;color:#1a1a1a;">' + lab + '</span></span>';
     }).join(' ');
 }
 
@@ -4704,7 +4705,7 @@ function buildVipEvidenceBlock(data) {
         pillars.forEach(function(p,i){
             var spRaw=(isUnk&&i===0)?'-':(p.n==='일주'?'일원':(typeof getSipseong==='function'?getSipseong(ds,p.h[0]):''));
             var spShow=(spRaw==='-')?'-':(typeof sipToManseBadge==='function'?sipToManseBadge(spRaw,p.n==='일주'):(spRaw||'-'));
-            ev+='<td style="padding:4px 8px;text-align:center;"><span style="font-size:10px;background:rgba(199,167,106,0.08);padding:1px 6px;border-radius:8px;color:#ccc;">'+spShow+'</span></td>';
+            ev+='<td style="padding:4px 8px;text-align:center;"><span class="vip-sip-cell" style="font-size:10px;color:#1a1a1a;font-weight:600;">'+spShow+'</span></td>';
         });
         ev += '</tr>';
         // 천간
@@ -4714,7 +4715,7 @@ function buildVipEvidenceBlock(data) {
             if(isUnk&&i===0){ev+='<td style="text-align:center;color:#444;font-size:11px;">미상</td>';return;}
             var g=p.h[0]||''; var col=hanCol(g);
             var gKr=HK_GAN[g]||g;
-            ev+='<td style="padding:6px 6px;text-align:center;vertical-align:middle;"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;line-height:1.05;"><span style="font-size:1.2em;font-weight:800;color:'+col+';font-family:\'Noto Sans KR\',sans-serif;">'+g+'</span><span style="font-size:11px;color:#aaa;font-weight:600;">'+gKr+'</span></div></td>';
+            ev+='<td style="padding:6px 6px;text-align:center;vertical-align:middle;"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;line-height:1.05;"><span class="vip-hanja" style="font-size:1.1em;font-weight:800;color:'+col+';font-family:\'Noto Sans KR\',sans-serif;">'+g+'</span><span style="font-size:10px;color:#555;font-weight:600;">'+gKr+'</span></div></td>';
         });
         ev += '</tr>';
         // 지지
@@ -4724,7 +4725,7 @@ function buildVipEvidenceBlock(data) {
             if(isUnk&&i===0){ev+='<td style="text-align:center;color:#444;font-size:11px;">미상</td>';return;}
             var j=p.h[1]||''; var col=hanCol(j);
             var jKr=HK_JI[j]||j;
-            ev+='<td style="padding:6px 6px;text-align:center;vertical-align:middle;"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;line-height:1.05;"><span style="font-size:1.2em;font-weight:800;color:'+col+';font-family:\'Noto Sans KR\',sans-serif;">'+j+'</span><span style="font-size:11px;color:#aaa;font-weight:600;">'+jKr+'</span></div></td>';
+            ev+='<td style="padding:6px 6px;text-align:center;vertical-align:middle;"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;line-height:1.05;"><span class="vip-hanja" style="font-size:1.1em;font-weight:800;color:'+col+';font-family:\'Noto Sans KR\',sans-serif;">'+j+'</span><span style="font-size:10px;color:#555;font-weight:600;">'+jKr+'</span></div></td>';
         });
         ev += '</tr>';
         // 지지 십성 — 만세력 표와 동일 규칙
@@ -4733,7 +4734,7 @@ function buildVipEvidenceBlock(data) {
         pillars.forEach(function(p,i){
             var spRaw=(isUnk&&i===0)?'-':(typeof getSipseong==='function'?getSipseong(ds,p.h[1]):'');
             var spShow=(spRaw==='-')?'-':(typeof sipToManseBadge==='function'?sipToManseBadge(spRaw,false):(spRaw||'-'));
-            ev+='<td style="padding:4px 8px;text-align:center;"><span style="font-size:10px;background:rgba(199,167,106,0.08);padding:1px 6px;border-radius:8px;color:#ccc;">'+spShow+'</span></td>';
+            ev+='<td style="padding:4px 8px;text-align:center;"><span class="vip-sip-cell" style="font-size:10px;color:#1a1a1a;font-weight:600;">'+spShow+'</span></td>';
         });
         ev += '</tr>';
         // 지장간
@@ -4750,7 +4751,7 @@ function buildVipEvidenceBlock(data) {
         pillars.forEach(function(p,i){
             if(isUnk&&i===0){ev+='<td style="text-align:center;color:#444;">-</td>';return;}
             var u=typeof getUnsung==='function'?getUnsung(ds,p.h[1])||'-':'-';
-            ev+='<td style="padding:4px 8px;text-align:center;font-size:10px;color:#888;">'+u+'</td>';
+            ev+='<td style="padding:4px 8px;text-align:center;font-size:10px;color:#1a1a1a;font-weight:600;">'+u+'</td>';
         });
         ev += '</tr>';
         var at12=data.allTwelveShinsal||{};
@@ -6158,7 +6159,7 @@ function getHidden(branch, dayStem) {
     return (BRANCH_HIDDEN[branch] || []).map(ch => {
         const ss = getSipseong(dayStem, ch);
         const lab = typeof sipToManseBadge === 'function' ? sipToManseBadge(ss, false) : ss;
-        return `<div style="margin-bottom:4px;"><span class="${HAN_COLOR[ch]}">${ch}</span> <span style="font-size:10px; color:#777; background:#111; padding:2px 4px; border-radius:3px;">${lab}</span></div>`;
+        return `<div style="margin-bottom:4px;"><span class="${HAN_COLOR[ch]}">${ch}</span> <span class="jijanggan-sip" style="font-size:10px;color:#1a1a1a;">${lab}</span></div>`;
     }).join('');
 }
 
