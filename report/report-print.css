@@ -64,13 +64,21 @@
 
   /* report-core 인라인 반투명 박스 */
   #report-container div[style*="background:rgba(255,255,255"],
-  #report-container div[style*="background:rgba(0,0,0"] {
+  #report-container div[style*="background:rgba(0,0,0"],
+  #report-container div[style*="background:rgba(199,167,106"],
+  #report-container div[style*="background:rgba(231,76,60"],
+  .sajux-panel-plain, .deep-hook-panel, .premium-executive-summary,
+  #sec-life-panorama, .sajux-gongmang-note {
     background: #ffffff !important;
     background-color: #ffffff !important;
     border: 1px solid #cccccc !important;
     box-shadow: none !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
+  }
+
+  .m-hanja, .vip-hanja, .report-pillar-hanja, .hanja-main {
+    font-family: 'Noto Sans KR', sans-serif !important;
   }
 
   /* 오행 한자·천간지지 색상 보존 */
