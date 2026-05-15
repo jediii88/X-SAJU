@@ -57,7 +57,7 @@
       // 자동실행은 window.load IIFE에서 처리 (하단 스크립트 참조)
     })();
     </script>
-    <meta name="version" content="1778825516">
+    <meta name="version" content="1778826929">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -1982,6 +1982,32 @@
         
         /* PDF 출력 스타일 */
         @media print {
+    .remedy-checklist-table,
+    .remedy-checklist-table thead,
+    .remedy-checklist-table tbody {
+        display: table !important;
+        width: 100% !important;
+        border-collapse: collapse !important;
+        table-layout: fixed !important;
+    }
+    .remedy-checklist-table tr { display: table-row !important; }
+    .remedy-checklist-table th,
+    .remedy-checklist-table td {
+        display: table-cell !important;
+        vertical-align: top !important;
+    }
+    .card, .yearly-card, .monthly-card, .module-item {
+        background: #f8f9fa !important;
+        color: #111 !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        border: 1px solid #ddd !important;
+    }
+    .badge, .tag, .jijanggan {
+        background: #e9ecef !important;
+        color: #000 !important;
+    }
+
             /* 화면용 UI 전부 숨기기 */
             #star-canvas, body::before, #floating-toc, #theme-toggle, #sticky-part-nav, .print-actions, #sajux-pdf-fab { display: none !important; }
             .jeomsin-nav, .btn, #sec-report { display: none !important; }
@@ -2133,8 +2159,8 @@
     </script>
 
 <!-- SAJUX_CACHE_BUSTER_START -->
-<meta name="sajux-build" content="1778825516">
-<script>(function(){var v='1778825516';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
+<meta name="sajux-build" content="1778826929">
+<script>(function(){var v='1778826929';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
 <!-- SAJUX_CACHE_BUSTER_END -->
 </head>
 <body>
@@ -2907,7 +2933,7 @@ function startReport() {
 <script src="lunar.js"></script>
     <!-- KLC: KASI 기준 한국 음양력 변환 (음력 입력 시 사용) -->
     <script src="klc.min.js"></script>
-    <script src="report-core.js?v=1778825516"></script>
+    <script src="report-core.js?v=1778826929"></script>
 
 
 
