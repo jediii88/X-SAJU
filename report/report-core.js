@@ -1882,6 +1882,30 @@ function ensureSajuxPdfPrintForceStyles() {
 }
 
 /** 와이드 PDF 버튼 스타일 + 우하단 FAB (인쇄 시 숨김) */
+
+function ensureCoverLogoForPrint() {
+    if (window.__sajuxCoverPrintBound) return;
+    window.__sajuxCoverPrintBound = true;
+    function applyCoverLogo() {
+        document.querySelectorAll('.sajux-logo-cover-screen, .cover-page .sajux-logo.dark').forEach(function (el) {
+            el.style.setProperty('display', 'none', 'important');
+        });
+        document.querySelectorAll('.sajux-logo-cover-print, .cover-page .sajux-logo.light').forEach(function (el) {
+            el.style.setProperty('display', 'block', 'important');
+            el.style.setProperty('visibility', 'visible', 'important');
+            el.style.setProperty('opacity', '1', 'important');
+            el.style.setProperty('mix-blend-mode', 'normal', 'important');
+        });
+    }
+    window.addEventListener('beforeprint', applyCoverLogo);
+    if (window.matchMedia) {
+        var mq = window.matchMedia('print');
+        if (mq.addEventListener) mq.addEventListener('change', function (e) { if (e.matches) applyCoverLogo(); });
+        else if (mq.addListener) mq.addListener(function (e) { if (e.matches) applyCoverLogo(); });
+    }
+}
+
+
 function injectSajuxPdfUi() {
     if (!document.getElementById('sajux-report-ui-styles')) {
         var st = document.createElement('style');
@@ -1899,7 +1923,7 @@ function injectSajuxPdfUi() {
     fab.textContent = '🖨 PDF';
     fab.addEventListener('click', function () { window.print(); });
     document.body.appendChild(fab);
-    try { ensureSajuxPdfPrintForceStyles(); } catch (e) {}
+    try { ensureSajuxPdfPrintForceStyles(); ensureCoverLogoForPrint(); } catch (e) {}
 }
 
 function getDBText(category, key, fallback) {
@@ -1981,8 +2005,8 @@ function generateDeepReport(data) {
     html += safeCall(()=>buildChapter8_NextDaewun(data), 'ch8dw');
     html += safeCall(()=>buildChapter9_Monthly(data), 'ch9monthly');
 
-    // PHASE 5: 별첨(자미두수) + 최종 실행 지침
-    html += safeCall(()=>buildZiWeiDestinyBlueprintSection(data), 'ziweiAppendix');
+    // PHASE 5: 별첨(자미두수) → 최종 실행 지침
+    html += safeCall(()=>'<div class="ziwei-appendix-block chapter-start" style="page-break-before:always;break-before:page;">' + (buildZiWeiDestinyBlueprintSection(data)||'') + '</div>', 'ziweiAppendix');
     html += safeCall(()=>wrapPartSection(
         buildPartHeader(5,'최종 실행 지침 (개운법 및 체크리스트)','실행 우선순위 · 마무리','sec-part5-final'),
         buildChapter9_Remedy(data)||''
@@ -1990,7 +2014,7 @@ function generateDeepReport(data) {
 
     document.getElementById('report-container').innerHTML = html;
 
-    try { injectSajuxPdfUi(); } catch (e) { console.error('injectSajuxPdfUi', e.message); }
+    try { injectSajuxPdfUi(); ensureCoverLogoForPrint(); } catch (e) { console.error('injectSajuxPdfUi', e.message); }
 
     // 기존 정적 만세력 섹션들 숨김 (report-container가 모든 내용을 포함하므로)
     var staticSecs = ['sec-manse','sec-relation','sec-shinsal','sec-wuxing',
@@ -4630,14 +4654,18 @@ function buildPartHeader(num, title, subtitle, anchorId, opts) {
     var color = c[num] != null ? c[num] : '199,167,106';
     var border = h[num] != null ? h[num] : '#c7a76a';
     var icon = ic[num] != null ? ic[num] : '📌';
-    return '<div' + idAttr + ' class="part-header-block report-chapter sajux-print-surface" style="display:block;background:linear-gradient(135deg,rgba(' + color + ',0.09),rgba(255,255,255,0));border-top:2px solid ' + border + ';border-radius:16px;padding:28px 32px;margin:' + marginTop + ' 0 4px;page-break-before:auto;page-break-inside:avoid;break-inside:avoid;page-break-after:avoid;break-after:avoid;"><div class="part-header-label part-title" style="display:block;font-size:11px;color:' + border + ';letter-spacing:0.12em;margin-bottom:10px;font-weight:700;">[ 제 ' + num + '부 ]</div><div class="part-header-title" style="display:block;font-size:26px;font-weight:700;color:var(--text-primary);margin-bottom:8px;">' + icon + ' ' + title + '</div><div class="part-header-sub" style="display:block;font-size:13px;color:var(--text-dim);letter-spacing:1px;">' + subtitle + '</div></motion>';
+    return '<div' + idAttr + ' class="part-header-block report-chapter sajux-print-surface" style="display:block;background:linear-gradient(135deg,rgba(' + color + ',0.09),rgba(255,255,255,0));border-top:2px solid ' + border + ';border-radius:16px;padding:28px 32px;margin:' + marginTop + ' 0 4px;page-break-before:auto;page-break-inside:avoid;break-inside:avoid;page-break-after:avoid;break-after:avoid;"><div class="part-header-label part-title" style="display:block;font-size:11px;color:' + border + ';letter-spacing:0.12em;margin-bottom:10px;font-weight:700;">[ 제 ' + num + '부 ]</div><div class="part-header-title" style="display:block;font-size:26px;font-weight:700;color:var(--text-primary);margin-bottom:8px;">' + icon + ' ' + title + '</div><div class="part-header-sub" style="display:block;font-size:13px;color:var(--text-dim);letter-spacing:1px;">' + subtitle + '</div></div>';
 }
 
-function formatJijangganCellHtml(hiddenRaw) {
-    var raw = String(hiddenRaw || '-').replace(/<br\s*\/?>/gi, ' ').trim();
-    if (!raw || raw === '-') return '-';
-    return String(raw).split(/\s+/).filter(Boolean).map(function (chunk) {
-        return '<span class="m-badge badge tag jijanggan" style="display:inline-block;margin:2px 3px;font-size:10px;line-height:1.4;">' + chunk + '</span>';
+function getHiddenVipTableCell(branch, dayStem) {
+    var stems = BRANCH_HIDDEN[branch] || [];
+    if (!stems.length) return '-';
+    return stems.map(function (ch) {
+        var ss = getSipseong(dayStem, ch);
+        var lab = typeof sipToManseBadge === 'function' ? sipToManseBadge(ss, false) : (ss || '');
+        var cls = HAN_COLOR[ch] || '';
+        return '<span class="m-badge badge tag jijanggan ' + cls + '" style="display:inline-block;margin:2px 2px;font-size:10px;line-height:1.35;">'
+            + ch + ' <span style="font-size:9px;opacity:0.9;">' + lab + '</span></span>';
     }).join(' ');
 }
 
@@ -4659,7 +4687,8 @@ function buildVipEvidenceBlock(data) {
     ev += '<div id="sec-vip-evidence" class="report-chapter chapter-start vip-evidence-block" style="padding-top:4px;margin-bottom:32px;">';
     ev += '<div style="font-size:11px;color:rgba(199,167,106,0.75);letter-spacing:0.12em;margin-bottom:8px;font-weight:700;">[ 원국 근거·만세력 데이터 ]</div>';
     // ── ① 만세력 원국 8자 표 ──
-    ev += '<div style="font-size:13px;color:var(--gold);font-weight:800;letter-spacing:1.2px;line-height:1.45;margin-bottom:12px;">① 타고난 8자 — 사주 원국</div>';
+    ev += '<div class="vip-manse-keep-group" style="page-break-inside:avoid;break-inside:avoid;">';
+    ev += '<div class="vip-manse-title" style="font-size:13px;color:var(--gold);font-weight:800;letter-spacing:1.2px;line-height:1.45;margin-bottom:12px;page-break-after:avoid;break-after:avoid;">① 타고난 8자 — 사주 원국</div>';
     if(pillars.length>=2){
         var isUnk = !pillars[0]||!pillars[0].h||!pillars[0].h[0];
         ev += '<div style="overflow-x:auto;margin-bottom:10px;"><table style="width:100%;border-collapse:collapse;table-layout:fixed;">';
@@ -4712,8 +4741,7 @@ function buildVipEvidenceBlock(data) {
         ev += '<td style="padding:4px;color:#555;font-size:10px;">지장간</td>';
         pillars.forEach(function(p,i){
             if(isUnk&&i===0){ev+='<td style="text-align:center;color:#444;">-</td>';return;}
-            var hid=(typeof getHidden==='function'?getHidden(p.h[1],ds):'')||'-';
-            ev+='<td style="padding:6px 8px;text-align:center;vertical-align:middle;">'+formatJijangganCellHtml(hid)+'</td>';
+            ev+='<td style="padding:6px 4px;text-align:center;vertical-align:middle;">'+getHiddenVipTableCell(p.h[1], ds)+'</td>';
         });
         ev += '</tr>';
         // 12운성
@@ -4777,6 +4805,7 @@ function buildVipEvidenceBlock(data) {
         ev += '</tr>';
         ev += '</table></div>';
     }
+    ev += '</div>';
 
     ev += '</div>';
     return ev;
