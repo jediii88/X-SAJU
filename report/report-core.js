@@ -1726,6 +1726,14 @@ window.SAJU_DB = {
 
 // --- X-SAJU DEEP REPORT GENERATOR ENGINE (V4 - REAL DB INTEGRATION) ---
 
+function getReportAssetUrl(file) {
+    try {
+        if (typeof window !== 'undefined' && window.location && window.location.href) {
+            return new URL('assets/' + file, window.location.href).href;
+        }
+    } catch (e) { /* fall through */ }
+    return 'https://sajux.com/report/assets/' + file;
+}
 
 function ensureSajuxPdfPrintForceStyles() {
     if (document.getElementById('sajux-pdf-print-force') || document.getElementById('sajux-pdf-print-force-dynamic')) return;
@@ -1839,12 +1847,21 @@ function ensureSajuxPdfPrintForceStyles() {
   .pdf-btn, .nav-floating, .sajux-pdf-wide-btn {
     display: none !important;
   }
-  .sajux-logo.dark { display: none !important; mix-blend-mode: normal !important; }
-  .sajux-logo.light {
+  #sec-cover, .cover-page { background: #ffffff !important; }
+  .cover-page .sajux-logo-cover-screen,
+  .sajux-logo.dark { display: none !important; visibility: hidden !important; mix-blend-mode: normal !important; }
+  .cover-page .sajux-logo-cover-print,
+  .sajux-logo.light,
+  .sajux-logo-cover-print {
     display: block !important;
+    visibility: visible !important;
     mix-blend-mode: normal !important;
     opacity: 1 !important;
     filter: none !important;
+    max-width: 520px !important;
+    width: 72% !important;
+    height: auto !important;
+    margin: 0 auto 12px !important;
   }
   .sajux-logo-wrap img {
     -webkit-print-color-adjust: exact !important;
@@ -5220,11 +5237,13 @@ function buildLifePanoramaSection(data) {
 // buildCoverPage: 표지 페이지
 // ===================================================================
 function buildCoverPage(data) {
+    var logoLight = getReportAssetUrl('sajux-logo-light.png');
+    var logoDark = getReportAssetUrl('sajux-logo-dark.png');
     return `<div id="sec-cover" class="cover-page chapter-start" style="display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:90vh;padding:72px 28px 56px;text-align:center;border-bottom:1px solid rgba(199,167,106,0.12);margin-bottom:56px;">
         <div class="sajux-logo-wrap" style="width:100%;max-width:90vw;margin:0 auto;display:flex;flex-direction:column;justify-content:center;align-items:center;">
             <div class="sajux-logo-cover-row" style="display:flex;justify-content:center;align-items:center;width:100%;">
-                <img class="sajux-logo sajux-logo-cover-print" src="assets/sajux-logo-light.png" alt="SAJU X 로고" loading="eager" decoding="sync" style="width:clamp(320px,55vw,600px);max-width:100%;height:auto;margin:0 auto;" />
-                <img class="sajux-logo dark sajux-logo-cover-screen" src="assets/sajux-logo-dark.png" alt="SAJU X 로고" loading="eager" decoding="sync" style="width:clamp(320px,55vw,600px);max-width:100%;height:auto;margin:0 auto;" />
+                <img class="sajux-logo light sajux-logo-cover-print" src="${logoLight}" alt="SAJU X 로고" loading="eager" decoding="sync" style="width:clamp(320px,55vw,600px);max-width:100%;height:auto;margin:0 auto;" />
+                <img class="sajux-logo dark sajux-logo-cover-screen" src="${logoDark}" alt="SAJU X 로고" loading="eager" decoding="sync" style="width:clamp(320px,55vw,600px);max-width:100%;height:auto;margin:0 auto;" />
             </div>
             <div id="sec-book-intro" class="sajux-intro-block" style="width:100%;max-width:760px;margin:24px auto 0;text-align:center;">
                 <div class="sajux-intro-heading" style="font-size:13px;letter-spacing:0.12em;color:rgba(199,167,106,0.9);margin-bottom:16px;font-weight:700;">사주X란?</div>
