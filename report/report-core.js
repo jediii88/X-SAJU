@@ -7369,16 +7369,12 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
         const daeunForReport = filterDaeunRowsByClientAge(daeunData.map(dy => {
             const gz = dy.getGanZhi();
             return { age: dy.getStartAge()-1, name: gz[0]+gz[1], gz: [gz[0], gz[1]] };
-        }), (function(){
-            var ref = reportBaseAt || new Date();
-            var bY = displaySolarY, bM = displaySolarM, bD = displaySolarD;
-            var birth = new Date(bY, Math.max(0, (bM||1)-1), Math.max(1, bD||1));
-            if (isNaN(birth.getTime())) return 0;
-            var a = ref.getFullYear() - birth.getFullYear();
-            var dm = ref.getMonth() - birth.getMonth();
-            if (dm < 0 || (dm === 0 && ref.getDate() < birth.getDate())) a--;
-            return Math.max(0, a);
-        })());
+        }), getClientAgeYearsAtReport({
+            reportBaseAt: reportBaseAt,
+            coverSolarY: displaySolarY,
+            coverSolarM: displaySolarM,
+            coverSolarD: displaySolarD
+        }));
         // 각 주별 십성 계산 (일간 기준, getSipseong과 동일 규칙)
         const pillars_sipseong = (pillars||[]).map((p,pi) => {
             if(!p || !p.h) return '';
