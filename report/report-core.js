@@ -3657,7 +3657,6 @@ function buildSeYunYearCardHtml(data, yr, opt) {
     var yongTag = (OH_KR7[data.yong || 'wood'] || '목') + ' 기운이 유리한 편';
     var domAdvN = yearlyDomainStrategicAdvices(sc);
     var body = buildYearStrategicNarrative(name, yr, formatGanzhiPair(info.g, info.j), ev2.l, sc, sewSip, yongTag, domAdvN);
-    var kwDet = '<div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.08);font-size:11.5px;color:#aaa;line-height:1.85;"><b style="color:#c7a76a;">재물·직장·서류·사람</b> — 재물: ' + ykwInd.wealth + ' / 직업: ' + ykwInd.career + ' / 문서: ' + ykwInd.doc + ' / 애정: ' + ykwInd.love + '</div>';
     var isThis = !!opt.isThisYear;
     var border = isThis ? 'var(--gold)' : 'rgba(255,255,255,0.06)';
     var bgA = isThis ? '0.05' : '0.03';
@@ -3668,9 +3667,9 @@ function buildSeYunYearCardHtml(data, yr, opt) {
         + '<div style="font-size:20px;font-weight:800;color:' + ev2.c + ';width:100%;line-height:1.35;font-family:\'Noto Serif KR\',\'Nanum Myeongjo\',\'Batang\',\'Apple SD Gothic Neo\',serif;letter-spacing:0.04em;">' + formatYearWithGanzhi(yr, info.g, info.j) + badge + '</div>'
         + '<div style="font-size:13px;font-weight:700;color:#ebe4d6;line-height:1.5;margin:0;width:100%;">' + oneLine + '</div>'
         + '<div style="width:100%;"><span style="display:inline-block;font-size:12px;background:rgba(255,255,255,0.06);padding:6px 14px;border-radius:20px;color:' + ev2.c + ';font-weight:700;">' + ev2.l + '</span></div>'
-        + '<p style="font-size:11.5px;color:#999;margin:0;line-height:1.75;width:100%;">' + boldStarsToStrong(pickSeYunYearHookParagraph(name, yr, info.g, info.j, ev2.l, sc)) + '</p></div>'
+        + '<p style="font-size:13.5px;color:#ccc;margin:0;line-height:1.85;width:100%;">' + boldStarsToStrong(pickSeYunYearHookParagraph(name, yr, info.g, info.j, ev2.l, sc)) + '</p></div>'
         + strip
-        + '<div style="margin-top:4px;width:100%;">' + body + kwDet + '</div>'
+        + '<div style="margin-top:4px;width:100%;">' + body + '</div>'
         + '</div>';
 }
 
@@ -5149,11 +5148,8 @@ function buildSewunLoop(data) {
             : '<p class="yearly-description" style="font-size:13px;color:#ddd;line-height:1.85;margin:0;">' + yearNarr + '</p>';
         const seyunOneLine = formatSeYunCardOneLineConclusion(evLab, score);
         const sewSipCustomer = sewSip ? sewSip : '';
-        const keywordDetail = isCoreThree
-            ? '<div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.08);font-size:11.5px;color:#aaa;line-height:1.85;"><b style="color:#c7a76a;">재물·직장·서류·사람</b> — 재물: ' + ykwInd.wealth + ' / 직업: ' + ykwInd.career + ' / 문서: ' + ykwInd.doc + ' / 애정: ' + ykwInd.love + '</div>'
-            : '';
         const yearlyBodyHtml = '<div style="width:100%;box-sizing:border-box;background:rgba(255,255,255,0.06);border-radius:8px;padding:14px 16px;margin-bottom:10px;border:1px solid rgba(199,167,106,0.2);">'
-            + strategicBlock + keywordDetail + '</div>';
+            + strategicBlock + '</div>';
         rows += `<div class="seyun-year-card yearly-card glass-panel" style="width:100%;max-width:100%;box-sizing:border-box;background:rgba(255,255,255,${isNow?'0.07':'0.03'});border-radius:10px;padding:16px;border:1px solid ${isNow?'var(--gold)':'rgba(255,255,255,0.07)'};break-inside:avoid;">
             <div style="display:flex;flex-direction:column;align-items:flex-start;width:100%;gap:8px;margin-bottom:10px;">
                 <div style="width:100%;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;">
@@ -5888,7 +5884,7 @@ function buildChapter6_SeYun(data){
     var chIntroSy = buildChapterIntroHtml(data, 'seyun');
     return '<div class="report-chapter chapter-start">' + chHeadSy + chIntroSy
         + '<div style="width:100%;box-sizing:border-box;display:flex;flex-direction:column;gap:16px;">' + inner + '</div>'
-        + '<div style="margin-top:16px;font-size:11px;color:#666;">같은 해 안에서는 월마다 “독촉·계약·휴식” 중 하나만 메인으로 두고 나머지는 보조로 두십시오.</div></div>';
+                + '<p class="ch-text sajux-monthly-tip" style="margin-top:16px;font-size:13.5px;color:#bbb;line-height:1.85;">같은 해 안에서는 월마다 <strong>독촉·계약·휴식</strong> 중 하나만 메인으로 두고 나머지는 보조로 두십시오.</p></div>';
 }
 
 // ═══════════════════════════════════════════════════════
