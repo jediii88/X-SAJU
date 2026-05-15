@@ -1,0 +1,56 @@
+/* Override styles to improve dark-mode/card contrast and light-mode readability */
+/* Dark-mode: make cards darker and remove bright cream panels */
+html:not([data-theme="light"]) .card,
+html:not([data-theme="light"]) .yearly-card,
+html:not([data-theme="light"]) .monthly-card,
+html:not([data-theme="light"]) .inner-card,
+html:not([data-theme="light"]) .detail-box,
+html:not([data-theme="light"]) .jijanggan,
+html:not([data-theme="light"]) .badge,
+html:not([data-theme="light"]) .tag,
+html:not([data-theme="light"]) div[class*="box"],
+html:not([data-theme="light"]) div[class*="card"] {
+  background: rgba(8,10,12,0.72) !important;
+  border: 1px solid rgba(255,255,255,0.04) !important;
+  box-shadow: none !important;
+  color: rgba(255,255,255,0.94) !important;
+}
+
+/* Slightly darken special highlighted panels that were too bright */
+html:not([data-theme="light"]) .glass-card,
+html:not([data-theme="light"]) .inline-interp,
+html:not([data-theme="light"]) .section-interp {
+  background: rgba(12,12,14,0.66) !important;
+  border-color: rgba(255,255,255,0.03) !important;
+}
+
+/* Light-mode: increase text contrast for readability */
+html[data-theme="light"] body,
+html[data-theme="light"] .report-chapter,
+html[data-theme="light"] .card,
+html[data-theme="light"] .inline-interp,
+html[data-theme="light"] .section-title,
+html[data-theme="light"] .part-title,
+html[data-theme="light"] p,
+html[data-theme="light"] li,
+html[data-theme="light"] .ii-text,
+html[data-theme="light"] .ii-text p {
+  color: #111111 !important;
+}
+
+/* Headings slightly stronger in light mode */
+html[data-theme="light"] h1,
+html[data-theme="light"] h2,
+html[data-theme="light"] h3,
+html[data-theme="light"] .section-title {
+  color: #0b0b0b !important;
+  font-weight: 700;
+}
+
+/* Reduce any bright gold/glow in dark mode that causes eye strain */
+html:not([data-theme="light"]) .gold,
+html:not([data-theme="light"]) .brand {
+  color: #b8923a !important;
+  text-shadow: none !important;
+}
+
