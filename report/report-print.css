@@ -70,8 +70,39 @@
   }
 
   .report-container, #report-container, .print-container, .layout-wrapper,
-  .seyun-premium-vertical, .part-header-block, .cover-page, .manse-table, .manse-row {
+  .seyun-premium-vertical, .part-header-block, .cover-page {
     display: block !important;
+  }
+
+  /* 만세력 그리드 — block으로 바꾸면 표가 깨짐 */
+  .manse-table {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+  }
+  .manse-row {
+    display: grid !important;
+    grid-template-columns: 60px repeat(4, 1fr) !important;
+    gap: 4px !important;
+  }
+  .manse-cell {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  /* 제목 카드 = 바로 아래 본문과 같은 페이지 (위 카드와는 분리) */
+  .part-header-block {
+    page-break-before: auto !important;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+    margin-bottom: 4px !important;
+  }
+  .part-follow-content > *:first-child,
+  .part-follow-content > .report-chapter:first-child {
+    page-break-before: avoid !important;
+    break-before: avoid !important;
   }
 
   table {
@@ -125,5 +156,28 @@
   .sajux-logo-wrap img {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
+  }
+
+  /* 어두운 인라인 패널 → 밝은 용지용 (오행 한자색은 유지) */
+  .yearly-indicators,
+  .sajux-print-panel-inner,
+  #report-container div[style*="background:rgba(0,0,0"],
+  .daeun-decade-card,
+  .seyun-year-card {
+    background: #f7f7f7 !important;
+    background-color: #f7f7f7 !important;
+    border-color: #cccccc !important;
+  }
+
+  .m-hangul,
+  .yearly-ind-val,
+  .vip-evidence-block td,
+  .remedy-checklist-table td,
+  .remedy-checklist-table th {
+    color: #333333 !important;
+  }
+  .part-header-sub,
+  .m-badge {
+    color: #444444 !important;
   }
 }
