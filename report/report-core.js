@@ -206,6 +206,7 @@ function stripTimelineMacroLeaks(html) {
     s = s.replace(/캘린더에\s*(?:먼저\s*)?(?:박|적|찍)/gi, '메모에 ');
     s = s.replace(/고정비·회수·수면\s*슬롯을[^\n<]*?(\.|$)/gi, '');
     s = s.replace(/현금이\s*먼저\s*나가는\s*조건[^\n<]*?(\.|$)/gi, '');
+    s = s.replace(/먼저\s*통장에서\s*빠져나가는\s*조건[^\n<]*?(\.|$)/gi, '');
     s = s.replace(/고정비·미수·회수만\s*주간\s*점검[^\n<]*?(\.|$)/gi, '');
     s = s.replace(/생활\s*리듬과\s*지출·회수의\s*균형을[\s\S]*?(\.(?=\s|<|$)|$)/gi, '');
     s = s.replace(/선납·연대·지분처럼[\s\S]*?(\.(?=\s|<|$)|$)/gi, '');
@@ -265,7 +266,7 @@ var FORTUNE_ACTION_CAUTIOUS_BY_OH = {
         '대외 약속이 겹치면 돈도 새어 나갑니다. **주 2회 상한**으로 잡고 나머지는 다음 주로 넘기십시오.'
     ],
     earth: [
-        '**먼저 통장에서 빠져나가는 조건**(선납·연대·지분 약속)이 붙은 계약은 이번 달 서명하지 마십시오.',
+        '**선납·연대·지분 약속**이 붙은 계약은 이번 달 서명하지 마십시오. 조건은 영업일 이틀 뒤에만 검토하십시오.',
         '토 기운 달에는 **구독·자동이체**를 한 번만 점검하십시오. 그날은 새 결제 수단을 열지 마십시오.',
         '안정만 추구하다 기회를 놓치지 않으려면, **검토할 제안은 메모만** 하고 답은 이틀 뒤에 하십시오.'
     ],
@@ -1730,7 +1731,7 @@ function injectSajuxPdfUi() {
     if (!document.getElementById('sajux-report-ui-styles')) {
         var st = document.createElement('style');
         st.id = 'sajux-report-ui-styles';
-        st.textContent = '.month-pillar-title{white-space:nowrap!important;display:inline-block!important;max-width:100%;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom;}.seyun-premium-vertical{display:flex!important;flex-direction:column!important;align-items:stretch!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important;}.seyun-premium-vertical .seyun-year-card,.seyun-premium-vertical>div{width:100%!important;max-width:100%!important;box-sizing:border-box!important;flex:0 0 auto!important;}.yearly-card-container,.monthly-card-container{display:grid!important;grid-template-columns:1fr!important;width:100%!important;max-width:100%!important;gap:20px!important;box-sizing:border-box!important;}.yearly-card-container .fortune-scroll,.monthly-card-container .fortune-scroll{display:flex!important;flex-direction:column!important;overflow-x:visible!important;overflow-y:visible!important;scroll-snap-type:none!important;align-items:stretch!important;width:100%!important;max-width:100%!important;}.yearly-card-container .f-card,.monthly-card-container .f-card{flex:0 0 auto!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important;}.vip-module-stack{display:flex;flex-direction:column;gap:0;}.vip-module-item{margin-bottom:16px;border-left:3px solid #d4af37;padding-left:14px;}.vip-module-title{color:#d4af37;font-weight:700;margin-bottom:6px;font-size:13.5px;font-family:Noto Serif KR,serif;}.vip-module-desc{color:#d8d3c9;line-height:1.88;font-size:13.5px;margin:0;}.yearly-ind-val{white-space:nowrap!important;text-overflow:ellipsis!important;overflow:hidden!important;max-width:100%!important;}.animal-symbol{font-size:15px;color:rgba(228,232,240,0.92);margin-top:10px;font-weight:500;line-height:1.55;}.cover-highlight{color:#d4af37;font-weight:700;}.birth-info{font-size:0.85em;color:#888;margin-top:8px;line-height:1.65;}.report-past-age-hidden{display:none!important;}.badge,.tag,.jijanggan{background:rgba(128,128,128,0.1)!important;color:var(--text-primary)!important;border:1px solid rgba(128,128,128,0.2);}.card,.yearly-card,.monthly-card,.module-item{background:rgba(var(--bg-rgb,128,128,128),0.1)!important;backdrop-filter:blur(12px)!important;border:1px solid rgba(128,128,128,0.15)!important;}.sajux-pdf-wide-btn{cursor:pointer;box-sizing:border-box;border:1px solid rgba(255,255,255,0.12);font-family:inherit;font-weight:700;font-size:15px;padding:16px 22px;margin:16px 0 18px;border-radius:12px;background:rgba(128,128,128,0.22)!important;color:rgba(245,240,232,0.94)!important;letter-spacing:0.02em;box-shadow:none!important;backdrop-filter:blur(10px)!important;-webkit-backdrop-filter:blur(10px)!important;width:100%;max-width:100%;transition:background .15s ease,border-color .15s ease,color .15s ease;}.sajux-pdf-wide-btn:hover{background:rgba(128,128,128,0.3)!important;border-color:rgba(255,255,255,0.18)!important;}.sajux-pdf-wide-btn:active{transform:translateY(1px);}#sajux-pdf-fab{cursor:pointer;position:fixed;bottom:22px;right:18px;z-index:10001;font-family:inherit;font-weight:700;font-size:14px;padding:14px 20px;border-radius:999px;border:1px solid rgba(255,255,255,0.12);background:rgba(128,128,128,0.24)!important;color:rgba(245,240,232,0.94)!important;box-shadow:0 6px 20px rgba(0,0,0,0.35)!important;backdrop-filter:blur(10px)!important;-webkit-backdrop-filter:blur(10px)!important;transition:background .15s ease,border-color .15s ease;}#sajux-pdf-fab:hover{background:rgba(128,128,128,0.32)!important;border-color:rgba(255,255,255,0.2)!important;} @media print{.pdf-btn,.nav-floating,#sajux-pdf-fab,.sajux-pdf-wide-btn{display:none !important;}.sajux-logo.dark{display:none!important}.sajux-logo.light{display:block!important;mix-blend-mode:normal!important;opacity:1!important}.sajux-logo-wrap img{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}table,.card,.module-item,.yearly-card,.monthly-card,.glass-panel,.yearly-card-container,.monthly-card-container,.seyun-year-card,.f-card,.vip-module-item,.manse-table,.appendix-ziwei{page-break-inside:avoid!important;break-inside:avoid!important}h1,h2,h3,.section-title,.ch-title{page-break-inside:avoid!important;break-inside:avoid!important;page-break-after:avoid!important;break-after:avoid!important}} @media(max-width:600px){#sajux-pdf-fab{bottom:16px;right:12px;padding:12px 16px;font-size:13px;}}';
+        st.textContent = '.month-pillar-title{white-space:nowrap!important;display:inline-block!important;max-width:100%;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom;}.seyun-premium-vertical{display:flex!important;flex-direction:column!important;align-items:stretch!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important;}.seyun-premium-vertical .seyun-year-card,.seyun-premium-vertical>div{width:100%!important;max-width:100%!important;box-sizing:border-box!important;flex:0 0 auto!important;}.yearly-card-container,.monthly-card-container{display:grid!important;grid-template-columns:1fr!important;width:100%!important;max-width:100%!important;gap:20px!important;box-sizing:border-box!important;}.yearly-card-container .fortune-scroll,.monthly-card-container .fortune-scroll{display:flex!important;flex-direction:column!important;overflow-x:visible!important;overflow-y:visible!important;scroll-snap-type:none!important;align-items:stretch!important;width:100%!important;max-width:100%!important;}.yearly-card-container .f-card,.monthly-card-container .f-card{flex:0 0 auto!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important;}.vip-module-stack{display:flex;flex-direction:column;gap:0;}.vip-module-item{margin-bottom:16px;border-left:3px solid #d4af37;padding-left:14px;}.vip-module-title{color:#d4af37;font-weight:700;margin-bottom:6px;font-size:13.5px;font-family:Noto Serif KR,serif;}.vip-module-desc{color:#d8d3c9;line-height:1.88;font-size:13.5px;margin:0;}.yearly-ind-val{white-space:nowrap!important;text-overflow:ellipsis!important;overflow:hidden!important;max-width:100%!important;}.animal-symbol{font-size:15px;color:rgba(228,232,240,0.92);margin-top:10px;font-weight:500;line-height:1.55;}.cover-highlight{color:#d4af37;font-weight:700;}.birth-info{font-size:0.85em;color:#888;margin-top:8px;line-height:1.65;}.remedy-checklist-table{display:table!important;width:100%!important;border-collapse:collapse!important;table-layout:fixed!important;}.remedy-checklist-table thead{display:table-header-group!important;}.remedy-checklist-table tbody{display:table-row-group!important;}.remedy-checklist-table tr{display:table-row!important;}.remedy-checklist-table th,.remedy-checklist-table td{display:table-cell!important;vertical-align:top!important;}.badge,.tag,.jijanggan{background:rgba(128,128,128,0.1)!important;color:var(--text-primary)!important;border:1px solid rgba(128,128,128,0.2);}.card,.yearly-card,.monthly-card,.module-item{background:rgba(var(--bg-rgb,128,128,128),0.1)!important;backdrop-filter:blur(12px)!important;border:1px solid rgba(128,128,128,0.15)!important;}.sajux-pdf-wide-btn{cursor:pointer;box-sizing:border-box;border:1px solid rgba(255,255,255,0.12);font-family:inherit;font-weight:700;font-size:15px;padding:16px 22px;margin:16px 0 18px;border-radius:12px;background:rgba(128,128,128,0.22)!important;color:rgba(245,240,232,0.94)!important;letter-spacing:0.02em;box-shadow:none!important;backdrop-filter:blur(10px)!important;-webkit-backdrop-filter:blur(10px)!important;width:100%;max-width:100%;transition:background .15s ease,border-color .15s ease,color .15s ease;}.sajux-pdf-wide-btn:hover{background:rgba(128,128,128,0.3)!important;border-color:rgba(255,255,255,0.18)!important;}.sajux-pdf-wide-btn:active{transform:translateY(1px);}#sajux-pdf-fab{cursor:pointer;position:fixed;bottom:22px;right:18px;z-index:10001;font-family:inherit;font-weight:700;font-size:14px;padding:14px 20px;border-radius:999px;border:1px solid rgba(255,255,255,0.12);background:rgba(128,128,128,0.24)!important;color:rgba(245,240,232,0.94)!important;box-shadow:0 6px 20px rgba(0,0,0,0.35)!important;backdrop-filter:blur(10px)!important;-webkit-backdrop-filter:blur(10px)!important;transition:background .15s ease,border-color .15s ease;}#sajux-pdf-fab:hover{background:rgba(128,128,128,0.32)!important;border-color:rgba(255,255,255,0.2)!important;} @media print{.pdf-btn,.nav-floating,#sajux-pdf-fab,.sajux-pdf-wide-btn{display:none !important;}.sajux-logo.dark{display:none!important}.sajux-logo.light{display:block!important;mix-blend-mode:normal!important;opacity:1!important}.sajux-logo-wrap img{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}.remedy-checklist-table,.remedy-checklist-table thead,.remedy-checklist-table tbody{display:table!important;width:100%!important;border-collapse:collapse!important;}.remedy-checklist-table tr{display:table-row!important;}.remedy-checklist-table th,.remedy-checklist-table td{display:table-cell!important;vertical-align:top!important;color:#111!important;background:#fff!important;border:1px solid #ddd!important;}.card,.yearly-card,.monthly-card,.module-item{background:#f8f9fa !important;color:#111 !important;backdrop-filter:none !important;-webkit-backdrop-filter:none !important;border:1px solid #ddd !important;}.badge,.tag,.jijanggan{background:#e9ecef !important;color:#000 !important;}table,.card,.module-item,.yearly-card,.monthly-card,.glass-panel,.yearly-card-container,.monthly-card-container,.seyun-year-card,.f-card,.vip-module-item,.manse-table,.appendix-ziwei{page-break-inside:avoid!important;break-inside:avoid!important}h1,h2,h3,.section-title,.ch-title{page-break-inside:avoid!important;break-inside:avoid!important;page-break-after:avoid!important;break-after:avoid!important}} @media(max-width:600px){#sajux-pdf-fab{bottom:16px;right:12px;padding:12px 16px;font-size:13px;}}';
         document.head.appendChild(st);
     }
     var oldFab = document.getElementById('sajux-pdf-fab');
@@ -2389,6 +2390,49 @@ function getClientAgeYearsAtReport(data) {
     var dm = ref.getMonth() - birth.getMonth();
     if (dm < 0 || (dm === 0 && ref.getDate() < birth.getDate())) age--;
     return Math.max(0, age);
+}
+
+/** 과거 대운(10년 구간 종료 연령 < 현재 나이) 제외 */
+function filterDaeunRowsByClientAge(rows, clientAge) {
+    var list = rows || [];
+    var ageNow = Number(clientAge) || 0;
+    if (ageNow <= 0) return list;
+    return list.filter(function (r) {
+        var start = r.age !== undefined ? Number(r.age) : (Array.isArray(r) ? Number(r[0]) : 0);
+        if (isNaN(start)) start = 0;
+        return (start + 9) >= ageNow;
+    });
+}
+
+/** 개운법 나이대 블록 — 이미 지난 연령대 조언은 숨김 (38세 → 20·30대 미표시, 40·50대만) */
+function shouldShowRemedyAgeDecadeBand(clientAge, bandStart) {
+    var age = Number(clientAge) || 0;
+    var band = Number(bandStart) || 20;
+    if (band === 20) return age < 30;
+    if (band === 50) return age >= 40;
+    return band >= Math.ceil((age + 1) / 10) * 10;
+}
+
+/** 개운법 — 현재·앞으로 해당하는 나이대 조언 HTML만 */
+function buildRemedyAgeDecadeBandsHTML(data) {
+    var age = getClientAgeYearsAtReport(data);
+    var bands = [
+        { start: 20, label: '20대', body: '한 분야로 이력서 한 장을 채우십시오. 통장은 **생활/저축 분리**, 카드는 **체크 한 장**으로 줄이십시오. 자격·포트폴리오는 **주말 반나절 고정 슬롯**에만 넣으십시오.' },
+        { start: 30, label: '30대', body: '연봉·이직은 **직무·야근·지표가 적힌 문자**가 있을 때만 진행하십시오. 부동산·주식·동업은 **같은 해 두 가지 이상 금지**입니다. 배우자와는 **월 고정비 숫자 한 장**만 맞추고 그날은 술을 끊으십시오.' },
+        { start: 40, label: '40대', body: '**검진·수면·주 3회 운동**을 먼저 달력에 박고 나머지 일정을 채우십시오. 인맥은 반으로 줄이고, **돈·계약 말 없는 날**을 주 1회 만드십시오. 사이드는 **세금·계좌 정리 후**에만 이름을 내십시오.' },
+        { start: 50, label: '50대 이후', body: '현금 방어가 최우선입니다. 큰 지출·보증·지분은 **지인 말이 아니라 서류**로만 받으십시오. 남기고 싶은 것은 **강의 한 번·글 한 편**으로 끝내고, 몸이 허락하는 시간만 잡으십시오.' }
+    ];
+    var html = '';
+    bands.forEach(function (b) {
+        if (!shouldShowRemedyAgeDecadeBand(age, b.start)) return;
+        html += '<div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:14px;">'
+            + '<div style="font-size:12px;color:var(--gold);font-weight:700;margin-bottom:6px;">' + b.label + '</div>'
+            + '<p style="font-size:12.5px;color:#bbb;line-height:1.8;margin:0;">' + b.body + '</p></div>';
+    });
+    if (!html) {
+        html = '<p style="font-size:12.5px;color:#bbb;line-height:1.8;margin:0;">지금 시기에 맞는 실행은 위 체크리스트와 오행 루틴을 먼저 고정하십시오.</p>';
+    }
+    return html;
 }
 
 /** 표지·히어로·birthStr 한 줄. 시·분(coverSolarHH/MM)은 항상 사용자 입력(경도 −32분 보정 전)만 사용합니다. 만세력·시주 등 내부 연산은 별도로 보정 후 시각을 씁니다. */
@@ -3468,7 +3512,7 @@ function buildChapter4_Wealth(data) {
         : `돈을 쫓으면 도망갑니다. **가격·시간·범위**를 먼저 밝히십시오. **하루아침에 크게 오르는 쪽**(유행 주식·코인 등)은 전체에서 **작은 비율**로만 두고, 분기마다 **남에게 보여줄 만한 결과** 한 가지만 골라 정리하십시오.`;
 
     // 대운별 재물 흐름
-    const rows = data.daeunRows || [];
+    const rows = filterDaeunRowsByClientAge(data.daeunRows || [], getClientAgeYearsAtReport(data));
     const OH2 = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water','子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'};
     const HK2 = {'甲':'갑','乙':'을','丙':'병','丁':'정','戊':'무','己':'기','庚':'경','辛':'신','壬':'임','癸':'계','子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해'};
     const yong = data.yong; const gi = data.gi; const hee = data.hee;
@@ -3607,7 +3651,8 @@ function buildChapter4_Wealth(data) {
 }
 
 function buildDaewunLoop(data) {
-    const rows = data.daeunRows || [];
+    var curClientAgeLoop = getClientAgeYearsAtReport(data);
+    const rows = filterDaeunRowsByClientAge(data.daeunRows || [], curClientAgeLoop);
     if(!rows.length) return `<div class="report-chapter"><h3 class="ch-title">대운 80년 심층 해부</h3><p class="ch-text">대운 데이터를 계산할 수 없습니다. 생년월일시를 정확히 입력하십시오.</p></div>`;
 
     const OH = {'甲':'목','乙':'목','丙':'화','丁':'화','戊':'토','己':'토','庚':'금','辛':'금','壬':'수','癸':'수'};
@@ -3653,8 +3698,6 @@ function buildDaewunLoop(data) {
     }
     function badge(s) { return s>=3?'🌟 대길':s>=1?'✦ 길':s===0?'— 평':s>=-2?'⚠ 주의':'❌ 흉'; }
     function col(s) { return s>=3?'#c7a76a':s>=1?'#00C853':s===0?'#888':s>=-2?'#ff9800':'#e74c3c'; }
-
-    var curClientAge = getClientAgeYearsAtReport(data);
 
     let out = `<div class="report-chapter"><h3 class="ch-title">대운 80년 — 인생 계절의 완전 해부</h3>
     <p class="ch-text">대운은 10년짜리 기후입니다. 계절을 모르면 옷을 잘못 입습니다. 용신이 오면 **공격**, 기신이 오면 **수비**만 고르십시오. 아래는 그 계절표입니다.</p>
@@ -3750,11 +3793,7 @@ function buildDaewunLoop(data) {
         const _ageRange = `${age}세부터 ${age+9}세까지 — `;
         const periodNarr = _PN[ganjiKey] || (_ageRange + ganD + ' ' + jiD);
         const ganKr = HK[gan]||gan; const jiKr = HK[ji]||ji;
-        const decadeEndAge = age + 9;
-        const pastHidden = curClientAge > 0 && decadeEndAge < curClientAge;
-        const pastCls = pastHidden ? ' report-past-age-hidden' : '';
-
-        out += `<div class="daeun-decade-card${pastCls}" style="background:rgba(255,255,255,${isCurrent?'0.07':'0.03'});border:1px solid ${isCurrent?'var(--gold)':'rgba(255,255,255,0.07)'};border-radius:12px;padding:18px;break-inside:avoid;">
+        out += `<div class="daeun-decade-card" style="background:rgba(255,255,255,${isCurrent?'0.07':'0.03'});border:1px solid ${isCurrent?'var(--gold)':'rgba(255,255,255,0.07)'};border-radius:12px;padding:18px;break-inside:avoid;">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
                 <div style="display:flex;align-items:center;gap:10px;">
                     <div>
@@ -4779,22 +4818,7 @@ function buildChapter9_Remedy(data) {
         <div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:22px;margin:24px 0;">
             <div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:16px;letter-spacing:1px;">&#9670; 나이대별로 손대야 할 것만</div>
             <div style="display:flex;flex-direction:column;gap:8px;">
-                <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:14px;">
-                    <div style="font-size:12px;color:var(--gold);font-weight:700;margin-bottom:6px;">20대</div>
-                    <p style="font-size:12.5px;color:#bbb;line-height:1.8;margin:0;">한 분야로 이력서 한 장을 채우십시오. 통장은 **생활/저축 분리**, 카드는 **체크 한 장**으로 줄이십시오. 자격·포트폴리오는 **주말 반나절 고정 슬롯**에만 넣으십시오.</p>
-                </div>
-                <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:14px;">
-                    <div style="font-size:12px;color:var(--gold);font-weight:700;margin-bottom:6px;">30대</div>
-                    <p style="font-size:12.5px;color:#bbb;line-height:1.8;margin:0;">연봉·이직은 **직무·야근·지표가 적힌 문자**가 있을 때만 진행하십시오. 부동산·주식·동업은 **같은 해 두 가지 이상 금지**입니다. 배우자와는 **월 고정비 숫자 한 장**만 맞추고 그날은 술을 끊으십시오.</p>
-                </div>
-                <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:14px;">
-                    <div style="font-size:12px;color:var(--gold);font-weight:700;margin-bottom:6px;">40대</div>
-                    <p style="font-size:12.5px;color:#bbb;line-height:1.8;margin:0;">**검진·수면·주 3회 운동**을 먼저 달력에 박고 나머지 일정을 채우십시오. 인맥은 반으로 줄이고, **돈·계약 말 없는 날**을 주 1회 만드십시오. 사이드는 **세금·계좌 정리 후**에만 이름을 내십시오.</p>
-                </div>
-                <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:14px;">
-                    <div style="font-size:12px;color:var(--gold);font-weight:700;margin-bottom:6px;">50대 이후</div>
-                    <p style="font-size:12.5px;color:#bbb;line-height:1.8;margin:0;">현금 방어가 최우선입니다. 큰 지출·보증·지분은 **지인 말이 아니라 서류**로만 받으십시오. 남기고 싶은 것은 **강의 한 번·글 한 편**으로 끝내고, 몸이 허락하는 시간만 잡으십시오.</p>
-                </div>
+                ${buildRemedyAgeDecadeBandsHTML(data)}
             </div>
         </div>
         <div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:22px;margin:24px 0;">
@@ -6845,10 +6869,12 @@ function runAnalysis(overrideParams) {
             if(!wrap) return;
             var detDiv=document.createElement('div');
             detDiv.style.cssText='margin-top:12px;display:flex;flex-direction:column;gap:12px;';
+            var _daeunAgeCut = (globalSajuData && typeof getClientAgeYearsAtReport === 'function') ? getClientAgeYearsAtReport(globalSajuData) : currentAge;
             daeunData.forEach(function(dy,idx){
                 var gz=dy.getGanZhi();var g=gz[0];var j=gz[1];
                 var age=dy.getStartAge()-1;
                 var endAge=idx<daeunData.length-1?(daeunData[idx+1].getStartAge()-1):age+10;
+                if (_daeunAgeCut > 0 && (endAge - 1) < _daeunAgeCut) return;
                 var _birthY=(globalSajuData&&globalSajuData.birthYear)||1988;
                 var _startYr=_birthY+age-1;var _endYr=_birthY+endAge-2;
                 var s=gs(g,j);var isCur=idx===activeDaeunIdx;var col=gc(s);
@@ -7324,10 +7350,19 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
         })();
 
         // 대운 데이터 수집
-        const daeunForReport = daeunData.map(dy => {
+        const daeunForReport = filterDaeunRowsByClientAge(daeunData.map(dy => {
             const gz = dy.getGanZhi();
             return { age: dy.getStartAge()-1, name: gz[0]+gz[1], gz: [gz[0], gz[1]] };
-        });
+        }), (function(){
+            var ref = reportBaseAt || new Date();
+            var bY = displaySolarY, bM = displaySolarM, bD = displaySolarD;
+            var birth = new Date(bY, Math.max(0, (bM||1)-1), Math.max(1, bD||1));
+            if (isNaN(birth.getTime())) return 0;
+            var a = ref.getFullYear() - birth.getFullYear();
+            var dm = ref.getMonth() - birth.getMonth();
+            if (dm < 0 || (dm === 0 && ref.getDate() < birth.getDate())) a--;
+            return Math.max(0, a);
+        })());
         // 각 주별 십성 계산 (일간 기준, getSipseong과 동일 규칙)
         const pillars_sipseong = (pillars||[]).map((p,pi) => {
             if(!p || !p.h) return '';
