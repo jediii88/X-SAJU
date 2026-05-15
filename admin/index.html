@@ -148,9 +148,9 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--go
       <hr class="divider">
       <div class="form-row">
         <div>
-          <label>고객 링크 발행 표기 (실명은 URL에 넣지 않음)</label>
+          <label>담당자 표기 (by= 파라미터)</label>
           <input type="text" id="issuer-name" placeholder="장경현" maxlength="40" onblur="saveIssuerName()">
-          <div class="hint">리포트·궁합 고객용 링크에 <code>by=장*현</code> 형태로 붙습니다. 이 브라우저에 저장됩니다.</div>
+          <div class="hint">고객·담당자 이름 모두 URL에는 가운데만 * 처리됩니다 (예: <code>n=심*영</code>, <code>by=장*현</code>). 이 브라우저에 저장되는 값은 담당자 표기용입니다.</div>
         </div>
       </div>
       <hr class="divider">
@@ -350,12 +350,13 @@ function dDayBadge(expAt){
 }
 
 // ── 링크 빌더 (고객 전달용: 담당자 표기 마스킹 by=)
+/** URL용 이름: 첫·끝 글자만 남기고 가운데는 * (예: 심나영 → 심*영, 장경현 → 장**현) */
 function maskNameForLink(name){
   const s=String(name||'').trim();
   if(!s)return'';
   if(s.length<=1)return'*';
   if(s.length===2)return s.charAt(0)+'*';
-  return s.charAt(0)+'*'+s.charAt(s.length-1);
+  return s.charAt(0)+'*'.repeat(s.length-2)+s.charAt(s.length-1);
 }
 function saveIssuerName(){
   try{
@@ -376,7 +377,7 @@ function appendIssuerParam(p){
   if(m)p.set('by',m);
 }
 function appendCoupleSide(prefix,cust,p){
-  p.set(prefix+'_n',cust.name);
+  p.set(prefix+'_n',maskNameForLink(cust.name));
   p.set(prefix+'_g',cust.gender);
   p.set(prefix+'_c',cust.cal);
   p.set(prefix+'_y',cust.y);p.set(prefix+'_mo',cust.mo);p.set(prefix+'_d',cust.d);
@@ -391,7 +392,7 @@ function appendCoupleSide(prefix,cust,p){
 function buildReportUrl(cust,expAt,unknown){
   const base='https://sajux.com/report/saju.html';
   const p=new URLSearchParams();
-  p.set('n',cust.name);
+  p.set('n',maskNameForLink(cust.name));
   p.set('g',cust.gender==='male'?'male':'female');
   p.set('c',cust.cal==='solar'?'solar':'lunar');
   p.set('y',cust.y);p.set('mo',cust.mo);p.set('d',cust.d);

@@ -106,4 +106,113 @@
     .f-card.active { border-color: var(--gold); background: rgba(199, 167, 106, 0.05); }
     .f-age { font-size: 12px; color: var(--gold); margin-bottom: 5px; }
     .f-hz { font-size: 20px; font-weight: 200; }
+
+/* =========================================
+   [사주X PDF 인쇄 전용 강제 스타일링]
+========================================= */
+@media print {
+  body, html {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+  }
+
+  /* 지장간, 십성 배지, 태그 등 모든 작은 요소들 강제 화이트닝 */
+  .jijanggan, .jijanggan span, .jijanggan div, .badge, .tag, .highlight, [class*="badge"], [class*="tag"] {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    border: 1px solid #999999 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* 카드 안의 내부 카드, 회색/검은색 박스들 강제 화이트닝 */
+  .card, .yearly-card, .monthly-card, .module-item, .inner-card, .detail-box, .content-box, [class*="box"], [class*="card"] {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    border: 1px solid #cccccc !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  body, .dashboard-container, .zami-card, .glass-panel, .vip-module-item, .f-card, .appendix-ziwei, .manse-table {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+  }
+
+  /* 텍스트는 예외 없이 무조건 검은색 (회색 텍스트로 인한 가독성 저하 방지) */
+  *, p, span, div, h1, h2, h3, h4, h5, h6, td, th, li {
+    color: #000000 !important;
+    text-shadow: none !important;
+  }
+
+  /* 단락 제목 고립(Page Break) 방어 */
+  .section-title, .part-title, .report-chapter, .ch-title, h1, h2, h3, .title-card {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    margin-bottom: 10px !important;
+  }
+
+  /* 부모 컨테이너가 flex라서 page-break가 안 먹히는 현상 방지 */
+  .report-container, #report-container, .print-container, .layout-wrapper, .seyun-premium-vertical {
+    display: block !important;
+  }
+
+  table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+  th, td {
+    border: 1px solid #dee2e6 !important;
+    padding: 10px !important;
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
+  .remedy-checklist-table,
+  .remedy-checklist-table thead,
+  .remedy-checklist-table tbody {
+    display: table !important;
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+  .remedy-checklist-table tr { display: table-row !important; }
+  .remedy-checklist-table th,
+  .remedy-checklist-table td {
+    display: table-cell !important;
+    vertical-align: top !important;
+  }
+
+  .card, .yearly-card, .monthly-card, .module-item, table, h1, h2, h3 {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  #floating-toc, #theme-toggle, #sticky-part-nav, #sajux-pdf-fab, .pdf-btn, .nav-floating, .sajux-pdf-wide-btn {
+    display: none !important;
+  }
+  .sajux-logo.dark { display: none !important; mix-blend-mode: normal !important; }
+  .sajux-logo.light {
+    display: block !important;
+    mix-blend-mode: normal !important;
+    opacity: 1 !important;
+    filter: none !important;
+  }
+  .sajux-logo-wrap img {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
+
 </style></head>
