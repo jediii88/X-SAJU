@@ -232,6 +232,26 @@ body::before {
 .wood { color: var(--wood); } .fire { color: var(--fire); }
 .earth { color: var(--earth); } .metal { color: var(--metal); } .water { color: var(--water); }
 </style>
+<style type="text/css" media="print">
+  .card, .yearly-card, .monthly-card, .inner-card, .detail-box, 
+  .jijanggan, .jijanggan span, .badge, .tag, div[class*="box"], div[class*="card"] {
+      background: #ffffff !important;
+      background-color: #ffffff !important;
+      border: 1px solid #cccccc !important;
+      box-shadow: none !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+  }
+  h1, h2, h3, h4, h5, .section-title, .part-title, .title-card {
+      page-break-after: avoid !important;
+      break-after: avoid !important;
+      page-break-inside: avoid !important;
+      margin-bottom: 20px !important;
+  }
+  .report-container, .print-container, .layout-wrapper, .card-wrapper, body, main {
+      display: block !important;
+  }
+</style>
 </head>
 <body>
 
