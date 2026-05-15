@@ -57,7 +57,7 @@
       // 자동실행은 window.load IIFE에서 처리 (하단 스크립트 참조)
     })();
     </script>
-    <meta name="version" content="1778833725">
+    <meta name="version" content="1778834491">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -1334,7 +1334,10 @@
             overflow-wrap: anywhere;
         }
         @media print {
-            .manse-table, .manse-row { display: block !important; }
+            .manse-table { display: flex !important; flex-direction: column !important; gap: 4px !important; }
+            .manse-row { display: grid !important; grid-template-columns: 60px repeat(4, 1fr) !important; gap: 4px !important; }
+            .part-header-block { page-break-before: auto !important; page-break-after: avoid !important; break-after: avoid !important; }
+            .part-follow-content > *:first-child { page-break-before: avoid !important; break-before: avoid !important; }
             .manse-cell, .m-badge, .m-badge-shinsal, .jijanggan, .badge, .tag {
                 background: #ffffff !important;
                 background-color: #ffffff !important;
@@ -2079,8 +2082,8 @@
     </script>
 
 <!-- SAJUX_CACHE_BUSTER_START -->
-<meta name="sajux-build" content="1778833725">
-<script>(function(){var v='1778833725';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
+<meta name="sajux-build" content="1778834491">
+<script>(function(){var v='1778834491';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
 <!-- SAJUX_CACHE_BUSTER_END -->
 </head>
 <body>
@@ -3069,9 +3072,15 @@ body.light-mode #sajux-pdf-fab {
   }
 
   .report-container, #report-container, .print-container, .layout-wrapper,
-  .seyun-premium-vertical, .part-header-block, .cover-page, .manse-table, .manse-row {
+  .seyun-premium-vertical, .part-header-block, .cover-page {
     display: block !important;
   }
+  .manse-table { display: flex !important; flex-direction: column !important; gap: 4px !important; }
+  .manse-row { display: grid !important; grid-template-columns: 60px repeat(4, 1fr) !important; gap: 4px !important; }
+  .part-header-block { page-break-before: auto !important; page-break-after: avoid !important; break-after: avoid !important; }
+  .part-follow-content > *:first-child { page-break-before: avoid !important; break-before: avoid !important; }
+  .yearly-indicators, #report-container div[style*="background:rgba(0,0,0"] { background: #f7f7f7 !important; }
+  .yearly-ind-val, .m-hangul { color: #333333 !important; }
 
   table {
     border-collapse: collapse !important;
