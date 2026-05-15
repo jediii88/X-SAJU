@@ -2404,6 +2404,14 @@ function filterDaeunRowsByClientAge(rows, clientAge) {
     });
 }
 
+/** UI·리포트 공통 — 만 나이 기준 안내 (한국식 세는 나이 아님) */
+function getAgeBasisNoteHtml(style) {
+    var text = '대운·세운·연령대에 나오는 ○○세 표기는 모두 만 나이(양력 생일 기준)입니다. 한국식 세는 나이와 숫자가 다를 수 있습니다.';
+    if (style === 'disclaimer') return text;
+    if (style === 'plain') return '※ ' + text;
+    return '<p class="age-basis-note" style="margin:0 0 12px;font-size:11px;line-height:1.65;color:#888;">※ ' + text + '</p>';
+}
+
 /** 개운법 나이대 블록 — 이미 지난 연령대 조언은 숨김 (38세 → 20·30대 미표시, 40·50대만) */
 function shouldShowRemedyAgeDecadeBand(clientAge, bandStart) {
     var age = Number(clientAge) || 0;
@@ -2630,7 +2638,7 @@ function buildPremiumExecutiveSummary(data) {
         '<div style="color:#c7a76a;font-weight:700;margin-bottom:6px;">열람·PDF 안내</div>' +
         accessLine + '<br>발행일(출력 기준): ' + reportDateStr + '<br>브라우저에서 <strong>인쇄 → PDF로 저장</strong>을 실행해 전략 문서를 보관하십시오.' +
         '</div>' +
-        '<p class="premium-disclaimer" style="margin:16px 0 0;font-size:11.5px;line-height:1.75;color:#777;">본 리포트는 전통 명리학 기반의 전략 해석 자료입니다. 의학·법률·투자 자문이 아니며, 실제 실행 판단과 책임은 본인에게 있습니다.</p>' +
+        '<p class="premium-disclaimer" style="margin:16px 0 0;font-size:11.5px;line-height:1.75;color:#777;">본 리포트는 전통 명리학 기반의 전략 해석 자료입니다. 의학·법률·투자 자문이 아니며, 실제 실행 판단과 책임은 본인에게 있습니다.<br><span style="display:block;margin-top:8px;">' + getAgeBasisNoteHtml('disclaimer') + '</span></p>' +
         '</div>';
 }
 
@@ -3700,6 +3708,7 @@ function buildDaewunLoop(data) {
     function col(s) { return s>=3?'#c7a76a':s>=1?'#00C853':s===0?'#888':s>=-2?'#ff9800':'#e74c3c'; }
 
     let out = `<div class="report-chapter"><h3 class="ch-title">대운 80년 — 인생 계절의 완전 해부</h3>
+    ${getAgeBasisNoteHtml('block')}
     <p class="ch-text">대운은 10년짜리 기후입니다. 계절을 모르면 옷을 잘못 입습니다. 용신이 오면 **공격**, 기신이 오면 **수비**만 고르십시오. 아래는 그 계절표입니다.</p>
     <div style="display:flex;flex-direction:column;gap:16px;">`;
 
@@ -4817,6 +4826,7 @@ function buildChapter9_Remedy(data) {
 
         <div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:22px;margin:24px 0;">
             <div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:16px;letter-spacing:1px;">&#9670; 나이대별로 손대야 할 것만</div>
+            ${getAgeBasisNoteHtml('block')}
             <div style="display:flex;flex-direction:column;gap:8px;">
                 ${buildRemedyAgeDecadeBandsHTML(data)}
             </div>
@@ -5142,7 +5152,7 @@ function buildClientCoverPage(data) {
         <div style="width:110px;height:110px;margin:2px auto 12px;display:flex;align-items:center;justify-content:center;"><img src="${animalImage}" alt="${animalPlain || '일주 동물'}" loading="lazy" style="width:100%;height:100%;object-fit:contain;display:block;"/></div>
         <div style="font-size:30px;line-height:1.15;margin:0 0 6px;">${iljuBig}</div>
         ${animalHighlight ? `<div class="animal-symbol">당신의 상징 동물은 <span class="cover-highlight">${escHtmlAttr(animalHighlight)}</span>입니다.</div>` : ''}
-        ${coverLine ? `<div class="birth-info">${escHtmlAttr(coverLine)}</div>` : ''}
+        ${coverLine ? `<div class="birth-info">${escHtmlAttr(coverLine)}</div><p style="margin:10px 0 0;font-size:11px;line-height:1.6;color:rgba(180,185,195,0.75);">※ 대운·연령 표기는 만 나이(양력 생일 기준)입니다.</p>` : `<p style="margin:10px 0 0;font-size:11px;line-height:1.6;color:rgba(180,185,195,0.75);">※ 대운·연령 표기는 만 나이(양력 생일 기준)입니다.</p>`}
 
         <div style="margin-top:38px;font-size:10px;color:rgba(210,214,223,0.34);letter-spacing:0.14em;">${formatReportAccessLine(data)}</div>
     </div>`;
@@ -5161,6 +5171,11 @@ function buildForewordPage(data) {
         <div style="text-align:left;padding:16px 18px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(199,167,106,0.14);margin-bottom:14px;">
             <div style="font-size:12px;color:var(--gold);letter-spacing:0.08em;margin-bottom:8px;font-weight:700;">법적 안내</div>
             <p style="margin:0;font-size:13px;line-height:1.9;color:#d6dae2;">본 리포트는 명리학(사주) 해석을 기반으로 한 참고 정보입니다. 투자, 의료, 법률, 세무 등 전문 자문을 대체하지 않으며, 최종 판단과 책임은 이용자 본인에게 있습니다.</p>
+        </div>
+
+        <div style="text-align:left;padding:16px 18px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(199,167,106,0.14);margin-bottom:14px;">
+            <div style="font-size:12px;color:var(--gold);letter-spacing:0.08em;margin-bottom:8px;font-weight:700;">연령 표기 (만 나이)</div>
+            <p style="margin:0;font-size:13px;line-height:1.9;color:#d6dae2;">대운·세운·나이대 조언에 나오는 ○○세는 <b>만 나이</b>(양력 생일 기준)입니다. 한국식 세는 나이(생일 전후로 +1하는 방식)와 다를 수 있으니, 숫자를 비교할 때 참고하십시오.</p>
         </div>
 
         <div style="text-align:left;padding:16px 18px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(199,167,106,0.14);margin-bottom:14px;">
@@ -5336,7 +5351,7 @@ var HELP_DATA = {
     },
     daeun: {
         title: "대운 (10년 단위의 큰 흐름)",
-        desc: "나의 사주 원국이라는 '자동차'가 달리는 '10년 단위의 도로'입니다.<br>대운이 좋으면 고속도로를 달리는 것이고, 대운이 나쁘면 비포장도로를 달리는 것과 같습니다. 대운수(예: 3)는 해당 나이(3세, 13세, 23세...)마다 운의 흐름이 바뀜을 의미합니다."
+        desc: "나의 사주 원국이라는 '자동차'가 달리는 '10년 단위의 도로'입니다.<br>대운이 좋으면 고속도로를 달리는 것이고, 대운이 나쁘면 비포장도로를 달리는 것과 같습니다. 대운수(예: 3)는 해당 만 나이(양력 생일 기준)에 운의 흐름이 바뀌기 시작하는 시점을 뜻합니다. 표의 ○○세·10년 구간도 모두 만 나이로 읽으십시오. 한국식 세는 나이와 숫자가 다를 수 있습니다."
     },
     seun: {
         title: "세운 (1년 단위의 흐름)",
@@ -7229,7 +7244,7 @@ var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STR
             const curSip = getSipseong(dayStem, curGz[0]);
             const curKr = `${HAN_KOR[curGz[0]]}${HAN_KOR[curGz[1]]}`;
             const dwEndAge = activeDaeunIdx < daeunData.length-1 ? (daeunData[activeDaeunIdx+1].getStartAge()-1) : (curDW.getStartAge()-1)+10;
-            daeunSummaryEl.innerHTML = `현재 <b>${curDW.getStartAge()-1}세 ~ ${dwEndAge}세</b> · <b style="color:var(--gold);">${curGz[0]}${curGz[1]}(${curKr})</b> 대운 진행 중 &nbsp;·&nbsp; 십성 <b>${curSip || '-'}</b> 축이 10년을 이끕니다.`;
+            daeunSummaryEl.innerHTML = getAgeBasisNoteHtml('block').replace('margin:0 0 12px','margin:0 0 8px') + `현재 <b>${curDW.getStartAge()-1}세 ~ ${dwEndAge}세</b> (만 나이)  · <b style="color:var(--gold);">${curGz[0]}${curGz[1]}(${curKr})</b> 대운 진행 중 &nbsp;·&nbsp; 십성 <b>${curSip || '-'}</b> 축이 10년을 이끕니다.`;
         } else if(daeunSummaryEl) {
             daeunSummaryEl.innerHTML = '대운 흐름을 확인하십시오. 현재 진행 중인 대운이 굵게 표시됩니다.';
         }
