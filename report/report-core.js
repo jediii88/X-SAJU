@@ -2693,7 +2693,8 @@ function ensureSajuxReadablePanelStyles() {
     var st = document.createElement('style');
     st.id = 'sajux-readable-panels';
     st.textContent = [
-        ".m-hanja,.vip-hanja,.report-pillar-hanja,.hanja-main,.f-hz .report-pillar-hanja{font-family:'Noto Sans KR',sans-serif!important;}",
+        ".m-hanja,.vip-hanja,.report-pillar-hanja,.hanja-main,.f-hz .report-pillar-hanja,.sajux-hanja,.month-pillar-title,.monthly-card,.yearly-card,.seyun-year-card{font-family:'Noto Sans KR',sans-serif!important;}",
+        ".month-pillar-title .sajux-hanja,.monthly-card .sajux-hanja,.yearly-card .sajux-hanja{font-family:'Noto Sans KR',sans-serif!important;font-weight:700;}",
         ".sajux-panel-plain,.yearly-indicators,.deep-hook-panel,.premium-executive-summary,#sec-life-panorama.report-chapter,.sajux-gongmang-note{background:transparent!important;background-color:transparent!important;}",
         "body:not(.light-mode) .deep-hook-panel p,html[data-theme=dark] .deep-hook-panel p,body:not(.light-mode) .sajux-gongmang-note p,html[data-theme=dark] .sajux-gongmang-note p{color:#ddd!important;}",
         "body:not(.light-mode) .yearly-indicators .yearly-ind-val,html[data-theme=dark] .yearly-indicators .yearly-ind-val{color:#e8dcc8!important;}",
@@ -3664,7 +3665,7 @@ function buildSeYunYearCardHtml(data, yr, opt) {
     var oneLine = formatSeYunCardOneLineConclusion(ev2.l, sc);
     return '<div class="yearly-card glass-panel" style="width:100%;max-width:100%;box-sizing:border-box;background:rgba(255,255,255,' + bgA + ');border-radius:12px;padding:18px 20px;border:1px solid ' + border + ';">'
         + '<div style="width:100%;display:flex;flex-direction:column;gap:10px;margin-bottom:12px;align-items:stretch;">'
-        + '<div style="font-size:20px;font-weight:800;color:' + ev2.c + ';width:100%;line-height:1.35;font-family:\'Noto Serif KR\',\'Nanum Myeongjo\',\'Batang\',\'Apple SD Gothic Neo\',serif;letter-spacing:0.04em;">' + formatYearWithGanzhi(yr, info.g, info.j) + badge + '</div>'
+        + '<div style="font-size:20px;font-weight:800;color:' + ev2.c + ';width:100%;line-height:1.35;font-family:\'Noto Sans KR\',sans-serif;letter-spacing:0.04em;">' + formatYearWithGanzhiHtml(yr, info.g, info.j) + badge + '</div>'
         + '<div style="font-size:13px;font-weight:700;color:#ebe4d6;line-height:1.5;margin:0;width:100%;">' + oneLine + '</div>'
         + '<div style="width:100%;"><span style="display:inline-block;font-size:12px;background:rgba(255,255,255,0.06);padding:6px 14px;border-radius:20px;color:' + ev2.c + ';font-weight:700;">' + ev2.l + '</span></div>'
         + '<p style="font-size:13.5px;color:#ccc;margin:0;line-height:1.85;width:100%;">' + boldStarsToStrong(pickSeYunYearHookParagraph(name, yr, info.g, info.j, ev2.l, sc)) + '</p></div>'
@@ -5154,7 +5155,7 @@ function buildSewunLoop(data) {
             <div style="display:flex;flex-direction:column;align-items:flex-start;width:100%;gap:8px;margin-bottom:10px;">
                 <div style="width:100%;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;">
                 <div>
-                    <div style="font-size:17px;font-weight:800;color:var(--gold);">${formatYearWithGanzhi(yr, stemHan, jiHan)}</div>
+                    <div style="font-size:17px;font-weight:800;color:var(--gold);font-family:'Noto Sans KR',sans-serif;">${formatYearWithGanzhiHtml(yr, stemHan, jiHan)}</div>
                     <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:4px;">
                         ${sewSipCustomer ? `<span style="font-size:10px;background:rgba(199,167,106,0.15);color:#c7a76a;padding:1px 7px;border-radius:8px;">${sewSipCustomer}</span>` : ''}
                         ${sewShinsal.map(s=>`<span style="font-size:10px;background:rgba(255,255,255,0.08);color:#aaa;padding:1px 7px;border-radius:8px;">${s}</span>`).join('')}
@@ -5251,7 +5252,7 @@ function buildWolunLoop(data) {
         const mGanHj = GAN_HJ[mGanKr] || '';
         const mJiHj = JI_HJ[mJiKr] || '';
         const monthNo = i + 1;
-        const pillarTitle = formatMonthWithGanzhi(monthNo, mGanHj, mJiHj);
+        const pillarTitle = formatMonthWithGanzhiHtml(monthNo, mGanHj, mJiHj);
         const score = mScore(mGanHj, mJiHj);
         const col = mColor(score); const badge = mBadge(score);
         const isNow = i === curMonth;
@@ -5293,7 +5294,7 @@ function buildWolunLoop(data) {
         return `<div class="monthly-card glass-panel" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,${isNow?'0.07':'0.03'});border-radius:10px;padding:14px 16px;border-left:3px solid ${col};break-inside:avoid;">
             <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
                 <div style="display:flex;align-items:center;gap:8px;min-width:0;flex-wrap:wrap;">
-                    <span class="month-pillar-title" style="font-size:18px;font-weight:700;color:var(--gold);font-family:'Noto Serif KR','Nanum Myeongjo','Batang',serif;letter-spacing:0.02em;">${pillarTitle}</span>
+                    <span class="month-pillar-title" style="font-size:18px;font-weight:700;color:var(--gold);font-family:'Noto Sans KR',sans-serif;letter-spacing:0.02em;">${pillarTitle}</span>
                     ${mSipAxis ? `<span style="font-size:10px;background:rgba(199,167,106,0.12);color:#c7a76a;padding:1px 7px;border-radius:8px;">${mSipAxis}</span>` : ''}
                     <span style="font-size:12px;color:#aaa;">양력 ${yr}.${monthNo}월 · ${mJiKr}월(${BRANCH_ANIMAL[mJiHj]||'해당'})</span>
                     ${isNow?'<span style="font-size:10px;background:var(--gold);color:#000;padding:1px 7px;border-radius:8px;font-weight:700;">이번달</span>':''}
@@ -5301,7 +5302,7 @@ function buildWolunLoop(data) {
                 <span style="font-size:16px;">${badge}</span>
             </div>
             <p style="font-size:12.5px;font-weight:700;color:var(--text-primary);line-height:1.55;margin:0 0 8px;width:100%;">${wolOneLine}</p>
-            <p style="font-size:13px;color:#ccc;line-height:1.8;margin:0 0 6px;">${dynText}</p>
+            <p style="font-size:13px;color:#ccc;line-height:1.8;margin:0 0 6px;">${polishHanjaInText(dynText)}</p>
             <div style="font-size:11px;color:${col};">지시: ${ordText}</div>
         </div>`;
     }).join('');
@@ -6629,6 +6630,7 @@ function closeHelp(e) {
 
 var HAN_COLOR = {"甲":"wood","乙":"wood","寅":"wood","卯":"wood","丙":"fire","丁":"fire","巳":"fire","午":"fire","戊":"earth","己":"earth","辰":"earth","戌":"earth","丑":"earth","未":"earth","庚":"metal","辛":"metal","申":"metal","酉":"metal","壬":"water","癸":"water","亥":"water","子":"water"};
 var HAN_KOR = {"甲":"갑","乙":"을","丙":"병","丁":"정","戊":"무","己":"기","庚":"경","辛":"신","壬":"임","癸":"계","子":"자","丑":"축","寅":"인","卯":"묘","辰":"진","巳":"사","午":"오","未":"미","申":"신","酉":"유","戌":"술","亥":"해"};
+var SAJUX_HANJA_FONT = "'Noto Sans KR', sans-serif";
 /** 간지 한 덩어리: 병오(丙午) — 한글(한자한자) */
 function formatGanzhiPair(gStemHan, jBranchHan) {
     var g = String(gStemHan || '');
@@ -6636,14 +6638,36 @@ function formatGanzhiPair(gStemHan, jBranchHan) {
     if (!g || !j) return '';
     return (HAN_KOR[g] || g) + (HAN_KOR[j] || j) + '(' + g + j + ')';
 }
+/** HTML — 괄호 안 한자만 만세력과 동일 폰트 */
+function formatGanzhiPairHtml(gStemHan, jBranchHan) {
+    var g = String(gStemHan || '');
+    var j = String(jBranchHan || '');
+    if (!g || !j) return '';
+    var hangul = (HAN_KOR[g] || g) + (HAN_KOR[j] || j);
+    return hangul + '(<span class="sajux-hanja">' + g + j + '</span>)';
+}
+/** 본문 속 한자(木 등) → sajux-hanja 래핑 */
+function polishHanjaInText(text) {
+    return String(text == null ? '' : text).replace(/[\u4E00-\u9FFF\u3400-\u4DBF]+/g, function (m) {
+        return '<span class="sajux-hanja">' + m + '</span>';
+    });
+}
 /** 예: 2026년 병오(丙午)년 */
 function formatYearWithGanzhi(yr, gStemHan, jBranchHan) {
     var p = formatGanzhiPair(gStemHan, jBranchHan);
     return p ? (String(yr) + '년 ' + p + '년') : (String(yr) + '년');
 }
+function formatYearWithGanzhiHtml(yr, gStemHan, jBranchHan) {
+    var p = formatGanzhiPairHtml(gStemHan, jBranchHan);
+    return p ? (String(yr) + '년 ' + p + '년') : (String(yr) + '년');
+}
 /** 예: 10월 무술(戊戌)월 */
 function formatMonthWithGanzhi(monthNum, gStemHan, jBranchHan) {
     var p = formatGanzhiPair(gStemHan, jBranchHan);
+    return p ? (String(monthNum) + '월 ' + p + '월') : (String(monthNum) + '월');
+}
+function formatMonthWithGanzhiHtml(monthNum, gStemHan, jBranchHan) {
+    var p = formatGanzhiPairHtml(gStemHan, jBranchHan);
     return p ? (String(monthNum) + '월 ' + p + '월') : (String(monthNum) + '월');
 }
 var STEM_YANG = ["갑","병","무","경","임"];
@@ -7379,7 +7403,7 @@ function renderFortuneText(opts) {
         ? (FORTUNE_ACTION_CAUTIOUS_BY_OH[oh] || FORTUNE_ACTION_CAUTIOUS_BY_OH.earth)
         : FORTUNE_TEXT_DB.action.favorable;
     const c = pickVariant(actionPool, seed + idx * 5 + 2);
-    return stripReportMacroLeaks(`${a} ${b} ${c}`);
+    return polishHanjaInText(stripReportMacroLeaks(`${a} ${b} ${c}`));
 }
 
 // 12신살 (삼합·일지 기준: 반안·육해·재·월·급각 등 만세력 통용 항목 포함)
@@ -8542,10 +8566,10 @@ var strat = _dText(s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>'
                 var d=document.createElement('div');
                 d.style.cssText='padding:12px;background:rgba(255,255,255,'+(isThis?'0.07':'0.03')+');border:1px solid '+(isThis?'var(--gold)':'rgba(255,255,255,0.07)')+';border-radius:10px;';
                 d.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px;">'+
-                    '<div style="display:flex;align-items:center;gap:7px;"><span style="font-size:18px;font-weight:900;color:var(--gold);font-family:\'Noto Serif KR\',\'Nanum Myeongjo\',\'Batang\',serif;">'+g+j+'</span><span style="font-size:13px;font-weight:600;color:#ccc;">('+((HAN_KOR&&HAN_KOR[g])||g)+((HAN_KOR&&HAN_KOR[j])||j)+')</span>'+
+                    '<div style="display:flex;align-items:center;gap:7px;"><span style="font-size:18px;font-weight:900;color:var(--gold);font-family:\'Noto Sans KR\',sans-serif;"><span class="sajux-hanja">'+g+j+'</span></span><span style="font-size:13px;font-weight:600;color:#ccc;">('+((HAN_KOR&&HAN_KOR[g])||g)+((HAN_KOR&&HAN_KOR[j])||j)+')</span>'+
                     '<span style="font-size:13px;color:#bbb;">'+yr+'년'+(isThis?' <span style="font-size:10px;background:var(--gold);color:#000;padding:1px 6px;border-radius:6px;font-weight:700;">올해</span>':'')+'</span></div>'+
                     '<span style="font-size:11px;font-weight:700;color:'+col+';">'+gb(s)+'</span></div>'+
-                    '<div style="background:rgba(199,167,106,0.05);border-radius:6px;padding:8px 10px;border-left:2px solid '+col+';"><p style="font-size:12px;color:#ccc;line-height:1.75;margin:0;">'+adv+'</p></div>';
+                    '<div style="background:rgba(199,167,106,0.05);border-radius:6px;padding:8px 10px;border-left:2px solid '+col+';"><p style="font-size:12px;color:#ccc;line-height:1.75;margin:0;">'+polishHanjaInText(adv)+'</p></div>';
                 detDiv.appendChild(d);
             }
             wrap.appendChild(detDiv);
@@ -8604,10 +8628,10 @@ var strat = _dText(s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>'
                 var d=document.createElement('div');
                 d.style.cssText='padding:11px;background:rgba(255,255,255,'+(isThis?'0.07':'0.02')+');border:1px solid '+(isThis?'var(--gold)':'rgba(255,255,255,0.06)')+';border-radius:8px;';
                 d.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;">'+
-                    '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;"><span style="font-size:15px;font-weight:800;color:var(--gold);font-family:\'Noto Serif KR\',\'Nanum Myeongjo\',\'Batang\',serif;">'+formatMonthWithGanzhi(m,g,j)+'</span>'+
+                    '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;"><span style="font-size:15px;font-weight:800;color:var(--gold);font-family:\'Noto Sans KR\',sans-serif;">'+(typeof formatMonthWithGanzhiHtml==='function'?formatMonthWithGanzhiHtml(m,g,j):formatMonthWithGanzhi(m,g,j))+'</span>'+
                     '<span style="font-size:12px;color:#bbb;">'+wY+'.'+m+'월'+(isThis?' <span style="font-size:10px;background:var(--gold);color:#000;padding:1px 5px;border-radius:5px;font-weight:700;">이달</span>':'')+'</span></div>'+
                     '<span style="font-size:11px;font-weight:700;color:'+col+';">'+gb(s)+'</span></div>'+
-                    '<div style="background:rgba(199,167,106,0.04);border-radius:5px;padding:7px 9px;border-left:2px solid '+col+';"><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">'+advm+'</p></div>';
+                    '<div style="background:rgba(199,167,106,0.04);border-radius:5px;padding:7px 9px;border-left:2px solid '+col+';"><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">'+polishHanjaInText(advm)+'</p></div>';
                 detDiv.appendChild(d);
             }
             wrap.appendChild(detDiv);
@@ -8797,7 +8821,7 @@ var strat = _dText(s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>'
                     ?(ykSe+'의 흐름은 '+gTag+jTag+' 기운이 급한 변화보다 안정 운영에 힘을 싣는 편에 가깝습니다. '+reactTxt+' 큰 승부보다 기존 구조를 다듬고 새는 부분을 줄이는 쪽이 유리합니다.')
                     :(ykSe+'의 흐름은 '+gTag+jTag+' 기운이 부담 구간을 건드릴 수 있습니다. '+reactTxt+' 공격적으로 키우기보다 현금흐름 방어와 계약 재검토를 먼저 하면 손실 가능성을 낮출 수 있습니다.');
                 h3+='<div style="margin-bottom:14px;padding:16px;background:rgba(255,255,255,'+(isThis?'0.07':'0.03')+');border:1px solid '+(isThis?'var(--gold)':'rgba(255,255,255,0.07)')+';border-radius:12px;">';
-                h3+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;"><div style="display:flex;align-items:center;gap:8px;min-width:0;flex:1;"><span style="font-size:20px;font-weight:700;color:var(--gold);font-family:\'Noto Serif KR\',\'Nanum Myeongjo\',\'Batang\',serif;white-space:nowrap;letter-spacing:0.02em;">'+g2+j2+'</span><span style="font-size:14px;color:#bbb;white-space:nowrap;">'+yr+'년'+(isThis?' <span style="font-size:10px;background:var(--gold);color:#000;padding:1px 7px;border-radius:8px;font-weight:700;">올해</span>':'')+'</span></div><span style="font-size:12px;font-weight:700;color:'+col2+';white-space:nowrap;">'+gb(s2)+'</span></div>';
+                h3+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;"><div style="display:flex;align-items:center;gap:8px;min-width:0;flex:1;"><span style="font-size:20px;font-weight:700;color:var(--gold);font-family:\'Noto Sans KR\',sans-serif;white-space:nowrap;letter-spacing:0.02em;"><span class="sajux-hanja">'+g2+j2+'</span></span><span style="font-size:14px;color:#bbb;white-space:nowrap;">'+yr+'년'+(isThis?' <span style="font-size:10px;background:var(--gold);color:#000;padding:1px 7px;border-radius:8px;font-weight:700;">올해</span>':'')+'</span></div><span style="font-size:12px;font-weight:700;color:'+col2+';white-space:nowrap;">'+gb(s2)+'</span></div>';
                 h3+=seStrip;
                 var ynarr=ykSe+'의 흐름은 '+(GK[g2]||g2)+'('+KN[gOh]+') 천간과 '+(JK[j2]||j2)+'('+KN[jOh]+') 지지가 겹쳐 나타납니다. '+(s2>=2?'원국과의 합이 맞아 드는 편이라 실행한 일이 결과로 이어질 가능성이 큽니다. 상반기에 거점을 고정하고 하반기에 확장을 붙이면 리스크가 줄어듭니다.':s2>=0?'급하게 키우기보다 기존 구조를 다듬고 현금흐름을 먼저 안정시키는 편이 유리합니다. 분기마다 우선순위를 세 개 이내로 압축하십시오.':'부담 구간을 건드릴 수 있으니 결정 속도를 늦추고 안전장치를 먼저 챙기십시오. 보증·레버리지·감정적 확장은 가급적 피하는 것이 좋습니다.')+' '+reactTxt;
                 h3+='<div style="background:rgba(0,0,0,0.15);border-radius:6px;padding:10px;margin-bottom:10px;"><p style="font-size:12px;color:#ddd;line-height:1.75;margin:0;">'+ynarr+'</p></div>';
@@ -8824,7 +8848,7 @@ var strat = _dText(s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>'
             function gc(s){return s>=3?'#c7a76a':s>=1?'#00C853':s===0?'#888':s>=-2?'#ff9800':'#e74c3c';}
             function gb(s){return s>=3?'🌟 대길':s>=1?'✦ 길':s===0?'— 평':s>=-2?'⚠ 주의':'❌ 흉';}
             var curY3=new Date().getFullYear();var curM3=new Date().getMonth()+1;
-            var h4='<div class="report-chapter"><h3 class="ch-title" style="font-family:\'Noto Serif KR\',\'Nanum Myeongjo\',\'Batang\',serif;">월운 12개월 — 이달의 기운 완전 해부</h3><p class="ch-text">월운은 그달의 날씨입니다. 언제 액셀을 밟고 언제 브레이크를 밟아야 하는지 — 달력처럼 활용하십시오.</p>';
+            var h4='<div class="report-chapter"><h3 class="ch-title">월운 12개월 — 이달의 기운 완전 해부</h3><p class="ch-text">월운은 그달의 날씨입니다. 언제 액셀을 밟고 언제 브레이크를 밟아야 하는지 — 달력처럼 활용하십시오.</p>';
             for(var m4=1;m4<=12;m4++){
                 var mS=Solar.fromYmd(curY3,m4,15);
                 var mE=mS.getLunar().getEightChar();
@@ -8843,7 +8867,7 @@ var strat = _dText(s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>'
                 if(mbPair&&natalB.indexOf(mbPair)>=0){var _mbk=JK[mbPair]||mbPair; mReacts.push(mJTag+getJosa(mJTag,'이/가')+' 원국의 '+_mbk+getJosa(_mbk,'과/와')+' 잘 맞아 협업이 부드럽습니다.');}
                 if(mbClash&&natalB.indexOf(mbClash)>=0){var _mck=JK[mbClash]||mbClash; mReacts.push(mJTag+getJosa(mJTag,'이/가')+' 원국의 '+_mck+getJosa(_mck,'과/와')+' 부딪혀 일정 변경·감정 충돌을 조심해야 합니다.');}
                 var mReactTxt=mReacts.length?mReacts[0]:'원국과 큰 충돌이 적어 계획대로 밀어붙이기 좋은 달입니다.';
-                var mKey=(typeof formatMonthWithGanzhi==='function')?formatMonthWithGanzhi(m4,gm4,jm4):(String(m4)+'월 '+gm4+jm4);
+                var mKey=(typeof formatMonthWithGanzhiHtml==='function')?formatMonthWithGanzhiHtml(m4,gm4,jm4):((typeof formatMonthWithGanzhi==='function')?formatMonthWithGanzhi(m4,gm4,jm4):(String(m4)+'월 '+gm4+jm4));
                 var mSalt=(curY3*17+m4*5+(gm4.charCodeAt(0)||0)+(jm4.charCodeAt(0)||0))%12;
                 var mTail=[
                     '이번 달 말미에는 지출 앱을 열지 마십시오.',
@@ -8871,7 +8895,7 @@ var strat = _dText(s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>'
                     ?mNeuBodies[mSalt % 4]
                     :(mKey+'에는 부담 신호가 먼저 올 수 있습니다. '+mReactTxt+' 큰 결정보다 검토·보류를 먼저 하면 안정적으로 넘길 가능성이 높습니다. '+mTail);
                 h4+='<div style="margin-bottom:12px;padding:14px;background:rgba(255,255,255,'+(isThisM?'0.07':'0.03')+');border:1px solid '+(isThisM?'var(--gold)':'rgba(255,255,255,0.06)')+';border-radius:10px;">';
-                h4+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:8px;"><div style="display:flex;align-items:center;gap:8px;min-width:0;flex:1;"><span style="font-size:18px;font-weight:900;color:var(--gold);font-family:\'Noto Serif KR\',\'Nanum Myeongjo\',\'Batang\',serif;white-space:nowrap;letter-spacing:0.02em;">'+mKey+'</span><span style="font-size:13px;color:#bbb;white-space:nowrap;">'+m4+'월'+(isThisM?' <span style="font-size:10px;background:var(--gold);color:#000;padding:1px 6px;border-radius:6px;font-weight:700;">이달</span>':'')+'</span></div><span style="font-size:11px;font-weight:700;color:'+colm+';white-space:nowrap;">'+gb(sm4)+'</span></div>';
+                h4+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:8px;"><div style="display:flex;align-items:center;gap:8px;min-width:0;flex:1;"><span style="font-size:18px;font-weight:900;color:var(--gold);font-family:\'Noto Sans KR\',sans-serif;white-space:nowrap;letter-spacing:0.02em;">'+mKey+'</span><span style="font-size:13px;color:#bbb;white-space:nowrap;">'+m4+'월'+(isThisM?' <span style="font-size:10px;background:var(--gold);color:#000;padding:1px 6px;border-radius:6px;font-weight:700;">이달</span>':'')+'</span></div><span style="font-size:11px;font-weight:700;color:'+colm+';white-space:nowrap;">'+gb(sm4)+'</span></div>';
                 h4+='<div style="background:rgba(199,167,106,0.05);border-radius:6px;padding:8px 10px;border-left:2px solid '+colm+';"><p style="font-size:12px;color:#bbb;line-height:1.7;margin:0;">'+advm.replace(/\*\*([\s\S]*?)\*\*/g,'<strong>$1</strong>')+'</p></div></div>';
             }
             h4+='</div>';
