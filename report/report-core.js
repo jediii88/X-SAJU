@@ -1732,7 +1732,7 @@ function ensureSajuxPdfPrintForceStyles() {
     var st = document.createElement('style');
     st.id = 'sajux-pdf-print-force-dynamic';
     st.textContent = `/* =========================================
-   [사주X PDF 인쇄 전용 강제 스타일링]
+   [사주X PDF 인쇄 — 배경만 화이트닝, 오행 글자색 유지]
 ========================================= */
 @media print {
   body, html {
@@ -1743,43 +1743,58 @@ function ensureSajuxPdfPrintForceStyles() {
     box-shadow: none !important;
   }
 
-  /* 지장간, 십성 배지, 태그 등 모든 작은 요소들 강제 화이트닝 */
-  .jijanggan, .jijanggan span, .jijanggan div, .badge, .tag, .highlight, [class*="badge"], [class*="tag"] {
+  /* 지장간, 십성 배지, 태그 — 배경만 */
+  .jijanggan, .jijanggan span, .jijanggan div,
+  .badge, .tag, .m-badge, .m-badge-shinsal, .m-badge--gongmang-hit,
+  .highlight, [class*="badge"], [class*="tag"] {
     background: #ffffff !important;
     background-color: #ffffff !important;
-    color: #000000 !important;
     border: 1px solid #999999 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
 
-  /* 카드 안의 내부 카드, 회색/검은색 박스들 강제 화이트닝 */
-  .card, .yearly-card, .monthly-card, .module-item, .inner-card, .detail-box, .content-box, [class*="box"], [class*="card"] {
+  /* 카드·내부 박스 — 배경만 (글자색 건드리지 않음) */
+  .card, .yearly-card, .monthly-card, .module-item,
+  .inner-card, .detail-box, .content-box,
+  .sajux-print-surface, .report-inner-box,
+  .vip-evidence-block table,
+  .manse-cell, .manse-table,
+  [class*="box"]:not(.checkbox):not(.search-box),
+  [class*="card"] {
     background: #ffffff !important;
     background-color: #ffffff !important;
-    color: #000000 !important;
     border: 1px solid #cccccc !important;
     box-shadow: none !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
   }
 
-  body, .dashboard-container, .zami-card, .glass-panel, .vip-module-item, .f-card, .appendix-ziwei, .manse-table {
+  /* report-core 인라인 반투명 박스 */
+  #report-container div[style*="background:rgba(255,255,255"],
+  #report-container div[style*="background:rgba(0,0,0"] {
     background: #ffffff !important;
     background-color: #ffffff !important;
+    border: 1px solid #cccccc !important;
+    box-shadow: none !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
-    box-shadow: none !important;
   }
 
-  /* 텍스트는 예외 없이 무조건 검은색 (회색 텍스트로 인한 가독성 저하 방지) */
-  *, p, span, div, h1, h2, h3, h4, h5, h6, td, th, li {
-    color: #000000 !important;
-    text-shadow: none !important;
+  /* 오행 한자·천간지지 색상 보존 */
+  .wood, .fire, .earth, .metal, .water,
+  .m-hanja, .m-hanja.wood, .m-hanja.fire, .m-hanja.earth, .m-hanja.metal, .m-hanja.water,
+  .rel-char span, [class*="han-"] {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
-  /* 단락 제목 고립(Page Break) 방어 */
-  .section-title, .part-title, .report-chapter, .ch-title, h1, h2, h3, .title-card {
+  /* 단락 제목 고립 방지 */
+  .section-title, .part-title, .part-header-label, .part-header-block,
+  .report-chapter, .ch-title, h1, h2, h3, .title-card {
     page-break-after: avoid !important;
     break-after: avoid !important;
     page-break-inside: avoid !important;
@@ -1787,8 +1802,8 @@ function ensureSajuxPdfPrintForceStyles() {
     margin-bottom: 10px !important;
   }
 
-  /* 부모 컨테이너가 flex라서 page-break가 안 먹히는 현상 방지 */
-  .report-container, #report-container, .print-container, .layout-wrapper, .seyun-premium-vertical {
+  .report-container, #report-container, .print-container, .layout-wrapper,
+  .seyun-premium-vertical, .part-header-block, .cover-page, .manse-table, .manse-row {
     display: block !important;
   }
 
@@ -1802,8 +1817,10 @@ function ensureSajuxPdfPrintForceStyles() {
     border: 1px solid #dee2e6 !important;
     padding: 10px !important;
     background-color: #ffffff !important;
-    color: #000000 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
+
   .remedy-checklist-table,
   .remedy-checklist-table thead,
   .remedy-checklist-table tbody {
@@ -1818,12 +1835,8 @@ function ensureSajuxPdfPrintForceStyles() {
     vertical-align: top !important;
   }
 
-  .card, .yearly-card, .monthly-card, .module-item, table, h1, h2, h3 {
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
-  }
-
-  #floating-toc, #theme-toggle, #sticky-part-nav, #sajux-pdf-fab, .pdf-btn, .nav-floating, .sajux-pdf-wide-btn {
+  #floating-toc, #theme-toggle, #sticky-part-nav, #sajux-pdf-fab,
+  .pdf-btn, .nav-floating, .sajux-pdf-wide-btn {
     display: none !important;
   }
   .sajux-logo.dark { display: none !important; mix-blend-mode: normal !important; }
@@ -4581,7 +4594,7 @@ function buildPartHeader(num, title, subtitle, anchorId, opts) {
     var color = c[num] != null ? c[num] : '199,167,106';
     var border = h[num] != null ? h[num] : '#c7a76a';
     var icon = ic[num] != null ? ic[num] : '📌';
-    return '<div' + idAttr + ' class="report-chapter" style="background:linear-gradient(135deg,rgba(' + color + ',0.09),rgba(0,0,0,0));border-top:2px solid ' + border + ';border-radius:16px;padding:32px 36px;margin:' + marginTop + ' 0 8px;page-break-before:' + pageBreak + ';"><div style="font-size:11px;color:' + border + ';letter-spacing:0.12em;margin-bottom:10px;font-weight:700;">[ 제 ' + num + '부 ]</div><div style="font-size:26px;font-weight:700;color:var(--text-primary);margin-bottom:8px;">' + icon + ' ' + title + '</div><div style="font-size:13px;color:var(--text-dim);letter-spacing:1px;">' + subtitle + '</div></div>';
+    return '<div' + idAttr + ' class="part-header-block report-chapter sajux-print-surface" style="display:block;background:linear-gradient(135deg,rgba(' + color + ',0.09),rgba(0,0,0,0));border-top:2px solid ' + border + ';border-radius:16px;padding:32px 36px;margin:' + marginTop + ' 0 8px;page-break-before:' + pageBreak + ';page-break-inside:avoid;break-inside:avoid;"><div class="part-header-label part-title" style="display:block;font-size:11px;color:' + border + ';letter-spacing:0.12em;margin-bottom:10px;font-weight:700;page-break-after:avoid !important;break-after:avoid !important;">[ 제 ' + num + '부 ]</div><div class="part-header-title" style="display:block;font-size:26px;font-weight:700;color:var(--text-primary);margin-bottom:8px;page-break-after:avoid !important;break-after:avoid !important;">' + icon + ' ' + title + '</div><div class="part-header-sub" style="display:block;font-size:13px;color:var(--text-dim);letter-spacing:1px;">' + subtitle + '</div></div>';
 }
 
 // VIP 근거: 원국 8자 만세력 표 (프리미엄 요약 직후 배치)
@@ -4656,7 +4669,7 @@ function buildVipEvidenceBlock(data) {
         pillars.forEach(function(p,i){
             if(isUnk&&i===0){ev+='<td style="text-align:center;color:#444;">-</td>';return;}
             var hid=(typeof getHidden==='function'?getHidden(p.h[1],ds):'')||'-';
-            ev+='<td style="padding:4px 8px;text-align:center;font-size:10px;color:#888;line-height:1.35;">'+String(hid).replace(/<br\s*\/?>/gi,' ')+'</td>';
+            ev+='<td class="jijanggan badge tag sajux-print-surface" style="padding:4px 8px;text-align:center;font-size:10px;line-height:1.35;">'+String(hid).replace(/<br\s*\/?>/gi,' ')+'</td>';
         });
         ev += '</tr>';
         // 12운성
@@ -5208,12 +5221,14 @@ function buildLifePanoramaSection(data) {
 // ===================================================================
 function buildCoverPage(data) {
     return `<div id="sec-cover" class="cover-page chapter-start" style="display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:90vh;padding:72px 28px 56px;text-align:center;border-bottom:1px solid rgba(199,167,106,0.12);margin-bottom:56px;">
-        <div class="sajux-logo-wrap" style="width:100%;max-width:90vw;margin:0 auto;display:flex;justify-content:center;align-items:center;"><img class="sajux-logo dark" src="assets/sajux-logo-dark.png" alt="SAJU X 로고" loading="lazy" style="width:clamp(420px,58vw,630px);max-width:100%;margin:0 auto;" /><img class="sajux-logo light" src="assets/sajux-logo-light.png" alt="SAJU X 로고" loading="lazy" style="width:clamp(420px,58vw,630px);max-width:100%;margin:0 auto;" /></div>
-        <div id="sec-book-intro" class="sajux-intro-block" style="width:100%;max-width:760px;margin:28px auto 0;text-align:center;">
-            <div class="sajux-intro-heading" style="font-size:13px;letter-spacing:0.12em;color:rgba(199,167,106,0.9);margin-bottom:16px;font-weight:700;">사주X란?</div>
-            <div class="intro-text-container">
-                <p style="margin-bottom: 12px;">사주X는 X-파일처럼, 고객님의 깊은 내면과 흐름을 조용히 비춰보는 비밀문서입니다.</p>
-                <p>또한 사주X의 X는 사주를 이루는 네 개의 기둥이 서로 이어져 완성되는, 한 사람의 운명 구조를 상징합니다.</p>
+        <div class="sajux-logo-wrap" style="width:100%;max-width:90vw;margin:0 auto;display:flex;flex-direction:column;justify-content:center;align-items:center;">
+            <div style="display:flex;justify-content:center;align-items:center;"><img class="sajux-logo dark" src="assets/sajux-logo-dark.png" alt="SAJU X 로고" loading="lazy" style="width:clamp(420px,58vw,630px);max-width:100%;margin:0 auto;" /><img class="sajux-logo light" src="assets/sajux-logo-light.png" alt="SAJU X 로고" loading="lazy" style="width:clamp(420px,58vw,630px);max-width:100%;margin:0 auto;" /></div>
+            <div id="sec-book-intro" class="sajux-intro-block" style="width:100%;max-width:760px;margin:24px auto 0;text-align:center;">
+                <div class="sajux-intro-heading" style="font-size:13px;letter-spacing:0.12em;color:rgba(199,167,106,0.9);margin-bottom:16px;font-weight:700;">사주X란?</div>
+                <div class="intro-text-container">
+                    <p style="margin-bottom: 12px;">사주X는 X-파일처럼, 고객님의 깊은 내면과 흐름을 조용히 비춰보는 비밀문서입니다.</p>
+                    <p>또한 사주X의 X는 사주를 이루는 네 개의 기둥이 서로 이어져 완성되는, 한 사람의 운명 구조를 상징합니다.</p>
+                </div>
             </div>
         </div>
     </div>`;
@@ -6629,7 +6644,7 @@ function runAnalysis(overrideParams) {
 
         const manseHtml = [
             headerRow,
-            bRow('십성(천)', p => `<div class="m-badge">${sipToManseBadge(getSipseong(dayStem, p.h[0]), p.n === '일주')}</div>`),
+            bRow('십성(천)', p => `<div class="m-badge badge tag">${sipToManseBadge(getSipseong(dayStem, p.h[0]), p.n === '일주')}</div>`),
             bRow('천간', p => `
                 <div class="m-hanja ${HAN_COLOR[p.h[0]] || ''}" style="font-weight:900;text-shadow:0 0 0.01px currentColor;">${p.h[0]}</div>
                 <div class="m-hangul">${HAN_KOR[p.h[0]] || p.h[0]}</div>
@@ -6638,8 +6653,8 @@ function runAnalysis(overrideParams) {
                 <div class="m-hanja ${HAN_COLOR[p.h[1]] || ''}" style="font-weight:900;text-shadow:0 0 0.01px currentColor;">${p.h[1]}</div>
                 <div class="m-hangul">${HAN_KOR[p.h[1]] || p.h[1]}</div>
             `),
-            bRow('십성(지)', p => `<div class="m-badge">${sipToManseBadge(getSipseong(dayStem, p.h[1]), false)}</div>`),
-            bRow('숨은 기둥', p => `<div class="m-badge">${getHidden(p.h[1], dayStem).replace(/<br>/g, '')}</div>`),
+            bRow('십성(지)', p => `<div class="m-badge badge tag">${sipToManseBadge(getSipseong(dayStem, p.h[1]), false)}</div>`),
+            bRow('숨은 기둥', p => `<div class="m-badge badge tag jijanggan">${getHidden(p.h[1], dayStem).replace(/<br>/g, '')}</div>`),
             bRow('흐름 리듬', p => `<div class="m-badge">${getUnsung(dayStem, p.h[1]) || '-'}</div>`),
             bRow('지지 신호', p => shinsalBadgeHtml(allTwelveShinsal[p.n])),
             bRow('추가 신호', p => shinsalBadgeHtml(allExtraShinsal[p.n])),
