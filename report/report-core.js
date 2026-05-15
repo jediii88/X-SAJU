@@ -351,6 +351,180 @@ function voiceInlineInterpHeader(topic, data) {
     return buildChapterHead(buildTopicMetaphorTitle(topic, data), label) + buildChapterIntroHtml(data, topic);
 }
 
+/** ═══ 궁합(2인) — 사주아이형 톤 (couple · compatibility 공용) ═══ */
+var SAJUX_COMPAT_SECTION_LABELS = {
+    overview: '궁합 총평 — 두 격이 만나는 자리',
+    personality: '성격·기질 — 타고난 온도',
+    lover: '연인 — 마음의 리듬',
+    married: '부부 — 삶의 설계',
+    friend: '우정 — 오래 가는 거리',
+    business: '동업 — 역할과 돈',
+    spouse: '배우자궁 — 끌림의 방향',
+    wuxing: '오행 대칭 — 에너지 보완',
+    strategy: '관계 전략 — 소통·동업·친밀',
+    timeline: '시기 — 대운·세운 싱크',
+    caution: '취급 주의 — 지키면 오래 갑니다',
+    brief: '관계 브리프 — 한눈에 보는 핵심'
+};
+
+function buildCompatMetaphorTitle(ctx) {
+    ctx = ctx || {};
+    var nA = nmNormalize(ctx.aName || (ctx.a && ctx.a.name)) || '한 분';
+    var nB = nmNormalize(ctx.bName || (ctx.b && ctx.b.name)) || '한 분';
+    var a = ctx.a || {};
+    var b = ctx.b || {};
+    var profA = (typeof getIljuProfile === 'function') ? getIljuProfile(a.dayStem, a.dayBranch) : null;
+    var profB = (typeof getIljuProfile === 'function') ? getIljuProfile(b.dayStem, b.dayBranch) : null;
+    var imgA = profA && profA.image ? String(profA.image).split(/[—\-–]/)[0].trim() : '';
+    var imgB = profB && profB.image ? String(profB.image).split(/[—\-–]/)[0].trim() : '';
+    if (imgA && imgB) {
+        return nA + '님은 ' + imgA + ', ' + nB + '님은 ' + imgB + ' — 두 격이 한 방에 맞닿은 형상이네요';
+    }
+    if (ctx.isHap) return nA + '님과 ' + nB + '님, 배우자궁이 맞물리는 인연이시군요';
+    if (ctx.isChung) return nA + '님과 ' + nB + '님, 각도는 세지만 끌림도 강한 만남이네요';
+    var sc = ctx.score;
+    if (sc >= 75) return nA + '님과 ' + nB + '님, 서로의 빈칸을 채우는 보완형 궁합이네요';
+    if (sc >= 55) return nA + '님과 ' + nB + '님, 노력하면 깊어지는 균형형 인연이시군요';
+    return nA + '님과 ' + nB + '님, 다름을 인정할 때 빛나는 조율형 궁합이에요';
+}
+
+function buildCompatTopicMetaphor(topic, ctx) {
+    ctx = ctx || {};
+    var nA = nmNormalize(ctx.aName) || '한 분';
+    var nB = nmNormalize(ctx.bName) || '한 분';
+    var seed = nA + nB + (topic || '');
+    var pools = {
+        overview: function () {
+            return pickVoiceLine([
+                nA + '님과 ' + nB + '님, 겉으로는 다른데 속 리듬이 맞는 조합이네요',
+                '두 분의 사주가 겹치는 지점이 분명한, 인연 지도가 열린 격이시군요',
+                nA + '님과 ' + nB + '님, 만남 자체가 우연이 아니라 구조로 읽히는 궁합이에요'
+            ], seed);
+        },
+        personality: function () {
+            return nA + '님과 ' + nB + '님, 타고난 온도 차이가 관계의 색을 만드는 구간이네요';
+        },
+        lover: function () {
+            return pickVoiceLine([
+                '애정은 만남 횟수보다 **약속 리듬**이 먼저인, 연인 궁합이시군요',
+                nA + '님과 ' + nB + '님, 마음이 붙는 속도와 지키는 속도가 다른 편이네요'
+            ], seed + 'lv');
+        },
+        married: function () {
+            return '부부로 가면 돈·집·자녀 숫자가 같은 주에 몰릴 때가 관건인 궁합이에요';
+        },
+        friend: function () {
+            return nA + '님과 ' + nB + '님, 오래 가려면 **공통 취미 한 가지**가 닻이 되는 우정이네요';
+        },
+        business: function () {
+            return '동업은 친함보다 **역할 문장**이 먼저인, 비즈니스 궁합이시군요';
+        },
+        spouse: function () {
+            return voiceMingliLine('일지는 배우자궁, 무의식적으로 끌리는 형상입니다.') + ' 두 사람의 일지 관계가 끌림의 온도를 정합니다.';
+        },
+        wuxing: function () {
+            return nA + '님과 ' + nB + '님, 오행 막대가 말해 주는 **보완과 과잉**을 먼저 보시면 됩니다.';
+        },
+        strategy: function () {
+            return '소통·돈·친밀 — 세 전장에서 승부가 갈리는 시기가 분명한 궁합이네요';
+        },
+        timeline: function () {
+            return voiceMingliLine('대운은 10년짜리 계절입니다.') + ' 두 사람 계절이 겹칠 때만 크게 움직이십시오.';
+        },
+        caution: function () {
+            return nA + '님과 ' + nB + '님, 지치는 날에 내리는 **즉석 합의**가 가장 비싼 실수가 되기 쉬운 조합이에요';
+        },
+        brief: function () {
+            return nA + '님과 ' + nB + '님, 한 줄 목표만 맞춰도 마찰이 줄어드는 관계 브리프네요';
+        }
+    };
+    var fn = pools[topic];
+    if (fn) return fn();
+    return buildCompatMetaphorTitle(ctx);
+}
+
+function buildCompatOpenerInner(topic, ctx) {
+    ctx = ctx || {};
+    var nA = nmNormalize(ctx.aName) || '한 분';
+    var nB = nmNormalize(ctx.bName) || '한 분';
+    var pools = {
+        overview: [
+            voiceMingliLine('일간·일지·오행이 동시에 말할 때 궁합 점수가 의미를 갖습니다.') + ' 숫자만 보지 말고 아래 패널 순서대로 읽어 보세요.',
+            '두 분 다 바쁜데 마음이 엇갈릴 때가 있다면, 그건 성격 탓이 아니라 **기운 각도** 때문일 수 있어요.'
+        ],
+        personality: [
+            '성격 카드는 비난이 아니라 **서로의 기본 온도**예요. 맞추려 하기보다 먼저 이름 붙이면 편해집니다.',
+            voiceMingliLine('신강·신약은 혼자 버티는 힘의 양이 아니라, 관계에서 주도권이 어디로 가는지도 말합니다.')
+        ],
+        lover: [
+            voiceMingliLine('일간 상생·상극은 애정 표현 방식의 차이로 나타납니다.') + ' 사랑의 언어가 다르면 오해가 커져요.',
+            '도화살·합·충은 연애 사건의 **속도**를 바꿉니다. 빠르다고 나쁜 건 아니에요.'
+        ],
+        married: [
+            '결혼 후엔 로맨스보다 **생활 숫자**가 먼저예요. 돈·집·육아 일정을 달력에 같이 적어 두십시오.',
+            voiceMingliLine('대운이 겹치는 해는 관계의 계절이 바뀝니다.') + ' 그해에 큰 결정을 몰아넣지 마세요.'
+        ],
+        friend: [
+            '우정은 자주 만날수록만 깊어지는 게 아니에요. **공통 관심사 한 가지**가 오래 가게 합니다.',
+            '충(冲)이 있어도 우정은 깨지지 않아요. 다만 말버릇을 조심할 시기가 따로 있을 뿐이에요.'
+        ],
+        business: [
+            voiceMingliLine('재성·관성 균형은 돈과 책임의 분담을 말합니다.') + ' 계약은 친함 다음에 적으십시오.',
+            '역할을 나눌 때 직함 말고 **결정권 범위**를 문장으로 쓰면 마찰이 줄어요.'
+        ],
+        spouse: [
+            '배우자궁은 이상형이 아니라 **무의식적으로 끌리는 온도**예요. 상대가 그림과 다르면 당황할 수 있어요.',
+            voiceMingliLine('일지 합은 편안함, 충은 자극입니다.') + ' 둘 다 흉이 아니라 비용 구조에 가깝습니다.'
+        ],
+        wuxing: [
+            '좌우 막대는 겉 비교용이에요. 한쪽이 과하면 그 오행 **생활 루틴**부터 맞추십시오.',
+            nA + '님과 ' + nB + '님, 부족한 오행을 **같이 채우는 습관**이 궁합 점수를 올립니다.'
+        ],
+        strategy: [
+            '소통은 감정 맞추기보다 **일정·돈 숫자**부터 맞출 때 비용이 줄어요.',
+            '동업은 KPI 한 줄, 친밀은 피로 주 **휴식 슬롯** — 세 가지를 따로 관리하십시오.'
+        ],
+        timeline: [
+            voiceMingliLine('대운 싱크는 두 사람의 10년 계절이 겹치는지 봅니다.') + ' 초록·빨강 카드만 골라 일정을 잡으세요.',
+            '안정기에는 관계 점검, 조율기에는 큰 말 줄이기 — 타임라인 색이 행동 지침입니다.'
+        ],
+        caution: [
+            '지친 날 **즉석 합의**는 나중에 되돌리기 어렵습니다. 결론은 내일 아침으로 미루십시오.',
+            '제3자에게 돈·험담을 맡기면 둘 사이 비용이 커져요. 직접 대화 한 통이 낫습니다.'
+        ],
+        brief: [
+            '브리프는 예쁜 말이 아니라 **이번 달에 지킬 한 줄**이에요. 냉장고에 붙여 두셔도 좋습니다.',
+            nA + '님과 ' + nB + '님, 공동 목표를 문장으로 고정하면 시너지가 커져요.'
+        ]
+    };
+    var pool = pools[topic];
+    if (!pool || !pool.length) return '';
+    return pool[Math.abs(hashSeed(nA + nB + topic + 'cop')) % pool.length];
+}
+
+function buildCompatSajuKidOpener(ctx, innerLine) {
+    ctx = ctx || {};
+    var nA = nmNormalize(ctx.aName) || '한 분';
+    var nB = nmNormalize(ctx.bName) || '한 분';
+    var surface = pickVoiceLine(SAJUX_SURFACE_LINES, nA + nB + 'compatOpener');
+    var open = surface + ' ' + nA + '님과 ' + nB + '님은 ';
+    if (innerLine) return open + innerLine;
+    return open + '서로 다른 기운이 맞닿을 때 시너지가 커지는 구조라고 볼 수 있어요.';
+}
+
+function buildCompatChapterIntro(ctx, topic) {
+    var text = buildCompatSajuKidOpener(ctx, buildCompatOpenerInner(topic, ctx));
+    return '<p class="ch-text ch-voice-opener compat-voice-opener" style="margin:0 0 16px;font-size:13.5px;line-height:1.88;color:#ddd;">'
+        + boldStarsToStrong(text) + '</p>';
+}
+
+/** 궁합 섹션 상단 — 은유 제목 + 사주아이형 도입 (ctx: a,b,aName,bName,isHap,isChung,score,…) */
+function buildCompatVoiceSection(topic, ctx) {
+    var label = SAJUX_COMPAT_SECTION_LABELS[topic] || '';
+    return buildChapterHead(buildCompatTopicMetaphor(topic, ctx), label, { extraStyle: 'color:#f5f0e6;' })
+        + buildCompatChapterIntro(ctx, topic);
+}
+
 function buildTopicOpenerInner(topic, data) {
     var nm = nmNormalize(data.name || '') || '고객';
     var mainSip = getDominantSipseong(data);
