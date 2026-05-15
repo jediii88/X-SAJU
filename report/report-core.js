@@ -774,12 +774,12 @@ function buildCompatSpousePanelHtml(ctx, aSpouse, bSpouse) {
         '<div class="insight-card" style="border-left:3px solid var(--gold);">',
         '<div class="tag">💛 ' + escHtmlAttr(aName) + '님이 끌리는 이성</div><br>',
         '<strong>일지: ' + escHtmlAttr(aDB) + '</strong><br><br>',
-        '<p style="font-size:13.5px;color:#bbb;line-height:1.85;margin:0;">' + aSpouse + '</p>',
+        '<p style="font-size:13.5px;color:#bbb;line-height:1.85;margin:0;">' + polishCompatLine(ctx, 'a', aSpouse) + '</p>',
         '<br><span style="font-size:11px;color:#777;">※ 배우자궁은 무의식적으로 끌리는 온도입니다.</span></div>',
         '<div class="insight-card" style="border-left:3px solid var(--gold-soft);">',
         '<div class="tag">✦ ' + escHtmlAttr(bName) + '님이 끌리는 이성</div><br>',
         '<strong>일지: ' + escHtmlAttr(bDB) + '</strong><br><br>',
-        '<p style="font-size:13.5px;color:#bbb;line-height:1.85;margin:0;">' + bSpouse + '</p></div>',
+        '<p style="font-size:13.5px;color:#bbb;line-height:1.85;margin:0;">' + polishCompatLine(ctx, 'b', bSpouse) + '</p></div>',
         '<div class="insight-card"><div class="tag">🔄 두 사람이 끌리는 이유</div><br>',
         '<p style="font-size:13.5px;color:#bbb;line-height:1.85;margin:0;">' + boldStarsToStrong(why) + '</p></div>'
     ].join('');
@@ -1063,6 +1063,17 @@ function voicePolishParagraph(data, text) {
 
 function voicePolishHtml(data, html) {
     return String(html == null ? '' : html);
+}
+
+/** 만세력·대운 카드 등 HTML 삽입용 — 【】·당신·IT슬랭 정리 + strong */
+function voicePolishReportHtml(data, text) {
+    return boldStarsToStrong(voicePolishParagraph(data, text));
+}
+
+/** 궁합 패널 — a/b 이름 각각 polish */
+function polishCompatLine(ctx, who, text) {
+    var nm = compatNm(ctx, who);
+    return voicePolishParagraph({ name: nm }, text);
 }
 
 /** 세운 본문 등에 남은 고정 변명 문구(옛 입력·캐시 잔재) 제거 */
@@ -3039,7 +3050,7 @@ function buildRelationSummary(data) {
             return `원국에 ${kr} ${type}(${label})이 있습니다. 한 오행이 판을 집어삼킵니다. 용신 방향이면 특기, 기신 방향이면 전면전입니다. **그 오행과 같은 업·사람 밀도**를 의도적으로 조절하십시오.`;
         }
         // 기본 폴백
-        return `당신의 원국에 ${kr} ${type}(${label}) 구조가 있습니다. 이 관계는 당신이 살면서 반복적으로 경험하는 특정 패턴의 원형입니다. 이 에너지 구조를 이해하시면 비슷한 상황이 반복되는 이유와 변화가 일어나는 시기를 미리 파악하실 수 있습니다. 중요한 약속과 지출은 서면 조건을 먼저 확정하십시오.`;
+        return voicePolishParagraph(data, `${nmUi(data.name || '고객')} 원국에 ${kr} ${type}(${label}) 구조가 있습니다. 이 관계는 ${nmDnimEunNeun(data.name || '고객')} 살면서 반복적으로 경험하는 특정 패턴의 원형입니다. 이 에너지 구조를 이해하시면 비슷한 상황이 반복되는 이유와 변화가 일어나는 시기를 미리 파악하실 수 있습니다. 중요한 약속과 지출은 서면 조건을 먼저 확정하십시오.`);
     }
     
     if(!interactions || interactions.length === 0) {
@@ -3047,7 +3058,7 @@ function buildRelationSummary(data) {
             <div class="ii-label">✦ 합·충·형·파·해 해석</div>
             <div class="ii-title">안정적인 원국 구조</div>
             <div class="ii-text">
-                <p>겉으로 드러나는 합충형파해는 없습니다. 흔들림이 적은 판입니다. 그건 무미건조함이 아니라 **통제권이 당신에게 남는 구조**입니다.</p>
+                <p>${voicePolishParagraph(data, '겉으로 드러나는 합충형파해는 없습니다. 흔들림이 적은 판입니다. 그건 무미건조함이 아니라 **통제권이 당신에게 남는 구조**입니다.')}</p>
                 <p style="margin-top:10px;color:#999;">합·충은 ‘운’이 아니라 반복 각도입니다. 없다고 아쉬워하지 마십시오. **한 달에 관계·돈 결정 한 번만** 크게 잡으십시오.</p>
             </div>
         </div>`;
@@ -3069,7 +3080,7 @@ function buildRelationSummary(data) {
     
     return voiceInlineInterpHeader('relation', data) + `<div class="inline-interp">
         <div class="ii-label">❖ 합·충·형·파·해 해석</div>
-        <div class="ii-title">원국의 충돌과 결합 — 당신 삶의 반복 패턴</div>
+        <div class="ii-title">원국의 충돌과 결합 — ${nmUi(data.name || '고객')} 삶의 반복 패턴</div>
         <div class="ii-text">
             ${rows}
             <p style="margin-top:12px;color:#999;font-size:13px;line-height:1.75;">합은 빨리 붙고, 충은 각도가 정면입니다. 둘 다 흉복이 아니라 **비용 구조**입니다. 합·충이 겹치는 해·달에는 계약 조항·인맥 거리를 먼저 정리하십시오.</p>
@@ -3083,7 +3094,7 @@ function buildShinsalSummary(data) {
     const shinsal = Array.isArray(raw) ? raw : Object.values(raw).reduce((acc, arr) => acc.concat(Array.isArray(arr) ? arr : []), []);
     const goodCats = ['길성'];
     if(!shinsal || shinsal.length === 0) {
-        return voiceInlineInterpHeader('shinsal', data) + '<div class="inline-interp"><div class="ii-label">\u2756 신살\u00b7길성 분석</div><div class="ii-title">특별한 신살이 없는 순수한 원국</div><div class="ii-text"><p style="font-size:13.5px;color:#bbb;line-height:1.85;">당신의 원국에는 특별한 신살이 검출되지 않았습니다. 신살이 없다는 것은 흉한 것이 아닙니다. 오히려 복잡한 에너지의 간섭 없이 일간의 본래 기질이 가장 맑고 순수하게 발현됩니다. 당신의 삶은 특별한 충격이나 사건보다 꾸준함과 본인의 의지로 설계됩니다.</p></div></div>';
+        return voiceInlineInterpHeader('shinsal', data) + '<div class="inline-interp"><div class="ii-label">\u2756 신살\u00b7길성 분석</div><div class="ii-title">특별한 신살이 없는 순수한 원국</div><div class="ii-text"><p style="font-size:13.5px;color:#bbb;line-height:1.85;">' + voicePolishParagraph(data, nmUi(data.name || '고객') + ' 원국에는 특별한 신살이 검출되지 않았습니다. 신살이 없다는 것은 흉한 것이 아닙니다. 오히려 복잡한 에너지의 간섭 없이 일간의 본래 기질이 가장 맑고 순수하게 발현됩니다. ' + nmDnimEunNeun(data.name || '고객') + ' 삶은 특별한 충격이나 사건보다 꾸준함과 본인의 의지로 설계됩니다.') + '</p></div></div>';
     }
     const goodList = shinsal.filter(s => (window.SHINSAL_DESC?.[s]?.cat||'')=== '길성');
     const badList  = shinsal.filter(s => (window.SHINSAL_DESC?.[s]?.cat||'')=== '신살' || !(window.SHINSAL_DESC?.[s]?.cat) || window.SHINSAL_DESC?.[s]?.cat !== '길성');
@@ -3113,13 +3124,13 @@ function buildShinsalSummary(data) {
                 <span style="font-size:11px;background:rgba(255,255,255,0.07);color:${catColor};padding:2px 10px;border-radius:10px;">${isGood ? '\u2756 길성' : '\u26a0 신살'}</span>
                 <span style="font-size:12px;color:#777;">${info.short||''}</span>
             </div>
-            ${baseDetail ? `<p style="font-size:13.5px;color:#ccc;line-height:1.85;margin:0 0 10px;">${baseDetail}</p>` : ''}
+            ${baseDetail ? `<p style="font-size:13.5px;color:#ccc;line-height:1.85;margin:0 0 10px;">${voicePolishParagraph(data, baseDetail)}</p>` : ''}
             ${personalTip ? `<div style="background:rgba(199,167,106,0.06);border-radius:8px;padding:12px 14px;border-left:2px solid ${catColor};"><p style="font-size:13.5px;color:#bbb;line-height:1.85;margin:0;">${personalTip}</p></div>` : ''}
         </div>`;
     }).join('');
     return voiceInlineInterpHeader('shinsal', data) + `<div class="inline-interp">
         <div class="ii-label">\u2756 신살 \u00b7 길성 상세 분석</div>
-        <div class="ii-title">당신의 사주에 새겨진 특별한 에너지 코드 \u2014 총 ${shinsal.length}개</div>
+        <div class="ii-title">${nmUi(data.name || '고객')} 사주에 새겨진 특별한 에너지 코드 \u2014 총 ${shinsal.length}개</div>
         <div class="ii-text">
             <p style="font-size:13.5px;color:#bbb;line-height:1.85;margin-bottom:16px;">신살은 낙인이 아니라 **반복되는 각도의 이름**입니다. 길성은 무기, 신살은 훈련장입니다. 흉살도 통제하면 레버가 됩니다.</p>
             ${goodList.length > 0 ? `<div style="margin-bottom:10px;padding:12px 16px;background:rgba(199,167,106,0.07);border-radius:10px;border-left:3px solid var(--gold);"><div style="font-size:12px;color:var(--gold);margin-bottom:6px;">\u2756 길성 ${goodList.length}개 \u2014 선천적으로 타고난 무기</div><div style="font-size:14px;color:#ddd;font-weight:700;">${goodList.join(' \u00b7 ')}</div></div>` : ''}
@@ -4906,7 +4917,7 @@ function buildDaewunLoop(data) {
         const ganjiKey = gan+ji;
         // 나이범위를 포함한 통합 서사: ganD(10년 서사) + jiD(계절 서사)
         const _ageRange = `${age}세부터 ${age+9}세까지 — `;
-        const periodNarr = _PN[ganjiKey] || (_ageRange + ganD + ' ' + jiD);
+        const periodNarr = voicePolishParagraph(data, _PN[ganjiKey] || (_ageRange + ganD + ' ' + jiD));
         const ganKr = HK[gan]||gan; const jiKr = HK[ji]||ji;
         out += `<div class="daeun-decade-card" style="background:rgba(255,255,255,${isCurrent?'0.07':'0.03'});border:1px solid ${isCurrent?'var(--gold)':'rgba(255,255,255,0.07)'};border-radius:12px;padding:18px;break-inside:avoid;">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
@@ -4924,7 +4935,7 @@ function buildDaewunLoop(data) {
                 <span style="font-size:13px;font-weight:700;color:${c};padding:4px 12px;border-radius:20px;background:rgba(255,255,255,0.05);">${b}</span>
             </div>
             <div style="background:rgba(255,255,255,0.06);border-radius:8px;padding:14px;margin-bottom:12px;border:1px solid rgba(199,167,106,0.15);">
-                <p style="font-size:13.5px;color:#ddd;line-height:1.85;margin:0;">${periodNarr}</p>
+                <p style="font-size:13.5px;color:#ddd;line-height:1.85;margin:0;">${voicePolishReportHtml(data, periodNarr)}</p>
             </div>
             ${strategy}
         </div>`;
@@ -8017,6 +8028,8 @@ function runAnalysis(overrideParams) {
         buildFortuneCards('daeun-table', daeunRows2, activeDaeunIdx);
         // ===== 대운 표 아래 풀이 주입 =====
         (function(){
+            var _daeunPolish = globalSajuData || { name: (typeof name !== 'undefined' ? name : '') };
+            function _dText(t) { return voicePolishReportHtml(_daeunPolish, t || ''); }
             var OH={'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
             var JO={'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'};
             var GAN_T={
@@ -8080,14 +8093,14 @@ var STRAT_BAD = [
     '▶ 인간관계: 갈등이 쉽게 생기는 시기입니다. 감정적 대응을 자제하고, 중요한 결정을 서두르지 않는 편이 좋습니다.',
     '▶ 보완: 이 시기를 학습·자기개발·인맥 정비로 채운 사람이 다음 황금 대운에서 가장 크게 도약합니다.'
 ];
-var strat = s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STRAT_BAD.join('<br>');
+var strat = _dText(s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>') : STRAT_BAD.join('<br>'));
                 var d=document.createElement('div');
                 d.style.cssText='padding:14px;background:rgba(255,255,255,'+(isCur?'0.07':'0.03')+');border:1px solid '+(isCur?'var(--gold)':'rgba(255,255,255,0.07)')+';border-radius:10px;';
                 d.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:6px;">'+
                     '<div style="display:flex;align-items:center;gap:8px;"><span style="font-size:22px;font-weight:900;color:var(--gold);font-family:Noto Serif KR,serif;">'+g+j+'</span><span style="font-size:15px;font-weight:600;color:#ccc;">('+((HAN_KOR&&HAN_KOR[g])||g)+((HAN_KOR&&HAN_KOR[j])||j)+')</span>'+
                     '<div><div style="font-size:12px;color:#bbb;">'+age+'세 ~ '+(endAge-1)+'세</div>'+(isCur?'<span style="font-size:10px;background:var(--gold);color:#000;padding:1px 6px;border-radius:6px;font-weight:700;">▶ 현재</span>':'')+'</div></div>'+
                     '<span style="font-size:12px;font-weight:700;color:'+col+';">'+gb(s)+'</span></div>'+
-                    '<div style="background:rgba(0,0,0,0.15);border-radius:6px;padding:10px;margin-bottom:8px;"><p style="font-size:12px;color:#ddd;line-height:1.75;margin:0;">'+((window.PERIOD_NARRATIVE&&window.PERIOD_NARRATIVE[g+j]) ? window.PERIOD_NARRATIVE[g+j] : (GAN_T[g]||'')+' '+(JI_T[j]||''))+'</p></div>'+
+                    '<div style="background:rgba(0,0,0,0.15);border-radius:6px;padding:10px;margin-bottom:8px;"><p style="font-size:12px;color:#ddd;line-height:1.75;margin:0;">'+_dText((window.PERIOD_NARRATIVE&&window.PERIOD_NARRATIVE[g+j]) ? window.PERIOD_NARRATIVE[g+j] : (GAN_T[g]||'')+' '+(JI_T[j]||''))+'</p></div>'+
                     /* 천간/지지 분리박스 제거 */
                     '<div style="background:rgba(199,167,106,0.05);border-radius:6px;padding:8px 10px;border-left:2px solid '+col+';"><p style="font-size:12px;color:#ccc;line-height:1.75;margin:0;">'+strat+'</p></div>';
                 detDiv.appendChild(d);
