@@ -1726,12 +1726,128 @@ window.SAJU_DB = {
 
 // --- X-SAJU DEEP REPORT GENERATOR ENGINE (V4 - REAL DB INTEGRATION) ---
 
+
+function ensureSajuxPdfPrintForceStyles() {
+    if (document.getElementById('sajux-pdf-print-force') || document.getElementById('sajux-pdf-print-force-dynamic')) return;
+    var st = document.createElement('style');
+    st.id = 'sajux-pdf-print-force-dynamic';
+    st.textContent = `/* =========================================
+   [사주X PDF 인쇄 전용 강제 스타일링]
+========================================= */
+@media print {
+  body, html {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+  }
+
+  /* 지장간, 십성 배지, 태그 등 모든 작은 요소들 강제 화이트닝 */
+  .jijanggan, .jijanggan span, .jijanggan div, .badge, .tag, .highlight, [class*="badge"], [class*="tag"] {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    border: 1px solid #999999 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* 카드 안의 내부 카드, 회색/검은색 박스들 강제 화이트닝 */
+  .card, .yearly-card, .monthly-card, .module-item, .inner-card, .detail-box, .content-box, [class*="box"], [class*="card"] {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    border: 1px solid #cccccc !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  body, .dashboard-container, .zami-card, .glass-panel, .vip-module-item, .f-card, .appendix-ziwei, .manse-table {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+  }
+
+  /* 텍스트는 예외 없이 무조건 검은색 (회색 텍스트로 인한 가독성 저하 방지) */
+  *, p, span, div, h1, h2, h3, h4, h5, h6, td, th, li {
+    color: #000000 !important;
+    text-shadow: none !important;
+  }
+
+  /* 단락 제목 고립(Page Break) 방어 */
+  .section-title, .part-title, .report-chapter, .ch-title, h1, h2, h3, .title-card {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    margin-bottom: 10px !important;
+  }
+
+  /* 부모 컨테이너가 flex라서 page-break가 안 먹히는 현상 방지 */
+  .report-container, #report-container, .print-container, .layout-wrapper, .seyun-premium-vertical {
+    display: block !important;
+  }
+
+  table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+  th, td {
+    border: 1px solid #dee2e6 !important;
+    padding: 10px !important;
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
+  .remedy-checklist-table,
+  .remedy-checklist-table thead,
+  .remedy-checklist-table tbody {
+    display: table !important;
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+  .remedy-checklist-table tr { display: table-row !important; }
+  .remedy-checklist-table th,
+  .remedy-checklist-table td {
+    display: table-cell !important;
+    vertical-align: top !important;
+  }
+
+  .card, .yearly-card, .monthly-card, .module-item, table, h1, h2, h3 {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  #floating-toc, #theme-toggle, #sticky-part-nav, #sajux-pdf-fab, .pdf-btn, .nav-floating, .sajux-pdf-wide-btn {
+    display: none !important;
+  }
+  .sajux-logo.dark { display: none !important; mix-blend-mode: normal !important; }
+  .sajux-logo.light {
+    display: block !important;
+    mix-blend-mode: normal !important;
+    opacity: 1 !important;
+    filter: none !important;
+  }
+  .sajux-logo-wrap img {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
+`;
+    document.body.appendChild(st);
+}
+
 /** 와이드 PDF 버튼 스타일 + 우하단 FAB (인쇄 시 숨김) */
 function injectSajuxPdfUi() {
     if (!document.getElementById('sajux-report-ui-styles')) {
         var st = document.createElement('style');
         st.id = 'sajux-report-ui-styles';
-        st.textContent = '.month-pillar-title{white-space:nowrap!important;display:inline-block!important;max-width:100%;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom;}.seyun-premium-vertical{display:flex!important;flex-direction:column!important;align-items:stretch!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important;}.seyun-premium-vertical .seyun-year-card,.seyun-premium-vertical>div{width:100%!important;max-width:100%!important;box-sizing:border-box!important;flex:0 0 auto!important;}.yearly-card-container,.monthly-card-container{display:grid!important;grid-template-columns:1fr!important;width:100%!important;max-width:100%!important;gap:20px!important;box-sizing:border-box!important;}.yearly-card-container .fortune-scroll,.monthly-card-container .fortune-scroll{display:flex!important;flex-direction:column!important;overflow-x:visible!important;overflow-y:visible!important;scroll-snap-type:none!important;align-items:stretch!important;width:100%!important;max-width:100%!important;}.yearly-card-container .f-card,.monthly-card-container .f-card{flex:0 0 auto!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important;}.vip-module-stack{display:flex;flex-direction:column;gap:0;}.vip-module-item{margin-bottom:16px;border-left:3px solid #d4af37;padding-left:14px;}.vip-module-title{color:#d4af37;font-weight:700;margin-bottom:6px;font-size:13.5px;font-family:Noto Serif KR,serif;}.vip-module-desc{color:#d8d3c9;line-height:1.88;font-size:13.5px;margin:0;}.yearly-ind-val{white-space:nowrap!important;text-overflow:ellipsis!important;overflow:hidden!important;max-width:100%!important;}.animal-symbol{font-size:15px;color:rgba(228,232,240,0.92);margin-top:10px;font-weight:500;line-height:1.55;}.cover-highlight{color:#d4af37;font-weight:700;}.birth-info{font-size:0.85em;color:#888;margin-top:8px;line-height:1.65;}.remedy-checklist-table{display:table!important;width:100%!important;border-collapse:collapse!important;table-layout:fixed!important;}.remedy-checklist-table thead{display:table-header-group!important;}.remedy-checklist-table tbody{display:table-row-group!important;}.remedy-checklist-table tr{display:table-row!important;}.remedy-checklist-table th,.remedy-checklist-table td{display:table-cell!important;vertical-align:top!important;}.badge,.tag,.jijanggan{background:rgba(128,128,128,0.1)!important;color:var(--text-primary)!important;border:1px solid rgba(128,128,128,0.2);}.card,.yearly-card,.monthly-card,.module-item{background:rgba(var(--bg-rgb,128,128,128),0.1)!important;backdrop-filter:blur(12px)!important;border:1px solid rgba(128,128,128,0.15)!important;}.sajux-pdf-wide-btn{cursor:pointer;box-sizing:border-box;border:1px solid rgba(255,255,255,0.12);font-family:inherit;font-weight:700;font-size:15px;padding:16px 22px;margin:16px 0 18px;border-radius:12px;background:rgba(128,128,128,0.22)!important;color:rgba(245,240,232,0.94)!important;letter-spacing:0.02em;box-shadow:none!important;backdrop-filter:blur(10px)!important;-webkit-backdrop-filter:blur(10px)!important;width:100%;max-width:100%;transition:background .15s ease,border-color .15s ease,color .15s ease;}.sajux-pdf-wide-btn:hover{background:rgba(128,128,128,0.3)!important;border-color:rgba(255,255,255,0.18)!important;}.sajux-pdf-wide-btn:active{transform:translateY(1px);}#sajux-pdf-fab{cursor:pointer;position:fixed;bottom:22px;right:18px;z-index:10001;font-family:inherit;font-weight:700;font-size:14px;padding:14px 20px;border-radius:999px;border:1px solid rgba(255,255,255,0.12);background:rgba(128,128,128,0.24)!important;color:rgba(245,240,232,0.94)!important;box-shadow:0 6px 20px rgba(0,0,0,0.35)!important;backdrop-filter:blur(10px)!important;-webkit-backdrop-filter:blur(10px)!important;transition:background .15s ease,border-color .15s ease;}#sajux-pdf-fab:hover{background:rgba(128,128,128,0.32)!important;border-color:rgba(255,255,255,0.2)!important;} @media print{.pdf-btn,.nav-floating,#sajux-pdf-fab,.sajux-pdf-wide-btn{display:none !important;}.sajux-logo.dark{display:none!important}.sajux-logo.light{display:block!important;mix-blend-mode:normal!important;opacity:1!important}.sajux-logo-wrap img{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}.remedy-checklist-table,.remedy-checklist-table thead,.remedy-checklist-table tbody{display:table!important;width:100%!important;border-collapse:collapse!important;}.remedy-checklist-table tr{display:table-row!important;}.remedy-checklist-table th,.remedy-checklist-table td{display:table-cell!important;vertical-align:top!important;color:#111!important;background:#fff!important;border:1px solid #ddd!important;}.card,.yearly-card,.monthly-card,.module-item{background:#f8f9fa !important;color:#111 !important;backdrop-filter:none !important;-webkit-backdrop-filter:none !important;border:1px solid #ddd !important;}.badge,.tag,.jijanggan{background:#e9ecef !important;color:#000 !important;}table,.card,.module-item,.yearly-card,.monthly-card,.glass-panel,.yearly-card-container,.monthly-card-container,.seyun-year-card,.f-card,.vip-module-item,.manse-table,.appendix-ziwei{page-break-inside:avoid!important;break-inside:avoid!important}h1,h2,h3,.section-title,.ch-title{page-break-inside:avoid!important;break-inside:avoid!important;page-break-after:avoid!important;break-after:avoid!important}} @media(max-width:600px){#sajux-pdf-fab{bottom:16px;right:12px;padding:12px 16px;font-size:13px;}}';
+        st.textContent = '.month-pillar-title{white-space:nowrap!important;display:inline-block!important;max-width:100%;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom;}.seyun-premium-vertical{display:flex!important;flex-direction:column!important;align-items:stretch!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important;}.seyun-premium-vertical .seyun-year-card,.seyun-premium-vertical>div{width:100%!important;max-width:100%!important;box-sizing:border-box!important;flex:0 0 auto!important;}.yearly-card-container,.monthly-card-container{display:grid!important;grid-template-columns:1fr!important;width:100%!important;max-width:100%!important;gap:20px!important;box-sizing:border-box!important;}.yearly-card-container .fortune-scroll,.monthly-card-container .fortune-scroll{display:flex!important;flex-direction:column!important;overflow-x:visible!important;overflow-y:visible!important;scroll-snap-type:none!important;align-items:stretch!important;width:100%!important;max-width:100%!important;}.yearly-card-container .f-card,.monthly-card-container .f-card{flex:0 0 auto!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important;}.vip-module-stack{display:flex;flex-direction:column;gap:0;}.vip-module-item{margin-bottom:16px;border-left:3px solid #d4af37;padding-left:14px;}.vip-module-title{color:#d4af37;font-weight:700;margin-bottom:6px;font-size:13.5px;font-family:Noto Serif KR,serif;}.vip-module-desc{color:#d8d3c9;line-height:1.88;font-size:13.5px;margin:0;}.yearly-ind-val{white-space:nowrap!important;text-overflow:ellipsis!important;overflow:hidden!important;max-width:100%!important;}.animal-symbol{font-size:15px;color:rgba(228,232,240,0.92);margin-top:10px;font-weight:500;line-height:1.55;}.cover-highlight{color:#d4af37;font-weight:700;}.birth-info{font-size:0.85em;color:#888;margin-top:8px;line-height:1.65;}.remedy-checklist-table{display:table!important;width:100%!important;border-collapse:collapse!important;table-layout:fixed!important;}.remedy-checklist-table thead{display:table-header-group!important;}.remedy-checklist-table tbody{display:table-row-group!important;}.remedy-checklist-table tr{display:table-row!important;}.remedy-checklist-table th,.remedy-checklist-table td{display:table-cell!important;vertical-align:top!important;}.badge,.tag,.jijanggan{background:rgba(128,128,128,0.1)!important;color:var(--text-primary)!important;border:1px solid rgba(128,128,128,0.2);}.card,.yearly-card,.monthly-card,.module-item{background:rgba(var(--bg-rgb,128,128,128),0.1)!important;backdrop-filter:blur(12px)!important;border:1px solid rgba(128,128,128,0.15)!important;}.sajux-pdf-wide-btn{cursor:pointer;box-sizing:border-box;border:1px solid rgba(255,255,255,0.12);font-family:inherit;font-weight:700;font-size:15px;padding:16px 22px;margin:16px 0 18px;border-radius:12px;background:rgba(128,128,128,0.22)!important;color:rgba(245,240,232,0.94)!important;letter-spacing:0.02em;box-shadow:none!important;backdrop-filter:blur(10px)!important;-webkit-backdrop-filter:blur(10px)!important;width:100%;max-width:100%;transition:background .15s ease,border-color .15s ease,color .15s ease;}.sajux-pdf-wide-btn:hover{background:rgba(128,128,128,0.3)!important;border-color:rgba(255,255,255,0.18)!important;}.sajux-pdf-wide-btn:active{transform:translateY(1px);}#sajux-pdf-fab{cursor:pointer;position:fixed;bottom:22px;right:18px;z-index:10001;font-family:inherit;font-weight:700;font-size:14px;padding:14px 20px;border-radius:999px;border:1px solid rgba(255,255,255,0.12);background:rgba(128,128,128,0.24)!important;color:rgba(245,240,232,0.94)!important;box-shadow:0 6px 20px rgba(0,0,0,0.35)!important;backdrop-filter:blur(10px)!important;-webkit-backdrop-filter:blur(10px)!important;transition:background .15s ease,border-color .15s ease;}#sajux-pdf-fab:hover{background:rgba(128,128,128,0.32)!important;border-color:rgba(255,255,255,0.2)!important;} @media(max-width:600px){#sajux-pdf-fab{bottom:16px;right:12px;padding:12px 16px;font-size:13px;}}';
         document.head.appendChild(st);
     }
     var oldFab = document.getElementById('sajux-pdf-fab');
@@ -1744,6 +1860,7 @@ function injectSajuxPdfUi() {
     fab.textContent = '🖨 PDF';
     fab.addEventListener('click', function () { window.print(); });
     document.body.appendChild(fab);
+    try { ensureSajuxPdfPrintForceStyles(); } catch (e) {}
 }
 
 function getDBText(category, key, fallback) {
@@ -1792,7 +1909,6 @@ function generateDeepReport(data) {
 
     // PHASE 1: VIP 대시보드
     html += safeCall(()=>buildCoverPage(data), 'cover');
-    html += safeCall(()=>buildBookIntroPage(data), 'bookIntro');
     html += safeCall(()=>buildClientCoverPage(data), 'clientCover');
     html += safeCall(()=>buildTOC(data), 'toc');
     html += safeCall(()=>buildForewordPage(data), 'foreword');
@@ -5091,8 +5207,15 @@ function buildLifePanoramaSection(data) {
 // buildCoverPage: 표지 페이지
 // ===================================================================
 function buildCoverPage(data) {
-    return `<div id="sec-cover" class="cover-page chapter-start" style="display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:90vh;padding:72px 28px;text-align:center;border-bottom:1px solid rgba(199,167,106,0.12);margin-bottom:56px;">
+    return `<div id="sec-cover" class="cover-page chapter-start" style="display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:90vh;padding:72px 28px 56px;text-align:center;border-bottom:1px solid rgba(199,167,106,0.12);margin-bottom:56px;">
         <div class="sajux-logo-wrap" style="width:100%;max-width:90vw;margin:0 auto;display:flex;justify-content:center;align-items:center;"><img class="sajux-logo dark" src="assets/sajux-logo-dark.png" alt="SAJU X 로고" loading="lazy" style="width:clamp(420px,58vw,630px);max-width:100%;margin:0 auto;" /><img class="sajux-logo light" src="assets/sajux-logo-light.png" alt="SAJU X 로고" loading="lazy" style="width:clamp(420px,58vw,630px);max-width:100%;margin:0 auto;" /></div>
+        <div id="sec-book-intro" class="sajux-intro-block" style="width:100%;max-width:760px;margin:28px auto 0;text-align:center;">
+            <div class="sajux-intro-heading" style="font-size:13px;letter-spacing:0.12em;color:rgba(199,167,106,0.9);margin-bottom:16px;font-weight:700;">사주X란?</div>
+            <div class="intro-text-container">
+                <p style="margin-bottom: 12px;">사주X는 X-파일처럼, 고객님의 깊은 내면과 흐름을 조용히 비춰보는 비밀문서입니다.</p>
+                <p>또한 사주X의 X는 사주를 이루는 네 개의 기둥이 서로 이어져 완성되는, 한 사람의 운명 구조를 상징합니다.</p>
+            </div>
+        </div>
     </div>`;
 }
 
@@ -5100,13 +5223,7 @@ function buildCoverPage(data) {
 // buildBookIntroPage: 소개 (표지 다음)
 // ===================================================================
 function buildBookIntroPage(data) {
-    return `<div id="sec-book-intro" class="toc-page chapter-start book-intro-page" style="padding:88px 42px 96px;border-bottom:1px solid rgba(199,167,106,0.12);margin-bottom:56px;max-width:760px;margin-left:auto;margin-right:auto;text-align:center;">
-        <div style="font-size:10px;letter-spacing:0.2em;color:rgba(199,167,106,0.75);margin-bottom:28px;font-weight:700;">[ 사주X 분석 개요 ]</div>
-        <div class="intro-text-container">
-            <p style="margin-bottom: 12px;">사주X는 X-파일처럼, 고객님의 깊은 내면과 흐름을 조용히 비춰보는 비밀문서입니다.</p>
-            <p>또한 사주X의 X는 사주를 이루는 네 개의 기둥이 서로 이어져 완성되는, 한 사람의 운명 구조를 상징합니다.</p>
-        </div>
-    </div>`;
+    return '';
 }
 
 // ===================================================================
