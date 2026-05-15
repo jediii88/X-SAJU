@@ -10,10 +10,10 @@
     box-shadow: none !important;
   }
 
-  /* 지장간, 십성 배지, 태그 — 배경만 */
-  .jijanggan, .jijanggan span, .jijanggan div,
-  .badge, .tag, .m-badge, .m-badge-shinsal, .m-badge--gongmang-hit,
-  .highlight, [class*="badge"], [class*="tag"] {
+  /* 십성·신살 배지 — 인쇄용 밝은 배경 (지장간 태그는 제외) */
+  .badge:not(.jijanggan-tag), .tag:not(.jijanggan-tag),
+  .m-badge:not(.jijanggan-tag), .m-badge-shinsal, .m-badge--gongmang-hit,
+  .highlight, [class*="badge"]:not(.jijanggan-tag), [class*="tag"]:not(.jijanggan-tag) {
     background: #ffffff !important;
     background-color: #ffffff !important;
     border: 1px solid #999999 !important;
@@ -22,6 +22,28 @@
     -webkit-backdrop-filter: none !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
+  }
+
+  /* VIP 만세력 — 지장간: 오행 한자색 + 십성 라벨 검정 */
+  .vip-evidence-block .jijanggan-tag {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+  .vip-evidence-block .jijanggan-tag .wood,
+  .vip-evidence-block .jijanggan-tag .fire,
+  .vip-evidence-block .jijanggan-tag .earth,
+  .vip-evidence-block .jijanggan-tag .metal,
+  .vip-evidence-block .jijanggan-tag .water {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    font-weight: 700 !important;
+  }
+  .vip-evidence-block .jijanggan-sip,
+  .vip-evidence-block .vip-sip-cell {
+    color: #1a1a1a !important;
+    font-weight: 600 !important;
   }
 
   /* 카드·내부 박스 — 배경만 (글자색 건드리지 않음) */
@@ -54,6 +76,7 @@
   /* 오행 한자·천간지지 색상 보존 */
   .wood, .fire, .earth, .metal, .water,
   .m-hanja, .m-hanja.wood, .m-hanja.fire, .m-hanja.earth, .m-hanja.metal, .m-hanja.water,
+  .vip-hanja, .vip-evidence-block .vip-hanja,
   .rel-char span, [class*="han-"] {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
@@ -92,11 +115,13 @@
     justify-content: center !important;
   }
 
-  /* 제목 카드 = 바로 아래 본문과 같은 페이지 (위 카드와는 분리) */
+  /* 제N부 헤더 — 위 내용과 분리(새 페이지), 아래 본문과는 붙임 */
   .part-header-block {
-    page-break-before: auto !important;
+    page-break-before: always !important;
+    break-before: page !important;
     page-break-after: avoid !important;
     break-after: avoid !important;
+    margin-top: 0 !important;
     margin-bottom: 4px !important;
   }
   .part-follow-content > *:first-child,
@@ -117,6 +142,23 @@
     background-color: #ffffff !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
+  }
+
+  /* VIP 만세력표 — PDF에서 과대 확대 방지 */
+  .vip-evidence-block table th,
+  .vip-evidence-block table td {
+    padding: 3px 5px !important;
+    font-size: 10px !important;
+    line-height: 1.35 !important;
+  }
+  .vip-evidence-block table td div span[style*="font-size:1.2em"],
+  .vip-evidence-block table .vip-hanja {
+    font-size: 15px !important;
+    line-height: 1.1 !important;
+  }
+  .vip-evidence-block table td span[style*="color:#aaa"] {
+    font-size: 10px !important;
+    color: #555 !important;
   }
 
   .remedy-checklist-table,
@@ -177,8 +219,19 @@
     color: #333333 !important;
   }
   .part-header-sub,
-  .m-badge {
+  .m-badge:not(.jijanggan-tag) {
     color: #444444 !important;
+  }
+
+  /* 어두운 패널·카드 — 밝은 용지 + 진한 글자 */
+  .sajux-access-note,
+  .deep-hook-panel,
+  .deep-hook-panel p,
+  .premium-executive-summary .vip-module-desc,
+  .premium-executive-summary p,
+  #report-container div[style*="background:rgba(0,0,0"] p,
+  #report-container div[style*="background:rgba(0,0,0"] {
+    color: #333333 !important;
   }
 
   .vip-manse-keep-group {
@@ -190,17 +243,6 @@
     break-after: avoid !important;
   }
 
-  /* 표지 로고 — img 실패 시 CSS 배경 fallback */
-  .cover-page .sajux-logo-wrap::before {
-    content: '';
-    display: block !important;
-    width: min(420px, 72vw) !important;
-    height: 100px !important;
-    margin: 0 auto 16px !important;
-    background: url('https://sajux.com/report/assets/sajux-logo-light.png') center / contain no-repeat !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
   .cover-page .sajux-logo-cover-row {
     display: block !important;
   }
