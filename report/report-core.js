@@ -2740,7 +2740,7 @@ function ensureSajuxReadablePanelStyles() {
         "body:not(.light-mode) .deep-hook-panel p,html[data-theme=dark] .deep-hook-panel p,body:not(.light-mode) .sajux-gongmang-note p,html[data-theme=dark] .sajux-gongmang-note p{color:#ddd!important;}",
         "body:not(.light-mode) .yearly-indicators .yearly-ind-val,html[data-theme=dark] .yearly-indicators .yearly-ind-val{color:#e8dcc8!important;}",
         ".yearly-indicators-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px 10px!important;width:100%!important;}",
-        "@media (min-width:520px){.yearly-indicators-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;}}",
+        "@media (min-width:520px){.yearly-indicators-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;}}",
         "body.light-mode .domain-summary-3box,html[data-theme=light] .domain-summary-3box{background:rgba(122,90,34,0.07)!important;border-color:rgba(122,90,34,0.28)!important;}",
         "body.light-mode .domain-summary-3box [style*=\"background:rgba(0,0,0,0.18)\"],html[data-theme=light] .domain-summary-3box [style*=\"background:rgba(0,0,0,0.18)\"]{background:#fff!important;border:1px solid rgba(28,24,18,0.1)!important;box-sizing:border-box;}",
         "body.light-mode .domain-summary-3box [style*=\"color:#9aa1ae\"],html[data-theme=light] .domain-summary-3box [style*=\"color:#9aa1ae\"]{color:rgba(28,34,46,0.58)!important;}",
@@ -3014,25 +3014,25 @@ function generateDeepReport(data) {
     html += safeCall(()=>buildForewordPage(data), 'foreword');
     html += safeCall(()=>buildPremiumExecutiveSummary(data), 'premium');
     html += safeCall(()=>wrapPartSection(
-        buildPartHeader(1,(nmDnim(data.name || '고객') + '이라는 사람'),'타고난 8자 · 인생 일대기','sec-part1-narrative'),
+        buildPartHeader(1,'원국 · 일대기','타고난 8자 · 인생 전체 흐름','sec-part1-narrative'),
         (buildVipEvidenceBlock(data)||'') + (buildLifePanoramaSection(data)||'')
     ), 'part1section');
 
     // PHASE 2: 하드웨어 스펙 분석
     html += safeCall(()=>wrapPartSection(
-        buildPartHeader(2,'하드웨어 스펙 분석','에너지 분포 · 일하는 방식 패턴','sec-part2-hardware'),
+        buildPartHeader(2,'에너지 스펙','오행 분포 · 일하는 방식 패턴','sec-part2-hardware'),
         (buildChapter2_Wuxing(data)||'') + (buildChapter3_Sipseong(data)||'')
     ), 'part2section');
 
     // PHASE 3: 도메인별 심층 해부
     html += safeCall(()=>wrapPartSection(
-        buildPartHeader(3,'핵심 4대 운 집중 조명','재물 · 직업 · 애정 · 건강','sec-part3-four'),
+        buildPartHeader(3,'4대 핵심운','재물 · 직업 · 애정 · 건강','sec-part3-four'),
         (buildChapter4_Wealth(data)||'') + (buildChapter5_Career(data)||'') + (buildChapter6_Love(data)||'') + (buildChapter8_Health(data)||'')
     ), 'part3section');
 
     // PHASE 4: 타임라인 전략 상황실
     html += safeCall(()=>wrapPartSection(
-        buildPartHeader(4,'타임라인 전략','대운 · 세운 · 월운','sec-part4-timeline'),
+        buildPartHeader(4,'타임라인','대운 · 세운 · 월운','sec-part4-timeline'),
         buildDaewunLoop(data)||''
     ), 'part4headerBlock');
     html += '<div class="seyun-premium-vertical" style="display:flex;flex-direction:column;gap:24px;width:100%;max-width:100%;box-sizing:border-box;">';
@@ -3045,7 +3045,7 @@ function generateDeepReport(data) {
     // PHASE 5: 별첨(자미두수) → 최종 실행 지침
     html += safeCall(()=>'<div class="ziwei-appendix-block chapter-start" style="page-break-before:always;break-before:page;">' + (buildZiWeiDestinyBlueprintSection(data)||'') + '</div>', 'ziweiAppendix');
     html += safeCall(()=>wrapPartSection(
-        buildPartHeader(5,'최종 실행 지침 (개운법 및 체크리스트)','실행 우선순위 · 마무리','sec-part5-final'),
+        buildPartHeader(5,'실행 지침','개운법 · 체크리스트','sec-part5-final'),
         buildChapter9_Remedy(data)||''
     ), 'part5section');
 
