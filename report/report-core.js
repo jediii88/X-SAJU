@@ -4696,7 +4696,7 @@ function buildChapter3_Sipseong(data) {
     return `<div class="report-chapter">
         ${chHead3}
         ${chIntro3}
-        <div class="sipseong-bar-chart" style="background:rgba(0,0,0,0.22);border:1px solid rgba(199,167,106,0.2);border-radius:12px;padding:18px 20px;margin:0 0 18px;">
+        <div class="sipseong-bar-chart" style="background:var(--panel,rgba(0,0,0,0.22));border:1px solid rgba(199,167,106,0.2);border-radius:12px;padding:18px 20px;margin:0 0 18px;">
             <div style="font-size:12px;font-weight:800;color:var(--gold);margin-bottom:14px;letter-spacing:0.5px;">업무 스타일 비율 — 비겁·식상·재성·관성·인성</div>
             ${sipRows || '<p style="color:#888;font-size:12px;margin:0;">분포 데이터를 불러오는 중입니다.</p>'}
         </div>
