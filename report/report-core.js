@@ -4455,11 +4455,24 @@ function buildIljuProfileCard(data) {
     const OH_COLOR = {
         '甲':'#4a9e6a','乙':'#4a9e6a',
         '丙':'#e05a2b','丁':'#e05a2b',
-        '戊':'#b8923a','己':'#b8923a',
-        '庚':'#7a8494','辛':'#7a8494',
-        '壬':'#5588bb','癸':'#5588bb'
+        '戊':'#c8a050','己':'#c8a050',
+        '庚':'#8898aa','辛':'#8898aa',
+        '壬':'water-dark','癸':'water-dark'
     };
-    const accentColor = OH_COLOR[ds] || 'var(--gold)';
+    const BRANCH_OH_COLOR = {
+        '子':'water-dark','亥':'water-dark',
+        '寅':'#4a9e6a','卯':'#4a9e6a',
+        '巳':'#e05a2b','午':'#e05a2b',
+        '丑':'#c8a050','辰':'#c8a050','未':'#c8a050','戌':'#c8a050',
+        '申':'#8898aa','酉':'#8898aa'
+    };
+    function iljuHanjaSpan(char, colorVal, sizeStyle) {
+        const isWater = colorVal === 'water-dark';
+        const col = isWater ? '#111111' : (colorVal || 'var(--gold)');
+        const stroke = isWater ? ';-webkit-text-stroke:0.5px rgba(255,255,255,0.6);paint-order:stroke fill' : '';
+        return `<div style="font-size:${sizeStyle||'44px'};font-weight:200;line-height:1.1;font-family:'Noto Sans KR','Noto Sans SC',sans-serif;color:${col}${stroke};">${char}</div>`;
+    }
+    const accentColor = OH_COLOR[ds] === 'water-dark' ? '#111111' : (OH_COLOR[ds] || 'var(--gold)');
 
     // 키워드 배지 (strength에서 추출)
     const kwRaw = prof.strength || '';
@@ -4473,11 +4486,13 @@ function buildIljuProfileCard(data) {
         ? `<span style="font-size:10px;padding:3px 8px;border-radius:10px;background:rgba(199,167,106,0.15);color:var(--gold);border:1px solid rgba(199,167,106,0.3);font-weight:700;">${data.strengthText.includes('신강')||data.strengthText.includes('강') ? '신강(身强)' : '신약(身弱)'}</span>`
         : '';
 
-    return `<div class="ilju-profile-card" style="display:flex;gap:20px;align-items:flex-start;background:linear-gradient(135deg,rgba(${accentColor==='var(--gold)'?'199,167,106':'100,100,150'},0.08),rgba(0,0,0,0));border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:22px 24px;margin-bottom:24px;position:relative;overflow:hidden;">
+    const branchColor = BRANCH_OH_COLOR[db] || 'var(--gold)';
+
+    return `<div class="ilju-profile-card" style="display:flex;gap:20px;align-items:flex-start;background:linear-gradient(135deg,rgba(30,28,22,0.6),rgba(12,12,16,0.4));border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:22px 24px;margin-bottom:24px;position:relative;overflow:hidden;">
         <div class="ilju-hanja-col" style="flex:0 0 auto;text-align:center;min-width:72px;">
-            <div style="font-size:42px;font-weight:900;line-height:1.1;font-family:'Noto Sans KR',sans-serif;color:${accentColor};text-shadow:0 0 24px rgba(199,167,106,0.18);">${ds}</div>
-            <div style="font-size:42px;font-weight:900;line-height:1.1;font-family:'Noto Sans KR',sans-serif;color:rgba(255,255,255,0.6);">${db}</div>
-            <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:6px;letter-spacing:1px;">일간 · 일지</div>
+            ${iljuHanjaSpan(ds, OH_COLOR[ds], '46px')}
+            ${iljuHanjaSpan(db, BRANCH_OH_COLOR[db], '46px')}
+            <div style="font-size:10px;color:rgba(255,255,255,0.32);margin-top:6px;letter-spacing:1px;">일간 · 일지</div>
         </div>
         <div style="flex:1;min-width:0;">
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;">
@@ -5899,7 +5914,7 @@ function getHiddenVipTableCell(branch, dayStem) {
         var cls = HAN_COLOR[ch] || '';
         return '<span class="jijanggan-tag" style="display:inline-flex;align-items:center;gap:3px;margin:2px 3px;font-size:10px;line-height:1.35;">'
             + '<span class="vip-hanja ' + cls + '" style="font-weight:700;">' + ch + '</span>'
-            + '<span class="jijanggan-sip" style="font-size:9px;color:#1a1a1a;">' + lab + '</span></span>';
+            + '<span class="jijanggan-sip" style="font-size:9px;color:var(--text-dim,rgba(255,255,255,0.60));">' + lab + '</span></span>';
     }).join(' ');
 }
 
@@ -5938,7 +5953,7 @@ function buildVipEvidenceBlock(data) {
         pillars.forEach(function(p,i){
             var spRaw=(isUnk&&i===0)?'-':(p.n==='일주'?'일원':(typeof getSipseong==='function'?getSipseong(ds,p.h[0]):''));
             var spShow=(spRaw==='-')?'-':(typeof sipToManseBadge==='function'?sipToManseBadge(spRaw,p.n==='일주'):(spRaw||'-'));
-            ev+='<td style="padding:4px 8px;text-align:center;"><span class="vip-sip-cell" style="font-size:10px;color:#1a1a1a;font-weight:600;">'+spShow+'</span></td>';
+            ev+='<td style="padding:4px 8px;text-align:center;"><span class="vip-sip-cell" style="font-size:10px;color:var(--text-dim,rgba(255,255,255,0.62));font-weight:600;">'+spShow+'</span></td>';
         });
         ev += '</tr>';
         // 천간
@@ -5948,7 +5963,11 @@ function buildVipEvidenceBlock(data) {
             if(isUnk&&i===0){ev+='<td style="text-align:center;color:#444;font-size:11px;">미상</td>';return;}
             var g=p.h[0]||''; var col=hanCol(g);
             var gKr=HK_GAN[g]||g;
-            ev+='<td style="padding:6px 6px;text-align:center;vertical-align:middle;"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;line-height:1.05;"><span class="vip-hanja" style="font-size:1.1em;font-weight:800;color:'+col+';font-family:\'Noto Sans KR\',sans-serif;">'+g+'</span><span style="font-size:10px;color:#555;font-weight:600;">'+gKr+'</span></div></td>';
+            var isWater=STEM_OH[g]==='water';
+            var hanjaStyle=isWater
+                ? 'font-size:1.55em;font-weight:300;color:#111111;-webkit-text-stroke:0.4px rgba(255,255,255,0.55);paint-order:stroke fill;font-family:\'Noto Sans KR\',\'Noto Sans SC\',sans-serif;'
+                : 'font-size:1.55em;font-weight:300;color:'+col+';font-family:\'Noto Sans KR\',\'Noto Sans SC\',sans-serif;';
+            ev+='<td style="padding:6px 6px;text-align:center;vertical-align:middle;"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;line-height:1.05;"><span class="vip-hanja" style="'+hanjaStyle+'">'+g+'</span><span style="font-size:10px;color:rgba(255,255,255,0.38);font-weight:500;">'+gKr+'</span></div></td>';
         });
         ev += '</tr>';
         // 지지
@@ -5958,7 +5977,11 @@ function buildVipEvidenceBlock(data) {
             if(isUnk&&i===0){ev+='<td style="text-align:center;color:#444;font-size:11px;">미상</td>';return;}
             var j=p.h[1]||''; var col=hanCol(j);
             var jKr=HK_JI[j]||j;
-            ev+='<td style="padding:6px 6px;text-align:center;vertical-align:middle;"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;line-height:1.05;"><span class="vip-hanja" style="font-size:1.1em;font-weight:800;color:'+col+';font-family:\'Noto Sans KR\',sans-serif;">'+j+'</span><span style="font-size:10px;color:#555;font-weight:600;">'+jKr+'</span></div></td>';
+            var isWater=BRNCH_OH[j]==='water';
+            var hanjaStyle=isWater
+                ? 'font-size:1.55em;font-weight:300;color:#111111;-webkit-text-stroke:0.4px rgba(255,255,255,0.55);paint-order:stroke fill;font-family:\'Noto Sans KR\',\'Noto Sans SC\',sans-serif;'
+                : 'font-size:1.55em;font-weight:300;color:'+col+';font-family:\'Noto Sans KR\',\'Noto Sans SC\',sans-serif;';
+            ev+='<td style="padding:6px 6px;text-align:center;vertical-align:middle;"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;line-height:1.05;"><span class="vip-hanja" style="'+hanjaStyle+'">'+j+'</span><span style="font-size:10px;color:rgba(255,255,255,0.38);font-weight:500;">'+jKr+'</span></div></td>';
         });
         ev += '</tr>';
         // 지지 십성 — 만세력 표와 동일 규칙
@@ -5967,7 +5990,7 @@ function buildVipEvidenceBlock(data) {
         pillars.forEach(function(p,i){
             var spRaw=(isUnk&&i===0)?'-':(typeof getSipseong==='function'?getSipseong(ds,p.h[1]):'');
             var spShow=(spRaw==='-')?'-':(typeof sipToManseBadge==='function'?sipToManseBadge(spRaw,false):(spRaw||'-'));
-            ev+='<td style="padding:4px 8px;text-align:center;"><span class="vip-sip-cell" style="font-size:10px;color:#1a1a1a;font-weight:600;">'+spShow+'</span></td>';
+            ev+='<td style="padding:4px 8px;text-align:center;"><span class="vip-sip-cell" style="font-size:10px;color:var(--text-dim,rgba(255,255,255,0.62));font-weight:600;">'+spShow+'</span></td>';
         });
         ev += '</tr>';
         // 지장간
@@ -5984,7 +6007,7 @@ function buildVipEvidenceBlock(data) {
         pillars.forEach(function(p,i){
             if(isUnk&&i===0){ev+='<td style="text-align:center;color:#444;">-</td>';return;}
             var u=typeof getUnsung==='function'?getUnsung(ds,p.h[1])||'-':'-';
-            ev+='<td style="padding:4px 8px;text-align:center;font-size:10px;color:#1a1a1a;font-weight:600;">'+u+'</td>';
+            ev+='<td style="padding:4px 8px;text-align:center;font-size:10px;color:var(--text-dim,rgba(255,255,255,0.62));font-weight:600;">'+u+'</td>';
         });
         ev += '</tr>';
         var at12=data.allTwelveShinsal||{};
@@ -7438,7 +7461,7 @@ function getHidden(branch, dayStem) {
     return (BRANCH_HIDDEN[branch] || []).map(ch => {
         const ss = getSipseong(dayStem, ch);
         const lab = typeof sipToManseBadge === 'function' ? sipToManseBadge(ss, false) : ss;
-        return `<div style="margin-bottom:4px;"><span class="${HAN_COLOR[ch]}">${ch}</span> <span class="jijanggan-sip" style="font-size:10px;color:#1a1a1a;">${lab}</span></div>`;
+        return `<div style="margin-bottom:4px;"><span class="${HAN_COLOR[ch]}">${ch}</span> <span class="jijanggan-sip" style="font-size:10px;color:var(--text-dim,rgba(255,255,255,0.60));">${lab}</span></div>`;
     }).join('');
 }
 
