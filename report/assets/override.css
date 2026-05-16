@@ -1,8 +1,15 @@
-/* ══════════════════════════════════════════════
-   SAJUX OVERRIDE — 다크/라이트 가독성, 폰트, 레이아웃
-   ══════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════
+   SAJUX OVERRIDE v3
+   ▸ 다크모드 = "별이 보이는 우주" — 깊은 어둠, 빛나는 별 텍스트
+   ▸ 라이트모드 = "도화지에 먹" — 따뜻한 종이, 선명한 먹 글씨
+   ▸ 두 테마는 완전히 독립 적용. 서로 간섭 없음.
+   ══════════════════════════════════════════════════════ */
 
-/* ── 한자(한문) 폰트 고딕체 통일 ── */
+/* ─────────────────────────────────
+   공통 (테마 무관)
+───────────────────────────────── */
+
+/* 한자 폰트 고딕 통일 */
 .sajux-hanja, .m-hanja, .hanja, .manse-hanja,
 [class*="hanja"], [class*="ganji"],
 .m-stem, .m-branch, .manse-stem, .manse-branch,
@@ -12,143 +19,14 @@
   font-weight: 700 !important;
 }
 
-/* ── 다크모드: 카드 배경 어둡게 ── */
-html:not([data-theme="light"]) .card,
-html:not([data-theme="light"]) .yearly-card,
-html:not([data-theme="light"]) .monthly-card,
-html:not([data-theme="light"]) .inner-card,
-html:not([data-theme="light"]) .detail-box,
-html:not([data-theme="light"]) .jijanggan,
-html:not([data-theme="light"]) .badge,
-html:not([data-theme="light"]) .tag,
-html:not([data-theme="light"]) div[class*="box"],
-html:not([data-theme="light"]) div[class*="card"] {
-  background: rgba(8,10,12,0.72) !important;
-  border: 1px solid rgba(255,255,255,0.04) !important;
-  box-shadow: none !important;
-  color: rgba(255,255,255,0.94) !important;
-}
-
-html:not([data-theme="light"]) .glass-card,
-html:not([data-theme="light"]) .inline-interp,
-html:not([data-theme="light"]) .section-interp {
-  background: rgba(12,12,14,0.66) !important;
-  border-color: rgba(255,255,255,0.03) !important;
-}
-
-/* ── 다크모드: 너무 어두운 텍스트(어두운 배경에 거의 안 보임) → 밝게 ── */
-html:not([data-theme="light"]) [style*="color:#1a1a1a"],
-html:not([data-theme="light"]) [style*="color:#3d3428"],
-html:not([data-theme="light"]) [style*="color:#4a4a4a"],
-html:not([data-theme="light"]) [style*="color:#333"],
-html:not([data-theme="light"]) [style*="color: #333"] { color: #c8c0b0 !important; }
-html:not([data-theme="light"]) [style*="color:#444"],
-html:not([data-theme="light"]) [style*="color: #444"] { color: #b8b0a0 !important; }
-html:not([data-theme="light"]) [style*="color:#555"],
-html:not([data-theme="light"]) [style*="color: #555"] { color: #a0988a !important; }
-/* 다크모드: 중간 회색 — 약간 밝혀서 읽기 편하게 */
-html:not([data-theme="light"]) [style*="color:#666"],
-html:not([data-theme="light"]) [style*="color: #666"] { color: #999 !important; }
-html:not([data-theme="light"]) [style*="color:#777"],
-html:not([data-theme="light"]) [style*="color: #777"] { color: #aaa !important; }
-/* 너무 희미한 글자 약간 강화 */
-html:not([data-theme="light"]) .premium-disclaimer { color: #aaa !important; }
-
-/* ── 다크모드: 골드·브랜드 눈부심 제거 ── */
-html:not([data-theme="light"]) .gold,
-html:not([data-theme="light"]) .brand {
-  color: #b8923a !important;
-  text-shadow: none !important;
-}
-
-/* ── 다크모드: 열람·PDF 안내 ── */
-html:not([data-theme="light"]) .sajux-access-note {
-  background: rgba(20,18,14,0.85) !important;
-  border-color: rgba(199,167,106,0.25) !important;
-  color: #c8c0b0 !important;
-}
-
-/* ── 라이트모드: 텍스트 대비 강화 ── */
-html[data-theme="light"] body,
-html[data-theme="light"] .report-chapter,
-html[data-theme="light"] .card,
-html[data-theme="light"] .inline-interp,
-html[data-theme="light"] .section-title,
-html[data-theme="light"] .part-title,
-html[data-theme="light"] p,
-html[data-theme="light"] li,
-html[data-theme="light"] .ii-text,
-html[data-theme="light"] .ii-text p,
-html[data-theme="light"] .ch-text { color: #111111 !important; }
-
-html[data-theme="light"] h1,
-html[data-theme="light"] h2,
-html[data-theme="light"] h3,
-html[data-theme="light"] .section-title,
-html[data-theme="light"] .ch-title { color: #0b0b0b !important; font-weight: 700; }
-
-/* 라이트모드: #bbb, #ccc, #ddd 등 밝은 인라인 색 → 어두운 색으로 */
-html[data-theme="light"] [style*="color:#bbb"],
-html[data-theme="light"] [style*="color: #bbb"] { color: #444 !important; }
-html[data-theme="light"] [style*="color:#ccc"],
-html[data-theme="light"] [style*="color: #ccc"] { color: #333 !important; }
-html[data-theme="light"] [style*="color:#ddd"],
-html[data-theme="light"] [style*="color: #ddd"] { color: #222 !important; }
-html[data-theme="light"] [style*="color:#aaa"],
-html[data-theme="light"] [style*="color: #aaa"] { color: #555 !important; }
-html[data-theme="light"] [style*="color:#999"],
-html[data-theme="light"] [style*="color: #999"] { color: #555 !important; }
-html[data-theme="light"] [style*="color:rgba(255,255,255,0.4"],
-html[data-theme="light"] [style*="color:rgba(255,255,255,0.3"] { color: #666 !important; }
-html[data-theme="light"] [style*="color:rgba(255,255,255,0.5"] { color: #555 !important; }
-html[data-theme="light"] [style*="color:rgba(255,255,255,0.6"],
-html[data-theme="light"] [style*="color:rgba(255,255,255,0.7"] { color: #333 !important; }
-html[data-theme="light"] [style*="color:rgba(255,255,255,0.8"],
-html[data-theme="light"] [style*="color:rgba(255,255,255,0.9"] { color: #111 !important; }
-html[data-theme="light"] [style*="color:rgba(245,240,232"],
-html[data-theme="light"] [style*="color:rgba(180,185,195"] { color: #444 !important; }
-/* 라이트모드: 밝은 크림/연회색 계열 → 어두운 텍스트로 */
-html[data-theme="light"] [style*="color:#f5f0e6"],
-html[data-theme="light"] [style*="color:#efe9dc"],
-html[data-theme="light"] [style*="color:#e5d7b3"],
-html[data-theme="light"] [style*="color:#d8d3c9"],
-html[data-theme="light"] [style*="color:#d7d7d7"],
-html[data-theme="light"] [style*="color:#cfcfcf"],
-html[data-theme="light"] [style*="color:#d6dae2"] { color: #444 !important; }
-html[data-theme="light"] [style*="color:#b0bec5"],
-html[data-theme="light"] [style*="color:#9aa1ae"],
-html[data-theme="light"] [style*="color:#7a8494"] { color: #555 !important; }
-
-/* 라이트모드: 오행 차트 — 흰 카드 */
-html[data-theme="light"] .wuxing-bar-chart {
-  background: #ffffff !important;
-  border: 1px solid rgba(199,167,106,0.3) !important;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.06) !important;
-}
-
-/* 라이트모드: 열람·PDF 안내 */
-html[data-theme="light"] .sajux-access-note {
-  background: #fffdf7 !important;
-  border: 1px solid rgba(199,167,106,0.35) !important;
-  color: #2a2420 !important;
-}
-html[data-theme="light"] .sajux-access-note strong { color: #1c1814 !important; }
-
-/* 라이트모드: yearly-indicators 셀 */
-html[data-theme="light"] .yearly-ind-cell {
-  background: #ffffff !important;
-  border: 1px solid rgba(28,24,18,0.1) !important;
-}
-html[data-theme="light"] .yearly-ind-val { color: #1c1814 !important; }
-
-/* ── 4대 지표 그리드: 항상 2×2 유지 ── */
+/* 4대 지표 그리드 — 항상 2×2 */
 .yearly-indicators-grid {
   display: grid !important;
   grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   gap: 8px 10px !important;
 }
 
-/* ── 파트 헤더 제목: 문장형 폰트 → 명확한 헤딩 스타일 ── */
+/* 파트 헤더 제목 스타일 */
 .part-header-title {
   font-size: 22px !important;
   font-weight: 800 !important;
@@ -156,47 +34,233 @@ html[data-theme="light"] .yearly-ind-val { color: #1c1814 !important; }
   line-height: 1.3 !important;
 }
 
-/* ── PDF 인쇄: 카드 단위로 끊기 ── */
+/* ─────────────────────────────────
+   다크모드 — 별이 보이는 우주
+   깊은 배경, 별처럼 빛나는 글씨
+───────────────────────────────── */
+
+/* 카드/패널 어둡게 */
+html:not([data-theme="light"]) .card,
+html:not([data-theme="light"]) .yearly-card,
+html:not([data-theme="light"]) .monthly-card,
+html:not([data-theme="light"]) .inner-card,
+html:not([data-theme="light"]) .detail-box,
+html:not([data-theme="light"]) .jijanggan,
+html:not([data-theme="light"]) div[class*="card"] {
+  background: rgba(8,10,16,0.70) !important;
+  border: 1px solid rgba(255,255,255,0.05) !important;
+  box-shadow: none !important;
+}
+
+html:not([data-theme="light"]) .glass-card,
+html:not([data-theme="light"]) .inline-interp,
+html:not([data-theme="light"]) .section-interp {
+  background: rgba(12,14,20,0.65) !important;
+  border-color: rgba(255,255,255,0.04) !important;
+}
+
+/* 다크모드: 어두운 글씨색 → 밝게 (별빛처럼) */
+html:not([data-theme="light"]) [style*="color:#1a1a1a"],
+html:not([data-theme="light"]) [style*="color:#3d3428"],
+html:not([data-theme="light"]) [style*="color:#4a4a4a"],
+html:not([data-theme="light"]) [style*="color:#3a3a3a"],
+html:not([data-theme="light"]) [style*="color:#2a2a2a"] { color: #c8c4bc !important; }
+html:not([data-theme="light"]) [style*="color:#333"]    { color: #c8c4bc !important; }
+html:not([data-theme="light"]) [style*="color:#444"]    { color: #b8b0a0 !important; }
+html:not([data-theme="light"]) [style*="color:#555"]    { color: #a09888 !important; }
+html:not([data-theme="light"]) [style*="color:#666"]    { color: #9a9280 !important; }
+html:not([data-theme="light"]) [style*="color:#777"]    { color: #a8a098 !important; }
+
+/* 다크모드: 골드·브랜드 눈부심 억제 */
+html:not([data-theme="light"]) .gold,
+html:not([data-theme="light"]) .brand {
+  color: #b8923a !important;
+  text-shadow: none !important;
+}
+
+/* 다크모드: 버튼 */
+html:not([data-theme="light"]) .btn {
+  background: rgba(255,255,255,0.05) !important;
+  color: rgba(255,255,255,0.88) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+}
+html:not([data-theme="light"]) .btn.subtle {
+  color: rgba(255,255,255,0.55) !important;
+  border-color: rgba(255,255,255,0.06) !important;
+}
+html:not([data-theme="light"]) .btn.subtle:hover {
+  color: rgba(255,255,255,0.85) !important;
+}
+
+/* 다크모드: 열람·PDF 안내 */
+html:not([data-theme="light"]) .sajux-access-note {
+  background: rgba(20,18,14,0.85) !important;
+  border-color: rgba(199,167,106,0.25) !important;
+  color: #c8c0b0 !important;
+}
+
+/* ─────────────────────────────────
+   라이트모드 — 도화지에 먹
+   따뜻한 크림 종이, 선명한 먹 글씨
+───────────────────────────────── */
+
+/* 배경 & 기본 텍스트 */
+html[data-theme="light"] body {
+  background: #f5f0e8 !important;
+  color: #1a1510 !important;
+}
+html[data-theme="light"] .report-chapter { color: #1a1510 !important; }
+
+/* 카드: 따뜻한 흰 종이 */
+html[data-theme="light"] .card,
+html[data-theme="light"] .yearly-card,
+html[data-theme="light"] .monthly-card,
+html[data-theme="light"] .inner-card,
+html[data-theme="light"] .detail-box,
+html[data-theme="light"] div[class*="card"] {
+  background: #ffffff !important;
+  border: 1px solid rgba(28,21,10,0.10) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
+  color: #1a1510 !important;
+}
+html[data-theme="light"] .glass-card,
+html[data-theme="light"] .inline-interp,
+html[data-theme="light"] .section-interp {
+  background: #faf7f2 !important;
+  border-color: rgba(28,21,10,0.08) !important;
+  color: #1a1510 !important;
+}
+
+/* 라이트모드: 제목·본문 선명하게 */
+html[data-theme="light"] h1,
+html[data-theme="light"] h2,
+html[data-theme="light"] h3,
+html[data-theme="light"] .section-title,
+html[data-theme="light"] .ch-title,
+html[data-theme="light"] .part-header-title { color: #0d0a06 !important; font-weight: 700; }
+
+html[data-theme="light"] p,
+html[data-theme="light"] li,
+html[data-theme="light"] .ii-text,
+html[data-theme="light"] .ii-text p { color: #1a1510 !important; }
+
+/* 라이트모드: 밝은 다크모드용 색 → 먹색으로 교체 */
+/* 흰색 계열 (다크모드에서만 쓰는 색) */
+html[data-theme="light"] [style*="color:#ddd"]              { color: #3a3530 !important; }
+html[data-theme="light"] [style*="color:#ccc"]              { color: #4a4540 !important; }
+html[data-theme="light"] [style*="color:#bbb"]              { color: #555048 !important; }
+html[data-theme="light"] [style*="color:#aaa"]              { color: #605850 !important; }
+html[data-theme="light"] [style*="color:#999"]              { color: #686058 !important; }
+html[data-theme="light"] [style*="color:#888"]              { color: #706860 !important; }
+html[data-theme="light"] [style*="color:#d6dae2"]           { color: #4a4540 !important; }
+html[data-theme="light"] [style*="color:#cfcfcf"]           { color: #4a4540 !important; }
+html[data-theme="light"] [style*="color:#d7d7d7"]           { color: #3a3530 !important; }
+html[data-theme="light"] [style*="color:#d8d3c9"]           { color: #4a4540 !important; }
+html[data-theme="light"] [style*="color:#f5f0e6"]           { color: #2a2520 !important; }
+html[data-theme="light"] [style*="color:#efe9dc"]           { color: #2a2520 !important; }
+html[data-theme="light"] [style*="color:#e5d7b3"]           { color: #3a3025 !important; }
+html[data-theme="light"] [style*="color:#e8dcc8"]           { color: #2a2520 !important; }
+html[data-theme="light"] [style*="color:#c8c0b0"]           { color: #3a3530 !important; }
+html[data-theme="light"] [style*="color:#b0bec5"]           { color: #555860 !important; }
+html[data-theme="light"] [style*="color:#9aa1ae"]           { color: #606870 !important; }
+html[data-theme="light"] [style*="color:#7a8494"]           { color: #606870 !important; }
+html[data-theme="light"] [style*="color:#8a8278"]           { color: #706860 !important; }
+/* rgba 흰색 계열 */
+html[data-theme="light"] [style*="color:rgba(255,255,255,0.9"] { color: #111 !important; }
+html[data-theme="light"] [style*="color:rgba(255,255,255,0.8"] { color: #222 !important; }
+html[data-theme="light"] [style*="color:rgba(255,255,255,0.7"] { color: #333 !important; }
+html[data-theme="light"] [style*="color:rgba(255,255,255,0.6"] { color: #444 !important; }
+html[data-theme="light"] [style*="color:rgba(255,255,255,0.5"] { color: #555 !important; }
+html[data-theme="light"] [style*="color:rgba(255,255,255,0.4"] { color: #666 !important; }
+html[data-theme="light"] [style*="color:rgba(255,255,255,0.3"] { color: #777 !important; }
+html[data-theme="light"] [style*="color:rgba(245,240,232"]    { color: #2a2520 !important; }
+html[data-theme="light"] [style*="color:rgba(180,185,195"]    { color: #555860 !important; }
+
+/* 라이트모드: 버튼 — 종이 위 먹 테두리 */
+html[data-theme="light"] .btn {
+  background: #ffffff !important;
+  color: #1a1510 !important;
+  border: 1px solid rgba(28,21,10,0.18) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07) !important;
+}
+html[data-theme="light"] .btn.subtle {
+  background: transparent !important;
+  color: #3a3530 !important;
+  border: 1px solid rgba(28,21,10,0.15) !important;
+  box-shadow: none !important;
+}
+html[data-theme="light"] .btn:hover {
+  background: #f0ece4 !important;
+  color: #0d0a06 !important;
+}
+
+/* 라이트모드: yearly-indicators 셀 */
+html[data-theme="light"] .yearly-ind-cell {
+  background: #faf7f2 !important;
+  border: 1px solid rgba(28,21,10,0.10) !important;
+}
+html[data-theme="light"] .yearly-ind-val  { color: #1a1510 !important; }
+html[data-theme="light"] .yearly-ind-cell > div:first-child { color: #706858 !important; }
+
+/* 라이트모드: 오행 차트 */
+html[data-theme="light"] .wuxing-bar-chart {
+  background: #ffffff !important;
+  border: 1px solid rgba(199,167,106,0.3) !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06) !important;
+}
+html[data-theme="light"] .ch-text,
+html[data-theme="light"] .ch-text b { color: #1a1510 !important; }
+
+/* 라이트모드: 열람·PDF 안내 */
+html[data-theme="light"] .sajux-access-note {
+  background: #fdf9f2 !important;
+  border: 1px solid rgba(199,167,106,0.35) !important;
+  color: #2a2520 !important;
+}
+html[data-theme="light"] .sajux-access-note strong { color: #1a1510 !important; }
+
+/* 라이트모드: 링크 */
+html[data-theme="light"] a { color: #5a4020 !important; }
+
+/* ─────────────────────────────────
+   PDF 인쇄 — 카드 단위로 끊기
+───────────────────────────────── */
 @media print {
-  /* 각 챕터/카드는 내부에서 쪼개지지 않도록 */
   .report-chapter,
-  .yearly-card,
-  .monthly-card,
-  .card,
-  .inner-card,
-  .vip-module-card,
-  .glass-panel,
-  .sajux-access-note,
-  .inline-interp {
+  .yearly-card, .monthly-card, .card, .inner-card,
+  .vip-module-card, .glass-panel,
+  .sajux-access-note, .inline-interp {
     page-break-inside: avoid !important;
     break-inside: avoid !important;
   }
-  /* 파트 헤더는 항상 새 페이지에서 시작 */
   .part-header-block {
     page-break-before: always !important;
     break-before: page !important;
     page-break-after: avoid !important;
     break-after: avoid !important;
   }
-  /* 챕터 제목 다음 내용이 이어지도록 */
   .ch-title, h2, h3, .section-title {
     page-break-after: avoid !important;
     break-after: avoid !important;
   }
-  /* 4대 지표 그리드 인쇄 시에도 2×2 유지 */
   .yearly-indicators-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
-  /* 인쇄 배경 복원 */
+  /* 인쇄: 배경 종이색, 먹 글씨 */
+  body, .report-chapter { background: #fff !important; color: #111 !important; }
   .card, .yearly-card, .monthly-card, .inner-card,
   .detail-box, .jijanggan, div[class*="card"], div[class*="box"] {
     background: #ffffff !important;
-    border: 1px solid #cccccc !important;
-    color: #111111 !important;
+    border: 1px solid #ccc !important;
+    color: #111 !important;
   }
   .sajux-access-note {
-    background: #fffdf7 !important;
-    color: #2a2420 !important;
+    background: #fdf9f2 !important;
+    color: #2a2520 !important;
     border: 1px solid rgba(199,167,106,0.4) !important;
   }
+  /* 인쇄 시 밝은 다크모드 색 모두 검게 */
+  [style*="color:#ddd"], [style*="color:#ccc"], [style*="color:#bbb"],
+  [style*="color:#aaa"], [style*="color:#d6dae2"], [style*="color:#e8dcc8"],
+  [style*="color:rgba(255,255,255"] { color: #333 !important; }
 }
