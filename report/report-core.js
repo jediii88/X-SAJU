@@ -3643,7 +3643,7 @@ function buildSeYunYearCardHtml(data, yr, opt) {
     var isThis = !!opt.isThisYear;
     var border = isThis ? 'var(--gold)' : 'rgba(255,255,255,0.06)';
     var bgA = isThis ? '0.05' : '0.03';
-    var badge = isThis ? ' <span style="font-size:10px;background:var(--gold);color:#000;padding:2px 8px;border-radius:8px;font-weight:700;">▶ 올해</span>' : '';
+    var badge = isThis ? ' <span style="font-size:10px;background:rgba(199,167,106,0.10);color:var(--gold);border:1px solid rgba(199,167,106,0.40);padding:2px 8px;border-radius:8px;font-weight:600;letter-spacing:0.3px;">▶ 올해</span>' : '';
     var oneLine = formatSeYunCardOneLineConclusion(ev2.l, sc);
     return '<div class="yearly-card glass-panel" style="width:100%;max-width:100%;box-sizing:border-box;background:rgba(255,255,255,' + bgA + ');border-radius:12px;padding:18px 20px;border:1px solid ' + border + ';">'
         + '<div style="width:100%;display:flex;flex-direction:column;gap:10px;margin-bottom:12px;align-items:stretch;">'
@@ -5026,7 +5026,7 @@ function buildChapter4_Wealth(data) {
             ? '한 번에 크게 가면 되돌리기 비쌉니다. **같은 목표도 단계를 세 개**로 나누십시오.'
             : '버티기만 하면 기회가 스칩니다. **도움을 요청할 사람 한 명**만 미리 지정하십시오.');
         const txt = [intro, reactionText, essayBridge, action, tail].filter(Boolean).join(' ');
-        const curBadge = isCur ? '<span style="font-size:10px;background:var(--gold);color:#000;padding:1px 6px;border-radius:6px;font-weight:700;">▶ 현재</span>' : '';
+        const curBadge = isCur ? '<span style="font-size:10px;background:rgba(199,167,106,0.10);color:var(--gold);border:1px solid rgba(199,167,106,0.40);padding:1px 6px;border-radius:6px;font-weight:600;letter-spacing:0.3px;">▶ 현재</span>' : '';
         return `<div style="background:rgba(255,255,255,0.03);border-radius:8px;padding:12px 14px;margin-bottom:8px;border-left:3px solid ${isGood ? '#c7a76a' : isBad ? '#e74c3c' : '#555'};">
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
                 <span style="font-size:12px;color:${isGood ? 'var(--gold)' : isBad ? '#e74c3c' : '#888'};">${age}~${endAge}세 ${ganKr}${jiKr}</span>
@@ -5235,7 +5235,7 @@ function buildDaewunLoop(data) {
                             ${(typeof getUnsung==='function'&&data.dayStem) ? `<span style="font-size:10px;background:rgba(255,255,255,0.1);color:#bbb;padding:1px 7px;border-radius:8px;">흐름: ${getUnsung(data.dayStem,ji)||'-'}</span>` : ''}
                             ${(typeof getSipseong==='function'&&data.dayStem) ? `<span class="m-badge" style="font-size:10px;display:inline-block;">${sipToManseBadge(getSipseong(data.dayStem,gan), false)}</span>` : ''}
                         </div>
-                        ${isCurrent?'<span style="font-size:10px;background:var(--gold);color:#000;padding:2px 8px;border-radius:8px;font-weight:700;display:inline-block;margin-top:4px;">▶ 지금 이 시기</span>':''}
+                        ${isCurrent?'<span style="font-size:10px;background:rgba(199,167,106,0.10);color:var(--gold);border:1px solid rgba(199,167,106,0.40);padding:2px 8px;border-radius:8px;font-weight:600;letter-spacing:0.3px;display:inline-block;margin-top:4px;">▶ 지금 이 시기</span>':''}
                     </div>
                 </div>
                 <span style="font-size:13px;font-weight:700;color:${c};padding:4px 12px;border-radius:20px;background:rgba(255,255,255,0.05);">${b}</span>
@@ -5400,7 +5400,7 @@ function buildSewunLoop(data) {
                     <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:4px;">
                         ${sewSipCustomer ? `<span style="font-size:10px;background:rgba(199,167,106,0.15);color:#c7a76a;padding:1px 7px;border-radius:8px;">${sewSipCustomer}</span>` : ''}
                         ${sewShinsal.map(s=>`<span style="font-size:10px;background:rgba(255,255,255,0.08);color:#aaa;padding:1px 7px;border-radius:8px;">${s}</span>`).join('')}
-                        ${isNow?'<span style="font-size:10px;background:var(--gold);color:#000;padding:1px 7px;border-radius:8px;font-weight:700;">▶ 올해</span>':''}
+                        ${isNow?'<span style="font-size:10px;background:rgba(199,167,106,0.10);color:var(--gold);border:1px solid rgba(199,167,106,0.40);padding:1px 7px;border-radius:8px;font-weight:600;letter-spacing:0.3px;">▶ 올해</span>':''}
                     </div>
                 </div>
                 <span style="font-size:13px;font-weight:700;color:${col};padding:4px 12px;border-radius:20px;background:rgba(255,255,255,0.05);">${label}</span>
@@ -5539,7 +5539,7 @@ function buildWolunLoop(data) {
                     <span class="month-pillar-title" style="font-size:18px;font-weight:700;color:var(--gold);font-family:'Noto Sans KR',sans-serif;letter-spacing:0.02em;">${pillarTitle}</span>
                     ${mSipAxis ? `<span style="font-size:10px;background:rgba(199,167,106,0.12);color:#c7a76a;padding:1px 7px;border-radius:8px;">${mSipAxis}</span>` : ''}
                     <span style="font-size:12px;color:#aaa;">양력 ${yr}.${monthNo}월 · ${mJiKr}월(${BRANCH_ANIMAL[mJiHj]||'해당'})</span>
-                    ${isNow?'<span style="font-size:10px;background:var(--gold);color:#000;padding:1px 7px;border-radius:8px;font-weight:700;">이번달</span>':''}
+                    ${isNow?'<span style="font-size:10px;background:rgba(199,167,106,0.10);color:var(--gold);border:1px solid rgba(199,167,106,0.40);padding:1px 7px;border-radius:8px;font-weight:600;letter-spacing:0.3px;">이번달</span>':''}
                 </div>
                 <span style="font-size:16px;">${badge}</span>
             </div>
@@ -8456,7 +8456,7 @@ var strat = _dText(s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>'
                 d.style.cssText='padding:14px;background:rgba(255,255,255,'+(isCur?'0.07':'0.03')+');border:1px solid '+(isCur?'var(--gold)':'rgba(255,255,255,0.07)')+';border-radius:10px;';
                 d.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:6px;">'+
                     '<div style="display:flex;align-items:center;gap:8px;"><span style="font-size:22px;font-weight:900;color:var(--gold);font-family:Noto Serif KR,serif;">'+g+j+'</span><span style="font-size:15px;font-weight:600;color:#ccc;">('+((HAN_KOR&&HAN_KOR[g])||g)+((HAN_KOR&&HAN_KOR[j])||j)+')</span>'+
-                    '<div><div style="font-size:12px;color:#bbb;">'+age+'세 ~ '+(endAge-1)+'세</div>'+(isCur?'<span style="font-size:10px;background:var(--gold);color:#000;padding:1px 6px;border-radius:6px;font-weight:700;">▶ 현재</span>':'')+'</div></div>'+
+                    '<div><div style="font-size:12px;color:#bbb;">'+age+'세 ~ '+(endAge-1)+'세</div>'+(isCur?'<span style="font-size:10px;background:rgba(199,167,106,0.10);color:var(--gold);border:1px solid rgba(199,167,106,0.40);padding:1px 6px;border-radius:6px;font-weight:600;letter-spacing:0.3px;">▶ 현재</span>':'')+'</div></div>'+
                     '<span style="font-size:12px;font-weight:700;color:'+col+';">'+gb(s)+'</span></div>'+
                     '<div style="background:rgba(0,0,0,0.15);border-radius:6px;padding:10px;margin-bottom:8px;"><p style="font-size:12px;color:#ddd;line-height:1.75;margin:0;">'+_dText((window.PERIOD_NARRATIVE&&window.PERIOD_NARRATIVE[g+j]) ? window.PERIOD_NARRATIVE[g+j] : (GAN_T[g]||'')+' '+(JI_T[j]||''))+'</p></div>'+
                     /* 천간/지지 분리박스 제거 */
@@ -8837,7 +8837,7 @@ var strat = _dText(s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>'
                 d.style.cssText='padding:12px;background:rgba(255,255,255,'+(isThis?'0.07':'0.03')+');border:1px solid '+(isThis?'var(--gold)':'rgba(255,255,255,0.07)')+';border-radius:10px;';
                 d.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px;">'+
                     '<div style="display:flex;align-items:center;gap:7px;"><span style="font-size:18px;font-weight:900;color:var(--gold);font-family:\'Noto Sans KR\',sans-serif;"><span class="sajux-hanja">'+g+j+'</span></span><span style="font-size:13px;font-weight:600;color:#ccc;">('+((HAN_KOR&&HAN_KOR[g])||g)+((HAN_KOR&&HAN_KOR[j])||j)+')</span>'+
-                    '<span style="font-size:13px;color:#bbb;">'+yr+'년'+(isThis?' <span style="font-size:10px;background:var(--gold);color:#000;padding:1px 6px;border-radius:6px;font-weight:700;">올해</span>':'')+'</span></div>'+
+                    '<span style="font-size:13px;color:#bbb;">'+yr+'년'+(isThis?' <span style="font-size:10px;background:rgba(199,167,106,0.10);color:var(--gold);border:1px solid rgba(199,167,106,0.40);padding:1px 6px;border-radius:6px;font-weight:600;letter-spacing:0.3px;">올해</span>':'')+'</span></div>'+
                     '<span style="font-size:11px;font-weight:700;color:'+col+';">'+gb(s)+'</span></div>'+
                     '<div style="background:rgba(199,167,106,0.05);border-radius:6px;padding:8px 10px;border-left:2px solid '+col+';"><p style="font-size:12px;color:#ccc;line-height:1.75;margin:0;">'+polishHanjaInText(adv)+'</p></div>';
                 detDiv.appendChild(d);
@@ -8899,7 +8899,7 @@ var strat = _dText(s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>'
                 d.style.cssText='padding:11px;background:rgba(255,255,255,'+(isThis?'0.07':'0.02')+');border:1px solid '+(isThis?'var(--gold)':'rgba(255,255,255,0.06)')+';border-radius:8px;';
                 d.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;">'+
                     '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;"><span style="font-size:15px;font-weight:800;color:var(--gold);font-family:\'Noto Sans KR\',sans-serif;">'+(typeof formatMonthWithGanzhiHtml==='function'?formatMonthWithGanzhiHtml(m,g,j):formatMonthWithGanzhi(m,g,j))+'</span>'+
-                    '<span style="font-size:12px;color:#bbb;">'+wY+'.'+m+'월'+(isThis?' <span style="font-size:10px;background:var(--gold);color:#000;padding:1px 5px;border-radius:5px;font-weight:700;">이달</span>':'')+'</span></div>'+
+                    '<span style="font-size:12px;color:#bbb;">'+wY+'.'+m+'월'+(isThis?' <span style="font-size:10px;background:rgba(199,167,106,0.10);color:var(--gold);border:1px solid rgba(199,167,106,0.40);padding:1px 5px;border-radius:5px;font-weight:600;letter-spacing:0.3px;">이달</span>':'')+'</span></div>'+
                     '<span style="font-size:11px;font-weight:700;color:'+col+';">'+gb(s)+'</span></div>'+
                     '<div style="background:rgba(199,167,106,0.04);border-radius:5px;padding:7px 9px;border-left:2px solid '+col+';"><p style="font-size:11.5px;color:#bbb;line-height:1.7;margin:0;">'+polishHanjaInText(advm)+'</p></div>';
                 detDiv.appendChild(d);
@@ -9034,7 +9034,7 @@ var strat = _dText(s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>'
                     +wealthLine+' '+careerLine+' '+relationLine;
 
                 h2+='<div style="margin-bottom:18px;padding:18px;background:rgba(255,255,255,'+(isCur?'0.07':'0.03')+');border:1px solid '+(isCur?'var(--gold)':'rgba(255,255,255,0.07)')+';border-radius:12px;">';
-                h2+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:26px;font-weight:900;color:var(--gold);font-family:Noto Serif KR,serif;">'+g+j+'</span><div><div style="font-size:13px;color:#bbb;">'+age+'세 ~ '+(endAge-1)+'세</div>'+(isCur?'<span style="font-size:10px;background:var(--gold);color:#000;padding:1px 8px;border-radius:8px;font-weight:700;">▶ 현재</span>':'')+'</div></div><span style="font-size:13px;font-weight:700;color:'+col+';padding:4px 12px;border-radius:20px;background:rgba(255,255,255,0.05);">'+gb(s)+'</span></div>';
+                h2+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:26px;font-weight:900;color:var(--gold);font-family:Noto Serif KR,serif;">'+g+j+'</span><div><div style="font-size:13px;color:#bbb;">'+age+'세 ~ '+(endAge-1)+'세</div>'+(isCur?'<span style="font-size:10px;background:rgba(199,167,106,0.10);color:var(--gold);border:1px solid rgba(199,167,106,0.40);padding:1px 8px;border-radius:8px;font-weight:600;letter-spacing:0.3px;">▶ 현재</span>':'')+'</div></div><span style="font-size:13px;font-weight:700;color:'+col+';padding:4px 12px;border-radius:20px;background:rgba(255,255,255,0.05);">'+gb(s)+'</span></div>';
                 var _ageD = age||0;
                 var dnarr=(window.PERIOD_NARRATIVE&&window.PERIOD_NARRATIVE[g+j])
                     ||(_ageD+'세~'+(_ageD+9)+'세 — '+(GAN_T[g]||g+' 기운의 10년입니다.')+' '+(JI_T[j]||''));
@@ -9091,7 +9091,7 @@ var strat = _dText(s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>'
                     ?(ykSe+'의 흐름은 '+gTag+jTag+' 기운이 급한 변화보다 안정 운영에 힘을 싣는 편에 가깝습니다. '+reactTxt+' 큰 승부보다 기존 구조를 다듬고 새는 부분을 줄이는 쪽이 유리합니다.')
                     :(ykSe+'의 흐름은 '+gTag+jTag+' 기운이 부담 구간을 건드릴 수 있습니다. '+reactTxt+' 공격적으로 키우기보다 현금흐름 방어와 계약 재검토를 먼저 하면 손실 가능성을 낮출 수 있습니다.');
                 h3+='<div style="margin-bottom:14px;padding:16px;background:rgba(255,255,255,'+(isThis?'0.07':'0.03')+');border:1px solid '+(isThis?'var(--gold)':'rgba(255,255,255,0.07)')+';border-radius:12px;">';
-                h3+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;"><div style="display:flex;align-items:center;gap:8px;min-width:0;flex:1;"><span style="font-size:20px;font-weight:700;color:var(--gold);font-family:\'Noto Sans KR\',sans-serif;white-space:nowrap;letter-spacing:0.02em;"><span class="sajux-hanja">'+g2+j2+'</span></span><span style="font-size:14px;color:#bbb;white-space:nowrap;">'+yr+'년'+(isThis?' <span style="font-size:10px;background:var(--gold);color:#000;padding:1px 7px;border-radius:8px;font-weight:700;">올해</span>':'')+'</span></div><span style="font-size:12px;font-weight:700;color:'+col2+';white-space:nowrap;">'+gb(s2)+'</span></div>';
+                h3+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;"><div style="display:flex;align-items:center;gap:8px;min-width:0;flex:1;"><span style="font-size:20px;font-weight:700;color:var(--gold);font-family:\'Noto Sans KR\',sans-serif;white-space:nowrap;letter-spacing:0.02em;"><span class="sajux-hanja">'+g2+j2+'</span></span><span style="font-size:14px;color:#bbb;white-space:nowrap;">'+yr+'년'+(isThis?' <span style="font-size:10px;background:rgba(199,167,106,0.10);color:var(--gold);border:1px solid rgba(199,167,106,0.40);padding:1px 7px;border-radius:8px;font-weight:600;letter-spacing:0.3px;">올해</span>':'')+'</span></div><span style="font-size:12px;font-weight:700;color:'+col2+';white-space:nowrap;">'+gb(s2)+'</span></div>';
                 h3+=seStrip;
                 var ynarr=ykSe+'의 흐름은 '+(GK[g2]||g2)+'('+KN[gOh]+') 천간과 '+(JK[j2]||j2)+'('+KN[jOh]+') 지지가 겹쳐 나타납니다. '+(s2>=2?'원국과의 합이 맞아 드는 편이라 실행한 일이 결과로 이어질 가능성이 큽니다. 상반기에 거점을 고정하고 하반기에 확장을 붙이면 리스크가 줄어듭니다.':s2>=0?'급하게 키우기보다 기존 구조를 다듬고 현금흐름을 먼저 안정시키는 편이 유리합니다. 분기마다 우선순위를 세 개 이내로 압축하십시오.':'부담 구간을 건드릴 수 있으니 결정 속도를 늦추고 안전장치를 먼저 챙기십시오. 보증·레버리지·감정적 확장은 가급적 피하는 것이 좋습니다.')+' '+reactTxt;
                 h3+='<div style="background:rgba(0,0,0,0.15);border-radius:6px;padding:10px;margin-bottom:10px;"><p style="font-size:12px;color:#ddd;line-height:1.75;margin:0;">'+ynarr+'</p></div>';
@@ -9165,7 +9165,7 @@ var strat = _dText(s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>'
                     ?mNeuBodies[mSalt % 4]
                     :(mKey+'에는 부담 신호가 먼저 올 수 있습니다. '+mReactTxt+' 큰 결정보다 검토·보류를 먼저 하면 안정적으로 넘길 가능성이 높습니다. '+mTail);
                 h4+='<div style="margin-bottom:12px;padding:14px;background:rgba(255,255,255,'+(isThisM?'0.07':'0.03')+');border:1px solid '+(isThisM?'var(--gold)':'rgba(255,255,255,0.06)')+';border-radius:10px;">';
-                h4+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:8px;"><div style="display:flex;align-items:center;gap:8px;min-width:0;flex:1;"><span style="font-size:18px;font-weight:900;color:var(--gold);font-family:\'Noto Sans KR\',sans-serif;white-space:nowrap;letter-spacing:0.02em;">'+mKey+'</span><span style="font-size:13px;color:#bbb;white-space:nowrap;">'+m4+'월'+(isThisM?' <span style="font-size:10px;background:var(--gold);color:#000;padding:1px 6px;border-radius:6px;font-weight:700;">이달</span>':'')+'</span></div><span style="font-size:11px;font-weight:700;color:'+colm+';white-space:nowrap;">'+gb(sm4)+'</span></div>';
+                h4+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:8px;"><div style="display:flex;align-items:center;gap:8px;min-width:0;flex:1;"><span style="font-size:18px;font-weight:900;color:var(--gold);font-family:\'Noto Sans KR\',sans-serif;white-space:nowrap;letter-spacing:0.02em;">'+mKey+'</span><span style="font-size:13px;color:#bbb;white-space:nowrap;">'+m4+'월'+(isThisM?' <span style="font-size:10px;background:rgba(199,167,106,0.10);color:var(--gold);border:1px solid rgba(199,167,106,0.40);padding:1px 6px;border-radius:6px;font-weight:600;letter-spacing:0.3px;">이달</span>':'')+'</span></div><span style="font-size:11px;font-weight:700;color:'+colm+';white-space:nowrap;">'+gb(sm4)+'</span></div>';
                 h4+='<div style="background:rgba(199,167,106,0.05);border-radius:6px;padding:8px 10px;border-left:2px solid '+colm+';"><p style="font-size:12px;color:#bbb;line-height:1.7;margin:0;">'+advm.replace(/\*\*([\s\S]*?)\*\*/g,'<strong>$1</strong>')+'</p></div></div>';
             }
             h4+='</div>';
