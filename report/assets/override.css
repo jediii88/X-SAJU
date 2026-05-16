@@ -208,6 +208,24 @@ html[data-theme="light"] .wuxing-bar-chart {
   border: 1px solid rgba(199,167,106,0.3) !important;
   box-shadow: 0 2px 12px rgba(0,0,0,0.06) !important;
 }
+
+/* 라이트모드: 십성 차트 */
+html[data-theme="light"] .sipseong-bar-chart {
+  background: #ffffff !important;
+  border: 1px solid rgba(199,167,106,0.3) !important;
+}
+
+/* 라이트모드: 막대 트랙 (흰 배경에 rgba(255,255,255,0.08)은 안 보임 → 연회색) */
+html[data-theme="light"] .wuxing-bar-row [style*="background:rgba(255,255,255,0.08)"],
+html[data-theme="light"] .sipseong-bar-row [style*="background:rgba(255,255,255,0.08)"] {
+  background: rgba(0,0,0,0.10) !important;
+  border-color: rgba(0,0,0,0.08) !important;
+}
+
+/* 라이트모드: 막대 값·레이블 색 (이미 상위에서 #bbb→#555 처리되나 강화) */
+html[data-theme="light"] .wuxing-bar-row,
+html[data-theme="light"] .sipseong-bar-row { color: #1a1510 !important; }
+
 html[data-theme="light"] .ch-text,
 html[data-theme="light"] .ch-text b { color: #1a1510 !important; }
 
