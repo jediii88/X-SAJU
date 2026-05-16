@@ -41,8 +41,8 @@ html:not([data-theme="light"]) .water,
 html:not([data-theme="light"]) .manse-cell .water,
 html:not([data-theme="light"]) [class~="water"] .top,
 html:not([data-theme="light"]) [class~="water"] .bottom {
-  color: #111111 !important;
-  -webkit-text-stroke: 0.4px rgba(255,255,255,0.55) !important;
+  color: var(--water) !important;
+  -webkit-text-stroke: 0.6px rgba(255,255,255,0.72) !important;
   paint-order: stroke fill !important;
 }
 
