@@ -4467,11 +4467,11 @@ function buildIljuProfileCard(data) {
     };
     function iljuHanjaSpan(char, colorVal, sizeStyle) {
         const isWater = colorVal === 'water-dark';
-        const col = isWater ? '#111111' : (colorVal || 'var(--gold)');
-        const stroke = isWater ? ';-webkit-text-stroke:0.5px rgba(255,255,255,0.6);paint-order:stroke fill' : '';
+        const col = isWater ? 'var(--water)' : (colorVal || 'var(--gold)');
+        const stroke = isWater ? ';-webkit-text-stroke:0.6px rgba(255,255,255,0.72);paint-order:stroke fill' : '';
         return `<div style="font-size:${sizeStyle||'44px'};font-weight:200;line-height:1.1;font-family:'Noto Sans KR','Noto Sans SC',sans-serif;color:${col}${stroke};">${char}</div>`;
     }
-    const accentColor = OH_COLOR[ds] === 'water-dark' ? '#111111' : (OH_COLOR[ds] || 'var(--gold)');
+    const accentColor = OH_COLOR[ds] === 'water-dark' ? 'var(--water)' : (OH_COLOR[ds] || 'var(--gold)');
 
     // 키워드 배지 (strength에서 추출)
     const kwRaw = prof.strength || '';
@@ -5914,7 +5914,7 @@ function getHiddenVipTableCell(branch, dayStem) {
             var cls = HAN_COLOR[ch] || '';
             var isWater = (ch==='壬'||ch==='癸');
             var hanStyle = isWater
-                ? 'font-size:14px;font-weight:300;font-family:\'Noto Sans KR\',\'Noto Sans SC\',sans-serif;color:#111111;-webkit-text-stroke:0.4px rgba(255,255,255,0.55);paint-order:stroke fill;'
+                ? 'font-size:14px;font-weight:300;font-family:\'Noto Sans KR\',\'Noto Sans SC\',sans-serif;color:var(--water);-webkit-text-stroke:0.6px rgba(255,255,255,0.72);paint-order:stroke fill;'
                 : 'font-size:14px;font-weight:300;font-family:\'Noto Sans KR\',\'Noto Sans SC\',sans-serif;';
             return '<div style="display:flex;flex-direction:column;align-items:center;line-height:1.2;">'
                 + '<span class="vip-hanja ' + cls + '" style="' + hanStyle + '">' + ch + '</span>'
@@ -5971,7 +5971,7 @@ function buildVipEvidenceBlock(data) {
             var gKr=HK_GAN[g]||g;
             var isWater=STEM_OH[g]==='water';
             var hanjaStyle=isWater
-                ? 'font-size:1.55em;font-weight:300;color:#111111;-webkit-text-stroke:0.4px rgba(255,255,255,0.55);paint-order:stroke fill;font-family:\'Noto Sans KR\',\'Noto Sans SC\',sans-serif;'
+                ? 'font-size:1.55em;font-weight:300;color:var(--water);-webkit-text-stroke:0.6px rgba(255,255,255,0.72);paint-order:stroke fill;font-family:\'Noto Sans KR\',\'Noto Sans SC\',sans-serif;'
                 : 'font-size:1.55em;font-weight:300;color:'+col+';font-family:\'Noto Sans KR\',\'Noto Sans SC\',sans-serif;';
             ev+='<td style="padding:6px 6px;text-align:center;vertical-align:middle;"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;line-height:1.05;"><span class="vip-hanja" style="'+hanjaStyle+'">'+g+'</span><span style="font-size:10px;color:rgba(255,255,255,0.38);font-weight:500;">'+gKr+'</span></div></td>';
         });
@@ -5985,7 +5985,7 @@ function buildVipEvidenceBlock(data) {
             var jKr=HK_JI[j]||j;
             var isWater=BRNCH_OH[j]==='water';
             var hanjaStyle=isWater
-                ? 'font-size:1.55em;font-weight:300;color:#111111;-webkit-text-stroke:0.4px rgba(255,255,255,0.55);paint-order:stroke fill;font-family:\'Noto Sans KR\',\'Noto Sans SC\',sans-serif;'
+                ? 'font-size:1.55em;font-weight:300;color:var(--water);-webkit-text-stroke:0.6px rgba(255,255,255,0.72);paint-order:stroke fill;font-family:\'Noto Sans KR\',\'Noto Sans SC\',sans-serif;'
                 : 'font-size:1.55em;font-weight:300;color:'+col+';font-family:\'Noto Sans KR\',\'Noto Sans SC\',sans-serif;';
             ev+='<td style="padding:6px 6px;text-align:center;vertical-align:middle;"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;line-height:1.05;"><span class="vip-hanja" style="'+hanjaStyle+'">'+j+'</span><span style="font-size:10px;color:rgba(255,255,255,0.38);font-weight:500;">'+jKr+'</span></div></td>';
         });
@@ -6956,8 +6956,18 @@ window.UNSUNG_MAP = {
 };
 
 var BRANCH_HIDDEN = {
-    '子':['癸'], '丑':['己','癸','辛'], '寅':['甲','丙','戊'], '卯':['乙'], '辰':['戊','乙','癸'], '巳':['丙','戊','庚'],
-    '午':['丁','己'], '未':['己','丁','乙'], '申':['庚','壬','戊'], '酉':['辛'], '戌':['戊','辛','丁'], '亥':['壬','甲']
+    '子':['壬','癸'],
+    '丑':['癸','辛','己'],
+    '寅':['戊','丙','甲'],
+    '卯':['甲','乙'],
+    '辰':['乙','癸','戊'],
+    '巳':['戊','庚','丙'],
+    '午':['丙','己','丁'],
+    '未':['丁','乙','己'],
+    '申':['戊','壬','庚'],
+    '酉':['庚','辛'],
+    '戌':['辛','丁','戊'],
+    '亥':['甲','壬']
 };
 
 // 십이신살(반안·육해·재살·월살) 및 년지 상문/조객 등 공통 조견
