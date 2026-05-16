@@ -2955,7 +2955,6 @@ function generateDeepReport(data) {
 
     // ── 3부: 삶의 네 영역 ──
     var part3Body = '';
-    part3Body += safeCall(()=>buildFourDomainRadar(data)||'', 'four-radar');
     part3Body += safeCall(()=>buildChapter4_Wealth(data)||'', 'ch4-wealth');
     part3Body += safeCall(()=>buildChapter5_Career(data)||'', 'ch5-career');
     part3Body += safeCall(()=>buildChapter6_Love(data)||'', 'ch6-love');
@@ -5907,15 +5906,22 @@ function buildPartHeader(num, title, subtitle, anchorId, opts) {
 
 function getHiddenVipTableCell(branch, dayStem) {
     var stems = BRANCH_HIDDEN[branch] || [];
-    if (!stems.length) return '-';
-    return stems.map(function (ch) {
-        var ss = getSipseong(dayStem, ch);
-        var lab = typeof sipToManseBadge === 'function' ? sipToManseBadge(ss, false) : (ss || '');
-        var cls = HAN_COLOR[ch] || '';
-        return '<span class="jijanggan-tag" style="display:inline-flex;align-items:center;gap:3px;margin:2px 3px;font-size:10px;line-height:1.35;">'
-            + '<span class="vip-hanja ' + cls + '" style="font-weight:700;">' + ch + '</span>'
-            + '<span class="jijanggan-sip" style="font-size:9px;color:var(--text-dim,rgba(255,255,255,0.60));">' + lab + '</span></span>';
-    }).join(' ');
+    if (!stems.length) return '<span style="color:rgba(255,255,255,0.3);">-</span>';
+    return '<div style="display:flex;flex-direction:column;align-items:center;gap:5px;padding:2px 0;">'
+        + stems.map(function(ch) {
+            var ss  = getSipseong(dayStem, ch);
+            var lab = typeof sipToManseBadge === 'function' ? sipToManseBadge(ss, false) : (ss || '');
+            var cls = HAN_COLOR[ch] || '';
+            var isWater = (ch==='壬'||ch==='癸');
+            var hanStyle = isWater
+                ? 'font-size:14px;font-weight:300;font-family:\'Noto Sans KR\',\'Noto Sans SC\',sans-serif;color:#111111;-webkit-text-stroke:0.4px rgba(255,255,255,0.55);paint-order:stroke fill;'
+                : 'font-size:14px;font-weight:300;font-family:\'Noto Sans KR\',\'Noto Sans SC\',sans-serif;';
+            return '<div style="display:flex;flex-direction:column;align-items:center;line-height:1.2;">'
+                + '<span class="vip-hanja ' + cls + '" style="' + hanStyle + '">' + ch + '</span>'
+                + '<span style="font-size:9px;color:var(--text-dim,rgba(255,255,255,0.55));font-weight:500;margin-top:1px;">' + lab + '</span>'
+                + '</div>';
+        }).join('')
+        + '</div>';
 }
 
 // VIP 근거: 원국 8자 만세력 표 (프리미엄 요약 직후 배치)
@@ -6659,7 +6665,7 @@ function buildForewordPage(data) {
     const accessLine = formatReportAccessLine(data);
     return `<div id="sec-book-foreword" class="toc-page chapter-start book-foreword-page" style="padding:56px 36px 72px;border-bottom:1px solid rgba(199,167,106,0.12);margin-bottom:40px;max-width:700px;margin-left:auto;margin-right:auto;">
         <div style="font-size:10px;letter-spacing:0.2em;color:rgba(199,167,106,0.75);margin-bottom:16px;font-weight:700;">[ 이용 안내 ]</div>
-        <h2 style="font-family:Noto Serif KR,serif;font-size:28px;font-weight:700;color:#fff;margin:0 0 18px;">이용 안내</h2>
+        <h2 style="font-family:'Noto Serif KR',serif;font-size:28px;font-weight:700;color:var(--text,rgba(255,255,255,0.95));margin:0 0 18px;">이용 안내</h2>
 
         <div style="text-align:left;padding:16px 18px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(199,167,106,0.14);margin-bottom:14px;">
             <div style="font-size:12px;color:var(--gold);letter-spacing:0.08em;margin-bottom:8px;font-weight:700;">법적 안내</div>
@@ -6691,8 +6697,8 @@ function buildForewordPage(data) {
 function buildTOC(data) {
     var tocNm = nmDnim((data && data.name) || '고객');
     var gHead = 'font-size:11.5px;font-weight:800;color:rgba(212,175,55,0.98);letter-spacing:0.14em;margin:26px 0 10px;padding-bottom:8px;border-bottom:1px solid rgba(199,167,106,0.28);';
-    var gSub = 'display:block;font-size:10.5px;color:#888;font-weight:600;letter-spacing:0.04em;margin-top:5px;';
-    var row = 'display:flex;align-items:baseline;gap:12px;padding:11px 0 11px 14px;border-bottom:1px solid rgba(255,255,255,0.04);';
+    var gSub = 'display:block;font-size:10.5px;color:var(--text-dim,rgba(255,255,255,0.55));font-weight:600;letter-spacing:0.04em;margin-top:5px;';
+    var row = 'display:flex;align-items:baseline;gap:12px;padding:11px 0 11px 14px;border-bottom:1px solid rgba(128,128,128,0.12);';
     var groups = [
         { head: '인트로', sub: '전략 요약 · 열람 안내', items: [
             { t: '표지 · 소개 · 고객 정보', s: '브랜드 톤 · 생년월일시 확인', p: '—' },
@@ -6722,17 +6728,17 @@ function buildTOC(data) {
     groups.forEach(function (grp) {
         body += '<div style="' + gHead + '">' + grp.head + '<span style="' + gSub + '">' + grp.sub + '</span></div>';
         grp.items.forEach(function (it) {
-            body += '<div style="' + row + '"><div style="font-size:10px;color:var(--gold);min-width:20px;font-weight:700;">·</div><div style="flex:1;"><div style="font-size:14px;font-weight:600;color:#ddd;margin-bottom:2px;">' + it.t + '</div><div style="font-size:11.5px;color:#777;">' + it.s + '</div></div><div style="font-size:11px;color:rgba(199,167,106,0.4);min-width:32px;text-align:right;">' + it.p + '</div></div>';
+            body += '<div style="' + row + '"><div style="font-size:10px;color:var(--gold);min-width:20px;font-weight:700;">·</div><div style="flex:1;"><div style="font-size:14px;font-weight:600;color:var(--text,rgba(255,255,255,0.88));margin-bottom:2px;">' + it.t + '</div><div style="font-size:11.5px;color:var(--text-dim,rgba(255,255,255,0.50));">' + it.s + '</div></div><div style="font-size:11px;color:rgba(199,167,106,0.45);min-width:32px;text-align:right;">' + it.p + '</div></div>';
         });
     });
 
     return '<div class="toc-page" style="padding:60px 40px 80px;border-bottom:1px solid rgba(199,167,106,0.1);margin-bottom:48px;">' +
         '<div style="font-size:10px;letter-spacing:0.22em;color:rgba(199,167,106,0.75);margin-bottom:14px;font-weight:700;">[ 리포트 핵심 목차 ]</div>' +
-        '<div style="font-family:Noto Serif KR,serif;font-size:30px;font-weight:700;color:#fff;margin-bottom:6px;">목차</div>' +
-        '<div style="font-size:13px;color:#666;margin-bottom:32px;">X-SAJU MASTER — 컨설팅 보고서형 4부 구조</div>' +
+        '<div style="font-family:\'Noto Serif KR\',serif;font-size:30px;font-weight:700;color:var(--text,rgba(255,255,255,0.95));margin-bottom:6px;">목차</div>' +
+        '<div style="font-size:13px;color:var(--text-dim,rgba(255,255,255,0.55));margin-bottom:32px;">X-SAJU MASTER — 컨설팅 보고서형 4부 구조</div>' +
         '<div style="width:60px;height:2px;background:var(--gold);margin-bottom:28px;opacity:0.4;"></div>' +
         body +
-        '<div style="margin-top:36px;padding:18px 20px;background:rgba(199,167,106,0.04);border-radius:10px;border:1px solid rgba(199,167,106,0.1);font-size:12px;color:#777;line-height:1.8;">' +
+        '<div style="margin-top:36px;padding:18px 20px;background:rgba(199,167,106,0.04);border-radius:10px;border:1px solid rgba(199,167,106,0.1);font-size:12px;color:var(--text-dim,rgba(255,255,255,0.50));line-height:1.8;">' +
         '※ 이 리포트는 명리학(사주팔자)을 기반으로 작성된 운명 분석서입니다. 각 챕터의 해석은 동양철학의 오행·십성·대운 흐름을 근거로 하며, 실제 삶에서의 선택과 노력에 따라 결과는 달라질 수 있습니다. 본 분석은 인생의 방향을 설계하는 참고 자료로 활용하시기 바랍니다.<br><br>' +
         '※ 온라인 링크 열람·PDF 저장은 발행 정책에 따릅니다(기본 30일·서버에서 <code style="font-size:11px;">reportExpiresAt</code> 또는 <code style="font-size:11px;">reportIssuedAt</code> 전달 시 안내문이 자동 반영됩니다).' +
         '</div></div>';
