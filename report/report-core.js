@@ -567,10 +567,50 @@ function buildCompatSajuKidOpener(ctx, innerLine) {
     return open + '서로 다른 기운이 맞닿을 때 시너지가 커지는 구조입니다.';
 }
 
+function _sajuxCompatChapterCount(reset) {
+    if (typeof window === 'undefined') {
+        _sajuxCompatChapterCount._n = reset ? 0 : (_sajuxCompatChapterCount._n || 0) + 1;
+        return _sajuxCompatChapterCount._n;
+    }
+    if (reset || typeof window._sajuxCompatChapterIdx !== 'number') window._sajuxCompatChapterIdx = 0;
+    if (!reset) window._sajuxCompatChapterIdx += 1;
+    return window._sajuxCompatChapterIdx;
+}
+function buildCompatBridge(topic, ctx) {
+    var nA = nmNormalize((ctx && ctx.aName) || '') || '한 분';
+    var nB = nmNormalize((ctx && ctx.bName) || '') || '다른 한 분';
+    var bridges = {
+        overview:    null, // 첫 챕터 — 풀 인사
+        personality: '두 분의 관계를 풀기 전에, 먼저 ' + nA + '님과 ' + nB + '님 각자의 결을 짚어 보겠습니다.',
+        lover:       '서로의 결을 보았으니, 이제 두 분이 연인으로서 어떤 리듬을 만드는지 살피겠습니다.',
+        married:     '연인의 호흡을 살폈으니, 부부로서 함께 살아가는 그림은 어떻게 그려지는지 풀어 보겠습니다.',
+        friend:      '관계의 무게를 잠시 내려놓고, 두 분이 친구·동료로서는 어떤 거리를 지키면 좋은지 봅니다.',
+        business:    '감정의 자리에서 한 발 비켜서서, 함께 일하거나 동업할 때의 그림을 짚어 보겠습니다.',
+        child:       '두 분 사이에 새 식구가 더해진다면 어떤 결이 어우러지는지, 자녀와의 관계도 살펴봅니다.',
+        spouse:      '배우자궁(일지)이 서로 어떻게 닿는지, 두 분의 가장 깊은 자리를 들여다봅니다.',
+        crisis:      '관계에는 흐름이 있습니다. 어떤 시기가 같이 있기 좋은 시절이고, 어떤 시기에 한 발 거리를 두는 것이 좋은지 짚겠습니다.',
+        timeline:    '대운(10년 흐름)이 두 분에게서 어떻게 겹치는지, 함께 갈 길의 색지도를 살펴봅니다.',
+        caution:     '관계를 오래 지키려면 지뢰를 미리 알아두는 것이 좋습니다. 두 분이 특히 조심해야 할 자리를 정리해 드립니다.',
+        wuxing:      '두 분의 에너지가 서로를 어떻게 채우는지, 오행의 균형을 함께 살펴봅니다.',
+        strategy:    '관계의 결과 흐름을 보았으니, 일상에서 어떻게 호흡을 맞춰 갈지 정리해 드립니다.',
+        brief:       '두 분의 관계를 한 장으로 요약합니다. 뒤에 이어지는 풀이의 길잡이로 봐주세요.'
+    };
+    return bridges[topic] === undefined ? null : bridges[topic];
+}
+
 function buildCompatChapterIntro(ctx, topic) {
-    var text = buildCompatSajuKidOpener(ctx, buildCompatOpenerInner(topic, ctx));
-    return '<p class="ch-text ch-voice-opener compat-voice-opener" style="margin:0 0 16px;font-size:13.5px;line-height:1.88;color:#ddd;">'
-        + boldStarsToStrong(text) + '</p>';
+    var idx = _sajuxCompatChapterCount();
+    var bridge = buildCompatBridge(topic, ctx);
+    var text;
+    if (idx <= 1 || topic === 'overview' || bridge === null) {
+        text = buildCompatSajuKidOpener(ctx, buildCompatOpenerInner(topic, ctx));
+    } else {
+        var inner = buildCompatOpenerInner(topic, ctx);
+        text = bridge + (inner ? ' ' + inner : '');
+    }
+    var fakeData = { name: ctx && ctx.aName };
+    return '<p class="ch-text ch-voice-opener compat-voice-opener" style="margin:0 0 16px;font-size:13.5px;line-height:1.95;color:rgba(255,255,255,0.78);">'
+         + boldStarsToStrong(voicePolishParagraph(fakeData, text)) + '</p>';
 }
 
 /** 궁합 섹션 상단 — 은유 제목 + 사주아이형 도입 (ctx: a,b,aName,bName,isHap,isChung,score,…) */
