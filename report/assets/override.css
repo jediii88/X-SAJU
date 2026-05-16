@@ -609,3 +609,85 @@ html[data-theme="light"] .pdf-btn {
   color: #7a5a10 !important;
   border: 1px solid rgba(140,100,20,0.25) !important;
 }
+
+/* ─────────────────────────────────
+   v6 추가 — 광역 색상·만세력 위계
+───────────────────────────────── */
+
+/* 만세력 표 행 라벨 (.vip-row-label) — 양 테마 대응 */
+html:not([data-theme="light"]) .vip-row-label { color: rgba(255,255,255,0.50) !important; }
+html[data-theme="light"] .vip-row-label { color: #6a6058 !important; }
+
+/* 신살 셀 (작은 텍스트 영역) */
+html[data-theme="light"] td[style*="color:var(--text-dim"] { color: #5a5048 !important; }
+
+/* 광역 글자색 — 다크모드 (#bbb / #ddd / #ccc 모두 일관 처리) */
+html:not([data-theme="light"]) .report-chapter [style*="color:#bbb"],
+html:not([data-theme="light"]) .report-chapter [style*="color:#ccc"],
+html:not([data-theme="light"]) .report-chapter [style*="color:#ddd"],
+html:not([data-theme="light"]) .yearly-card [style*="color:#bbb"],
+html:not([data-theme="light"]) .monthly-card [style*="color:#bbb"],
+html:not([data-theme="light"]) .vip-module-item [style*="color:#bbb"],
+html:not([data-theme="light"]) .toc-page [style*="color:#bbb"] {
+  color: rgba(255,255,255,0.78) !important;
+}
+html:not([data-theme="light"]) .report-chapter [style*="color:#777"],
+html:not([data-theme="light"]) .report-chapter [style*="color:#888"],
+html:not([data-theme="light"]) .report-chapter [style*="color:#999"] {
+  color: rgba(255,255,255,0.55) !important;
+}
+
+/* 광역 글자색 — 라이트모드 (다크 전제로 박힌 인라인 색 일괄 보정) */
+html[data-theme="light"] .report-chapter [style*="color:#bbb"],
+html[data-theme="light"] .report-chapter [style*="color:#ccc"],
+html[data-theme="light"] .yearly-card [style*="color:#bbb"],
+html[data-theme="light"] .monthly-card [style*="color:#bbb"],
+html[data-theme="light"] .vip-module-item [style*="color:#bbb"],
+html[data-theme="light"] .vip-module-item [style*="color:#d8d3c9"],
+html[data-theme="light"] .toc-page [style*="color:#bbb"] {
+  color: #2a2520 !important;
+}
+html[data-theme="light"] .report-chapter [style*="color:#ddd"],
+html[data-theme="light"] .yearly-card [style*="color:#ddd"],
+html[data-theme="light"] .monthly-card [style*="color:#ddd"],
+html[data-theme="light"] .vip-module-item [style*="color:#ddd"],
+html[data-theme="light"] .toc-page [style*="color:#ddd"] {
+  color: #1f1a14 !important;
+}
+html[data-theme="light"] .report-chapter [style*="color:#777"],
+html[data-theme="light"] .report-chapter [style*="color:#888"],
+html[data-theme="light"] .report-chapter [style*="color:#999"] {
+  color: #5a5048 !important;
+}
+
+/* 키워드 배지 (.ilju-kw-badge) — 라이트 가독성 */
+html[data-theme="light"] .ilju-kw-badge {
+  background: rgba(140,100,20,0.06) !important;
+  color: #4a3a18 !important;
+  border-color: rgba(140,100,20,0.20) !important;
+}
+
+/* 카드 안 골드 헤더 텍스트 (라이트에서 너무 옅음) */
+html[data-theme="light"] [style*="color:var(--gold)"],
+html[data-theme="light"] [style*="color: var(--gold)"] {
+  color: #7a5410 !important;
+}
+html[data-theme="light"] [style*="color:rgba(199,167,106"] {
+  color: #7a5410 !important;
+}
+
+/* 만세력 행 구분선 — 라이트에서 거의 안 보이는 문제 */
+html[data-theme="light"] table tr[style*="border-bottom"] {
+  border-bottom-color: rgba(0,0,0,0.07) !important;
+}
+
+/* 일주 한자 col 하단 "일간 · 일지" 라벨 */
+html[data-theme="light"] .ilju-hanja-col [style*="color:rgba(255,255,255,0.32)"] {
+  color: #8a7e6a !important;
+}
+
+/* 인쇄 — 12신살 셀 가독성 보강 */
+@media print {
+  .vip-row-label { color: #555 !important; }
+  td[style*="font-size:9.5px"] { color: #444 !important; }
+}
