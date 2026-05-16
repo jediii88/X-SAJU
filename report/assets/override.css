@@ -1,5 +1,18 @@
-/* Override styles to improve dark-mode/card contrast and light-mode readability */
-/* Dark-mode: make cards darker and remove bright cream panels */
+/* ══════════════════════════════════════════════
+   SAJUX OVERRIDE — 다크/라이트 가독성, 폰트, 레이아웃
+   ══════════════════════════════════════════════ */
+
+/* ── 한자(한문) 폰트 고딕체 통일 ── */
+.sajux-hanja, .m-hanja, .hanja, .manse-hanja,
+[class*="hanja"], [class*="ganji"],
+.m-stem, .m-branch, .manse-stem, .manse-branch,
+.rel-char span, .ch-stem, .ch-branch,
+.manse-cell .top, .manse-cell .bottom {
+  font-family: 'Noto Sans KR', 'Noto Sans SC', 'Noto Sans', sans-serif !important;
+  font-weight: 700 !important;
+}
+
+/* ── 다크모드: 카드 배경 어둡게 ── */
 html:not([data-theme="light"]) .card,
 html:not([data-theme="light"]) .yearly-card,
 html:not([data-theme="light"]) .monthly-card,
@@ -16,7 +29,6 @@ html:not([data-theme="light"]) div[class*="card"] {
   color: rgba(255,255,255,0.94) !important;
 }
 
-/* Slightly darken special highlighted panels that were too bright */
 html:not([data-theme="light"]) .glass-card,
 html:not([data-theme="light"]) .inline-interp,
 html:not([data-theme="light"]) .section-interp {
@@ -24,7 +36,31 @@ html:not([data-theme="light"]) .section-interp {
   border-color: rgba(255,255,255,0.03) !important;
 }
 
-/* Light-mode: increase text contrast for readability */
+/* ── 다크모드: 너무 밝은 텍스트 색 → 읽기 편한 수준으로 ── */
+html:not([data-theme="light"]) [style*="color:#777"],
+html:not([data-theme="light"]) [style*="color: #777"] { color: #aaa !important; }
+html:not([data-theme="light"]) [style*="color:#666"],
+html:not([data-theme="light"]) [style*="color: #666"] { color: #999 !important; }
+html:not([data-theme="light"]) [style*="color:#555"],
+html:not([data-theme="light"]) [style*="color: #555"] { color: #999 !important; }
+/* 너무 희미한 글자 약간 강화 */
+html:not([data-theme="light"]) .premium-disclaimer { color: #aaa !important; }
+
+/* ── 다크모드: 골드·브랜드 눈부심 제거 ── */
+html:not([data-theme="light"]) .gold,
+html:not([data-theme="light"]) .brand {
+  color: #b8923a !important;
+  text-shadow: none !important;
+}
+
+/* ── 다크모드: 열람·PDF 안내 ── */
+html:not([data-theme="light"]) .sajux-access-note {
+  background: rgba(20,18,14,0.85) !important;
+  border-color: rgba(199,167,106,0.25) !important;
+  color: #c8c0b0 !important;
+}
+
+/* ── 라이트모드: 텍스트 대비 강화 ── */
 html[data-theme="light"] body,
 html[data-theme="light"] .report-chapter,
 html[data-theme="light"] .card,
@@ -34,52 +70,110 @@ html[data-theme="light"] .part-title,
 html[data-theme="light"] p,
 html[data-theme="light"] li,
 html[data-theme="light"] .ii-text,
-html[data-theme="light"] .ii-text p {
-  color: #111111 !important;
-}
+html[data-theme="light"] .ii-text p,
+html[data-theme="light"] .ch-text { color: #111111 !important; }
 
-/* Headings slightly stronger in light mode */
 html[data-theme="light"] h1,
 html[data-theme="light"] h2,
 html[data-theme="light"] h3,
-html[data-theme="light"] .section-title {
-  color: #0b0b0b !important;
-  font-weight: 700;
-}
+html[data-theme="light"] .section-title,
+html[data-theme="light"] .ch-title { color: #0b0b0b !important; font-weight: 700; }
 
-/* Reduce any bright gold/glow in dark mode that causes eye strain */
-html:not([data-theme="light"]) .gold,
-html:not([data-theme="light"]) .brand {
-  color: #b8923a !important;
-  text-shadow: none !important;
-}
+/* 라이트모드: #bbb, #ccc, #ddd 등 밝은 인라인 색 → 어두운 색으로 */
+html[data-theme="light"] [style*="color:#bbb"],
+html[data-theme="light"] [style*="color: #bbb"] { color: #444 !important; }
+html[data-theme="light"] [style*="color:#ccc"],
+html[data-theme="light"] [style*="color: #ccc"] { color: #333 !important; }
+html[data-theme="light"] [style*="color:#ddd"],
+html[data-theme="light"] [style*="color: #ddd"] { color: #222 !important; }
+html[data-theme="light"] [style*="color:#aaa"],
+html[data-theme="light"] [style*="color: #aaa"] { color: #555 !important; }
+html[data-theme="light"] [style*="color:#999"],
+html[data-theme="light"] [style*="color: #999"] { color: #555 !important; }
+html[data-theme="light"] [style*="color:rgba(255,255,255,0.4"],
+html[data-theme="light"] [style*="color:rgba(255,255,255,0.3"] { color: #666 !important; }
+html[data-theme="light"] [style*="color:rgba(255,255,255,0.5"] { color: #555 !important; }
+html[data-theme="light"] [style*="color:rgba(255,255,255,0.6"],
+html[data-theme="light"] [style*="color:rgba(255,255,255,0.7"] { color: #333 !important; }
 
-/* Light mode: wuxing bar chart — clean white card */
+/* 라이트모드: 오행 차트 — 흰 카드 */
 html[data-theme="light"] .wuxing-bar-chart {
   background: #ffffff !important;
   border: 1px solid rgba(199,167,106,0.3) !important;
   box-shadow: 0 2px 12px rgba(0,0,0,0.06) !important;
 }
-html[data-theme="light"] .wuxing-bar-chart .wuxing-bar-row > div:first-child,
-html[data-theme="light"] .ch-text,
-html[data-theme="light"] .ch-text b {
-  color: #1c1814 !important;
-}
 
-/* Light mode: sajux-access-note (열람·PDF 안내) */
+/* 라이트모드: 열람·PDF 안내 */
 html[data-theme="light"] .sajux-access-note {
   background: #fffdf7 !important;
   border: 1px solid rgba(199,167,106,0.35) !important;
   color: #2a2420 !important;
 }
-html[data-theme="light"] .sajux-access-note strong {
-  color: #1c1814 !important;
+html[data-theme="light"] .sajux-access-note strong { color: #1c1814 !important; }
+
+/* 라이트모드: yearly-indicators 셀 */
+html[data-theme="light"] .yearly-ind-cell {
+  background: #ffffff !important;
+  border: 1px solid rgba(28,24,18,0.1) !important;
+}
+html[data-theme="light"] .yearly-ind-val { color: #1c1814 !important; }
+
+/* ── 4대 지표 그리드: 항상 2×2 유지 ── */
+.yearly-indicators-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 8px 10px !important;
 }
 
-/* Dark mode: sajux-access-note */
-html:not([data-theme="light"]) .sajux-access-note {
-  background: rgba(20,18,14,0.85) !important;
-  border-color: rgba(199,167,106,0.25) !important;
-  color: #c8c0b0 !important;
+/* ── 파트 헤더 제목: 문장형 폰트 → 명확한 헤딩 스타일 ── */
+.part-header-title {
+  font-size: 22px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.3px !important;
+  line-height: 1.3 !important;
 }
 
+/* ── PDF 인쇄: 카드 단위로 끊기 ── */
+@media print {
+  /* 각 챕터/카드는 내부에서 쪼개지지 않도록 */
+  .report-chapter,
+  .yearly-card,
+  .monthly-card,
+  .card,
+  .inner-card,
+  .vip-module-card,
+  .glass-panel,
+  .sajux-access-note,
+  .inline-interp {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+  /* 파트 헤더는 항상 새 페이지에서 시작 */
+  .part-header-block {
+    page-break-before: always !important;
+    break-before: page !important;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+  }
+  /* 챕터 제목 다음 내용이 이어지도록 */
+  .ch-title, h2, h3, .section-title {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+  }
+  /* 4대 지표 그리드 인쇄 시에도 2×2 유지 */
+  .yearly-indicators-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+  /* 인쇄 배경 복원 */
+  .card, .yearly-card, .monthly-card, .inner-card,
+  .detail-box, .jijanggan, div[class*="card"], div[class*="box"] {
+    background: #ffffff !important;
+    border: 1px solid #cccccc !important;
+    color: #111111 !important;
+  }
+  .sajux-access-note {
+    background: #fffdf7 !important;
+    color: #2a2420 !important;
+    border: 1px solid rgba(199,167,106,0.4) !important;
+  }
+}
