@@ -662,7 +662,13 @@ function renderPersonCard(prefix, info, saju) {
 
   nameEl.textContent = info.name;
   const ds = saju.dayStem, db = saju.dayBranch;
-  iljuEl.innerHTML = `<span class="${HAN_COLOR[ds]}">${ds}</span><span class="${HAN_COLOR[db]}">${db}</span> <span style="font-size:13px;color:var(--text-dim);">${HAN_KOR[ds]}${HAN_KOR[db]}</span>`;
+  (function(){
+    var dsWater = (ds==='壬'||ds==='癸');
+    var dbWater = (db==='子'||db==='亥');
+    var dsStroke = dsWater ? '-webkit-text-stroke:0.5px rgba(255,255,255,0.7);paint-order:stroke fill;' : '';
+    var dbStroke = dbWater ? '-webkit-text-stroke:0.5px rgba(255,255,255,0.7);paint-order:stroke fill;' : '';
+    iljuEl.innerHTML = `<span class="${HAN_COLOR[ds]}" style="font-family:'Noto Sans KR',sans-serif;font-weight:300;${dsStroke}">${ds}</span><span class="${HAN_COLOR[db]}" style="font-family:'Noto Sans KR',sans-serif;font-weight:300;${dbStroke}">${db}</span> <span style="font-size:13px;color:var(--text-dim);">${HAN_KOR[ds]}${HAN_KOR[db]}</span>`;
+  })();
   metaEl.innerHTML  = `${saju.solarYear}년생 · ${info.gender==='male'?'남':'여'} · ${saju.strength}`;
 
   // 원국 8자 만세력 표
@@ -690,34 +696,39 @@ function renderPersonCard(prefix, info, saju) {
   }
   const KOR_MAP = {'甲':'갑','乙':'을','丙':'병','丁':'정','戊':'무','己':'기','庚':'경','辛':'신','壬':'임','癸':'계','子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해'};
 
+  function _hanjaStyle(ch){
+    var isWater = (ch==='壬'||ch==='癸'||ch==='子'||ch==='亥');
+    var stroke = isWater ? '-webkit-text-stroke:0.5px rgba(255,255,255,0.7);paint-order:stroke fill;' : '';
+    return "font-family:'Noto Sans KR',sans-serif;font-weight:300;font-size:22px;" + stroke;
+  }
   pillarsEl.innerHTML = `
-    <table style="width:100%;border-collapse:collapse;margin-top:6px;font-size:11px;">
-      <tr style="border-bottom:1px solid rgba(199,167,106,0.2);">
-        <td style="padding:3px 2px;color:#555;font-size:9px;width:36px;"></td>
-        ${order.map((i,li)=>`<td style="text-align:center;padding:3px 4px;color:var(--gold);font-size:9px;font-weight:700;">${labels[li]}</td>`).join('')}
+    <table style="width:100%;border-collapse:collapse;margin-top:8px;table-layout:fixed;">
+      <tr style="border-bottom:1px solid rgba(199,167,106,0.22);">
+        <td style="padding:5px 2px;width:42px;"></td>
+        ${order.map((i,li)=>`<td style="text-align:center;padding:5px 4px;color:var(--gold);font-size:10.5px;font-weight:600;letter-spacing:0.04em;">${labels[li]}</td>`).join('')}
       </tr>
-      <tr style="border-bottom:1px solid rgba(255,255,255,0.03);">
-        <td style="color:#555;font-size:9px;padding:3px 2px;">십성</td>
+      <tr style="border-bottom:1px solid rgba(128,128,128,0.10);">
+        <td style="color:var(--text-dim);font-size:10px;padding:5px 2px;font-weight:600;">십성</td>
         ${order.map((i,li)=>{
           const p = saju.pillars[i];
           const ss = li===2 ? '일원' : getSS(ds, p.h[0]);
-          return `<td style="text-align:center;padding:2px 3px;"><span style="font-size:9px;background:rgba(199,167,106,0.08);color:#aaa;padding:1px 4px;border-radius:6px;">${ss}</span></td>`;
+          return `<td style="text-align:center;padding:3px 3px;"><span style="font-size:10px;background:rgba(199,167,106,0.08);color:var(--text-soft);padding:1px 6px;border-radius:6px;">${ss}</span></td>`;
         }).join('')}
       </tr>
-      <tr style="border-bottom:1px solid rgba(255,255,255,0.03);">
-        <td style="color:#555;font-size:9px;padding:3px 2px;">천간</td>
+      <tr style="border-bottom:1px solid rgba(128,128,128,0.10);">
+        <td style="color:var(--text-dim);font-size:10px;padding:5px 2px;font-weight:600;">천간</td>
         ${order.map((i,li)=>{
           const p = saju.pillars[i];
           const col = HAN_COLOR[p.h[0]]||'';
-          return `<td style="text-align:center;padding:4px 2px;"><span class="${col}" style="font-size:18px;font-weight:900;">${p.h[0]}</span><br><span style="font-size:8px;color:#555;">${KOR_MAP[p.h[0]]||''}</span></td>`;
+          return `<td style="text-align:center;padding:6px 2px;"><span class="${col}" style="${_hanjaStyle(p.h[0])}">${p.h[0]}</span><br><span style="font-size:9px;color:var(--text-dim);font-weight:500;">${KOR_MAP[p.h[0]]||''}</span></td>`;
         }).join('')}
       </tr>
       <tr>
-        <td style="color:#555;font-size:9px;padding:3px 2px;">지지</td>
+        <td style="color:var(--text-dim);font-size:10px;padding:5px 2px;font-weight:600;">지지</td>
         ${order.map((i,li)=>{
           const p = saju.pillars[i];
           const col = HAN_COLOR[p.h[1]]||'';
-          return `<td style="text-align:center;padding:4px 2px;"><span class="${col}" style="font-size:18px;font-weight:900;">${p.h[1]}</span><br><span style="font-size:8px;color:#555;">${KOR_MAP[p.h[1]]||''}</span></td>`;
+          return `<td style="text-align:center;padding:6px 2px;"><span class="${col}" style="${_hanjaStyle(p.h[1])}">${p.h[1]}</span><br><span style="font-size:9px;color:var(--text-dim);font-weight:500;">${KOR_MAP[p.h[1]]||''}</span></td>`;
         }).join('')}
       </tr>
     </table>`;
@@ -818,6 +829,8 @@ function compatVoiceLead(topic, ctx) {
 }
 
 function buildRelPanels(params, a, b, result) {
+  // 궁합 챕터 카운터 리셋 — 인사 중복 방지
+  if (typeof _sajuxCompatChapterCount === 'function') { try { _sajuxCompatChapterCount(true); } catch(e){} }
   const compatCtx = buildCompatCtx(params, a, b, result);
   window.__compatCtx = compatCtx;
   const voice = function(topic) { return compatVoiceLead(topic, compatCtx); };
@@ -925,10 +938,10 @@ function buildRelPanels(params, a, b, result) {
         `<div class="insight-card" style="border-left:3px solid ${color};margin-bottom:12px;">
           <div class="tag" style="color:${color};">${label} — ${aName}님 ${age}~${endAge}세 (${bName}님 ${age+(parseInt(bYear||0)-parseInt(aYear||0))}~${endAge+(parseInt(bYear||0)-parseInt(aYear||0))}세)</div><br>
           ${isGood
-            ? '<p style="font-size:13.5px;color:#bbb;line-height:1.85;margin:0;"><strong>✦ 관계 황금기</strong><br>' + (typeof compatCrisisNarrative === 'function' ? compatCrisisNarrative(oh, true, false, age) : ev.b) + '<br><br>이 시기에 함께 내린 결정이 이후 10년을 만듭니다.</p>'
+            ? '<p style="font-size:13.5px;color:var(--text-soft);line-height:1.85;margin:0;"><strong>✦ 관계 황금기</strong><br>' + (typeof compatCrisisNarrative === 'function' ? compatCrisisNarrative(oh, true, false, age) : ev.b) + '<br><br>이 시기에 함께 내린 결정이 이후 10년을 만듭니다.</p>'
             : isBad
-            ? '<p style="font-size:13.5px;color:#bbb;line-height:1.85;margin:0;"><strong>⚠ 조율기</strong><br>' + (typeof compatCrisisNarrative === 'function' ? compatCrisisNarrative(oh, false, true, age) : ev.c) + '<br><br>갈등 날엔 <strong>하루 쿨다운</strong> 후 대화하십시오.</p>'
-            : '<p style="font-size:13.5px;color:#bbb;line-height:1.85;margin:0;">' + (typeof compatCrisisNarrative === 'function' ? compatCrisisNarrative(oh, false, false, age) : '안정기 — 관계 점검에 좋습니다.') + '</p>'
+            ? '<p style="font-size:13.5px;color:var(--text-soft);line-height:1.85;margin:0;"><strong>⚠ 조율기</strong><br>' + (typeof compatCrisisNarrative === 'function' ? compatCrisisNarrative(oh, false, true, age) : ev.c) + '<br><br>갈등 날엔 <strong>하루 쿨다운</strong> 후 대화하십시오.</p>'
+            : '<p style="font-size:13.5px;color:var(--text-soft);line-height:1.85;margin:0;">' + (typeof compatCrisisNarrative === 'function' ? compatCrisisNarrative(oh, false, false, age) : '안정기 — 관계 점검에 좋습니다.') + '</p>'
           }
         </div>`
       );
@@ -1041,17 +1054,17 @@ function buildRelPanels(params, a, b, result) {
         <div style="background:rgba(0,0,0,0.2);border-radius:10px;padding:14px 12px;">
           <div style="font-size:11px;color:var(--gold);font-weight:700;margin-bottom:6px;">${aName}님의 자녀 ${aChild.emoji}</div>
           <div style="font-size:9px;color:#7ab8d4;margin-bottom:8px;">자녀궁 ${aTB}</div>
-          <p style="font-size:12px;color:#ccc;line-height:1.75;margin:0;">${aChild.txt}</p>
+          <p style="font-size:12px;color:var(--text-soft);line-height:1.75;margin:0;">${aChild.txt}</p>
         </div>
         <div style="background:rgba(0,0,0,0.2);border-radius:10px;padding:14px 12px;">
           <div style="font-size:11px;color:var(--gold);font-weight:700;margin-bottom:6px;">${bName}님의 자녀 ${bChild.emoji}</div>
           <div style="font-size:9px;color:#7ab8d4;margin-bottom:8px;">자녀궁 ${bTB}</div>
-          <p style="font-size:12px;color:#ccc;line-height:1.75;margin:0;">${bChild.txt}</p>
+          <p style="font-size:12px;color:var(--text-soft);line-height:1.75;margin:0;">${bChild.txt}</p>
         </div>
       </div>
       <div style="background:rgba(199,167,106,0.06);border-left:3px solid var(--gold);padding:12px 14px;border-radius:0 8px 8px 0;">
         <div style="font-size:10px;color:var(--gold);margin-bottom:6px;">두 사람의 자녀궁 관계</div>
-        <p style="font-size:12.5px;color:#ddd;line-height:1.75;margin:0;">${ZIWEI_CHILD_BOND[bondType]}</p>
+        <p style="font-size:12.5px;color:var(--text);line-height:1.75;margin:0;">${ZIWEI_CHILD_BOND[bondType]}</p>
       </div>
     </div>`;
 
