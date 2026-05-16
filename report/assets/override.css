@@ -66,3 +66,20 @@ html[data-theme="light"] .ch-text b {
   color: #1c1814 !important;
 }
 
+/* Light mode: sajux-access-note (열람·PDF 안내) */
+html[data-theme="light"] .sajux-access-note {
+  background: #fffdf7 !important;
+  border: 1px solid rgba(199,167,106,0.35) !important;
+  color: #2a2420 !important;
+}
+html[data-theme="light"] .sajux-access-note strong {
+  color: #1c1814 !important;
+}
+
+/* Dark mode: sajux-access-note */
+html:not([data-theme="light"]) .sajux-access-note {
+  background: rgba(20,18,14,0.85) !important;
+  border-color: rgba(199,167,106,0.25) !important;
+  color: #c8c0b0 !important;
+}
+
