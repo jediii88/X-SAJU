@@ -306,9 +306,76 @@ html[data-theme="light"] .vip-module-item {
 html[data-theme="light"] .vip-module-title { color: #8a6218 !important; }
 html[data-theme="light"] .vip-module-desc  { color: #2a2218 !important; }
 
-/* 만세력 테이블 라이트 */
-html[data-theme="light"] .vip-manse-title { color: #7a5a14 !important; }
-html[data-theme="light"] table td         { color: #1a1510 !important; }
+/* ─────────────────────────────────
+   라이트모드 — toc-page / 목차 강제 수정
+───────────────────────────────── */
+html[data-theme="light"] .toc-page,
+html[data-theme="light"] .book-foreword-page {
+  color: #1a1510 !important;
+}
+html[data-theme="light"] .toc-page [style*="color:#fff"],
+html[data-theme="light"] .toc-page [style*="color: #fff"],
+html[data-theme="light"] .toc-page [style*="color:white"] { color: #0d0a06 !important; }
+html[data-theme="light"] .toc-page [style*="color:#ddd"]  { color: #383028 !important; }
+html[data-theme="light"] .toc-page [style*="color:#777"]  { color: #6a6058 !important; }
+html[data-theme="light"] .toc-page [style*="color:#888"]  { color: #706860 !important; }
+html[data-theme="light"] .toc-page [style*="color:#666"]  { color: #5a5248 !important; }
+
+/* 연간 세운 카드 라이트 */
+html[data-theme="light"] .yearly-card { color: #1a1510 !important; }
+html[data-theme="light"] .yearly-card [style*="color:#ddd"] { color: #383028 !important; }
+html[data-theme="light"] .yearly-card [style*="color:#ccc"] { color: #484038 !important; }
+
+/* 월운 카드 라이트 */
+html[data-theme="light"] .monthly-card { color: #1a1510 !important; }
+html[data-theme="light"] .monthly-card [style*="color:#ddd"] { color: #383028 !important; }
+html[data-theme="light"] .monthly-card [style*="color:#ccc"] { color: #484038 !important; }
+
+/* 일반 report-chapter 내 어두운 하드코딩 색 라이트모드 보정 */
+html[data-theme="light"] .report-chapter [style*="color:#ddd"] { color: #383028 !important; }
+html[data-theme="light"] .report-chapter [style*="color:#ccc"] { color: #484038 !important; }
+html[data-theme="light"] .report-chapter [style*="color:#bbb"] { color: #555048 !important; }
+html[data-theme="light"] .report-chapter [style*="color:#777"] { color: #6a6058 !important; }
+html[data-theme="light"] .report-chapter [style*="color:#888"] { color: #706860 !important; }
+html[data-theme="light"] .report-chapter [style*="color:#999"] { color: #686058 !important; }
+
+/* 지장간 셀 라이트모드 */
+html[data-theme="light"] .vip-hanja.wood  { color: var(--wood) !important; -webkit-text-stroke: 0 !important; }
+html[data-theme="light"] .vip-hanja.fire  { color: var(--fire) !important; -webkit-text-stroke: 0 !important; }
+html[data-theme="light"] .vip-hanja.earth { color: var(--earth) !important; -webkit-text-stroke: 0 !important; }
+html[data-theme="light"] .vip-hanja.metal { color: var(--metal) !important; -webkit-text-stroke: 0 !important; }
+html[data-theme="light"] .vip-hanja.water { color: #0d0d0d !important; -webkit-text-stroke: 0 !important; }
+
+/* 표 셀 라이트모드 */
+html[data-theme="light"] .vip-sip-cell { color: #3a3028 !important; }
+html[data-theme="light"] .jijanggan-sip { color: #6a6058 !important; }
+
+/* 만세력 표 행 구분선 라이트 */
+html[data-theme="light"] table tr[style*="border-bottom:1px solid rgba(255,255,255"] {
+  border-bottom-color: rgba(0,0,0,0.08) !important;
+}
+
+/* 스티키 네비게이션 라이트 */
+html[data-theme="light"] .sticky-part-nav,
+html[data-theme="light"] .spn-item {
+  background: rgba(244,239,230,0.96) !important;
+  color: #2a2218 !important;
+  border-color: rgba(0,0,0,0.10) !important;
+}
+html[data-theme="light"] .spn-item.active,
+html[data-theme="light"] .spn-item:hover { color: #7a5a14 !important; }
+
+/* 플로팅 목차 라이트 */
+html[data-theme="light"] #floating-toc {
+  background: rgba(255,255,255,0.97) !important;
+  border-color: rgba(0,0,0,0.10) !important;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.10) !important;
+}
+
+/* VIP 증거 블록 라이트 */
+html[data-theme="light"] .vip-evidence-block { color: #1a1510 !important; }
+html[data-theme="light"] .vip-manse-title     { color: #7a5a14 !important; }
+html[data-theme="light"] table td { color: #1a1510 !important; }
 
 /* ─────────────────────────────────
    PDF 인쇄 — 카드 단위 끊기
