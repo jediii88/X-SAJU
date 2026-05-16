@@ -169,19 +169,14 @@ function buildMetaphorHookTitle(data) {
     var parts = getIljuImageParts(data);
     if (!parts.scene) {
         var nm = nmNormalize(data.name || '') || '당신';
-        return nm + '님, 겉과 속이 다른 매력이 겹쳐 있는 격입니다';
+        return nm + '의 원국 — 겉과 속이 교차하는 지점';
     }
-    if (parts.trait) return parts.scene + '이신데, ' + parts.trait + ' 분입니다';
-    return parts.scene + '이신 격입니다';
+    // 제목은 물상(scene)만 — 짧고 선명하게
+    return parts.scene;
 }
 /** 인생 일대기 등 — 은유 훅과 겹치지 않는 섹션 제목 */
 function buildLifePanoramaTitle(data) {
-    var nm = nmNormalize(data.name || '') || '고객';
-    return pickVoiceLine([
-        nm + '님, 태어남에서 귀결까지 네 장의 풍경입니다',
-        '인생은 한 권의 대서사 — 지금 읽을 장면이 정해져 있습니다',
-        '원국이 그려 주는 인생의 네 계절, 차례대로 짚어 보겠습니다'
-    ], (data.dayStem || '') + (data.dayBranch || '') + 'lifePanorama');
+    return '인생 일대기';
 }
 
 /** 명리 브릿지 한 줄 + 본문 */
@@ -203,9 +198,10 @@ function voiceObserveEnd(seed) {
 function buildChapterHead(metaphorTitle, sectionLabel, opts) {
     opts = opts || {};
     var extra = opts.extraStyle || '';
-    return '<h3 class="ch-title" style="font-family:\'Noto Sans KR\',sans-serif;font-size:20px;font-weight:800;line-height:1.45;margin:0 0 6px;' + extra + '">'
-        + escHtmlAttr(metaphorTitle) + '</h3>'
-        + (sectionLabel ? '<p class="ch-section-label" style="font-size:11px;letter-spacing:0.1em;color:rgba(199,167,106,0.75);margin:0 0 14px;font-weight:700;">' + escHtmlAttr(sectionLabel) + '</p>' : '');
+    // 섹션 라벨(넘버·카테고리)은 위에 작게, 핵심 제목은 크게
+    return (sectionLabel ? '<p class="ch-section-label" style="font-size:10px;letter-spacing:0.14em;color:rgba(199,167,106,0.65);margin:0 0 6px;font-weight:700;text-transform:uppercase;">' + escHtmlAttr(sectionLabel) + '</p>' : '')
+        + '<h3 class="ch-title" style="font-family:\'Noto Sans KR\',sans-serif;font-size:22px;font-weight:800;line-height:1.3;margin:0 0 14px;' + extra + '">'
+        + escHtmlAttr(metaphorTitle) + '</h3>';
 }
 
 var SAJUX_SURFACE_LINES = [
@@ -241,115 +237,39 @@ function getDominantSipseong(data) {
     return sorted[0] || '정재';
 }
 
-/** 주제별 은유 제목 (사주아이 12유형 응용, 프리미엄 톤) */
+/** 주제별 섹션 제목 — 2~5단어 명사구, ~이네요/~이시군요 금지 */
 function buildTopicMetaphorTitle(topic, data) {
-    var nm = nmNormalize(data.name || '') || '고객';
-    var seed = nm + (topic || '') + (data.dayStem || '') + (data.dayBranch || '');
-    var prof = getIljuProfile(data.dayStem, data.dayBranch);
-    var img = prof && prof.image ? String(prof.image) : '';
     var oh = getMinMaxOh(data);
     var OH_KR = { wood: '목', fire: '화', earth: '토', metal: '금', water: '수' };
     var mainSip = getDominantSipseong(data);
-    var pools = {
-        basic: function () {
-            if (img) return buildMetaphorHookTitle(data);
-            return pickVoiceLine([
-                nm + '님, 태어난 순간부터 이야기가 겹겹이 쌓인 격이네요',
-                '원국 한 장에 담긴 삶의 온도가 꽤 선명한 편이시군요'
-            ], seed);
-        },
-        wuxing: function () {
+    var isStrong = (data.strengthText || '').indexOf('신강') >= 0 || (data.strengthText || '').indexOf('강') >= 0;
+
+    var titles = {
+        basic:    function() { return buildMetaphorHookTitle(data); }, // 일주 물상 — 짧게
+        wuxing:   function() {
             var maxK = OH_KR[oh.maxW] || '오행';
             var minK = OH_KR[oh.minW] || '기운';
-            if ((oh.pct[oh.minW] || 0) === 0) return maxK + ' 기운은 넘치는데 ' + minK + ' 기운은 비어 있는, 소리 없는 아우성이 가슴속에 꽉 찬 격이네요';
-            return maxK + '의 바람이 세게 불지만 ' + minK + ' 쪽 숨구멍은 얇은, 균형 잡기가 숙제인 사주시군요';
+            return (oh.pct[oh.minW] === 0) ? maxK + ' 과다 · ' + minK + ' 부재' : maxK + ' 과다 · ' + minK + ' 부족';
         },
-        sipseong: function () {
-            return '일터와 돈 앞에서 먼저 튀어나오는 ' + mainSip + ' 축, 그 뒤에 숨은 반응이 있는 격이네요';
-        },
-        wealth: function () {
-            return pickVoiceLine([
-                '돈의 물길은 열려 있는데, 지키는 데 쓰는 힘이 더 큰 타입이시군요',
-                '사방에 재물 기운이 깔려 있으나 그만큼 고단함도 따르는 격이네요',
-                '쌓는 재능과 쓰는 속도가 같이 달리는, 현실 감각이 강한 사주예요'
-            ], seed + 'w');
-        },
-        career: function () {
-            return pickVoiceLine([
-                '무대는 넓은데 스스로를 묶는 끈도 굵은, 일과 소명이 충돌하는 격이네요',
-                '이름을 걸 만한 자리를 찾는 쪽으로 에너지가 모이는 타입이시군요',
-                '조직의 판 위에서도 독립의 호흡을 잃지 않는 사주시네요'
-            ], seed + 'c');
-        },
-        love: function () {
-            return pickVoiceLine([
-                '마음은 깊은데 표현은 조심스러운, 사랑의 리듬이 느린 격이네요',
-                '강한 인연에 끌리면서도 존중받길 바라는, 이중적인 로맨티스트 기질이시군요',
-                '가까워질수록 책임이 커지는, 애정운에 무게가 실린 사주예요'
-            ], seed + 'l');
-        },
-        health: function () {
-            return pickVoiceLine([
-                '몸이 보내는 신호를 먼저 듣는 편이시면 오래 가는 타입이에요',
-                '힘을 쓰는 만큼 회복 루틴이 필요한, 체력 관리가 숙제인 격이네요',
-                '겉건강보다 속 피로가 먼저 오는, 리듬형 체질이시군요'
-            ], seed + 'h');
-        },
-        hidden: function () {
-            return pickVoiceLine([
-                '겉으로 드러나지 않는 뿌리가 삶을 움직이는, 지장간이 깊은 격이네요',
-                '말하지 않아도 마음속 엔진은 돌아가는, 숨은 기둥이 강한 타입이시군요',
-                '내면의 욕망이 천천히 깨어나는, 잠재력이 두꺼운 사주예요'
-            ], seed + 'j');
-        },
-        daeun: function () {
-            return pickVoiceLine([
-                '인생 계절이 바뀔 때마다 옷갈이를 해야 하는, 10년 단위 전략가시군요',
-                '대운이라는 긴 파도 위에 올라타는 법을 배우는 중인 격이네요',
-                '한 번의 승부보다 긴 호흡이 답인, 계절형 운명이시군요'
-            ], seed + 'd');
-        },
-        seyun: function () {
-            return pickVoiceLine([
-                '올해의 하늘은 말보다 숫자로 먼저 말하는 해시군요',
-                '세운이라는 1년짜리 날씨를 읽는 눈이 필요한 시기네요',
-                '짧은 승부와 긴 방어가 갈리는, 연도별 갈림길이에요'
-            ], seed + 's');
-        },
-        monthly: function () {
-            return '한 해 안에서도 달마다 숨 쉬는 법이 바뀌는, 월운 지도가 필요한 시기네요';
-        },
-        remedy: function () {
-            return pickVoiceLine([
-                '운을 바꾸려면 장식보다 루틴이 먼저인, 실행형 개운법이 맞는 타입이시군요',
-                '색과 방향은 보조고, 습관이 살길을 여는 사주시네요',
-                '마음가짐과 행동이 같이 움직일 때 운이 붙는 격이네요'
-            ], seed + 'r');
-        },
-        current: function () {
-            return '지금 이 순간, 대운·세운·월운이 겹쳐 말을 거는 시기시군요';
-        },
-        master: function () {
-            return nm + '님 원국을 한 바퀴 돌며, 삶의 큰 줄기를 짚는 시간이네요';
-        },
-        relation: function () {
-            return '사주 안의 인연 줄이 서로 당기고 밀치는, 관계 지도가 드러나는 격이네요';
-        },
-        shinsal: function () {
-            return '신살이라는 이름의 바람이 어디로 불어오는지 짚어볼 차례네요';
-        },
-        strength: function () {
-            var st = (data.strengthText || '').indexOf('신강') >= 0;
-            return st ? '에너지가 넘치는 만큼 방향 잡기가 관건인, 신강의 기운이시군요' : '혼자 버티기보다 맞는 손을 잡을 때 빛나는, 신약에 가까운 흐름이네요';
-        },
-        ziwei: function () {
-            return '별자리 지도로 삶의 무대 배치를 다시 보는, 자미두수 별첨이네요';
-        },
-        appendix: function () {
-            return '성향의 온도를 숫자가 아닌 말로 읽는, 마무리 해석이네요';
-        }
+        sipseong: function() { return mainSip + ' 중심 — 업무 패턴'; },
+        wealth:   function() { return '재물 전략'; },
+        career:   function() { return '직업 · 소명'; },
+        love:     function() { return '애정 · 인연'; },
+        health:   function() { return '건강 · 회복'; },
+        hidden:   function() { return '지장간 · 내면'; },
+        daeun:    function() { return '대운 흐름'; },
+        seyun:    function() { return '세운 분석'; },
+        monthly:  function() { return '월운 지도'; },
+        remedy:   function() { return '개운법'; },
+        current:  function() { return '현재 운세 종합'; },
+        master:   function() { return '원국 요약'; },
+        relation: function() { return '합 · 충 · 형 · 파'; },
+        shinsal:  function() { return '신살'; },
+        strength: function() { return isStrong ? '신강(身强) 원국' : '신약(身弱) 원국'; },
+        ziwei:    function() { return '자미두수 청사진'; },
+        appendix: function() { return '성향 분석'; }
     };
-    var fn = pools[topic];
+    var fn = titles[topic];
     if (fn) return fn();
     return buildMetaphorHookTitle(data);
 }
@@ -609,7 +529,7 @@ function buildInlineWuxingSummaryHtml(data) {
     var body = buildSajuKidStyleOpener(data, inner) + (excessText ? ' ' + voicePolishParagraph(data, excessText) : '');
     return voiceInlineInterpHeader('wuxing', data)
         + '<div class="inline-interp"><div class="ii-label">✦ 오행 해석</div>'
-        + '<div class="ii-title">' + escHtmlAttr(ohKr + ' 기운이 삶의 리듬을 잡고 있어요') + '</div>'
+        + '<div class="ii-title">' + escHtmlAttr(ohKr + ' 오행 — 에너지 분포') + '</div>'
         + '<div class="ii-text"><p style="font-size:13.5px;color:#bbb;line-height:1.85;margin:0;">' + boldStarsToStrong(body) + '</p></div></div>';
 }
 
