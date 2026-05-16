@@ -483,20 +483,11 @@ function buildCompatVoiceSection(topic, ctx) {
 }
 
 function buildVipModuleTitles(data, daeunLabel, curY, curM) {
-    var nm = nmNormalize(data.name || '') || '고객';
-    var seed = (data.dayStem || '') + (data.dayBranch || '') + daeunLabel + curY;
     return [
-        pickVoiceLine([
-            '모듈 1 · 방향 선택',
-            '모듈 1 · 에너지 응축',
-            nm + '님, 쏠림을 줄이는 것이 우선입니다'
-        ], seed + 'v1'),
-        pickVoiceLine([
-            '모듈 2 · 10년 구조 설계',
-            '모듈 2 · 구조 설계 시기'
-        ], seed + 'v2'),
-        '모듈 3 · 연간 전술 선택',
-        '모듈 4 · 실행 압축'
+        '지금 내 에너지의 방향',
+        daeunLabel + ' — 이 10년의 과제',
+        curY + '년에 집중할 것',
+        curM + '월 행동 지침'
     ];
 }
 
@@ -2935,23 +2926,25 @@ function generateDeepReport(data) {
     html += safeCall(()=>buildPremiumExecutiveSummary(data), 'premium');
 
     // ── 1부: 나라는 사람 ──
-    // 일주 프로파일 카드(히어로) + 원국·기질 분석
+    var part1Body = '';
+    part1Body += safeCall(()=>buildIljuProfileCard(data)||'', 'ilju-card');
+    part1Body += safeCall(()=>buildChapter1_Basic(data)||'', 'ch1-basic');
+    part1Body += safeCall(()=>buildVipEvidenceBlock(data)||'', 'vip-evidence');
+    part1Body += safeCall(()=>buildLifePanoramaSection(data)||'', 'life-panorama');
+    part1Body += safeCall(()=>buildChapter2_Wuxing(data)||'', 'ch2-wuxing');
+    part1Body += safeCall(()=>buildChapter3_Sipseong(data)||'', 'ch3-sip');
     html += safeCall(()=>wrapPartSection(
         buildPartHeader(1,'나라는 사람','원국 · 기질 · 타고난 패턴','sec-part1-narrative'),
-        (buildIljuProfileCard(data)||'') +
-        (buildChapter1_Basic(data)||'') +
-        (buildVipEvidenceBlock(data)||'') +
-        (buildLifePanoramaSection(data)||'') +
-        (buildChapter2_Wuxing(data)||'') +
-        (buildChapter3_Sipseong(data)||'')
+        part1Body
     ), 'part1section');
 
     // ── 2부: 지금 이 시절 ──
-    // 대운 타임라인(히어로) + 대운 상세 + 세운 + 월운
+    var part2Body = '';
+    part2Body += safeCall(()=>buildDaeunTimeline(data)||'', 'daeun-timeline');
+    part2Body += safeCall(()=>buildDaewunLoop(data)||'', 'daewun-loop');
     html += safeCall(()=>wrapPartSection(
         buildPartHeader(2,'지금 이 시절','대운 위치 · 올해 · 이달','sec-part2-now'),
-        (buildDaeunTimeline(data)||'') +
-        (buildDaewunLoop(data)||'')
+        part2Body
     ), 'part2headerBlock');
     html += '<div class="seyun-premium-vertical" style="display:flex;flex-direction:column;gap:24px;width:100%;max-width:100%;box-sizing:border-box;">';
     html += safeCall(()=>buildChapter6_SeYun(data), 'ch6seyun');
@@ -2961,22 +2954,24 @@ function generateDeepReport(data) {
     html += safeCall(()=>buildChapter9_Monthly(data), 'ch9monthly');
 
     // ── 3부: 삶의 네 영역 ──
-    // 4대 영역 레이더(히어로) + 재물·직업·애정·건강 상세
+    var part3Body = '';
+    part3Body += safeCall(()=>buildFourDomainRadar(data)||'', 'four-radar');
+    part3Body += safeCall(()=>buildChapter4_Wealth(data)||'', 'ch4-wealth');
+    part3Body += safeCall(()=>buildChapter5_Career(data)||'', 'ch5-career');
+    part3Body += safeCall(()=>buildChapter6_Love(data)||'', 'ch6-love');
+    part3Body += safeCall(()=>buildChapter8_Health(data)||'', 'ch8-health');
     html += safeCall(()=>wrapPartSection(
         buildPartHeader(3,'삶의 네 영역','재물 · 직업 · 애정 · 건강','sec-part3-four'),
-        (buildFourDomainRadar(data)||'') +
-        (buildChapter4_Wealth(data)||'') +
-        (buildChapter5_Career(data)||'') +
-        (buildChapter6_Love(data)||'') +
-        (buildChapter8_Health(data)||'')
+        part3Body
     ), 'part3section');
 
     // ── 4부: 지금부터의 선택 ──
-    // 자미두수 + 개운법 체크리스트
+    var part4Body = '';
+    part4Body += '<div class="ziwei-appendix-block" style="margin-bottom:8px;">' + safeCall(()=>buildZiWeiDestinyBlueprintSection(data)||'', 'ziwei') + '</div>';
+    part4Body += safeCall(()=>buildChapter9_Remedy(data)||'', 'ch9-remedy');
     html += safeCall(()=>wrapPartSection(
         buildPartHeader(4,'지금부터의 선택','개운법 · 체크리스트 · 청사진','sec-part4-final'),
-        '<div class="ziwei-appendix-block" style="margin-bottom:8px;">' + (buildZiWeiDestinyBlueprintSection(data)||'') + '</div>' +
-        (buildChapter9_Remedy(data)||'')
+        part4Body
     ), 'part4section');
 
     document.getElementById('report-container').innerHTML = html;
@@ -3722,26 +3717,30 @@ function buildPremiumExecutiveSummary(data) {
     var mTrend = trendLabel(mScore);
     var yLabel = (HAN_KOR[ygz[0]] || ygz[0] || '-') + (HAN_KOR[ygz[1]] || ygz[1] || '-') + '년';
 
-    var coreFusion = nmKkeEunNeun(nm) + ' 환경이 바뀔수록 숫자와 사람 약속이 한꺼번에 몰리는 구조가 있습니다. 그건 성격 문제가 아니라, **추진력과 정밀함이 동시에 요구되는 커리어 패턴**과 별자리 기반 「' + palaceLabel + '」 무대가 겹친 탓입니다. <strong>흔들림을 기다리지 말고 변화의 순서를 직접 설계하십시오.</strong>';
+    var coreFusion = nmKkeEunNeun(nm) + ' 환경이 바뀔수록 해야 할 일이 한꺼번에 몰리는 구조가 있습니다. 이건 성격 문제가 아니라, ' + nmUi(nm) + ' 사주가 그렇게 설계되어 있기 때문입니다. <strong>지금 어디에 에너지를 쏟아야 할지를 이 리포트가 짚어드립니다.</strong>';
+
+    var OH_KR2 = {wood:'목(木)', fire:'화(火)', earth:'토(土)', metal:'금(金)', water:'수(水)'};
+    var yongFull = OH_KR2[data.yong] || (KN[data.yong] ? KN[data.yong]+' 기운' : '용신');
+    var giFull   = OH_KR2[data.gi]   || (KN[data.gi]   ? KN[data.gi]  +' 기운' : '기신');
 
     var pools = [
         {
-            m1: nmEunNeun(nm) + ' ' + iljuScene + '처럼 한 갈래로 에너지가 모이는 고출력 타입입니다. 연료가 넘칠수록 과열이 걱정되었을 수 있습니다. 【확장은 멈추고 ' + yongKr + ' 냉각만 가동】하십시오. ' + giKr + ' 방향의 충동 확장은 즉시 끊으십시오.',
-            m2: daeunLabel + '은 ' + dTrend + ' 국면입니다. 후퇴가 아니라 다음 20년 현금흐름을 위한 성벽입니다. 【인력·원가·의사결정 표준화 한 장】을 먼저 완성하십시오. 무리한 재진출보다 내부 시스템 고도화를 우선하십시오.',
-            m3: curY + '년(' + yLabel + ')은 ' + yTrend + ' 전술 구간입니다. 【11월 전까지 계약·브랜드 포지션·핵심 인맥 중 하나만】 종결하십시오. 미집행 데이터와 미완료 안건은 이번 주 안에 정리하십시오.',
-            m4: curM + '월은 ' + mTrend + ' 흐름입니다. 【다음 분기 실행 목록 3개로 압축】하십시오. 일정 블록·현금 점검·건강 루틴을 고정하고, 감정성 약속은 이번 달에는 열지 마십시오.'
+            m1: iljuScene + ' — 이 물상처럼 ' + nmUi(nm) + ' 에너지는 한 방향으로 모아질 때 진짜 힘이 납니다. 지금은 여러 가지를 동시에 하려는 분산을 줄이는 것이 먼저입니다.',
+            m2: daeunLabel + '은 ' + dTrend + ' 국면입니다. 지금 이 10년은 다음 20년을 위한 기반을 다지는 시기입니다. 크게 벌리기보다 내 것을 단단하게 만드는 쪽이 맞습니다.',
+            m3: curY + '년은 ' + yTrend + ' 흐름의 해입니다. 올해는 새로운 시작보다 이미 시작한 것을 마무리하는 데 집중할수록 결과가 좋습니다.',
+            m4: curM + '월은 ' + mTrend + ' 흐름입니다. 이달은 속도보다 정확도가 중요합니다. 연락처·계약·결제 흐름을 한 번 점검하고, 무리한 일정을 걷어내는 것이 우선입니다.'
         },
         {
-            m1: '한 줄 테제는 분명합니다. ' + iljuScene + '의 추진력은 이미 준비되어 있습니다. 산만한 시도가 아니라 ' + yongKr + ' 중심의 선택과 집중이 필요합니다. 【이번 주 신규 시도 0건】으로 시작하십시오.',
-            m2: daeunLabel + '은 향후 20년 복리 성과를 설계하는 구간입니다. 방어의 목적은 버티기가 아니라 재현 가능한 수익 모델입니다. 【조직 규칙·거래 기준·리스크 한도를 문서 한 장】에 적으십시오.',
-            m3: curY + '년(' + yLabel + ')은 실행 압축의 해입니다. 【계약·핵심 파트너·외부 신뢰 자산 중 하나만】 올해 안에 끝내십시오. 실행 없는 기획은 즉시 종료하십시오.',
-            m4: curM + '월은 다음 점프를 위한 준비 월입니다. 【회의·지출·관계를 각각 절반으로】 줄이십시오. 실행 전 검토표를 만들어 실수 비용을 선제적으로 차단하십시오.'
+            m1: iljuScene + ' — ' + nmUi(nm) + ' 추진력은 이미 충분합니다. 지금 필요한 건 더 많이 하는 것이 아니라, 가장 중요한 한 가지에 집중하는 것입니다.',
+            m2: daeunLabel + '의 핵심 방향은 ' + dTrend + '입니다. 이 10년 동안 쌓은 것이 앞으로 30년을 결정합니다. 지금은 버티기가 아니라 재현 가능한 습관과 구조를 만드는 시기입니다.',
+            m3: curY + '년은 ' + yTrend + ' 기운의 해입니다. 계약, 브랜드, 핵심 관계 중 하나를 올해 안에 확실히 정리해 두면 내년이 훨씬 가벼워집니다.',
+            m4: curM + '월은 ' + mTrend + ' 흐름입니다. 이달은 새로운 것을 시작하기보다 이미 진행 중인 것을 완성하는 데 에너지를 씁니다. 무리한 약속은 줄이고 체력과 수면부터 지키십시오.'
         },
         {
-            m1: '현재 엔진은 과열이 아니라 과분산이 문제입니다. ' + iljuScene + '의 강점을 하나의 수익 축으로 묶으십시오. ' + yongKr + ' 보강은 필수이며, ' + giKr + ' 방향의 감정적 확장은 즉시 멈추십시오. 【수익 축 이름을 한 단어로 적고 그 외는 거절】하십시오.',
-            m2: daeunLabel + '의 핵심 과제는 생존이 아니라 구조 업그레이드입니다. 방어는 공격 준비를 위한 정비 단계입니다. 【채널 축소·원가 숫자·역할 책임을 한 표에】 고정하십시오.',
-            m3: curY + '년(' + yLabel + ')은 시장 접점을 넓힐 타이밍입니다. 【제안서·가격·메시지 중 하나만】 이번 해 안에 재정렬하십시오. 실행 없는 기획은 부채이므로 즉시 종료하십시오.',
-            m4: curM + '월에는 가속보다 정렬이 우선입니다. 【연락처·계약서·결제 흐름 선점검】만 하십시오. 체력과 수면 리듬을 무너뜨리는 일정은 즉시 삭제하십시오.'
+            m1: iljuScene + ' — ' + nmUi(nm) + ' 강점은 이미 있습니다. 문제는 에너지가 여러 방향으로 흩어지는 것입니다. 가장 잘할 수 있는 하나를 먼저 선택하십시오.',
+            m2: daeunLabel + '은 ' + dTrend + ' 구간입니다. 지금의 10년은 공격이 아니라 내실을 다지는 시기입니다. 인력, 원가, 의사결정 흐름을 단순화할수록 다음 도약이 빨라집니다.',
+            m3: curY + '년은 ' + yTrend + ' 전술 구간입니다. 올해는 시장에 나를 알리기 좋은 해입니다. 제안, 가격, 메시지 중 하나를 올해 안에 정돈해 두십시오.',
+            m4: curM + '월은 ' + mTrend + ' 흐름입니다. 이달은 가속보다 정렬이 우선입니다. 연락처·계약·결제 흐름을 점검하고, 체력을 무너뜨리는 일정은 먼저 지우십시오.'
         }
     ];
 
@@ -3766,12 +3765,12 @@ function buildPremiumExecutiveSummary(data) {
         '<button type="button" class="sajux-pdf-wide-btn pdf-btn" onclick="window.print()">PDF 저장 (전체 너비)</button>' +
         '<p class="premium-thesis" style="margin:0 0 10px;font-size:14.5px;line-height:1.9;color:#efe9dc;font-weight:500;">' + escHtmlAttr(buildSajuKidStyleOpener(data)) + '</p>' +
         '<p class="premium-thesis" style="margin:0 0 14px;font-size:14.5px;line-height:1.9;color:#efe9dc;font-weight:600;">' + coreFusion + '</p>' +
-        '<div style="font-size:11px;color:var(--gold);letter-spacing:1px;margin:16px 0 8px;">4대 실행 모듈</div>' +
-        '<div class="vip-module-stack" style="margin:0;">' +
-        modules.map(function(m){
-            return '<div class="vip-module-item" style="margin-bottom:16px;border-left:3px solid #d4af37;padding-left:14px;">'
-                + '<div class="vip-module-title" style="color:#d4af37;font-weight:700;margin-bottom:6px;font-size:13.5px;font-family:\'Noto Serif KR\',serif;letter-spacing:0.02em;">' + escHtmlAttr(m.title) + '</div>'
-                + '<div class="vip-module-desc" style="color:#d8d3c9;line-height:1.88;font-size:13.5px;margin:0;">' + boldStarsToStrong(voicePolishParagraph(data, m.body)) + '</div>'
+        '<div style="font-size:11px;color:var(--gold);letter-spacing:1px;margin:16px 0 8px;">이 리포트가 전하는 핵심 4가지</div>' +
+        '<div class="vip-module-stack" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:0;">' +
+        modules.map(function(m, idx){
+            return '<div class="vip-module-item" style="padding:14px 16px;border-radius:10px;background:rgba(199,167,106,0.06);border:1px solid rgba(199,167,106,0.18);">'
+                + '<div class="vip-module-title" style="color:#d4af37;font-weight:700;margin-bottom:8px;font-size:12.5px;letter-spacing:0.02em;">' + escHtmlAttr(m.title) + '</div>'
+                + '<div class="vip-module-desc" style="color:#d8d3c9;line-height:1.8;font-size:13px;margin:0;">' + boldStarsToStrong(voicePolishParagraph(data, m.body)) + '</div>'
                 + '</div>';
         }).join('') +
         '</div>' +
