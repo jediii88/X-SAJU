@@ -4500,7 +4500,6 @@ function buildIljuProfileCard(data) {
 function buildDaeunTimeline(data) {
     const rows = data.daeunRows || data.daewunList || [];
     if (!rows.length) return '';
-
     const curAge = getClientAgeYearsAtReport(data) || 0;
     const OH_COLOR = {
         '甲':'#4a9e6a','乙':'#4a9e6a','丙':'#e05a2b','丁':'#e05a2b',
@@ -4533,6 +4532,8 @@ function buildDaeunTimeline(data) {
         const isPast = curAge >= age + 10;
         return {g, j, age, score, isCur, isPast};
     }).filter(r => r.g && r.j);
+
+    if (!items.length) return ''; // 렌더할 대운 셀이 없으면 빈 박스 방지
 
     const cells = items.map(r => {
         const col = OH_COLOR[r.g] || 'var(--gold)';
@@ -6125,6 +6126,9 @@ function buildChapter7_NextYears(data){
     function card(yr){
         return buildSeYunYearCardHtml(data, yr, {});
     }
+    var c1 = card(curY+1);
+    var c2 = card(curY+2);
+    if(!c1 && !c2) return ''; // 두 카드 모두 비면 빈 래퍼 방지
     var p1n = computeSeYunScorePack(data, curY + 1);
     var p2n = computeSeYunScorePack(data, curY + 2);
     var h3n = (p1n && p2n) ? formatNextYearsChapterH3(curY + 1, p1n, curY + 2, p2n) : ('[ 11. ' + (curY + 1) + '·' + (curY + 2) + '년 ] — 앞선 두 해는 계약·현금·관계를 한 주에 섞지 마십시오');
@@ -6133,7 +6137,7 @@ function buildChapter7_NextYears(data){
     return '<div class="report-chapter chapter-start">'
         + chHeadNy + chIntroNy
         +'<div style="width:100%;box-sizing:border-box;display:flex;flex-direction:column;gap:16px;">'
-        +card(curY+1)+card(curY+2)
+        +c1+c2
         +'</div>'
         +'</div>';
 }
