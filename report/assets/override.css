@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════
-   SAJUX OVERRIDE v3
+   SAJUX OVERRIDE v4
    ▸ 다크모드 = "별이 보이는 우주" — 깊은 어둠, 빛나는 별 텍스트
    ▸ 라이트모드 = "도화지에 먹" — 따뜻한 종이, 선명한 먹 글씨
    ▸ 두 테마는 완전히 독립 적용. 서로 간섭 없음.
@@ -281,4 +281,95 @@ html[data-theme="light"] a { color: #5a4020 !important; }
   [style*="color:#ddd"], [style*="color:#ccc"], [style*="color:#bbb"],
   [style*="color:#aaa"], [style*="color:#d6dae2"], [style*="color:#e8dcc8"],
   [style*="color:rgba(255,255,255"] { color: #333 !important; }
+}
+
+/* ─────────────────────────────────────────────────────
+   신규 컴포넌트 스타일 — 일주 프로파일 카드
+───────────────────────────────────────────────────── */
+.ilju-profile-card {
+    position: relative;
+    transition: box-shadow 0.2s;
+}
+.ilju-profile-card:hover {
+    box-shadow: 0 4px 24px rgba(199,167,106,0.12) !important;
+}
+.ilju-kw-badge {
+    transition: background 0.15s, border-color 0.15s;
+}
+.ilju-kw-badge:hover {
+    background: rgba(255,255,255,0.1) !important;
+    border-color: rgba(199,167,106,0.4) !important;
+}
+[data-theme="light"] .ilju-profile-card {
+    background: linear-gradient(135deg, rgba(199,167,106,0.06), rgba(255,255,255,0)) !important;
+    border-color: rgba(0,0,0,0.08) !important;
+}
+[data-theme="light"] .ilju-kw-badge {
+    background: rgba(0,0,0,0.05) !important;
+    border-color: rgba(0,0,0,0.12) !important;
+    color: #333 !important;
+}
+[data-theme="light"] .ilju-profile-card p,
+[data-theme="light"] .ilju-profile-card div {
+    color: #222 !important;
+}
+
+/* ─────────────────────────────────────────────────────
+   신규 컴포넌트 스타일 — 대운 타임라인
+───────────────────────────────────────────────────── */
+.daeun-timeline-wrap {
+    overflow: visible;
+}
+.daeun-timeline-wrap > div:last-child {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(199,167,106,0.3) transparent;
+}
+.daeun-timeline-wrap > div:last-child::-webkit-scrollbar { height: 4px; }
+.daeun-timeline-wrap > div:last-child::-webkit-scrollbar-track { background: transparent; }
+.daeun-timeline-wrap > div:last-child::-webkit-scrollbar-thumb { background: rgba(199,167,106,0.3); border-radius: 2px; }
+.daeun-tl-cell {
+    cursor: default;
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+.daeun-tl-cell:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25) !important;
+}
+[data-theme="light"] .daeun-tl-cell {
+    background: rgba(0,0,0,0.04) !important;
+    border-color: rgba(0,0,0,0.10) !important;
+}
+[data-theme="light"] .daeun-timeline-wrap div {
+    color: #333 !important;
+}
+
+/* ─────────────────────────────────────────────────────
+   신규 컴포넌트 스타일 — 4대 영역 레이더 차트
+───────────────────────────────────────────────────── */
+.four-domain-radar svg polygon {
+    transition: all 0.3s;
+}
+[data-theme="light"] .four-domain-radar {
+    background: rgba(0,0,0,0.02) !important;
+    border-color: rgba(0,0,0,0.08) !important;
+}
+[data-theme="light"] .four-domain-radar text { fill: #333 !important; }
+[data-theme="light"] .four-domain-radar div { color: #222 !important; }
+[data-theme="light"] .four-domain-radar span { color: #444 !important; }
+
+/* ─────────────────────────────────────────────────────
+   직업·애정 섹션 블록
+───────────────────────────────────────────────────── */
+[data-theme="light"] .ilju-career-love-block { border-color: rgba(0,0,0,0.08) !important; }
+[data-theme="light"] .ilju-career-love-block p { color: #222 !important; }
+[data-theme="light"] .ilju-career-love-block div { color: #333 !important; }
+
+@media print {
+    .daeun-timeline-wrap { overflow: visible !important; }
+    .daeun-timeline-wrap > div:last-child { overflow: visible !important; flex-wrap: wrap !important; }
+    .four-domain-radar { page-break-inside: avoid !important; break-inside: avoid !important; }
+    .ilju-profile-card { page-break-inside: avoid !important; break-inside: avoid !important; }
+    .ilju-career-love-block { page-break-inside: avoid !important; break-inside: avoid !important; }
+    [data-theme="light"] .daeun-tl-cell { background: rgba(0,0,0,0.05) !important; border-color: #ccc !important; }
+    [data-theme="light"] .four-domain-radar { background: #fff !important; }
 }
