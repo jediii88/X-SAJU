@@ -1115,8 +1115,49 @@ function mentorBreakSentences(htmlish) {
     return String(htmlish || '').replace(/\. /g, '.</p><p style="margin:0 0 8px;line-height:1.85;color:#ddd;">');
 }
 /** `**강조**` → <strong> (리포트 본문 HTML에 삽입할 때만 사용) */
+/**
+ * 본문 텍스트 중 단독으로 박혀 있는 천간/지지 한자를 발견하면 오행색 span으로 감싸 줌.
+ * - 이미 <span class="hwood ...">…</span>처럼 색이 입혀진 한자는 건드리지 않음.
+ * - <strong>·<b>·<em>·<i>·<u>·<a> 같은 인라인 강조 안에 든 한자는 색칠 OK.
+ * - 차원이 다른 큰 디스플레이 한자(20px 이상)는 sajuxHanjaInlineStyle을 따로 쓰므로 영향 없음.
+ */
+function colorizeHanjaInline(html) {
+    if (!html) return '';
+    var s = String(html);
+    var STEM_OH = { '甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water' };
+    var BRANCH_OH = { '子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water' };
+    var COLOR = { wood:'var(--wood, #6FBF73)', fire:'var(--fire, #E76F51)', earth:'var(--earth, #C8A45C)', metal:'var(--metal, #C9CDD2)', water:'var(--water, #181828)' };
+    var HAN_RE = /[甲乙丙丁戊己庚辛壬癸子丑寅卯辰巳午未申酉戌亥]/g;
+
+    // 보호할 영역(이미 색/스타일이 들어간 곳)을 placeholder로 치환했다가 마지막에 복원
+    var protects = [];
+    function protect(m) { protects.push(m); return '\x00P' + (protects.length - 1) + '\x01'; }
+
+    // 1) <span ...>…</span> 중 class에 hwood/hfire/hearth/hmetal/hwater 가 있거나
+    //    style에 color: 가 명시된 경우 보호
+    s = s.replace(/<span\b[^>]*?(?:class\s*=\s*["'][^"']*\bh(?:wood|fire|earth|metal|water)\b[^"']*["']|style\s*=\s*["'][^"']*color\s*:[^"']*["'])[^>]*>[\s\S]*?<\/span>/g, protect);
+    // 2) <div … style="…color:…" … >…</div>도 한 번 보호 (대형 디스플레이 한자 카드 등)
+    s = s.replace(/<(div|p)\b[^>]*style\s*=\s*["'][^"']*color\s*:[^"']*["'][^>]*>[\s\S]*?<\/\1>/g, protect);
+    // 3) <table>·<style>·<script>는 통째 보호 (만세력 표는 자체 색 시스템)
+    s = s.replace(/<(table|style|script)[\s\S]*?<\/\1>/gi, protect);
+
+    // 한자 단일 글자에 span 입히기
+    s = s.replace(HAN_RE, function (ch) {
+        var oh = STEM_OH[ch] || BRANCH_OH[ch];
+        if (!oh) return ch;
+        var col = COLOR[oh];
+        var stroke = (oh === 'water') ? ';-webkit-text-stroke:0.5px rgba(255,255,255,0.65);paint-order:stroke fill' : '';
+        return '<span class="hanja-oh h' + oh + '" style="color:' + col + ';font-family:\'Noto Sans KR\',sans-serif;font-weight:500' + stroke + '">' + ch + '</span>';
+    });
+
+    // 보호 영역 복원
+    s = s.replace(/\x00P(\d+)\x01/g, function (_, i) { return protects[+i]; });
+    return s;
+}
+
 function boldStarsToStrong(s) {
-    return String(s == null ? '' : s).replace(/\*\*([\s\S]*?)\*\*/g, '<strong>$1</strong>');
+    var html = String(s == null ? '' : s).replace(/\*\*([\s\S]*?)\*\*/g, '<strong>$1</strong>');
+    return colorizeHanjaInline(html);
 }
 
 /** 사주아이형 톤 정리 — VIP·카드·고정문 공통 (【】·당신→님은·IT슬랭 완화) */
