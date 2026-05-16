@@ -3021,6 +3021,7 @@ function generateDeepReport(data) {
         (buildIljuProfileCard(data)||'') +
         (buildChapter1_Basic(data)||'') +
         (buildVipEvidenceBlock(data)||'') +
+        (buildLifePanoramaSection(data)||'') +
         (buildChapter2_Wuxing(data)||'') +
         (buildChapter3_Sipseong(data)||'')
     ), 'part1section');
