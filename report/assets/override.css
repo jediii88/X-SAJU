@@ -507,3 +507,105 @@ html[data-theme="light"] .ilju-career-love-block div { color: #2a2218 !important
   html[data-theme="light"] .daeun-tl-cell   { background: rgba(0,0,0,0.04) !important; border-color: #ccc !important; }
   html[data-theme="light"] .four-domain-radar { background: #fff !important; }
 }
+
+/* ─────────────────────────────────
+   현재·이번달·올해 뱃지 — 글래스 스타일 강화
+───────────────────────────────── */
+/* 라이트모드: 뱃지 색상 보정 */
+html[data-theme="light"] [style*="rgba(199,167,106,0.10);color:var(--gold)"] {
+  background: rgba(140,100,20,0.08) !important;
+  color: #7a5a10 !important;
+  border-color: rgba(140,100,20,0.30) !important;
+}
+
+/* ─────────────────────────────────
+   전체 디자인 일관성 — 공통 컴포넌트
+───────────────────────────────── */
+
+/* 모든 섹션 구분선 */
+html:not([data-theme="light"]) .report-chapter + .report-chapter {
+  border-top: 1px solid rgba(255,255,255,0.04);
+}
+
+/* 파트 헤더 블록 — 상단 여백 */
+.part-header-block {
+  padding-top: 8px;
+}
+
+/* 챕터 레이블 (작은 상단 텍스트) */
+.ch-section-label {
+  font-size: 10px !important;
+  letter-spacing: 0.18em !important;
+  font-weight: 600 !important;
+  text-transform: uppercase;
+}
+html:not([data-theme="light"]) .ch-section-label {
+  color: rgba(200,160,80,0.65) !important;
+}
+html[data-theme="light"] .ch-section-label {
+  color: rgba(140,100,20,0.70) !important;
+}
+
+/* 챕터 제목 */
+.ch-title {
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.3px !important;
+  line-height: 1.35 !important;
+}
+html:not([data-theme="light"]) .ch-title {
+  color: #f0ead8 !important;
+}
+html[data-theme="light"] .ch-title {
+  color: #0c0904 !important;
+}
+
+/* 스티키 하단 네비 버튼 활성 상태 */
+.spn-item.active {
+  border-color: rgba(200,160,80,0.45) !important;
+  color: var(--sajux-gold) !important;
+}
+html:not([data-theme="light"]) .spn-item {
+  background: rgba(255,255,255,0.03) !important;
+  border: 1px solid rgba(255,255,255,0.07) !important;
+  color: rgba(255,255,255,0.70) !important;
+}
+html[data-theme="light"] .spn-item {
+  background: rgba(0,0,0,0.03) !important;
+  border: 1px solid rgba(0,0,0,0.09) !important;
+  color: rgba(0,0,0,0.65) !important;
+}
+
+/* 대운 타임라인 현재 핀 레이블 */
+html:not([data-theme="light"]) [style*="▶ 현재"] {
+  color: var(--sajux-gold) !important;
+}
+
+/* 세운/월운 카드 헤더 — 다크 #bbb 보정 */
+html:not([data-theme="light"]) [style*="color:#bbb"] { color: rgba(255,255,255,0.60) !important; }
+html:not([data-theme="light"]) [style*="color:#aaa"] { color: rgba(255,255,255,0.52) !important; }
+
+/* 라이트: 세운/월운 카드 */
+html[data-theme="light"] .yearly-card [style*="color:#bbb"],
+html[data-theme="light"] .monthly-card [style*="color:#bbb"] { color: #555048 !important; }
+html[data-theme="light"] .yearly-card [style*="color:#aaa"],
+html[data-theme="light"] .monthly-card [style*="color:#aaa"] { color: #686058 !important; }
+
+/* PDF 저장 버튼 */
+.sajux-pdf-wide-btn, .pdf-btn {
+  font-weight: 600 !important;
+  letter-spacing: 0.3px !important;
+  border-radius: 10px !important;
+}
+html:not([data-theme="light"]) .sajux-pdf-wide-btn,
+html:not([data-theme="light"]) .pdf-btn {
+  background: rgba(200,160,80,0.08) !important;
+  color: var(--sajux-gold) !important;
+  border: 1px solid rgba(200,160,80,0.30) !important;
+}
+html[data-theme="light"] .sajux-pdf-wide-btn,
+html[data-theme="light"] .pdf-btn {
+  background: rgba(140,100,20,0.06) !important;
+  color: #7a5a10 !important;
+  border: 1px solid rgba(140,100,20,0.25) !important;
+}
