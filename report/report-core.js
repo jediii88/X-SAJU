@@ -16,6 +16,52 @@ var JOSA_MAP_22 = {
     '오': { i: '가', wa: '와' }, '미': { i: '가', wa: '와' }, '유': { i: '가', wa: '와' }, '술': { i: '이', wa: '과' }, '해': { i: '가', wa: '와' }
 };
 
+/** ─────────────────────────────────────────
+ *  오행 색 단일 소스 (Single Source of Truth)
+ *  명조(나무) 녹·불 적·흙 황·금 회·물 현색(玄, 검정)
+ * ───────────────────────────────────────── */
+var SAJUX_OH_COLORS = {
+    wood:  '#4a9e6a',
+    fire:  '#e05a2b',
+    earth: '#c8a050',
+    metal: '#8898aa',
+    water: 'var(--water)'
+};
+var SAJUX_STEM_OH = {
+    '甲':'wood','乙':'wood','丙':'fire','丁':'fire',
+    '戊':'earth','己':'earth','庚':'metal','辛':'metal',
+    '壬':'water','癸':'water'
+};
+var SAJUX_BRANCH_OH = {
+    '子':'water','亥':'water',
+    '寅':'wood','卯':'wood',
+    '巳':'fire','午':'fire',
+    '丑':'earth','辰':'earth','未':'earth','戌':'earth',
+    '申':'metal','酉':'metal'
+};
+function sajuxStemColor(stem) {
+    var oh = SAJUX_STEM_OH[stem];
+    return SAJUX_OH_COLORS[oh] || 'var(--gold)';
+}
+function sajuxBranchColor(branch) {
+    var oh = SAJUX_BRANCH_OH[branch];
+    return SAJUX_OH_COLORS[oh] || 'var(--gold)';
+}
+function sajuxIsWaterChar(ch) {
+    return SAJUX_STEM_OH[ch] === 'water' || SAJUX_BRANCH_OH[ch] === 'water';
+}
+/** 수 오행 한자용 인라인 스타일 (검정 + 흰 윤곽). 비-수면 그냥 색만 반환 */
+function sajuxHanjaInlineStyle(ch, sizeStyle, weight) {
+    var col = SAJUX_STEM_OH[ch] ? sajuxStemColor(ch) : sajuxBranchColor(ch);
+    var sw  = sajuxIsWaterChar(ch);
+    var base = "font-family:'Noto Sans KR','Noto Sans SC',sans-serif;"
+             + "font-weight:" + (weight || 300) + ";"
+             + "color:" + col + ";";
+    if (sizeStyle) base += "font-size:" + sizeStyle + ";";
+    if (sw) base += "-webkit-text-stroke:0.6px rgba(255,255,255,0.72);paint-order:stroke fill;";
+    return base;
+}
+
 /** 부록 B 등 세운 상세 직전 4대 지표 블록 — 2×2(모바일)·4열(넓은 화면) 그리드 */
 function buildYearlyIndicatorsHtml(ykw) {
     var w = ykw || { wealth: '-', career: '-', doc: '-', love: '-' };
@@ -1019,8 +1065,29 @@ function voicePolishParagraph(data, text) {
     s = s.replace(/일주(?!\s*[\(（])/g, '일주(태어난 날의 두 글자)');
     s = s.replace(/대운(?!\s*[\(（수])/g, '대운(10년 단위로 바뀌는 운의 흐름)');
     s = s.replace(/세운(?!\s*[\(（])/g, '세운(그해 한 해의 운)');
+    s = s.replace(/월운(?!\s*[\(（])/g, '월운(그달의 운)');
     s = s.replace(/원국(?!\s*[\(（])/g, '원국(태어날 때 정해진 나의 사주 구조)');
     s = s.replace(/일간(?!\s*[\(（])/g, '일간(사주에서 나를 나타내는 글자)');
+    s = s.replace(/일지(?!\s*[\(（])/g, '일지(태어난 날의 아래 글자, 배우자궁)');
+    s = s.replace(/신강(?!\s*[\(（])/g, '신강(타고난 에너지가 강한 편)');
+    s = s.replace(/신약(?!\s*[\(（])/g, '신약(타고난 에너지가 섬세한 편)');
+    s = s.replace(/격국(?!\s*[\(（])/g, '격국(사주의 큰 그림·구조)');
+    s = s.replace(/통근(?!\s*[\(（])/g, '통근(천간이 지지에 뿌리내린 상태)');
+    s = s.replace(/조후(?!\s*[\(（])/g, '조후(사주 속 온도와 습도 균형)');
+    s = s.replace(/공망(?!\s*[\(（])/g, '공망(채워도 채워지지 않는 빈자리)');
+    s = s.replace(/지장간(?!\s*[\(（])/g, '지장간(겉 글자 안에 숨은 또 다른 기운)');
+    s = s.replace(/천간(?!\s*[\(（])/g, '천간(사주의 위 네 글자, 겉으로 드러난 역할)');
+    s = s.replace(/지지(?!\s*[\(（])/g, '지지(사주의 아래 네 글자, 속에 자리 잡은 본성)');
+    s = s.replace(/편관(?!\s*[\(（])/g, '편관(나를 강하게 단련시키는 기운)');
+    s = s.replace(/정관(?!\s*[\(（])/g, '정관(원칙·책임을 부여하는 기운)');
+    s = s.replace(/편재(?!\s*[\(（])/g, '편재(흐름이 큰 재물 기운)');
+    s = s.replace(/정재(?!\s*[\(（])/g, '정재(꾸준히 쌓이는 재물 기운)');
+    s = s.replace(/식신(?!\s*[\(（])/g, '식신(즐거움을 만들어내는 표현 기운)');
+    s = s.replace(/상관(?!\s*[\(（])/g, '상관(말과 재능이 빛나는 기운)');
+    s = s.replace(/편인(?!\s*[\(（])/g, '편인(직관·창의가 깊어지는 기운)');
+    s = s.replace(/정인(?!\s*[\(（])/g, '정인(나를 든든히 받쳐주는 기운)');
+    s = s.replace(/비견(?!\s*[\(（])/g, '비견(나와 같은 결의 사람·동료 기운)');
+    s = s.replace(/겁재(?!\s*[\(（])/g, '겁재(경쟁을 부르는 같은 결의 기운)');
 
     // ─── 어려운 표현 → 쉬운 말 ───
     s = s.replace(/레버리지/g, '빚을 써서 키우는 투자');
@@ -1631,7 +1698,7 @@ function buildYearStrategicNarrative(name, yr, kor, evLabel, sc, sewSip, ohTag, 
     var wcBlock = '';
     if (df.wealth || df.career) {
         wcBlock = '<div style="margin:14px 0 10px;padding:12px 14px;border-radius:10px;border:1px solid rgba(199,167,106,0.28);background:rgba(199,167,106,0.06);">'
-            + '<div style="font-size:12px;font-weight:800;color:#d4af37;font-family:Noto Serif KR,serif;letter-spacing:0.04em;margin-bottom:10px;">[ ' + yr + '년 재물운 및 직업운 상세 풀이 ]</div>'
+            + '<div style="font-size:12px;font-weight:800;color:#d4af37;font-family:Noto Sans KR,serif;letter-spacing:0.04em;margin-bottom:10px;">[ ' + yr + '년 재물운 및 직업운 상세 풀이 ]</div>'
             + (df.wealth ? '<p style="margin:0 0 8px;line-height:1.85;color:#ddd;">' + boldStarsToStrong(df.wealth) + '</p>' : '')
             + (df.career ? '<p style="margin:0;line-height:1.85;color:#ddd;">' + boldStarsToStrong(df.career) + '</p>' : '')
             + '</div>';
@@ -2857,7 +2924,7 @@ function injectSajuxPdfUi() {
     if (!document.getElementById('sajux-report-ui-styles')) {
         var st = document.createElement('style');
         st.id = 'sajux-report-ui-styles';
-        st.textContent = '.month-pillar-title{white-space:nowrap!important;display:inline-block!important;max-width:100%;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom;}.seyun-premium-vertical{display:flex!important;flex-direction:column!important;align-items:stretch!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important;}.seyun-premium-vertical .seyun-year-card,.seyun-premium-vertical>div{width:100%!important;max-width:100%!important;box-sizing:border-box!important;flex:0 0 auto!important;}.yearly-card-container,.monthly-card-container{display:grid!important;grid-template-columns:1fr!important;width:100%!important;max-width:100%!important;gap:20px!important;box-sizing:border-box!important;}.yearly-card-container .fortune-scroll,.monthly-card-container .fortune-scroll{display:flex!important;flex-direction:column!important;overflow-x:visible!important;overflow-y:visible!important;scroll-snap-type:none!important;align-items:stretch!important;width:100%!important;max-width:100%!important;}.yearly-card-container .f-card,.monthly-card-container .f-card{flex:0 0 auto!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important;}.vip-module-stack{display:flex;flex-direction:column;gap:0;}.vip-module-item{margin-bottom:16px;border-left:3px solid #d4af37;padding-left:14px;}.vip-module-title{color:#d4af37;font-weight:700;margin-bottom:6px;font-size:13.5px;font-family:Noto Serif KR,serif;}.vip-module-desc{color:#d8d3c9;line-height:1.88;font-size:13.5px;margin:0;}.yearly-ind-val{white-space:nowrap!important;text-overflow:ellipsis!important;overflow:hidden!important;max-width:100%!important;}.animal-symbol{font-size:15px;color:rgba(228,232,240,0.92);margin-top:10px;font-weight:500;line-height:1.55;}.cover-highlight{color:#d4af37;font-weight:700;}.birth-info{font-size:0.85em;color:#888;margin-top:8px;line-height:1.65;}.remedy-checklist-table{display:table!important;width:100%!important;border-collapse:collapse!important;table-layout:fixed!important;}.remedy-checklist-table thead{display:table-header-group!important;}.remedy-checklist-table tbody{display:table-row-group!important;}.remedy-checklist-table tr{display:table-row!important;}.remedy-checklist-table th,.remedy-checklist-table td{display:table-cell!important;vertical-align:top!important;}.badge,.tag,.jijanggan{background:rgba(128,128,128,0.1)!important;color:var(--text-primary)!important;border:1px solid rgba(128,128,128,0.2);}.card,.yearly-card,.monthly-card,.module-item{background:rgba(var(--bg-rgb,128,128,128),0.1)!important;backdrop-filter:blur(12px)!important;border:1px solid rgba(128,128,128,0.15)!important;}.sajux-pdf-wide-btn{cursor:pointer;box-sizing:border-box;border:1px solid rgba(255,255,255,0.12);font-family:inherit;font-weight:700;font-size:15px;padding:16px 22px;margin:16px 0 18px;border-radius:12px;background:rgba(128,128,128,0.22)!important;color:rgba(245,240,232,0.94)!important;letter-spacing:0.02em;box-shadow:none!important;backdrop-filter:blur(10px)!important;-webkit-backdrop-filter:blur(10px)!important;width:100%;max-width:100%;transition:background .15s ease,border-color .15s ease,color .15s ease;}.sajux-pdf-wide-btn:hover{background:rgba(128,128,128,0.3)!important;border-color:rgba(255,255,255,0.18)!important;}.sajux-pdf-wide-btn:active{transform:translateY(1px);}#sajux-pdf-fab{cursor:pointer;position:fixed;bottom:22px;right:18px;z-index:10001;font-family:inherit;font-weight:700;font-size:14px;padding:14px 20px;border-radius:999px;border:1px solid rgba(255,255,255,0.12);background:rgba(128,128,128,0.24)!important;color:rgba(245,240,232,0.94)!important;box-shadow:0 6px 20px rgba(0,0,0,0.35)!important;backdrop-filter:blur(10px)!important;-webkit-backdrop-filter:blur(10px)!important;transition:background .15s ease,border-color .15s ease;}#sajux-pdf-fab:hover{background:rgba(128,128,128,0.32)!important;border-color:rgba(255,255,255,0.2)!important;} @media(max-width:600px){#sajux-pdf-fab{bottom:16px;right:12px;padding:12px 16px;font-size:13px;}}';
+        st.textContent = '.month-pillar-title{white-space:nowrap!important;display:inline-block!important;max-width:100%;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom;}.seyun-premium-vertical{display:flex!important;flex-direction:column!important;align-items:stretch!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important;}.seyun-premium-vertical .seyun-year-card,.seyun-premium-vertical>div{width:100%!important;max-width:100%!important;box-sizing:border-box!important;flex:0 0 auto!important;}.yearly-card-container,.monthly-card-container{display:grid!important;grid-template-columns:1fr!important;width:100%!important;max-width:100%!important;gap:20px!important;box-sizing:border-box!important;}.yearly-card-container .fortune-scroll,.monthly-card-container .fortune-scroll{display:flex!important;flex-direction:column!important;overflow-x:visible!important;overflow-y:visible!important;scroll-snap-type:none!important;align-items:stretch!important;width:100%!important;max-width:100%!important;}.yearly-card-container .f-card,.monthly-card-container .f-card{flex:0 0 auto!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important;}.vip-module-stack{display:flex;flex-direction:column;gap:0;}.vip-module-item{margin-bottom:16px;border-left:3px solid #d4af37;padding-left:14px;}.vip-module-title{color:#d4af37;font-weight:700;margin-bottom:6px;font-size:13.5px;font-family:Noto Sans KR,serif;}.vip-module-desc{color:#d8d3c9;line-height:1.88;font-size:13.5px;margin:0;}.yearly-ind-val{white-space:nowrap!important;text-overflow:ellipsis!important;overflow:hidden!important;max-width:100%!important;}.animal-symbol{font-size:15px;color:rgba(228,232,240,0.92);margin-top:10px;font-weight:500;line-height:1.55;}.cover-highlight{color:#d4af37;font-weight:700;}.birth-info{font-size:0.85em;color:#888;margin-top:8px;line-height:1.65;}.remedy-checklist-table{display:table!important;width:100%!important;border-collapse:collapse!important;table-layout:fixed!important;}.remedy-checklist-table thead{display:table-header-group!important;}.remedy-checklist-table tbody{display:table-row-group!important;}.remedy-checklist-table tr{display:table-row!important;}.remedy-checklist-table th,.remedy-checklist-table td{display:table-cell!important;vertical-align:top!important;}.badge,.tag,.jijanggan{background:rgba(128,128,128,0.1)!important;color:var(--text-primary)!important;border:1px solid rgba(128,128,128,0.2);}.card,.yearly-card,.monthly-card,.module-item{background:rgba(var(--bg-rgb,128,128,128),0.1)!important;backdrop-filter:blur(12px)!important;border:1px solid rgba(128,128,128,0.15)!important;}.sajux-pdf-wide-btn{cursor:pointer;box-sizing:border-box;border:1px solid rgba(255,255,255,0.12);font-family:inherit;font-weight:700;font-size:15px;padding:16px 22px;margin:16px 0 18px;border-radius:12px;background:rgba(128,128,128,0.22)!important;color:rgba(245,240,232,0.94)!important;letter-spacing:0.02em;box-shadow:none!important;backdrop-filter:blur(10px)!important;-webkit-backdrop-filter:blur(10px)!important;width:100%;max-width:100%;transition:background .15s ease,border-color .15s ease,color .15s ease;}.sajux-pdf-wide-btn:hover{background:rgba(128,128,128,0.3)!important;border-color:rgba(255,255,255,0.18)!important;}.sajux-pdf-wide-btn:active{transform:translateY(1px);}#sajux-pdf-fab{cursor:pointer;position:fixed;bottom:22px;right:18px;z-index:10001;font-family:inherit;font-weight:700;font-size:14px;padding:14px 20px;border-radius:999px;border:1px solid rgba(255,255,255,0.12);background:rgba(128,128,128,0.24)!important;color:rgba(245,240,232,0.94)!important;box-shadow:0 6px 20px rgba(0,0,0,0.35)!important;backdrop-filter:blur(10px)!important;-webkit-backdrop-filter:blur(10px)!important;transition:background .15s ease,border-color .15s ease;}#sajux-pdf-fab:hover{background:rgba(128,128,128,0.32)!important;border-color:rgba(255,255,255,0.2)!important;} @media(max-width:600px){#sajux-pdf-fab{bottom:16px;right:12px;padding:12px 16px;font-size:13px;}}';
         document.head.appendChild(st);
     }
     var oldFab = document.getElementById('sajux-pdf-fab');
@@ -2964,14 +3031,22 @@ function generateDeepReport(data) {
         part3Body
     ), 'part3section');
 
-    // ── 4부: 지금부터의 선택 ──
+    // ── 4부: 지금부터의 선택 — 개운법 중심으로 단순화 ──
     var part4Body = '';
-    part4Body += '<div class="ziwei-appendix-block" style="margin-bottom:8px;">' + safeCall(()=>buildZiWeiDestinyBlueprintSection(data)||'', 'ziwei') + '</div>';
     part4Body += safeCall(()=>buildChapter9_Remedy(data)||'', 'ch9-remedy');
     html += safeCall(()=>wrapPartSection(
         buildPartHeader(4,'지금부터의 선택','개운법 · 체크리스트 · 청사진','sec-part4-final'),
         part4Body
     ), 'part4section');
+
+    // ── 부록: 자미두수 운명 청사진 (별도 학문, 참고 자료) ──
+    var ziweiBlock = safeCall(()=>buildZiWeiDestinyBlueprintSection(data)||'', 'ziwei');
+    if (ziweiBlock) {
+        html += '<div class="ziwei-appendix-block" style="margin-top:36px;padding-top:28px;border-top:1px dashed rgba(199,167,106,0.20);">'
+              + '<div style="font-size:10px;letter-spacing:0.18em;color:rgba(199,167,106,0.65);margin-bottom:12px;font-weight:700;">[ 부록 · 별도 자료 ]</div>'
+              + ziweiBlock
+              + '</div>';
+    }
 
     document.getElementById('report-container').innerHTML = html;
 
@@ -3124,7 +3199,7 @@ function buildRelationSummary(data) {
         const typeColor = rel.type&&rel.type.includes('충') ? '#ff8a80' : rel.type&&rel.type.includes('형') ? '#ffb74d' : rel.type&&rel.type.includes('합') ? '#80cbc4' : '#c7a76a';
         return `<div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:14px 16px;margin-bottom:12px;border-left:3px solid ${typeColor};">
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-                <span style="font-size:16px;font-weight:800;color:var(--gold);font-family:Noto Serif KR,serif;">${rel.chars?rel.chars.join('·'):''}</span>
+                <span style="font-size:16px;font-weight:800;color:var(--gold);font-family:Noto Sans KR,serif;">${rel.chars?rel.chars.join('·'):''}</span>
                 <span style="font-size:12px;color:#aaa;">(${charsKr})</span>
                 <span style="font-size:11px;font-weight:700;color:${typeColor};padding:2px 8px;background:rgba(255,255,255,0.06);border-radius:10px;">${rel.label||rel.type||''}</span>
             </div>
@@ -3299,7 +3374,7 @@ function buildCurrentPeriodSummary(data) {
         const _dEndY = _dStartY + 9;
         daeunHtml = `<div style="margin-bottom:12px;padding:14px;background:rgba(199,167,106,0.06);border:1px solid var(--gold);border-radius:10px;">
             <div style="font-size:11px;color:var(--gold);font-weight:700;margin-bottom:8px;letter-spacing:1px;">▶ 현재 대운 — ${curDaeun.age}세~${curDaeun.age+9}세 · 지금 진행 중인 10년 운세</div>
-            <div style="font-size:18px;font-weight:900;color:var(--gold);font-family:Noto Serif KR,serif;margin-bottom:6px;"><span style="font-family:Noto Serif KR,serif;">${formatGanzhiPair(dg, dj)}</span> <span style="font-size:13px;color:#bbb;font-weight:400;">${KN[dOh]||''}·${KN[djOh]||''}</span></div>
+            <div style="font-size:18px;font-weight:900;color:var(--gold);font-family:Noto Sans KR,serif;margin-bottom:6px;"><span style="font-family:Noto Sans KR,serif;">${formatGanzhiPair(dg, dj)}</span> <span style="font-size:13px;color:#bbb;font-weight:400;">${KN[dOh]||''}·${KN[djOh]||''}</span></div>
             <p style="font-size:13px;color:#ddd;line-height:1.8;margin:0 0 8px;">${voicePolishParagraph(data, dStrat)}</p>
             <span style="font-size:12px;font-weight:700;color:${dcol};">${gb(ds)}</span>
         </div>`;
@@ -3351,7 +3426,7 @@ function buildCurrentPeriodSummary(data) {
         const crossText = '';  // 교차 설명은 sAdv에 통합됨
         sewunHtml = `<div style="margin-bottom:12px;padding:14px;background:rgba(74,158,106,0.05);border:1px solid rgba(74,158,106,0.3);border-radius:10px;">
             <div style="font-size:11px;color:#4a9e6a;font-weight:700;margin-bottom:8px;letter-spacing:1px;">▶ ${formatYearWithGanzhi(curY, sg, sj)} 세운 · 지금 현재의 연운</div>
-            <div style="font-size:17px;font-weight:900;color:#4a9e6a;font-family:Noto Serif KR,serif;margin-bottom:6px;"><span style="font-family:Noto Serif KR,serif;">${formatGanzhiPair(sg, sj)}</span> <span style="font-size:13px;color:#bbb;font-weight:400;">${KN[sOh]||''}·${KN[sjOh]||''}</span></div>
+            <div style="font-size:17px;font-weight:900;color:#4a9e6a;font-family:Noto Sans KR,serif;margin-bottom:6px;"><span style="font-family:Noto Sans KR,serif;">${formatGanzhiPair(sg, sj)}</span> <span style="font-size:13px;color:#bbb;font-weight:400;">${KN[sOh]||''}·${KN[sjOh]||''}</span></div>
             ${crossText ? `<p style="font-size:12.5px;color:#aaa;line-height:1.75;margin:0 0 8px;border-left:2px solid #4a9e6a;padding-left:10px;">${crossText}</p>` : ''}
             <p style="font-size:13px;color:#ddd;line-height:1.8;margin:0 0 8px;">${voicePolishParagraph(data, sAdv)}</p>
             <span style="font-size:12px;font-weight:700;color:${scol};">${gb(ss)}</span>
@@ -3389,7 +3464,7 @@ function buildCurrentPeriodSummary(data) {
             :`주의가 필요한 달입니다. 큰 결정은 <strong>【영업일 이틀 유예】</strong>하십시오. 다툼·충동 지출·야간 문자는 이번 달 금지입니다. 내공은 수면으로만 쌓으십시오.`;
         wolunHtml = `<div style="padding:14px;background:rgba(74,114,198,0.05);border:1px solid rgba(74,114,198,0.3);border-radius:10px;">
             <div style="font-size:11px;color:#5b7fc4;font-weight:700;margin-bottom:8px;letter-spacing:1px;">▶ ${curY2}년 ${formatMonthWithGanzhi(curM2, mg, mj)} · 지금 이 달의 기운</div>
-            <div style="font-size:16px;font-weight:900;color:#5b7fc4;font-family:Noto Serif KR,serif;margin-bottom:6px;"><span style="font-family:Noto Serif KR,serif;">${formatGanzhiPair(mg, mj)}</span> <span style="font-size:13px;color:#bbb;font-weight:400;">${KN[mOh]||''}·${KN[mjOh]||''}</span></div>
+            <div style="font-size:16px;font-weight:900;color:#5b7fc4;font-family:Noto Sans KR,serif;margin-bottom:6px;"><span style="font-family:Noto Sans KR,serif;">${formatGanzhiPair(mg, mj)}</span> <span style="font-size:13px;color:#bbb;font-weight:400;">${KN[mOh]||''}·${KN[mjOh]||''}</span></div>
             <p style="font-size:13px;color:#ddd;line-height:1.8;margin:0 0 6px;">${WL[mj]||'이달의 기운입니다.'}</p>
             <p style="font-size:12.5px;color:#bbb;line-height:1.75;margin:0 0 8px;">${boldStarsToStrong(voicePolishParagraph(data, mAdv))}</p>
             <span style="font-size:12px;font-weight:700;color:${mcol};">${gb(ms)}</span>
@@ -3759,7 +3834,7 @@ function buildPremiumExecutiveSummary(data) {
 
     return '<div id="sec-premium-summary" class="report-chapter premium-executive-summary chapter-start sajux-panel-plain" style="margin-bottom:40px;padding:22px 20px;border-radius:14px;border:1px solid rgba(199,167,106,0.35);background:transparent;">' +
         '<div style="font-size:10px;letter-spacing:0.18em;color:rgba(199,167,106,0.72);margin-bottom:10px;font-weight:700;">사주X 프리미엄 브리프</div>' +
-        '<h2 style="font-family:\'Noto Serif KR\',serif;font-size:22px;font-weight:700;color:#f5f0e6;margin:0 0 6px;line-height:1.45;">' + escHtmlAttr(metaphorLead) + '</h2>' +
+        '<h2 style="font-family:\'Noto Sans KR\',serif;font-size:22px;font-weight:700;color:#f5f0e6;margin:0 0 6px;line-height:1.45;">' + escHtmlAttr(metaphorLead) + '</h2>' +
         '<p style="font-size:11px;letter-spacing:0.12em;color:rgba(199,167,106,0.72);margin:0 0 14px;font-weight:700;">VIP 종합 전략 요약</p>' +
         '<button type="button" class="sajux-pdf-wide-btn pdf-btn" onclick="window.print()">PDF 저장 (전체 너비)</button>' +
         '<p class="premium-thesis" style="margin:0 0 10px;font-size:14.5px;line-height:1.9;color:#efe9dc;font-weight:500;">' + escHtmlAttr(buildSajuKidStyleOpener(data)) + '</p>' +
@@ -4451,27 +4526,10 @@ function buildIljuProfileCard(data) {
     if (!prof) return '';
 
     const name = data.name || '고객';
-    const OH_COLOR = {
-        '甲':'#4a9e6a','乙':'#4a9e6a',
-        '丙':'#e05a2b','丁':'#e05a2b',
-        '戊':'#c8a050','己':'#c8a050',
-        '庚':'#8898aa','辛':'#8898aa',
-        '壬':'water-dark','癸':'water-dark'
-    };
-    const BRANCH_OH_COLOR = {
-        '子':'water-dark','亥':'water-dark',
-        '寅':'#4a9e6a','卯':'#4a9e6a',
-        '巳':'#e05a2b','午':'#e05a2b',
-        '丑':'#c8a050','辰':'#c8a050','未':'#c8a050','戌':'#c8a050',
-        '申':'#8898aa','酉':'#8898aa'
-    };
-    function iljuHanjaSpan(char, colorVal, sizeStyle) {
-        const isWater = colorVal === 'water-dark';
-        const col = isWater ? 'var(--water)' : (colorVal || 'var(--gold)');
-        const stroke = isWater ? ';-webkit-text-stroke:0.6px rgba(255,255,255,0.72);paint-order:stroke fill' : '';
-        return `<div style="font-size:${sizeStyle||'44px'};font-weight:200;line-height:1.1;font-family:'Noto Sans KR','Noto Sans SC',sans-serif;color:${col}${stroke};">${char}</div>`;
+    function iljuHanjaSpan(char, sizeStyle) {
+        return `<div style="line-height:1.1;${sajuxHanjaInlineStyle(char, sizeStyle||'46px', 200)}">${char}</div>`;
     }
-    const accentColor = OH_COLOR[ds] === 'water-dark' ? 'var(--water)' : (OH_COLOR[ds] || 'var(--gold)');
+    const accentColor = sajuxStemColor(ds);
 
     // 키워드 배지 (strength에서 추출)
     const kwRaw = prof.strength || '';
@@ -4480,17 +4538,16 @@ function buildIljuProfileCard(data) {
         `<span class="ilju-kw-badge" style="display:inline-block;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.85);margin:3px 3px 3px 0;letter-spacing:0.5px;">${k}</span>`
     ).join('');
 
-    // 신강/신약 뱃지
+    const isStrong = data.strengthText && (data.strengthText.includes('신강')||data.strengthText.includes('강'));
+    const strengthLabel = isStrong ? '에너지가 강한 편' : '에너지가 섬세한 편';
     const strengthBadge = data.strengthText
-        ? `<span style="font-size:10px;padding:3px 8px;border-radius:10px;background:rgba(199,167,106,0.15);color:var(--gold);border:1px solid rgba(199,167,106,0.3);font-weight:700;">${data.strengthText.includes('신강')||data.strengthText.includes('강') ? '신강(身强)' : '신약(身弱)'}</span>`
+        ? `<span title="${isStrong?'신강(身强)':'신약(身弱)'}" style="font-size:10px;padding:3px 9px;border-radius:10px;background:rgba(199,167,106,0.10);color:var(--gold);border:1px solid rgba(199,167,106,0.30);font-weight:600;letter-spacing:0.2px;">${strengthLabel}</span>`
         : '';
-
-    const branchColor = BRANCH_OH_COLOR[db] || 'var(--gold)';
 
     return `<div class="ilju-profile-card" style="display:flex;gap:20px;align-items:flex-start;background:linear-gradient(135deg,rgba(30,28,22,0.6),rgba(12,12,16,0.4));border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:22px 24px;margin-bottom:24px;position:relative;overflow:hidden;">
         <div class="ilju-hanja-col" style="flex:0 0 auto;text-align:center;min-width:72px;">
-            ${iljuHanjaSpan(ds, OH_COLOR[ds], '46px')}
-            ${iljuHanjaSpan(db, BRANCH_OH_COLOR[db], '46px')}
+            ${iljuHanjaSpan(ds, '46px')}
+            ${iljuHanjaSpan(db, '46px')}
             <div style="font-size:10px;color:rgba(255,255,255,0.32);margin-top:6px;letter-spacing:1px;">일간 · 일지</div>
         </div>
         <div style="flex:1;min-width:0;">
@@ -4514,16 +4571,7 @@ function buildDaeunTimeline(data) {
     const rows = data.daeunRows || data.daewunList || [];
     if (!rows.length) return '';
     const curAge = getClientAgeYearsAtReport(data) || 0;
-    const OH_COLOR = {
-        '甲':'#4a9e6a','乙':'#4a9e6a','丙':'#e05a2b','丁':'#e05a2b',
-        '戊':'#c8a050','己':'#c8a050','庚':'#8898aa','辛':'#8898aa',
-        '壬':'#5588bb','癸':'#5588bb'
-    };
-    const JI_COLOR = {
-        '子':'#5588bb','丑':'#c8a050','寅':'#4a9e6a','卯':'#4a9e6a','辰':'#c8a050',
-        '巳':'#e05a2b','午':'#e05a2b','未':'#c8a050','申':'#8898aa','酉':'#8898aa',
-        '戌':'#c8a050','亥':'#5588bb'
-    };
+    // 색상은 글로벌 헬퍼 사용 — sajuxStemColor / sajuxBranchColor
     const yong = data.yong || ''; const hee = data.hee || '';
     const gi = data.gi || ''; const goo = data.goo || '';
     const OH_MAP = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
@@ -4549,27 +4597,27 @@ function buildDaeunTimeline(data) {
     if (!items.length) return ''; // 렌더할 대운 셀이 없으면 빈 박스 방지
 
     const cells = items.map(r => {
-        const col = OH_COLOR[r.g] || 'var(--gold)';
+        const col = sajuxStemColor(r.g);
         const bgAlpha = r.isCur ? '0.18' : (r.isPast ? '0.05' : '0.09');
         const borderColor = r.isCur ? col : (r.isPast ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.1)');
-        const textAlpha = r.isPast ? '0.38' : '0.88';
+        const dimOpacity = r.isPast ? 0.42 : 1;
         const scoreDot = r.score >= 2 ? '●' : (r.score <= -2 ? '●' : '◉');
-        const scoreDotColor = r.score >= 2 ? '#4a9e6a' : (r.score <= -2 ? '#e05a2b' : '#c8a050');
+        const scoreDotColor = r.score >= 2 ? SAJUX_OH_COLORS.wood : (r.score <= -2 ? SAJUX_OH_COLORS.fire : SAJUX_OH_COLORS.earth);
         const curLabel = r.isCur ? `<div style="font-size:9px;color:${col};font-weight:800;letter-spacing:1px;margin-bottom:3px;">▶ 현재</div>` : '';
-        return `<div class="daeun-tl-cell" style="flex:0 0 auto;min-width:60px;text-align:center;padding:10px 8px;border-radius:10px;background:rgba(255,255,255,${bgAlpha});border:1px solid ${borderColor};position:relative;${r.isCur?'box-shadow:0 0 12px rgba(199,167,106,0.18);':''}" title="${r.g}${r.j} ${r.age}세~${r.age+9}세">
+        return `<div class="daeun-tl-cell" style="flex:0 0 auto;min-width:60px;text-align:center;padding:10px 8px;border-radius:10px;background:rgba(255,255,255,${bgAlpha});border:1px solid ${borderColor};position:relative;opacity:${dimOpacity};${r.isCur?'box-shadow:0 0 12px rgba(199,167,106,0.18);':''}" title="${r.g}${r.j} ${r.age}세~${r.age+9}세">
             ${curLabel}
-            <div style="font-size:20px;font-weight:900;font-family:'Noto Sans KR',sans-serif;color:${col};opacity:${r.isPast?'0.4':'1'};line-height:1.1;">${r.g}</div>
-            <div style="font-size:20px;font-weight:900;font-family:'Noto Sans KR',sans-serif;color:rgba(255,255,255,${textAlpha});line-height:1.1;">${r.j}</div>
-            <div style="font-size:10px;color:rgba(255,255,255,0.4);margin-top:4px;">${r.age}세</div>
+            <div style="line-height:1.1;${sajuxHanjaInlineStyle(r.g, '20px', 700)}">${r.g}</div>
+            <div style="line-height:1.1;${sajuxHanjaInlineStyle(r.j, '20px', 700)}">${r.j}</div>
+            <div style="font-size:10px;color:rgba(255,255,255,0.45);margin-top:4px;">${r.age}세</div>
             <div style="font-size:11px;color:${scoreDotColor};margin-top:2px;">${scoreDot}</div>
         </div>`;
     }).join(`<div style="flex:0 0 auto;width:12px;border-top:1px dashed rgba(255,255,255,0.12);align-self:center;"></div>`);
 
     return `<div class="daeun-timeline-wrap" style="margin-bottom:24px;">
-        <div style="font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:1px;margin-bottom:10px;">대운 흐름 — 10년 계절 지도 &nbsp;
-            <span style="color:#4a9e6a;font-size:10px;">● 용신 운</span>&ensp;
-            <span style="color:#e05a2b;font-size:10px;">● 기신 운</span>&ensp;
-            <span style="color:#c8a050;font-size:10px;">◉ 중립 운</span>
+        <div style="font-size:11px;color:rgba(255,255,255,0.45);letter-spacing:1px;margin-bottom:10px;">대운 흐름 — 10년마다 바뀌는 인생의 큰 계절 &nbsp;
+            <span style="color:${SAJUX_OH_COLORS.wood};font-size:10px;">● 나에게 좋은 운</span>&ensp;
+            <span style="color:${SAJUX_OH_COLORS.fire};font-size:10px;">● 부담되는 운</span>&ensp;
+            <span style="color:${SAJUX_OH_COLORS.earth};font-size:10px;">◉ 중립</span>
         </div>
         <div style="display:flex;align-items:center;gap:0;overflow-x:auto;padding-bottom:6px;-webkit-overflow-scrolling:touch;">
             ${cells}
@@ -5955,7 +6003,7 @@ function buildVipEvidenceBlock(data) {
         ev += '</tr>';
         // 천간 십성 — 만세력과 동일(정통 십성 한글)
         ev += '<tr style="border-bottom:1px solid rgba(255,255,255,0.04);">';
-        ev += '<td style="padding:4px;color:#555;font-size:10px;">십성</td>';
+        ev += '<td class="vip-row-label" style="padding:6px 4px;font-size:10.5px;font-weight:600;letter-spacing:0.02em;">십성</td>';
         pillars.forEach(function(p,i){
             var spRaw=(isUnk&&i===0)?'-':(p.n==='일주'?'일원':(typeof getSipseong==='function'?getSipseong(ds,p.h[0]):''));
             var spShow=(spRaw==='-')?'-':(typeof sipToManseBadge==='function'?sipToManseBadge(spRaw,p.n==='일주'):(spRaw||'-'));
@@ -5964,7 +6012,7 @@ function buildVipEvidenceBlock(data) {
         ev += '</tr>';
         // 천간
         ev += '<tr style="border-bottom:1px solid rgba(255,255,255,0.04);">';
-        ev += '<td style="padding:4px;color:#555;font-size:10px;">천간</td>';
+        ev += '<td class="vip-row-label" style="padding:6px 4px;font-size:10.5px;font-weight:600;letter-spacing:0.02em;">천간</td>';
         pillars.forEach(function(p,i){
             if(isUnk&&i===0){ev+='<td style="text-align:center;color:#444;font-size:11px;">미상</td>';return;}
             var g=p.h[0]||''; var col=hanCol(g);
@@ -5973,12 +6021,12 @@ function buildVipEvidenceBlock(data) {
             var hanjaStyle=isWater
                 ? 'font-size:1.55em;font-weight:300;color:var(--water);-webkit-text-stroke:0.6px rgba(255,255,255,0.72);paint-order:stroke fill;font-family:\'Noto Sans KR\',\'Noto Sans SC\',sans-serif;'
                 : 'font-size:1.55em;font-weight:300;color:'+col+';font-family:\'Noto Sans KR\',\'Noto Sans SC\',sans-serif;';
-            ev+='<td style="padding:6px 6px;text-align:center;vertical-align:middle;"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;line-height:1.05;"><span class="vip-hanja" style="'+hanjaStyle+'">'+g+'</span><span style="font-size:10px;color:rgba(255,255,255,0.38);font-weight:500;">'+gKr+'</span></div></td>';
+            ev+='<td style="padding:6px 6px;text-align:center;vertical-align:middle;"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;line-height:1.05;"><span class="vip-hanja" style="'+hanjaStyle+'">'+g+'</span><span style="font-size:10px;color:var(--text-dim,rgba(255,255,255,0.55));font-weight:500;">'+gKr+'</span></div></td>';
         });
         ev += '</tr>';
         // 지지
         ev += '<tr style="border-bottom:1px solid rgba(255,255,255,0.04);">';
-        ev += '<td style="padding:4px;color:#555;font-size:10px;">지지</td>';
+        ev += '<td class="vip-row-label" style="padding:6px 4px;font-size:10.5px;font-weight:600;letter-spacing:0.02em;">지지</td>';
         pillars.forEach(function(p,i){
             if(isUnk&&i===0){ev+='<td style="text-align:center;color:#444;font-size:11px;">미상</td>';return;}
             var j=p.h[1]||''; var col=hanCol(j);
@@ -5987,12 +6035,12 @@ function buildVipEvidenceBlock(data) {
             var hanjaStyle=isWater
                 ? 'font-size:1.55em;font-weight:300;color:var(--water);-webkit-text-stroke:0.6px rgba(255,255,255,0.72);paint-order:stroke fill;font-family:\'Noto Sans KR\',\'Noto Sans SC\',sans-serif;'
                 : 'font-size:1.55em;font-weight:300;color:'+col+';font-family:\'Noto Sans KR\',\'Noto Sans SC\',sans-serif;';
-            ev+='<td style="padding:6px 6px;text-align:center;vertical-align:middle;"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;line-height:1.05;"><span class="vip-hanja" style="'+hanjaStyle+'">'+j+'</span><span style="font-size:10px;color:rgba(255,255,255,0.38);font-weight:500;">'+jKr+'</span></div></td>';
+            ev+='<td style="padding:6px 6px;text-align:center;vertical-align:middle;"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;line-height:1.05;"><span class="vip-hanja" style="'+hanjaStyle+'">'+j+'</span><span style="font-size:10px;color:var(--text-dim,rgba(255,255,255,0.55));font-weight:500;">'+jKr+'</span></div></td>';
         });
         ev += '</tr>';
         // 지지 십성 — 만세력 표와 동일 규칙
         ev += '<tr style="border-bottom:1px solid rgba(255,255,255,0.04);">';
-        ev += '<td style="padding:4px;color:#555;font-size:10px;">십성</td>';
+        ev += '<td class="vip-row-label" style="padding:6px 4px;font-size:10.5px;font-weight:600;letter-spacing:0.02em;">십성</td>';
         pillars.forEach(function(p,i){
             var spRaw=(isUnk&&i===0)?'-':(typeof getSipseong==='function'?getSipseong(ds,p.h[1]):'');
             var spShow=(spRaw==='-')?'-':(typeof sipToManseBadge==='function'?sipToManseBadge(spRaw,false):(spRaw||'-'));
@@ -6001,7 +6049,7 @@ function buildVipEvidenceBlock(data) {
         ev += '</tr>';
         // 지장간
         ev += '<tr style="border-bottom:1px solid rgba(255,255,255,0.04);">';
-        ev += '<td style="padding:4px;color:#555;font-size:10px;">지장간</td>';
+        ev += '<td class="vip-row-label" style="padding:6px 4px;font-size:10.5px;font-weight:600;letter-spacing:0.02em;">지장간</td>';
         pillars.forEach(function(p,i){
             if(isUnk&&i===0){ev+='<td style="text-align:center;color:#444;">-</td>';return;}
             ev+='<td style="padding:6px 4px;text-align:center;vertical-align:middle;">'+getHiddenVipTableCell(p.h[1], ds)+'</td>';
@@ -6009,7 +6057,7 @@ function buildVipEvidenceBlock(data) {
         ev += '</tr>';
         // 12운성
         ev += '<tr style="border-bottom:1px solid rgba(255,255,255,0.04);">';
-        ev += '<td style="padding:4px;color:#555;font-size:10px;">12운성</td>';
+        ev += '<td class="vip-row-label" style="padding:6px 4px;font-size:10.5px;font-weight:600;letter-spacing:0.02em;">12운성</td>';
         pillars.forEach(function(p,i){
             if(isUnk&&i===0){ev+='<td style="text-align:center;color:#444;">-</td>';return;}
             var u=typeof getUnsung==='function'?getUnsung(ds,p.h[1])||'-':'-';
@@ -6035,22 +6083,22 @@ function buildVipEvidenceBlock(data) {
         }
         // 12신살
         ev += '<tr style="border-bottom:1px solid rgba(255,255,255,0.04);">';
-        ev += '<td style="padding:4px;color:#555;font-size:10px;">12신살</td>';
+        ev += '<td class="vip-row-label" style="padding:6px 4px;font-size:10.5px;font-weight:600;letter-spacing:0.02em;">12신살</td>';
         pillars.forEach(function(p,i){
             if(isUnk&&i===0){ev+='<td style="text-align:center;color:#444;">-</td>';return;}
             var arr=at12[p.n]||[];
             var txt=formatShinsalCell(arr);
-            ev+='<td style="padding:3px 4px;text-align:center;font-size:7.6px;color:#7f7f7f;line-height:1.24;white-space:normal;word-break:keep-all;overflow-wrap:anywhere;letter-spacing:-0.12px;">'+txt+'</td>';
+            ev+='<td style="padding:3px 4px;text-align:center;font-size:9.5px;color:var(--text-dim,rgba(255,255,255,0.62));line-height:1.4;white-space:normal;word-break:keep-all;overflow-wrap:anywhere;letter-spacing:-0.05px;">'+txt+'</td>';
         });
         ev += '</tr>';
         // 기타신살
         ev += '<tr style="border-bottom:1px solid rgba(255,255,255,0.04);">';
-        ev += '<td style="padding:4px;color:#555;font-size:10px;">기타신살</td>';
+        ev += '<td class="vip-row-label" style="padding:6px 4px;font-size:10.5px;font-weight:600;letter-spacing:0.02em;">기타신살</td>';
         pillars.forEach(function(p,i){
             if(isUnk&&i===0){ev+='<td style="text-align:center;color:#444;">-</td>';return;}
             var arr=atEx[p.n]||[];
             var txt=formatShinsalCell(arr);
-            ev+='<td style="padding:3px 4px;text-align:center;font-size:7.6px;color:#7f7f7f;line-height:1.24;white-space:normal;word-break:keep-all;overflow-wrap:anywhere;letter-spacing:-0.12px;">'+txt+'</td>';
+            ev+='<td style="padding:3px 4px;text-align:center;font-size:9.5px;color:var(--text-dim,rgba(255,255,255,0.62));line-height:1.4;white-space:normal;word-break:keep-all;overflow-wrap:anywhere;letter-spacing:-0.05px;">'+txt+'</td>';
         });
         ev += '</tr>';
         // 공망
@@ -6058,7 +6106,7 @@ function buildVipEvidenceBlock(data) {
         var gmStrR=typeof getGongmang==='function'?getGongmang(ds+db):'';
         var gmHanjaR=gmStrR?[...gmStrR].map(function(c){return KR2HJ2_r[c]||c;}):[];
         ev += '<tr>';
-        ev += '<td style="padding:4px;color:#555;font-size:10px;">공망</td>';
+        ev += '<td class="vip-row-label" style="padding:6px 4px;font-size:10.5px;font-weight:600;letter-spacing:0.02em;">공망</td>';
         pillars.forEach(function(p,i){
             if(isUnk&&i===0){ev+='<td style="text-align:center;color:#444;">-</td>';return;}
             var br=(p.h&&p.h[1])||'';
@@ -6120,7 +6168,7 @@ function buildZiWeiDestinyBlueprintSection(data) {
         + '**취미·직무가 맞는 소모임**에는 먼저 **서로의 일과 생활 리듬**을 묻고, 편할 때 **짧은 대면 한 번**으로 분위기를 확인한 뒤 관계를 이어 가십시오.</p>';
     var zwLead = buildMetaphorHookTitle(data);
     return '<div id="sec-ziwei-appendix" class="report-chapter chapter-start appendix-ziwei" style="padding-top:8px;margin-bottom:8px;">'
-        + '<h3 class="ch-title" style="font-family:\'Noto Serif KR\',serif;font-size:20px;font-weight:800;line-height:1.45;margin:0 0 6px;">' + escHtmlAttr(zwLead) + '</h3>'
+        + '<h3 class="ch-title" style="font-family:\'Noto Sans KR\',serif;font-size:20px;font-weight:800;line-height:1.45;margin:0 0 6px;">' + escHtmlAttr(zwLead) + '</h3>'
         + '<p style="font-size:11px;letter-spacing:0.1em;color:rgba(157,211,255,0.75);margin:0 0 14px;font-weight:700;">별첨 · 자미두수로 보는 운명 설계도</p>'
         + '<p style="font-size:13px;color:#b8d4e8;margin:0 0 18px;line-height:1.85;">자미두수는 <strong>대만·중국 등지에서 발전한 별자리(자리배치) 기반 점성술</strong>로, 사주와 별개로 내면 반응·관계·일의 강약을 읽는 보조 프레임입니다. 사주를 대체하지 않고, 같은 인생을 다른 렌즈로 점검하는 <strong>별첨</strong>입니다.</p>'
         + '<p style="font-size:12px;color:#8ab4c7;margin:0 0 16px;line-height:1.75;">아래는 년지 <strong>' + ybKr + '(' + yb + ')</strong>을 전면에 둔 <strong>근사 해석</strong>입니다. 전통 자미두수의 월·시 배치와 다를 수 있으나, <strong>사회적 페르소나와 내면 욕망</strong>이 어디서 갈리는지 보는 용도로 쓰십시오.</p>'
@@ -6196,7 +6244,7 @@ function buildChapter8_NextDaewun(data){
     var chIntroNd = buildChapterIntroHtml(data, 'daeun');
     return '<div class="report-chapter chapter-start">' + chHeadNd + chIntroNd
         +'<div style="display:flex;flex-direction:column;align-items:stretch;gap:14px;background:rgba(199,167,106,0.07);border-radius:12px;padding:18px 20px;margin-bottom:20px;width:100%;max-width:100%;box-sizing:border-box;">'
-        +'<div style="font-size:30px;font-weight:800;color:'+judgeColor+';text-align:center;font-family:Noto Serif KR,serif;line-height:1.15;">'+nextDW.name+'</div>'
+        +'<div style="font-size:30px;font-weight:800;color:'+judgeColor+';text-align:center;font-family:Noto Sans KR,serif;line-height:1.15;">'+nextDW.name+'</div>'
         +'<div style="text-align:center;width:100%;"><div style="font-size:11px;color:#888;margin-bottom:4px;">'+nextDW.age+'세부터 열 해 동안</div>'
         +'<div style="font-size:14px;font-weight:700;color:'+judgeColor+';">'+judge+'</div></div></div>'
         +'<p style="font-size:13.5px;color:#ddd;line-height:2;margin:0 0 16px;">'+(DWNEXT[doh]||'')+'</p>'
@@ -6560,7 +6608,7 @@ function buildLifePanoramaSection(data) {
 
     return '<div id="sec-life-panorama" class="report-chapter chapter-start sajux-panel-plain" style="margin:28px 0 40px;padding:22px 20px;border-radius:14px;border:1px solid rgba(199,167,106,0.28);background:transparent;">'
         + '<div style="font-size:11px;letter-spacing:0.2em;color:rgba(199,167,106,0.85);margin-bottom:10px;font-weight:700;">인생 일대기</div>'
-        + '<h2 style="font-family:Noto Serif KR,serif;font-size:22px;font-weight:800;color:#f5f0e6;margin:0 0 8px;line-height:1.45;">' + escHtmlAttr(buildLifePanoramaTitle(data)) + '</h2>'
+        + '<h2 style="font-family:Noto Sans KR,serif;font-size:22px;font-weight:800;color:#f5f0e6;margin:0 0 8px;line-height:1.45;">' + escHtmlAttr(buildLifePanoramaTitle(data)) + '</h2>'
         + '<p style="font-size:12px;color:rgba(199,167,106,0.75);margin:0 0 16px;letter-spacing:0.04em;">' + escHtmlAttr(nmDnim(name) + '의 대서사시 — 태어남에서 귀결까지') + '</p>'
         + '<p style="font-size:13.5px;color:#ddd;line-height:2;margin:0 0 14px;">' + _lp(p1) + '</p>'
         + '<p style="font-size:13.5px;color:#ddd;line-height:2;margin:0 0 14px;">' + _lp(p2) + '</p>'
@@ -6665,7 +6713,7 @@ function buildForewordPage(data) {
     const accessLine = formatReportAccessLine(data);
     return `<div id="sec-book-foreword" class="toc-page chapter-start book-foreword-page" style="padding:56px 36px 72px;border-bottom:1px solid rgba(199,167,106,0.12);margin-bottom:40px;max-width:700px;margin-left:auto;margin-right:auto;">
         <div style="font-size:10px;letter-spacing:0.2em;color:rgba(199,167,106,0.75);margin-bottom:16px;font-weight:700;">[ 이용 안내 ]</div>
-        <h2 style="font-family:'Noto Serif KR',serif;font-size:28px;font-weight:700;color:var(--text,rgba(255,255,255,0.95));margin:0 0 18px;">이용 안내</h2>
+        <h2 style="font-family:'Noto Sans KR',serif;font-size:28px;font-weight:700;color:var(--text,rgba(255,255,255,0.95));margin:0 0 18px;">이용 안내</h2>
 
         <div style="text-align:left;padding:16px 18px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(199,167,106,0.14);margin-bottom:14px;">
             <div style="font-size:12px;color:var(--gold);letter-spacing:0.08em;margin-bottom:8px;font-weight:700;">법적 안내</div>
@@ -6734,7 +6782,7 @@ function buildTOC(data) {
 
     return '<div class="toc-page" style="padding:60px 40px 80px;border-bottom:1px solid rgba(199,167,106,0.1);margin-bottom:48px;">' +
         '<div style="font-size:10px;letter-spacing:0.22em;color:rgba(199,167,106,0.75);margin-bottom:14px;font-weight:700;">[ 리포트 핵심 목차 ]</div>' +
-        '<div style="font-family:\'Noto Serif KR\',serif;font-size:30px;font-weight:700;color:var(--text,rgba(255,255,255,0.95));margin-bottom:6px;">목차</div>' +
+        '<div style="font-family:\'Noto Sans KR\',serif;font-size:30px;font-weight:700;color:var(--text,rgba(255,255,255,0.95));margin-bottom:6px;">목차</div>' +
         '<div style="font-size:13px;color:var(--text-dim,rgba(255,255,255,0.55));margin-bottom:32px;">X-SAJU MASTER — 컨설팅 보고서형 4부 구조</div>' +
         '<div style="width:60px;height:2px;background:var(--gold);margin-bottom:28px;opacity:0.4;"></div>' +
         body +
@@ -8455,7 +8503,7 @@ var strat = _dText(s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>'
                 var d=document.createElement('div');
                 d.style.cssText='padding:14px;background:rgba(255,255,255,'+(isCur?'0.07':'0.03')+');border:1px solid '+(isCur?'var(--gold)':'rgba(255,255,255,0.07)')+';border-radius:10px;';
                 d.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:6px;">'+
-                    '<div style="display:flex;align-items:center;gap:8px;"><span style="font-size:22px;font-weight:900;color:var(--gold);font-family:Noto Serif KR,serif;">'+g+j+'</span><span style="font-size:15px;font-weight:600;color:#ccc;">('+((HAN_KOR&&HAN_KOR[g])||g)+((HAN_KOR&&HAN_KOR[j])||j)+')</span>'+
+                    '<div style="display:flex;align-items:center;gap:8px;"><span style="font-size:22px;font-weight:900;color:var(--gold);font-family:Noto Sans KR,serif;">'+g+j+'</span><span style="font-size:15px;font-weight:600;color:#ccc;">('+((HAN_KOR&&HAN_KOR[g])||g)+((HAN_KOR&&HAN_KOR[j])||j)+')</span>'+
                     '<div><div style="font-size:12px;color:#bbb;">'+age+'세 ~ '+(endAge-1)+'세</div>'+(isCur?'<span style="font-size:10px;background:rgba(199,167,106,0.10);color:var(--gold);border:1px solid rgba(199,167,106,0.40);padding:1px 6px;border-radius:6px;font-weight:600;letter-spacing:0.3px;">▶ 현재</span>':'')+'</div></div>'+
                     '<span style="font-size:12px;font-weight:700;color:'+col+';">'+gb(s)+'</span></div>'+
                     '<div style="background:rgba(0,0,0,0.15);border-radius:6px;padding:10px;margin-bottom:8px;"><p style="font-size:12px;color:#ddd;line-height:1.75;margin:0;">'+_dText((window.PERIOD_NARRATIVE&&window.PERIOD_NARRATIVE[g+j]) ? window.PERIOD_NARRATIVE[g+j] : (GAN_T[g]||'')+' '+(JI_T[j]||''))+'</p></div>'+
@@ -9034,7 +9082,7 @@ var strat = _dText(s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>'
                     +wealthLine+' '+careerLine+' '+relationLine;
 
                 h2+='<div style="margin-bottom:18px;padding:18px;background:rgba(255,255,255,'+(isCur?'0.07':'0.03')+');border:1px solid '+(isCur?'var(--gold)':'rgba(255,255,255,0.07)')+';border-radius:12px;">';
-                h2+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:26px;font-weight:900;color:var(--gold);font-family:Noto Serif KR,serif;">'+g+j+'</span><div><div style="font-size:13px;color:#bbb;">'+age+'세 ~ '+(endAge-1)+'세</div>'+(isCur?'<span style="font-size:10px;background:rgba(199,167,106,0.10);color:var(--gold);border:1px solid rgba(199,167,106,0.40);padding:1px 8px;border-radius:8px;font-weight:600;letter-spacing:0.3px;">▶ 현재</span>':'')+'</div></div><span style="font-size:13px;font-weight:700;color:'+col+';padding:4px 12px;border-radius:20px;background:rgba(255,255,255,0.05);">'+gb(s)+'</span></div>';
+                h2+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:26px;font-weight:900;color:var(--gold);font-family:Noto Sans KR,serif;">'+g+j+'</span><div><div style="font-size:13px;color:#bbb;">'+age+'세 ~ '+(endAge-1)+'세</div>'+(isCur?'<span style="font-size:10px;background:rgba(199,167,106,0.10);color:var(--gold);border:1px solid rgba(199,167,106,0.40);padding:1px 8px;border-radius:8px;font-weight:600;letter-spacing:0.3px;">▶ 현재</span>':'')+'</div></div><span style="font-size:13px;font-weight:700;color:'+col+';padding:4px 12px;border-radius:20px;background:rgba(255,255,255,0.05);">'+gb(s)+'</span></div>';
                 var _ageD = age||0;
                 var dnarr=(window.PERIOD_NARRATIVE&&window.PERIOD_NARRATIVE[g+j])
                     ||(_ageD+'세~'+(_ageD+9)+'세 — '+(GAN_T[g]||g+' 기운의 10년입니다.')+' '+(JI_T[j]||''));
