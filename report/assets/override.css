@@ -1,45 +1,85 @@
 /* ══════════════════════════════════════════════════════
-   SAJUX OVERRIDE v4
-   ▸ 다크모드 = "별이 보이는 우주" — 깊은 어둠, 빛나는 별 텍스트
-   ▸ 라이트모드 = "도화지에 먹" — 따뜻한 종이, 선명한 먹 글씨
-   ▸ 두 테마는 완전히 독립 적용. 서로 간섭 없음.
+   SAJUX OVERRIDE v5  — 하이앤드 에디션
+   ▸ 다크모드 = 밤 하늘·우주 — 깊은 암흑, 별 같은 골드 포인트
+   ▸ 라이트모드 = 낮·종이 — 따뜻한 크림, 선명한 먹 글씨
+   ▸ 톤: Tesla 정밀함 × Apple 간결함 × 한국 전통 골드
    ══════════════════════════════════════════════════════ */
 
 /* ─────────────────────────────────
-   공통 (테마 무관)
+   CSS 변수 — 공통 토큰
+───────────────────────────────── */
+:root {
+  --sajux-radius-card:  14px;
+  --sajux-radius-inner: 10px;
+  --sajux-gold:         #c8a050;
+  --sajux-gold-dim:     rgba(200,160,80,0.55);
+  --sajux-transition:   0.18s cubic-bezier(0.4,0,0.2,1);
+  --text-dim:           rgba(255,255,255,0.60);
+}
+html[data-theme="light"] {
+  --text-dim:           rgba(20,14,6,0.55);
+}
+
+/* ─────────────────────────────────
+   공통 — 테마 무관
 ───────────────────────────────── */
 
-/* 한자 폰트 고딕 통일 */
+/* 한자 폰트: 가느다란 고딕 (weight 200~300) */
 .sajux-hanja, .m-hanja, .hanja, .manse-hanja,
 [class*="hanja"], [class*="ganji"],
 .m-stem, .m-branch, .manse-stem, .manse-branch,
 .rel-char span, .ch-stem, .ch-branch,
-.manse-cell .top, .manse-cell .bottom {
+.manse-cell .top, .manse-cell .bottom,
+.vip-hanja {
   font-family: 'Noto Sans KR', 'Noto Sans SC', 'Noto Sans', sans-serif !important;
-  font-weight: 700 !important;
+  font-weight: 300 !important;
 }
 
-/* 4대 지표 그리드 — 항상 2×2 */
+/* 수(水) 오행 한자 — 검정 + 흰 윤곽 (다크모드) */
+html:not([data-theme="light"]) .vip-hanja[style*="color:var(--water)"],
+html:not([data-theme="light"]) .water,
+html:not([data-theme="light"]) .manse-cell .water,
+html:not([data-theme="light"]) [class~="water"] .top,
+html:not([data-theme="light"]) [class~="water"] .bottom {
+  color: #111111 !important;
+  -webkit-text-stroke: 0.4px rgba(255,255,255,0.55) !important;
+  paint-order: stroke fill !important;
+}
+
+/* 라이트모드: 수 = 검정 (그대로) */
+html[data-theme="light"] .vip-hanja[style*="color:var(--water)"],
+html[data-theme="light"] .water,
+html[data-theme="light"] [class~="water"] .top,
+html[data-theme="light"] [class~="water"] .bottom {
+  color: #0d0d0d !important;
+  -webkit-text-stroke: 0 !important;
+}
+
+/* 4대 지표 — 항상 2×2 */
 .yearly-indicators-grid {
   display: grid !important;
   grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   gap: 8px 10px !important;
 }
 
-/* 파트 헤더 제목 스타일 */
+/* 파트 헤더 */
 .part-header-title {
   font-size: 22px !important;
-  font-weight: 800 !important;
-  letter-spacing: -0.3px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.5px !important;
   line-height: 1.3 !important;
 }
 
 /* ─────────────────────────────────
-   다크모드 — 별이 보이는 우주
-   깊은 배경, 별처럼 빛나는 글씨
+   다크모드 — 밤 하늘 / 우주
 ───────────────────────────────── */
 
-/* 카드/패널 어둡게 */
+/* 기본 배경 */
+html:not([data-theme="light"]) body {
+  background: #08090e !important;
+}
+
+/* 카드·패널 */
 html:not([data-theme="light"]) .card,
 html:not([data-theme="light"]) .yearly-card,
 html:not([data-theme="light"]) .monthly-card,
@@ -47,71 +87,90 @@ html:not([data-theme="light"]) .inner-card,
 html:not([data-theme="light"]) .detail-box,
 html:not([data-theme="light"]) .jijanggan,
 html:not([data-theme="light"]) div[class*="card"] {
-  background: rgba(8,10,16,0.70) !important;
-  border: 1px solid rgba(255,255,255,0.05) !important;
-  box-shadow: none !important;
+  background: rgba(14,14,18,0.92) !important;
+  border: 1px solid rgba(255,255,255,0.055) !important;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.03) !important;
 }
 
 html:not([data-theme="light"]) .glass-card,
 html:not([data-theme="light"]) .inline-interp,
 html:not([data-theme="light"]) .section-interp {
-  background: rgba(12,14,20,0.65) !important;
+  background: rgba(16,15,20,0.75) !important;
   border-color: rgba(255,255,255,0.04) !important;
 }
 
-/* 다크모드: 어두운 글씨색 → 밝게 (별빛처럼) */
+/* 제목 계층 */
+html:not([data-theme="light"]) h1,
+html:not([data-theme="light"]) h2,
+html:not([data-theme="light"]) h3,
+html:not([data-theme="light"]) .section-title,
+html:not([data-theme="light"]) .ch-title,
+html:not([data-theme="light"]) .part-header-title {
+  color: #f0ead8 !important;
+}
+
+/* 다크: 어두운 inline 색상 → 밝게 */
 html:not([data-theme="light"]) [style*="color:#1a1a1a"],
 html:not([data-theme="light"]) [style*="color:#3d3428"],
 html:not([data-theme="light"]) [style*="color:#4a4a4a"],
 html:not([data-theme="light"]) [style*="color:#3a3a3a"],
 html:not([data-theme="light"]) [style*="color:#2a2a2a"] { color: #c8c4bc !important; }
-html:not([data-theme="light"]) [style*="color:#333"]    { color: #c8c4bc !important; }
-html:not([data-theme="light"]) [style*="color:#444"]    { color: #b8b0a0 !important; }
-html:not([data-theme="light"]) [style*="color:#555"]    { color: #a09888 !important; }
-html:not([data-theme="light"]) [style*="color:#666"]    { color: #9a9280 !important; }
-html:not([data-theme="light"]) [style*="color:#777"]    { color: #a8a098 !important; }
+html:not([data-theme="light"]) [style*="color:#333"]    { color: #c2bdb5 !important; }
+html:not([data-theme="light"]) [style*="color:#444"]    { color: #b0a898 !important; }
+html:not([data-theme="light"]) [style*="color:#555"]    { color: rgba(255,255,255,0.45) !important; }
+html:not([data-theme="light"]) [style*="color:#666"]    { color: rgba(255,255,255,0.40) !important; }
+html:not([data-theme="light"]) [style*="color:#777"]    { color: rgba(255,255,255,0.50) !important; }
+html:not([data-theme="light"]) [style*="color:#999"]    { color: rgba(255,255,255,0.55) !important; }
 
-/* 다크모드: 골드·브랜드 눈부심 억제 */
+/* 골드 톤 — 균일화 */
 html:not([data-theme="light"]) .gold,
 html:not([data-theme="light"]) .brand {
-  color: #b8923a !important;
+  color: var(--sajux-gold) !important;
   text-shadow: none !important;
 }
 
-/* 다크모드: 버튼 */
+/* 버튼 */
 html:not([data-theme="light"]) .btn {
-  background: rgba(255,255,255,0.05) !important;
-  color: rgba(255,255,255,0.88) !important;
-  border: 1px solid rgba(255,255,255,0.08) !important;
+  background: rgba(255,255,255,0.04) !important;
+  color: rgba(255,255,255,0.86) !important;
+  border: 1px solid rgba(255,255,255,0.07) !important;
+}
+html:not([data-theme="light"]) .btn:hover {
+  background: rgba(255,255,255,0.08) !important;
 }
 html:not([data-theme="light"]) .btn.subtle {
-  color: rgba(255,255,255,0.55) !important;
-  border-color: rgba(255,255,255,0.06) !important;
-}
-html:not([data-theme="light"]) .btn.subtle:hover {
-  color: rgba(255,255,255,0.85) !important;
+  color: rgba(255,255,255,0.48) !important;
+  border-color: rgba(255,255,255,0.05) !important;
 }
 
-/* 다크모드: 열람·PDF 안내 */
+/* 열람·PDF 안내 */
 html:not([data-theme="light"]) .sajux-access-note {
-  background: rgba(20,18,14,0.85) !important;
-  border-color: rgba(199,167,106,0.25) !important;
-  color: #c8c0b0 !important;
+  background: rgba(16,14,10,0.90) !important;
+  border-color: rgba(200,160,80,0.22) !important;
+  color: rgba(255,255,255,0.58) !important;
 }
+
+/* VIP 모듈 카드 그리드 — 다크 */
+html:not([data-theme="light"]) .vip-module-item {
+  background: rgba(255,255,255,0.025) !important;
+  border-color: rgba(200,160,80,0.15) !important;
+}
+
+/* 만세력 테이블 헤더 행 */
+html:not([data-theme="light"]) .vip-manse-title { color: var(--sajux-gold) !important; }
 
 /* ─────────────────────────────────
-   라이트모드 — 도화지에 먹
-   따뜻한 크림 종이, 선명한 먹 글씨
+   라이트모드 — 낮 / 크림 종이
 ───────────────────────────────── */
 
-/* 배경 & 기본 텍스트 */
+/* 배경 */
 html[data-theme="light"] body {
-  background: #f5f0e8 !important;
-  color: #1a1510 !important;
+  background: #f4efe6 !important;
+  color: #111008 !important;
 }
-html[data-theme="light"] .report-chapter { color: #1a1510 !important; }
+html[data-theme="light"] .report-chapter { color: #111008 !important; }
 
-/* 카드: 따뜻한 흰 종이 */
+/* 카드 */
 html[data-theme="light"] .card,
 html[data-theme="light"] .yearly-card,
 html[data-theme="light"] .monthly-card,
@@ -119,129 +178,140 @@ html[data-theme="light"] .inner-card,
 html[data-theme="light"] .detail-box,
 html[data-theme="light"] div[class*="card"] {
   background: #ffffff !important;
-  border: 1px solid rgba(28,21,10,0.10) !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
-  color: #1a1510 !important;
+  border: 1px solid rgba(16,12,4,0.09) !important;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.055) !important;
+  color: #111008 !important;
 }
 html[data-theme="light"] .glass-card,
 html[data-theme="light"] .inline-interp,
 html[data-theme="light"] .section-interp {
-  background: #faf7f2 !important;
-  border-color: rgba(28,21,10,0.08) !important;
-  color: #1a1510 !important;
+  background: #faf6ef !important;
+  border-color: rgba(16,12,4,0.07) !important;
+  color: #111008 !important;
 }
 
-/* 라이트모드: 제목·본문 선명하게 */
+/* 제목 */
 html[data-theme="light"] h1,
 html[data-theme="light"] h2,
 html[data-theme="light"] h3,
 html[data-theme="light"] .section-title,
 html[data-theme="light"] .ch-title,
-html[data-theme="light"] .part-header-title { color: #0d0a06 !important; font-weight: 700; }
+html[data-theme="light"] .part-header-title { color: #0c0904 !important; font-weight: 700 !important; }
 
+/* 본문 */
 html[data-theme="light"] p,
 html[data-theme="light"] li,
 html[data-theme="light"] .ii-text,
 html[data-theme="light"] .ii-text p { color: #1a1510 !important; }
+html[data-theme="light"] .ch-text,
+html[data-theme="light"] .ch-text b { color: #1a1510 !important; }
 
-/* 라이트모드: 밝은 다크모드용 색 → 먹색으로 교체 */
-/* 흰색 계열 (다크모드에서만 쓰는 색) */
-html[data-theme="light"] [style*="color:#ddd"]              { color: #3a3530 !important; }
-html[data-theme="light"] [style*="color:#ccc"]              { color: #4a4540 !important; }
+/* 라이트: 다크모드 밝은색 → 먹색 치환 */
+html[data-theme="light"] [style*="color:#ddd"]              { color: #383028 !important; }
+html[data-theme="light"] [style*="color:#ccc"]              { color: #484038 !important; }
 html[data-theme="light"] [style*="color:#bbb"]              { color: #555048 !important; }
-html[data-theme="light"] [style*="color:#aaa"]              { color: #605850 !important; }
+html[data-theme="light"] [style*="color:#aaa"]              { color: #5e5850 !important; }
 html[data-theme="light"] [style*="color:#999"]              { color: #686058 !important; }
 html[data-theme="light"] [style*="color:#888"]              { color: #706860 !important; }
-html[data-theme="light"] [style*="color:#d6dae2"]           { color: #4a4540 !important; }
-html[data-theme="light"] [style*="color:#cfcfcf"]           { color: #4a4540 !important; }
-html[data-theme="light"] [style*="color:#d7d7d7"]           { color: #3a3530 !important; }
-html[data-theme="light"] [style*="color:#d8d3c9"]           { color: #4a4540 !important; }
-html[data-theme="light"] [style*="color:#f5f0e6"]           { color: #2a2520 !important; }
-html[data-theme="light"] [style*="color:#efe9dc"]           { color: #2a2520 !important; }
-html[data-theme="light"] [style*="color:#e5d7b3"]           { color: #3a3025 !important; }
-html[data-theme="light"] [style*="color:#e8dcc8"]           { color: #2a2520 !important; }
-html[data-theme="light"] [style*="color:#c8c0b0"]           { color: #3a3530 !important; }
+html[data-theme="light"] [style*="color:#d6dae2"]           { color: #484038 !important; }
+html[data-theme="light"] [style*="color:#cfcfcf"]           { color: #484038 !important; }
+html[data-theme="light"] [style*="color:#d7d7d7"]           { color: #383028 !important; }
+html[data-theme="light"] [style*="color:#d8d3c9"]           { color: #484038 !important; }
+html[data-theme="light"] [style*="color:#f5f0e6"]           { color: #282018 !important; }
+html[data-theme="light"] [style*="color:#efe9dc"]           { color: #282018 !important; }
+html[data-theme="light"] [style*="color:#e5d7b3"]           { color: #3a2e1e !important; }
+html[data-theme="light"] [style*="color:#e8dcc8"]           { color: #282018 !important; }
+html[data-theme="light"] [style*="color:#c8c0b0"]           { color: #383028 !important; }
 html[data-theme="light"] [style*="color:#b0bec5"]           { color: #555860 !important; }
 html[data-theme="light"] [style*="color:#9aa1ae"]           { color: #606870 !important; }
 html[data-theme="light"] [style*="color:#7a8494"]           { color: #606870 !important; }
 html[data-theme="light"] [style*="color:#8a8278"]           { color: #706860 !important; }
-/* rgba 흰색 계열 */
-html[data-theme="light"] [style*="color:rgba(255,255,255,0.9"] { color: #111 !important; }
-html[data-theme="light"] [style*="color:rgba(255,255,255,0.8"] { color: #222 !important; }
-html[data-theme="light"] [style*="color:rgba(255,255,255,0.7"] { color: #333 !important; }
-html[data-theme="light"] [style*="color:rgba(255,255,255,0.6"] { color: #444 !important; }
-html[data-theme="light"] [style*="color:rgba(255,255,255,0.5"] { color: #555 !important; }
-html[data-theme="light"] [style*="color:rgba(255,255,255,0.4"] { color: #666 !important; }
-html[data-theme="light"] [style*="color:rgba(255,255,255,0.3"] { color: #777 !important; }
-html[data-theme="light"] [style*="color:rgba(245,240,232"]    { color: #2a2520 !important; }
-html[data-theme="light"] [style*="color:rgba(180,185,195"]    { color: #555860 !important; }
+html[data-theme="light"] [style*="color:rgba(255,255,255,0.9"]  { color: #0d0a06 !important; }
+html[data-theme="light"] [style*="color:rgba(255,255,255,0.8"]  { color: #1a1510 !important; }
+html[data-theme="light"] [style*="color:rgba(255,255,255,0.7"]  { color: #2a2520 !important; }
+html[data-theme="light"] [style*="color:rgba(255,255,255,0.6"]  { color: #3a3530 !important; }
+html[data-theme="light"] [style*="color:rgba(255,255,255,0.5"]  { color: #484038 !important; }
+html[data-theme="light"] [style*="color:rgba(255,255,255,0.4"]  { color: #555048 !important; }
+html[data-theme="light"] [style*="color:rgba(255,255,255,0.3"]  { color: #656058 !important; }
+html[data-theme="light"] [style*="color:rgba(245,240,232"]  { color: #282018 !important; }
+html[data-theme="light"] [style*="color:rgba(180,185,195"]  { color: #555860 !important; }
 
-/* 라이트모드: 버튼 — 종이 위 먹 테두리 */
+/* 라이트: dim 색상 */
+html[data-theme="light"] [style*="color:rgba(255,255,255,0.38)"],
+html[data-theme="light"] [style*="color:rgba(255,255,255,0.32)"],
+html[data-theme="light"] [style*="color:rgba(255,255,255,0.35)"] { color: #707068 !important; }
+
+/* 버튼 */
 html[data-theme="light"] .btn {
   background: #ffffff !important;
-  color: #1a1510 !important;
-  border: 1px solid rgba(28,21,10,0.18) !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.07) !important;
+  color: #111008 !important;
+  border: 1px solid rgba(16,12,4,0.16) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
 }
 html[data-theme="light"] .btn.subtle {
   background: transparent !important;
   color: #3a3530 !important;
-  border: 1px solid rgba(28,21,10,0.15) !important;
+  border: 1px solid rgba(16,12,4,0.14) !important;
   box-shadow: none !important;
 }
 html[data-theme="light"] .btn:hover {
-  background: #f0ece4 !important;
-  color: #0d0a06 !important;
+  background: #ede8de !important;
+  color: #0c0904 !important;
 }
 
-/* 라이트모드: yearly-indicators 셀 */
+/* yearly-indicators */
 html[data-theme="light"] .yearly-ind-cell {
-  background: #faf7f2 !important;
-  border: 1px solid rgba(28,21,10,0.10) !important;
+  background: #faf6ef !important;
+  border: 1px solid rgba(16,12,4,0.09) !important;
 }
-html[data-theme="light"] .yearly-ind-val  { color: #1a1510 !important; }
+html[data-theme="light"] .yearly-ind-val  { color: #111008 !important; }
 html[data-theme="light"] .yearly-ind-cell > div:first-child { color: #706858 !important; }
 
-/* 라이트모드: 오행 차트 */
+/* 오행 차트 */
 html[data-theme="light"] .wuxing-bar-chart {
   background: #ffffff !important;
-  border: 1px solid rgba(199,167,106,0.3) !important;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.06) !important;
+  border: 1px solid rgba(200,160,80,0.28) !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.05) !important;
 }
-
-/* 라이트모드: 십성 차트 */
 html[data-theme="light"] .sipseong-bar-chart {
   background: #ffffff !important;
-  border: 1px solid rgba(199,167,106,0.3) !important;
+  border: 1px solid rgba(200,160,80,0.28) !important;
 }
 
-/* 라이트모드: 막대 트랙 (흰 배경에 rgba(255,255,255,0.08)은 안 보임 → 연회색) */
+/* 막대 트랙 */
 html[data-theme="light"] .wuxing-bar-row [style*="background:rgba(255,255,255,0.08)"],
 html[data-theme="light"] .sipseong-bar-row [style*="background:rgba(255,255,255,0.08)"] {
-  background: rgba(0,0,0,0.10) !important;
-  border-color: rgba(0,0,0,0.08) !important;
+  background: rgba(0,0,0,0.09) !important;
+  border-color: rgba(0,0,0,0.07) !important;
 }
-
-/* 라이트모드: 막대 값·레이블 색 (이미 상위에서 #bbb→#555 처리되나 강화) */
 html[data-theme="light"] .wuxing-bar-row,
 html[data-theme="light"] .sipseong-bar-row { color: #1a1510 !important; }
 
-html[data-theme="light"] .ch-text,
-html[data-theme="light"] .ch-text b { color: #1a1510 !important; }
-
-/* 라이트모드: 열람·PDF 안내 */
+/* 열람·PDF 안내 */
 html[data-theme="light"] .sajux-access-note {
-  background: #fdf9f2 !important;
-  border: 1px solid rgba(199,167,106,0.35) !important;
-  color: #2a2520 !important;
+  background: #fdf8ef !important;
+  border: 1px solid rgba(200,160,80,0.32) !important;
+  color: #2a2218 !important;
 }
-html[data-theme="light"] .sajux-access-note strong { color: #1a1510 !important; }
+html[data-theme="light"] .sajux-access-note strong { color: #111008 !important; }
 
-/* 라이트모드: 링크 */
-html[data-theme="light"] a { color: #5a4020 !important; }
+/* 링크 */
+html[data-theme="light"] a { color: #5a3e18 !important; }
+
+/* VIP 모듈 카드 — 라이트 */
+html[data-theme="light"] .vip-module-item {
+  background: #faf6ef !important;
+  border-color: rgba(200,160,80,0.22) !important;
+}
+html[data-theme="light"] .vip-module-title { color: #8a6218 !important; }
+html[data-theme="light"] .vip-module-desc  { color: #2a2218 !important; }
+
+/* 만세력 테이블 라이트 */
+html[data-theme="light"] .vip-manse-title { color: #7a5a14 !important; }
+html[data-theme="light"] table td         { color: #1a1510 !important; }
 
 /* ─────────────────────────────────
-   PDF 인쇄 — 카드 단위로 끊기
+   PDF 인쇄 — 카드 단위 끊기
 ───────────────────────────────── */
 @media print {
   .report-chapter,
@@ -264,112 +334,109 @@ html[data-theme="light"] a { color: #5a4020 !important; }
   .yearly-indicators-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
-  /* 인쇄: 배경 종이색, 먹 글씨 */
   body, .report-chapter { background: #fff !important; color: #111 !important; }
   .card, .yearly-card, .monthly-card, .inner-card,
   .detail-box, .jijanggan, div[class*="card"], div[class*="box"] {
     background: #ffffff !important;
-    border: 1px solid #ccc !important;
+    border: 1px solid #d0c8bc !important;
     color: #111 !important;
   }
   .sajux-access-note {
-    background: #fdf9f2 !important;
-    color: #2a2520 !important;
-    border: 1px solid rgba(199,167,106,0.4) !important;
+    background: #fdf8ef !important;
+    color: #2a2218 !important;
+    border: 1px solid rgba(200,160,80,0.38) !important;
   }
-  /* 인쇄 시 밝은 다크모드 색 모두 검게 */
   [style*="color:#ddd"], [style*="color:#ccc"], [style*="color:#bbb"],
   [style*="color:#aaa"], [style*="color:#d6dae2"], [style*="color:#e8dcc8"],
   [style*="color:rgba(255,255,255"] { color: #333 !important; }
+  /* 인쇄: 수 오행 한자 = 검정, outline 제거 */
+  .vip-hanja { -webkit-text-stroke: 0 !important; }
 }
 
-/* ─────────────────────────────────────────────────────
-   신규 컴포넌트 스타일 — 일주 프로파일 카드
-───────────────────────────────────────────────────── */
+/* ─────────────────────────────────
+   일주 프로파일 카드
+───────────────────────────────── */
 .ilju-profile-card {
-    position: relative;
-    transition: box-shadow 0.2s;
+  position: relative;
+  transition: box-shadow var(--sajux-transition);
 }
 .ilju-profile-card:hover {
-    box-shadow: 0 4px 24px rgba(199,167,106,0.12) !important;
+  box-shadow: 0 4px 24px rgba(200,160,80,0.10) !important;
 }
 .ilju-kw-badge {
-    transition: background 0.15s, border-color 0.15s;
+  transition: background var(--sajux-transition), border-color var(--sajux-transition);
 }
 .ilju-kw-badge:hover {
-    background: rgba(255,255,255,0.1) !important;
-    border-color: rgba(199,167,106,0.4) !important;
+  background: rgba(255,255,255,0.09) !important;
+  border-color: rgba(200,160,80,0.38) !important;
 }
-[data-theme="light"] .ilju-profile-card {
-    background: linear-gradient(135deg, rgba(199,167,106,0.06), rgba(255,255,255,0)) !important;
-    border-color: rgba(0,0,0,0.08) !important;
+html[data-theme="light"] .ilju-profile-card {
+  background: linear-gradient(135deg, rgba(200,160,80,0.05), #ffffff) !important;
+  border-color: rgba(0,0,0,0.07) !important;
 }
-[data-theme="light"] .ilju-kw-badge {
-    background: rgba(0,0,0,0.05) !important;
-    border-color: rgba(0,0,0,0.12) !important;
-    color: #333 !important;
+html[data-theme="light"] .ilju-kw-badge {
+  background: rgba(0,0,0,0.04) !important;
+  border-color: rgba(0,0,0,0.10) !important;
+  color: #2a2218 !important;
 }
-[data-theme="light"] .ilju-profile-card p,
-[data-theme="light"] .ilju-profile-card div {
-    color: #222 !important;
-}
+html[data-theme="light"] .ilju-profile-card p,
+html[data-theme="light"] .ilju-profile-card div { color: #1a1510 !important; }
+/* 라이트: 일주 카드 내 dim 텍스트 */
+html[data-theme="light"] .ilju-hanja-col > div:last-child { color: #909080 !important; }
 
-/* ─────────────────────────────────────────────────────
-   신규 컴포넌트 스타일 — 대운 타임라인
-───────────────────────────────────────────────────── */
-.daeun-timeline-wrap {
-    overflow: visible;
-}
+/* ─────────────────────────────────
+   대운 타임라인
+───────────────────────────────── */
+.daeun-timeline-wrap { overflow: visible; }
 .daeun-timeline-wrap > div:last-child {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(199,167,106,0.3) transparent;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(200,160,80,0.28) transparent;
 }
 .daeun-timeline-wrap > div:last-child::-webkit-scrollbar { height: 4px; }
 .daeun-timeline-wrap > div:last-child::-webkit-scrollbar-track { background: transparent; }
-.daeun-timeline-wrap > div:last-child::-webkit-scrollbar-thumb { background: rgba(199,167,106,0.3); border-radius: 2px; }
+.daeun-timeline-wrap > div:last-child::-webkit-scrollbar-thumb { background: rgba(200,160,80,0.28); border-radius: 2px; }
 .daeun-tl-cell {
-    cursor: default;
-    transition: transform 0.15s, box-shadow 0.15s;
+  cursor: default;
+  transition: transform var(--sajux-transition), box-shadow var(--sajux-transition);
 }
 .daeun-tl-cell:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.25) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.22) !important;
 }
-[data-theme="light"] .daeun-tl-cell {
-    background: rgba(0,0,0,0.04) !important;
-    border-color: rgba(0,0,0,0.10) !important;
+html[data-theme="light"] .daeun-tl-cell {
+  background: rgba(0,0,0,0.03) !important;
+  border-color: rgba(0,0,0,0.09) !important;
 }
-[data-theme="light"] .daeun-timeline-wrap div {
-    color: #333 !important;
-}
+html[data-theme="light"] .daeun-timeline-wrap div { color: #2a2218 !important; }
 
-/* ─────────────────────────────────────────────────────
-   신규 컴포넌트 스타일 — 4대 영역 레이더 차트
-───────────────────────────────────────────────────── */
-.four-domain-radar svg polygon {
-    transition: all 0.3s;
+/* ─────────────────────────────────
+   4대 영역 레이더 차트
+───────────────────────────────── */
+.four-domain-radar svg polygon { transition: all 0.3s; }
+html[data-theme="light"] .four-domain-radar {
+  background: rgba(0,0,0,0.018) !important;
+  border-color: rgba(0,0,0,0.07) !important;
 }
-[data-theme="light"] .four-domain-radar {
-    background: rgba(0,0,0,0.02) !important;
-    border-color: rgba(0,0,0,0.08) !important;
-}
-[data-theme="light"] .four-domain-radar text { fill: #333 !important; }
-[data-theme="light"] .four-domain-radar div { color: #222 !important; }
-[data-theme="light"] .four-domain-radar span { color: #444 !important; }
+html[data-theme="light"] .four-domain-radar text { fill: #2a2218 !important; }
+html[data-theme="light"] .four-domain-radar div  { color: #1a1510 !important; }
+html[data-theme="light"] .four-domain-radar span { color: #3a3028 !important; }
 
-/* ─────────────────────────────────────────────────────
-   직업·애정 섹션 블록
-───────────────────────────────────────────────────── */
-[data-theme="light"] .ilju-career-love-block { border-color: rgba(0,0,0,0.08) !important; }
-[data-theme="light"] .ilju-career-love-block p { color: #222 !important; }
-[data-theme="light"] .ilju-career-love-block div { color: #333 !important; }
+/* ─────────────────────────────────
+   직업·애정 블록
+───────────────────────────────── */
+html[data-theme="light"] .ilju-career-love-block { border-color: rgba(0,0,0,0.07) !important; }
+html[data-theme="light"] .ilju-career-love-block p   { color: #1a1510 !important; }
+html[data-theme="light"] .ilju-career-love-block div { color: #2a2218 !important; }
 
+/* ─────────────────────────────────
+   PDF 인쇄 — 신규 컴포넌트
+───────────────────────────────── */
 @media print {
-    .daeun-timeline-wrap { overflow: visible !important; }
-    .daeun-timeline-wrap > div:last-child { overflow: visible !important; flex-wrap: wrap !important; }
-    .four-domain-radar { page-break-inside: avoid !important; break-inside: avoid !important; }
-    .ilju-profile-card { page-break-inside: avoid !important; break-inside: avoid !important; }
-    .ilju-career-love-block { page-break-inside: avoid !important; break-inside: avoid !important; }
-    [data-theme="light"] .daeun-tl-cell { background: rgba(0,0,0,0.05) !important; border-color: #ccc !important; }
-    [data-theme="light"] .four-domain-radar { background: #fff !important; }
+  .daeun-timeline-wrap { overflow: visible !important; }
+  .daeun-timeline-wrap > div:last-child { overflow: visible !important; flex-wrap: wrap !important; }
+  .four-domain-radar    { page-break-inside: avoid !important; break-inside: avoid !important; }
+  .ilju-profile-card    { page-break-inside: avoid !important; break-inside: avoid !important; }
+  .ilju-career-love-block { page-break-inside: avoid !important; break-inside: avoid !important; }
+  html[data-theme="light"] .daeun-tl-cell   { background: rgba(0,0,0,0.04) !important; border-color: #ccc !important; }
+  html[data-theme="light"] .four-domain-radar { background: #fff !important; }
 }
