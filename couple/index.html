@@ -828,6 +828,95 @@ function compatVoiceLead(topic, ctx) {
   return (typeof buildCompatVoiceSection === 'function') ? buildCompatVoiceSection(topic, ctx) : '';
 }
 
+// ── 두 사람 일간 오행 관계에 따른 깊은 풀이 ──
+function buildCompatOhFlow(aOh, bOh, aName, bName, aStr, bStr) {
+  const OH_KR = { wood:'목', fire:'화', earth:'토', metal:'금', water:'수' };
+  const GENERATES = { wood:'fire', fire:'earth', earth:'metal', metal:'water', water:'wood' };
+  const CONTROLS  = { wood:'earth', fire:'metal', earth:'water', metal:'wood', water:'fire' };
+  let kind, title, body, friction, repair;
+  if (aOh === bOh) {
+    kind = 'same';
+    title = '같은 결의 두 사람 — 동일 오행';
+    body = aName + '님과 ' + bName + '님은 둘 다 ' + OH_KR[aOh] + ' 기운을 타고난 분이라, "이 사람은 나를 알아본다"는 감각이 처음부터 강합니다. 같은 음악, 같은 풍경, 같은 분위기에 동시에 끌리는 일이 자주 있을 것입니다.';
+    friction = '같은 결인 만큼 같은 자리에서 같이 지칩니다. 한 사람이 무너질 때 다른 한 사람이 받쳐 줄 에너지가 부족할 수 있고, 의견이 같다 보니 다른 시각이 필요한 순간을 함께 놓치기 쉽습니다.';
+    repair = '한 분이 일부러 반대 결의 사람(친구·동료)을 한 명씩 두십시오. 두 분만의 세계가 닫히지 않도록, 외부 결을 일부러 들여놓는 것이 이 관계의 보약입니다.';
+  } else if (GENERATES[aOh] === bOh) {
+    kind = 'gen-ab';
+    title = aName + '님이 ' + bName + '님을 키우는 결';
+    body = aName + '님의 ' + OH_KR[aOh] + ' 기운이 ' + bName + '님의 ' + OH_KR[bOh] + ' 기운을 자연스럽게 길러 주는 구조입니다. ' + bName + '님은 ' + aName + '님 곁에 있을 때 자기도 모르게 "내 안의 가능성이 펼쳐지는 느낌"을 받는 분이 많습니다.';
+    friction = '주는 쪽인 ' + aName + '님이 시간이 지나면서 "나는 늘 채워주기만 한다"는 피로를 느낄 수 있습니다. ' + bName + '님은 받는 것이 익숙해져 표현이 점점 줄어들기 쉽고요.';
+    repair = aName + '님이 일주일에 한 번은 본인을 위한 시간을 비우시고, ' + bName + '님이 그 시간을 지켜드리는 약속이 좋습니다. 받은 만큼 표현으로 돌려주는 작은 의식 — 메모 한 줄, 따뜻한 차 한 잔이면 충분합니다.';
+  } else if (GENERATES[bOh] === aOh) {
+    kind = 'gen-ba';
+    title = bName + '님이 ' + aName + '님을 키우는 결';
+    body = bName + '님의 ' + OH_KR[bOh] + ' 기운이 ' + aName + '님의 ' + OH_KR[aOh] + ' 기운을 자연스럽게 길러 주는 구조입니다. ' + aName + '님은 ' + bName + '님 곁에 있을 때 마음이 안정되고 자기 길이 또렷해지는 경험을 자주 하실 것입니다.';
+    friction = '주는 쪽인 ' + bName + '님이 "나는 늘 응원만 한다"는 피로를 안고, 받는 ' + aName + '님이 그 보살핌을 당연하게 여기게 되는 패턴이 위험 신호입니다.';
+    repair = bName + '님이 본인의 시간과 욕구를 분명히 표현하시는 연습이 필요합니다. ' + aName + '님은 그 표현을 "내가 잘못해서"로 받지 마시고 "이 사람이 나를 더 깊이 신뢰해서"로 받아 주세요.';
+  } else if (CONTROLS[aOh] === bOh) {
+    kind = 'ctrl-ab';
+    title = aName + '님이 ' + bName + '님을 다스리는 결';
+    body = aName + '님의 ' + OH_KR[aOh] + ' 기운이 ' + bName + '님의 ' + OH_KR[bOh] + ' 기운을 단속하는 구조입니다. ' + bName + '님은 ' + aName + '님 곁에서 "느슨해지지 않고 단정해지는" 느낌을 자주 받습니다. 그것이 안정으로 작용하면 큰 힘이지만, 통제로 읽히는 순간 갑갑함으로 변합니다.';
+    friction = aName + '님은 "내가 옳은 방향을 알려주는 것"이라 생각하지만, ' + bName + '님은 "내 결정권이 자꾸 줄어든다"는 답답함을 안에 쌓을 수 있습니다.';
+    repair = aName + '님이 결정을 내리기 전 한 박자만 늦춰 ' + bName + '님 의견을 먼저 묻는 습관이 가장 효과적입니다. ' + bName + '님은 작은 결정부터 본인의 색깔을 분명히 드러내십시오.';
+  } else if (CONTROLS[bOh] === aOh) {
+    kind = 'ctrl-ba';
+    title = bName + '님이 ' + aName + '님을 다스리는 결';
+    body = bName + '님의 ' + OH_KR[bOh] + ' 기운이 ' + aName + '님의 ' + OH_KR[aOh] + ' 기운을 단속하는 구조입니다. ' + aName + '님은 ' + bName + '님 곁에 있을 때 자기 자신을 더 단정하게 정리하게 되는 분위기를 자주 느낍니다.';
+    friction = bName + '님이 무심코 던진 한 마디가 ' + aName + '님에게는 "지적당했다"로 깊이 박힐 수 있습니다. 반복되면 마음의 거리감이 빠르게 자랍니다.';
+    repair = bName + '님은 의견을 낼 때 "이건 내 생각인데"라고 한 마디를 먼저 붙여 주세요. ' + aName + '님은 지적이 아니라 "관심이 깊어서 그런 말을 한다"고 해석하는 연습이 도움이 됩니다.';
+  }
+  let strengthLine = '';
+  if (aStr === '신강' && bStr === '신강') strengthLine = '두 분 모두 에너지가 강한 편이라, 같이 있을 때의 호흡은 뜨겁고 또렷합니다. 다만 둘 다 양보가 어려운 자리이니, "이번엔 내가 따른다"라는 말을 한 분이 먼저 꺼내 주는 것이 관계의 윤활유입니다.';
+  else if (aStr === '신약' && bStr === '신약') strengthLine = '두 분 모두 섬세한 결이라, 서로의 마음을 잘 읽는 강점이 있습니다. 단, 결정의 순간에 둘 다 망설이기 쉬우니 "이건 내가 결정할게"라고 한 분이 먼저 잡아 주는 자리가 필요합니다.';
+  else strengthLine = '한 분은 추진의 결, 한 분은 조율의 결을 타고나, 한 분이 앞에서 끌고 한 분이 옆에서 가다듬는 이상적인 호흡이 만들어집니다. 이 균형이 가장 큰 자산입니다.';
+
+  return '<div class="insight-card sajux-print-surface" style="margin-top:14px;padding:18px 20px;border-radius:12px;background:rgba(199,167,106,0.06);border-left:3px solid var(--gold);">'
+    + '<div class="tag" style="color:var(--gold);font-weight:700;letter-spacing:0.10em;">✦ ' + title + '</div><br>'
+    + '<p style="font-size:13.5px;color:var(--text);line-height:1.95;margin:0 0 12px;">' + body + '</p>'
+    + '<p style="font-size:13px;color:var(--text-soft);line-height:1.95;margin:0 0 10px;"><strong style="color:#ffc7a0;">⚠ 마찰 포인트.</strong> ' + friction + '</p>'
+    + '<p style="font-size:13px;color:var(--text-soft);line-height:1.95;margin:0 0 12px;"><strong style="color:#9ed3bb;">✓ 회복의 작은 약속.</strong> ' + repair + '</p>'
+    + '<p style="font-size:12.5px;color:var(--text-dim);line-height:1.9;margin:0;font-style:italic;">' + strengthLine + '</p>'
+    + '</div>';
+}
+
+// ── 부부 — 생활의 4가지 마찰(돈·시간·가족·소통) ──
+function buildCompatMarriageFriction(aName, bName, score, isHap, isChung) {
+  const tone = isHap ? 'good' : isChung ? 'rough' : score >= 65 ? 'good' : score >= 40 ? 'mid' : 'rough';
+  const blocks = {
+    good: {
+      money: '돈 이야기를 비교적 일찍 꺼내도 다툼으로 번지지 않는 결입니다. 다만 안정적이라 해서 미루지는 마십시오. **공동 가계부 한 페이지**를 결혼 전에 만드시는 것이 평생의 보약입니다.',
+      time: '두 분의 시간 감각이 자연스럽게 맞아 떨어지는 편입니다. 그래서 더 위험한 것이 "당연히 알겠지"라는 가정입니다. 약속은 메시지로 한 번 더 박아 두십시오.',
+      family: '양가 가족과의 관계도 비교적 매끄럽게 이어집니다. 단, 한쪽 부모님에게 너무 가까이 가면 다른 쪽 부모님이 거리감을 느끼기 쉬우니, **균형의 거리**를 의식하십시오.',
+      comm: '평소 대화는 잘 흐릅니다. 어려운 주제(돈·미래·과거)는 "이번 주말 1시간만"처럼 시간을 정해서 이야기하시면 가벼움 속의 무거움이 잘 풀립니다.'
+    },
+    mid: {
+      money: '소비 스타일이 다른 두 분일 가능성이 큽니다. 어느 한 쪽으로 맞추려 하지 마시고, **각자의 비상금 비율**을 인정한 위에서 공동 항목만 합의하십시오.',
+      time: '한 분이 부지런하면 다른 한 분이 느슨하게 보입니다. 같은 일에 들이는 시간이 다른 것일 뿐 게으른 것이 아닙니다. **일정의 결**을 인정해 주십시오.',
+      family: '양가 가족 사이에서 한 분이 자주 입장이 곤란해질 수 있습니다. 결정은 두 분이 먼저 내리고 가족에게 알리는 순서를 지키시는 것이 갈등을 크게 줄입니다.',
+      comm: '같은 단어를 다르게 듣는 분들이라, 중요한 약속은 반드시 메시지로 한 번 남겨 두십시오. "들었다"와 "안 들었다"의 다툼이 가장 많이 일어나는 자리입니다.'
+    },
+    rough: {
+      money: '돈에 대한 가치관이 비교적 멀리 떨어져 있는 분들입니다. 합치려 하기보다 **가시화**가 먼저입니다. 매달 한 번, 통장 한 장씩만 같이 보시는 약속을 만드십시오.',
+      time: '한 분의 시간이 다른 한 분에게 늘 빠르거나 느립니다. 같은 일정이라도 **시작 시각만 정확히** 맞추시고, 끝나는 시각은 여유를 두십시오.',
+      family: '양가 가족과의 일에서 두 분의 의견이 다를 때, 절대 가족 앞에서 다투지 마십시오. 같은 결로 행동한 뒤 둘만 있을 때 길게 이야기하시는 편이 안전합니다.',
+      comm: '같은 일을 두고도 해석이 갈리는 분들입니다. 다툼이 시작되면 **하루 미루기**가 가장 효과적입니다. 그날 안에 결론 내려 하지 마십시오.'
+    }
+  }[tone];
+  const headerNote = tone === 'good' ? '두 분의 호흡이 잘 맞는 결이라, 큰 마찰은 적은 편입니다. 다만 작은 가시도 쌓이면 두꺼워지니, 미리 알고 다듬어 두시면 좋습니다.'
+    : tone === 'mid' ? '두 분 사이에 결의 차이가 있긴 하지만, 그 차이가 곧 보완입니다. 아래 네 자리만 의식하시면 평생 잔고장이 크게 줄어듭니다.'
+    : '두 분 사이에 결의 거리가 조금 있는 편입니다. 그렇다고 안 맞는 관계가 아닙니다. 거리를 인정한 위에서 작은 약속을 지키는 것 — 이것이 이 관계가 가장 빛나는 방법입니다.';
+
+  return '<div class="insight-card sajux-print-surface" style="margin-top:14px;padding:20px 22px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(199,167,106,0.20);">'
+    + '<div class="tag" style="color:var(--gold);letter-spacing:0.10em;font-weight:700;">💍 생활의 4가지 마찰 — ' + aName + '·' + bName + '</div>'
+    + '<p style="font-size:12.5px;color:var(--text-soft);line-height:1.9;margin:8px 0 14px;font-style:italic;">' + headerNote + '</p>'
+    + '<div style="display:grid;grid-template-columns:1fr;gap:10px;">'
+    +   '<div style="padding:12px 14px;background:rgba(255,210,150,0.05);border-left:2px solid rgba(255,210,150,0.4);border-radius:8px;"><div style="font-size:11px;color:#ffd9a8;font-weight:700;letter-spacing:0.05em;margin-bottom:6px;">💰 돈</div><p style="font-size:12.5px;color:var(--text);line-height:1.85;margin:0;">' + blocks.money + '</p></div>'
+    +   '<div style="padding:12px 14px;background:rgba(170,200,255,0.05);border-left:2px solid rgba(170,200,255,0.4);border-radius:8px;"><div style="font-size:11px;color:#9bb8ee;font-weight:700;letter-spacing:0.05em;margin-bottom:6px;">⏰ 시간</div><p style="font-size:12.5px;color:var(--text);line-height:1.85;margin:0;">' + blocks.time + '</p></div>'
+    +   '<div style="padding:12px 14px;background:rgba(220,180,255,0.05);border-left:2px solid rgba(220,180,255,0.4);border-radius:8px;"><div style="font-size:11px;color:#c8a6ff;font-weight:700;letter-spacing:0.05em;margin-bottom:6px;">👪 가족</div><p style="font-size:12.5px;color:var(--text);line-height:1.85;margin:0;">' + blocks.family + '</p></div>'
+    +   '<div style="padding:12px 14px;background:rgba(140,200,180,0.05);border-left:2px solid rgba(140,200,180,0.4);border-radius:8px;"><div style="font-size:11px;color:#9ed3bb;font-weight:700;letter-spacing:0.05em;margin-bottom:6px;">💬 소통</div><p style="font-size:12.5px;color:var(--text);line-height:1.85;margin:0;">' + blocks.comm + '</p></div>'
+    + '</div></div>';
+}
+
 function buildRelPanels(params, a, b, result) {
   // 궁합 챕터 카운터 리셋 — 인사 중복 방지
   if (typeof _sajuxCompatChapterCount === 'function') { try { _sajuxCompatChapterCount(true); } catch(e){} }
@@ -898,9 +987,10 @@ function buildRelPanels(params, a, b, result) {
   );
 
   // ── 연인 ──
-  document.getElementById('panel-lover').innerHTML = voice('lover') + (
-    typeof buildCompatLoverPanelHtml === 'function' ? buildCompatLoverPanelHtml(compatCtx) : ''
-  );
+  const ohFlowCard = buildCompatOhFlow(aOh, bOh, aName, bName, a.strength, b.strength);
+  document.getElementById('panel-lover').innerHTML = voice('lover')
+    + (typeof buildCompatLoverPanelHtml === 'function' ? buildCompatLoverPanelHtml(compatCtx) : '')
+    + ohFlowCard;
 
   // ── 부부 ──
   const marriedInsights = [];
@@ -953,6 +1043,7 @@ function buildRelPanels(params, a, b, result) {
     </div>`);
   })();
   if (typeof buildCompatChildHtml === 'function') marriedInsights.push(buildCompatChildHtml(compatCtx, result.score));
+  marriedInsights.push(buildCompatMarriageFriction(aName, bName, result.score, isHap, isChung));
   document.getElementById('panel-married').innerHTML = voice('married') + marriedInsights.join('');
 
   // ── 친구 ──
