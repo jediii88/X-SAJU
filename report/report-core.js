@@ -250,12 +250,10 @@ function buildChapterHead(metaphorTitle, sectionLabel, opts) {
         + escHtmlAttr(metaphorTitle) + '</h3>';
 }
 
-var SAJUX_SURFACE_LINES = [
-    '겉으로는 듬직해 보이지만, 속으로는 누구보다 치열하게 고민하는 편입니다.',
-    '겉맛은 차분한데, 속은 늘 바쁘게 돌아가는 타입입니다.',
-    '말수는 적어 보여도, 마음속 계산은 쉬지 않는 편입니다.',
-    '남들이 보기엔 여유로운데, 본인만 아는 압박감이 있는 형국입니다.'
-];
+// SAJUX_SURFACE_LINES: 프리미엄 브리프·챕터 도입 등에서 사용되는 짧은 도입문.
+// 사용자 피드백 — 매크로 인사("겉으로는 듬직해 보이지만, 속으로는 누구보다 치열하게…")는 폐기.
+// 챕터 다리(buildChapterBridge) + 프리미엄 브리프 자체 도입문이 그 역할을 대신함.
+var SAJUX_SURFACE_LINES = [''];
 
 function getWuxingPctMap(data) {
     var wx = data.wuxing || {};
@@ -3971,27 +3969,35 @@ function buildPremiumExecutiveSummary(data) {
     var reportDate = getReportBaseDate(data);
     var reportDateStr = reportDate.getFullYear() + '년 ' + (reportDate.getMonth() + 1) + '월 ' + reportDate.getDate() + '일';
 
-    return '<div id="sec-premium-summary" class="report-chapter premium-executive-summary chapter-start sajux-panel-plain" style="margin-bottom:40px;padding:22px 20px;border-radius:14px;border:1px solid rgba(199,167,106,0.35);background:transparent;">' +
-        '<div style="font-size:10px;letter-spacing:0.18em;color:rgba(199,167,106,0.72);margin-bottom:10px;font-weight:700;">사주X 프리미엄 브리프</div>' +
-        '<h2 style="font-family:\'Noto Sans KR\',serif;font-size:22px;font-weight:700;color:#f5f0e6;margin:0 0 6px;line-height:1.45;">' + escHtmlAttr(metaphorLead) + '</h2>' +
-        '<p style="font-size:11px;letter-spacing:0.12em;color:rgba(199,167,106,0.72);margin:0 0 14px;font-weight:700;">VIP 종합 전략 요약</p>' +
+    // 한 호흡 narrative — 풀 인사 매크로 대신, 메타포 한 줄로 시작해 핵심을 줄글로 풀어냄
+    var openParagraph = nmDnim(nm) + '은 ' + iljuScene + '의 결을 타고난 분입니다.'
+        + (ilju && ilju.core ? ' ' + String(ilju.core).split('.')[0] + '이라고 풀이됩니다.' : '');
+    var bridgeParagraph = nmKke(nm) + ' 이번 리포트는 같은 결을 네 갈래로 차근차근 풀어 드립니다. '
+        + '먼저 <strong>' + nmUi(nm) + ' 타고난 결</strong>을 짚고, 그 결이 <strong>지금 이 시기</strong>에 어떻게 흐르고 있는지, '
+        + '<strong>일·돈·관계·몸</strong>의 네 자리에서는 어떤 모습으로 드러나는지, 마지막으로 일상에서 어떻게 다듬어 가시면 좋은지 — 이 순서로 이어집니다.';
+    var quickGlanceLine = '한눈에 보면, '
+        + '대운은 <strong>' + daeunLabel + '</strong>(' + dTrend + ' 국면), '
+        + '올해는 <strong>' + curY + '년</strong> ' + yTrend + ' 흐름, '
+        + '이번 달은 <strong>' + curM + '월</strong> ' + mTrend + ' 결입니다. '
+        + nmUi(nm) + ' 사주는 ' + yongFull + '을 기다리고, ' + giFull + '이 두꺼워질 때 무리하지 않으시는 편이 좋습니다.';
+
+    return '<div id="sec-premium-summary" class="report-chapter premium-executive-summary chapter-start sajux-panel-plain" style="margin-bottom:40px;padding:24px 22px;border-radius:14px;border:1px solid rgba(199,167,106,0.30);background:transparent;">' +
+        '<div style="font-size:10.5px;letter-spacing:0.18em;color:rgba(199,167,106,0.72);margin-bottom:10px;font-weight:600;">사주X · 프리미엄 리포트</div>' +
+        '<h2 style="font-family:\'Noto Sans KR\',sans-serif;font-size:23px;font-weight:700;color:var(--text, #f5f0e6);margin:0 0 6px;line-height:1.45;letter-spacing:-0.01em;">' + escHtmlAttr(metaphorLead) + '</h2>' +
+        '<p style="font-size:11.5px;letter-spacing:0.12em;color:var(--text-dim, rgba(199,167,106,0.72));margin:0 0 18px;font-weight:500;">' + escHtmlAttr(nmUi(nm)) + ' 사주를 한 흐름으로 풀어 드립니다</p>' +
         '<button type="button" class="sajux-pdf-wide-btn pdf-btn" onclick="window.print()">PDF 저장 (전체 너비)</button>' +
-        '<p class="premium-thesis" style="margin:0 0 10px;font-size:14.5px;line-height:1.9;color:#efe9dc;font-weight:500;">' + escHtmlAttr(buildSajuKidStyleOpener(data)) + '</p>' +
-        '<p class="premium-thesis" style="margin:0 0 14px;font-size:14.5px;line-height:1.9;color:#efe9dc;font-weight:600;">' + coreFusion + '</p>' +
-        '<div style="font-size:11px;color:var(--gold);letter-spacing:1px;margin:16px 0 8px;">이 리포트가 전하는 핵심 4가지</div>' +
-        '<div class="vip-module-stack" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:0;">' +
-        modules.map(function(m, idx){
-            return '<div class="vip-module-item" style="padding:14px 16px;border-radius:10px;background:rgba(199,167,106,0.06);border:1px solid rgba(199,167,106,0.18);">'
-                + '<div class="vip-module-title" style="color:#d4af37;font-weight:700;margin-bottom:8px;font-size:12.5px;letter-spacing:0.02em;">' + escHtmlAttr(m.title) + '</div>'
-                + '<div class="vip-module-desc" style="color:#d8d3c9;line-height:1.8;font-size:13px;margin:0;">' + boldStarsToStrong(voicePolishParagraph(data, m.body)) + '</div>'
-                + '</div>';
-        }).join('') +
+        '<p class="premium-thesis" style="margin:18px 0 12px;font-size:14.5px;line-height:1.95;color:var(--text, #efe9dc);font-weight:500;">' + boldStarsToStrong(voicePolishParagraph(data, openParagraph)) + '</p>' +
+        '<p class="premium-thesis" style="margin:0 0 12px;font-size:14px;line-height:1.95;color:var(--text-soft, #d8d3c9);">' + boldStarsToStrong(voicePolishParagraph(data, coreFusion)) + '</p>' +
+        '<p class="premium-thesis" style="margin:0 0 16px;font-size:14px;line-height:1.95;color:var(--text-soft, #d8d3c9);">' + boldStarsToStrong(voicePolishParagraph(data, bridgeParagraph)) + '</p>' +
+        '<div class="brief-glance sajux-print-surface" style="margin:18px 0 8px;padding:16px 18px;border-radius:12px;background:rgba(199,167,106,0.06);border-left:3px solid var(--gold);">' +
+        '<div style="font-size:10.5px;color:var(--gold);font-weight:700;letter-spacing:0.10em;margin-bottom:8px;">한눈에 보는 지금의 결</div>' +
+        '<p style="font-size:13.5px;color:var(--text);line-height:1.92;margin:0;">' + boldStarsToStrong(quickGlanceLine) + '</p>' +
         '</div>' +
-        '<div class="sajux-access-note" style="margin-top:20px;padding:14px 16px;border-radius:10px;border:1px solid rgba(199,167,106,0.25);font-size:12.5px;line-height:1.78;">' +
-        '<div style="color:#c9a55a;font-weight:700;margin-bottom:6px;">열람·PDF 안내</div>' +
+        '<div class="sajux-access-note" style="margin-top:20px;padding:14px 16px;border-radius:10px;border:1px solid rgba(199,167,106,0.25);font-size:12.5px;line-height:1.85;">' +
+        '<div style="color:var(--gold, #c9a55a);font-weight:700;margin-bottom:6px;letter-spacing:0.05em;">열람·PDF 안내</div>' +
         accessLine + '<br>발행일(출력 기준): ' + reportDateStr + '<br>브라우저에서 <strong>인쇄 → PDF로 저장</strong>을 실행해 전략 문서를 보관하십시오.' +
         '</div>' +
-        '<p class="premium-disclaimer" style="margin:16px 0 0;font-size:11.5px;line-height:1.75;color:#777;">본 리포트는 전통 명리학 기반의 전략 해석 자료입니다. 의학·법률·투자 자문이 아니며, 실제 실행 판단과 책임은 본인에게 있습니다.<br><span style="display:block;margin-top:8px;">' + getAgeBasisNoteHtml('disclaimer') + '</span></p>' +
+        '<p class="premium-disclaimer" style="margin:16px 0 0;font-size:11.5px;line-height:1.85;color:var(--text-dim, #777);">본 리포트는 전통 명리학 기반의 전략 해석 자료입니다. 의학·법률·투자 자문이 아니며, 실제 실행 판단과 책임은 본인에게 있습니다.<br><span style="display:block;margin-top:8px;">' + getAgeBasisNoteHtml('disclaimer') + '</span></p>' +
         '</div>';
 }
 
