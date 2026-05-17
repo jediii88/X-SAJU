@@ -288,14 +288,19 @@ function buildTopicMetaphorTitle(topic, data) {
     var mainSip = getDominantSipseong(data);
     var isStrong = (data.strengthText || '').indexOf('신강') >= 0 || (data.strengthText || '').indexOf('강') >= 0;
 
+    // 손님이 보는 챕터 제목 — 기술 표기(○○ 과다 · ○○ 부재) 대신 결론·은유 위주 자연어로.
+    // 풀이 안쪽 본문에서 수치·근거를 풀어 주므로, 제목은 손님이 한 번에 알아챌 수 있는 결로 잡는다.
     var titles = {
         basic:    function() { return buildMetaphorHookTitle(data); }, // 일주 물상 — 짧게
         wuxing:   function() {
-            var maxK = OH_KR[oh.maxW] || '오행';
-            var minK = OH_KR[oh.minW] || '기운';
-            return (oh.pct[oh.minW] === 0) ? maxK + ' 과다 · ' + minK + ' 부재' : maxK + ' 과다 · ' + minK + ' 부족';
+            var maxK = OH_KR[oh.maxW] || '';
+            var minK = OH_KR[oh.minW] || '';
+            // 다섯 기운 중 어느 결이 두텁고, 어느 결이 비어 있는지를 자연어로
+            var maxLabel = { wood:'나무', fire:'불', earth:'흙', metal:'금', water:'물' }[oh.maxW] || (maxK + '의 기운');
+            var minLabel = { wood:'나무', fire:'불', earth:'흙', metal:'금', water:'물' }[oh.minW] || (minK + '의 기운');
+            return maxLabel + '의 결은 두텁고, ' + minLabel + '의 결은 얇은 분';
         },
-        sipseong: function() { return mainSip + ' 중심 — 업무 패턴'; },
+        sipseong: function() { return mainSip + ' — 일하실 때 가장 자주 쓰시는 결'; },
         wealth:   function() { return '재물 전략'; },
         career:   function() { return '직업 · 소명'; },
         love:     function() { return '애정 · 인연'; },
@@ -3131,11 +3136,16 @@ function generateDeepReport(data) {
 
     // ── 1부: 나라는 사람 ──
     var part1Body = '';
+    // 손님 동선:
+    //   ① 일주 프로필 — "나는 누구인가"를 한 카드로
+    //   ② 만세력 표 — 풀이의 근거 자료 (필수, 변경 금지)
+    //   ③ 메인 인생 한 흐름 — 만세력 바로 아래에서 태어남→마지막까지 통풀이
+    //   ④ 사주 기본 종합 풀이 — 메인 풀이의 보강
+    //   ⑤·⑥ 오행·십성 — 부속 분석 (참고용)
     part1Body += safeCall(()=>buildIljuProfileCard(data)||'', 'ilju-card');
-    part1Body += safeCall(()=>buildChapter1_Basic(data)||'', 'ch1-basic');
-    // 메인 음식: 인생 한 흐름 — 태어남에서 마지막 순간까지. 1부 둘째 자리에서 쭉 이어줌.
-    part1Body += safeCall(()=>buildLifePanoramaSection(data)||'', 'life-panorama');
     part1Body += safeCall(()=>buildVipEvidenceBlock(data)||'', 'vip-evidence');
+    part1Body += safeCall(()=>buildLifePanoramaSection(data)||'', 'life-panorama');
+    part1Body += safeCall(()=>buildChapter1_Basic(data)||'', 'ch1-basic');
     part1Body += safeCall(()=>buildChapter2_Wuxing(data)||'', 'ch2-wuxing');
     part1Body += safeCall(()=>buildChapter3_Sipseong(data)||'', 'ch3-sip');
     html += safeCall(()=>wrapPartSection(
@@ -3981,7 +3991,7 @@ function buildPremiumExecutiveSummary(data) {
         '<div style="font-size:10.5px;letter-spacing:0.20em;color:rgba(199,167,106,0.72);margin-bottom:14px;font-weight:600;">사주X · 프리미엄 리포트</div>' +
         '<h2 style="font-family:\'Noto Sans KR\',sans-serif;font-size:24px;font-weight:700;color:var(--text, #f5f0e6);margin:0 0 8px;line-height:1.45;letter-spacing:-0.01em;">' + escHtmlAttr(metaphorLead) + '</h2>' +
         '<p style="font-size:11.5px;letter-spacing:0.14em;color:var(--text-dim, rgba(199,167,106,0.72));margin:0 0 22px;font-weight:500;">' + escHtmlAttr(nmUi(nm)) + ' 사주를 한 흐름으로 풀어 드립니다</p>' +
-        '<button type="button" class="sajux-pdf-wide-btn pdf-btn" onclick="window.print()" style="margin-bottom:24px;">PDF 저장 (전체 너비)</button>' +
+        '<button type="button" class="sajux-pdf-wide-btn pdf-btn" onclick="window.print()" style="margin-bottom:24px;">PDF 저장</button>' +
         '<div class="brief-glance sajux-print-surface" style="text-align:left;margin:0 0 18px;padding:18px 20px;border-radius:12px;background:rgba(199,167,106,0.06);border-left:3px solid var(--gold);">' +
         '<div style="font-size:10.5px;color:var(--gold);font-weight:700;letter-spacing:0.12em;margin-bottom:10px;">한눈에 보는 지금의 결</div>' +
         '<p style="font-size:14px;color:var(--text);line-height:2;margin:0;">' + boldStarsToStrong(quickGlanceLine) + '</p>' +
