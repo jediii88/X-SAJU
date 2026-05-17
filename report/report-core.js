@@ -3136,14 +3136,16 @@ function generateDeepReport(data) {
 
     // ── 1부: 나라는 사람 ──
     var part1Body = '';
-    // 손님 동선:
-    //   ① 일주 프로필 — "나는 누구인가"를 한 카드로
+    // 손님 동선 (고객 의도 = "나는 어떤 사람인가"에 답하는 흐름):
+    //   ① 일주 프로필 — 한 줄 메타포·키워드 배지 (도입)
     //   ② 만세력 표 — 풀이의 근거 자료 (필수, 변경 금지)
-    //   ③ 메인 인생 한 흐름 — 만세력 바로 아래에서 태어남→마지막까지 통풀이
-    //   ④ 사주 기본 종합 풀이 — 메인 풀이의 보강
-    //   ⑤·⑥ 오행·십성 — 부속 분석 (참고용)
+    //   ③ ★ 메인 인물 초상 — "○○님은 이런 사람입니다" (가장 큰 메인)
+    //   ④ ★ 메인 인생 한 흐름 — 태어남→마지막까지 시기별 흐름 (둘째 메인)
+    //   ⑤ 사주 기본 종합 풀이 — 보강
+    //   ⑥·⑦ 오행·십성 — 부속 분석 (참고용)
     part1Body += safeCall(()=>buildIljuProfileCard(data)||'', 'ilju-card');
     part1Body += safeCall(()=>buildVipEvidenceBlock(data)||'', 'vip-evidence');
+    part1Body += safeCall(()=>buildPersonalPortrait(data)||'', 'personal-portrait');
     part1Body += safeCall(()=>buildLifePanoramaSection(data)||'', 'life-panorama');
     part1Body += safeCall(()=>buildChapter1_Basic(data)||'', 'ch1-basic');
     part1Body += safeCall(()=>buildChapter2_Wuxing(data)||'', 'ch2-wuxing');
@@ -4713,6 +4715,123 @@ function buildIljuProfileCard(data) {
             <div style="line-height:1.8;">${kwBadges}</div>
         </div>
     </div>`;
+}
+
+
+/** ─────────────────────────────────────────
+ *  ★ buildPersonalPortrait — 인물 초상 (메인 음식)
+ *  "○○님은 이런 사람입니다" — 만세력 표 직후 1부의 진짜 메인.
+ *  고객이 사주X에 의뢰하는 진짜 의도("나는 어떤 사람인가")에 답하는 핵심 챕터.
+ *  
+ *  구성: 첫인상↔속내 → 강점 → 약점 → 의사결정 → 관계 → 일 → 본질 한 줄
+ * ───────────────────────────────────────── */
+function buildPersonalPortrait(data) {
+    var name = data.name || '고객';
+    var ds = data.dayStem || '';
+    var db = data.dayBranch || '';
+    var iljuKey = ds + db;
+    var ilju = (typeof ILJU_60_DB !== 'undefined' && ILJU_60_DB[iljuKey]) ? ILJU_60_DB[iljuKey] : null;
+    var STEM_OH = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
+    var BRANCH_OH = {'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'};
+    var dayOh = STEM_OH[ds] || 'earth';
+    var branchOh = BRANCH_OH[db] || 'earth';
+    var isStrong = (data.strengthText || '').indexOf('신강') >= 0 || (data.strengthText || '').indexOf('강') >= 0;
+
+    // 십성 분포 분석 (강점·관계·일 풀이에 사용)
+    var sip = data.sipseong || {};
+    var sipTotal = Object.keys(sip).reduce(function(s,k){ return s + (Number(sip[k]) || 0); }, 0) || 1;
+    function sipPct(key) { return Math.round((Number(sip[key]) || 0) / sipTotal * 100); }
+    var pctGwan = sipPct('편관') + sipPct('정관'); // 관성 (책임·권위)
+    var pctJae = sipPct('편재') + sipPct('정재'); // 재성 (재물·현실)
+    var pctIn = sipPct('편인') + sipPct('정인');   // 인성 (배움·수용)
+    var pctSig = sipPct('식신') + sipPct('상관'); // 식상 (표현·창작)
+    var pctBi = sipPct('비견') + sipPct('겁재');   // 비겁 (자아·동료)
+
+    function _vp(t) { return voicePolishParagraph(data, t || ''); }
+
+    // ── 1단락: 첫인상 vs 속내 (일간·일지 조합)
+    var firstImpressionByStem = {
+        wood: '곧고 단단한 사람으로 보이십니다. 자기 색이 분명하고, 한번 정한 방향은 잘 바꾸지 않으시는 인상이라 사람들이 ' + nmEunNeun(name) + ' “믿음직하다”고 평가합니다.',
+        fire: '환하고 따뜻한 사람으로 보이십니다. 한 자리에 들어오시면 분위기가 살아나고, 사람들이 ' + nmEunNeun(name) + ' 자연스럽게 중심으로 두는 결입니다.',
+        earth: '묵직하고 든든한 사람으로 보이십니다. 큰 소리 내지 않으셔도 무게가 실리고, 사람들이 ' + nmEunNeun(name) + ' “기댈 수 있는 어른”으로 느끼는 인상입니다.',
+        metal: '깔끔하고 단정한 사람으로 보이십니다. 말과 행동에 군더더기가 없어서 사람들이 ' + nmEunNeun(name) + ' “원칙 있는 사람”으로 기억합니다.',
+        water: '조용하고 깊이 있는 사람으로 보이십니다. 말은 적게 하셔도 한 마디에 무게가 있어서 사람들이 ' + nmEunNeun(name) + ' “생각이 깊다”고 평가합니다.'
+    };
+    var inSelfByStem = {
+        wood: '하지만 안쪽으로는 의외로 섬세하고 잘 흔들리는 결이 있으십니다. 남이 알아채지 못하는 작은 말 한마디에 오래 머무시는 편이고, 그 민감함이 사실 ' + nmUi(name) + ' 깊이의 출발점입니다.',
+        fire: '하지만 안쪽으로는 그 따뜻함을 유지하는 데 의외로 많은 에너지가 들어갑니다. 혼자가 되시면 의외로 가라앉으시는 시간이 길고, 그래서 “회복하는 시간”이 ' + nmUi(name) + ' 평생 과제입니다.',
+        earth: '하지만 안쪽으로는 끊임없이 “이게 맞나, 저게 맞나” 저울질하시는 결이 있으십니다. 겉이 든든해 보이는 만큼 속에서 잰 시간들이 ' + nmEunNeun(name) + ' 단단하게 만들었습니다.',
+        metal: '하지만 안쪽으로는 한 번 마음이 다치면 그 자국이 오래 남으시는 결입니다. 겉으로는 다 정리한 듯 보이셔도 속에서는 한참을 곱씹으시는 편이고, 그게 ' + nmUi(name) + ' 깊이의 비밀입니다.',
+        water: '하지만 안쪽으로는 의외로 뜨겁고 활발한 결이 있으십니다. 잘 드러내지 않으실 뿐, ' + nmUi(name) + ' 안에는 아무도 모르는 “남다른 야망”이 흐르고 있습니다.'
+    };
+    var p1 = (firstImpressionByStem[dayOh] || firstImpressionByStem.earth) + ' ' + (inSelfByStem[dayOh] || inSelfByStem.earth);
+
+    // ── 2단락: 타고난 강점 (60일주 DB + 십성 분포)
+    var coreSentence = ilju && ilju.core ? String(ilju.core).split('.')[0] + '.' : '';
+    var strengthRaw = ilju && ilju.strength ? ilju.strength : '';
+    var dominantSipDesc = '';
+    if (pctSig >= 30) dominantSipDesc = ' 특히 식상(食傷, 표현·창작)의 결이 두텁게 자리잡고 있어서, ' + nmDnim(name) + '은 “생각을 글이나 말, 작품으로 풀어내는” 일에서 진가를 발휘하시는 분입니다.';
+    else if (pctGwan >= 30) dominantSipDesc = ' 특히 관성(官星, 책임·권위)이 두텁게 자리잡고 있어서, ' + nmDnim(name) + '은 “책임지는 자리에서 빛나는” 결입니다. 위에서 누가 시키지 않아도 스스로 책임을 짊어지시는 편이고, 그 무게가 ' + nmEunNeun(name) + ' 자라게 합니다.';
+    else if (pctJae >= 30) dominantSipDesc = ' 특히 재성(財星, 재물·현실)이 두텁게 자리잡고 있어서, ' + nmDnim(name) + '은 “현실 감각이 또렷한” 분입니다. 추상보다 구체, 이상보다 실리에 강하시고, 사람들이 ' + nmUi(name) + ' 판단을 “현실적이다”라고 신뢰합니다.';
+    else if (pctIn >= 30) dominantSipDesc = ' 특히 인성(印星, 배움·수용)이 두텁게 자리잡고 있어서, ' + nmDnim(name) + '은 “배움과 깊이를 사랑하는” 분입니다. 한 가지 주제를 끝까지 파고드시는 결이고, 그 깊이가 ' + nmUi(name) + ' 진짜 자산입니다.';
+    else if (pctBi >= 30) dominantSipDesc = ' 특히 비겁(比劫, 자아·동료)이 두텁게 자리잡고 있어서, ' + nmDnim(name) + '은 “자기 색이 또렷한” 분입니다. 누구의 그늘 아래 머물기보다 ' + nmDnim(name) + '만의 자리를 만들고 싶어 하시고, 동료·친구 관계에서 중심이 되시는 편입니다.';
+    var p2 = nmDnim(name) + '의 가장 큰 강점은 ' + (strengthRaw ? '“' + strengthRaw + '”' : '타고난 결') + '입니다. ' + (coreSentence || '') + dominantSipDesc + ' 이 강점은 누가 가르쳐 준 것이 아니라 태어나실 때 이미 ' + nmUi(name) + ' 안에 새겨진 것이라, 노력으로 키운 능력과는 결이 다릅니다.';
+
+    // ── 3단락: 약점·과제 (60일주 DB의 weakness)
+    var weaknessRaw = ilju && ilju.weakness ? ilju.weakness : '';
+    var weakBalance = '';
+    if (pctSig === 0) weakBalance = ' 사주에 식상(食傷)이 비어 있어, 마음에 담은 것을 밖으로 풀어내지 않고 안에 쌓아두시는 패턴이 있습니다. 그게 쌓이면 몸으로 신호가 오니, “말로 글로 표현하는 작은 통로”를 의식적으로 하나 만드십시오.';
+    else if (pctGwan === 0) weakBalance = ' 사주에 관성(官星)이 비어 있어, 외부의 규율·체계 안에 들어가시는 게 의외로 답답하실 수 있습니다. 자유롭게 일하시되, 스스로 만든 “나만의 규칙” 하나는 꼭 두십시오.';
+    else if (pctJae === 0) weakBalance = ' 사주에 재성(財星)이 비어 있어, 현실의 숫자·돈 흐름이 ' + nmUi(name) + ' 마음에 잘 안 잡히시는 결입니다. 의식적으로 “돈에 대한 기록 습관”(가계부·자산 정리) 하나를 만드시는 편이 좋습니다.';
+    else if (pctIn === 0) weakBalance = ' 사주에 인성(印星)이 비어 있어, 깊게 파고드는 학습보다 빠른 실행이 더 편하실 수 있습니다. 다만 한 분야는 “끝까지 파는 시간”을 의식적으로 가지셔야 깊이가 쌓입니다.';
+    var p3 = nmDnim(name) + '이 자주 부딪히시는 벽은 — ' + (weaknessRaw ? '“' + weaknessRaw + '”' : '같은 결의 그늘') + '입니다. 강한 결의 뒷면에는 늘 그 결의 그늘이 있으니, 약점이라고 부끄러워하실 일이 아닙니다. 다만 이 패턴이 반복되면 ' + nmEunNeun(name) + ' 지치게 만드니, 알아채는 것만으로도 큰 자산이 됩니다.' + weakBalance;
+
+    // ── 4단락: 의사결정 패턴 (신강·신약)
+    var p4_strong = nmDnim(name) + '은 결정을 내리실 때 “직관과 추진력으로 빠르게 가는” 분이십니다. 머리로 길게 재기보다 “이거다” 싶으면 바로 움직이시고, 그 추진력이 ' + nmUi(name) + ' 평생 가장 큰 동력입니다. 다만 너무 빠른 결정이 한 번씩 큰 비용으로 돌아오기도 하니, 큰 결정에서는 “하루 자고 다시 보기” 정도의 작은 안전장치는 두시는 편이 좋습니다.';
+    var p4_weak = nmDnim(name) + '은 결정을 내리실 때 “여러 각도에서 살펴보고 천천히 가는” 분이십니다. 빠른 결정을 강요받으시면 의외로 큰 스트레스를 느끼시고, 충분히 시간을 두실 때 가장 좋은 결정을 내리십니다. 그 신중함이 ' + nmUi(name) + ' 진짜 강점이니, “결정이 늦다”는 외부 압박에 흔들리지 마십시오. 다만 결정을 너무 미루다 기회가 지나가는 일은 한 번씩 있으니, “스스로 정한 결정 마감일” 하나는 두시는 편이 좋습니다.';
+    var p4 = isStrong ? p4_strong : p4_weak;
+
+    // ── 5단락: 관계 안에서의 모습
+    var p5_intro = '관계 안에서 ' + nmDnim(name) + '은 ';
+    var p5_body;
+    if (pctGwan >= pctSig && pctGwan >= pctJae) {
+        p5_body = '“책임을 지는 자리”에 자연스럽게 서시는 분입니다. 가족 안에서는 어른 역할을, 친구들 사이에서는 중재자 역할을, 직장에서는 위로 올라가시는 결입니다. 다만 그 책임감 때문에 ' + nmUi(name) + ' 마음을 풀어놓으실 자리가 의외로 적어, 한두 명의 “나를 그대로 봐 주는 사람”을 곁에 두시는 게 평생의 보호막이 됩니다.';
+    } else if (pctSig >= pctJae && pctSig >= pctIn) {
+        p5_body = '“이야기를 풀어내는 사람”의 자리에 서십니다. 만남을 따뜻하게 만드시고, 사람들이 ' + nmUi(name) + ' 곁에서 마음을 열게 됩니다. 다만 ' + nmDnim(name) + '의 마음을 들어 주는 사람이 의외로 적을 수 있으니, “들어 주는 한 사람”을 일부러 만드시는 편이 좋습니다.';
+    } else if (pctJae >= pctIn) {
+        p5_body = '“현실을 챙기는 사람”의 자리에 서십니다. 가족·친구·연인이 곤란해질 때 ' + nmDnim(name) + '이 실제로 도움이 되는 분이고, 그래서 사람들이 ' + nmEunNeun(name) + ' 깊이 의지합니다. 다만 ' + nmUi(name) + ' 마음 자체를 봐 주는 사람은 의외로 적을 수 있으니, 그 갈증은 한 번쯤 정직하게 인정하셔야 합니다.';
+    } else {
+        p5_body = '“깊이 들어가는 사람”의 자리에 서십니다. 많은 사람과 얕게 만나기보다 한두 사람과 깊이 만나시는 결이고, 그 한두 사람이 ' + nmUi(name) + ' 평생 가장 큰 자산이 됩니다. 다만 그 사람과의 거리가 멀어지면 큰 공허감이 따라오니, 관계의 깊이를 “하나에만 집중”하지 마시고 두세 갈래로 분산해 두시는 편이 좋습니다.';
+    }
+    var p5 = p5_intro + p5_body;
+
+    // ── 6단락: 일을 대하는 결
+    var careerRaw = ilju && ilju.career ? ilju.career : '';
+    var p6 = '일을 대하실 때 ' + nmDnim(name) + '은 ' + (isStrong ? '“스스로 결정하고 끝까지 책임지는” 결' : '“충분히 살피고 함께 만들어 가는” 결') + '입니다. ' + (careerRaw ? '특히 ' + careerRaw + ' 분야의 일이 ' + nmUi(name) + ' 결과 잘 맞고, 그 안에서는 다른 사람보다 두 배쯤 빠르게 자리를 잡으시는 편입니다.' : '') + ' 어떤 직업이든 ' + nmDnim(name) + '이 중요하게 여기시는 것은 “나만의 색을 인정받는 자리”입니다. 큰 무리에 묻혀서 색을 잃는 환경이라면, 아무리 안정적이어도 오래 못 가시는 결입니다.';
+
+    // ── 7단락: 평생 가는 본질 한 줄
+    var imageLine = ilju && ilju.image ? ilju.image : '';
+    var p7 = '결국 ' + nmDnim(name) + '은 — ' + (imageLine ? '“' + imageLine + '”' : '평생 ' + nmUi(name) + ' 결을 다듬어 가시는') + ' 분입니다. 시기에 따라 풍경은 바뀌고, 대운에 따라 빛의 각도도 달라지지만, ' + nmUi(name) + ' 안의 본질은 변하지 않습니다. 그 본질을 알아채시고 그 본질대로 살아가실 때 ' + nmDnim(name) + '은 가장 자연스럽고, 그래서 가장 빛나십니다.';
+
+    function paragraph(label, text) {
+        return '<div class="portrait-block" style="margin:0 0 22px;">'
+            + (label ? '<div style="font-size:10.5px;letter-spacing:0.16em;color:var(--gold);font-weight:700;margin-bottom:8px;">' + escHtmlAttr(label) + '</div>' : '')
+            + '<p style="font-size:14px;color:var(--text);line-height:2.05;margin:0;">' + boldStarsToStrong(_vp(text)) + '</p>'
+            + '</div>';
+    }
+
+    return '<div id="sec-personal-portrait" class="report-chapter chapter-start sajux-panel-plain" style="margin:28px 0 40px;padding:28px 24px;border-radius:14px;border:1px solid rgba(199,167,106,0.30);background:transparent;">'
+        + '<div style="font-size:11px;letter-spacing:0.20em;color:rgba(199,167,106,0.85);margin-bottom:10px;font-weight:700;">메인 — 인물 초상</div>'
+        + '<h2 style="font-family:Noto Sans KR,sans-serif;font-size:24px;font-weight:700;color:var(--text);margin:0 0 6px;line-height:1.45;letter-spacing:-0.01em;">' + escHtmlAttr(nmDnim(name)) + '은 이런 사람입니다</h2>'
+        + '<p style="font-size:12px;color:rgba(199,167,106,0.75);margin:0 0 24px;letter-spacing:0.04em;">사주 여덟 글자가 그려 낸 ' + escHtmlAttr(nmUi(name)) + ' 결</p>'
+        + paragraph('첫인상 vs 속내', p1)
+        + paragraph('타고난 결 — 강점', p2)
+        + paragraph('자주 부딪히시는 벽 — 과제', p3)
+        + paragraph('결정을 내리실 때의 결', p4)
+        + paragraph('관계 안에서의 모습', p5)
+        + paragraph('일을 대하실 때의 결', p6)
+        + paragraph('평생 가는 ' + nmUi(name) + ' 본질', p7)
+        + '</div>';
 }
 
 
