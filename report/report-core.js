@@ -5240,34 +5240,38 @@ function buildChapter4_Wealth(data) {
             route:'벌이는 2~3갈래만 두고, 한 달에 한 번 숫자만 맞추기',
             caution:'보증·말로 잡는 동업·감정으로 큰 돈 움직이기는 멈추기'
         })}
-        <p class="ch-text">재물은 감이 아니라 **리듬**입니다. “돈이 잘 들어오는 해”와 “지키는 해”가 갈립니다. 아래에서 **용신**은 몸에 맞는 기운(확장·공격에 유리한 때), **기신**은 부담이 큰 기운(지출·실수가 커지기 쉬운 때)로 읽으십시오. 기신이 두꺼울 때는 **새 투자·큰 계약**을 잠시 멈추고 통장부터 정리하는 편이 손해를 줄입니다.</p>
+        <p class="ch-text">${voicePolishParagraph(data, '재물은 감이 아니라 리듬입니다. 같은 사람이라도 "돈이 잘 들어오는 해"와 "지키는 해"가 분명히 갈립니다. 사주에서 용신은 몸에 잘 맞는 기운(확장·공격에 유리한 때), 기신은 부담이 큰 기운(지출·실수가 커지기 쉬운 때)으로 읽으시면 좋습니다. 먼저 ' + nmUi(name) + ' 재물의 결부터 들여다보겠습니다.')}</p>
 
-        <div style="background:rgba(199,167,106,0.07);border-left:3px solid var(--gold);padding:16px 18px;border-radius:0 8px 8px 0;margin:16px 0;">
-            <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;letter-spacing:1px;">${nmUi(name)} 재물 구조</div>
-            <p style="font-size:14.5px;color:#ddd;line-height:1.9;margin:0 0 10px;">${wealthDesc}</p>
-            <p style="font-size:13px;color:#ccc;line-height:1.8;margin:0;">⚠ 조심할 것: ${wealthCaution}</p>
+        <div class="wealth-structure sajux-print-surface" style="background:rgba(199,167,106,0.07);border-left:3px solid var(--gold);padding:18px 20px;border-radius:0 10px 10px 0;margin:18px 0;">
+            <div style="font-size:11px;color:var(--text-dim);margin-bottom:10px;letter-spacing:0.10em;font-weight:600;">${nmUi(name)} 재물 구조</div>
+            <p style="font-size:14.5px;color:#ddd;line-height:1.95;margin:0 0 12px;">${boldStarsToStrong(wealthDesc)}</p>
+            <p style="font-size:13px;color:var(--text-soft);line-height:1.9;margin:0;"><strong style="color:#ffc7a0;">⚠ 조심할 것.</strong> ${boldStarsToStrong(wealthCaution)}</p>
         </div>
 
-        <div style="background:rgba(199,167,106,0.05);border-radius:12px;padding:20px;margin:20px 0;border:1px solid rgba(199,167,106,0.15);">
-            <div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:16px;letter-spacing:1px;">💰 대운별 재물 흐름 — ${nmUi(name)} 인생 재물 타임라인</div>
-            <p style="font-size:12.5px;color:#aaa;line-height:1.8;margin:0 0 14px;">10년마다 ‘벌기’와 ‘지키기’의 비중이 바뀝니다. 아래 줄마다 **그 구간의 단 하나 행동**을 골라 실행하십시오.</p>
-            ${daewunRows || `<p style="color:#666;font-size:12px;">대운 데이터가 없습니다.</p>`}
+        <p class="ch-text">${voicePolishParagraph(data, '구조를 살폈으니, 그 구조가 시간 위에서 어떻게 흘러가는지 — 10년 단위 대운의 결을 따라 ' + nmUi(name) + ' 인생 재물 타임라인을 펼쳐 드리겠습니다.')}</p>
+
+        <div class="wealth-timeline sajux-print-surface" style="background:rgba(199,167,106,0.05);border-radius:12px;padding:22px;margin:14px 0 20px;border:1px solid rgba(199,167,106,0.15);">
+            <div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:14px;letter-spacing:0.10em;">💰 대운별 재물 흐름 — ${nmUi(name)} 인생 재물 타임라인</div>
+            <p style="font-size:12.5px;color:var(--text-soft);line-height:1.85;margin:0 0 14px;">10년마다 '벌기'와 '지키기'의 비중이 달라집니다. 각 구간에서 단 하나의 행동만 골라 실행하시면 됩니다.</p>
+            ${daewunRows || `<p style="color:var(--text-dim);font-size:12px;">대운 데이터가 없습니다.</p>`}
         </div>
 
-        <div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:20px;margin:20px 0;">
-            <div style="font-size:12px;color:var(--gold);margin-bottom:14px;letter-spacing:1px;">&#9670; 재물을 지키는 핵심 원칙</div>
+        <p class="ch-text">${voicePolishParagraph(data, '시기별 흐름을 보았으니, 마지막으로 어느 시기에 무엇을 멈추고 무엇을 밀어야 하는지 — 재물을 지키는 가장 단단한 두 원칙을 정리해 드립니다.')}</p>
+
+        <div class="wealth-rule sajux-print-surface" style="background:rgba(255,255,255,0.03);border-radius:12px;padding:20px 22px;margin:14px 0 18px;border:1px solid rgba(199,167,106,0.18);">
+            <div style="font-size:12px;color:var(--gold);margin-bottom:14px;letter-spacing:0.10em;font-weight:700;">재물을 지키는 핵심 원칙</div>
             <div style="display:flex;flex-direction:column;gap:10px;">
-                <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:14px;">
-                    <div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:8px;">기신 기운이 강한 시기 — 이것만은 하지 마십시오</div>
-                    <p style="font-size:13px;color:#bbb;line-height:1.88;margin:0;">기신이 두꺼울 때는 **판단이 흐려지기 쉽습니다.** 새 투자·보증·동업 확장은 **당분간 보류**하십시오. 큰 결정은 **이틀 밤을 자고**, **조건을 글로 받은 뒤**에만 내리십시오.</p>
+                <div style="padding:14px 16px;border-radius:10px;background:rgba(255,140,140,0.05);border-left:3px solid rgba(255,140,140,0.45);">
+                    <div style="font-size:12px;font-weight:700;color:#ff9f9f;letter-spacing:0.05em;margin-bottom:6px;">⚠ 기신 기운이 강한 시기 — 이것만은 하지 마십시오</div>
+                    <p style="font-size:13px;color:var(--text);line-height:1.95;margin:0;">${boldStarsToStrong('기신이 두꺼울 때는 판단이 흐려지기 쉽습니다. 새 투자·보증·동업 확장은 당분간 보류하시고, 큰 결정은 이틀 밤을 자고 조건을 글로 받은 뒤에만 내리십시오.')}</p>
                 </div>
-                <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:14px;">
-                    <div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:8px;">용신 기운이 강한 시기 — 이때 움직이십시오</div>
-                    <p style="font-size:13px;color:#bbb;line-height:1.88;margin:0;">용신·희신이 겹치면 **나가서 해도 되는 해**에 가깝습니다. 미리 몸과 통장을 준비한 사람이 이깁니다. **통장에 쓸 돈**, **잠잘 시간**, **계약서 사본** 세 가지를 챙기십시오.</p>
+                <div style="padding:14px 16px;border-radius:10px;background:rgba(140,200,180,0.05);border-left:3px solid rgba(140,200,180,0.45);">
+                    <div style="font-size:12px;font-weight:700;color:#9ed3bb;letter-spacing:0.05em;margin-bottom:6px;">✦ 용신 기운이 강한 시기 — 이때 움직이십시오</div>
+                    <p style="font-size:13px;color:var(--text);line-height:1.95;margin:0;">${boldStarsToStrong('용신·희신이 겹치면 나가서 해도 되는 해에 가깝습니다. 미리 몸과 통장을 준비한 사람이 이깁니다. 통장에 쓸 돈, 잠잘 시간, 계약서 사본 — 세 가지를 미리 챙기십시오.')}</p>
                 </div>
             </div>
         </div>
-        <p class="ch-text" style="margin-top:16px;">돈은 빠르게 번 것보다 오래 남는 쪽이 이깁니다. ${nmUi(name)} 리듬은 ${isStrong ? '**나눠 넣고 쉬는 날을 달력에 고정**' : '**파트너와 주간 점검 한 번**'}하십시오.</p>
+        <p class="ch-text" style="margin-top:14px;">${voicePolishParagraph(data, '돈은 빠르게 번 것보다 오래 남는 쪽이 이깁니다. ' + nmUi(name) + ' 리듬은 ' + (isStrong ? '나눠 넣고 쉬는 날을 달력에 고정해 두시는 것' : '신뢰할 수 있는 파트너와 주간 점검을 한 번씩 갖는 것') + ' — 이 한 가지를 평생 지켜 가시면 됩니다.')}</p>
     </div>`;
 }
 
@@ -5679,6 +5683,27 @@ function buildWolunLoop(data) {
 
     const curMonth = new Date().getMonth(); // 0-based
     // 이번 연도 인월부터 12개월
+    // 시간 다리(transition) — 한 달 → 다음 달 사이 흐름 한 줄
+    function _buildMonthBridge(prevScore, nextScore, nextMonthNo, nextLabel) {
+        if (prevScore == null || nextScore == null) return '';
+        var diff = nextScore - prevScore;
+        var line;
+        if (diff >= 3)        line = '여기서 흐름이 크게 살아납니다. ' + nextMonthNo + '월(' + nextLabel + ')은 한 달 동안 미뤄두었던 일을 한꺼번에 푸는 시기로 잡으시면 좋습니다.';
+        else if (diff >= 1)   line = '바람이 한 단계 부드러워집니다. ' + nextMonthNo + '월(' + nextLabel + ')은 새 약속 한두 가지를 가볍게 더해도 무리가 없습니다.';
+        else if (diff <= -3)  line = '여기서 흐름이 한 박자 무거워집니다. ' + nextMonthNo + '월(' + nextLabel + ')은 새 결정보다 정리·점검 쪽으로 무게를 옮기십시오.';
+        else if (diff <= -1)  line = '결이 살짝 비틀립니다. ' + nextMonthNo + '월(' + nextLabel + ')은 약속을 한두 개 미루더라도 호흡을 길게 가져가십시오.';
+        else                  line = '흐름이 비슷한 결로 이어집니다. ' + nextMonthNo + '월(' + nextLabel + ')은 이번 달의 리듬을 그대로 이어가시면 됩니다.';
+        return '<div class="month-bridge" style="margin:6px 4px 6px;padding:8px 14px;font-size:12px;color:var(--text-dim);line-height:1.85;font-style:italic;letter-spacing:0.01em;">↓ ' + line + '</div>';
+    }
+    const _monthScores = Array.from({length:12}).map(function(_,i){
+        var mJiKr = MONTH_JI_BASE[i];
+        var mGanIdx = (MONTH_GAN_START + i) % 10;
+        var mGanKr = GAN[mGanIdx];
+        var mGanHj = GAN_HJ[mGanKr] || '';
+        var mJiHj = JI_HJ[mJiKr] || '';
+        return { score: mScore(mGanHj, mJiHj), mGanKr: mGanKr, mJiKr: mJiKr, monthNo: i+1 };
+    });
+
     const rows = Array.from({length:12}).map((_,i)=>{
         const mJiKr = MONTH_JI_BASE[i];
         const mGanIdx = (MONTH_GAN_START + i) % 10;
@@ -5739,6 +5764,14 @@ function buildWolunLoop(data) {
             <p style="font-size:13px;color:#ccc;line-height:1.8;margin:0 0 6px;">${polishHanjaInText(dynText)}</p>
             <div style="font-size:11px;color:${col};">지시: ${ordText}</div>
         </div>`;
+    });
+
+    // 카드 사이에 시간 다리 끼워넣기
+    const _rowsWithBridges = rows.map(function(card, i){
+        if (i === 0) return card;
+        var prev = _monthScores[i-1], cur = _monthScores[i];
+        var bridge = _buildMonthBridge(prev.score, cur.score, cur.monthNo, cur.mGanKr + cur.mJiKr + '월');
+        return bridge + card;
     }).join('');
 
     var chHeadMo = buildChapterHead(buildTopicMetaphorTitle('monthly', data), SAJUX_SECTION_LABELS.monthly);
@@ -5746,9 +5779,10 @@ function buildWolunLoop(data) {
     return `<div class="report-chapter">
         ${chHeadMo}
         ${chIntroMo}
-        <p class="ch-text">세운이 해의 날씨라면 월운은 **시간대**입니다. 기운이 맞는 달에는 밀고, 부딪히는 달에는 **일정 30%를 비우십시오.**</p>
+        <p class="ch-text">${voicePolishParagraph(data, '세운이 한 해의 날씨라면, 월운은 그 안의 시간대입니다. 기운이 맞는 달에는 한 발 밀고, 부딪히는 달에는 일정의 약 30%를 비우는 식으로 호흡을 가져가시면 한 해가 훨씬 길게 견뎌집니다.')}</p>
+        <p class="ch-text" style="font-size:13px;color:var(--text-dim);">${voicePolishParagraph(data, '카드와 카드 사이에 한 줄 다리를 두어, 한 달이 다음 달로 어떻게 이어지는지 한눈에 보이도록 정리했습니다.')}</p>
         <div style="display:flex;flex-direction:column;gap:10px;width:100%;">
-            ${rows}
+            ${_rowsWithBridges}
         </div>
     </div>`;
 }
@@ -5786,23 +5820,24 @@ function buildChapter5_Career(data) {
             route:'핵심 역할 문서화 + 분기 목표 수치화',
             caution:'권한 없는 과잉 책임과 무계획 이직을 절대 삼가십시오'
         })}
-        <p class="ch-text">직업은 직함이 아니라 **권한**의 문제입니다. 권한이 흐리면 실력이 소음이 됩니다.</p>
-        <div style="background:rgba(199,167,106,0.07);border-radius:12px;padding:20px;margin:20px 0;">
-            <div style="font-size:11px;color:var(--text-dim);margin-bottom:10px;letter-spacing:1px;">직업 성향 분석 결과</div>
+        <p class="ch-text">${voicePolishParagraph(data, '직업은 직함이 아니라 권한의 문제입니다. 권한이 흐리면 실력이 소음이 되고, 권한이 분명하면 같은 일이라도 결과가 또렷하게 쌓입니다. ' + nmUi(name) + ' 사주는 어떤 권한 위에서 가장 빛나는지 — 먼저 그 결을 살펴보겠습니다.')}</p>
+        <div class="career-type-block sajux-print-surface" style="background:rgba(199,167,106,0.07);border-radius:12px;padding:22px;margin:18px 0;border:1px solid rgba(199,167,106,0.18);">
+            <div style="font-size:11px;color:var(--text-dim);margin-bottom:10px;letter-spacing:0.10em;">직업 성향 분석 결과</div>
             <div style="font-size:16px;font-weight:700;color:var(--gold);margin-bottom:12px;">${cd.label}</div>
-            <p style="font-size:14.5px;color:#ddd;line-height:1.9;margin:0;">${cd.desc}</p>
+            <p style="font-size:14.5px;color:#ddd;line-height:1.95;margin:0;">${boldStarsToStrong(cd.desc)}</p>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0;">
-            <div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:14px;">
-                <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;letter-spacing:1px;">최적 직업군</div>
-                <div style="font-size:13px;color:#ddd;line-height:1.8;">${cd.jobs}</div>
+        <p class="ch-text">${voicePolishParagraph(data, '결을 알았다면, 어떤 자리에서 그 결이 가장 잘 살아나는지가 다음 질문입니다. ' + nmKke(name) + ' 어울리는 무대와, 그 무대에서 돈이 어떻게 따라붙는지 정리해 드립니다.')}</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0 18px;">
+            <div class="sajux-print-surface" style="background:rgba(255,255,255,0.04);border-radius:10px;padding:14px 16px;">
+                <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;letter-spacing:0.10em;">최적 직업군</div>
+                <div style="font-size:13px;color:#ddd;line-height:1.85;">${boldStarsToStrong(cd.jobs)}</div>
             </div>
-            <div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:14px;">
-                <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;letter-spacing:1px;">재물과의 연결</div>
-                <div style="font-size:13px;color:#ddd;line-height:1.8;">${wealthLink}</div>
+            <div class="sajux-print-surface" style="background:rgba(255,255,255,0.04);border-radius:10px;padding:14px 16px;">
+                <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;letter-spacing:0.10em;">재물과의 연결</div>
+                <div style="font-size:13px;color:#ddd;line-height:1.85;">${boldStarsToStrong(wealthLink)}</div>
             </div>
         </div>
-        <p class="ch-text">직업 선택의 기준은 하나입니다. **내 결정권이 서면** 실력이 살고, 없으면 소모됩니다.</p>
+        <p class="ch-text">${voicePolishParagraph(data, '직업 선택의 기준은 단 하나입니다. 내 결정권이 서면 실력이 살고, 없으면 같은 자리에서 소모됩니다. 명함의 무게가 아니라 권한의 두께를 보십시오.')}</p>
 
         <div style="background:rgba(199,167,106,0.05);border-radius:12px;padding:20px;margin:16px 0;border:1px solid rgba(199,167,106,0.1);">
             <div style="font-size:12px;color:var(--gold);margin-bottom:12px;letter-spacing:1px;">&#9670; 대운 단계별 커리어 전략</div>
@@ -5824,7 +5859,13 @@ function buildChapter6_Love(data) {
     const sipseong = data.sipseong || {};
     const gwanC = (sipseong['정관']||0) + (sipseong['편관']||0);
     const inC = (sipseong['정인']||0) + (sipseong['편인']||0);
+    const jaeC = (sipseong['정재']||0) + (sipseong['편재']||0);
+    const sikC = (sipseong['식신']||0) + (sipseong['상관']||0);
     const sipTotal = Math.max(Object.values(sipseong).reduce((a,b)=>a+b,0), 1);
+    const ds = data.dayStem || '丙';
+    const STEM_OH_LV = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
+    const dayOh = STEM_OH_LV[ds] || 'fire';
+    const isStrong = data.strengthText && (data.strengthText.includes('신강') || data.strengthText.includes('강'));
 
     const loveStyle = gwanC / sipTotal > 0.2
         ? '책임·약속·리더십 축이 두껍습니다. 끌고 가는 힘이 있습니다. 그건 든든함이자 **통제로 읽힐 수 있는 각도**입니다. “내가 옳다”는 말을 **하루 유예**하십시오.'
@@ -5833,6 +5874,35 @@ function buildChapter6_Love(data) {
         : '독립 기운이 갑니다. 붙는 것보다 **거리와 자율**이 숨이 트입니다. 상대에게도 같은 거리를 허용하십시오.';
 
     const meetTiming = nmUi(name) + ' 인연은 운이 열릴 때만 오는 것이 아닙니다. **지인 소개·취미 모임·직무가 맞는 소규모 모임**에 나가는 패턴이 열려 있어야 만남이 이어집니다. 기운이 맞는 해·달에는 **한 달에 새로운 자리 하나**만 추가하고, 나머지는 기존 관계에 시간을 쓰십시오.';
+
+    // ── 일간별 사랑의 언어 ──
+    const LOVE_LANGUAGE = {
+        wood: { core:'함께 성장한다는 감각', sign:'서로의 꿈을 응원하는 대화', danger:'상대가 나를 가둘 때 가장 빠르게 식습니다', repair:'미래 계획을 공유하는 자리를 한 달에 한 번 고정' },
+        fire: { core:'표현된 애정과 인정', sign:'이름을 불러주고, 눈을 맞춰 주는 사소한 순간', danger:'침묵·무관심·차분한 거리감을 거절로 읽기 쉽습니다', repair:'하루 한 번 “좋다·고맙다”를 말로 남기는 약속' },
+        earth: { core:'한결같은 일상의 안정감', sign:'약속을 지키는 행동, 같은 자리에 있어 주는 것', danger:'갑작스러운 변화·즉흥 약속 변경에 마음이 닫힙니다', repair:'주말 루틴 하나를 함께 만들어 두기 (산책·식사·드라마)' },
+        metal: { core:'존중과 정확한 거리', sign:'경계를 지켜주고, 약속한 것을 정확히 이행하는 태도', danger:'무책임·말 바꾸기·과한 친밀 요구에 빠르게 식습니다', repair:'중요한 약속은 메시지로 남겨 양쪽이 같은 글을 보도록' },
+        water: { core:'깊이 있는 대화와 비밀의 공유', sign:'얕은 잡담보다 마음의 결을 묻는 한 마디', danger:'표면적 관계·다수의 관심이 분산될 때 외로움을 크게 느낍니다', repair:'일주일에 한 번, 둘만의 긴 대화 시간을 따로 비워 두기' }
+    };
+    const ll = LOVE_LANGUAGE[dayOh];
+
+    // ── 일간×십성 비중에 따른 관계 패턴 ──
+    let attractionPattern;
+    if (jaeC / sipTotal >= 0.25) {
+        attractionPattern = nmUi(name) + ' 사주에는 재성(財)이 두껍게 박혀 있습니다. 사랑에서도 **현실 감각이 또렷한** 사람에게 마음이 갑니다. 단, 좋아하는 마음을 바로 표현하기보다 “챙겨 주는 행동”으로 드러내는 편이라, 상대 쪽에서는 가끔 “정말 좋아하는 게 맞나” 헷갈려 합니다. 말과 행동의 무게를 한 번씩 일부러 맞춰 주는 연습이 필요합니다.';
+    } else if (gwanC / sipTotal >= 0.25) {
+        attractionPattern = nmUi(name) + ' 사주에는 관성(官)이 두껍게 자리 잡고 있습니다. 사랑에서도 **틀과 약속**을 먼저 봅니다. 신뢰가 가는 사람이면 천천히, 그러나 한 번 마음이 가면 깊습니다. 다만 책임감이 강한 만큼 **상대를 무겁게 만들 수 있는 톤**이 있으니, “내가 옳다”는 말은 한 박자 늦추는 편이 좋습니다.';
+    } else if (inC / sipTotal >= 0.25) {
+        attractionPattern = nmUi(name) + ' 사주에는 인성(印)이 깊이 자리합니다. 사랑에서 **돌봄과 지지**가 자연스럽게 흘러나오는 분입니다. 그래서 좋은 점은 상대가 이 곁에서 안전함을 느낀다는 것이고, 조심할 점은 “내가 더 챙겨야 한다”는 자각이 강해 **본인의 감정을 뒷자리로 미루는 패턴**이 반복된다는 점입니다.';
+    } else if (sikC / sipTotal >= 0.25) {
+        attractionPattern = nmUi(name) + ' 사주에는 식상(食傷)이 활짝 펼쳐져 있습니다. 사랑에서 **표현·창의·즐거움의 비중**이 큽니다. 데이트 자체가 콘텐츠가 되는 분위기이고, 같은 일상도 새롭게 해석하는 능력이 있습니다. 다만 자극이 줄어든 평탄한 시기에 “재미가 식었다”고 빨리 결론 내리지 않으셔야 합니다.';
+    } else {
+        attractionPattern = nmUi(name) + ' 사주는 한쪽으로 치우치지 않은 균형형입니다. 사랑에서도 **상황별로 색깔이 달라지는 다면적인** 분입니다. 좋은 점은 다양한 사람과 호흡을 맞출 수 있다는 것이고, 어려운 점은 “나는 어떤 사랑을 원하는가”를 자기 스스로 또렷이 정리하는 데 시간이 걸린다는 것입니다.';
+    }
+
+    // ── 다툼·소통 가이드 (강약별) ──
+    const conflictGuide = isStrong
+        ? '다툼이 시작되면 ' + nmEunNeun(name) + ' 본능적으로 **결론을 빨리 내려는** 쪽으로 기울입니다. 그 속도가 본인은 명료해 좋지만, 상대에게는 **자기 감정이 인정받지 못한 채 정리당했다**는 인상을 남길 수 있습니다. 결론보다 먼저 “지금 어떤 마음이세요?”라고 한 번만 물어 주십시오. 한 박자만 늦춰도 같은 결론이 훨씬 부드럽게 안착합니다.'
+        : nmEunNeun(name) + ' 다툼 앞에서 **속으로 삼키고 정리하는** 분이 많습니다. 그 자리에서는 평화로워 보이지만, 같은 패턴이 쌓이면 어느 날 갑자기 차갑게 거리를 두는 모습으로 드러납니다. 한 번에 두꺼운 말을 꺼내기 어렵다면, **메시지로 한 줄씩** 남겨두는 방법도 좋습니다. “지금 좀 힘들었어”라는 한 문장이 관계를 살립니다.';
 
     var chHead6 = buildChapterHead(buildTopicMetaphorTitle('love', data), SAJUX_SECTION_LABELS.love);
     var chIntro6 = buildChapterIntroHtml(data, 'love');
@@ -5845,14 +5915,39 @@ function buildChapter6_Love(data) {
             route:'취미·직무가 맞는 모임을 고르고, 첫 만남은 가벼운 대화로 확인한 뒤 대면으로 넘기십시오',
             caution:'감정 최고점·투자·지분 이야기가 겹친 날의 관계 결정은 유예하십시오'
         })}
+
+        <p class="ch-text">${voicePolishParagraph(data, '먼저 ' + nmUi(name) + ' 사랑이 어떤 결로 흐르는지 큰 그림부터 살펴보겠습니다. 그 다음 일지(배우자궁), 사랑의 언어, 다툼이 일어났을 때의 호흡 순서로 차근차근 풀어 드릴게요.')}</p>
+
         <p class="ch-text">애정은 횟수가 아니라 **리듬**입니다. 만난 지 얼마 안 됐거나 다툰 직후처럼 **감정이 가장 높은 날**에는, 동거·결혼 준비 서류·**큰 돈이 오가는 차용 증서**·부동산·맞벌·지분처럼 **나중에 철회하기 어려운 약속**은 날짜를 미루십시오. 여기서 말하는 것은 **법적·재정 구속이 생기는 서명**이며, 단순 앱 결제나 일상적인 이름 적기와는 다릅니다.</p>
         <p class="ch-text">이성운의 핵은 “누구를 만나느냐”가 아니라 **나는 어떤 패턴으로 만남과 이별을 반복하느냐**입니다. 패턴을 알면 같은 상처를 반값에 삽니다.</p>
+
         <div style="background:rgba(199,167,106,0.07);border-left:3px solid var(--gold);padding:16px 18px;border-radius:0 8px 8px 0;margin:20px 0;">
-            <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;letter-spacing:1px;">일지 배우자궁 분석</div>
-            <p style="font-size:14.5px;color:#ddd;line-height:1.9;margin:0;">${loveText}</p>
+            <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;letter-spacing:0.10em;">일지 배우자궁 분석</div>
+            <p style="font-size:14.5px;color:#ddd;line-height:1.95;margin:0;">${boldStarsToStrong(loveText)}</p>
         </div>
+
+        <p class="ch-text" style="margin-top:14px;">${voicePolishParagraph(data, '여기까지가 ' + nmUi(name) + ' 사랑의 큰 결입니다. 이제 한 발 더 들어가서, 일상에서 어떤 표현이 ' + nmKke(name) + ' 진짜 사랑으로 닿는지 — 즉 ' + nmUi(name) + ' "사랑의 언어"를 살펴보겠습니다.')}</p>
+
+        <div class="love-language-block sajux-print-surface" style="margin:18px 0;padding:20px 22px;border-radius:14px;background:linear-gradient(135deg,rgba(214,135,135,0.08),rgba(255,255,255,0.02));border:1px solid rgba(214,135,135,0.22);">
+            <div style="font-size:11px;color:#e29a9a;letter-spacing:0.10em;margin-bottom:12px;font-weight:700;">${nmUi(name)} 사랑의 언어</div>
+            <p style="font-size:13.5px;color:#e8d8d8;line-height:1.95;margin:0 0 12px;"><strong style="color:#f3c4c4;">핵심 신호 ▸</strong> ${ll.core}. 일상에서 ${ll.sign}이 닿을 때 ${nmEunNeun(name)} 가장 깊이 사랑받는다고 느낍니다.</p>
+            <p style="font-size:13px;color:#d8c8c8;line-height:1.95;margin:0 0 10px;"><strong style="color:#f3c4c4;">반대로 가장 식는 순간 ▸</strong> ${ll.danger}.</p>
+            <p style="font-size:13px;color:#d8c8c8;line-height:1.95;margin:0;"><strong style="color:#f3c4c4;">관계를 회복하는 작은 약속 ▸</strong> ${ll.repair}.</p>
+        </div>
+
+        <p class="ch-text" style="margin-top:14px;">${voicePolishParagraph(data, '사랑의 언어를 알았으니, 이제 ' + nmIGa(name) + ' 어떤 사람에게 끌리고 어떤 방식으로 그 마음을 표현하는지 — 끌림의 패턴을 들여다봅니다.')}</p>
+
+        <p class="ch-text">${attractionPattern}</p>
+
         <p class="ch-text">${loveStyle}</p>
         <p class="ch-text">${meetTiming}</p>
+
+        <p class="ch-text" style="margin-top:18px;">${voicePolishParagraph(data, '관계가 잘 흐를 때의 모습을 살폈습니다. 그런데 어떤 관계든 부딪히는 순간이 옵니다. 그 순간 ' + nmIGa(name) + ' 어떻게 호흡하시면 좋은지, 사주의 결을 따라 정리해 드립니다.')}</p>
+
+        <div class="love-conflict-block sajux-print-surface" style="margin:14px 0 18px;padding:18px 20px;border-radius:12px;background:rgba(255,170,120,0.06);border:1px solid rgba(255,170,120,0.20);">
+            <div style="font-size:11px;color:#ffc7a0;letter-spacing:0.10em;margin-bottom:10px;font-weight:700;">다툼이 일어났을 때의 호흡</div>
+            <p style="font-size:13.5px;color:#eedfd0;line-height:1.95;margin:0;">${boldStarsToStrong(conflictGuide)}</p>
+        </div>
         <div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:18px;margin-top:16px;">
             <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;letter-spacing:1px;">인연 활성화 전략</div>
             <p style="font-size:13.5px;color:#bbb;line-height:1.9;margin:0;">완벽한 사람이 아니라 **나와 에너지가 보완되는 사람**이 장기적으로 맞는 경우가 많습니다. **취향이 맞는 소규모 모임·직무 커뮤니티**에서 접점이 열리는 경우가 많습니다. 일지 합이 맞으면 속도가 붙습니다. 머리의 이상형만 쫓지 마십시오.</p>
@@ -5982,6 +6077,38 @@ function buildChapter8_Health(data) {
     const organ = {wood:'간·담낭·신경계',fire:'심장·심혈관·소장',earth:'비장·위장·소화기',metal:'폐·대장·호흡기',water:'신장·방광·호르몬'}[maxWuxing] || '위장·소화기';
     const emotion = {wood:'분노와 억울함',fire:'과도한 흥분과 불안',earth:'지나친 걱정과 생각',metal:'슬픔과 우울감',water:'두려움과 공포'}[maxWuxing] || '스트레스';
     const season = {wood:'봄(3~5월), 인·묘월',fire:'여름(6~8월), 사·오월',earth:'환절기, 진·술·축·미월',metal:'가을(9~11월), 신·유월',water:'겨울(12~2월), 해·자월'}[maxWuxing] || '환절기';
+    // ── 피로의 모양 (오행별 신호) ──
+    const FATIGUE_SIGNATURE = {
+        wood: nmEunNeun(name) + ' 피로가 쌓이면 가장 먼저 **눈의 떨림·뒷목 뻐근함·짜증**으로 신호가 옵니다. 평소엔 안 거슬렸던 작은 소음이 유독 거슬리거나, 운전 중 욱하는 빈도가 늘어난다면 간·담낭이 “쉬자”라고 말하는 중입니다.',
+        fire: nmEunNeun(name) + ' 피로가 쌓이면 **두근거림·잠 들기 어려움·말이 빨라지는** 신호가 먼저 옵니다. 누워도 머릿속이 환하게 돌아가거나, 손바닥에 땀이 자주 차면 심장 쪽이 한 박자 쉬어달라는 신호입니다.',
+        earth: nmEunNeun(name) + ' 피로가 쌓이면 **속 더부룩함·식욕 변화·생각이 빙글빙글 도는** 신호가 먼저 옵니다. 같은 걱정이 머릿속에서 답을 못 찾고 반복된다면 비위가 “결정 좀 내려달라”라고 말하는 중입니다.',
+        metal: nmEunNeun(name) + ' 피로가 쌓이면 **마른기침·코·피부·이유 없는 슬픔**으로 신호가 옵니다. 이유 없이 눈물이 가까이 차오르거나, 호흡이 얕아지면 폐가 “감정을 한 번 비워달라”라고 말하는 중입니다.',
+        water: nmEunNeun(name) + ' 피로가 쌓이면 **허리·발목 시림·새벽 잦은 깸·근거 없는 두려움**으로 신호가 옵니다. 평소엔 무덤덤했던 일에 까닭 없이 겁이 나면 신장이 “충전이 필요하다”라고 말하는 중입니다.'
+    }[maxWuxing];
+    // ── 컨디션 시간대 (오행별 약한 시각) ──
+    const TIME_RHYTHM = {
+        wood: '간·담낭은 **밤 11시~새벽 3시**(자시·축시)에 회복합니다. 이 시간대에 깨어 있는 시간이 많으면 다음 날 짜증·집중력 저하가 두 배로 옵니다. 11시 이전 잠자리는 가장 비싼 약입니다.',
+        fire: '심장은 **낮 11시~오후 1시**(오시)에 가장 활발합니다. 이 시간대에 카페인·자극성 회의가 겹치면 밤에 잠이 도망갑니다. 점심 전후 30분의 차분한 휴식이 야간 수면을 살립니다.',
+        earth: '비위는 **오전 7시~9시**(진시)·오후 1시~3시(미시)에 가장 잘 움직입니다. 이 시간대 식사를 거르면 컨디션이 길게 빠집니다. 시간만 고정해도 위가 살아납니다.',
+        metal: '폐·대장은 **새벽 3시~7시**(인시·묘시)에 정리됩니다. 이 시간대 수면이 얕으면 면역이 가장 먼저 깎입니다. 새벽 깸이 잦다면 폐 쪽 신호로 보십시오.',
+        water: '신장은 **오후 5시~7시**(유시·술시)에 회복 단계로 들어갑니다. 이 시간대 격렬한 운동·과음은 신장에 두 배로 부담입니다. 저녁 시간을 완만하게 내려놓으십시오.'
+    }[maxWuxing];
+    // ── 음주·카페인·디지털 등 구체 습관 ──
+    const HABIT_RX = {
+        wood: { drink:'주 2회 이상 음주는 간이 회복할 시간을 빼앗습니다. **금주일을 달력에 박아두는** 방식이 가장 효과적입니다.', caffeine:'커피는 오전 11시 이전 한 잔까지. 그 이후의 카페인은 짜증과 수면 질을 같이 깎습니다.', screen:'야간에 화면을 오래 보면 간 쪽 피로가 빠르게 쌓입니다. 자기 1시간 전부터는 화면 밝기를 절반으로.' },
+        fire: { drink:'음주는 짧은 위로지만 심장에는 두 배 부담입니다. **2주에 한 번**으로 간격을 늘리십시오.', caffeine:'에너지 드링크·다량의 커피는 두근거림을 키웁니다. 하루 한 잔, 오후엔 디카페인으로.', screen:'잠자기 직전 영상 시청은 흥분 상태로 잠드는 일과 같습니다. 침실에서는 화면을 빼는 편이 좋습니다.' },
+        earth: { drink:'음주는 식사 리듬을 망가뜨립니다. **저녁 식사 후 음주**보다 식사 자체를 충분히 드시는 편이 회복이 빠릅니다.', caffeine:'공복 커피는 위 점막에 직접 부담이 갑니다. 반드시 식후 30분 이상 뒤에.', screen:'식사 중 화면 시청은 포만감 신호를 가립니다. 식사 시간만큼은 화면을 비우십시오.' },
+        metal: { drink:'음주는 폐 쪽 회복을 늦춥니다. **운동 다음 날 음주**는 면역이 가장 깎이는 조합입니다.', caffeine:'카페인은 마른기침을 키울 수 있습니다. 따뜻한 차로 절반을 대체하십시오.', screen:'미세먼지 시즌엔 실내에 머무는 시간이 길어집니다. 환기·가습기·실내 식물은 약입니다.' },
+        water: { drink:'음주는 신장이 가장 먼저 비명을 지르는 자리입니다. **늦은 시간 음주**는 다음 날의 부종·피곤으로 정확히 돌아옵니다.', caffeine:'카페인 과다는 수분을 빼앗아 신장 부담을 키웁니다. 한 잔 마실 때 물 한 잔을 같이.', screen:'늦은 밤 화면 시청은 신장 회복 시간을 깎습니다. 11시 이후 화면은 수면의 적입니다.' }
+    }[maxWuxing];
+    // ── 정신 건강 신호 ──
+    const MIND_RX = {
+        wood: '머리가 자주 **답답하고 숨이 짧아진다**면 분노가 누적된 신호입니다. 글로 한 줄 풀어 적거나, 격렬하지 않은 운동(빠르게 걷기·자전거)이 가장 효과적입니다.',
+        fire: '**가만히 있어도 마음이 들끓는** 느낌이 자주 든다면 휴식 부족 신호입니다. 침묵의 시간 — 5분만이라도 화면 없이 앉아 있는 시간이 약입니다.',
+        earth: '**같은 걱정이 답을 못 찾고 빙글빙글** 도는 시기가 길어지면 비위 쪽 회복이 필요합니다. 일을 한 가지씩 끝내고 지우는 “체크리스트 식 마무리”가 도움이 됩니다.',
+        metal: '**이유 없이 눈물이 가깝고, 가슴이 무거운** 시기는 폐 쪽 신호입니다. 깊은 호흡 5분, 햇볕을 직접 받는 30분이 가장 빠른 회복법입니다.',
+        water: '**근거 없는 두려움·미래에 대한 막연한 불안**이 길어지면 신장 쪽 신호입니다. 따뜻한 음식·따뜻한 물·일정한 수면 — 이 세 가지를 1주만 지켜도 풀립니다.'
+    }[maxWuxing];
     const foodAdvice = {
         wood:'신맛·녹색 채소를 기본으로 깔고, **술은 주 단위로 끊을 날**을 먼저 정하십시오.',
         fire:'쓴맛은 아침 한 번. **오후 2시 이후 카페인 금지**를 달력에 박으십시오.',
@@ -6015,41 +6142,76 @@ function buildChapter8_Health(data) {
             route:'주간 운동 3회 + 분기 검진 선예약을 고정하십시오',
             caution:'과로·야간 음주·통증 방치를 절대 지속하지 마십시오'
         })}
-        <p class="ch-text">건강은 몸만이 아니라 **감정의 배출구**입니다. ${emotion}이 쌓이면 ${organ}이 먼저 비명을 냅니다.</p>
-        <p class="ch-text">과로가 겹치면 숫자 감각·협상력이 함께 깎입니다. **수면·식사·운동**을 가계부처럼 고정하십시오.</p>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0;">
-            <div style="background:rgba(231,76,60,0.07);border-radius:10px;padding:16px;">
-                <div style="font-size:11px;color:rgba(255,120,120,0.8);margin-bottom:8px;letter-spacing:1px;">⚠ 평생 주요 취약 장기</div>
+        <p class="ch-text">${voicePolishParagraph(data, '건강은 몸만이 아니라 ' + nmUi(name) + ' 감정과 연결된 자리입니다. 먼저 ' + nmIGa(name) + ' 어떤 식으로 피로 신호를 받는지 — 이른바 "피로의 모양"부터 짚어 보겠습니다.')}</p>
+
+        <div class="health-fatigue-block sajux-print-surface" style="margin:14px 0 18px;padding:18px 20px;border-radius:12px;background:rgba(255,170,170,0.05);border:1px solid rgba(255,170,170,0.18);">
+            <div style="font-size:11px;color:#ff9f9f;letter-spacing:0.10em;margin-bottom:10px;font-weight:700;">${nmUi(name)} 피로의 모양</div>
+            <p style="font-size:13.5px;color:#eed8d8;line-height:1.95;margin:0 0 10px;">${boldStarsToStrong(FATIGUE_SIGNATURE)}</p>
+            <p style="font-size:13px;color:#ddc8c8;line-height:1.95;margin:0;">${boldStarsToStrong('이 신호가 이틀 이상 지속되면 일정을 줄이는 것이 가장 빠른 처방입니다.')}</p>
+        </div>
+
+        <p class="ch-text">${voicePolishParagraph(data, '신호를 알았다면, 이번엔 ' + nmUi(name) + ' 몸이 어느 시간대에 회복하고 어느 시간대에 무리하면 안 되는지 — 시간의 결을 정리해 드립니다.')}</p>
+
+        <div class="health-time-block sajux-print-surface" style="margin:14px 0 18px;padding:18px 20px;border-radius:12px;background:rgba(170,200,255,0.05);border:1px solid rgba(170,200,255,0.18);">
+            <div style="font-size:11px;color:#9bb8ee;letter-spacing:0.10em;margin-bottom:10px;font-weight:700;">${nmUi(name)} 컨디션 시간대</div>
+            <p style="font-size:13.5px;color:#dee2eb;line-height:1.95;margin:0;">${boldStarsToStrong(TIME_RHYTHM)}</p>
+        </div>
+
+        <p class="ch-text">${voicePolishParagraph(data, '시간의 결을 짚었으니, 이제 일상에서 가장 영향이 큰 세 가지 — 음주·카페인·화면 — 을 어떻게 다루면 좋은지 ' + nmUi(name) + ' 사주에 맞춰 정리해 드리겠습니다.')}</p>
+
+        <div class="health-habit-grid" style="display:grid;grid-template-columns:1fr;gap:10px;margin:14px 0 18px;">
+            <div class="sajux-print-surface" style="padding:14px 16px;border-radius:10px;background:rgba(255,255,255,0.03);border-left:3px solid rgba(255,170,120,0.6);">
+                <div style="font-size:11px;color:#ffc7a0;font-weight:700;letter-spacing:0.05em;margin-bottom:6px;">🍷 음주 가이드</div>
+                <p style="font-size:13px;color:#ddd;line-height:1.9;margin:0;">${boldStarsToStrong(HABIT_RX.drink)}</p>
+            </div>
+            <div class="sajux-print-surface" style="padding:14px 16px;border-radius:10px;background:rgba(255,255,255,0.03);border-left:3px solid rgba(180,140,255,0.6);">
+                <div style="font-size:11px;color:#c8a6ff;font-weight:700;letter-spacing:0.05em;margin-bottom:6px;">☕ 카페인 가이드</div>
+                <p style="font-size:13px;color:#ddd;line-height:1.9;margin:0;">${boldStarsToStrong(HABIT_RX.caffeine)}</p>
+            </div>
+            <div class="sajux-print-surface" style="padding:14px 16px;border-radius:10px;background:rgba(255,255,255,0.03);border-left:3px solid rgba(140,200,180,0.6);">
+                <div style="font-size:11px;color:#9ed3bb;font-weight:700;letter-spacing:0.05em;margin-bottom:6px;">📱 화면·환경 가이드</div>
+                <p style="font-size:13px;color:#ddd;line-height:1.9;margin:0;">${boldStarsToStrong(HABIT_RX.screen)}</p>
+            </div>
+        </div>
+
+        <p class="ch-text">${voicePolishParagraph(data, '몸의 신호를 살폈다면, 마음의 신호도 같은 무게로 살펴봐야 합니다. ' + nmUi(name) + ' 마음이 무너지기 직전에 보내는 신호와, 그 자리에서 가장 빠르게 회복하는 방법을 일러드립니다.')}</p>
+
+        <div class="health-mind-block sajux-print-surface" style="margin:14px 0 18px;padding:18px 20px;border-radius:12px;background:rgba(199,167,106,0.06);border-left:3px solid var(--gold);">
+            <div style="font-size:11px;color:var(--gold);letter-spacing:0.10em;margin-bottom:10px;font-weight:700;">정신 건강 신호와 회복</div>
+            <p style="font-size:13.5px;color:#e8e0d2;line-height:1.95;margin:0;">${boldStarsToStrong(MIND_RX)}</p>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0;">
+            <div class="sajux-print-surface" style="background:rgba(231,76,60,0.07);border-radius:10px;padding:16px;">
+                <div style="font-size:11px;color:rgba(255,120,120,0.8);margin-bottom:8px;letter-spacing:0.10em;">⚠ 평생 주요 취약 장기</div>
                 <div style="font-size:17px;font-weight:700;color:#ff8a80;margin-bottom:6px;">${organ}</div>
-                <div style="font-size:13px;color:#bbb;line-height:1.7;">${ohKr} 기운 과부하 시 가장 먼저 타격받습니다.</div>
+                <div style="font-size:13px;color:var(--text-soft, #bbb);line-height:1.75;">${ohKr} 기운이 과해질 때 가장 먼저 타격을 받습니다.</div>
             </div>
-            <div style="background:rgba(255,165,0,0.07);border-radius:10px;padding:16px;">
-                <div style="font-size:11px;color:rgba(255,200,100,0.8);margin-bottom:8px;letter-spacing:1px;">감정 → 신체 연결고리</div>
+            <div class="sajux-print-surface" style="background:rgba(255,165,0,0.07);border-radius:10px;padding:16px;">
+                <div style="font-size:11px;color:rgba(255,200,100,0.8);margin-bottom:8px;letter-spacing:0.10em;">감정 → 신체 연결고리</div>
                 <div style="font-size:17px;font-weight:700;color:#ffcc80;margin-bottom:6px;">${emotion}</div>
-                <div style="font-size:13px;color:#bbb;line-height:1.7;">이 감정이 쌓일 때 해당 장기가 가장 먼저 반응합니다.</div>
+                <div style="font-size:13px;color:var(--text-soft, #bbb);line-height:1.75;">이 감정이 쌓일 때 해당 장기가 가장 먼저 반응합니다.</div>
             </div>
         </div>
 
-        <p class="ch-text">원국에서 <b>${ohKr}</b>이 두껍습니다. <b>${season}</b> 전후로 **검진 한 번**을 당겨 붙이십시오.</p>
+        <p class="ch-text">${voicePolishParagraph(data, '원국에서 ' + ohKr + '이 두껍게 박힌 분이라, 특히 ' + season + ' 전후로 한 번씩 검진을 미리 당겨 두시는 편이 좋습니다. 기신이 들어오는 해·대운에는 면역이 가장 빠르게 얇아지니, 신호를 참는 것은 가장 비싼 절약입니다.')}</p>
 
-        <p class="ch-text">기신이 들어오는 해·대운에는 면역이 급격히 얇아집니다. 신호를 참는 것은 **가장 비싼 절약**입니다.</p>
-
-        <div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:18px;margin:16px 0;">
-            <div style="font-size:12px;color:var(--gold);margin-bottom:10px;letter-spacing:1px;">🥗 맞춤 식이 처방</div>
-            <p style="font-size:13.5px;color:#ddd;line-height:1.9;margin:0;">${foodAdvice}</p>
+        <div class="sajux-print-surface" style="background:rgba(255,255,255,0.04);border-radius:10px;padding:18px;margin:16px 0;">
+            <div style="font-size:12px;color:var(--gold);margin-bottom:10px;letter-spacing:0.10em;">🥗 맞춤 식이 처방</div>
+            <p style="font-size:13.5px;color:#ddd;line-height:1.95;margin:0;">${boldStarsToStrong(foodAdvice)}</p>
         </div>
 
-        <div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:18px;margin-bottom:16px;">
-            <div style="font-size:12px;color:var(--gold);margin-bottom:10px;letter-spacing:1px;">🏃 맞춤 운동 처방</div>
-            <p style="font-size:13.5px;color:#ddd;line-height:1.9;margin:0;">${exerciseAdvice}</p>
+        <div class="sajux-print-surface" style="background:rgba(255,255,255,0.04);border-radius:10px;padding:18px;margin-bottom:16px;">
+            <div style="font-size:12px;color:var(--gold);margin-bottom:10px;letter-spacing:0.10em;">🏃 맞춤 운동 처방</div>
+            <p style="font-size:13.5px;color:#ddd;line-height:1.95;margin:0;">${boldStarsToStrong(exerciseAdvice)}</p>
         </div>
 
-        <div style="background:rgba(231,76,60,0.06);border-radius:10px;padding:18px;">
-            <div style="font-size:12px;color:rgba(255,120,120,0.8);margin-bottom:10px;letter-spacing:1px;">🏥 권장 정기 검진</div>
-            <p style="font-size:13.5px;color:#ddd;line-height:1.9;margin:0;">${checkupAdvice}</p>
+        <div class="sajux-print-surface" style="background:rgba(231,76,60,0.06);border-radius:10px;padding:18px;">
+            <div style="font-size:12px;color:rgba(255,120,120,0.8);margin-bottom:10px;letter-spacing:0.10em;">🏥 권장 정기 검진</div>
+            <p style="font-size:13.5px;color:#ddd;line-height:1.95;margin:0;">${boldStarsToStrong(checkupAdvice)}</p>
         </div>
 
-        <p class="ch-text" style="margin-top:16px;">연료로 몸을 태우지 마십시오. **멈출 수 있는 사람**이 긴 레이스에서 이깁니다.</p>
+        <p class="ch-text" style="margin-top:16px;">${voicePolishParagraph(data, '연료로 몸을 태우지 마세요. 멈출 수 있는 사람이 긴 레이스에서 이깁니다.')}</p>
 
         <div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:22px;margin:20px 0;">
             <div style="font-size:12px;color:var(--gold);margin-bottom:16px;letter-spacing:1px;">&#9670; ${nmUi(name)}님의 취약 오행 — 심층 건강 가이드</div>
@@ -6366,13 +6528,28 @@ function buildChapter7_NextYears(data){
     if(!c1 && !c2) return ''; // 두 카드 모두 비면 빈 래퍼 방지
     var p1n = computeSeYunScorePack(data, curY + 1);
     var p2n = computeSeYunScorePack(data, curY + 2);
+    // 해 사이 시간 다리
+    function _yearBridge(prevPack, nextPack, nextYr){
+        if (!prevPack || !nextPack) return '';
+        var diff = (nextPack.sc || 0) - (prevPack.sc || 0);
+        var line;
+        if (diff >= 4)        line = '여기서부터 흐름이 한 단계 살아납니다. ' + nextYr + '년은 미뤄두었던 큰 의사결정을 본격적으로 풀어가시면 좋습니다.';
+        else if (diff >= 2)   line = '바람의 방향이 부드러워집니다. ' + nextYr + '년은 새로운 시도 한두 가지를 가볍게 펼쳐도 무리가 없습니다.';
+        else if (diff <= -4)  line = '여기서 흐름이 한 박자 무거워집니다. ' + nextYr + '년은 새 도전보다 정리·축적의 해로 무게를 옮기십시오.';
+        else if (diff <= -2)  line = '결이 살짝 비틀립니다. ' + nextYr + '년은 일정의 약 30%를 비워두고 호흡을 길게 가져가십시오.';
+        else                  line = '같은 결의 흐름이 이어집니다. ' + nextYr + '년은 올해의 리듬을 그대로 이어가시면 됩니다.';
+        return '<div class="year-bridge" style="margin:8px 0;padding:10px 16px;font-size:13px;color:var(--text-dim);line-height:1.95;font-style:italic;border-left:1px dashed rgba(199,167,106,0.40);">↓ ' + line + '</div>';
+    }
+    var nowPack = computeSeYunScorePack(data, curY);
+    var bridge1 = _yearBridge(nowPack, p1n, curY+1);
+    var bridge2 = _yearBridge(p1n, p2n, curY+2);
     var h3n = (p1n && p2n) ? formatNextYearsChapterH3(curY + 1, p1n, curY + 2, p2n) : ('[ 11. ' + (curY + 1) + '·' + (curY + 2) + '년 ] — 앞선 두 해는 계약·현금·관계를 한 주에 섞지 마십시오');
     var chHeadNy = buildChapterHead(buildTopicMetaphorTitle('seyun', data), h3n);
     var chIntroNy = buildChapterIntroHtml(data, 'seyun');
     return '<div class="report-chapter chapter-start">'
         + chHeadNy + chIntroNy
         +'<div style="width:100%;box-sizing:border-box;display:flex;flex-direction:column;gap:16px;">'
-        +c1+c2
+        + bridge1 + c1 + bridge2 + c2
         +'</div>'
         +'</div>';
 }
@@ -6461,6 +6638,39 @@ function buildChapter9_Remedy(data) {
     const yong = data.yong || stemEl;
     const ohKr = {wood:'목',fire:'화',earth:'토',metal:'금',water:'수'};
     const yongKr = ohKr[yong] || ohKr[stemEl];
+    const name = data.name || '고객';
+    const ds = data.dayStem || '丙';
+    const isStrong = data.strengthText && (data.strengthText.includes('신강') || data.strengthText.includes('강'));
+
+    // ── 일간별 하루 루틴 (아침·낮·저녁·밤) ──
+    const DAILY_RX = {
+        '甲': { morn:'창문을 활짝 열고 5분간 깊은 호흡', noon:'점심 후 바깥 산책 10분 (햇볕 직접)', eve:'식사 후 차 한 잔과 짧은 메모', night:'밤 11시 이전 잠자리 — 간이 회복하는 시간' },
+        '乙': { morn:'식물에 물 주기 또는 화분 옆 5분 명상', noon:'창가 자리에서 점심 — 햇볕과 식물의 결을 같이', eve:'한 가지 작은 정리 (서랍·책상 위)', night:'밤 11시 이전 따뜻한 차 — 카페인 제외' },
+        '丙': { morn:'창문 열고 햇볕 직접 받기 10분', noon:'밝은 자리에서 점심 — 어둑한 방 피하기', eve:'발표·미팅이 있다면 이 시간대까지만', night:'침실 조명 어둡게 — 자기 1시간 전 화면 끄기' },
+        '丁': { morn:'촛불 한 자루 또는 조명만 켜고 차 한 잔', noon:'한 시간만이라도 따뜻한 빛이 드는 자리에', eve:'글쓰기·일기 5분 — 오늘 하루를 한 줄로', night:'어둠을 두려워하지 않는 연습 — 조명을 줄이고 잠들기' },
+        '戊': { morn:'침대 정리 후 5분간 가만히 앉기', noon:'식사 시간을 정확히 — 30분 미루지 않기', eve:'책상 위 한 가지 비우기 (영수증·메모지)', night:'식후 30분 산책 → 입욕 → 일관된 시각 취침' },
+        '己': { morn:'침구 정리와 가벼운 스트레칭 5분', noon:'점심 도시락 또는 단정한 한 끼', eve:'가까운 사람에게 짧은 안부 한 통', night:'10시 이후엔 음식·자극적 영상 끊기' },
+        '庚': { morn:'찬물 세수 + 1분 거울 보고 자세 잡기', noon:'결정해야 할 일 하나만 점심 전에 마무리', eve:'운동 30분 (저강도 근력 또는 빠르게 걷기)', night:'금속 액세서리 빼고 손목·발목 자유롭게' },
+        '辛': { morn:'세안 후 거울 앞에서 옷매무새 정리 1분', noon:'정갈한 한 끼 — 너무 자극적인 음식 피하기', eve:'완료한 일 한 가지를 일부러 종료 표시', night:'침실은 단정하게 — 잡동사니 보이는 곳에 두지 않기' },
+        '壬': { morn:'물 한 잔 천천히 마시기 (찬물 아닌 미온수)', noon:'한 사람과의 깊은 대화 — 잡담 대신 본질', eve:'욕조에 발만이라도 따뜻하게 담그기', night:'11시 이후 화면 끄기 — 신장 회복 시간 보호' },
+        '癸': { morn:'창문 열고 공기 환기 + 따뜻한 물 한 잔', noon:'복잡한 결정은 점심 전, 점심 후엔 단순 작업', eve:'일기·메모로 마음을 정리 (말로 풀기 어려울 때)', night:'잠들기 1시간 전부터 따뜻한 차·낮은 조명' }
+    };
+    const dailyRx = DAILY_RX[ds] || DAILY_RX['戊'];
+
+    // ── 일간별 부적·향·식물·소품 ──
+    const TALISMAN_RX = {
+        wood: { incense:'편백·소나무·삼나무 향', plant:'몬스테라·산세베리아·테이블야자', charm:'동쪽 창가에 작은 화분 한 개', taboo:'동쪽 벽에 거울이나 금속 장식 두지 않기' },
+        fire: { incense:'유향(프랑킨센스)·계피·로즈마리', plant:'홍콩야자·아레카야자·붉은 잎 식물', charm:'책상 남쪽에 작은 양초 또는 따뜻한 톤 조명', taboo:'침대 머리맡에 큰 거울이나 어두운 그림 두지 않기' },
+        earth: { incense:'백단(샌달우드)·라벤더', plant:'금전수·고무나무·다육이', charm:'중앙(거실·책상 한가운데)에 도자기 그릇 한 개', taboo:'식탁이나 침대 위에 잡동사니 쌓아두지 않기' },
+        metal: { incense:'백차·국화·은은한 시트러스', plant:'스파티필름·아이비·하얀 꽃 식물', charm:'서쪽에 백자·은소품 한 개', taboo:'서쪽 자리에 시들거나 깨진 물건 두지 않기' },
+        water: { incense:'침향·백단·연꽃', plant:'개운죽·스킨답서스·물에 키우는 식물', charm:'북쪽에 어항·물그릇·검정 도자기 한 개', taboo:'북쪽 자리에 잡동사니나 마른 식물 두지 않기' }
+    };
+    const talisman = TALISMAN_RX[yong] || TALISMAN_RX.earth;
+
+    // ── 신강·신약별 마음가짐 ──
+    const MINDSET_RX = isStrong
+        ? '에너지가 강한 분이라, 개운의 핵심은 “더 채우기”가 아니라 **풀어내기·내려놓기**에 있습니다. 결정을 미루는 연습, 거절하는 연습, 한 걸음 물러서서 보는 연습 — 이 세 가지가 ' + nmKke(name) + ' 가장 큰 보약입니다.'
+        : '에너지가 섬세한 분이라, 개운의 핵심은 “비우기”가 아니라 **꾸준히 채우기**에 있습니다. 같은 시간 식사·같은 시간 수면·같은 사람을 자주 만나는 — 이 세 가지 일관성이 ' + nmKke(name) + ' 가장 큰 보약입니다.';
     const colorDB = {
         wood:{good:'초록·청색·청록·연두',bad:'흰색·금색·은색',dir:'동쪽·동남쪽',num:'3, 8',gem:'에메랄드·옥·공작석·녹마노',food:'신맛 음식 — 레몬·식초·매실·키위·녹차',time:'봄(3~5월), 이른 아침 시간대',guien:'수 기운 일간(임·계)을 가진 사람'},
         fire:{good:'빨강·주황·분홍·보라',bad:'검정·짙은 파랑',dir:'남쪽·동남쪽',num:'2, 7',gem:'루비·가넷·레드코랄·레드재스퍼',food:'쓴맛 음식 — 녹차·여주·쑥·아메리카노',time:'여름(6~8월), 오전~정오 시간대',guien:'목 기운 일간(갑·을)을 가진 사람'},
@@ -6474,7 +6684,16 @@ function buildChapter9_Remedy(data) {
     return `<div class="report-chapter" id="sec-remedy-final">
         ${chHeadR}
         ${chIntroR}
-        <p class="ch-text">아래 표는 장식이 아닙니다. **일주일만** 색·방향·시간대를 고정해 보고, 덜 지친 조합을 달력에 붙이십시오. ${yongKr}을 몸에 입히면 **수면과 집중**이 먼저 돌아옵니다.</p>
+
+        <p class="ch-text">${voicePolishParagraph(data, '여기까지 ' + nmUi(name) + ' 사주를 차근차근 살폈습니다. 이 마지막 장은 사주를 바꾸는 자리가 아니라, 타고난 결을 일상의 결로 바꿔 드리는 자리입니다. 색·방향·시간·작은 행동 — 거창하지 않은 것을 일주일만 지켜 보십시오. 덜 지친 조합이 ' + nmKke(name) + ' 가장 큰 보약입니다.')}</p>
+
+        <div class="remedy-mindset sajux-print-surface" style="margin:14px 0 18px;padding:18px 20px;border-radius:12px;background:rgba(199,167,106,0.06);border-left:3px solid var(--gold);">
+            <div style="font-size:11px;color:var(--gold);letter-spacing:0.10em;margin-bottom:10px;font-weight:700;">${nmUi(name)} 개운(開運)의 결</div>
+            <p style="font-size:13.5px;color:#e8e0d2;line-height:1.95;margin:0;">${boldStarsToStrong(MINDSET_RX)}</p>
+        </div>
+
+        <p class="ch-text">${voicePolishParagraph(data, '먼저 색·방향·시간 같은 큰 결을 짚고, 이어서 ' + nmUi(name) + ' 일간(' + ds + ')에 맞춘 하루 루틴과 부적·향·식물 같은 손에 잡히는 작은 도구들을 풀어 드립니다.')}</p>
+
         ${typeof buildRemedyYongHeeMindsetHTML === 'function' ? buildRemedyYongHeeMindsetHTML(data) : ''}
 
         <table class="remedy-checklist-table" style="width:100%;border-collapse:collapse;margin:18px 0;background:rgba(255,255,255,0.04);border:1px solid rgba(199,167,106,0.35);border-radius:12px;overflow:hidden;font-size:12px;">
@@ -6510,6 +6729,54 @@ function buildChapter9_Remedy(data) {
                         metal: '서쪽 책상면은 서류만 두고, 잡동사니는 반대편으로 치우십시오. 은·회색 액세서리는 하나만 착용하는 규칙을 두십시오. 매운맛은 점심 한 번—저녁엔 생강·마늘을 빼십시오. 중요한 결정은 해 질 무렵이 아니라 해 질 2시간 전에 끝내십시오.',
                         water: '북쪽 침대 헤드 근처에 전자기기 충전을 두지 마십시오. 남색·검정은 겉옷 한 벌만 고정하고, 실내는 조도 낮게 유지하십시오. 짠맛은 아침 미역 한 그릇으로 끝—밤엔 짠 국물을 피하십시오. 긴 통화·긴 회의는 오후 5시 이전에 끊으십시오.'
                     })[yong] || '표의 행운 색·방향·시간대 중 두 가지만 골라 일주일 동안 같은 패턴으로 반복하십시오. 덜 피곤한 조합이 나오면 그대로 고정하십시오.'}</p>
+                </div>
+            </div>
+        </div>
+
+        <p class="ch-text">${voicePolishParagraph(data, '큰 결을 보았으니, 이제 ' + nmUi(name) + ' 일간(' + ds + ')에 맞춘 하루 루틴을 시간 단위로 풀어 드립니다. 한 번에 다 하실 필요 없이, 이 중 두 가지만 골라 일주일 동안 같은 시간에 반복해 보십시오. 사주가 풀어지는 방식은 늘 작은 반복에서 시작합니다.')}</p>
+
+        <div class="daily-rx-block sajux-print-surface" style="background:rgba(255,255,255,0.03);border-radius:12px;padding:22px;margin:18px 0;border:1px solid rgba(199,167,106,0.18);">
+            <div style="font-size:12px;color:var(--gold);font-weight:700;letter-spacing:0.10em;margin-bottom:14px;">${nmUi(name)} 하루 루틴 — 일간 ${ds} 기준</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                <div style="padding:14px 16px;border-radius:10px;background:rgba(255,210,150,0.05);border-left:2px solid rgba(255,210,150,0.45);">
+                    <div style="font-size:11px;color:#ffd9a8;font-weight:700;letter-spacing:0.05em;margin-bottom:6px;">🌅 아침 (6~9시)</div>
+                    <p style="font-size:13px;color:#e8e0d2;line-height:1.85;margin:0;">${dailyRx.morn}</p>
+                </div>
+                <div style="padding:14px 16px;border-radius:10px;background:rgba(255,235,180,0.05);border-left:2px solid rgba(255,235,180,0.45);">
+                    <div style="font-size:11px;color:#ffe9b8;font-weight:700;letter-spacing:0.05em;margin-bottom:6px;">☀️ 낮 (12~15시)</div>
+                    <p style="font-size:13px;color:#e8e0d2;line-height:1.85;margin:0;">${dailyRx.noon}</p>
+                </div>
+                <div style="padding:14px 16px;border-radius:10px;background:rgba(220,180,255,0.05);border-left:2px solid rgba(220,180,255,0.45);">
+                    <div style="font-size:11px;color:#d8b8ff;font-weight:700;letter-spacing:0.05em;margin-bottom:6px;">🌆 저녁 (18~21시)</div>
+                    <p style="font-size:13px;color:#e0d8ec;line-height:1.85;margin:0;">${dailyRx.eve}</p>
+                </div>
+                <div style="padding:14px 16px;border-radius:10px;background:rgba(170,200,255,0.05);border-left:2px solid rgba(170,200,255,0.45);">
+                    <div style="font-size:11px;color:#a8c8ff;font-weight:700;letter-spacing:0.05em;margin-bottom:6px;">🌙 밤 (22~24시)</div>
+                    <p style="font-size:13px;color:#dee2eb;line-height:1.85;margin:0;">${dailyRx.night}</p>
+                </div>
+            </div>
+        </div>
+
+        <p class="ch-text">${voicePolishParagraph(data, '시간의 결이 잡혔다면, 이번엔 공간의 결입니다. 향·식물·작은 소품 — 사주의 ' + yongKr + ' 기운을 일상의 공기에 들여놓는 가장 부드러운 방법입니다.')}</p>
+
+        <div class="talisman-rx-block sajux-print-surface" style="background:rgba(199,167,106,0.05);border-radius:12px;padding:22px;margin:18px 0;border:1px solid rgba(199,167,106,0.22);">
+            <div style="font-size:12px;color:var(--gold);font-weight:700;letter-spacing:0.10em;margin-bottom:14px;">${yongKr}을 일상에 들이는 4가지 방법</div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+                <div style="display:flex;gap:14px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(199,167,106,0.15);">
+                    <div style="font-size:22px;flex-shrink:0;">🪔</div>
+                    <div style="flex:1;"><div style="font-size:12px;color:var(--gold);font-weight:700;margin-bottom:4px;">향 (집중·잠자리)</div><p style="font-size:13px;color:#e8e0d2;line-height:1.85;margin:0;">${talisman.incense}을 한 가지만 골라 같은 시간에 사용해 보십시오. 너무 진하지 않게.</p></div>
+                </div>
+                <div style="display:flex;gap:14px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(199,167,106,0.15);">
+                    <div style="font-size:22px;flex-shrink:0;">🪴</div>
+                    <div style="flex:1;"><div style="font-size:12px;color:var(--gold);font-weight:700;margin-bottom:4px;">식물 (공간의 결)</div><p style="font-size:13px;color:#e8e0d2;line-height:1.85;margin:0;">${talisman.plant} 중 손이 덜 가는 한 종류를 책상 또는 침실 옆에 두십시오. 시들면 바로 새로 들이는 것이 약입니다.</p></div>
+                </div>
+                <div style="display:flex;gap:14px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(199,167,106,0.15);">
+                    <div style="font-size:22px;flex-shrink:0;">🕯️</div>
+                    <div style="flex:1;"><div style="font-size:12px;color:var(--gold);font-weight:700;margin-bottom:4px;">소품 (방향)</div><p style="font-size:13px;color:#e8e0d2;line-height:1.85;margin:0;">${talisman.charm}.</p></div>
+                </div>
+                <div style="display:flex;gap:14px;align-items:flex-start;padding:10px 0;">
+                    <div style="font-size:22px;flex-shrink:0;">🚫</div>
+                    <div style="flex:1;"><div style="font-size:12px;color:#ff9f9f;font-weight:700;margin-bottom:4px;">피해야 할 것</div><p style="font-size:13px;color:#e8d8d2;line-height:1.85;margin:0;">${talisman.taboo}.</p></div>
                 </div>
             </div>
         </div>
