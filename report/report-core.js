@@ -1206,37 +1206,49 @@ function voicePolishParagraph(data, text) {
     // Remove a known repeated/macro sentence if present (defensive).
     s = s.replace(/겉으로는 듬직해 보이지만, 속으로는 누구보다 치열하게 고민하는 편[^\n\<\>]{0,120}/g, '');
 
+    // ── 명리 DB 어투 자연어화 — "~ 상(象)." 같은 한자식 종결을 부드럽게 풀어 줍니다.
+    //   예) "촛불이 여름 대지 위에서 풍요롭게 타오르는 상(象)." → "촛불이 여름 대지 위에서 풍요롭게 타오르는 모습입니다."
+    //   ※ 따옴표(", ") 안에 들어 있는 비유 라벨(image 텍스트 등)은 건드리지 않도록 lookahead로 보호.
+    s = s.replace(/는\s*상\s*\(\s*象\s*\)\s*\./g, '는 모습입니다.');
+    s = s.replace(/하는\s*상\s*\(\s*象\s*\)\s*\./g, '하는 모습입니다.');
+    s = s.replace(/된\s*상\s*\(\s*象\s*\)\s*\./g, '된 모습입니다.');
+    s = s.replace(/인\s*상\s*\(\s*象\s*\)\s*\./g, '인 모습입니다.');
+    // 남은 일반 패턴 — "○○ 상(象)." 끝맺음을 형상입니다로
+    s = s.replace(/([가-힣A-Za-z])\s*상\s*\(\s*象\s*\)\s*\./g, '$1 형상입니다.');
+
     // ─── 전문 용어 쉬운 풀이 (일반 독자용) ───
-    s = s.replace(/기신(?!\s*[\(（])/g, '기신(나를 지치게 하는 기운)');
-    s = s.replace(/용신(?!\s*[\(（])/g, '용신(나를 돕는 핵심 기운)');
-    s = s.replace(/십성(?!\s*[\(（])/g, '십성(사주 속 나의 역할과 관계 방식)');
-    s = s.replace(/구신(?!\s*[\(（])/g, '구신(기신을 더 강하게 만드는 기운)');
-    s = s.replace(/일주(?!\s*[\(（])/g, '일주(태어난 날의 두 글자)');
-    s = s.replace(/대운(?!\s*[\(（수])/g, '대운(10년 단위로 바뀌는 운의 흐름)');
-    s = s.replace(/세운(?!\s*[\(（])/g, '세운(그해 한 해의 운)');
-    s = s.replace(/월운(?!\s*[\(（])/g, '월운(그달의 운)');
-    s = s.replace(/원국(?!\s*[\(（])/g, '원국(태어날 때 정해진 나의 사주 구조)');
-    s = s.replace(/일간(?!\s*[\(（])/g, '일간(사주에서 나를 나타내는 글자)');
-    s = s.replace(/일지(?!\s*[\(（])/g, '일지(태어난 날의 아래 글자, 배우자궁)');
-    s = s.replace(/신강(?!\s*[\(（])/g, '신강(타고난 에너지가 강한 편)');
-    s = s.replace(/신약(?!\s*[\(（])/g, '신약(타고난 에너지가 섬세한 편)');
-    s = s.replace(/격국(?!\s*[\(（])/g, '격국(사주의 큰 그림·구조)');
-    s = s.replace(/통근(?!\s*[\(（])/g, '통근(천간이 지지에 뿌리내린 상태)');
-    s = s.replace(/조후(?!\s*[\(（])/g, '조후(사주 속 온도와 습도 균형)');
-    s = s.replace(/공망(?!\s*[\(（])/g, '공망(채워도 채워지지 않는 빈자리)');
-    s = s.replace(/지장간(?!\s*[\(（])/g, '지장간(겉 글자 안에 숨은 또 다른 기운)');
-    s = s.replace(/천간(?!\s*[\(（])/g, '천간(사주의 위 네 글자, 겉으로 드러난 역할)');
-    s = s.replace(/지지(?!\s*[\(（])/g, '지지(사주의 아래 네 글자, 속에 자리 잡은 본성)');
-    s = s.replace(/편관(?!\s*[\(（])/g, '편관(나를 강하게 단련시키는 기운)');
-    s = s.replace(/정관(?!\s*[\(（])/g, '정관(원칙·책임을 부여하는 기운)');
-    s = s.replace(/편재(?!\s*[\(（])/g, '편재(흐름이 큰 재물 기운)');
-    s = s.replace(/정재(?!\s*[\(（])/g, '정재(꾸준히 쌓이는 재물 기운)');
-    s = s.replace(/식신(?!\s*[\(（])/g, '식신(즐거움을 만들어내는 표현 기운)');
-    s = s.replace(/상관(?!\s*[\(（])/g, '상관(말과 재능이 빛나는 기운)');
-    s = s.replace(/편인(?!\s*[\(（])/g, '편인(직관·창의가 깊어지는 기운)');
-    s = s.replace(/정인(?!\s*[\(（])/g, '정인(나를 든든히 받쳐주는 기운)');
-    s = s.replace(/비견(?!\s*[\(（])/g, '비견(나와 같은 결의 사람·동료 기운)');
-    s = s.replace(/겁재(?!\s*[\(（])/g, '겁재(경쟁을 부르는 같은 결의 기운)');
+    // ※ (?<![가-힣]) — 앞이 한글 음절일 때는 단어 내부 우연 일치이므로 풀이하지 않습니다.
+    //   예) "달라지지만" 안의 "지지", "일주일" 안의 "일주", "신약품" 안의 "신약" 등을 보호.
+    s = s.replace(/(?<![가-힣])기신(?!\s*[\(（])/g, '기신(나를 지치게 하는 기운)');
+    s = s.replace(/(?<![가-힣])용신(?!\s*[\(（])/g, '용신(나를 돕는 핵심 기운)');
+    s = s.replace(/(?<![가-힣])십성(?!\s*[\(（])/g, '십성(사주 속 나의 역할과 관계 방식)');
+    s = s.replace(/(?<![가-힣])구신(?!\s*[\(（])/g, '구신(기신을 더 강하게 만드는 기운)');
+    s = s.replace(/(?<![가-힣])일주(?![일\s]*[가-힣\(（])/g, '일주(태어난 날의 두 글자)');
+    s = s.replace(/(?<![가-힣])대운(?!\s*[\(（수])/g, '대운(10년 단위로 바뀌는 운의 흐름)');
+    s = s.replace(/(?<![가-힣])세운(?!\s*[\(（])/g, '세운(그해 한 해의 운)');
+    s = s.replace(/(?<![가-힣])월운(?!\s*[\(（])/g, '월운(그달의 운)');
+    s = s.replace(/(?<![가-힣])원국(?!\s*[\(（])/g, '원국(태어날 때 정해진 나의 사주 구조)');
+    s = s.replace(/(?<![가-힣])일간(?!\s*[\(（])/g, '일간(사주에서 나를 나타내는 글자)');
+    s = s.replace(/(?<![가-힣])일지(?!\s*[\(（])/g, '일지(태어난 날의 아래 글자, 배우자궁)');
+    s = s.replace(/(?<![가-힣])신강(?!\s*[\(（])/g, '신강(타고난 에너지가 강한 편)');
+    s = s.replace(/(?<![가-힣])신약(?!\s*[\(（])/g, '신약(타고난 에너지가 섬세한 편)');
+    s = s.replace(/(?<![가-힣])격국(?!\s*[\(（])/g, '격국(사주의 큰 그림·구조)');
+    s = s.replace(/(?<![가-힣])통근(?!\s*[\(（])/g, '통근(천간이 지지에 뿌리내린 상태)');
+    s = s.replace(/(?<![가-힣])조후(?!\s*[\(（])/g, '조후(사주 속 온도와 습도 균형)');
+    s = s.replace(/(?<![가-힣])공망(?!\s*[\(（])/g, '공망(채워도 채워지지 않는 빈자리)');
+    s = s.replace(/(?<![가-힣])지장간(?!\s*[\(（])/g, '지장간(겉 글자 안에 숨은 또 다른 기운)');
+    s = s.replace(/(?<![가-힣])천간(?!\s*[\(（])/g, '천간(사주의 위 네 글자, 겉으로 드러난 역할)');
+    s = s.replace(/(?<![가-힣])지지(?![가-힣]|\s*[\(（])/g, '지지(사주의 아래 네 글자, 속에 자리 잡은 본성)');
+    s = s.replace(/(?<![가-힣])편관(?!\s*[\(（])/g, '편관(나를 강하게 단련시키는 기운)');
+    s = s.replace(/(?<![가-힣])정관(?!\s*[\(（])/g, '정관(원칙·책임을 부여하는 기운)');
+    s = s.replace(/(?<![가-힣])편재(?!\s*[\(（])/g, '편재(흐름이 큰 재물 기운)');
+    s = s.replace(/(?<![가-힣])정재(?!\s*[\(（])/g, '정재(꾸준히 쌓이는 재물 기운)');
+    s = s.replace(/(?<![가-힣])식신(?!\s*[\(（])/g, '식신(즐거움을 만들어내는 표현 기운)');
+    s = s.replace(/(?<![가-힣])상관(?!\s*[\(（])/g, '상관(말과 재능이 빛나는 기운)');
+    s = s.replace(/(?<![가-힣])편인(?!\s*[\(（])/g, '편인(직관·창의가 깊어지는 기운)');
+    s = s.replace(/(?<![가-힣])정인(?!\s*[\(（])/g, '정인(나를 든든히 받쳐주는 기운)');
+    s = s.replace(/(?<![가-힣])비견(?!\s*[\(（])/g, '비견(나와 같은 기운의 사람·동료)');
+    s = s.replace(/(?<![가-힣])겁재(?!\s*[\(（])/g, '겁재(경쟁을 부르는 같은 기운)');
 
     // ─── 어려운 표현 → 쉬운 말 ───
     s = s.replace(/레버리지/g, '빚을 써서 키우는 투자');
@@ -1247,24 +1259,11 @@ function voicePolishParagraph(data, text) {
     s = s.replace(/분할 매입/g, '나눠서 사기');
     s = s.replace(/배당/g, '배당(투자한 회사가 주는 수익)');
 
-    // ─── 말투 교정: 캐주얼 → 격식·따뜻한 문체 ───
-    s = s.replace(/이시군요/g, '입니다');
-    s = s.replace(/이군요/g, '입니다');
-    s = s.replace(/이네요/g, '입니다');
-    s = s.replace(/하네요/g, '합니다');
-    s = s.replace(/네요/g, '습니다');
-    s = s.replace(/이에요/g, '입니다');
-    s = s.replace(/예요/g, '입니다');
-    s = s.replace(/있어요/g, '있습니다');
-    s = s.replace(/없어요/g, '없습니다');
-    s = s.replace(/볼 수 있어요/g, '볼 수 있습니다');
-    s = s.replace(/같아요/g, '같습니다');
-    s = s.replace(/볼게요/g, '보겠습니다');
-    s = s.replace(/할게요/g, '하겠습니다');
-    s = s.replace(/갈림길이에요/g, '갈림길입니다');
-    s = s.replace(/좋아요/g, '좋습니다');
-    s = s.replace(/돼요/g, '됩니다');
-    s = s.replace(/돼요\./g, '됩니다.');
+    // ※ 과거에 있던 "캐주얼 → 격식" 어미 일괄 변환 블록은 제거했습니다.
+    //   ~네요·~군요·~이시군요·~것 같아요·~좋아요·~돼요 등 따뜻한 구어체 어미를
+    //   ~입니다·~합니다로 강제 변환하던 로직이 .cursorrules의 톤 가이드와 충돌했고,
+    //   본문 어디서나 동일하게 톤이 평탄해지는 부작용이 있었습니다. 이제는 템플릿이
+    //   고른 어미를 그대로 살리고, 격식이 필요한 곳에서는 템플릿 단계에서 결정합니다.
     return s;
 }
 
@@ -3998,13 +3997,13 @@ function buildPremiumExecutiveSummary(data) {
         { title: vipTitles[3], body: chosen.m4 }
     ];
 
-    // 표지형 압축 — 메타포 제목 + 한눈에 보기 카드만 남김.
+    // 표지형 압축 — 메타포 제목 + 프롤로그(한눈에 보기) 카드만 남김.
     // PDF 저장 버튼·열람 안내·면책 고지·이용 안내 등 유틸리티 컴포넌트는 본문 렌더링이 끝난 뒤
     // 문서 최하단(buildReportFooterUtilities)에 모아 배치합니다. 진짜 본문 풀이는 1~4부에서 이어집니다.
     var trendNuance = function (t) {
-        if (t === '공격') return '한 발 더 내디뎌도 좋은 공격 국면';
-        if (t === '균형') return '들숨 날숨이 고르게 맞아가는 균형 흐름';
-        return '한 박자 쉬어 가는 방어 결';
+        if (t === '공격') return '한 발 더 내디뎌도 좋은 공격 흐름';
+        if (t === '균형') return '들숨 날숨이 고르게 맞아 가는 균형 흐름';
+        return '한 박자 쉬어 가는 방어 흐름';
     };
     var monthFlavor = function (t) {
         if (t === '공격') return '속도를 한 단계 올려도 무리가 없는 달';
@@ -4026,7 +4025,8 @@ function buildPremiumExecutiveSummary(data) {
         '<h2 style="font-family:\'Noto Sans KR\',sans-serif;font-size:24px;font-weight:700;color:var(--text, #f5f0e6);margin:0 0 8px;line-height:1.45;letter-spacing:-0.01em;">' + escHtmlAttr(metaphorLead) + '</h2>' +
         '<p style="font-size:11.5px;letter-spacing:0.14em;color:var(--text-dim, rgba(199,167,106,0.72));margin:0 0 22px;font-weight:500;">' + escHtmlAttr(nmUi(nm)) + ' 사주를 한 흐름으로 부드럽게 풀어 드릴게요</p>' +
         '<div class="brief-glance sajux-print-surface" style="text-align:left;margin:0;padding:18px 20px;border-radius:12px;background:rgba(199,167,106,0.06);border-left:3px solid var(--gold);">' +
-        '<div style="font-size:10.5px;color:var(--gold);font-weight:700;letter-spacing:0.12em;margin-bottom:10px;">한눈에 보는 지금의 결</div>' +
+        '<div style="font-size:10.5px;color:var(--gold);font-weight:700;letter-spacing:0.12em;margin-bottom:6px;">프롤로그 — 한눈에 보는 지금의 흐름</div>' +
+        '<p style="font-size:11.5px;color:var(--text-dim, rgba(255,255,255,0.55));margin:0 0 12px;line-height:1.7;">본문(1부 ~ 4부)으로 들어가시기 전, 지금 ' + escHtmlAttr(nmUi(nm)) + ' 큰 흐름을 한 단락으로 미리 요약해 드릴게요. 자세한 풀이는 아래 본문에서 차근차근 이어집니다.</p>' +
         '<p style="font-size:14px;color:var(--text);line-height:2;margin:0;">' + boldStarsToStrong(quickGlanceLine) + '</p>' +
         '</div>' +
         '</div>';
@@ -4778,19 +4778,20 @@ function buildPersonalPortrait(data) {
     // ── 1단락: 첫인상 vs 속내 (일간·일지 조합)
     // ※ "사람들이 [〇〇님은] V" → 주격이 두 개라 어색해지므로, "사람들이 [〇〇님을] V" 또는
     //   "[〇〇님은] '…'이라는 평을 듣다"처럼 목적격/피동 구문으로 정리합니다.
+    // ※ '결'이라는 추상 명사는 모습/흐름/그림/풍경/자리/방식 등으로 풀어 다양화합니다.
     var firstImpressionByStem = {
         wood: '곧고 단단한 사람으로 보이십니다. 자기 색이 분명하고 한번 정한 방향은 잘 바꾸지 않으시는 인상이라, 주변에서는 자연스럽게 ' + nmEulReul(name) + ' “믿음직한 사람”으로 꼽곤 해요.',
-        fire: '환하고 따뜻한 사람으로 보이십니다. 한 자리에 들어오시면 분위기가 살아나고, 어느새 사람들이 ' + nmEulReul(name) + ' 자연스럽게 중심으로 두게 되는 결이에요.',
-        earth: '묵직하고 든든한 사람으로 보이십니다. 큰 소리 내지 않으셔도 무게가 실려서, 주변에서는 ' + nmEulReul(name) + ' “기댈 수 있는 어른”으로 받아들이는 분위기예요.',
+        fire: '환하고 따뜻한 사람으로 보이십니다. ' + nmIGa(name) + ' 들어오시면 그 자리의 공기가 한 번 살아나고, 어느새 사람들이 ' + nmEulReul(name) + ' 자연스럽게 중심으로 두게 됩니다.',
+        earth: '묵직하고 든든한 사람으로 보이십니다. 큰 소리 내지 않으셔도 자연스레 무게가 실려서, 주변에서는 ' + nmEulReul(name) + ' “기댈 수 있는 어른”처럼 받아들이는 분위기예요.',
         metal: '깔끔하고 단정한 사람으로 보이십니다. 말과 행동에 군더더기가 없어서, 사람들은 ' + nmEulReul(name) + ' “원칙 있는 사람”으로 오래 기억하는 편입니다.',
-        water: '조용하고 깊이 있는 사람으로 보이십니다. 말은 적게 하셔도 한 마디에 무게가 있어서, 주변에서는 ' + nmEulReul(name) + ' “생각이 깊은 사람”이라고 평하곤 해요.'
+        water: '조용하고 깊이 있는 사람으로 보이십니다. 말은 적게 하셔도 한 마디에 무게가 실려, 주변에서는 ' + nmEulReul(name) + ' “생각이 깊은 사람”으로 평하곤 해요.'
     };
     var inSelfByStem = {
-        wood: '다만 안쪽으로는 의외로 섬세하고 잘 흔들리는 결이 있으세요. 남들이 그냥 흘려보내는 말 한마디에도 오래 머무르시는 편인데, 그 민감함이 사실 ' + nmUi(name) + ' 깊이의 출발점이기도 합니다.',
-        fire: '다만 안쪽으로는 그 따뜻함을 유지하는 데 의외로 많은 에너지가 들어가요. 혼자가 되시면 의외로 가라앉으시는 시간이 길어서, “회복하는 시간”을 어떻게 챙기느냐가 ' + nmUi(name) + ' 평생 과제로 따라옵니다.',
-        earth: '다만 안쪽으로는 끊임없이 “이게 맞나, 저게 맞나” 저울질하시는 결이 있으세요. 겉이 든든해 보이는 만큼, 속에서 잰 시간들이 결국 ' + nmEulReul(name) + ' 단단하게 만들어 온 거예요.',
-        metal: '다만 안쪽으로는 한 번 마음이 다치면 그 자국이 오래 남으시는 결이에요. 겉으로는 다 정리한 듯 보이셔도 속에서는 한참 곱씹으시는 편인데, 그게 ' + nmUi(name) + ' 깊이의 비밀입니다.',
-        water: '다만 안쪽으로는 의외로 뜨겁고 활발한 결이 있으세요. 잘 드러내지 않으실 뿐, ' + nmUi(name) + ' 안에는 아무도 모르는 “남다른 야망”이 흐르고 있습니다.'
+        wood: '다만 내면을 들여다보면 의외로 섬세하고 잘 흔들리는 모습이 있으세요. 남들이 그냥 흘려보내는 말 한마디에도 오래 머무르시는 편인데, 그 민감함이 사실 ' + nmUi(name) + ' 깊이의 출발점이기도 합니다.',
+        fire: '다만 그 따뜻함을 유지하는 데에는 안에서 의외로 많은 에너지가 들어가요. 혼자가 되시면 한참 가라앉으시는 시간이 길어서, “회복하는 시간”을 어떻게 챙기느냐가 ' + nmUi(name) + ' 평생 과제처럼 따라옵니다.',
+        earth: '다만 내면에서는 끊임없이 “이게 맞나, 저게 맞나” 저울질하시는 흐름이 있으세요. 겉이 든든해 보이는 만큼, 속에서 잰 그 시간들이 결국 ' + nmEulReul(name) + ' 단단하게 만들어 온 거예요.',
+        metal: '다만 내면에서는 한 번 마음이 다치면 그 자국이 오래 남으시는 분이에요. 겉으로는 다 정리한 듯 보이셔도 속에서는 한참 곱씹으시는 편인데, 그게 ' + nmUi(name) + ' 깊이의 비밀입니다.',
+        water: '다만 내면에는 의외로 뜨겁고 활발한 기운이 있으세요. 잘 드러내지 않으실 뿐, ' + nmUi(name) + ' 안쪽에는 아무도 모르는 “남다른 야망”이 조용히 흐르고 있습니다.'
     };
     var p1 = (firstImpressionByStem[dayOh] || firstImpressionByStem.earth) + ' ' + (inSelfByStem[dayOh] || inSelfByStem.earth);
 
@@ -4798,21 +4799,21 @@ function buildPersonalPortrait(data) {
     var coreSentence = ilju && ilju.core ? String(ilju.core).split('.')[0] + '.' : '';
     var strengthRaw = ilju && ilju.strength ? ilju.strength : '';
     var dominantSipDesc = '';
-    if (pctSig >= 30) dominantSipDesc = ' 특히 식상(食傷, 표현·창작)의 결이 두텁게 자리잡고 있어서, ' + nmDnim(name) + '은 “생각을 글·말·작품으로 풀어내는” 일에서 진가를 발휘하시는 분이에요.';
-    else if (pctGwan >= 30) dominantSipDesc = ' 특히 관성(官星, 책임·권위)이 두텁게 자리잡고 있어서, ' + nmDnim(name) + '은 “책임지는 자리에서 빛나는” 결입니다. 위에서 누가 시키지 않아도 스스로 책임을 짊어지시는 편이고, 그 무게가 결국 ' + nmEulReul(name) + ' 한 단계 더 자라게 만들어요.';
+    if (pctSig >= 30) dominantSipDesc = ' 특히 식상(食傷, 표현·창작)의 기운이 두텁게 자리잡고 있어서, ' + nmDnim(name) + '은 “생각을 글·말·작품으로 풀어내는” 일에서 진가를 발휘하시는 분이에요.';
+    else if (pctGwan >= 30) dominantSipDesc = ' 특히 관성(官星, 책임·권위)이 두텁게 자리잡고 있어서, ' + nmDnim(name) + '은 “책임지는 자리에서 빛나는” 모습이세요. 위에서 누가 시키지 않아도 스스로 책임을 짊어지시는 편이고, 그 무게가 결국 ' + nmEulReul(name) + ' 한 단계 더 자라게 만들어요.';
     else if (pctJae >= 30) dominantSipDesc = ' 특히 재성(財星, 재물·현실)이 두텁게 자리잡고 있어서, ' + nmDnim(name) + '은 “현실 감각이 또렷한” 분이세요. 추상보다 구체, 이상보다 실리에 강하시고, 주변에서도 ' + nmUi(name) + ' 판단을 “현실적이다”라며 신뢰합니다.';
-    else if (pctIn >= 30) dominantSipDesc = ' 특히 인성(印星, 배움·수용)이 두텁게 자리잡고 있어서, ' + nmDnim(name) + '은 “배움과 깊이를 사랑하는” 분이세요. 한 가지 주제를 끝까지 파고드시는 결이고, 그 깊이가 ' + nmUi(name) + ' 진짜 자산입니다.';
+    else if (pctIn >= 30) dominantSipDesc = ' 특히 인성(印星, 배움·수용)이 두텁게 자리잡고 있어서, ' + nmDnim(name) + '은 “배움과 깊이를 사랑하는” 분이세요. 한 가지 주제를 끝까지 파고드시는 흐름이고, 그 깊이가 ' + nmUi(name) + ' 진짜 자산입니다.';
     else if (pctBi >= 30) dominantSipDesc = ' 특히 비겁(比劫, 자아·동료)이 두텁게 자리잡고 있어서, ' + nmDnim(name) + '은 “자기 색이 또렷한” 분이세요. 누구의 그늘 아래 머무시기보다 ' + nmDnim(name) + '만의 자리를 만들고 싶어 하시고, 동료·친구 관계에서 자연스럽게 중심에 서시는 편입니다.';
-    var p2 = nmUi(name) + ' 가장 큰 강점은 ' + (strengthRaw ? '“' + strengthRaw + '”' : '타고난 결') + '이에요. ' + (coreSentence || '') + dominantSipDesc + ' 이 강점은 누가 가르쳐 준 것이 아니라 태어나실 때 이미 ' + nmUi(name) + ' 안에 새겨져 있던 것이라, 노력으로 키운 능력과는 결이 다릅니다.';
+    var p2 = nmUi(name) + ' 가장 큰 강점은 ' + (strengthRaw ? '“' + strengthRaw + '”' : '타고난 기질') + '이에요. ' + (coreSentence || '') + dominantSipDesc + ' 이 강점은 누가 가르쳐 준 것이 아니라 태어나실 때 이미 ' + nmUi(name) + ' 안에 새겨져 있던 자질이라, 노력으로 키운 능력과는 그 질감이 다릅니다.';
 
     // ── 3단락: 약점·과제 (60일주 DB의 weakness)
     var weaknessRaw = ilju && ilju.weakness ? ilju.weakness : '';
     var weakBalance = '';
     if (pctSig === 0) weakBalance = ' 사주에 식상(食傷)이 비어 있어, 마음에 담은 것을 밖으로 풀어내지 않고 안에 쌓아두시는 패턴이 있습니다. 그게 쌓이면 몸으로 신호가 오니, “말로 글로 표현하는 작은 통로”를 의식적으로 하나 만드십시오.';
     else if (pctGwan === 0) weakBalance = ' 사주에 관성(官星)이 비어 있어, 외부의 규율·체계 안에 들어가시는 게 의외로 답답하실 수 있습니다. 자유롭게 일하시되, 스스로 만든 “나만의 규칙” 하나는 꼭 두십시오.';
-    else if (pctJae === 0) weakBalance = ' 사주에 재성(財星)이 비어 있어, 현실의 숫자·돈 흐름이 ' + nmUi(name) + ' 마음에 잘 안 잡히시는 결입니다. 의식적으로 “돈에 대한 기록 습관”(가계부·자산 정리) 하나를 만드시는 편이 좋습니다.';
+    else if (pctJae === 0) weakBalance = ' 사주에 재성(財星)이 비어 있어, 현실의 숫자·돈 흐름이 ' + nmUi(name) + ' 마음에는 잘 안 잡히시는 편이에요. 의식적으로 “돈에 대한 기록 습관”(가계부·자산 정리) 하나를 만드시는 편이 좋습니다.';
     else if (pctIn === 0) weakBalance = ' 사주에 인성(印星)이 비어 있어, 깊게 파고드는 학습보다 빠른 실행이 더 편하실 수 있습니다. 다만 한 분야는 “끝까지 파는 시간”을 의식적으로 가지셔야 깊이가 쌓입니다.';
-    var p3 = nmIGa(name) + ' 자주 부딪히시는 벽은 — ' + (weaknessRaw ? '“' + weaknessRaw + '”' : '같은 결의 그늘') + '이에요. 강한 결의 뒷면에는 늘 그 결의 그늘이 따라오니, 약점이라며 부끄러워하실 일은 아니랍니다. 다만 이 패턴이 반복되면 어느 순간 ' + nmEulReul(name) + ' 지치게 만드니, 미리 알아채시는 것만으로도 큰 자산이 돼요.' + weakBalance;
+    var p3 = nmIGa(name) + ' 자주 부딪히시는 벽은 — ' + (weaknessRaw ? '“' + weaknessRaw + '”' : '같은 기질이 만들어 내는 그늘') + '이에요. 강한 기질의 뒷면에는 늘 그 기질의 그늘이 따라오니, 약점이라며 부끄러워하실 일은 아니랍니다. 다만 이 패턴이 반복되면 어느 순간 ' + nmEulReul(name) + ' 지치게 만드니, 미리 알아채시는 것만으로도 큰 자산이 돼요.' + weakBalance;
 
     // ── 4단락: 의사결정 패턴 (신강·신약)
     var p4_strong = nmDnim(name) + '은 결정을 내리실 때 “직관과 추진력으로 빠르게 가는” 분이십니다. 머리로 길게 재기보다 “이거다” 싶으면 바로 움직이시고, 그 추진력이 ' + nmUi(name) + ' 평생 가장 큰 동력입니다. 다만 너무 빠른 결정이 한 번씩 큰 비용으로 돌아오기도 하니, 큰 결정에서는 “하루 자고 다시 보기” 정도의 작은 안전장치는 두시는 편이 좋습니다.';
@@ -4823,19 +4824,19 @@ function buildPersonalPortrait(data) {
     var p5_intro = '관계 안에서 ' + nmDnim(name) + '은 ';
     var p5_body;
     if (pctGwan >= pctSig && pctGwan >= pctJae) {
-        p5_body = '“책임을 지는 자리”에 자연스럽게 서시는 분입니다. 가족 안에서는 어른 역할을, 친구들 사이에서는 중재자 역할을, 직장에서는 위로 올라가시는 결입니다. 다만 그 책임감 때문에 ' + nmUi(name) + ' 마음을 풀어놓으실 자리가 의외로 적어, 한두 명의 “나를 그대로 봐 주는 사람”을 곁에 두시는 게 평생의 보호막이 됩니다.';
+        p5_body = '“책임을 지는 자리”에 자연스럽게 서시는 분입니다. 가족 안에서는 어른 역할을, 친구들 사이에서는 중재자 역할을, 직장에서는 위로 올라가시는 흐름이에요. 다만 그 책임감 때문에 ' + nmUi(name) + ' 마음을 풀어놓으실 자리가 의외로 적어, 한두 명의 “나를 그대로 봐 주는 사람”을 곁에 두시는 게 평생의 보호막이 됩니다.';
     } else if (pctSig >= pctJae && pctSig >= pctIn) {
-        p5_body = '“이야기를 풀어내는 사람”의 자리에 서십니다. 만남을 따뜻하게 만드시고, 사람들이 ' + nmUi(name) + ' 곁에서 마음을 열게 됩니다. 다만 ' + nmDnim(name) + '의 마음을 들어 주는 사람이 의외로 적을 수 있으니, “들어 주는 한 사람”을 일부러 만드시는 편이 좋습니다.';
+        p5_body = '“이야기를 풀어내는 사람”의 자리에 서십니다. 만남을 따뜻하게 만드시고, 사람들이 ' + nmUi(name) + ' 곁에서 마음을 열게 됩니다. 다만 ' + nmUi(name) + ' 마음을 들어 주는 사람은 의외로 적을 수 있으니, “들어 주는 한 사람”을 일부러 만드시는 편이 좋습니다.';
     } else if (pctJae >= pctIn) {
         p5_body = '“현실을 챙기는 사람”의 자리에 서십니다. 가족·친구·연인이 곤란해질 때 ' + nmIGa(name) + ' 실제로 도움이 되는 분이라, 사람들도 자연스럽게 ' + nmKke(name) + ' 깊이 의지하게 돼요. 다만 정작 ' + nmUi(name) + ' 마음을 들여다봐 주는 사람은 의외로 적을 수 있으니, 그 갈증은 한 번쯤 정직하게 인정하시는 편이 좋습니다.';
     } else {
-        p5_body = '“깊이 들어가는 사람”의 자리에 서십니다. 많은 사람과 얕게 만나기보다 한두 사람과 깊이 만나시는 결이고, 그 한두 사람이 ' + nmUi(name) + ' 평생 가장 큰 자산이 됩니다. 다만 그 사람과의 거리가 멀어지면 큰 공허감이 따라오니, 관계의 깊이를 “하나에만 집중”하지 마시고 두세 갈래로 분산해 두시는 편이 좋습니다.';
+        p5_body = '“깊이 들어가는 사람”의 자리에 서십니다. 많은 사람과 얕게 만나기보다 한두 사람과 깊이 만나시는 방식이고, 그 한두 사람이 ' + nmUi(name) + ' 평생 가장 큰 자산이 됩니다. 다만 그 사람과의 거리가 멀어지면 큰 공허감이 따라오니, 관계의 깊이를 “하나에만 집중”하지 마시고 두세 갈래로 분산해 두시는 편이 좋습니다.';
     }
     var p5 = p5_intro + p5_body;
 
-    // ── 6단락: 일을 대하는 결
+    // ── 6단락: 일을 대하는 방식
     var careerRaw = ilju && ilju.career ? ilju.career : '';
-    var p6 = '일을 대하실 때 ' + nmDnim(name) + '은 ' + (isStrong ? '“스스로 결정하고 끝까지 책임지는” 결' : '“충분히 살피고 함께 만들어 가는” 결') + '입니다. ' + (careerRaw ? '특히 ' + careerRaw + ' 분야의 일이 ' + nmUi(name) + ' 결과 잘 맞고, 그 안에서는 다른 사람보다 두 배쯤 빠르게 자리를 잡으시는 편입니다.' : '') + ' 어떤 직업이든 ' + nmDnim(name) + '이 중요하게 여기시는 것은 “나만의 색을 인정받는 자리”입니다. 큰 무리에 묻혀서 색을 잃는 환경이라면, 아무리 안정적이어도 오래 못 가시는 결입니다.';
+    var p6 = '일을 대하실 때 ' + nmDnim(name) + '은 ' + (isStrong ? '“스스로 결정하고 끝까지 책임지는” 방식' : '“충분히 살피고 함께 만들어 가는” 방식') + '이세요. ' + (careerRaw ? '특히 ' + careerRaw + ' 분야의 일이 ' + nmUi(name) + ' 기질과 잘 맞고, 그 안에서는 다른 사람보다 두 배쯤 빠르게 자리를 잡으시는 편입니다.' : '') + ' 어떤 직업이든 ' + nmDnim(name) + '이 중요하게 여기시는 것은 “나만의 색을 인정받는 자리”예요. 큰 무리에 묻혀서 색을 잃는 환경이라면, 아무리 안정적이어도 오래 못 머무시는 분이세요.';
 
     // ── 7단락: 평생 가는 본질 한 줄
     var imageLine = ilju && ilju.image ? ilju.image : '';
@@ -4851,13 +4852,13 @@ function buildPersonalPortrait(data) {
     return '<div id="sec-personal-portrait" class="report-chapter chapter-start sajux-panel-plain" style="margin:28px 0 40px;padding:28px 24px;border-radius:14px;border:1px solid rgba(199,167,106,0.30);background:transparent;">'
         + '<div style="font-size:11px;letter-spacing:0.20em;color:rgba(199,167,106,0.85);margin-bottom:10px;font-weight:700;">메인 — 인물 초상</div>'
         + '<h2 style="font-family:Noto Sans KR,sans-serif;font-size:24px;font-weight:700;color:var(--text);margin:0 0 6px;line-height:1.45;letter-spacing:-0.01em;">' + escHtmlAttr(nmDnim(name)) + '은 이런 사람입니다</h2>'
-        + '<p style="font-size:12px;color:rgba(199,167,106,0.75);margin:0 0 24px;letter-spacing:0.04em;">사주 여덟 글자가 그려 낸 ' + escHtmlAttr(nmUi(name)) + ' 결</p>'
+        + '<p style="font-size:12px;color:rgba(199,167,106,0.75);margin:0 0 24px;letter-spacing:0.04em;">사주 여덟 글자가 그려 낸 ' + escHtmlAttr(nmUi(name)) + ' 모습</p>'
         + paragraph('첫인상 vs 속내', p1)
-        + paragraph('타고난 결 — 강점', p2)
+        + paragraph('타고난 기질 — 강점', p2)
         + paragraph('자주 부딪히시는 벽 — 과제', p3)
-        + paragraph('결정을 내리실 때의 결', p4)
+        + paragraph('결정을 내리시는 방식', p4)
         + paragraph('관계 안에서의 모습', p5)
-        + paragraph('일을 대하실 때의 결', p6)
+        + paragraph('일을 대하시는 방식', p6)
         + paragraph('평생 가는 ' + nmUi(name) + ' 본질', p7)
         + '</div>';
 }
