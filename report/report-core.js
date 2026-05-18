@@ -4776,19 +4776,21 @@ function buildPersonalPortrait(data) {
     function _vp(t) { return voicePolishParagraph(data, t || ''); }
 
     // ── 1단락: 첫인상 vs 속내 (일간·일지 조합)
+    // ※ "사람들이 [〇〇님은] V" → 주격이 두 개라 어색해지므로, "사람들이 [〇〇님을] V" 또는
+    //   "[〇〇님은] '…'이라는 평을 듣다"처럼 목적격/피동 구문으로 정리합니다.
     var firstImpressionByStem = {
-        wood: '곧고 단단한 사람으로 보이십니다. 자기 색이 분명하고, 한번 정한 방향은 잘 바꾸지 않으시는 인상이라 사람들이 ' + nmEunNeun(name) + ' “믿음직하다”고 평가합니다.',
-        fire: '환하고 따뜻한 사람으로 보이십니다. 한 자리에 들어오시면 분위기가 살아나고, 사람들이 ' + nmEunNeun(name) + ' 자연스럽게 중심으로 두는 결입니다.',
-        earth: '묵직하고 든든한 사람으로 보이십니다. 큰 소리 내지 않으셔도 무게가 실리고, 사람들이 ' + nmEunNeun(name) + ' “기댈 수 있는 어른”으로 느끼는 인상입니다.',
-        metal: '깔끔하고 단정한 사람으로 보이십니다. 말과 행동에 군더더기가 없어서 사람들이 ' + nmEunNeun(name) + ' “원칙 있는 사람”으로 기억합니다.',
-        water: '조용하고 깊이 있는 사람으로 보이십니다. 말은 적게 하셔도 한 마디에 무게가 있어서 사람들이 ' + nmEunNeun(name) + ' “생각이 깊다”고 평가합니다.'
+        wood: '곧고 단단한 사람으로 보이십니다. 자기 색이 분명하고 한번 정한 방향은 잘 바꾸지 않으시는 인상이라, 주변에서는 자연스럽게 ' + nmEulReul(name) + ' “믿음직한 사람”으로 꼽곤 해요.',
+        fire: '환하고 따뜻한 사람으로 보이십니다. 한 자리에 들어오시면 분위기가 살아나고, 어느새 사람들이 ' + nmEulReul(name) + ' 자연스럽게 중심으로 두게 되는 결이에요.',
+        earth: '묵직하고 든든한 사람으로 보이십니다. 큰 소리 내지 않으셔도 무게가 실려서, 주변에서는 ' + nmEulReul(name) + ' “기댈 수 있는 어른”으로 받아들이는 분위기예요.',
+        metal: '깔끔하고 단정한 사람으로 보이십니다. 말과 행동에 군더더기가 없어서, 사람들은 ' + nmEulReul(name) + ' “원칙 있는 사람”으로 오래 기억하는 편입니다.',
+        water: '조용하고 깊이 있는 사람으로 보이십니다. 말은 적게 하셔도 한 마디에 무게가 있어서, 주변에서는 ' + nmEulReul(name) + ' “생각이 깊은 사람”이라고 평하곤 해요.'
     };
     var inSelfByStem = {
-        wood: '하지만 안쪽으로는 의외로 섬세하고 잘 흔들리는 결이 있으십니다. 남이 알아채지 못하는 작은 말 한마디에 오래 머무시는 편이고, 그 민감함이 사실 ' + nmUi(name) + ' 깊이의 출발점입니다.',
-        fire: '하지만 안쪽으로는 그 따뜻함을 유지하는 데 의외로 많은 에너지가 들어갑니다. 혼자가 되시면 의외로 가라앉으시는 시간이 길고, 그래서 “회복하는 시간”이 ' + nmUi(name) + ' 평생 과제입니다.',
-        earth: '하지만 안쪽으로는 끊임없이 “이게 맞나, 저게 맞나” 저울질하시는 결이 있으십니다. 겉이 든든해 보이는 만큼 속에서 잰 시간들이 ' + nmEunNeun(name) + ' 단단하게 만들었습니다.',
-        metal: '하지만 안쪽으로는 한 번 마음이 다치면 그 자국이 오래 남으시는 결입니다. 겉으로는 다 정리한 듯 보이셔도 속에서는 한참을 곱씹으시는 편이고, 그게 ' + nmUi(name) + ' 깊이의 비밀입니다.',
-        water: '하지만 안쪽으로는 의외로 뜨겁고 활발한 결이 있으십니다. 잘 드러내지 않으실 뿐, ' + nmUi(name) + ' 안에는 아무도 모르는 “남다른 야망”이 흐르고 있습니다.'
+        wood: '다만 안쪽으로는 의외로 섬세하고 잘 흔들리는 결이 있으세요. 남들이 그냥 흘려보내는 말 한마디에도 오래 머무르시는 편인데, 그 민감함이 사실 ' + nmUi(name) + ' 깊이의 출발점이기도 합니다.',
+        fire: '다만 안쪽으로는 그 따뜻함을 유지하는 데 의외로 많은 에너지가 들어가요. 혼자가 되시면 의외로 가라앉으시는 시간이 길어서, “회복하는 시간”을 어떻게 챙기느냐가 ' + nmUi(name) + ' 평생 과제로 따라옵니다.',
+        earth: '다만 안쪽으로는 끊임없이 “이게 맞나, 저게 맞나” 저울질하시는 결이 있으세요. 겉이 든든해 보이는 만큼, 속에서 잰 시간들이 결국 ' + nmEulReul(name) + ' 단단하게 만들어 온 거예요.',
+        metal: '다만 안쪽으로는 한 번 마음이 다치면 그 자국이 오래 남으시는 결이에요. 겉으로는 다 정리한 듯 보이셔도 속에서는 한참 곱씹으시는 편인데, 그게 ' + nmUi(name) + ' 깊이의 비밀입니다.',
+        water: '다만 안쪽으로는 의외로 뜨겁고 활발한 결이 있으세요. 잘 드러내지 않으실 뿐, ' + nmUi(name) + ' 안에는 아무도 모르는 “남다른 야망”이 흐르고 있습니다.'
     };
     var p1 = (firstImpressionByStem[dayOh] || firstImpressionByStem.earth) + ' ' + (inSelfByStem[dayOh] || inSelfByStem.earth);
 
@@ -4796,12 +4798,12 @@ function buildPersonalPortrait(data) {
     var coreSentence = ilju && ilju.core ? String(ilju.core).split('.')[0] + '.' : '';
     var strengthRaw = ilju && ilju.strength ? ilju.strength : '';
     var dominantSipDesc = '';
-    if (pctSig >= 30) dominantSipDesc = ' 특히 식상(食傷, 표현·창작)의 결이 두텁게 자리잡고 있어서, ' + nmDnim(name) + '은 “생각을 글이나 말, 작품으로 풀어내는” 일에서 진가를 발휘하시는 분입니다.';
-    else if (pctGwan >= 30) dominantSipDesc = ' 특히 관성(官星, 책임·권위)이 두텁게 자리잡고 있어서, ' + nmDnim(name) + '은 “책임지는 자리에서 빛나는” 결입니다. 위에서 누가 시키지 않아도 스스로 책임을 짊어지시는 편이고, 그 무게가 ' + nmEunNeun(name) + ' 자라게 합니다.';
-    else if (pctJae >= 30) dominantSipDesc = ' 특히 재성(財星, 재물·현실)이 두텁게 자리잡고 있어서, ' + nmDnim(name) + '은 “현실 감각이 또렷한” 분입니다. 추상보다 구체, 이상보다 실리에 강하시고, 사람들이 ' + nmUi(name) + ' 판단을 “현실적이다”라고 신뢰합니다.';
-    else if (pctIn >= 30) dominantSipDesc = ' 특히 인성(印星, 배움·수용)이 두텁게 자리잡고 있어서, ' + nmDnim(name) + '은 “배움과 깊이를 사랑하는” 분입니다. 한 가지 주제를 끝까지 파고드시는 결이고, 그 깊이가 ' + nmUi(name) + ' 진짜 자산입니다.';
-    else if (pctBi >= 30) dominantSipDesc = ' 특히 비겁(比劫, 자아·동료)이 두텁게 자리잡고 있어서, ' + nmDnim(name) + '은 “자기 색이 또렷한” 분입니다. 누구의 그늘 아래 머물기보다 ' + nmDnim(name) + '만의 자리를 만들고 싶어 하시고, 동료·친구 관계에서 중심이 되시는 편입니다.';
-    var p2 = nmDnim(name) + '의 가장 큰 강점은 ' + (strengthRaw ? '“' + strengthRaw + '”' : '타고난 결') + '입니다. ' + (coreSentence || '') + dominantSipDesc + ' 이 강점은 누가 가르쳐 준 것이 아니라 태어나실 때 이미 ' + nmUi(name) + ' 안에 새겨진 것이라, 노력으로 키운 능력과는 결이 다릅니다.';
+    if (pctSig >= 30) dominantSipDesc = ' 특히 식상(食傷, 표현·창작)의 결이 두텁게 자리잡고 있어서, ' + nmDnim(name) + '은 “생각을 글·말·작품으로 풀어내는” 일에서 진가를 발휘하시는 분이에요.';
+    else if (pctGwan >= 30) dominantSipDesc = ' 특히 관성(官星, 책임·권위)이 두텁게 자리잡고 있어서, ' + nmDnim(name) + '은 “책임지는 자리에서 빛나는” 결입니다. 위에서 누가 시키지 않아도 스스로 책임을 짊어지시는 편이고, 그 무게가 결국 ' + nmEulReul(name) + ' 한 단계 더 자라게 만들어요.';
+    else if (pctJae >= 30) dominantSipDesc = ' 특히 재성(財星, 재물·현실)이 두텁게 자리잡고 있어서, ' + nmDnim(name) + '은 “현실 감각이 또렷한” 분이세요. 추상보다 구체, 이상보다 실리에 강하시고, 주변에서도 ' + nmUi(name) + ' 판단을 “현실적이다”라며 신뢰합니다.';
+    else if (pctIn >= 30) dominantSipDesc = ' 특히 인성(印星, 배움·수용)이 두텁게 자리잡고 있어서, ' + nmDnim(name) + '은 “배움과 깊이를 사랑하는” 분이세요. 한 가지 주제를 끝까지 파고드시는 결이고, 그 깊이가 ' + nmUi(name) + ' 진짜 자산입니다.';
+    else if (pctBi >= 30) dominantSipDesc = ' 특히 비겁(比劫, 자아·동료)이 두텁게 자리잡고 있어서, ' + nmDnim(name) + '은 “자기 색이 또렷한” 분이세요. 누구의 그늘 아래 머무시기보다 ' + nmDnim(name) + '만의 자리를 만들고 싶어 하시고, 동료·친구 관계에서 자연스럽게 중심에 서시는 편입니다.';
+    var p2 = nmUi(name) + ' 가장 큰 강점은 ' + (strengthRaw ? '“' + strengthRaw + '”' : '타고난 결') + '이에요. ' + (coreSentence || '') + dominantSipDesc + ' 이 강점은 누가 가르쳐 준 것이 아니라 태어나실 때 이미 ' + nmUi(name) + ' 안에 새겨져 있던 것이라, 노력으로 키운 능력과는 결이 다릅니다.';
 
     // ── 3단락: 약점·과제 (60일주 DB의 weakness)
     var weaknessRaw = ilju && ilju.weakness ? ilju.weakness : '';
@@ -4810,7 +4812,7 @@ function buildPersonalPortrait(data) {
     else if (pctGwan === 0) weakBalance = ' 사주에 관성(官星)이 비어 있어, 외부의 규율·체계 안에 들어가시는 게 의외로 답답하실 수 있습니다. 자유롭게 일하시되, 스스로 만든 “나만의 규칙” 하나는 꼭 두십시오.';
     else if (pctJae === 0) weakBalance = ' 사주에 재성(財星)이 비어 있어, 현실의 숫자·돈 흐름이 ' + nmUi(name) + ' 마음에 잘 안 잡히시는 결입니다. 의식적으로 “돈에 대한 기록 습관”(가계부·자산 정리) 하나를 만드시는 편이 좋습니다.';
     else if (pctIn === 0) weakBalance = ' 사주에 인성(印星)이 비어 있어, 깊게 파고드는 학습보다 빠른 실행이 더 편하실 수 있습니다. 다만 한 분야는 “끝까지 파는 시간”을 의식적으로 가지셔야 깊이가 쌓입니다.';
-    var p3 = nmDnim(name) + '이 자주 부딪히시는 벽은 — ' + (weaknessRaw ? '“' + weaknessRaw + '”' : '같은 결의 그늘') + '입니다. 강한 결의 뒷면에는 늘 그 결의 그늘이 있으니, 약점이라고 부끄러워하실 일이 아닙니다. 다만 이 패턴이 반복되면 ' + nmEunNeun(name) + ' 지치게 만드니, 알아채는 것만으로도 큰 자산이 됩니다.' + weakBalance;
+    var p3 = nmIGa(name) + ' 자주 부딪히시는 벽은 — ' + (weaknessRaw ? '“' + weaknessRaw + '”' : '같은 결의 그늘') + '이에요. 강한 결의 뒷면에는 늘 그 결의 그늘이 따라오니, 약점이라며 부끄러워하실 일은 아니랍니다. 다만 이 패턴이 반복되면 어느 순간 ' + nmEulReul(name) + ' 지치게 만드니, 미리 알아채시는 것만으로도 큰 자산이 돼요.' + weakBalance;
 
     // ── 4단락: 의사결정 패턴 (신강·신약)
     var p4_strong = nmDnim(name) + '은 결정을 내리실 때 “직관과 추진력으로 빠르게 가는” 분이십니다. 머리로 길게 재기보다 “이거다” 싶으면 바로 움직이시고, 그 추진력이 ' + nmUi(name) + ' 평생 가장 큰 동력입니다. 다만 너무 빠른 결정이 한 번씩 큰 비용으로 돌아오기도 하니, 큰 결정에서는 “하루 자고 다시 보기” 정도의 작은 안전장치는 두시는 편이 좋습니다.';
@@ -4825,7 +4827,7 @@ function buildPersonalPortrait(data) {
     } else if (pctSig >= pctJae && pctSig >= pctIn) {
         p5_body = '“이야기를 풀어내는 사람”의 자리에 서십니다. 만남을 따뜻하게 만드시고, 사람들이 ' + nmUi(name) + ' 곁에서 마음을 열게 됩니다. 다만 ' + nmDnim(name) + '의 마음을 들어 주는 사람이 의외로 적을 수 있으니, “들어 주는 한 사람”을 일부러 만드시는 편이 좋습니다.';
     } else if (pctJae >= pctIn) {
-        p5_body = '“현실을 챙기는 사람”의 자리에 서십니다. 가족·친구·연인이 곤란해질 때 ' + nmDnim(name) + '이 실제로 도움이 되는 분이고, 그래서 사람들이 ' + nmEunNeun(name) + ' 깊이 의지합니다. 다만 ' + nmUi(name) + ' 마음 자체를 봐 주는 사람은 의외로 적을 수 있으니, 그 갈증은 한 번쯤 정직하게 인정하셔야 합니다.';
+        p5_body = '“현실을 챙기는 사람”의 자리에 서십니다. 가족·친구·연인이 곤란해질 때 ' + nmIGa(name) + ' 실제로 도움이 되는 분이라, 사람들도 자연스럽게 ' + nmKke(name) + ' 깊이 의지하게 돼요. 다만 정작 ' + nmUi(name) + ' 마음을 들여다봐 주는 사람은 의외로 적을 수 있으니, 그 갈증은 한 번쯤 정직하게 인정하시는 편이 좋습니다.';
     } else {
         p5_body = '“깊이 들어가는 사람”의 자리에 서십니다. 많은 사람과 얕게 만나기보다 한두 사람과 깊이 만나시는 결이고, 그 한두 사람이 ' + nmUi(name) + ' 평생 가장 큰 자산이 됩니다. 다만 그 사람과의 거리가 멀어지면 큰 공허감이 따라오니, 관계의 깊이를 “하나에만 집중”하지 마시고 두세 갈래로 분산해 두시는 편이 좋습니다.';
     }
@@ -6056,7 +6058,7 @@ function buildChapter6_Love(data) {
     // ── 다툼·소통 가이드 (강약별) ──
     const conflictGuide = isStrong
         ? '다툼이 시작되면 ' + nmEunNeun(name) + ' 본능적으로 **결론을 빨리 내려는** 쪽으로 기울입니다. 그 속도가 본인은 명료해 좋지만, 상대에게는 **자기 감정이 인정받지 못한 채 정리당했다**는 인상을 남길 수 있습니다. 결론보다 먼저 “지금 어떤 마음이세요?”라고 한 번만 물어 주십시오. 한 박자만 늦춰도 같은 결론이 훨씬 부드럽게 안착합니다.'
-        : nmEunNeun(name) + ' 다툼 앞에서 **속으로 삼키고 정리하는** 분이 많습니다. 그 자리에서는 평화로워 보이지만, 같은 패턴이 쌓이면 어느 날 갑자기 차갑게 거리를 두는 모습으로 드러납니다. 한 번에 두꺼운 말을 꺼내기 어렵다면, **메시지로 한 줄씩** 남겨두는 방법도 좋습니다. “지금 좀 힘들었어”라는 한 문장이 관계를 살립니다.';
+        : nmEunNeun(name) + ' 다툼 앞에서 **속으로 삼키고 정리하시는** 결에 가깝습니다. 그 자리에서는 평화로워 보이지만, 같은 패턴이 쌓이면 어느 날 갑자기 차갑게 거리를 두는 모습으로 드러납니다. 한 번에 두꺼운 말을 꺼내기 어렵다면, **메시지로 한 줄씩** 남겨두는 방법도 좋습니다. “지금 좀 힘들었어”라는 한 문장이 관계를 살립니다.';
 
     var chHead6 = buildChapterHead(buildTopicMetaphorTitle('love', data), SAJUX_SECTION_LABELS.love);
     var chIntro6 = buildChapterIntroHtml(data, 'love');
@@ -7234,7 +7236,7 @@ function buildLifePanoramaSection(data) {
     // 1단락 — 가정 분위기 + 부모와의 거리감
     var c1_p1_open = nmDnim(name) + joToken(nmDnim(name), '은/는') + ' 사주 첫 기둥(연주 ' + (HAN_KOR[yStem] || yStem || '') + (HAN_KOR[yBranch] || yBranch || '') + ') 자리에 어린 시절의 풍경이 새겨져 있습니다.';
     var c1_p1_body = {
-        good: ' 집 안 공기는 따뜻하고, 부모님 또는 조부모 한 분이 큰 그늘이 되어 ' + nmEunNeun(name) + ' 받쳐 주는 분위기였을 가능성이 큽니다. 큰 사고 없이 잔잔하게 자라셨고, 어른들의 칭찬이 일찍부터 자존감의 뼈대로 자리잡았습니다. 그 시기에 받은 시선이 평생 ' + nmUi(name) + ' 안쪽에서 “나는 사랑받을 만한 사람”이라는 든든한 바닥을 깔아 줍니다.',
+        good: ' 집 안 공기는 따뜻하고, 부모님 또는 조부모 한 분이 큰 그늘이 되어 ' + nmEulReul(name) + ' 받쳐 주는 분위기였을 가능성이 큽니다. 큰 사고 없이 잔잔하게 자라셨고, 어른들의 칭찬이 일찍부터 자존감의 뼈대로 자리잡았습니다. 그 시기에 받은 시선이 평생 ' + nmUi(name) + ' 안쪽에서 “나는 사랑받을 만한 사람”이라는 든든한 바닥을 깔아 줍니다.',
         tough: ' 부모님 중 한 분과의 거리가 다소 멀거나, 이사·전학·집안 사정 변화가 잦아서 일찍부터 눈치와 관찰력을 익히셨을 가능성이 큽니다. 어린아이가 짊어지기에 무거운 분위기였을 수 있고, 그래서 또래보다 일찍 어른스러워지셨습니다. 그 거리감이 시간이 지나서 ' + nmUi(name) + ' 독립심과 깊이 있는 관찰력으로 자라났습니다.',
         mid: ' 부모님은 ' + nmUi(name) + ' 재능을 알아보면서도 그것을 함부로 추켜세우지 않는 분이셨습니다. 한 마디 한 마디가 묵직했던 그 환경에서 어린 ' + nmDnim(name) + '은 일찍부터 “말의 무게”를 배웠고, 그래서 또래 친구들과는 조금 다른 결의 진중함을 갖게 되셨습니다. 큰 사건은 적었으나, 작은 한 마디들이 평생 가는 자리에 남았습니다.'
     }[yTone];
@@ -7245,7 +7247,7 @@ function buildLifePanoramaSection(data) {
         mid: ' 그 시기 ' + nmDnim(name) + '은 “조용하지만 속이 깊은 아이”로 보이셨을 가능성이 큽니다. 큰 굴곡 없이 지나간 듯해도, 어린 ' + nmDnim(name) + '은 작은 일에서도 의미를 캐냈고 — 그 습관이 평생 ' + nmUi(name) + ' 통찰력의 뿌리가 됩니다. 한 번쯤 어른들에게 “너는 너무 일찍 어른스러워서 걱정”이라는 말을 들으셨을 수 있습니다.'
     }[yTone];
     var c1Daewun = dw0 && dw0.labels.length
-        ? ' 그 시기를 감싼 첫 대운 ' + dw0.labels.join('·') + '은 ' + (dwT0 === 'tail' ? '바깥 환경이 ' + nmEunNeun(name) + ' 받쳐 주어 큰 굴곡 없이 자라셨을 결입니다.' : (dwT0 === 'side' ? '바깥 환경이 ' + nmEunNeun(name) + ' 자주 시험에 들게 한 결이고, 그때 익힌 인내가 평생의 자산이 됩니다.' : '큰 굴곡도, 큰 도약도 없는 평이한 결이라 — 집 안의 분위기가 그 시기를 가장 진하게 물들였습니다.')) : '';
+        ? ' 그 시기를 감싼 첫 대운 ' + dw0.labels.join('·') + '은 ' + (dwT0 === 'tail' ? '바깥 환경이 ' + nmEulReul(name) + ' 받쳐 주어 큰 굴곡 없이 자라셨을 결입니다.' : (dwT0 === 'side' ? '바깥 환경이 ' + nmEulReul(name) + ' 자주 시험에 들게 한 결이고, 그때 익힌 인내가 평생의 자산이 됩니다.' : '큰 굴곡도, 큰 도약도 없는 평이한 결이라 — 집 안의 분위기가 그 시기를 가장 진하게 물들였습니다.')) : '';
     var c1Tail = '이 시기의 화두 — 이미 받은 사랑은 충분합니다. 그 사랑을 어떻게 ' + nmUi(name) + ' 것으로 가져오느냐가 다음 시기의 출발점입니다.';
 
     // ── ② 학창·자아형성 (14~25세) — 월주 (학업·또래·정체성·첫 진로)
@@ -7255,17 +7257,17 @@ function buildLifePanoramaSection(data) {
     var dwT1 = dwTone(dw1);
     var c2_p1_open = '14세에서 25세 사이는 ' + nmUi(name) + ' 둘째 기둥(월주 ' + (HAN_KOR[mStem] || mStem || '') + (HAN_KOR[mBranchPillar] || mBranchPillar || '') + ')이 본격적으로 깨어나는 시기입니다.';
     var c2_p1_body = {
-        good: ' 학교·동아리·아르바이트 어디든 ' + nmEunNeun(name) + ' 알아봐 주는 어른 또는 선배가 한 명 이상 등장합니다. 그 사람의 한 마디가 ' + nmUi(name) + ' 첫 진로 선택을 빠르게 만들고, 자존감의 두 번째 층이 단단해집니다. 또래 관계도 비교적 잘 풀렸을 가능성이 크고, 그 시기에 만난 친구 중 한 명은 평생을 같이 가는 결이 됩니다.',
+        good: ' 학교·동아리·아르바이트 어디든 ' + nmEulReul(name) + ' 알아봐 주는 어른이나 선배가 한 명 이상 등장합니다. 그 사람의 한 마디가 ' + nmUi(name) + ' 첫 진로 선택을 빠르게 만들고, 자존감의 두 번째 층이 단단해집니다. 또래 관계도 비교적 잘 풀렸을 가능성이 크고, 그 시기에 만난 친구 중 한 명은 평생을 같이 가는 결이 됩니다.',
         tough: ' 또래 관계에서 한두 번 깊은 마찰이 있을 수 있고, 진로 선택을 두고 어른들과 의견이 갈리실 가능성이 큽니다. 가고 싶은 길이 부모님이 원하시는 길과 어긋났을 수 있고, 그래서 “내가 진짜 하고 싶은 게 뭐지?”라는 질문이 일찍부터 ' + nmUi(name) + ' 마음에 새겨졌습니다. 다만 그 마찰이 ' + nmUi(name) + ' 색을 더 또렷하게 만들어 주었습니다.',
         mid: ' 큰 풍파 없이도 ' + nmEunNeun(name) + ' 스스로 “나는 어떤 사람인가”를 일찍 묻기 시작합니다. 답을 빨리 내지 않아도 그 질문 자체가 ' + nmUi(name) + ' 평생을 받치는 축이 됩니다. 학교 성적이 잘 나오는 시기와 안 나오는 시기가 번갈아 왔을 수 있는데, 그건 능력 문제가 아니라 “관심 있는 과목에만 폭발적으로 빠지는” 결의 결과입니다.'
     }[mTone];
     var c2_p2 = {
-        good: ' 첫 사랑·첫 친한 친구·첫 진로 결정 — 이 시기에 정해진 결이 30대까지 ' + nmEunNeun(name) + ' 따라옵니다. 한 번의 작은 성공(상·합격·인정)이 “나는 이 길로 가도 되겠구나”를 확신시켜 주었을 가능성이 크고, 그 확신이 청장년기의 출발점이 됩니다. 다만 너무 일찍 정해진 길에 갇히지 않도록, 20대 중반에 한 번은 다른 결로의 시도를 해 보시는 편이 좋습니다.',
+        good: ' 첫 사랑·첫 친한 친구·첫 진로 결정 — 이 시기에 정해진 결이 30대까지 ' + nmEulReul(name) + ' 따라옵니다. 한 번의 작은 성공(상·합격·인정)이 “나는 이 길로 가도 되겠구나”를 확신시켜 주었을 가능성이 크고, 그 확신이 청장년기의 출발점이 됩니다. 다만 너무 일찍 정해진 길에 갇히지 않도록, 20대 중반에 한 번은 다른 결로의 시도를 해 보시는 편이 좋습니다.',
         tough: ' 첫 사회 진입(대학·첫 직장·첫 자취)에서 한 번 크게 흔들리거나, 가족과의 갈등이 정점을 찍는 시기일 수 있습니다. 첫사랑에서 깊게 다치셨을 수도 있고, 그 상처가 “관계에서 나는 어떤 사람인가”를 묻게 만들었습니다. 그때의 흔들림이 ' + nmUi(name) + ' 세상을 보는 눈을 깊게 만들었고, 30대에 진짜 자기 자리를 찾을 때의 감각이 됩니다.',
         mid: ' 큰 사건보다 작은 결정들이 차곡차곡 쌓이는 결입니다. 어떤 학과를 고를지, 어떤 친구와 가까이 지낼지, 어떤 일을 시작해 볼지 — 한 번에 하나씩 결정하면서 ' + nmUi(name) + ' 색이 윤곽을 잡아 갑니다. 이 시기의 결정 중 “나도 모르게 끌렸던 한 가지”가 사실 평생의 직업이 될 가능성이 큽니다.'
     }[mTone];
     var c2Daewun = dw1 && dw1.labels.length
-        ? ' 이 시기 대운 ' + dw1.labels.join('·') + '은 ' + (dwT1 === 'tail' ? '의외의 기회로 ' + nmEunNeun(name) + ' 끌어올리는 결입니다. 작은 성공 하나가 다음 10년의 토양이 됩니다.' : (dwT1 === 'side' ? '진로·관계에서 한 번 크게 흔들리는 결입니다. 그때의 흔들림이 ' + nmUi(name) + ' 세상을 보는 눈을 깊게 만들었습니다.' : '큰 폭의 변화보다 작은 결정들이 쌓여 방향을 잡는 결입니다.')) : '';
+        ? ' 이 시기 대운 ' + dw1.labels.join('·') + '은 ' + (dwT1 === 'tail' ? '의외의 기회가 ' + nmEulReul(name) + ' 한 단계 끌어올리는 결입니다. 작은 성공 하나가 다음 10년의 토양이 됩니다.' : (dwT1 === 'side' ? '진로·관계에서 한 번 크게 흔들리는 결입니다. 그때의 흔들림이 ' + nmUi(name) + ' 세상을 보는 눈을 깊게 만들었습니다.' : '큰 폭의 변화보다 작은 결정들이 쌓여 방향을 잡는 결입니다.')) : '';
     var c2Tail = '이 시기의 화두 — 남이 기대하는 길과 ' + nmUi(name) + ' 진짜 결, 그 둘 사이의 간격을 정직하게 인정하는 일.';
 
     // ── ③ 청장년기 (25~45세) — 일주 (사회 진출·결혼·재물·자녀)
@@ -7275,7 +7277,7 @@ function buildLifePanoramaSection(data) {
     var dwT2 = dwTone(dw2);
     var c3_p1_open = '25세에서 45세 사이는 ' + nmUi(name) + ' 본 모습 — 일주 ' + (HAN_KOR[ds] || ds || '') + (HAN_KOR[db] || db || '') + '의 결이 사회에서 본격적으로 펼쳐지는 시기입니다.';
     var c3_p1_body = ' 사주 안에서 일간(나)이 가장 활발하게 움직이는 구간이라, 직업·결혼·이주·창업·자녀 같은 굵직한 결정이 한꺼번에 몰려옵니다. ' + (dTone === 'good'
-        ? '사회생활 초반의 운이 ' + nmEunNeun(name) + ' 받쳐 주어 30대 초반에 한 번 큰 성취가 가능합니다. 결혼·이직·집 마련 중 한 가지가 그 시기에 정해질 가능성이 크고, 그 결정이 평생의 큰 줄기가 됩니다.'
+        ? '사회생활 초반의 운이 ' + nmEulReul(name) + ' 든든하게 받쳐 주어 30대 초반에 한 번 큰 성취가 가능합니다. 결혼·이직·집 마련 중 한 가지가 그 시기에 정해질 가능성이 크고, 그 결정이 평생의 큰 줄기가 됩니다.'
         : (dTone === 'tough'
             ? '다만 첫 직장이 오래 가지 못하거나 결혼·연애에서 한 번의 큰 학습이 따를 수 있습니다. 30대 중반까지는 “이게 정말 내 자리인가” 묻는 시기가 길고, 그 학습이 30대 후반의 진짜 안착을 가능하게 합니다.'
             : '화려한 도약보다 한 걸음씩 자기 자리를 다지는 결입니다. 30대 중반에는 ' + nmDnim(name) + '만의 색이 시장에서 인정받기 시작하고, 그때가 사실상의 “시작”입니다.'));
@@ -7283,14 +7285,14 @@ function buildLifePanoramaSection(data) {
         + ' 재물은 이 시기에 처음 “쌓이는” 감각을 익히게 됩니다. 30대 후반에는 ' + nmUi(name) + ' 이름이 적힌 통장·집·사업자 등록증 중 하나가 자리 잡고, 그게 평생의 자산 토대가 됩니다.'
         + ' 자녀(있다면)는 30대 초중반에 만나실 가능성이 크고, 그 자녀와의 관계가 ' + nmUi(name) + ' 안쪽 결을 한 번 더 다듬어 줍니다.';
     var c3Daewun = dw2 && dw2.labels.length
-        ? ' 이 20년의 대운 ' + dw2.labels.slice(0,2).join('·') + (dw2.labels[2]?'·'+dw2.labels[2]:'') + '은 ' + (dwT2 === 'tail' ? '바람이 ' + nmEunNeun(name) + ' 등 뒤에서 밀어 주는 시기입니다. 무리하지 않아도 결과가 따라옵니다.' : (dwT2 === 'side' ? '바람이 옆에서 부는 시기라 자주 기둥을 새로 세우셔야 합니다. 다만 그때 만든 골격이 평생의 자산입니다.' : '받쳐 주는 운과 시험하는 운이 번갈아 옵니다. 어느 쪽이든 일희일비하지 마시고 ' + nmUi(name) + ' 본업을 지키시는 편이 좋습니다.')) : '';
+        ? ' 이 20년의 대운 ' + dw2.labels.slice(0,2).join('·') + (dw2.labels[2]?'·'+dw2.labels[2]:'') + '은 ' + (dwT2 === 'tail' ? '바람이 ' + nmEulReul(name) + ' 등 뒤에서 밀어 주는 시기입니다. 무리하지 않아도 결과가 따라옵니다.' : (dwT2 === 'side' ? '바람이 옆에서 부는 시기라 자주 기둥을 새로 세우셔야 합니다. 다만 그때 만든 골격이 평생의 자산입니다.' : '받쳐 주는 운과 시험하는 운이 번갈아 옵니다. 어느 쪽이든 일희일비하지 마시고 ' + nmUi(name) + ' 본업을 지키시는 편이 좋습니다.')) : '';
     var c3Tail = '이 시기의 화두 — 많이 하기보다, 가장 잘하는 한 가지에서 깊이 들어가는 일.';
 
     // ── ④ 중장년기 (45~65세) — 일주·시주 사이 (책임·후반전·재물 안정)
     var dw3 = dwInRange(45, 65);
     var dwT3 = dwTone(dw3);
     var c4_p1_open = '45세에서 65세 사이는 ' + nmUi(name) + ' 인생에서 가장 책임이 무거운 시기입니다.';
-    var c4_p1_body = ' 자녀(있다면)의 진로, 부모님 건강, 본업의 마무리·전환, 재정의 큰 줄기가 한꺼번에 결정됩니다. 위로는 부모님 세대의 마무리를 봐 드려야 하고, 아래로는 자녀나 후배의 자리를 받쳐 주셔야 하는 — “인생의 가장 무거운 어깨”의 시기입니다. 그래서 50대 초반에는 한 번 ' + nmEunNeun(name) + ' 멈춰 세우는 일(번아웃·건강 신호·관계 정리)이 일어날 가능성이 크고, 그게 후반전을 다시 짜는 출발점이 됩니다.';
+    var c4_p1_body = ' 자녀(있다면)의 진로, 부모님 건강, 본업의 마무리·전환, 재정의 큰 줄기가 한꺼번에 결정됩니다. 위로는 부모님 세대의 마무리를 봐 드려야 하고, 아래로는 자녀나 후배의 자리를 받쳐 주셔야 하는 — “인생의 가장 무거운 어깨”의 시기입니다. 그래서 50대 초반에는 한 번 ' + nmEulReul(name) + ' 멈춰 세우는 일(번아웃·건강 신호·관계 정리)이 찾아올 가능성이 큰데, 그 멈춤이 결국 후반전을 다시 짜는 출발점이 되어 줍니다.';
     var c4_p2 = ' ' + nmUi(name) + ' 사주는 이 시기에 ' + (isStrong
         ? '바깥보다 안쪽을 정리하는 결로 흐릅니다. 그동안 벌인 일을 차근차근 거두고, 진짜 ' + nmUi(name) + ' 것만 남기시는 시기입니다. 50대 후반에는 “이름이 적힌 한 줄” — 한 권의 책, 한 사람의 제자, 한 채의 집 — 그런 결의 결과가 손에 잡힙니다.'
         : '안쪽보다 바깥에서 새로운 무대가 열리는 결로 흐릅니다. 후반전이 진짜 무대일 수 있고, 50대에 시작한 일이 60대의 명함이 됩니다. 사실 30~40대보다 50~60대에 더 빛나는 결이라, 너무 일찍 “다 끝났다”고 마음 놓지 마십시오.')
@@ -7307,7 +7309,7 @@ function buildLifePanoramaSection(data) {
     var c5_p1_open = '65세 이후의 풍경은 ' + nmUi(name) + ' 마지막 기둥(시주 ' + (HAN_KOR[hStem] || hStem || '') + (HAN_KOR[hBranch] || hBranch || '') + ')이 그려 보입니다.';
     var c5_p1_body = {
         good: ' 자녀·후배·제자 중 한 사람이 ' + nmDnim(name) + '의 길을 이어갑니다. ' + nmUi(name) + ' 노년은 외롭지 않고, 짧은 글이나 한 마디 조언으로 누군가의 결정을 도울 일이 잦습니다. 가족 안에서도 “그 어른” 자리에 자연스럽게 앉으시고, 큰 소리 내지 않아도 무게가 실리는 결입니다.',
-        tough: ' 노년기의 무게는 — 가까운 사람을 떠나보내는 일과, 스스로의 몸을 돌보는 일이 한꺼번에 옵니다. 60대 중반에 한 번 큰 헤어짐(부모·배우자·친구)이 따를 수 있고, 그때의 슬픔이 ' + nmUi(name) + ' 노년의 결을 결정합니다. 다만 그때까지 쌓아 둔 신뢰와 사람들이 ' + nmEunNeun(name) + ' 든든하게 받칩니다.',
+        tough: ' 노년기의 무게는 — 가까운 사람을 떠나보내는 일과, 스스로의 몸을 돌보는 일이 한꺼번에 옵니다. 60대 중반에 한 번 큰 헤어짐(부모·배우자·친구)이 따를 수 있고, 그때의 슬픔이 ' + nmUi(name) + ' 노년의 결을 결정합니다. 다만 그때까지 쌓아 둔 신뢰와 그 사람들이 ' + nmEulReul(name) + ' 든든하게 받쳐 줍니다.',
         mid: ' 화려한 무대보다 조용한 일상의 깊이가 ' + nmUi(name) + ' 노년을 빛냅니다. 한 권의 책, 한 사람과의 산책, 한 끼의 식사 — 그런 결의 일들이 평생을 마감합니다. 큰 사건이 적은 만큼 작은 일이 큰 의미가 되는 시기입니다.'
     }[hTone];
     var c5_p2 = ' 70대 이후에 ' + nmDnim(name) + '이 남기실 것은 — ' + (legacy || '평생 다듬어 온 ' + nmUi(name) + ' 결')
@@ -7485,45 +7487,38 @@ function buildReportFooterUtilities(data) {
         + 'style="margin:48px auto 0;padding:36px 24px 56px;max-width:720px;border-top:1px dashed rgba(199,167,106,0.28);">'
 
         + '<div style="font-size:10px;letter-spacing:0.22em;color:rgba(199,167,106,0.72);margin-bottom:12px;font-weight:700;text-align:center;">[ 리포트 부록 · 이용 안내 ]</div>'
-        + '<h2 style="font-family:\'Noto Sans KR\',serif;font-size:22px;font-weight:700;color:var(--text,rgba(255,255,255,0.95));margin:0 0 6px;text-align:center;">' + escHtmlAttr(nmDn) + ', 여기까지 함께 봐 주셔서 고마워요</h2>'
-        + '<p style="margin:0 0 22px;font-size:12.5px;line-height:1.85;color:var(--text-dim,rgba(255,255,255,0.6));text-align:center;">아래는 본문이 모두 끝난 뒤 보시는 보관·이용 안내예요. 한 번만 훑어 두시면 충분합니다.</p>'
+        + '<h2 style="font-family:\'Noto Sans KR\',serif;font-size:22px;font-weight:700;color:var(--text,rgba(255,255,255,0.95));margin:0 0 6px;text-align:center;line-height:1.5;">' + escHtmlAttr(nmDn) + ', 함께한 여정 — 여기까지 동행해 주시느라 수고 많으셨어요</h2>'
+        + '<p style="margin:0 0 22px;font-size:12.5px;line-height:1.85;color:var(--text-dim,rgba(255,255,255,0.6));text-align:center;">본문은 모두 마무리되었어요. 아래는 PDF 저장과 보관 정책, 그리고 짧은 안내 몇 가지를 한 자리에 정리해 둔 부록입니다.</p>'
 
-        // ── 1) PDF 저장 안내 + 인쇄 버튼 ──
+        // ── 1) PDF 저장 안내 + 인쇄 버튼 (30일 보관 → 필수 다운로드 강조)
         + '<div class="sajux-access-note" style="text-align:left;margin:0 0 18px;padding:16px 18px;border-radius:12px;border:1px solid rgba(199,167,106,0.28);background:rgba(199,167,106,0.05);font-size:13px;line-height:1.9;">'
         + '<div style="' + headStyle + '">열람 · PDF 저장 안내</div>'
-        + '<p style="' + pStyle + '">' + accessLine + '</p>'
-        + '<p style="margin:6px 0 0;font-size:13px;line-height:1.9;color:#d6dae2;">발행일(출력 기준)은 <strong>' + reportDateStr + '</strong>이에요. 브라우저에서 <strong>인쇄 → PDF로 저장</strong>을 한 번만 실행해 두시면, 링크 만료 이후에도 같은 문서를 두고두고 보실 수 있어요.</p>'
+        + '<p style="' + pStyle + '">이 리포트는 발행일(<strong>' + reportDateStr + '</strong>)로부터 <strong>30일</strong> 동안만 같은 링크에서 보실 수 있어요. 그 이후에는 다시 들어오기 어려울 수 있으니, 오늘 안에 <strong>PDF로 한 번 꼭 저장</strong>해 두시기를 권해 드립니다.</p>'
+        + '<p style="margin:6px 0 0;font-size:13px;line-height:1.9;color:#d6dae2;">브라우저에서 <strong>인쇄 → PDF로 저장</strong>을 한 번만 실행해 두시면, 링크 만료 이후에도 같은 문서를 두고두고 다시 펼쳐 보실 수 있어요.</p>'
         + '<div style="display:flex;justify-content:center;margin-top:14px;">'
         + '<button type="button" class="sajux-pdf-wide-btn pdf-btn" onclick="window.print()" style="margin:0;max-width:320px;">PDF로 저장하기</button>'
         + '</div>'
         + '</div>'
 
-        // ── 2) 이용 안내 4종 ──
+        // ── 2) 이용 안내 3종 ──
+        + '<div style="' + cardStyle + '">'
+        + '<div style="' + headStyle + '">이 리포트의 결</div>'
+        + '<p style="' + pStyle + '">이 리포트는 명리학(사주팔자)을 토대로 정리한 운명 해석 자료예요. 각 장의 풀이는 동양철학의 오행·십성·대운 흐름을 근거로 하고, 실제 결과는 ' + escHtmlAttr(nmDn) + '의 선택과 노력에 따라 얼마든지 달라질 수 있습니다. 인생의 방향을 잡으실 때 곁에 두고 참고하실 수 있는 지도라고 여겨 주세요.</p>'
+        + '</div>'
+
         + '<div style="' + cardStyle + '">'
         + '<div style="' + headStyle + '">법적 안내</div>'
-        + '<p style="' + pStyle + '">본 리포트는 명리학(사주) 해석을 토대로 정리한 참고 자료예요. 투자·의료·법률·세무 등 전문 자문을 대체하지 않으며, 최종 판단과 책임은 이용자 본인에게 있다는 점만 가볍게 기억해 주시면 좋아요.</p>'
-        + '</div>'
-
-        + '<div style="' + cardStyle + '">'
-        + '<div style="' + headStyle + '">연령 표기 (만 나이 기준)</div>'
-        + '<p style="' + pStyle + '">대운·세운·연령대 조언에 등장하는 ○○세는 모두 <b>만 나이</b>(양력 생일 기준)예요. 한국식 세는 나이(생일을 기점으로 ±1)와는 숫자가 다를 수 있으니, 본문 속 숫자를 비교하실 때 살짝 참고만 해 주세요.</p>'
-        + '</div>'
-
-        + '<div style="' + cardStyle + '">'
-        + '<div style="' + headStyle + '">권장 사용법</div>'
-        + '<p style="' + pStyle + '">' + escHtmlAttr(nmDn) + '에게 가장 와닿는 부분부터 천천히 읽으시면 돼요. 먼저 <b>한눈에 보는 지금의 결</b>을 한 번 훑고, 그다음 본문에서 깊은 풀이를 따라가시면 흐름이 자연스럽게 잡힙니다. 큰 결정 앞에서는 현실 여건과 가까운 전문가 의견을 함께 살펴 주세요.</p>'
+        + '<p style="' + pStyle + '">투자·의료·법률·세무 등 전문 자문을 대체하는 자료는 아니에요. 최종 판단과 그 책임은 이용자 본인에게 있다는 점만 가볍게 기억해 주시면 충분합니다.</p>'
         + '</div>'
 
         + '<div style="' + cardStyle + 'margin-bottom:0;">'
-        + '<div style="' + headStyle + '">보관 정책 · 다시 보기</div>'
-        + '<p style="margin:0 0 8px;font-size:13px;line-height:1.9;color:#d6dae2;">' + accessLine + '</p>'
-        + '<p style="' + pStyle + '">링크가 만료되면 동일 페이지로 다시 들어오기 어려울 수 있어요. 마음에 드는 페이지가 있다면 <b>PDF로 저장</b>해 두시는 편을 가장 추천드립니다.</p>'
+        + '<div style="' + headStyle + '">연령 표기 (만 나이 기준)</div>'
+        + '<p style="' + pStyle + '">대운·세운·연령대 조언에 등장하는 ○○세는 모두 <b>만 나이</b>(양력 생일 기준)예요. 한국식 세는 나이(생일을 기점으로 ±1)와는 숫자가 다를 수 있으니, 본문 숫자를 비교하실 때 살짝 참고만 해 주세요.</p>'
         + '</div>'
 
-        // ── 3) 짧은 면책 고지 ──
+        // ── 3) 짧은 면책 고지 (정리)
         + '<p class="premium-disclaimer" style="text-align:left;margin:22px 0 0;font-size:11.5px;line-height:1.9;color:var(--text-dim, #777);">'
-        + '본 리포트는 전통 명리학에 기반한 전략 해석 자료예요. 의학·법률·투자 자문이 아니며, 실제 실행과 그에 따르는 책임은 본인에게 있다는 점만 다정하게 기억해 주세요.'
-        + '<br><span style="display:block;margin-top:8px;">※ ' + getAgeBasisNoteHtml('disclaimer') + '</span>'
+        + '※ ' + getAgeBasisNoteHtml('disclaimer')
         + '</p>'
 
         + '</section>';
@@ -7579,10 +7574,8 @@ function buildTOC(data) {
         '<div style="font-size:13px;color:var(--text-dim,rgba(255,255,255,0.55));margin-bottom:32px;">X-SAJU MASTER — 컨설팅 보고서형 4부 구조</div>' +
         '<div style="width:60px;height:2px;background:var(--gold);margin-bottom:28px;opacity:0.4;"></div>' +
         body +
-        '<div style="margin-top:36px;padding:18px 20px;background:rgba(199,167,106,0.04);border-radius:10px;border:1px solid rgba(199,167,106,0.1);font-size:12px;color:var(--text-dim,rgba(255,255,255,0.50));line-height:1.8;">' +
-        '※ 이 리포트는 명리학(사주팔자)을 기반으로 작성된 운명 분석서입니다. 각 챕터의 해석은 동양철학의 오행·십성·대운 흐름을 근거로 하며, 실제 삶에서의 선택과 노력에 따라 결과는 달라질 수 있습니다. 본 분석은 인생의 방향을 설계하는 참고 자료로 활용하시기 바랍니다.<br><br>' +
-        '※ 온라인 링크 열람·PDF 저장은 발행 정책에 따릅니다(기본 30일·서버에서 <code style="font-size:11px;">reportExpiresAt</code> 또는 <code style="font-size:11px;">reportIssuedAt</code> 전달 시 안내문이 자동 반영됩니다).' +
-        '</div></div>';
+        '</div>';
+    // ※ 명리학 설명·발행 정책 안내는 본문 흐름을 끊지 않도록 문서 최하단(buildReportFooterUtilities)으로 이동했습니다.
 }
 
 function buildChapterPersonality(data) {
