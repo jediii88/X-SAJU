@@ -408,10 +408,9 @@ if (typeof KoreanLunarCalendar === 'undefined') {
   };
 }
 </script>
-<script src="../report/report-core.js" onerror="window.__compatScriptFail=1"></script>
 <script>
-(function compatBoot(){
-  function compatShowEngineError(html){
+(function sajuxCoupleBootstrap(){
+  function showEngineError(html){
     try {
       var ld = document.getElementById('loading-screen');
       var er = document.getElementById('error-screen');
@@ -427,17 +426,56 @@ if (typeof KoreanLunarCalendar === 'undefined') {
       }
     } catch (z) {}
   }
+
   if (window.__compatScriptFail) {
     window.__compatInitBlocked = true;
-    compatShowEngineError('필수 파일을 불러오지 못했습니다. 네트워크를 확인하거나 <strong>새로고침</strong>해 주세요.<br><span style="font-size:12px;color:#888;">일부 앱 속 브라우저에서는 보안 설정 때문에 차단될 수 있습니다.</span>');
+    showEngineError('필수 파일을 불러오지 못했습니다. 네트워크를 확인하거나 <strong>새로고침</strong>해 주세요.<br><span style="font-size:12px;color:#888;">일부 앱 속 브라우저에서는 보안 설정 때문에 차단될 수 있습니다.</span>');
     return;
   }
+
+  var loadTimer = setTimeout(function(){
+    window.__compatInitBlocked = true;
+    showEngineError('리포트 엔진 파일이 예상보다 오래 걸립니다. <strong>새로고침</strong>하거나 네트워크를 바꿔 다시 열어 주세요.<br><span style="font-size:12px;color:#888;">첫 방문 때만 로딩이 길 수 있습니다.</span>');
+  }, 90000);
+
+  var coreHref = '../report/report-core.js';
+  try {
+    coreHref = new URL('../report/report-core.js', location.href).href;
+  } catch (eUrl) {}
+  coreHref += (coreHref.indexOf('?') < 0 ? '?' : '&') + '_=' + String(Math.floor(Date.now() / 1800000));
+
+  var st = document.createElement('script');
+  st.charset = 'UTF-8';
+  st.async = false;
+  st.src = coreHref;
+  st.onerror = function(){
+    clearTimeout(loadTimer);
+    window.__compatScriptFail = 1;
+    window.__compatInitBlocked = true;
+    showEngineError('report-core.js를 불러오지 못했습니다. 캐시를 비우고 <strong>새로고침</strong>해 주세요.');
+  };
+  st.onload = function(){
+    clearTimeout(loadTimer);
+    try {
+      sajuxCoupleMain();
+    } catch (ex) {
+      console.error(ex);
+      window.__compatInitBlocked = true;
+      showEngineError('궁합 화면을 여는 중 오류가 났습니다. 일반 브라우저에서 다시 열어 주세요.');
+    }
+  };
+  document.head.appendChild(st);
+
+  function sajuxCoupleMain(){
+
+(function compatBoot(){
+  if (window.__compatScriptFail) return;
   var maxMs = 45000;
   window.__compatSafetyTid = setTimeout(function(){
     var ld = document.getElementById('loading-screen');
     if (!ld || ld.style.display === 'none') return;
     window.__compatInitBlocked = true;
-    compatShowEngineError('준비가 예상보다 길어지고 있습니다. <strong>새로고침</strong>해 보시고, 가능하면 일반 브라우저(크롬·사파리)에서 여세요.');
+    showEngineError('준비가 예상보다 길어지고 있습니다. <strong>새로고침</strong>해 보시고, 가능하면 일반 브라우저(크롬·사파리)에서 여세요.');
   }, maxMs);
   window.__compatClearSafetyTimeout = function(){
     try { if (window.__compatSafetyTid) clearTimeout(window.__compatSafetyTid); } catch (e1) {}
@@ -1355,6 +1393,9 @@ function init() {
     }
   }
 }
+
+}
+})();
 </script>
 </body>
 </html>
