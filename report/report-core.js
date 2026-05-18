@@ -50,7 +50,9 @@ function sajuxBranchColor(branch) {
 function sajuxIsWaterChar(ch) {
     return SAJUX_STEM_OH[ch] === 'water' || SAJUX_BRANCH_OH[ch] === 'water';
 }
-/** 수 오행 한자용 인라인 스타일 (검정 + 흰 윤곽). 비-수면 그냥 색만 반환 */
+/** 수 오행 한자용 인라인 스타일. 명리 정통 검정 + 다크 모드 한정 흰 윤곽으로
+ *  "잉크가 종이 위에 떠오르듯" 가시성을 확보합니다. 라이트 모드에서는
+ *  --water-stroke의 alpha를 0으로 두어 윤곽이 보이지 않습니다. */
 function sajuxHanjaInlineStyle(ch, sizeStyle, weight) {
     var col = SAJUX_STEM_OH[ch] ? sajuxStemColor(ch) : sajuxBranchColor(ch);
     var sw  = sajuxIsWaterChar(ch);
@@ -58,7 +60,7 @@ function sajuxHanjaInlineStyle(ch, sizeStyle, weight) {
              + "font-weight:" + (weight || 300) + ";"
              + "color:" + col + ";";
     if (sizeStyle) base += "font-size:" + sizeStyle + ";";
-    if (sw) base += "-webkit-text-stroke:0.6px rgba(255,255,255,0.72);paint-order:stroke fill;";
+    if (sw) base += "-webkit-text-stroke:0.75px var(--water-stroke, rgba(255,255,255,0.85));paint-order:stroke fill;";
     return base;
 }
 
@@ -311,9 +313,9 @@ function buildTopicMetaphorTitle(topic, data) {
             // 다섯 기운 중 어느 결이 두텁고, 어느 결이 비어 있는지를 자연어로
             var maxLabel = { wood:'나무', fire:'불', earth:'흙', metal:'금', water:'물' }[oh.maxW] || (maxK + '의 기운');
             var minLabel = { wood:'나무', fire:'불', earth:'흙', metal:'금', water:'물' }[oh.minW] || (minK + '의 기운');
-            return maxLabel + '의 결은 두텁고, ' + minLabel + '의 결은 얇은 분';
+            return maxLabel + '의 기운은 두텁고, ' + minLabel + '의 기운은 얇은 분';
         },
-        sipseong: function() { return mainSip + ' — 일하실 때 가장 자주 쓰시는 결'; },
+        sipseong: function() { return mainSip + ' — 일하실 때 가장 자주 꺼내 쓰시는 카드'; },
         wealth:   function() { return '재물 전략'; },
         career:   function() { return '직업 · 소명'; },
         love:     function() { return '애정 · 인연'; },
@@ -1215,6 +1217,35 @@ function voicePolishParagraph(data, text) {
     s = s.replace(/인\s*상\s*\(\s*象\s*\)\s*\./g, '인 모습입니다.');
     // 남은 일반 패턴 — "○○ 상(象)." 끝맺음을 형상입니다로
     s = s.replace(/([가-힣A-Za-z])\s*상\s*\(\s*象\s*\)\s*\./g, '$1 형상입니다.');
+
+    // ─── 한자(漢字) 괄호 → 한글 풀이 일관화 ───
+    // 데이터에 박혀 있는 "○○(漢字)" 표기는 한자를 모르면 막막하므로,
+    // 10대도 알 수 있게 한글 풀이로 통일합니다.
+    //   예) "편재(偏財)와 정재가" → "편재(흐름이 큰 재물 기운)와 정재가"
+    //   ※ 그 다음 단계의 풀이 규칙이 "정재(...)"도 같은 한글 풀이로 보충해 줘서
+    //     "편재(...)와 정재(...)"의 비대칭이 사라집니다.
+    s = s.replace(/편재\s*\(\s*偏財\s*\)/g, '편재(흐름이 큰 재물 기운)');
+    s = s.replace(/정재\s*\(\s*正財\s*\)/g, '정재(꾸준히 쌓이는 재물 기운)');
+    s = s.replace(/편관\s*\(\s*偏官\s*\)/g, '편관(나를 강하게 단련시키는 기운)');
+    s = s.replace(/정관\s*\(\s*正官\s*\)/g, '정관(원칙·책임을 부여하는 기운)');
+    s = s.replace(/식신\s*\(\s*食神\s*\)/g, '식신(즐거움을 만들어내는 표현 기운)');
+    s = s.replace(/상관\s*\(\s*傷官\s*\)/g, '상관(말과 재능이 빛나는 기운)');
+    s = s.replace(/편인\s*\(\s*偏印\s*\)/g, '편인(직관·창의가 깊어지는 기운)');
+    s = s.replace(/정인\s*\(\s*正印\s*\)/g, '정인(나를 든든히 받쳐주는 기운)');
+    s = s.replace(/비견\s*\(\s*比肩\s*\)/g, '비견(나와 같은 기운의 사람·동료)');
+    s = s.replace(/겁재\s*\(\s*劫財\s*\)/g, '겁재(경쟁을 부르는 같은 기운)');
+    s = s.replace(/식상\s*\(\s*食傷[^\)]*\)/g, '식상(표현·창작 기운)');
+    s = s.replace(/관성\s*\(\s*官星[^\)]*\)/g, '관성(책임·권위 기운)');
+    s = s.replace(/재성\s*\(\s*財星[^\)]*\)/g, '재성(재물·현실 감각)');
+    s = s.replace(/인성\s*\(\s*印星[^\)]*\)/g, '인성(배움·수용의 기운)');
+    s = s.replace(/비겁\s*\(\s*比劫[^\)]*\)/g, '비겁(자아·동료 기운)');
+    s = s.replace(/칠살\s*\(\s*七殺\s*\)/g, '칠살(나를 단련시키는 강한 기운)');
+    // 오행 한자 → 한글
+    s = s.replace(/목\s*\(\s*木\s*\)/g, '목(나무)');
+    s = s.replace(/화\s*\(\s*火\s*\)/g, '화(불)');
+    s = s.replace(/토\s*\(\s*土\s*\)/g, '토(흙)');
+    s = s.replace(/금\s*\(\s*金\s*\)/g, '금(쇠)');
+    s = s.replace(/수\s*\(\s*水\s*\)/g, '수(물)');
 
     // ─── 전문 용어 쉬운 풀이 (일반 독자용) ───
     // ※ (?<![가-힣]) — 앞이 한글 음절일 때는 단어 내부 우연 일치이므로 풀이하지 않습니다.
@@ -4116,9 +4147,9 @@ function buildPremiumExecutiveSummary(data) {
     // PDF 저장 버튼·열람 안내·면책 고지·이용 안내 등 유틸리티 컴포넌트는 본문 렌더링이 끝난 뒤
     // 문서 최하단(buildReportFooterUtilities)에 모아 배치합니다. 진짜 본문 풀이는 1~4부에서 이어집니다.
     var trendNuance = function (t) {
-        if (t === '공격') return '한 발 더 내디뎌도 좋은 공격 흐름';
-        if (t === '균형') return '들숨 날숨이 고르게 맞아 가는 균형 흐름';
-        return '한 박자 쉬어 가는 방어 흐름';
+        if (t === '공격') return '한 발 더 내디뎌도 좋은 흐름';
+        if (t === '균형') return '들숨 날숨이 고르게 맞아 가는 흐름';
+        return '한 박자 쉬어 가는 편이 좋은 흐름';
     };
     var monthFlavor = function (t) {
         if (t === '공격') return '속도를 한 단계 올려도 무리가 없는 달';
@@ -4134,6 +4165,8 @@ function buildPremiumExecutiveSummary(data) {
         + '이달 <strong>' + curM + '월</strong>은 ' + monthFlavor(mTrend) + '이에요. '
         + nmUi(nm) + ' 사주는 <strong>' + yongFull + '</strong>' + yongJosa + ' 기다리고 있어요. '
         + '<strong>' + giFull + '</strong>' + giJosa + ' 두꺼워질 때는 한 박자만 늦추시고, 무리한 결정은 잠깐 미뤄 두시는 편이 결과가 더 단단해집니다.';
+    // 한자 괄호("금(金)" 등)와 어휘 정리를 일관되게 적용
+    quickGlanceLine = voicePolishParagraph(data, quickGlanceLine);
 
     return '<div id="sec-premium-summary" class="report-chapter premium-executive-summary chapter-start sajux-panel-plain" style="margin-bottom:40px;padding:28px 22px;border-radius:14px;border:1px solid rgba(199,167,106,0.30);background:transparent;text-align:center;">' +
         '<div style="font-size:10.5px;letter-spacing:0.20em;color:rgba(199,167,106,0.72);margin-bottom:14px;font-weight:600;">사주X · 프리미엄 리포트</div>' +
@@ -6969,7 +7002,7 @@ function buildChapter9_Remedy(data) {
         <p class="ch-text">${voicePolishParagraph(data, '여기까지 ' + nmUi(name) + ' 사주를 차근차근 살폈습니다. 이 마지막 장은 사주를 바꾸는 자리가 아니라, 타고난 결을 일상의 결로 바꿔 드리는 자리입니다. 색·방향·시간·작은 행동 — 거창하지 않은 것을 일주일만 지켜 보십시오. 덜 지친 조합이 ' + nmKke(name) + ' 가장 큰 보약입니다.')}</p>
 
         <div class="remedy-mindset sajux-print-surface" style="margin:14px 0 18px;padding:18px 20px;border-radius:12px;background:rgba(199,167,106,0.06);border-left:3px solid var(--gold);">
-            <div style="font-size:11px;color:var(--gold);letter-spacing:0.10em;margin-bottom:10px;font-weight:700;">${nmUi(name)} 개운(開運)의 결</div>
+            <div style="font-size:11px;color:var(--gold);letter-spacing:0.10em;margin-bottom:10px;font-weight:700;">${nmUi(name)} 개운(開運)의 흐름</div>
             <p style="font-size:13.5px;color:#e8e0d2;line-height:1.95;margin:0;">${boldStarsToStrong(MINDSET_RX)}</p>
         </div>
 
@@ -7049,7 +7082,7 @@ function buildChapter9_Remedy(data) {
                 </div>
                 <div style="display:flex;gap:14px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(199,167,106,0.15);">
                     <div style="font-size:22px;flex-shrink:0;">🪴</div>
-                    <div style="flex:1;"><div style="font-size:12px;color:var(--gold);font-weight:700;margin-bottom:4px;">식물 (공간의 결)</div><p style="font-size:13px;color:#e8e0d2;line-height:1.85;margin:0;">${talisman.plant} 중 손이 덜 가는 한 종류를 책상 또는 침실 옆에 두십시오. 시들면 바로 새로 들이는 것이 약입니다.</p></div>
+                    <div style="flex:1;"><div style="font-size:12px;color:var(--gold);font-weight:700;margin-bottom:4px;">식물 (공간의 분위기)</div><p style="font-size:13px;color:#e8e0d2;line-height:1.85;margin:0;">${talisman.plant} 중 손이 덜 가는 한 종류를 책상 또는 침실 옆에 두십시오. 시들면 바로 새로 들이는 것이 약입니다.</p></div>
                 </div>
                 <div style="display:flex;gap:14px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(199,167,106,0.15);">
                     <div style="font-size:22px;flex-shrink:0;">🕯️</div>
@@ -7627,7 +7660,7 @@ function buildReportFooterUtilities(data) {
 
         // ── 2) 이용 안내 3종 ──
         + '<div style="' + cardStyle + '">'
-        + '<div style="' + headStyle + '">이 리포트의 결</div>'
+        + '<div style="' + headStyle + '">이 리포트를 어떻게 받아 주시면 좋을지</div>'
         + '<p style="' + pStyle + '">이 리포트는 명리학(사주팔자)을 토대로 정리한 운명 해석 자료예요. 각 장의 풀이는 동양철학의 오행·십성·대운 흐름을 근거로 하고, 실제 결과는 ' + escHtmlAttr(nmDn) + '의 선택과 노력에 따라 얼마든지 달라질 수 있습니다. 인생의 방향을 잡으실 때 곁에 두고 참고하실 수 있는 지도라고 여겨 주세요.</p>'
         + '</div>'
 
