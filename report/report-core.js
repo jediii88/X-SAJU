@@ -6739,7 +6739,8 @@ function _buildChapter2_Wuxing_DEAD(_data) {
 function buildChapter3_Sipseong(data) {
     const sipseong = data.sipseong || {};
     const total = Math.max(Object.values(sipseong).reduce((a, b) => a + b, 0), 1);
-    const primaryList = getChapter3PrimarySipseongs(sipseong);
+    var primaryList = getChapter3PrimarySipseongs(sipseong);
+    if (!primaryList.length) primaryList = ['정재'];
     const mainSip = primaryList[0] || '정재';
 
     const SIP_BAR_GROUPS = [
@@ -6785,7 +6786,7 @@ function buildChapter3_Sipseong(data) {
             + '</div>';
     }).join('');
 
-    const synthesis = buildChapter3SipseongSynthesisParagraph(primaryList.length ? primaryList : [mainSip], data);
+    const synthesis = buildChapter3SipseongSynthesisParagraph(primaryList, data);
     const topLabelPlain = String(topG.label || '').replace(/:\s*$/, '');
 
     var chHead3 = buildChapterHeadTopicFirst('십성 — 역할과 관계의 무늬', SAJUX_SECTION_LABELS.sipseong, buildTopicMetaphorTitle('sipseong', data));
