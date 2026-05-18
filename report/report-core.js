@@ -3293,6 +3293,10 @@ function generateDeepReport(data) {
     html += safeCall(()=>buildClientCoverPage(data), 'clientCover');
     html += safeCall(()=>buildTOC(data), 'toc');
     html += safeCall(()=>buildPremiumExecutiveSummary(data), 'premium');
+    // ★ 첫 페이지 직후 인생 서사 카드(5단계, 태어남~말년)로 몰입을 잡습니다.
+    //   고객은 사주 이론을 모르고 결과적인 메시지를 기대하므로, 분석 챕터(1~4부)에 앞서
+    //   "나는 어떤 인생을 살아왔고, 앞으로 어떤 흐름이 펼쳐지는가"를 먼저 보여 줍니다.
+    html += safeCall(()=>buildLifePanoramaSection(data)||'', 'life-panorama-intro');
 
     // ── 1부: 나라는 사람 ──
     var part1Body = '';
@@ -3300,13 +3304,12 @@ function generateDeepReport(data) {
     //   ① 일주 프로필 — 한 줄 메타포·키워드 배지 (도입)
     //   ② 만세력 표 — 풀이의 근거 자료 (필수, 변경 금지)
     //   ③ ★ 메인 인물 초상 — "○○님은 이런 사람입니다" (가장 큰 메인)
-    //   ④ ★ 메인 인생 한 흐름 — 태어남→마지막까지 시기별 흐름 (둘째 메인)
-    //   ⑤ 사주 기본 종합 풀이 — 보강
-    //   ⑥·⑦ 오행·십성 — 부속 분석 (참고용)
+    //   ④ 사주 기본 종합 풀이 — 보강
+    //   ⑤·⑥ 오행·십성 — 부속 분석 (참고용)
+    //   ※ 인생 파노라마(5단계 인생 서사)는 위쪽 인트로 영역으로 이동했습니다.
     part1Body += safeCall(()=>buildIljuProfileCard(data)||'', 'ilju-card');
     part1Body += safeCall(()=>buildVipEvidenceBlock(data)||'', 'vip-evidence');
     part1Body += safeCall(()=>buildPersonalPortrait(data)||'', 'personal-portrait');
-    part1Body += safeCall(()=>buildLifePanoramaSection(data)||'', 'life-panorama');
     part1Body += safeCall(()=>buildChapter1_Basic(data)||'', 'ch1-basic');
     part1Body += safeCall(()=>buildChapter2_Wuxing(data)||'', 'ch2-wuxing');
     part1Body += safeCall(()=>buildChapter3_Sipseong(data)||'', 'ch3-sip');
@@ -4156,28 +4159,122 @@ function buildPremiumExecutiveSummary(data) {
         if (t === '균형') return '리듬을 그대로 유지하기 좋은 달';
         return '욕심을 내려놓고 다듬어 가기 좋은 달';
     };
-    var yongJosa = getJosaFlex(yongFull, '을/를');
-    var giJosa = getJosaFlex(giFull, '이/가');
-    var dLabelJosa = getJosa(daeunLabel, '은/는');
-    var quickGlanceLine = '지금 ' + nmUi(nm) + ' 흐름을 한 문장으로 정리해 드리면, '
-        + '<strong>' + daeunLabel + '</strong>' + dLabelJosa + ' ' + trendNuance(dTrend) + '이고, '
-        + '올해 <strong>' + curY + '년</strong>은 ' + trendNuance(yTrend) + ', '
-        + '이달 <strong>' + curM + '월</strong>은 ' + monthFlavor(mTrend) + '이에요. '
-        + nmUi(nm) + ' 사주는 <strong>' + yongFull + '</strong>' + yongJosa + ' 기다리고 있어요. '
-        + '<strong>' + giFull + '</strong>' + giJosa + ' 두꺼워질 때는 한 박자만 늦추시고, 무리한 결정은 잠깐 미뤄 두시는 편이 결과가 더 단단해집니다.';
-    // 한자 괄호("금(金)" 등)와 어휘 정리를 일관되게 적용
-    quickGlanceLine = voicePolishParagraph(data, quickGlanceLine);
+    // ─── 첫 페이지 인생 서사 한 단락 ───
+    // 사주 이론(대운명·용신·기신·오행 이름)을 모르는 일반 독자가
+    // "내가 어떤 환경에 태어나서, 어떤 시기를 지나, 지금 어디에 와 있는지,
+    //  앞으로 어떻게 흘러갈지"를 한 단락으로 받아들 수 있게 결과적 표현만 씁니다.
+    var openingNarrative = buildOpeningLifeNarrative(data);
+    openingNarrative = voicePolishParagraph(data, openingNarrative);
 
     return '<div id="sec-premium-summary" class="report-chapter premium-executive-summary chapter-start sajux-panel-plain" style="margin-bottom:40px;padding:28px 22px;border-radius:14px;border:1px solid rgba(199,167,106,0.30);background:transparent;text-align:center;">' +
         '<div style="font-size:10.5px;letter-spacing:0.20em;color:rgba(199,167,106,0.72);margin-bottom:14px;font-weight:600;">사주X · 프리미엄 리포트</div>' +
         '<h2 style="font-family:\'Noto Sans KR\',sans-serif;font-size:24px;font-weight:700;color:var(--text, #f5f0e6);margin:0 0 8px;line-height:1.45;letter-spacing:-0.01em;">' + escHtmlAttr(metaphorLead) + '</h2>' +
-        '<p style="font-size:11.5px;letter-spacing:0.14em;color:var(--text-dim, rgba(199,167,106,0.72));margin:0 0 22px;font-weight:500;">' + escHtmlAttr(nmUi(nm)) + ' 사주를 한 흐름으로 부드럽게 풀어 드릴게요</p>' +
+        '<p style="font-size:11.5px;letter-spacing:0.14em;color:var(--text-dim, rgba(199,167,106,0.72));margin:0 0 22px;font-weight:500;">' + escHtmlAttr(nmUi(nm)) + ' 인생 한 편을 먼저 짧게 들려드릴게요</p>' +
         '<div class="brief-glance sajux-print-surface" style="text-align:left;margin:0;padding:18px 20px;border-radius:12px;background:rgba(199,167,106,0.06);border-left:3px solid var(--gold);">' +
-        '<div style="font-size:10.5px;color:var(--gold);font-weight:700;letter-spacing:0.12em;margin-bottom:6px;">프롤로그 — 한눈에 보는 지금의 흐름</div>' +
-        '<p style="font-size:11.5px;color:var(--text-dim, rgba(255,255,255,0.55));margin:0 0 12px;line-height:1.7;">본문(1부 ~ 4부)으로 들어가시기 전, 지금 ' + escHtmlAttr(nmUi(nm)) + ' 큰 흐름을 한 단락으로 미리 요약해 드릴게요. 자세한 풀이는 아래 본문에서 차근차근 이어집니다.</p>' +
-        '<p style="font-size:14px;color:var(--text);line-height:2;margin:0;">' + boldStarsToStrong(quickGlanceLine) + '</p>' +
+        '<div style="font-size:10.5px;color:var(--gold);font-weight:700;letter-spacing:0.12em;margin-bottom:6px;">' + escHtmlAttr(nmUi(nm)) + ' 인생 한 흐름 — 태어남부터 마지막 모습까지</div>' +
+        '<p style="font-size:11.5px;color:var(--text-dim, rgba(255,255,255,0.55));margin:0 0 12px;line-height:1.7;">본문에 들어가시기 전, ' + escHtmlAttr(nmUi(nm)) + ' 인생 전체의 큰 줄기를 한 단락으로 먼저 보여 드릴게요. 다음 페이지부터는 이 흐름이 시기별로 어떻게 펼쳐지는지 자세히 풀어 드립니다.</p>' +
+        '<p style="font-size:14px;color:var(--text);line-height:2;margin:0;">' + boldStarsToStrong(openingNarrative) + '</p>' +
         '</div>' +
         '</div>';
+}
+
+/** ─── 첫 페이지용 인생 서사 한 단락 ───
+ *  명리 용어(대운명·용신·기신·오행 한자)를 일절 쓰지 않고,
+ *  "어떤 환경에 태어나서 → 청년기 흐름 → 지금 시기 → 앞으로 → 말년"을
+ *  결과적·실용적 표현으로 풀어 한 단락으로 만듭니다.
+ */
+function buildOpeningLifeNarrative(data) {
+    var nm = data.name || '고객';
+    var mb = data.monthBranch || '';
+    var curAge = Number(data.currentAge || data.userAge || data.age || 0);
+    if (!curAge && data.birthYear) {
+        try {
+            var by = Number(data.birthYear);
+            var nowY = (typeof getReportBaseDate === 'function') ? getReportBaseDate(data).getFullYear() : (new Date()).getFullYear();
+            if (by > 1900 && by < 2200) curAge = Math.max(0, nowY - by);
+        } catch (e) {}
+    }
+    var rows = data.daeunRows || data.daewunList || [];
+    var yong = data.yong || ''; var hee = data.hee || '';
+    var gi = data.gi || ''; var goo = data.goo || '';
+    var STO = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
+    var BRO = {'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'};
+    function rowSc(g, j) {
+        var s = 0;
+        var go = STO[g]; var jo = BRO[j];
+        if (go === yong || go === hee) s += 2;
+        if (go === gi || go === goo) s -= 2;
+        if (jo === yong || jo === hee) s += 2;
+        if (jo === gi || jo === goo) s -= 2;
+        return s;
+    }
+    var parsed = [];
+    for (var i = 0; i < rows.length; i++) {
+        var r = rows[i];
+        var gz = (r && (r.name || (r.gz && (r.gz[0] + r.gz[1])))) || '';
+        var g = gz.charAt(0); var j = gz.charAt(1);
+        var ag = r && (r.age != null ? r.age : r.startAge);
+        ag = ag != null ? Number(ag) : i * 10;
+        parsed.push({ age: ag, sc: gz.length > 1 ? rowSc(g, j) : 0 });
+    }
+    function avgOf(arr) { if (!arr.length) return 0; return arr.reduce(function(s,x){return s+(x.sc||0);},0) / arr.length; }
+    function tone(a) { return a >= 1 ? 'tail' : (a <= -1 ? 'side' : 'mix'); }
+
+    var childhoodByMb = {
+        '子': '조용하고 규칙이 일찍 자리잡은 집안',
+        '丑': '느리지만 성실함이 묵직하게 칭찬받던 환경',
+        '寅': '도전을 부추기는 진취적인 분위기',
+        '卯': '화창하고 따뜻한 봄날 같은 환경',
+        '辰': '이사·전학 같은 변화가 잦았던 환경',
+        '巳': '기대와 자존심이 함께 자란 환경',
+        '午': '인정과 활기가 가득했던 환경',
+        '未': '조용한 배려와 끈기가 깔린 환경',
+        '申': '현실 감각이 일찍 자란 환경',
+        '酉': '완성도와 체면을 중시하는 환경',
+        '戌': '의리와 책임을 일찍 배운 환경',
+        '亥': '감수성과 정이 깊었던 환경'
+    };
+    var childhood = childhoodByMb[mb] || '진중하고 묵직한 분위기의 집안';
+
+    var youthTone = tone(avgOf(parsed.filter(function(x){ return x.age >= 15 && x.age <= 28; })));
+    var youthPhrase = youthTone === 'tail'
+        ? '운이 등 뒤에서 받쳐 주어 작은 성공이 자존감의 뼈대가 되는 청년기'
+        : (youthTone === 'side'
+            ? '진로와 관계 한 번씩 크게 흔들리며 자기 색을 또렷이 다듬는 청년기'
+            : '작은 결정들이 차곡차곡 쌓여 방향을 잡아 가는 청년기');
+
+    var currentPhase;
+    if (curAge && curAge < 25) currentPhase = '진로·정체성을 정하는 결정들이 가장 굵직하게 몰리는 시기';
+    else if (curAge && curAge < 45) currentPhase = '직업·결혼·재물의 자리잡기 결정이 가장 굵직하게 몰리는 시기';
+    else if (curAge && curAge < 65) currentPhase = '책임의 무게와 후반전 정리가 동시에 펼쳐지는 시기';
+    else if (curAge) currentPhase = '말년의 정리와 무엇을 남길지를 그려 가는 시기';
+    else currentPhase = '인생 중심의 큰 결정이 모이는 자리';
+
+    var nextLo = Math.max(curAge + 5, 25);
+    var nextHi = Math.min(nextLo + 15, 75);
+    var nextTone = tone(avgOf(parsed.filter(function(x){ return x.age >= nextLo && x.age <= nextHi; })));
+    var nextPhrase = nextTone === 'tail'
+        ? '바람이 등 뒤에서 밀어 주는 흐름'
+        : (nextTone === 'side'
+            ? '한 번 크게 정돈을 거치며 다듬어지는 흐름'
+            : '담담히 깊이가 쌓여 가는 흐름');
+
+    var lateTone = tone(avgOf(parsed.filter(function(x){ return x.age >= 60; })));
+    var latePhrase = lateTone === 'tail'
+        ? '이름과 신뢰가 한 번 더 빛나는 모습'
+        : (lateTone === 'side'
+            ? '몸을 우선하며 차분히 정리되는 모습'
+            : '조용한 일상의 깊이로 마감되는 모습');
+
+    var nowPiece = curAge
+        ? '지금은 <strong>' + curAge + '세</strong> — ' + currentPhase + '에 들어와 계세요'
+        : '지금은 ' + currentPhase + '에 들어와 계세요';
+
+    return nmEunNeun(nm) + ' <strong>' + childhood + '</strong>에서 태어나신 분이세요. '
+        + '<strong>' + youthPhrase + '</strong>를 지나, '
+        + nowPiece + '. '
+        + '앞으로 약 <strong>' + nextHi + '세</strong>까지는 <strong>' + nextPhrase + '</strong>이 이어지고, '
+        + '<strong>60대 이후</strong>엔 <strong>' + latePhrase + '</strong>으로 정리되는 분이에요.';
 }
 
 // ══════════════════════════════════════════════════════
@@ -7137,6 +7234,7 @@ function buildLifePanoramaSection(data) {
     var goo = data.goo || '';
     var yong = data.yong || 'wood';
     var gi = data.gi || 'metal';
+    var isStrong = ((data.strengthText || '').indexOf('신강') >= 0 || (data.strengthText || '').indexOf('강') >= 0);
 
     function joToken(krToken, pair) {
         if (!krToken) return getJosa('', pair);
@@ -7392,7 +7490,7 @@ function buildLifePanoramaSection(data) {
     var dw0 = dwInRange(0, 14);
     var dwT0 = dwTone(dw0);
     // 1단락 — 가정 분위기 + 부모와의 거리감
-    var c1_p1_open = nmDnim(name) + joToken(nmDnim(name), '은/는') + ' 사주 첫 기둥(연주 ' + (HAN_KOR[yStem] || yStem || '') + (HAN_KOR[yBranch] || yBranch || '') + ') 자리에 어린 시절의 풍경이 새겨져 있습니다.';
+    var c1_p1_open = nmDnim(name) + joToken(nmDnim(name), '은/는') + ' 태어나신 해의 자리에 어린 시절의 풍경이 새겨져 있습니다.';
     var c1_p1_body = {
         good: ' 집 안 공기는 따뜻하고, 부모님 또는 조부모 한 분이 큰 그늘이 되어 ' + nmEulReul(name) + ' 받쳐 주는 분위기였을 가능성이 큽니다. 큰 사고 없이 잔잔하게 자라셨고, 어른들의 칭찬이 일찍부터 자존감의 뼈대로 자리잡았습니다. 그 시기에 받은 시선이 평생 ' + nmUi(name) + ' 안쪽에서 “나는 사랑받을 만한 사람”이라는 든든한 바닥을 깔아 줍니다.',
         tough: ' 부모님 중 한 분과의 거리가 다소 멀거나, 이사·전학·집안 사정 변화가 잦아서 일찍부터 눈치와 관찰력을 익히셨을 가능성이 큽니다. 어린아이가 짊어지기에 무거운 분위기였을 수 있고, 그래서 또래보다 일찍 어른스러워지셨습니다. 그 거리감이 시간이 지나서 ' + nmUi(name) + ' 독립심과 깊이 있는 관찰력으로 자라났습니다.',
@@ -7405,7 +7503,7 @@ function buildLifePanoramaSection(data) {
         mid: ' 그 시기 ' + nmDnim(name) + '은 “조용하지만 속이 깊은 아이”로 보이셨을 가능성이 큽니다. 큰 굴곡 없이 지나간 듯해도, 어린 ' + nmDnim(name) + '은 작은 일에서도 의미를 캐냈고 — 그 습관이 평생 ' + nmUi(name) + ' 통찰력의 뿌리가 됩니다. 한 번쯤 어른들에게 “너는 너무 일찍 어른스러워서 걱정”이라는 말을 들으셨을 수 있습니다.'
     }[yTone];
     var c1Daewun = dw0 && dw0.labels.length
-        ? ' 그 시기를 감싼 첫 대운 ' + dw0.labels.join('·') + '은 ' + (dwT0 === 'tail' ? '바깥 환경이 ' + nmEulReul(name) + ' 받쳐 주어 큰 굴곡 없이 자라셨을 결입니다.' : (dwT0 === 'side' ? '바깥 환경이 ' + nmEulReul(name) + ' 자주 시험에 들게 한 결이고, 그때 익힌 인내가 평생의 자산이 됩니다.' : '큰 굴곡도, 큰 도약도 없는 평이한 결이라 — 집 안의 분위기가 그 시기를 가장 진하게 물들였습니다.')) : '';
+        ? ' 0~14세 사이의 바깥 운은 ' + (dwT0 === 'tail' ? '바깥 환경이 ' + nmEulReul(name) + ' 받쳐 주어 큰 굴곡 없이 자라셨을 흐름이었습니다.' : (dwT0 === 'side' ? '바깥 환경이 ' + nmEulReul(name) + ' 자주 시험에 들게 한 흐름이었고, 그때 익힌 인내가 평생의 자산이 됩니다.' : '큰 굴곡도, 큰 도약도 없는 평이한 흐름이라 — 집 안의 분위기가 그 시기를 가장 진하게 물들였습니다.')) : '';
     var c1Tail = '이 시기의 화두 — 이미 받은 사랑은 충분합니다. 그 사랑을 어떻게 ' + nmUi(name) + ' 것으로 가져오느냐가 다음 시기의 출발점입니다.';
 
     // ── ② 학창·자아형성 (14~25세) — 월주 (학업·또래·정체성·첫 진로)
@@ -7413,7 +7511,7 @@ function buildLifePanoramaSection(data) {
     var mTone = favorTone(mOh.branch || mOh.stem);
     var dw1 = dwInRange(15, 25);
     var dwT1 = dwTone(dw1);
-    var c2_p1_open = '14세에서 25세 사이는 ' + nmUi(name) + ' 둘째 기둥(월주 ' + (HAN_KOR[mStem] || mStem || '') + (HAN_KOR[mBranchPillar] || mBranchPillar || '') + ')이 본격적으로 깨어나는 시기입니다.';
+    var c2_p1_open = '14세에서 25세 사이는 ' + nmUi(name) + ' 청년기 — 자기 색을 본격적으로 다듬어 가는 시기입니다.';
     var c2_p1_body = {
         good: ' 학교·동아리·아르바이트 어디든 ' + nmEulReul(name) + ' 알아봐 주는 어른이나 선배가 한 명 이상 등장합니다. 그 사람의 한 마디가 ' + nmUi(name) + ' 첫 진로 선택을 빠르게 만들고, 자존감의 두 번째 층이 단단해집니다. 또래 관계도 비교적 잘 풀렸을 가능성이 크고, 그 시기에 만난 친구 중 한 명은 평생을 같이 가는 결이 됩니다.',
         tough: ' 또래 관계에서 한두 번 깊은 마찰이 있을 수 있고, 진로 선택을 두고 어른들과 의견이 갈리실 가능성이 큽니다. 가고 싶은 길이 부모님이 원하시는 길과 어긋났을 수 있고, 그래서 “내가 진짜 하고 싶은 게 뭐지?”라는 질문이 일찍부터 ' + nmUi(name) + ' 마음에 새겨졌습니다. 다만 그 마찰이 ' + nmUi(name) + ' 색을 더 또렷하게 만들어 주었습니다.',
@@ -7425,7 +7523,7 @@ function buildLifePanoramaSection(data) {
         mid: ' 큰 사건보다 작은 결정들이 차곡차곡 쌓이는 결입니다. 어떤 학과를 고를지, 어떤 친구와 가까이 지낼지, 어떤 일을 시작해 볼지 — 한 번에 하나씩 결정하면서 ' + nmUi(name) + ' 색이 윤곽을 잡아 갑니다. 이 시기의 결정 중 “나도 모르게 끌렸던 한 가지”가 사실 평생의 직업이 될 가능성이 큽니다.'
     }[mTone];
     var c2Daewun = dw1 && dw1.labels.length
-        ? ' 이 시기 대운 ' + dw1.labels.join('·') + '은 ' + (dwT1 === 'tail' ? '의외의 기회가 ' + nmEulReul(name) + ' 한 단계 끌어올리는 결입니다. 작은 성공 하나가 다음 10년의 토양이 됩니다.' : (dwT1 === 'side' ? '진로·관계에서 한 번 크게 흔들리는 결입니다. 그때의 흔들림이 ' + nmUi(name) + ' 세상을 보는 눈을 깊게 만들었습니다.' : '큰 폭의 변화보다 작은 결정들이 쌓여 방향을 잡는 결입니다.')) : '';
+        ? ' 15~25세 사이의 바깥 운은 ' + (dwT1 === 'tail' ? '의외의 기회가 ' + nmEulReul(name) + ' 한 단계 끌어올리는 흐름입니다. 작은 성공 하나가 다음 10년의 토양이 됩니다.' : (dwT1 === 'side' ? '진로·관계에서 한 번 크게 흔들리는 흐름입니다. 그때의 흔들림이 ' + nmUi(name) + ' 세상을 보는 눈을 깊게 만들었습니다.' : '큰 폭의 변화보다 작은 결정들이 쌓여 방향을 잡는 흐름입니다.')) : '';
     var c2Tail = '이 시기의 화두 — 남이 기대하는 길과 ' + nmUi(name) + ' 진짜 결, 그 둘 사이의 간격을 정직하게 인정하는 일.';
 
     // ── ③ 청장년기 (25~45세) — 일주 (사회 진출·결혼·재물·자녀)
@@ -7433,7 +7531,7 @@ function buildLifePanoramaSection(data) {
     var dTone = favorTone(dOh.branch);
     var dw2 = dwInRange(25, 45);
     var dwT2 = dwTone(dw2);
-    var c3_p1_open = '25세에서 45세 사이는 ' + nmUi(name) + ' 본 모습 — 일주 ' + (HAN_KOR[ds] || ds || '') + (HAN_KOR[db] || db || '') + '의 결이 사회에서 본격적으로 펼쳐지는 시기입니다.';
+    var c3_p1_open = '25세에서 45세 사이는 ' + nmUi(name) + ' 본 모습이 사회에서 본격적으로 펼쳐지는 시기입니다.';
     var c3_p1_body = ' 사주 안에서 일간(나)이 가장 활발하게 움직이는 구간이라, 직업·결혼·이주·창업·자녀 같은 굵직한 결정이 한꺼번에 몰려옵니다. ' + (dTone === 'good'
         ? '사회생활 초반의 운이 ' + nmEulReul(name) + ' 든든하게 받쳐 주어 30대 초반에 한 번 큰 성취가 가능합니다. 결혼·이직·집 마련 중 한 가지가 그 시기에 정해질 가능성이 크고, 그 결정이 평생의 큰 줄기가 됩니다.'
         : (dTone === 'tough'
@@ -7443,7 +7541,7 @@ function buildLifePanoramaSection(data) {
         + ' 재물은 이 시기에 처음 “쌓이는” 감각을 익히게 됩니다. 30대 후반에는 ' + nmUi(name) + ' 이름이 적힌 통장·집·사업자 등록증 중 하나가 자리 잡고, 그게 평생의 자산 토대가 됩니다.'
         + ' 자녀(있다면)는 30대 초중반에 만나실 가능성이 크고, 그 자녀와의 관계가 ' + nmUi(name) + ' 안쪽 결을 한 번 더 다듬어 줍니다.';
     var c3Daewun = dw2 && dw2.labels.length
-        ? ' 이 20년의 대운 ' + dw2.labels.slice(0,2).join('·') + (dw2.labels[2]?'·'+dw2.labels[2]:'') + '은 ' + (dwT2 === 'tail' ? '바람이 ' + nmEulReul(name) + ' 등 뒤에서 밀어 주는 시기입니다. 무리하지 않아도 결과가 따라옵니다.' : (dwT2 === 'side' ? '바람이 옆에서 부는 시기라 자주 기둥을 새로 세우셔야 합니다. 다만 그때 만든 골격이 평생의 자산입니다.' : '받쳐 주는 운과 시험하는 운이 번갈아 옵니다. 어느 쪽이든 일희일비하지 마시고 ' + nmUi(name) + ' 본업을 지키시는 편이 좋습니다.')) : '';
+        ? ' 25~45세 사이의 바깥 운은 ' + (dwT2 === 'tail' ? '바람이 ' + nmEulReul(name) + ' 등 뒤에서 밀어 주는 시기입니다. 무리하지 않아도 결과가 따라옵니다.' : (dwT2 === 'side' ? '바람이 옆에서 부는 시기라 자주 기둥을 새로 세우셔야 합니다. 다만 그때 만든 골격이 평생의 자산입니다.' : '받쳐 주는 운과 시험하는 운이 번갈아 옵니다. 어느 쪽이든 일희일비하지 마시고 ' + nmUi(name) + ' 본업을 지키시는 편이 좋습니다.')) : '';
     var c3Tail = '이 시기의 화두 — 많이 하기보다, 가장 잘하는 한 가지에서 깊이 들어가는 일.';
 
     // ── ④ 중장년기 (45~65세) — 일주·시주 사이 (책임·후반전·재물 안정)
@@ -7456,7 +7554,7 @@ function buildLifePanoramaSection(data) {
         : '안쪽보다 바깥에서 새로운 무대가 열리는 결로 흐릅니다. 후반전이 진짜 무대일 수 있고, 50대에 시작한 일이 60대의 명함이 됩니다. 사실 30~40대보다 50~60대에 더 빛나는 결이라, 너무 일찍 “다 끝났다”고 마음 놓지 마십시오.')
         + ' 건강 신호가 본격적으로 시작되는 시기이기도 합니다. 50대 초반의 건강 검진을 절대 미루지 마시고, 한 가지 만성 신호가 있다면 그때부터 “관리의 습관”으로 넘어가셔야 합니다.';
     var c4Daewun = dw3 && dw3.labels.length
-        ? ' 이 시기 대운 ' + dw3.labels.slice(0,2).join('·') + '은 ' + (dwT3 === 'tail' ? '평생 일군 평판이 한꺼번에 결실로 돌아오는 결입니다. 50대에 굵직한 인정이 따릅니다.' : (dwT3 === 'side' ? '건강과 가족을 둘 다 챙기셔야 하는 결입니다. 무리한 확장보다 회복과 정리가 우선입니다.' : '큰 영광보다 안정과 균형이 중심이 되는 결입니다. 새 무대보다 다듬은 무대가 더 오래 갑니다.')) : '';
+        ? ' 45~65세 사이의 바깥 운은 ' + (dwT3 === 'tail' ? '평생 일군 평판이 한꺼번에 결실로 돌아오는 흐름입니다. 50대에 굵직한 인정이 따릅니다.' : (dwT3 === 'side' ? '건강과 가족을 둘 다 챙기셔야 하는 흐름입니다. 무리한 확장보다 회복과 정리가 우선입니다.' : '큰 영광보다 안정과 균형이 중심이 되는 흐름입니다. 새 무대보다 다듬은 무대가 더 오래 갑니다.')) : '';
     var c4Tail = '이 시기의 화두 — 이름 한 줄을 어떻게 남길 것인가, 그리고 그 이름이 ' + nmUi(name) + ' 진짜 모습과 같은가.';
 
     // ── ⑤ 노년 (65세~) — 시주 (말년·자식·정리·유산)
@@ -7464,7 +7562,7 @@ function buildLifePanoramaSection(data) {
     var hTone = favorTone(hOh.branch || hOh.stem);
     var dw4 = dwInRange(65, 85);
     var dwT4 = dwTone(dw4);
-    var c5_p1_open = '65세 이후의 풍경은 ' + nmUi(name) + ' 마지막 기둥(시주 ' + (HAN_KOR[hStem] || hStem || '') + (HAN_KOR[hBranch] || hBranch || '') + ')이 그려 보입니다.';
+    var c5_p1_open = '65세 이후의 풍경은 ' + nmUi(name) + ' 말년 자리에 그려 보입니다.';
     var c5_p1_body = {
         good: ' 자녀·후배·제자 중 한 사람이 ' + nmDnim(name) + '의 길을 이어갑니다. ' + nmUi(name) + ' 노년은 외롭지 않고, 짧은 글이나 한 마디 조언으로 누군가의 결정을 도울 일이 잦습니다. 가족 안에서도 “그 어른” 자리에 자연스럽게 앉으시고, 큰 소리 내지 않아도 무게가 실리는 결입니다.',
         tough: ' 노년기의 무게는 — 가까운 사람을 떠나보내는 일과, 스스로의 몸을 돌보는 일이 한꺼번에 옵니다. 60대 중반에 한 번 큰 헤어짐(부모·배우자·친구)이 따를 수 있고, 그때의 슬픔이 ' + nmUi(name) + ' 노년의 결을 결정합니다. 다만 그때까지 쌓아 둔 신뢰와 그 사람들이 ' + nmEulReul(name) + ' 든든하게 받쳐 줍니다.',
@@ -7474,7 +7572,7 @@ function buildLifePanoramaSection(data) {
         + '입니다. 큰 재산이나 화려한 자리보다, ' + nmUi(name) + ' “습관 한 줄”이 후세에 남습니다. 자녀나 후배 한 명에게 ' + nmDnim(name) + '의 한 마디가 인생을 바꾸는 일이 일어날 수 있고, 그게 ' + nmUi(name) + ' 진짜 유산입니다.'
         + ' 마지막 순간의 풍경은 — ' + (closeScene || '평생 일군 성벽과 그 안의 온기를 남기고 떠나시는 결입니다.');
     var c5Daewun = dw4 && dw4.labels.length
-        ? ' 60대 이후 대운 ' + dw4.labels.slice(0,2).join('·') + '은 ' + (dwT4 === 'tail' ? '쌓은 것이 한 번 더 빛나는 결입니다. 늦게 받는 인정이 가장 진합니다.' : (dwT4 === 'side' ? '몸을 우선하시는 결입니다. 무리한 일정보다 회복 시간이 더 큰 자산입니다.' : '평온한 흐름입니다. 큰 일을 벌이지 않으셔도 평생의 기록이 자연스럽게 남습니다.')) : '';
+        ? ' 60대 이후의 바깥 운은 ' + (dwT4 === 'tail' ? '쌓은 것이 한 번 더 빛나는 흐름입니다. 늦게 받는 인정이 가장 진합니다.' : (dwT4 === 'side' ? '몸을 우선하시는 흐름입니다. 무리한 일정보다 회복 시간이 더 큰 자산입니다.' : '평온한 흐름입니다. 큰 일을 벌이지 않으셔도 평생의 기록이 자연스럽게 남습니다.')) : '';
     var c5Tail = '이 시기의 화두 — 말이 아니라, 남는 습관 한 줄로 ' + nmUi(name) + ' 마지막 모습을 새기는 일.';
 
     function periodCard(stripe, label, ageRange, p1, p2, daewunPart, tail) {
