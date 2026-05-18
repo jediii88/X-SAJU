@@ -15,6 +15,10 @@
   --sajux-gold-dim:     rgba(200,160,80,0.55);
   --sajux-transition:   0.18s cubic-bezier(0.4,0,0.2,1);
   --text-dim:           rgba(255,255,255,0.60);
+  /* 글래스 채도 — 배경이 대략 88% 투명하게 비치도록(불투명도 ~12% 전후) */
+  --sajux-glass-a-high: 0.12;
+  --sajux-glass-a-mid:  0.055;
+  --sajux-glass-a-low:  0.028;
 }
 html[data-theme="light"] {
   --text-dim:           rgba(20,14,6,0.55);
@@ -123,9 +127,9 @@ html:not([data-theme="light"]) #report-container {
 html:not([data-theme="light"]) .sajux-glass-heavy {
   background: linear-gradient(
     155deg,
-    rgba(255, 255, 255, 0.065) 0%,
-    rgba(255, 255, 255, 0.028) 42%,
-    rgba(255, 255, 255, 0.014) 100%
+    rgba(255, 255, 255, 0.13) 0%,
+    rgba(255, 255, 255, calc(var(--sajux-glass-a-mid) + 0.01)) 42%,
+    rgba(255, 255, 255, var(--sajux-glass-a-low)) 100%
   ) !important;
   backdrop-filter: blur(44px) saturate(155%) brightness(1.03) !important;
   -webkit-backdrop-filter: blur(44px) saturate(155%) brightness(1.03) !important;
@@ -151,9 +155,9 @@ html:not([data-theme="light"]) .jijanggan,
 html:not([data-theme="light"]) div[class*="card"] {
   background: linear-gradient(
     165deg,
-    rgba(255, 255, 255, 0.048) 0%,
-    rgba(255, 255, 255, 0.018) 48%,
-    rgba(255, 255, 255, 0.008) 100%
+    rgba(255, 255, 255, var(--sajux-glass-a-high)) 0%,
+    rgba(255, 255, 255, calc(var(--sajux-glass-a-mid) - 0.005)) 48%,
+    rgba(255, 255, 255, calc(var(--sajux-glass-a-low) - 0.012)) 100%
   ) !important;
   backdrop-filter: blur(36px) saturate(158%) brightness(1.02) !important;
   -webkit-backdrop-filter: blur(36px) saturate(158%) brightness(1.02) !important;
@@ -168,8 +172,8 @@ html:not([data-theme="light"]) .inline-interp,
 html:not([data-theme="light"]) .section-interp {
   background: linear-gradient(
     160deg,
-    rgba(255, 255, 255, 0.042) 0%,
-    rgba(255, 255, 255, 0.014) 100%
+    rgba(255, 255, 255, calc(var(--sajux-glass-a-high) - 0.01)) 0%,
+    rgba(255, 255, 255, calc(var(--sajux-glass-a-low) - 0.006)) 100%
   ) !important;
   backdrop-filter: blur(34px) saturate(156%) !important;
   -webkit-backdrop-filter: blur(34px) saturate(156%) !important;
@@ -182,8 +186,8 @@ html:not([data-theme="light"]) .section-interp {
 html:not([data-theme="light"]) .report-chapter:not(.part-header-block) {
   background: linear-gradient(
     165deg,
-    rgba(255, 255, 255, 0.038) 0%,
-    rgba(255, 255, 255, 0.014) 100%
+    rgba(255, 255, 255, calc(var(--sajux-glass-a-high) - 0.015)) 0%,
+    rgba(255, 255, 255, calc(var(--sajux-glass-a-low) - 0.004)) 100%
   ) !important;
   backdrop-filter: blur(32px) saturate(152%) !important;
   -webkit-backdrop-filter: blur(32px) saturate(152%) !important;
@@ -192,6 +196,129 @@ html:not([data-theme="light"]) .report-chapter:not(.part-header-block) {
   box-shadow:
     0 12px 44px rgba(0, 0, 0, 0.28),
     0 2px 10px rgba(0, 0, 0, 0.14) !important;
+}
+
+/* ── 다크 화면: 예전 transparent 패널·인라인 박스까지 글래스 통일 ── */
+@media screen {
+  html:not([data-theme="light"]) body:not(.light-mode) .sajux-panel-plain:not(.personal-portrait-hero),
+  html:not([data-theme="light"]) body:not(.light-mode) .yearly-indicators.sajux-panel-plain,
+  html:not([data-theme="light"]) body:not(.light-mode) #sec-premium-summary.premium-executive-summary,
+  html:not([data-theme="light"]) body:not(.light-mode) #sec-life-panorama.report-chapter.sajux-panel-plain {
+    background: linear-gradient(
+      165deg,
+      rgba(255, 255, 255, calc(var(--sajux-glass-a-high) - 0.01)) 0%,
+      rgba(255, 255, 255, calc(var(--sajux-glass-a-low) - 0.006)) 100%
+    ) !important;
+    backdrop-filter: blur(36px) saturate(158%) brightness(1.02) !important;
+    -webkit-backdrop-filter: blur(36px) saturate(158%) brightness(1.02) !important;
+    border: 1px solid rgba(199, 167, 106, 0.16) !important;
+    box-shadow:
+      0 14px 48px rgba(0, 0, 0, 0.30),
+      0 3px 12px rgba(0, 0, 0, 0.16) !important;
+    border-radius: var(--sajux-radius-card, 14px) !important;
+  }
+
+  html:not([data-theme="light"]) body:not(.light-mode) .deep-hook-panel,
+  html:not([data-theme="light"]) body:not(.light-mode) .sajux-gongmang-note {
+    background: linear-gradient(
+      165deg,
+      rgba(255, 255, 255, calc(var(--sajux-glass-a-high) - 0.018)) 0%,
+      rgba(255, 255, 255, calc(var(--sajux-glass-a-low) - 0.004)) 100%
+    ) !important;
+    backdrop-filter: blur(34px) saturate(156%) brightness(1.02) !important;
+    -webkit-backdrop-filter: blur(34px) saturate(156%) brightness(1.02) !important;
+    border: 1px solid rgba(255, 255, 255, 0.07) !important;
+    box-shadow:
+      0 12px 42px rgba(0, 0, 0, 0.28),
+      0 2px 10px rgba(0, 0, 0, 0.14) !important;
+    border-radius: var(--sajux-radius-inner, 10px) !important;
+  }
+
+  html:not([data-theme="light"]) body:not(.light-mode) .ilju-profile-card {
+    background: linear-gradient(
+      155deg,
+      rgba(255, 255, 255, calc(var(--sajux-glass-a-high) + 0.008)) 0%,
+      rgba(255, 255, 255, var(--sajux-glass-a-mid)) 46%,
+      rgba(255, 255, 255, calc(var(--sajux-glass-a-low) + 0.006)) 100%
+    ) !important;
+    backdrop-filter: blur(40px) saturate(160%) brightness(1.02) !important;
+    -webkit-backdrop-filter: blur(40px) saturate(160%) brightness(1.02) !important;
+    border: 1px solid rgba(255, 255, 255, 0.09) !important;
+    box-shadow:
+      0 14px 50px rgba(0, 0, 0, 0.32),
+      0 3px 14px rgba(0, 0, 0, 0.18) !important;
+  }
+
+  /* 일주 + 한 줄기 서사 통합 카드 — 안쪽에 두 번째 유리판 깔리지 않게 */
+  html:not([data-theme="light"]) body:not(.light-mode) #sec-ilju-narrative-unified .ilju-narrative-divider {
+    height: 1px;
+    margin: 14px 0 12px;
+    border: none;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(199, 167, 106, 0.28),
+      transparent
+    ) !important;
+  }
+  html:not([data-theme="light"]) body:not(.light-mode)
+    #sec-ilju-narrative-unified
+    .personal-portrait-inner.ilju-narrative-portrait {
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    padding: 2px 0 0 !important;
+    margin: 0 !important;
+    max-width: none !important;
+  }
+
+  html:not([data-theme="light"]) body:not(.light-mode) .domain-summary-3box {
+    background: linear-gradient(
+      165deg,
+      rgba(255, 255, 255, 0.042) 0%,
+      rgba(255, 255, 255, 0.014) 100%
+    ) !important;
+    backdrop-filter: blur(32px) saturate(156%) !important;
+    -webkit-backdrop-filter: blur(32px) saturate(156%) !important;
+    border: 1px solid rgba(199, 167, 106, 0.18) !important;
+    box-shadow:
+      0 12px 40px rgba(0, 0, 0, 0.26),
+      0 2px 10px rgba(0, 0, 0, 0.12) !important;
+  }
+
+  html:not([data-theme="light"]) body:not(.light-mode)
+    .report-chapter
+    .ch-head-current-period
+    ~ div[style*="display:flex"][style*="flex-wrap:wrap"]
+    > div {
+    backdrop-filter: blur(26px) saturate(155%) !important;
+    -webkit-backdrop-filter: blur(26px) saturate(155%) !important;
+    background: linear-gradient(
+      165deg,
+      rgba(255, 255, 255, 0.065) 0%,
+      rgba(255, 255, 255, 0.022) 100%
+    ) !important;
+    box-shadow: 0 8px 26px rgba(0, 0, 0, 0.22) !important;
+    border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  }
+
+  html:not([data-theme="light"]) body:not(.light-mode)
+    .daeun-timeline-wrap
+    > div[style*="overflow-x:auto"] {
+    padding: 12px 10px !important;
+    border-radius: 12px !important;
+    background: linear-gradient(
+      165deg,
+      rgba(255, 255, 255, 0.038) 0%,
+      rgba(255, 255, 255, 0.012) 100%
+    ) !important;
+    backdrop-filter: blur(28px) saturate(154%) !important;
+    -webkit-backdrop-filter: blur(28px) saturate(154%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    box-shadow: 0 10px 34px rgba(0, 0, 0, 0.24) !important;
+  }
 }
 
 html:not([data-theme="light"]) .part-header-block {
@@ -900,8 +1027,8 @@ html[data-theme="light"] #star-canvas {
     border-radius: 16px;
     background: linear-gradient(
       155deg,
-      rgba(255, 255, 255, 0.058) 0%,
-      rgba(255, 255, 255, 0.022) 100%
+      rgba(255, 255, 255, calc(var(--sajux-glass-a-high) - 0.02)) 0%,
+      rgba(255, 255, 255, calc(var(--sajux-glass-a-low) + 0.006)) 100%
     );
     backdrop-filter: blur(36px) saturate(158%);
     -webkit-backdrop-filter: blur(36px) saturate(158%);
@@ -920,14 +1047,16 @@ html[data-theme="light"] #star-canvas {
     border: 1px solid rgba(199,167,106,0.14);
     box-shadow: 0 10px 36px rgba(28,24,18,0.065);
   }
-  #sec-personal-portrait .personal-portrait-eyebrow {
+  #sec-personal-portrait .personal-portrait-eyebrow,
+  #sec-ilju-narrative-unified .personal-portrait-eyebrow {
     font-size: 10px;
     letter-spacing: 0.14em;
     color: rgba(199,167,106,0.72);
     margin: 0 0 10px;
     font-weight: 600;
   }
-  #sec-personal-portrait .personal-portrait-title {
+  #sec-personal-portrait .personal-portrait-title,
+  #sec-ilju-narrative-unified .personal-portrait-title {
     font-family: 'Noto Sans KR', sans-serif;
     font-size: clamp(17px, 4.2vw, 23px);
     font-weight: 700;
@@ -937,10 +1066,13 @@ html[data-theme="light"] #star-canvas {
     letter-spacing: -0.02em;
   }
   html[data-theme="light"] #sec-personal-portrait .personal-portrait-title,
-  body.light-mode #sec-personal-portrait .personal-portrait-title {
+  html[data-theme="light"] #sec-ilju-narrative-unified .personal-portrait-title,
+  body.light-mode #sec-personal-portrait .personal-portrait-title,
+  body.light-mode #sec-ilju-narrative-unified .personal-portrait-title {
     color: #0c0904 !important;
   }
-  #sec-personal-portrait .personal-portrait-lede {
+  #sec-personal-portrait .personal-portrait-lede,
+  #sec-ilju-narrative-unified .personal-portrait-lede {
     font-size: 12px;
     color: rgba(199,167,106,0.72);
     margin: 0 0 22px;
@@ -949,7 +1081,9 @@ html[data-theme="light"] #star-canvas {
     font-weight: 500;
   }
   html[data-theme="light"] #sec-personal-portrait .personal-portrait-lede,
-  body.light-mode #sec-personal-portrait .personal-portrait-lede {
+  html[data-theme="light"] #sec-ilju-narrative-unified .personal-portrait-lede,
+  body.light-mode #sec-personal-portrait .personal-portrait-lede,
+  body.light-mode #sec-ilju-narrative-unified .personal-portrait-lede {
     color: #7a5e28 !important;
   }
 }
