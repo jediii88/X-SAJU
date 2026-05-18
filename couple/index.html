@@ -399,7 +399,7 @@ body::before {
 </div>
 
 <script src="../report/lunar.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/korean-lunar-calendar/dist/korean-lunar-calendar.min.js"></script>
+<script src="../report/klc.min.js"></script>
 <script>
 if (typeof KoreanLunarCalendar === 'undefined') {
   window.KoreanLunarCalendar = class {
@@ -408,7 +408,6 @@ if (typeof KoreanLunarCalendar === 'undefined') {
   };
 }
 </script>
-<script src="../report/klc.min.js"></script>
 <script src="../report/report-core.js"></script>
 <script>
 // ══════════════════════════════════════
@@ -1271,7 +1270,11 @@ function buildTimeline(a, b, aInfo, bInfo, params) {
 // ══════════════════════════════════════
 // 초기화
 // ══════════════════════════════════════
-window.addEventListener('DOMContentLoaded', () => setTimeout(init, 500));
+(function scheduleCompatInit(){
+  function kick(){ setTimeout(init, 0); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', kick);
+  else kick();
+})();
 
 function init() {
   try {
