@@ -10,6 +10,19 @@
     box-shadow: none !important;
   }
 
+  /* 리포트 래퍼 전체 — 라이트/PDF에서 까만 바탕 방지 */
+  #step-2,
+  #sec-report-full,
+  #report-container {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+  }
+  #report-container .report-chapter,
+  #report-container .sajux-panel-plain,
+  #report-container .personal-portrait-hero .personal-portrait-inner {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+  }
   /* 십성·신살 배지 — 인쇄용 밝은 배경 (지장간 태그는 제외) */
   .badge:not(.jijanggan-tag), .tag:not(.jijanggan-tag),
   .m-badge:not(.jijanggan-tag), .m-badge-shinsal, .m-badge--gongmang-hit,
