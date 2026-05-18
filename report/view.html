@@ -57,7 +57,7 @@
       // 자동실행은 window.load IIFE에서 처리 (하단 스크립트 참조)
     })();
     </script>
-    <meta name="version" content="1779093293">
+    <meta name="version" content="1779093738">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -2200,8 +2200,8 @@
     </script>
 
 <!-- SAJUX_CACHE_BUSTER_START -->
-<meta name="sajux-build" content="1779093293">
-<script>(function(){var v='1779093293';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
+<meta name="sajux-build" content="1779093738">
+<script>(function(){var v='1779093738';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
 <!-- SAJUX_CACHE_BUSTER_END -->
 <link rel="stylesheet" href="assets/css/core.css">
 <link rel="stylesheet" href="assets/override.css">
@@ -2275,8 +2275,6 @@ html:not([data-theme="light"]) .brand {
 </style>
 </head>
 <body>
-
-<button id="theme-toggle" onclick="toggleTheme()" aria-label="테마 전환">☀️ 라이트</button>
 
 <!-- 플로팅 목차 — 5부 구조 (웹 전용, PDF 숨김) -->
 <div id="floating-toc" class="nav-floating" style="display:none; position:fixed; right:12px; top:50%; transform:translateY(-50%); z-index:9999; background:var(--panel); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid var(--line); border-radius:14px; padding:10px 6px; box-shadow:0 8px 32px rgba(0,0,0,0.45); max-width:44px; overflow:hidden; transition:max-width 0.3s, padding 0.3s;" onmouseenter="expandToc()" onmouseleave="collapseToc()">
@@ -2401,26 +2399,16 @@ body.light-mode .spn-sub {
 </style>
 <script>
 function applyTheme(mode){
-    var isLight = mode === 'light';
-    document.documentElement.setAttribute('data-theme', isLight ? 'light' : 'dark');
-    document.body.classList.toggle('light-mode', isLight);
-    var b = document.getElementById('theme-toggle');
-    if(b) b.textContent = isLight ? '🌙 다크' : '☀️ 라이트';
-    try { localStorage.setItem('sajux-theme', mode); } catch(e) {}
+    mode = 'dark';
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.body.classList.remove('light-mode');
+    try { localStorage.setItem('sajux-theme', 'dark'); } catch(e) {}
 }
 function toggleTheme(){
-    var isLight = document.body.classList.contains('light-mode');
-    applyTheme(isLight ? 'dark' : 'light');
+    applyTheme('dark');
 }
 function initTheme(){
-    var saved = null;
-    try { saved = localStorage.getItem('sajux-theme'); } catch(e) {}
-    if(saved === 'light' || saved === 'dark'){
-        applyTheme(saved);
-    } else {
-        var prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
-        applyTheme(prefersLight ? 'light' : 'dark');
-    }
+    applyTheme('dark');
 }
 if(document.readyState === 'loading'){
     document.addEventListener('DOMContentLoaded', initTheme);
