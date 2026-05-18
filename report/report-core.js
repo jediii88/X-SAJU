@@ -776,7 +776,7 @@ function buildInlineWuxingSummaryHtml(data) {
     if (!data.wuxing) return '';
     var maxW = Object.keys(data.wuxing).reduce(function (a, b) { return data.wuxing[a] > data.wuxing[b] ? a : b; });
     var ohKr = { wood: '목', fire: '화', earth: '토', metal: '금', water: '수' }[maxW] || maxW;
-    var excessText = window.SAJU_DB?.WUXING_EXCESS?.[maxW] || '';
+    var excessText = (window.SAJU_DB && window.SAJU_DB.WUXING_EXCESS && window.SAJU_DB.WUXING_EXCESS[maxW]) || '';
     var inner = pickVoiceLine([
         ohKr + ' 기운이 삶의 중심을 잡고 있어요. ' + voiceMingliLine('부족한 오행은 습관으로 채웁니다.'),
         '에너지가 ' + ohKr + ' 쪽으로 기울어 있다고 볼 수 있어요.'
@@ -3841,8 +3841,12 @@ function buildShinsalSummary(data) {
     if(!shinsal || shinsal.length === 0) {
         return voiceInlineInterpHeader('shinsal', data) + '<div class="inline-interp"><div class="ii-label">\u2756 신살\u00b7길성 분석</div><div class="ii-title">특별한 신살이 없는 순수한 원국</div><div class="ii-text"><p style="font-size:13.5px;color:#bbb;line-height:1.85;">' + voicePolishParagraph(data, nmUi(data.name || '고객') + ' 원국에는 특별한 신살이 검출되지 않았습니다. 신살이 없다는 것은 흉한 것이 아닙니다. 오히려 복잡한 에너지의 간섭 없이 일간의 본래 기질이 가장 맑고 순수하게 발현됩니다. ' + nmDnimEunNeun(data.name || '고객') + ' 삶은 특별한 충격이나 사건보다 꾸준함과 본인의 의지로 설계됩니다.') + '</p></div></div>';
     }
-    const goodList = shinsal.filter(s => (window.SHINSAL_DESC?.[s]?.cat||'')=== '길성');
-    const badList  = shinsal.filter(s => (window.SHINSAL_DESC?.[s]?.cat||'')=== '신살' || !(window.SHINSAL_DESC?.[s]?.cat) || window.SHINSAL_DESC?.[s]?.cat !== '길성');
+    const goodList = shinsal.filter(s => (((window.SHINSAL_DESC && window.SHINSAL_DESC[s]) || {}).cat || '') === '길성');
+    const badList  = shinsal.filter(s => {
+        var _d = (window.SHINSAL_DESC && window.SHINSAL_DESC[s]) || {};
+        var _c = _d.cat || '';
+        return _c === '신살' || !_c || _c !== '길성';
+    });
     const personalTips = {
         '천을귀인':'당신의 사주에 천을귀인이 있습니다. 이는 평생 위기의 순간마다 귀인이 나타나 도움을 주는 구조입니다. 가장 막막한 순간에 의외의 사람이 결정적 도움을 줍니다. 귀인을 알아보는 눈을 키우십시오. 귀인은 대개 화려하지 않고 소박하게 나타납니다. 사람을 가볍게 여기지 말고 인연을 소중히 하는 삶이 이 길성을 최대한 활성화시킵니다.',
         '문곡귀인':'당신의 사주에 문곡귀인이 있습니다. 학문과 지식에서 남다른 재능이 있으며, 글쓰기·강의·컨설팅으로 사회적 인정과 재물을 얻을 수 있습니다. 자격증, 전문 지식, 저술 활동을 적극적으로 추진하십시오. 배움을 멈추지 않는 삶이 이 귀인을 평생 활성화시킵니다.',
@@ -3858,7 +3862,7 @@ function buildShinsalSummary(data) {
         '겁살':'당신의 사주에 겁살이 있습니다. 갑작스러운 손재수, 도난, 사기, 외부 충격이 반복됩니다. 재물 관리에 특히 신중하고, 보증이나 투자에서 충동적 결정을 피하십시오.',
     };
     const rows = shinsal.map(s => {
-        const info = window.SHINSAL_DESC?.[s] || {cat:'신살', color:'#aaa', short:s, detail:''};
+        const info = (window.SHINSAL_DESC && window.SHINSAL_DESC[s]) || {cat:'신살', color:'#aaa', short:s, detail:''};
         const catColor = goodCats.includes(info.cat) ? '#c7a76a' : info.color || '#e74c3c';
         const isGood = goodCats.includes(info.cat);
         const personalTip = voicePolishParagraph(data, personalTips[s] || '');
@@ -6474,7 +6478,7 @@ function buildChapter3_Sipseong(data) {
     const sorted = Object.entries(sipseong).sort((a,b)=>b[1]-a[1]);
     const mainSip = sorted.length>0 ? sorted[0][0] : '정재';
     const secondSip = sorted.length>1 ? sorted[1][0] : '';
-    const sipText = window.SAJU_DB?.SIPSEONG?.[mainSip] || '주도적으로 판을 짜는 기질입니다.';
+    const sipText = (window.SAJU_DB && window.SAJU_DB.SIPSEONG && window.SAJU_DB.SIPSEONG[mainSip]) || '주도적으로 판을 짜는 기질입니다.';
     const total = Math.max(Object.values(sipseong).reduce((a,b)=>a+b,0),1);
     const sipDB = {
         '비견':'**동료·경쟁이 잦은 조직**에서 지는 걸 견디기 어렵고, 내 방식이 먼저 나옵니다. 동업에서 역할이 겹치면 마찰이 납니다. **역할을 문장으로 고정**하고 들어가십시오. 독립·세일즈·프로덕트에 강합니다.',
@@ -10183,7 +10187,7 @@ function getGongmang(dayPillar) {
 }
 
 function getUnsung(stem, branch) {
-    return UNSUNG_MAP[stem]?.[branch] || '';
+    return (UNSUNG_MAP[stem] && UNSUNG_MAP[stem][branch]) || '';
 }
 
 function getHidden(branch, dayStem) {
@@ -10969,9 +10973,9 @@ function runAnalysis(overrideParams) {
         }
         buildBars('sipseong-bars', Object.keys(sipCounts).map(key => ({
             key,
-            label: SIP_LABEL[key]?.main || key,
-            labelMain: SIP_LABEL[key]?.main || key,
-            labelSub: SIP_LABEL[key]?.sub || '',
+            label: (SIP_LABEL[key] && SIP_LABEL[key].main) || key,
+            labelMain: (SIP_LABEL[key] && SIP_LABEL[key].main) || key,
+            labelSub: (SIP_LABEL[key] && SIP_LABEL[key].sub) || '',
             value: percent(sipCounts[key], sipTotalWeight)
         })), () => 'bg-earth');
 
