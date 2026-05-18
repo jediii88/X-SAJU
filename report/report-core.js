@@ -265,6 +265,25 @@ function buildChapterHead(metaphorTitle, sectionLabel, opts) {
         + escHtmlAttr(metaphorTitle) + '</h3>';
 }
 
+/** 챕터 헤더 — 주제명을 가장 크게(오행·십성 등). 작은 눈금 라벨은 위, 은유 한 줄은 그 아래 보조 크기 */
+function buildChapterHeadTopicFirst(mainTitle, eyebrowLabel, leadHook, opts) {
+    opts = opts || {};
+    var hookHtml = '';
+    if (leadHook) {
+        hookHtml = '<p class="ch-hook-after-title" style="font-size:14px;font-weight:600;line-height:1.55;color:var(--text-dim,rgba(255,255,255,0.82));margin:0 0 14px;">'
+            + escHtmlAttr(leadHook) + '</p>';
+    }
+    var eyebrow = eyebrowLabel
+        ? '<p class="ch-section-label ch-section-label--eyebrow" style="font-size:10px;letter-spacing:0.12em;color:rgba(199,167,106,0.52);margin:0 0 8px;font-weight:700;">' + escHtmlAttr(eyebrowLabel) + '</p>'
+        : '';
+    var extra = opts.extraStyle || '';
+    return '<div class="ch-head-topic-first" style="margin-bottom:16px;' + extra + '">'
+        + eyebrow
+        + '<h2 class="ch-main-topic-title" style="font-family:\'Noto Sans KR\',sans-serif;font-size:clamp(22px,5vw,28px);font-weight:800;line-height:1.22;margin:0 0 10px;color:var(--text,rgba(255,255,255,0.96));">' + escHtmlAttr(mainTitle) + '</h2>'
+        + hookHtml
+        + '</div>';
+}
+
 // SAJUX_SURFACE_LINES: 프리미엄 브리프·챕터 도입 등에서 사용되는 짧은 도입문.
 // 사용자 피드백 — 매크로 인사("겉으로는 듬직해 보이지만, 속으로는 누구보다 치열하게…")는 폐기.
 // 챕터 다리(buildChapterBridge) + 프리미엄 브리프 자체 도입문이 그 역할을 대신함.
@@ -350,7 +369,7 @@ var SAJUX_SECTION_LABELS = {
     daeun: '대운 — 10년 계절의 지도',
     seyun: '10. 세운 — 앞으로 10년의 바람',
     monthly: '13. 월운 — 12개월의 리듬',
-    remedy: '09. 개운법 — 실행 체크리스트',
+    remedy: '09. 개운법 — 일상에 옮기기',
     current: '현재 대운·세운·월운 종합',
     master: '원국 한눈에 — 성격·돈·일·사랑·몸',
     relation: '합·충·형·파 — 관계의 힘',
@@ -379,8 +398,8 @@ function buildChapterBridge(topic, data) {
     var nm = nmNormalize((data && data.name) || '') || '고객';
     var bridges = {
         basic:    null, // 첫 챕터 — 풀 인사로 처리
-        wuxing:   nmUi(nm) + ' 기질을 보았으니, 이번에는 그 기질이 어떤 에너지로 짜였는지 들여다보겠습니다.',
-        sipseong: '같은 기질이라도 사람마다 쓰는 방식이 다릅니다. 이제 ' + nmDnim(nm) + '이 세상과 만나는 방식, 즉 십성의 무늬를 살펴보겠습니다.',
+        wuxing:   '원국 글자를 다섯 오행 비율로 읽어 보겠습니다.',
+        sipseong: '같은 기질이라도 사람마다 쓰는 방식이 다릅니다. 십성의 무늬를 살펴보겠습니다.',
         wealth:   nmUi(nm) + ' 타고난 결을 보았으니, 이제 그 결이 돈의 흐름과 어떻게 맞물리는지 짚어보겠습니다.',
         career:   '직업은 단순히 직함이 아니라 ' + nmUi(nm) + ' 에너지가 가장 빛나는 자리입니다. 그 자리부터 살펴보겠습니다.',
         love:     '관계와 애정은 ' + nmUi(nm) + ' 가장 깊은 부분과 맞닿아 있습니다. 어떤 사람과 어떤 리듬으로 만나는지 살피겠습니다.',
@@ -1202,6 +1221,7 @@ function voicePolishParagraph(data, text) {
     s = s.replace(/테마 성격 자산/g, '변동 큰 자산');
     s = s.replace(/새 온라인 채널/g, '새 소개 경로');
     s = s.replace(/플랫폼/g, '무대');
+    s = s.replace(/유년기부터\s*만년까지/g, '유년기부터 말년까지');
     s = s.replace(/풍요롭은/g, '풍요로운');
     s = s.replace(/풍요로운의/g, '풍요로움의');
     s = s.replace(/([가-힣]+)롭은(?=\s|분|것|형|인|자|때|데|며|고|\.|,|$)/g, '$1로운');
@@ -3097,7 +3117,8 @@ function ensureSajuxReadablePanelStyles() {
     st.textContent = [
         ".m-hanja,.vip-hanja,.report-pillar-hanja,.hanja-main,.f-hz .report-pillar-hanja,.sajux-hanja,.month-pillar-title,.monthly-card,.yearly-card,.seyun-year-card{font-family:'Noto Sans KR',sans-serif!important;}",
         ".month-pillar-title .sajux-hanja,.monthly-card .sajux-hanja,.yearly-card .sajux-hanja{font-family:'Noto Sans KR',sans-serif!important;font-weight:700;}",
-        ".sajux-panel-plain,.yearly-indicators,.deep-hook-panel,.premium-executive-summary,#sec-life-panorama.report-chapter,.sajux-gongmang-note{background:transparent!important;background-color:transparent!important;}",
+        "@media screen{.sajux-panel-plain,.yearly-indicators,.deep-hook-panel,.premium-executive-summary,#sec-life-panorama.report-chapter,.sajux-gongmang-note{background:transparent!important;background-color:transparent!important;}}",
+        "@media print{.sajux-panel-plain,.yearly-indicators,.deep-hook-panel,.premium-executive-summary,#sec-life-panorama.report-chapter,.sajux-gongmang-note{background:#ffffff!important;background-color:#ffffff!important;border:1px solid #dddddd!important;}}",
         "body:not(.light-mode) .deep-hook-panel p,html[data-theme=dark] .deep-hook-panel p,body:not(.light-mode) .sajux-gongmang-note p,html[data-theme=dark] .sajux-gongmang-note p{color:#ddd!important;}",
         "body:not(.light-mode) .yearly-indicators .yearly-ind-val,html[data-theme=dark] .yearly-indicators .yearly-ind-val{color:#e8dcc8!important;}",
         ".yearly-indicators-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px 10px!important;width:100%!important;}",
@@ -3384,15 +3405,17 @@ function generateDeepReport(data) {
     // ── 1부: 나라는 사람 ──
     var part1Body = '';
     // 손님 동선 (고객 의도 = "나는 어떤 사람인가"에 답하는 흐름):
-    //   ① 일주 프로필 — 한 줄 메타포·키워드 배지 (도입)
-    //   ② 만세력 표 — 풀이의 근거 자료 (필수, 변경 금지)
-    //   ③ ★ 메인 인생 스토리 — 태어남부터 마지막 장면까지 한 흐름 (가장 큰 메인)
-    //   ④ 사주 기본 종합 풀이 — 보강
-    //   ⑤·⑥ 오행·십성 — 부속 분석 (참고용)
+    //   ① ★ 메인 인생 스토리 — 태어남부터 마지막 장면까지 한 흐름 (가장 큰 메인)
+    //   ② 일주 프로필 — 한 줄 메타포·키워드 (보조 도입)
+    //   ③ 만세력 안내 → 표 — 풀이의 근거 자료
+    //   ④ 원국 구조 한 줄 요약(합·충·비중 등)
+    //   ⑤ 사주 기본 종합 풀이 — 보강
+    //   ⑥·⑦ 오행·십성 — 참고 분석
+    part1Body += safeCall(()=>buildPersonalPortrait(data)||'', 'personal-portrait');
     part1Body += safeCall(()=>buildIljuProfileCard(data)||'', 'ilju-card');
     part1Body += safeCall(()=>buildManseGuide(data)||'', 'manse-guide');
     part1Body += safeCall(()=>buildVipEvidenceBlock(data)||'', 'vip-evidence');
-    part1Body += safeCall(()=>buildPersonalPortrait(data)||'', 'personal-portrait');
+    part1Body += safeCall(()=>buildYeonjukStructuralBlurb(data)||'', 'yonjuk-blurb');
     part1Body += safeCall(()=>buildChapter1_Basic(data)||'', 'ch1-basic');
     part1Body += safeCall(()=>buildChapter2_Wuxing(data)||'', 'ch2-wuxing');
     part1Body += safeCall(()=>buildChapter3_Sipseong(data)||'', 'ch3-sip');
@@ -3441,12 +3464,12 @@ function generateDeepReport(data) {
     var part4Body = '';
     part4Body += safeCall(()=>buildChapter9_Remedy(data)||'', 'ch9-remedy');
     html += safeCall(()=>wrapPartSection(
-        buildPartHeader(4,'지금부터의 선택','개운법 · 체크리스트 · 청사진','sec-part4-final',{name:data.name}),
+        buildPartHeader(4,'지금부터의 선택','개운법 · 일상 적용','sec-part4-final',{name:data.name}),
         part4Body
     ), 'part4section');
 
     // ── 본문 최종 안내: 이용 안내·열람 정책·면책 고지·PDF 저장 버튼 ──
-    //   ※ 사용자 요청 흐름: 개운법 → 이용안내 → (서프라이즈) 자미두수 → 리뷰 안내
+    //   ※ 사용자 요청 흐름: 개운법 → 이용안내 → (서프라이즈) 자미두수
     html += safeCall(()=>buildReportFooterUtilities(data), 'footerUtilities');
 
     // ── 서프라이즈 인트로 + 부록: 자미두수 운명 청사진 (별도 학문) ──
@@ -3458,9 +3481,6 @@ function generateDeepReport(data) {
               + ziweiBlock
               + '</div>';
     }
-
-    // ── 맨 마지막: 리뷰 안내 카드 ──
-    html += safeCall(()=>buildReviewCallout(data)||'', 'review-callout');
 
     document.getElementById('report-container').innerHTML = html;
 
@@ -5301,10 +5321,11 @@ function buildPersonalPortrait(data) {
         return '<p style="font-size:14px;color:var(--text);line-height:2.1;margin:0 0 18px;">' + boldStarsToStrong(_vp(text)) + '</p>';
     }
 
-    return '<div id="sec-personal-portrait" class="report-chapter chapter-start sajux-panel-plain" style="margin:28px 0 40px;padding:28px 24px;border-radius:14px;border:1px solid rgba(199,167,106,0.30);background:transparent;">'
-        + '<div style="font-size:11px;letter-spacing:0.20em;color:rgba(199,167,106,0.85);margin-bottom:10px;font-weight:700;">메인 — ' + escHtmlAttr(nmUi(name)) + ' 인생 한 편</div>'
-        + '<h2 style="font-family:Noto Sans KR,sans-serif;font-size:24px;font-weight:700;color:var(--text);margin:0 0 6px;line-height:1.45;letter-spacing:-0.01em;">' + escHtmlAttr(nmDnim(name)) + '의 인생 — 태어남에서 마지막 장면까지</h2>'
-        + '<p style="font-size:12px;color:rgba(199,167,106,0.75);margin:0 0 22px;letter-spacing:0.04em;">유년기부터 말년까지 — 한 사람의 이야기로 이어서 풀어 드립니다</p>'
+    return '<div id="sec-personal-portrait" class="report-chapter chapter-start sajux-panel-plain personal-portrait-hero" style="margin:32px 0 44px;padding:0;border:none;background:transparent;">'
+        + '<div class="personal-portrait-inner">'
+        + '<p class="personal-portrait-eyebrow">' + escHtmlAttr(nmUi(name)) + '님 · 인생 한 편</p>'
+        + '<h2 class="personal-portrait-title">' + escHtmlAttr(nmDnim(name)) + '의 인생 — 태어남에서 마지막 장면까지</h2>'
+        + '<p class="personal-portrait-lede">유년기부터 말년까지 — 한 사람의 이야기로 이어서 풀어 드립니다</p>'
         + para(introText)
         + para(pYou)
         + para(pChu)
@@ -5313,7 +5334,7 @@ function buildPersonalPortrait(data) {
         + para(pM)
         + para(pN)
         + para(pMan)
-        + '</div>';
+        + '</div></div>';
 }
 
 
@@ -5587,14 +5608,15 @@ function buildCurrentPeriodCard(data) {
 
     var closing = '이렇게 ' + nmUi(name) + ' 지금 시기를 — 가장 큰 대운부터 한 달의 월운까지, 그리고 그 위에 비친 다섯 자리의 모양까지 — 한 흐름으로 풀어 드렸어요. 다음 챕터에서는 이 흐름이 “앞으로” 어떻게 이어지는지 — 다가올 대운 두 개와, 다음 해부터의 10년, 다음 11개월까지 차근차근 짚어 드릴게요.';
 
-    // ── HTML 조립 ──
-    var chHead = (typeof buildChapterHead === 'function')
-        ? buildChapterHead((typeof buildTopicMetaphorTitle === 'function' ? buildTopicMetaphorTitle('daeun', data) : ''), '현재의 운세 — 대운 · 세운 · 월운 그리고 다섯 영역')
-        : '<h3 class="ch-title">현재의 운세 — 대운 · 세운 · 월운 그리고 다섯 영역</h3>';
+    // ── HTML 조립 — 제목은「현재의 운세」한 가지만 크게, 부제는 대운·세운·월운 안내 ──
+    var chHead = '<div class="ch-head-current-period" style="margin-bottom:12px;">'
+        + '<h2 class="ch-title-current-period" style="font-family:\'Noto Sans KR\',sans-serif;font-size:clamp(24px,5.5vw,32px);font-weight:800;line-height:1.2;margin:0 0 8px;color:var(--text,rgba(255,255,255,0.96));">현재의 운세</h2>'
+        + '<p style="font-size:11px;letter-spacing:0.10em;color:rgba(199,167,106,0.72);margin:0;font-weight:700;">대운 · 세운 · 월운 그리고 다섯 영역</p>'
+        + '</div>';
 
     return '<div class="report-chapter">'
         + chHead
-        + '<p style="font-size:12px;color:rgba(199,167,106,0.75);margin:-6px 0 6px;letter-spacing:0.04em;">' + sub + '</p>'
+        + '<p style="font-size:12px;color:rgba(199,167,106,0.75);margin:0 0 6px;letter-spacing:0.04em;">' + sub + '</p>'
         + snapshotHtml
         + para(intro)
         + para(daeunStory)
@@ -6149,7 +6171,7 @@ function buildChapter2_Wuxing(data) {
         lackHtml += para('나머지 기운은 비교적 고르게 흐르고 있어서, 따로 보충해야 할 자리는 없어요. 이미 가지신 두꺼운 기운을 어디에 풀어내실지만 잘 고르시면 됩니다.');
     }
 
-    var chHead2 = buildChapterHead(buildTopicMetaphorTitle('wuxing', data), SAJUX_SECTION_LABELS.wuxing);
+    var chHead2 = buildChapterHeadTopicFirst('오행 — 다섯 기운의 짜임', SAJUX_SECTION_LABELS.wuxing, buildTopicMetaphorTitle('wuxing', data));
     var chIntro2 = buildChapterIntroHtml(data, 'wuxing');
     return `<div class="report-chapter">
         ${chHead2}
@@ -6311,7 +6333,7 @@ function buildChapter3_Sipseong(data) {
             + '<div style="flex:0 0 42px;text-align:right;font-size:12px;font-weight:700;color:' + col + ';">' + pct + '%</div></div>';
     }).join('');
     const sipComboText = secondSip ? `앞장서는 패턴은 **${axMain}**, 바닥에 깔리는 보조 패턴은 **${axSec}**입니다. 위기에서는 ${axMain} 쪽 반응부터 다루고, 평상시에는 ${axSec} 쪽 습관만 다듬으십시오. 둘을 한꺼번에 고치려 하지 마십시오. **충돌할 때는 ${axMain}만, 평소에는 ${axSec}만** 조정하십시오. 파트너는 둘 중 하나라도 덮어주는 사람을 고르십시오.` : '';
-    var chHead3 = buildChapterHead(buildTopicMetaphorTitle('sipseong', data), SAJUX_SECTION_LABELS.sipseong);
+    var chHead3 = buildChapterHeadTopicFirst('십성 — 역할과 관계의 무늬', SAJUX_SECTION_LABELS.sipseong, buildTopicMetaphorTitle('sipseong', data));
     var chIntro3 = buildChapterIntroHtml(data, 'sipseong');
     return `<div class="report-chapter">
         ${chHead3}
@@ -7769,6 +7791,55 @@ function getHiddenVipTableCell(branch, dayStem) {
         + '</div>';
 }
 
+/** 만세력 표 직후 — 원국에 방합·충·병존(천간 반복)·오행 균형 여부를 한 덩어리로 짚음 (~100자 전후) */
+function buildYeonjukStructuralBlurb(data) {
+    if (!data || !data.dayStem) return '';
+    var pillars = data.pillars || [];
+    if (pillars.length < 2) return '';
+
+    var ints = (typeof detectPillarInteractions === 'function') ? detectPillarInteractions(pillars) : [];
+    var hasBanghap = ints.some(function (x) { return x.type === '방합'; });
+    var hasChung = ints.some(function (x) { return x.type === '충'; });
+    var hasJiphap = ints.some(function (x) { return x.type === '지합'; });
+
+    var getH = function (p) { return p && p.h ? (typeof p.h === 'string' ? p.h : p.h.join('')) : ''; };
+    var stems = [];
+    for (var i = 0; i < pillars.length; i++) {
+        var g = getH(pillars[i])[0];
+        if (g) stems.push(g);
+    }
+    var stemCount = {};
+    stems.forEach(function (s) { stemCount[s] = (stemCount[s] || 0) + 1; });
+    var dupStem = Object.keys(stemCount).some(function (s) { return stemCount[s] >= 2; });
+
+    var wx = data.wuxing || {};
+    var oh5 = ['wood', 'fire', 'earth', 'metal', 'water'];
+    var totalRaw = oh5.reduce(function (s, k) { return s + (Number(wx[k]) || 0); }, 0);
+    var pct = {};
+    oh5.forEach(function (k) { pct[k] = totalRaw > 0 ? Math.round((Number(wx[k]) || 0) / totalRaw * 100) : 0; });
+    var ps = oh5.map(function (k) { return pct[k]; });
+    var maxP = Math.max.apply(null, ps);
+    var minP = Math.min.apply(null, ps);
+    var balanced = (maxP - minP) <= 18;
+
+    var seeds = [];
+    if (hasBanghap) seeds.push('방합이 깔려 한쪽 오행에 힘이 몰립니다. 그 결의 추진력과 과열을 함께 보시면 됩니다.');
+    else if (hasJiphap) seeds.push('지지 간 지합으로 글자들이 한데 묶여, 삶의 테마가 한 줄로 몰리기 쉽습니다.');
+    if (hasChung) seeds.push('축이 있어 안팎의 방향이 동시에 당겨지는 순간이 있습니다.');
+    if (dupStem) seeds.push('같은 천간이 반복되는 병존(비겁) 기운이 있어 자기축·대등 관계에서 힘이 붙습니다.');
+    if (balanced && !hasBanghap) seeds.push('오행 비율이 한쪽으로 치우치지 않아 상황에 따라 무게를 옮겨 타기 좋습니다.');
+    if (seeds.length === 0) seeds.push('뚜렷한 합·충 패턴 없이 풀어진 편이라 십성과 대운의 움직임이 풀이의 중심이 됩니다.');
+
+    var text = seeds.slice(0, 2).join(' ');
+    if (text.length > 118) text = text.slice(0, 117) + '…';
+
+    var polished = typeof voicePolishParagraph === 'function' ? voicePolishParagraph(data, text) : text;
+
+    return '<div class="yonjuk-struct-blurb sajux-print-surface" style="margin:14px 0 24px;padding:14px 18px;border-radius:12px;background:rgba(255,255,255,0.035);border:1px solid rgba(199,167,106,0.18);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);">'
+        + '<p class="ch-text" style="font-size:13.5px;color:var(--text);line-height:1.92;margin:0;">' + polished + '</p>'
+        + '</div>';
+}
+
 /**
  * 만세력 가이드 카드 — 만세력 표가 나오기 직전에 두는 "용어 안내" 챕터.
  *   고객이 사주를 처음 접해도 표를 읽을 수 있도록 — 만세력의 정체, 오행 5종,
@@ -7815,11 +7886,11 @@ function buildManseGuide(data) {
     return '<details class="manse-guide" style="background:rgba(255,255,255,0.025);border:1px solid rgba(199,167,106,0.22);border-radius:14px;padding:16px 20px;margin:12px 0 18px;">'
         + '<summary style="cursor:pointer;list-style:none;padding:4px 0;">'
         + '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">'
-        + '<div><div style="font-size:10px;letter-spacing:0.18em;color:var(--gold);font-weight:700;margin-bottom:4px;">SAJU GUIDE · 만세력 읽는 법</div>'
-        + '<div style="font-size:16px;font-weight:800;color:#fff;line-height:1.45;">만세력 표가 어떤 의미인지, 잠깐 짚고 가실래요?</div></div>'
+        + '<div><div style="font-size:10px;letter-spacing:0.16em;color:var(--gold);font-weight:700;margin-bottom:6px;">SAJU GUIDE</div>'
+        + '<div style="font-size:clamp(22px,5vw,28px);font-weight:800;color:#fff;line-height:1.22;">만세력 읽는 법</div></div>'
         + '<span class="manse-guide-toggle" style="font-size:11px;color:#aaa;padding:5px 10px;border-radius:999px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.10);">건너뛰셔도 좋아요 · 펼쳐 보기</span>'
         + '</div>'
-        + '<p style="font-size:12.5px;color:#aaa;line-height:1.85;margin:10px 0 0;">' + _vp('아래 표(만세력)에는 ' + nmUi(name) + ' 사주가 한 장으로 정리되어 있어요. 처음 보시면 한자와 용어가 빽빽하지만, 사실 몇 가지 기본만 짚으시면 “아 그래서 이런 풀이가 나오는구나” 정도는 충분히 따라가실 수 있어요. <strong>사주의 원리가 궁금하지 않으시면 이 안내는 건너뛰셔도 됩니다.</strong> 표만 보시고 풀이 본문으로 바로 넘어가셔도 좋아요.') + '</p>'
+        + '<p style="font-size:12.5px;color:#aaa;line-height:1.85;margin:10px 0 0;">' + _vp('만세력은 태어난 시각을 사주 여덟 글자로 옮겨 적은 표예요. 아래 표에는 ' + nmUi(name) + ' 원국이 한 장에 모여 있습니다. 용어가 빽빽해 보여도 기본만 알면 본문 풀이가 어디서 나오는지 따라가실 수 있어요. <strong>원리가 궁금하지 않으시면 이 안내는 건너뛰셔도 됩니다.</strong> 표만 보시고 본문으로 넘어가셔도 좋아요.') + '</p>'
         + '</summary>'
         + '<div style="margin-top:18px;padding-top:16px;border-top:1px dashed rgba(199,167,106,0.18);">'
         + '<div style="font-size:13.5px;color:#ddd;line-height:1.95;margin-bottom:14px;">' + _vp('<strong>만세력(萬歲曆)</strong>이란 — 태어난 시각의 천체 흐름을 사주 8글자로 환산해 둔 한 장의 표예요. 같은 날 태어난 사람이라도 시(時)에 따라 결이 다르고, 그 결을 다섯 가지 기운(오행)과 열 가지 관계(십성)로 풀어 보는 게 사주의 기본 원리입니다.') + '</div>'
@@ -8464,27 +8535,6 @@ function buildChapter9_Remedy(data) {
         <p class="ch-text">${voicePolishParagraph(data, '먼저 색·방향·시간 같은 큰 결을 짚고, 이어서 ' + nmUi(name) + ' 일간(' + ds + ')에 맞춘 하루 루틴과 부적·향·식물 같은 손에 잡히는 작은 도구들을 풀어 드립니다.')}</p>
 
         ${typeof buildRemedyYongHeeMindsetHTML === 'function' ? buildRemedyYongHeeMindsetHTML(data) : ''}
-
-        <table class="remedy-checklist-table" style="width:100%;border-collapse:collapse;margin:18px 0;background:rgba(255,255,255,0.04);border:1px solid rgba(199,167,106,0.35);border-radius:12px;overflow:hidden;font-size:12px;">
-            <caption style="caption-side:top;text-align:left;padding:0 4px 12px;font-size:11px;color:var(--gold);font-weight:800;letter-spacing:1px;">실행 체크리스트 (모바일 한 화면 캡처용)</caption>
-            <thead>
-                <tr style="background:rgba(199,167,106,0.14);color:#f0e6d2;">
-                    <th scope="col" style="padding:10px 10px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.1);width:24%;">항목</th>
-                    <th scope="col" style="padding:10px 10px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.1);">실행 값 · 메모</th>
-                    <th scope="col" style="padding:10px 8px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.1);width:44px;">체크</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr><td style="padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);color:#4a4a4a;vertical-align:top;">행운 색상</td><td style="padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);color:#3d3428;font-weight:600;">${colorDB.good}<div style="font-size:11px;color:#888;font-weight:400;margin-top:4px;">의복·소품·배경에 반영</div></td><td style="padding:10px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.06);color:#7a8494;">□</td></tr>
-                <tr><td style="padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);color:#4a4a4a;vertical-align:top;">주의 색상</td><td style="padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);color:#e8b8b0;font-weight:600;">${colorDB.bad}<div style="font-size:11px;color:#888;font-weight:400;margin-top:4px;">과다 노출 최소화</div></td><td style="padding:10px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.06);color:#7a8494;">□</td></tr>
-                <tr><td style="padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);color:#4a4a4a;vertical-align:top;">행운 방위</td><td style="padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);color:#3d3428;font-weight:600;">${colorDB.dir}<div style="font-size:11px;color:#888;font-weight:400;margin-top:4px;">책상·침실 동선</div></td><td style="padding:10px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.06);color:#7a8494;">□</td></tr>
-                <tr><td style="padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);color:#4a4a4a;vertical-align:top;">행운 숫자</td><td style="padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);color:#3d3428;font-weight:600;">${colorDB.num}<div style="font-size:11px;color:#888;font-weight:400;margin-top:4px;">일정·번호 규칙에 활용</div></td><td style="padding:10px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.06);color:#7a8494;">□</td></tr>
-                <tr><td style="padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);color:#4a4a4a;vertical-align:top;">행운 보석</td><td style="padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);color:#3d3428;font-weight:600;">${colorDB.gem}<div style="font-size:11px;color:#888;font-weight:400;margin-top:4px;">지니거나 책상 위 배치</div></td><td style="padding:10px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.06);color:#7a8494;">□</td></tr>
-                <tr><td style="padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);color:#4a4a4a;vertical-align:top;">식이 개운법</td><td style="padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);color:#ddd;">${colorDB.food}</td><td style="padding:10px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.06);color:#7a8494;">□</td></tr>
-                <tr><td style="padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);color:#4a4a4a;vertical-align:top;">최적 시간대</td><td style="padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);color:#ddd;">${colorDB.time}</td><td style="padding:10px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.06);color:#7a8494;">□</td></tr>
-                <tr><td style="padding:10px;color:#4a4a4a;vertical-align:top;">귀인 조건</td><td style="padding:10px;color:#ddd;">${colorDB.guien}</td><td style="padding:10px;text-align:center;color:#7a8494;">□</td></tr>
-            </tbody>
-        </table>
 
         <div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:22px;margin:24px 0;">
             <div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:16px;letter-spacing:1px;">&#9670; 오행별 맞춤 루틴 — 매일 고정할 것</div>
