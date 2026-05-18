@@ -3500,8 +3500,6 @@ function generateDeepReport(data) {
         part4Body
     ), 'part4section');
 
-    html += safeCall(()=>buildReviewCallout(data)||'', 'review-callout');
-
     // ── 본문 최종 안내: 이용 안내·열람 정책·면책 고지·PDF 저장 버튼 ──
     //   ※ 사용자 요청 흐름: 개운법 → 이용안내 → (서프라이즈) 자미두수
     html += safeCall(()=>buildReportFooterUtilities(data), 'footerUtilities');
@@ -3515,6 +3513,9 @@ function generateDeepReport(data) {
               + ziweiBlock
               + '</div>';
     }
+
+    // ── 마무리 리뷰 안내 — 문서 맨 끝(별첨 이후), 버튼 없음 ──
+    html += safeCall(()=>buildReviewCallout(data)||'', 'review-callout');
 
     document.getElementById('report-container').innerHTML = html;
 
