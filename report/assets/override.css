@@ -1,8 +1,8 @@
 /* ══════════════════════════════════════════════════════
-   SAJUX OVERRIDE v5  — 하이앤드 에디션
-   ▸ 다크모드 = 밤 하늘·우주 — 깊은 암흑, 별 같은 골드 포인트
-   ▸ 라이트모드 = 낮·종이 — 따뜻한 크림, 선명한 먹 글씨
-   ▸ 톤: Tesla 정밀함 × Apple 간결함 × 한국 전통 골드
+   SAJUX OVERRIDE v6 — 단일 다크 · 글래스모피즘
+   ▸ 배경: 은은한 메시 그라데이션(보라·골드·남색 광원)
+   ▸ 표면: 블러 + 채도 + 상단 하이라이트 + 이중 그림자
+   ▸ 라이트 전용 규칙은 하위 호환용으로 남음(화면에서는 다크 고정)
    ══════════════════════════════════════════════════════ */
 
 /* ─────────────────────────────────
@@ -95,8 +95,36 @@ h2.ch-title-current-period {
 
 html:not([data-theme="light"]) body {
   background:
-    radial-gradient(ellipse 140% 100% at 50% -20%, rgba(48, 44, 62, 0.55), transparent 55%),
-    linear-gradient(180deg, #12131a 0%, #08090e 55%, #050608 100%) fixed !important;
+    radial-gradient(ellipse 120% 70% at 15% -15%, rgba(99, 76, 168, 0.14), transparent 52%),
+    radial-gradient(ellipse 90% 55% at 88% 8%, rgba(199, 167, 106, 0.10), transparent 48%),
+    radial-gradient(ellipse 80% 50% at 50% 105%, rgba(30, 58, 95, 0.12), transparent 55%),
+    linear-gradient(168deg, #16171f 0%, #0c0d14 42%, #060708 100%) fixed !important;
+}
+
+/* ── 글래스 표면 공통 (모피즘: 블러 + 상단 하이라이트 + 깊은 그림자) ── */
+html:not([data-theme="light"]) .sajux-glass-heavy {
+  background: linear-gradient(
+    155deg,
+    rgba(255, 255, 255, 0.14) 0%,
+    rgba(255, 255, 255, 0.05) 38%,
+    rgba(255, 255, 255, 0.025) 100%
+  ) !important;
+  backdrop-filter: blur(32px) saturate(175%) brightness(1.04) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(175%) brightness(1.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  box-shadow:
+    0 12px 48px rgba(0, 0, 0, 0.38),
+    0 4px 16px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2) !important;
+}
+
+html:not([data-theme="light"]) .report-review-callout.sajux-glass-heavy {
+  border-color: rgba(199, 167, 106, 0.28) !important;
+  box-shadow:
+    0 16px 56px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(199, 167, 106, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
 }
 
 /* 카드·패널 — 글래스모피즘 */
@@ -107,35 +135,101 @@ html:not([data-theme="light"]) .inner-card,
 html:not([data-theme="light"]) .detail-box,
 html:not([data-theme="light"]) .jijanggan,
 html:not([data-theme="light"]) div[class*="card"] {
-  background: rgba(255, 255, 255, 0.055) !important;
-  backdrop-filter: blur(18px) saturate(145%) !important;
-  -webkit-backdrop-filter: blur(18px) saturate(145%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.10) !important;
-  box-shadow: 0 8px 36px rgba(0, 0, 0, 0.22) !important;
+  background: linear-gradient(
+    165deg,
+    rgba(255, 255, 255, 0.09) 0%,
+    rgba(255, 255, 255, 0.035) 45%,
+    rgba(255, 255, 255, 0.02) 100%
+  ) !important;
+  backdrop-filter: blur(26px) saturate(168%) brightness(1.03) !important;
+  -webkit-backdrop-filter: blur(26px) saturate(168%) brightness(1.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.11) !important;
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.03) !important;
 }
 
 html:not([data-theme="light"]) .glass-card,
 html:not([data-theme="light"]) .inline-interp,
 html:not([data-theme="light"]) .section-interp {
-  background: rgba(255, 255, 255, 0.05) !important;
-  backdrop-filter: blur(16px) saturate(140%) !important;
-  -webkit-backdrop-filter: blur(16px) saturate(140%) !important;
-  border-color: rgba(255, 255, 255, 0.09) !important;
+  background: linear-gradient(
+    160deg,
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(255, 255, 255, 0.028) 100%
+  ) !important;
+  backdrop-filter: blur(24px) saturate(165%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(165%) !important;
+  border-color: rgba(255, 255, 255, 0.11) !important;
+  box-shadow:
+    0 8px 36px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.09) !important;
 }
 
 html:not([data-theme="light"]) .report-chapter:not(.part-header-block) {
-  background: rgba(255, 255, 255, 0.035) !important;
-  backdrop-filter: blur(14px) saturate(135%) !important;
-  -webkit-backdrop-filter: blur(14px) saturate(135%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  background: linear-gradient(
+    165deg,
+    rgba(255, 255, 255, 0.065) 0%,
+    rgba(255, 255, 255, 0.028) 100%
+  ) !important;
+  backdrop-filter: blur(22px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(160%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.09) !important;
   border-radius: var(--sajux-radius-card, 14px) !important;
-  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.18) !important;
+  box-shadow:
+    0 8px 36px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+html:not([data-theme="light"]) .part-header-block {
+  backdrop-filter: blur(28px) saturate(170%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(170%) !important;
+  box-shadow:
+    0 14px 52px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
 }
 
 html:not([data-theme="light"]) details.manse-guide {
-  background: rgba(255, 255, 255, 0.045) !important;
-  backdrop-filter: blur(18px) saturate(140%) !important;
-  -webkit-backdrop-filter: blur(18px) saturate(140%) !important;
+  background: linear-gradient(
+    165deg,
+    rgba(255, 255, 255, 0.07) 0%,
+    rgba(255, 255, 255, 0.025) 100%
+  ) !important;
+  backdrop-filter: blur(26px) saturate(165%) !important;
+  -webkit-backdrop-filter: blur(26px) saturate(165%) !important;
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.26),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+}
+
+html:not([data-theme="light"]) .report-footer-utilities {
+  background: linear-gradient(
+    165deg,
+    rgba(255, 255, 255, 0.055) 0%,
+    rgba(255, 255, 255, 0.02) 100%
+  ) !important;
+  backdrop-filter: blur(20px) saturate(155%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(155%) !important;
+  border-radius: 18px !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow:
+    0 12px 44px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07) !important;
+}
+
+html:not([data-theme="light"]) .sticky-part-nav {
+  background: rgba(12, 13, 20, 0.72) !important;
+  backdrop-filter: blur(22px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(160%) !important;
+  border-top-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+html:not([data-theme="light"]) #floating-toc {
+  background: rgba(14, 14, 22, 0.62) !important;
+  backdrop-filter: blur(22px) saturate(165%) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(165%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 12px 44px rgba(0, 0, 0, 0.4) !important;
 }
 
 /* 제목 계층 */
@@ -182,19 +276,33 @@ html:not([data-theme="light"]) .btn.subtle {
   border-color: rgba(255,255,255,0.05) !important;
 }
 
-/* 열람·PDF 안내 */
+/* 열람·PDF 안내 — 유리 카드 */
 html:not([data-theme="light"]) .sajux-access-note {
-  background: rgba(16,14,10,0.90) !important;
-  border-color: rgba(200,160,80,0.22) !important;
-  color: rgba(255,255,255,0.58) !important;
+  background: linear-gradient(
+    165deg,
+    rgba(199, 167, 106, 0.09) 0%,
+    rgba(255, 255, 255, 0.04) 100%
+  ) !important;
+  backdrop-filter: blur(18px) saturate(155%) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(155%) !important;
+  border-color: rgba(200, 160, 80, 0.28) !important;
+  color: rgba(255, 255, 255, 0.72) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 8px 28px rgba(0, 0, 0, 0.22) !important;
 }
-
 /* VIP 모듈 카드 그리드 — 다크 */
 html:not([data-theme="light"]) .vip-module-item {
-  background: rgba(255,255,255,0.025) !important;
-  border-color: rgba(200,160,80,0.15) !important;
+  background: linear-gradient(
+    165deg,
+    rgba(255, 255, 255, 0.06) 0%,
+    rgba(255, 255, 255, 0.02) 100%
+  ) !important;
+  backdrop-filter: blur(16px) saturate(150%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(150%) !important;
+  border-color: rgba(200, 160, 80, 0.18) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
 }
-
 /* 만세력 테이블 헤더 행 */
 html:not([data-theme="light"]) .vip-manse-title { color: var(--sajux-gold) !important; }
 
@@ -806,4 +914,18 @@ html[data-theme="light"] #star-canvas {
   #sec-report-full {
     padding-bottom: calc(132px + env(safe-area-inset-bottom, 0px)) !important;
   }
+}
+
+/* ── 단일 다크 테마 고정 (라이트 모드 종료) ── */
+html {
+  color-scheme: dark !important;
+}
+#theme-toggle {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  position: absolute !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
 }
