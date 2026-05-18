@@ -290,11 +290,19 @@ function voiceObserveEnd(seed) {
 function buildChapterHeadMainSub(mainTitle, subTitle, opts) {
     opts = opts || {};
     var extra = opts.extraStyle || '';
-    var sub = (subTitle && String(subTitle).trim())
-        ? '<p class="ch-sub-under-main" style="font-size:11px;letter-spacing:0.10em;color:rgba(199,167,106,0.72);margin:0 0 14px;font-weight:700;line-height:1.45;">' + escHtmlAttr(subTitle) + '</p>'
-        : '';
+    var subFs = opts.subFontSize || '11px';
+    var subLh = opts.subLineHeight || '1.45';
+    var subCol = opts.subColor || 'rgba(199,167,106,0.72)';
+    var subWt = opts.subFontWeight || '700';
+    var subLs = opts.subLetterSpacing || '0.10em';
+    var h2style = opts.mainHeadingStyle || 'font-family:\'Noto Sans KR\',sans-serif;font-size:clamp(22px,5vw,28px);font-weight:800;line-height:1.2;margin:0 0 8px;color:var(--text,rgba(255,255,255,0.96));';
+    var sub = '';
+    if (subTitle && String(subTitle).trim()) {
+        var inner = opts.subIsHtml ? String(subTitle) : escHtmlAttr(subTitle);
+        sub = '<p class="ch-sub-under-main" style="font-size:' + subFs + ';letter-spacing:' + subLs + ';color:' + subCol + ';margin:0 0 14px;font-weight:' + subWt + ';line-height:' + subLh + ';">' + inner + '</p>';
+    }
     return '<div class="ch-head-main-sub" style="margin-bottom:16px;' + extra + '">'
-        + '<h2 class="ch-main-heading-xl" style="font-family:\'Noto Sans KR\',sans-serif;font-size:clamp(22px,5vw,28px);font-weight:800;line-height:1.2;margin:0 0 8px;color:var(--text,rgba(255,255,255,0.96));">' + escHtmlAttr(mainTitle) + '</h2>'
+        + '<h2 class="ch-main-heading-xl" style="' + h2style + '">' + escHtmlAttr(mainTitle) + '</h2>'
         + sub
         + '</div>';
 }
@@ -742,8 +750,25 @@ function buildCompatChapterIntro(ctx, topic) {
 /** 궁합 섹션 상단 — 은유 제목 + 사주아이형 도입 (ctx: a,b,aName,bName,isHap,isChung,score,…) */
 function buildCompatVoiceSection(topic, ctx) {
     var label = SAJUX_COMPAT_SECTION_LABELS[topic] || '';
-    return buildChapterHead(buildCompatTopicMetaphor(topic, ctx), label, { extraStyle: 'color:#f5f0e6;' })
-        + buildCompatChapterIntro(ctx, topic);
+    var metaphor = buildCompatTopicMetaphor(topic, ctx);
+    var head;
+    /* 총평만: 섹션명(궁합 총평)을 메인 타이틀로 — 은유 한 줄은 그 아래 보조 헤드로 */
+    if (topic === 'overview') {
+        var subHtml = boldStarsToStrong(escHtmlAttr(metaphor));
+        head = buildChapterHeadMainSub(label, subHtml, {
+            extraStyle: 'color:#f5f0e6;',
+            subIsHtml: true,
+            mainHeadingStyle: 'font-family:\'Noto Sans KR\',sans-serif;font-size:clamp(22px,5.2vw,32px);font-weight:700;line-height:1.22;margin:0 0 10px;color:var(--text,rgba(255,255,255,0.96));',
+            subFontSize: '13.5px',
+            subLetterSpacing: '0.03em',
+            subColor: 'rgba(255,255,255,0.76)',
+            subFontWeight: '500',
+            subLineHeight: '1.68'
+        });
+    } else {
+        head = buildChapterHead(metaphor, label, { extraStyle: 'color:#f5f0e6;' });
+    }
+    return head + buildCompatChapterIntro(ctx, topic);
 }
 
 function buildVipModuleTitles(data, daeunLabel, curY, curM) {
