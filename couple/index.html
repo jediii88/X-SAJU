@@ -45,7 +45,9 @@
   --fire: #d45a52;
   --earth: #c9a24c;
   --metal: #9ea4aa;
-  --water: #4e87d9;
+  /* 수(水): 개인 리포트(view)와 동일 — 현색 검정 + 가독 윤곽은 글자별 스타일로 */
+  --water: #181828;
+  --water-edge: rgba(255, 255, 255, 0.16);
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body {
@@ -318,7 +320,16 @@ body::before {
 #error-screen p { color:var(--text-dim); font-size:14px; line-height:1.7; }
 
 .wood { color: var(--wood); } .fire { color: var(--fire); }
-.earth { color: var(--earth); } .metal { color: var(--metal); } .water { color: var(--water); }
+.earth { color: var(--earth); } .metal { color: var(--metal); }
+.water {
+  color: var(--water);
+  -webkit-text-stroke: 0.45px rgba(255, 255, 255, 0.72);
+  paint-order: stroke fill;
+}
+.bg-water {
+  background: var(--water) !important;
+  box-shadow: inset 0 0 0 1px var(--water-edge);
+}
 </style>
 <style type="text/css" media="print">
   .card, .yearly-card, .monthly-card, .inner-card, .detail-box, 
@@ -400,7 +411,7 @@ body::before {
   <div class="page-header">
     <div class="brand">SAJU X</div>
     <h1>두 사람의 인연 구조</h1>
-    <p class="hero-sub">궁합 리포트 — 원국 표는 개인 만세력과 같은 규칙으로 계산합니다. 출생 시각은 한국 경도에 맞춰 약 32분 당겨 적용하며, 왼쪽부터 년주 · 월주 · 일주 · 시주 순입니다.</p>
+    <p class="hero-sub">궁합 리포트 — 원국 표는 개인 만세력과 같은 규칙으로 계산합니다. 출생 시각은 한국 경도에 맞춰 약 32분 당겨 적용하며, 왼쪽부터 시주 · 일주 · 월주 · 년주 순입니다.</p>
     <div class="rel-badge" id="rel-badge">연인 궁합</div>
     <div id="couple-issuer-hint" style="font-size:10px;color:var(--text-dim);margin-top:10px;letter-spacing:0.06em;"></div>
   </div>
@@ -879,12 +890,13 @@ function renderPersonCard(prefix, info, saju) {
     + (function(){
       var tg = gzString(saju.pillars && saju.pillars[0] && saju.pillars[0].h);
       if (tg.length < 2) return '';
-      return '<br><span style="font-size:10px;color:var(--text-dim);line-height:1.65;">시주 <strong style="color:rgba(232,228,218,0.88);font-weight:600;">' + tg + '</strong> ' + (HAN_KOR[tg[0]]||'') + (HAN_KOR[tg[1]]||'') + ' · 표 가장 오른쪽 칸</span>';
+      return '<br><span style="font-size:10px;color:var(--text-dim);line-height:1.65;">시주 <strong style="color:rgba(232,228,218,0.88);font-weight:600;">' + tg + '</strong> ' + (HAN_KOR[tg[0]]||'') + (HAN_KOR[tg[1]]||'') + ' · 표 가장 왼쪽 칸</span>';
     })();
 
   // 원국 8자 만세력 표
-  const order  = [3,2,1,0];
-  const labels = ['년주','월주','일주','시주'];
+  /* pillars 배열은 이미 [0]=시 [1]=일 [2]=월 [3]=년 — 예전 [3,2,1,0] 역순은 헤더만 뒤바뀐 버그 */
+  const order  = [0, 1, 2, 3];
+  const labels = ['시주', '일주', '월주', '년주'];
   const SIPSEONG_MAP = (function(){
     const map = {'비견':'비견','겁재':'겁재','식신':'식신','상관':'상관','편재':'편재','정재':'정재','편관':'편관','정관':'정관','편인':'편인','정인':'정인'};
     return map;
@@ -913,7 +925,7 @@ function renderPersonCard(prefix, info, saju) {
     return "font-family:'Noto Sans KR',sans-serif;font-weight:300;font-size:19px;" + stroke;
   }
   pillarsEl.innerHTML = `
-    <p style="margin:10px 0 6px;font-size:9.5px;color:var(--text-dim);line-height:1.5;letter-spacing:0.02em;text-align:left;">왼쪽부터 <strong style="color:var(--text-soft);font-weight:600;">년주(연도)</strong> · 월주 · 일주(나) · 시주입니다. <strong style="color:var(--text-soft);font-weight:600;">무진(戊辰)</strong>처럼 보이는 첫 칸은 시가 아니라 년입니다.</p>
+    <p style="margin:10px 0 6px;font-size:9.5px;color:var(--text-dim);line-height:1.5;letter-spacing:0.02em;text-align:left;">왼쪽부터 <strong style="color:var(--text-soft);font-weight:600;">시주</strong> · 일주(나) · 월주 · <strong style="color:var(--text-soft);font-weight:600;">년주(연도)</strong>입니다. 첫 칸이 태어난 시이고, 가장 오른쪽이 연도 기둥입니다.</p>
     <table style="width:100%;border-collapse:collapse;margin-top:2px;table-layout:fixed;">
       <tr style="border-bottom:1px solid rgba(199,167,106,0.22);">
         <td style="padding:5px 2px;width:42px;"></td>
@@ -925,7 +937,7 @@ function renderPersonCard(prefix, info, saju) {
           const p = saju.pillars[i];
           const gz = gzString(p && p.h);
           if (!gz || gz.length < 2) return '<td></td>';
-          const ss = li===2 ? '일원' : getSS(ds, gz[0]);
+          const ss = li === 1 ? '일원' : getSS(ds, gz[0]);
           return `<td style="text-align:center;padding:3px 3px;"><span style="font-size:10px;background:rgba(199,167,106,0.08);color:var(--text-soft);padding:1px 6px;border-radius:6px;">${ss}</span></td>`;
         }).join('')}
       </tr>
@@ -1511,7 +1523,7 @@ function init() {
 
     // CSS 오행 배경색 클래스
     const st = document.createElement('style');
-    st.textContent = '.bg-wood{background:var(--wood)}.bg-fire{background:var(--fire)}.bg-earth{background:var(--earth)}.bg-metal{background:var(--metal)}.bg-water{background:var(--water)}';
+    st.textContent = '.bg-wood{background:var(--wood)}.bg-fire{background:var(--fire)}.bg-earth{background:var(--earth)}.bg-metal{background:var(--metal)}.bg-water{background:var(--water);box-shadow:inset 0 0 0 1px var(--water-edge)}';
     document.head.appendChild(st);
 
     if (typeof window.__compatClearSafetyTimeout === 'function') window.__compatClearSafetyTimeout();
