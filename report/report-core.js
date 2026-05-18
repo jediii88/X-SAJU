@@ -407,7 +407,7 @@ function buildTopicMetaphorTitle(topic, data) {
 }
 
 var SAJUX_SECTION_LABELS = {
-    basic: '01. 원국 해부 — 태어난 순간의 별자리 지도',
+    basic: '한 줄기 서사 — 일주에서 펼치는 한 사람의 흐름',
     wuxing: '오행의 강약과 균형',
     sipseong: '십성 분포와 역할',
     wealth: '04. 재물 전략 — 돈의 흐름과 지키는 법',
@@ -491,7 +491,7 @@ function voiceInlineInterpHeader(topic, data) {
     var label = SAJUX_SECTION_LABELS[topic] || '';
     var hook = buildTopicMetaphorTitle(topic, data);
     if (topic === 'basic') {
-        return buildChapterHeadTopicFirst('원국 해부', '01 · 태어난 순간의 별자리 지도', hook) + buildChapterIntroHtml(data, topic);
+        return buildChapterHeadTopicFirst('한 줄기 서사', '일주 · 태어난 날의 중심축', hook) + buildChapterIntroHtml(data, topic);
     }
     if (topic === 'wuxing') {
         return buildChapterHeadTopicFirst('오행 — 다섯 기운의 짜임', label, hook) + buildChapterIntroHtml(data, topic);
@@ -3298,7 +3298,7 @@ function ensureSajuxReadablePanelStyles() {
     st.textContent = [
         ".m-hanja,.vip-hanja,.report-pillar-hanja,.hanja-main,.f-hz .report-pillar-hanja,.sajux-hanja,.month-pillar-title,.monthly-card,.yearly-card,.seyun-year-card{font-family:'Noto Sans KR',sans-serif!important;}",
         ".month-pillar-title .sajux-hanja,.monthly-card .sajux-hanja,.yearly-card .sajux-hanja{font-family:'Noto Sans KR',sans-serif!important;font-weight:700;}",
-        "@media screen{.sajux-panel-plain,.yearly-indicators,.deep-hook-panel,.premium-executive-summary,#sec-life-panorama.report-chapter,.sajux-gongmang-note{background:transparent!important;background-color:transparent!important;}}",
+        /* 화면에서는 패널 글래스는 override.css(.sajux-glass-*)가 담당 — 여기서 transparent로 덮어쓰면 유리 질감이 사라짐 */
         "@media print{.sajux-panel-plain,.yearly-indicators,.deep-hook-panel,.premium-executive-summary,#sec-life-panorama.report-chapter,.sajux-gongmang-note{background:#ffffff!important;background-color:#ffffff!important;border:1px solid #dddddd!important;}}",
         "body:not(.light-mode) .deep-hook-panel p,html[data-theme=dark] .deep-hook-panel p,body:not(.light-mode) .sajux-gongmang-note p,html[data-theme=dark] .sajux-gongmang-note p{color:#ddd!important;}",
         "body:not(.light-mode) .yearly-indicators .yearly-ind-val,html[data-theme=dark] .yearly-indicators .yearly-ind-val{color:#e8dcc8!important;}",
@@ -3585,11 +3585,10 @@ function generateDeepReport(data) {
 
     // ── 1부: 나라는 사람 ──
     var part1Body = '';
-    //   ① 일주 카드 — 바로 아래에 한 줄기 서사(태어남~마지막 장면 통합 서사)
+    //   ① 일주 카드 + 한 줄기 서사 — 단일 글래스 카드(buildIljuProfileCard)
     //   ② 만세력 안내 → 원국 표 → 원국 보강(격국·조후·공망·직업·관계) — 장문 인생 통변은 한 줄기 서사가 담당
     //   ③ 오행 · 십성 — 참고 분석
-    part1Body += safeCall(()=>buildIljuProfileCard(data)||'', 'ilju-card');
-    part1Body += safeCall(()=>buildPersonalPortrait(data)||'', 'personal-portrait');
+    part1Body += safeCall(()=>buildIljuProfileCard(data)||'', 'ilju-portrait-unified');
     part1Body += safeCall(()=>buildManseGuide(data)||'', 'manse-guide');
     part1Body += safeCall(()=>buildVipEvidenceBlock(data)||'', 'vip-evidence');
     part1Body += safeCall(()=>buildChapter1_Basic(data)||'', 'ch1-basic');
@@ -3693,7 +3692,9 @@ function injectSectionInterpretations(data) {
         }
     }
     // 1. 만세력 원국 아래
-    setEl('manse-inline-summary', () => buildChapter1_Basic(data) + buildCurrentPeriodSummary(data) + buildMasterFullReading(data));
+    // 만세력 블록은 화면에서 숨겨져 있어도 중복 주입되면 구버전 PDF·캐시에서 혼선을 줍니다.
+    // 원국 보강·현재 운·종합 풀이는 본문 1~2부 카드에만 둡니다.
+    setEl('manse-inline-summary', () => '');
     // 2. 합충형파해 아래
     setEl('relation-inline-summary', () => buildRelationSummary(data));
     // 3. 신살 아래
@@ -5106,51 +5107,52 @@ function buildIljuBranchSipseongSupplementHtml() {
 
 
 /** ─────────────────────────────────────────
- *  일주 프로파일 카드 — 1부 최상단 히어로 비주얼
- *  60일주 물상 + 핵심 키워드 배지 카드
+ *  일주 프로파일 카드 + 한 줄기 서사 — 단일 글래스 카드(바깥 테두리·배경 하나로 통일)
  * ───────────────────────────────────────── */
 function buildIljuProfileCard(data) {
     const ds = data.dayStem || '';
     const db = data.dayBranch || '';
     const iljuKey = ds + db;
     const prof = getIljuProfilePolished(data, ds, db);
-    if (!prof) return '';
+    var narrativeInner = buildPersonalPortraitInnerHtml(data) || '';
+    if (!prof && !narrativeInner) return '';
 
     function iljuHanjaSpan(char, sizeStyle) {
         return `<div style="line-height:1.1;${sajuxHanjaInlineStyle(char, sizeStyle||'46px', 200)}">${char}</div>`;
     }
     const accentColor = sajuxStemColor(ds);
 
-    // 키워드 배지 (strength에서 추출)
-    const kwRaw = prof.strength || '';
-    const kwList = kwRaw.split(/[·,·\s]+/).filter(k => k.length >= 2 && k.length <= 8).slice(0, 5);
-    const kwBadges = kwList.map(k =>
-        `<span class="ilju-kw-badge" style="display:inline-block;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.85);margin:3px 3px 3px 0;letter-spacing:0.5px;">${k}</span>`
-    ).join('');
+    var iljuTopHtml = '';
+    if (prof) {
+        const kwRaw = prof.strength || '';
+        const kwList = kwRaw.split(/[·,·\s]+/).filter(function (k) { return k.length >= 2 && k.length <= 8; }).slice(0, 5);
+        const kwBadges = kwList.map(function (k) {
+            return `<span class="ilju-kw-badge" style="display:inline-block;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.85);margin:3px 3px 3px 0;letter-spacing:0.5px;">${k}</span>`;
+        }).join('');
 
-    const isStrong = data.strengthText && (data.strengthText.includes('신강')||data.strengthText.includes('강'));
-    const strengthLabel = isStrong ? '에너지가 강한 편' : '에너지가 섬세한 편';
-    const strengthBadge = data.strengthText
-        ? `<span title="${isStrong?'신강(身强)':'신약(身弱)'}" style="font-size:10px;padding:3px 9px;border-radius:10px;background:rgba(199,167,106,0.10);color:var(--gold);border:1px solid rgba(199,167,106,0.30);font-weight:600;letter-spacing:0.2px;">${strengthLabel}</span>`
-        : '';
+        const isStrong = data.strengthText && (data.strengthText.includes('신강')||data.strengthText.includes('강'));
+        const strengthLabel = isStrong ? '에너지가 강한 편' : '에너지가 섬세한 편';
+        const strengthBadge = data.strengthText
+            ? `<span title="${isStrong?'신강(身强)':'신약(身弱)'}" style="font-size:10px;padding:3px 9px;border-radius:10px;background:rgba(199,167,106,0.10);color:var(--gold);border:1px solid rgba(199,167,106,0.30);font-weight:600;letter-spacing:0.2px;">${strengthLabel}</span>`
+            : '';
 
-    var iljuHangul = '';
-    if (typeof HAN_KOR !== 'undefined' && HAN_KOR) {
-        iljuHangul = (HAN_KOR[ds] || '') + (HAN_KOR[db] || '');
-    }
-    var iljuTitleWhite = (iljuHangul || iljuKey) + ' 일주';
+        var iljuHangul = '';
+        if (typeof HAN_KOR !== 'undefined' && HAN_KOR) {
+            iljuHangul = (HAN_KOR[ds] || '') + (HAN_KOR[db] || '');
+        }
+        var iljuTitleWhite = (iljuHangul || iljuKey) + ' 일주';
 
-    var iljuImageTagline = '';
-    if (prof.image) {
-        var imFull = String(prof.image);
-        var mdash = imFull.indexOf('—');
-        if (mdash >= 0) iljuImageTagline = imFull.slice(mdash + 1).trim();
-    }
-    var iljuTaglineHtml = iljuImageTagline
-        ? `<div style="font-size:12px;color:${accentColor};font-style:italic;margin-bottom:10px;line-height:1.45;opacity:0.92;">${iljuImageTagline}</div>`
-        : '';
+        var iljuImageTagline = '';
+        if (prof.image) {
+            var imFull = String(prof.image);
+            var mdash = imFull.indexOf('—');
+            if (mdash >= 0) iljuImageTagline = imFull.slice(mdash + 1).trim();
+        }
+        var iljuTaglineHtml = iljuImageTagline
+            ? `<div style="font-size:12px;color:${accentColor};font-style:italic;margin-bottom:10px;line-height:1.45;opacity:0.92;">${iljuImageTagline}</div>`
+            : '';
 
-    return `<div class="ilju-profile-card" style="display:flex;gap:20px;align-items:flex-start;background:linear-gradient(135deg,rgba(30,28,22,0.6),rgba(12,12,16,0.4));border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:22px 24px;margin-bottom:24px;position:relative;overflow:hidden;">
+        iljuTopHtml = `<div class="ilju-narrative-top" style="display:flex;gap:20px;align-items:flex-start;width:100%;box-sizing:border-box;">
         <div class="ilju-hanja-col" style="flex:0 0 auto;text-align:center;min-width:72px;">
             ${iljuHanjaSpan(ds, '46px')}
             ${iljuHanjaSpan(db, '46px')}
@@ -5165,6 +5167,18 @@ function buildIljuProfileCard(data) {
             <p style="font-size:13px;color:rgba(255,255,255,0.82);line-height:1.75;margin:0 0 14px;">${buildIljuProfileCardShortSummary(data, prof)}</p>
             <div style="line-height:1.8;">${kwBadges}</div>
         </div>
+    </div>`;
+    }
+
+    var divider = (prof && narrativeInner) ? '<div class="ilju-narrative-divider" aria-hidden="true"></div>' : '';
+    var portraitBlock = narrativeInner
+        ? `<div class="personal-portrait-inner ilju-narrative-portrait">${narrativeInner}</div>`
+        : '';
+
+    return `<div id="sec-ilju-narrative-unified" class="ilju-profile-card ilju-narrative-unified report-chapter chapter-start" style="display:flex;flex-direction:column;align-items:stretch;gap:0;margin-bottom:24px;padding:22px 24px;border-radius:16px;position:relative;overflow:hidden;border:1px solid rgba(255,255,255,0.08);background:transparent;box-sizing:border-box;">
+        ${iljuTopHtml}
+        ${divider}
+        ${portraitBlock}
     </div>`;
 }
 
@@ -5188,7 +5202,8 @@ function buildIljuProfileCard(data) {
  *  - 인물 초상의 7요소(첫인상·속내·강점·과제·결정·관계·일·본질)는
  *    해당 시기에 자연스럽게 녹여 배치합니다
  * ───────────────────────────────────────── */
-function buildPersonalPortrait(data) {
+/** 한 줄기 서사 본문만 — 일주 카드와 같은 글래스 카드 안에 붙일 때 공용 */
+function buildPersonalPortraitInnerHtml(data) {
     var name = data.name || '고객';
     var ds = data.dayStem || '';
     var db = data.dayBranch || '';
@@ -5383,9 +5398,7 @@ function buildPersonalPortrait(data) {
         return '<p style="font-size:14px;color:var(--text);line-height:2.1;margin:0 0 18px;">' + boldStarsToStrong(_vp(text)) + '</p>';
     }
 
-    return '<div id="sec-personal-portrait" class="report-chapter chapter-start sajux-panel-plain personal-portrait-hero" style="margin:32px 0 44px;padding:0;border:none;background:transparent;">'
-        + '<div class="personal-portrait-inner">'
-        + '<p class="personal-portrait-eyebrow">' + escHtmlAttr(nmDnim(name)) + ' · 한 줄기 서사</p>'
+    return '<p class="personal-portrait-eyebrow">' + escHtmlAttr(nmDnim(name)) + ' · 한 줄기 서사</p>'
         + '<h2 class="personal-portrait-title">처음 숨부터, 마침표까지</h2>'
         + '<p class="personal-portrait-lede">' + voiceTwilightSpan(name + 'portraitLede') + ' — 이름 없이도 읽히는 한 사람의 흐름</p>'
         + para(introText)
@@ -5395,8 +5408,14 @@ function buildPersonalPortrait(data) {
         + para(pJ)
         + para(pM)
         + para(pN)
-        + para(pMan)
-        + '</div></div>';
+        + para(pMan);
+}
+
+function buildPersonalPortrait(data) {
+    var inner = buildPersonalPortraitInnerHtml(data);
+    if (!inner) return '';
+    return '<div id="sec-personal-portrait" class="report-chapter chapter-start sajux-panel-plain personal-portrait-hero" style="margin:32px 0 44px;padding:0;border:none;background:transparent;">'
+        + '<div class="personal-portrait-inner">' + inner + '</div></div>';
 }
 
 
