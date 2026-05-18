@@ -3401,19 +3401,22 @@ function generateDeepReport(data) {
     ), 'part1section');
 
     // ── 2부: 지금 이 시절 ──
-    //   ① 대운 — 현재 대운부터 다음 대운까지의 흐름 (타임라인 + 대운 카드 + 다음 대운 풀이)
-    //   ② 세운 — 현재 포함 10년 (buildSewunLoop)
-    //   ③ 월운 — 현재 포함 12개월 (buildWolunLoop)
-    //   ※ 옛 buildChapter6_SeYun(올해)·buildChapter7_NextYears(내·내후년) 두 챕터는
-    //     buildSewunLoop(10년 카드)에 흡수되었습니다. 사용자 요청: "현재 세운 포함 10년 이후까지"
+    //   ① 대운 흐름 타임라인 (인생 80년 도식)
+    //   ② 현재 대운/세운/월운 통합 디테일 카드 (개념 + 5영역 풀이까지 한 카드)
+    //   ③ 앞으로 올 대운 — 다음·그 다음 (각 200~300자)
+    //   ④ 앞으로 올 세운 — 다음 해부터 10년 (각 200~300자)
+    //   ⑤ 앞으로 올 월운 — 다음 달부터 11개월 (각 200~300자)
+    //   ※ 옛 buildDaewunLoop / buildChapter8_NextDaewun / buildSewunLoop / buildChapter9_Monthly 는
+    //     사용자 피드백("현재 대운/세운/월운은 디테일하게 한 카드로, 다음 시기들은 200~300자")에 따라
+    //     buildCurrentPeriodCard + buildUpcoming{Daewun,Sewun,Wolun}Cards 로 교체되었습니다.
     var part2Body = '';
     part2Body += safeCall(()=>buildDaeunTimeline(data)||'', 'daeun-timeline');
-    part2Body += safeCall(()=>buildDaewunLoop(data)||'', 'daewun-loop');
-    part2Body += safeCall(()=>buildChapter8_NextDaewun(data)||'', 'ch8-next-daewun');
-    part2Body += safeCall(()=>buildSewunLoop(data)||'', 'sewun-loop-10y');
-    part2Body += safeCall(()=>buildChapter9_Monthly(data)||'', 'ch9-monthly');
+    part2Body += safeCall(()=>buildCurrentPeriodCard(data)||'', 'current-period-card');
+    part2Body += safeCall(()=>buildUpcomingDaewunCards(data)||'', 'upcoming-daewun');
+    part2Body += safeCall(()=>buildUpcomingSewunCards(data)||'', 'upcoming-sewun-10y');
+    part2Body += safeCall(()=>buildUpcomingWolunCards(data)||'', 'upcoming-wolun-11m');
     html += safeCall(()=>wrapPartSection(
-        buildPartHeader(2,'지금 이 시절','대운 · 10년 세운 · 12개월 월운','sec-part2-now',{name:data.name}),
+        buildPartHeader(2,'지금 이 시절','대운 · 세운 · 월운 — 지금 흐름과 앞으로 올 흐름','sec-part2-now',{name:data.name}),
         part2Body
     ), 'part2section');
 
@@ -3431,7 +3434,7 @@ function generateDeepReport(data) {
         part3Body
     ), 'part3section');
 
-    // ── 4부: 지금부터의 선택 — 개운법 중심으로 단순화 ──
+    // ── 4부: 지금부터의 선택 — 개운법 ──
     var part4Body = '';
     part4Body += safeCall(()=>buildChapter9_Remedy(data)||'', 'ch9-remedy');
     html += safeCall(()=>wrapPartSection(
@@ -3439,17 +3442,22 @@ function generateDeepReport(data) {
         part4Body
     ), 'part4section');
 
-    // ── 부록: 자미두수 운명 청사진 (별도 학문, 참고 자료) ──
+    // ── 본문 최종 안내: 이용 안내·열람 정책·면책 고지·PDF 저장 버튼 ──
+    //   ※ 사용자 요청 흐름: 개운법 → 이용안내 → (서프라이즈) 자미두수 → 리뷰 안내
+    html += safeCall(()=>buildReportFooterUtilities(data), 'footerUtilities');
+
+    // ── 서프라이즈 인트로 + 부록: 자미두수 운명 청사진 (별도 학문) ──
     var ziweiBlock = safeCall(()=>buildZiWeiDestinyBlueprintSection(data)||'', 'ziwei');
     if (ziweiBlock) {
-        html += '<div class="ziwei-appendix-block" style="margin-top:36px;padding-top:28px;border-top:1px dashed rgba(199,167,106,0.20);">'
-              + '<div style="font-size:10px;letter-spacing:0.18em;color:rgba(199,167,106,0.65);margin-bottom:12px;font-weight:700;">[ 부록 · 별도 자료 ]</div>'
+        html += safeCall(()=>buildZiweiSurpriseIntro(data)||'', 'ziwei-surprise-intro');
+        html += '<div class="ziwei-appendix-block" style="margin-top:24px;padding-top:24px;border-top:1px dashed rgba(199,167,106,0.20);">'
+              + '<div style="font-size:10px;letter-spacing:0.18em;color:rgba(199,167,106,0.65);margin-bottom:12px;font-weight:700;">[ 보너스 · 자미두수 별첨 ]</div>'
               + ziweiBlock
               + '</div>';
     }
 
-    // ── 문서 최하단: 이용 안내·열람 정책·면책 고지·PDF 저장 버튼을 한 곳에 정리 ──
-    html += safeCall(()=>buildReportFooterUtilities(data), 'footerUtilities');
+    // ── 맨 마지막: 리뷰 안내 카드 ──
+    html += safeCall(()=>buildReviewCallout(data)||'', 'review-callout');
 
     document.getElementById('report-container').innerHTML = html;
 
@@ -5370,6 +5378,509 @@ function buildDaeunTimeline(data) {
 
 
 /** ─────────────────────────────────────────
+ *  buildCurrentPeriodCard — 현재 대운·세운·월운 통합 디테일 카드
+ *  · 도입: 대운·세운·월운 개념 설명
+ *  · 현재 대운/세운/월운 한 흐름으로 풀이
+ *  · 이 흐름에 비추어 본 다섯 영역 (연애·건강·합격·직업·재물)
+ * ───────────────────────────────────────── */
+function buildCurrentPeriodCard(data) {
+    if (!data || !data.dayStem) return '';
+    var name = data.name || '고객';
+
+    var GAN_OH = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
+    var JI_OH  = {'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'};
+    var HK = {'甲':'갑','乙':'을','丙':'병','丁':'정','戊':'무','己':'기','庚':'경','辛':'신','壬':'임','癸':'계','子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해'};
+    var OH_KR = { wood:'목(나무)', fire:'화(불)', earth:'토(흙)', metal:'금(쇠)', water:'수(물)' };
+    var yong = data.yong || ''; var hee = data.hee || ''; var gi = data.gi || ''; var goo = data.goo || '';
+    function score(gan, ji) {
+        var s = 0;
+        var go = GAN_OH[gan] || ''; var jo = JI_OH[ji] || '';
+        if (go === yong || go === hee) s += 2;
+        if (go === gi  || go === goo) s -= 2;
+        if (jo === yong || jo === hee) s += 2;
+        if (jo === gi  || jo === goo) s -= 2;
+        return s;
+    }
+    function tone(s) { return s >= 3 ? 'good' : s >= 1 ? 'mild' : s === 0 ? 'flat' : s >= -2 ? 'caution' : 'tough'; }
+    function toneLabel(t) { return ({ good:'잘 풀리는 시기', mild:'한 발 더 내디뎌도 좋은 시기', flat:'안정·정돈에 좋은 시기', caution:'한 박자 늦추셔야 할 시기', tough:'단단히 지키셔야 할 시기' })[t] || '안정 시기'; }
+    function toneColor(t) { return ({ good:'#c7a76a', mild:'#5ec183', flat:'#9b9b9b', caution:'#e0a040', tough:'#c84a4a' })[t] || '#888'; }
+
+    // ── 현재 대운 추출 ──
+    var curAge = (typeof getClientAgeYearsAtReport === 'function') ? getClientAgeYearsAtReport(data) : 0;
+    var rows = (data.daeunRows && data.daeunRows.length) ? data.daeunRows : (data.daewunList || []);
+    var curDae = null;
+    for (var i = 0; i < rows.length; i++) {
+        var r = rows[i];
+        var a = (typeof r.age === 'number') ? r.age : (typeof r.startAge === 'number' ? r.startAge : 0);
+        if (curAge >= a && curAge < a + 10) { curDae = { row: r, age: a, idx: i }; break; }
+    }
+    if (!curDae && rows.length) {
+        var idx0 = (typeof data.activeDaeunIdx === 'number') ? data.activeDaeunIdx : 0;
+        var r0 = rows[idx0] || rows[0];
+        var a0 = (typeof r0.age === 'number') ? r0.age : (typeof r0.startAge === 'number' ? r0.startAge : 0);
+        curDae = { row: r0, age: a0, idx: idx0 };
+    }
+    var dGan = '', dJi = '';
+    if (curDae) {
+        var rr = curDae.row;
+        if (rr.gz) { dGan = rr.gz[0] || ''; dJi = rr.gz[1] || ''; }
+        else if (rr.h) { dGan = rr.h[0] || ''; dJi = rr.h[1] || ''; }
+        else { dGan = rr.gan || ''; dJi = rr.ji || ''; }
+    }
+    var dScore = (dGan && dJi) ? score(dGan, dJi) : 0;
+    var dTone = tone(dScore);
+    var dGanKr = HK[dGan] || dGan; var dJiKr = HK[dJi] || dJi;
+    var dGanOh = OH_KR[GAN_OH[dGan] || ''] || ''; var dJiOh = OH_KR[JI_OH[dJi] || ''] || '';
+
+    // ── 현재 세운 (올해) ──
+    var baseNow = (typeof getReportBaseDate === 'function') ? getReportBaseDate(data) : new Date();
+    var curYear = baseNow.getFullYear();
+    var GAN_HJ_ARR = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+    var JI_HJ_ARR  = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+    var yGanI = ((curYear - 4) % 10 + 10) % 10;
+    var yJiI  = ((curYear - 4) % 12 + 12) % 12;
+    var yGan = GAN_HJ_ARR[yGanI]; var yJi = JI_HJ_ARR[yJiI];
+    var yScore = score(yGan, yJi);
+    var yTone = tone(yScore);
+    var yGanKr = HK[yGan]; var yJiKr = HK[yJi];
+
+    // ── 현재 월운 (이번 달) ──
+    var curMonthIdx = baseNow.getMonth(); // 0~11
+    var MONTH_JI_KR = ['인','묘','진','사','오','미','신','유','술','해','자','축'];
+    var MONTH_GAN_START_TBL = [2, 4, 6, 8, 0];
+    var mGanStartIdx = MONTH_GAN_START_TBL[yGanI % 5];
+    var mJiKr = MONTH_JI_KR[curMonthIdx];
+    var mGanIdx = (mGanStartIdx + curMonthIdx) % 10;
+    var GAN_KR_ARR = ['갑','을','병','정','무','기','경','신','임','계'];
+    var mGanKr = GAN_KR_ARR[mGanIdx];
+    var GAN_HJ_FROM_KR = {'갑':'甲','을':'乙','병':'丙','정':'丁','무':'戊','기':'己','경':'庚','신':'辛','임':'壬','계':'癸'};
+    var JI_HJ_FROM_KR  = {'자':'子','축':'丑','인':'寅','묘':'卯','진':'辰','사':'巳','오':'午','미':'未','신':'申','유':'酉','술':'戌','해':'亥'};
+    var mGan = GAN_HJ_FROM_KR[mGanKr] || '甲';
+    var mJi  = JI_HJ_FROM_KR[mJiKr] || '寅';
+    var mScore = score(mGan, mJi);
+    var mTone = tone(mScore);
+    var monthNo = curMonthIdx + 1;
+
+    // ── 종합 점수 (대운+세운+월운) ──
+    var totalScore = dScore + yScore + mScore;
+    var totalTone = tone(totalScore / 2);
+
+    // ── 개념 설명 박스 ──
+    function conceptBox(label, body, color) {
+        return '<div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:13px 16px;border-left:3px solid ' + color + ';">'
+            + '<div style="font-size:11px;font-weight:700;color:' + color + ';letter-spacing:0.08em;margin-bottom:6px;">' + label + '</div>'
+            + '<p style="font-size:12.5px;color:#bbb;line-height:1.85;margin:0;">' + body + '</p></div>';
+    }
+    var conceptHtml = '<div style="display:grid;grid-template-columns:1fr;gap:10px;margin:14px 0 22px;">'
+        + conceptBox('대운 (大運) — 10년짜리 큰 계절', '인생 전체를 10년 단위로 끊었을 때, 그 시기에 ' + nmKke(name) + ' 어떤 공기가 둘러싸고 있는지를 보여 줘요. 큰 방향성·전반적인 분위기·이 시기에 살아 봐야 할 주제를 정해 주는 가장 큰 흐름입니다.', '#c7a76a')
+        + conceptBox('세운 (歲運) — 그해 한 해의 날씨', '대운이 “큰 계절”이라면, 세운은 “그 계절 안의 한 해 날씨”에 해당해요. 같은 봄이라도 비가 잦은 해와 햇살이 좋은 해가 다르듯, 한 해 안에서 어떤 일이 잦아질지를 보여 줍니다.', '#5ec183')
+        + conceptBox('월운 (月運) — 한 달 안의 시간대', '세운이 한 해의 날씨라면, 월운은 그 안의 “하루 중 시간대”에 가까워요. 한 달 단위로 컨디션·관계·돈의 흐름이 미세하게 바뀌니, 이번 달 안에서 어디에 힘을 실을지를 잡는 데 가장 좋습니다.', '#7fa5d6');
+    conceptHtml += '</div>';
+
+    // ── 현재 대운/세운/월운 풀이 ──
+    function pillarLine(g, j, gOh, jOh) {
+        return '<strong>' + (HK[g] || g) + (HK[j] || j) + '</strong> (' + (gOh || '') + '·' + (jOh || '') + ')';
+    }
+    function _vp(t) { return voicePolishParagraph(data, t); }
+    function _bs(t) { return boldStarsToStrong(_vp(t)); }
+
+    var endAge = (curDae ? curDae.age : 0) + 9;
+    var daeunBody = '지금 ' + nmEunNeun(name) + ' ' + (curDae ? curDae.age : 0) + '세부터 ' + endAge + '세까지 약 10년 동안, ' + pillarLine(dGan, dJi, dGanOh, dJiOh) + ' 대운 속에 들어와 계세요. ';
+    daeunBody += ({
+        good:    '이 10년은 ' + nmKke(name) + ' 가장 잘 맞는 기운이 두껍게 깔려 있어요. 같은 일을 해도 결과가 빨리 붙고, 한 번 잡은 기회가 다음 기회로 자연스럽게 이어집니다. 무리하지만 않으시면, 이 시기에 평생 끌고 갈 한두 가지 큰 축이 정해질 가능성이 큽니다.',
+        mild:    '이 10년은 ' + nmKke(name) + ' 한 발 더 내디뎌도 좋은 흐름이에요. 큰 위협은 적고, 꾸준히 노력하시는 만큼 그 결실이 차곡차곡 쌓이는 시기입니다. 한꺼번에 크게 가시기보다 평소 페이스를 유지하시는 게 가장 큰 이득이 됩니다.',
+        flat:    '이 10년은 큰 길도 큰 흉도 적은 평탄한 흐름이에요. 새로 벌이실 일을 만드시기보다는, 그동안 벌여 두신 일들 가운데 진짜 남길 한두 가지를 정리하고 다듬는 데 시간을 쓰시면 다음 대운이 훨씬 가벼워집니다.',
+        caution: '이 10년은 ' + nmKke(name) + ' 살짝 부담스러운 기운이 깔린 시기예요. 결정의 무게는 무거워지고, 같은 노력이라도 결과가 느리게 돌아옵니다. 이때는 새로 벌이시기보다 “이미 가지고 계신 것들을 단단히 지키시는 쪽”이 정답에 가까워요.',
+        tough:   '이 10년은 ' + nmKke(name) + ' 가장 부담이 큰 기운이 자리 잡고 있어요. 일·돈·건강 중 한 자리가 자주 흔들릴 수 있으니, 큰 결정은 평소보다 두 배 더 천천히, 글로 적어 두신 뒤에만 내리십시오. 지키는 쪽에 무게를 두시면 이 시기가 의외로 단단한 인생의 기반이 됩니다.'
+    })[dTone];
+
+    var sewunBody = '그 큰 계절 안에서, 올해(' + curYear + '년) ' + nmEunNeun(name) + ' <strong>' + yGanKr + yJiKr + '(' + yGan + yJi + ')</strong> 세운 위에 서 계세요. ';
+    sewunBody += ({
+        good:    '대운이 좋고 세운까지 맞물려 들어오는 흐름이라, **올 한 해는 평생 손에 꼽힐 만한 해**가 될 가능성이 커요. 미루어 두셨던 큰 결정 한두 가지를 올해 안에 푸시는 게 좋습니다.',
+        mild:    '올해는 큰 풍파 없이 차곡차곡 결실이 따라붙는 해예요. 지난해까지 쌓아 오신 것들이 올해 안에 작은 모양으로 한 번씩 드러납니다. 한 해의 성과를 분기마다 한 줄씩 기록해 두시면 다음 해 흐름이 또렷이 보입니다.',
+        flat:    '올해는 큰 사건보다는 정리·점검의 한 해예요. 새로 시작하기보다, 작년·재작년에 벌이신 일 중에 끊을 한 가지·이어 갈 한 가지를 가르는 데 마음을 쓰시면 좋아요.',
+        caution: '올해는 ' + nmKke(name) + ' 결정의 무게가 평소보다 무거워지는 해예요. 큰돈·큰 관계·큰 자리 — 이 셋 중 두 가지를 동시에 흔들지 마시고, 한 가지에만 집중하시면 한 해가 한결 가볍게 흘러갑니다.',
+        tough:   '올해는 한 발 물러서 보시는 게 정답에 가까운 해예요. 새 시작은 가능하면 내년 이후로 미루시고, 올해는 “지금 있는 것을 흔들리지 않게 지키는” 한 가지 목표만 가지고 가시면 결과가 단단해집니다.'
+    })[yTone];
+
+    var wolunBody = '그 한 해 안에서, 이번 달(' + monthNo + '월) ' + nmEunNeun(name) + ' <strong>' + mGanKr + mJiKr + '(' + mGan + mJi + ')</strong> 월운 위에 서 계세요. ';
+    wolunBody += ({
+        good:    '이번 달은 한 해 중에서도 특히 결정의 결과가 빨리 보이는 달이에요. 미뤄 두신 큰 안건을 이번 달 안에 한 가지만 매듭짓고 가시면, 다음 달이 한결 가볍게 풀립니다.',
+        mild:    '이번 달은 새 시도 한두 가지를 가볍게 더하셔도 무리가 없는 달이에요. 지난달의 리듬을 그대로 이어 가시면서, 이번 달 안에 “한 가지 마무리·한 가지 시작”만 잡으시면 균형이 좋습니다.',
+        flat:    '이번 달은 큰 굴곡 없이 평탄한 달이에요. 새 일을 벌이기보다 평소 빠져 있던 자기 관리(수면·식사·관계 정리) 쪽에 시간을 쓰시면 다음 달이 한결 가벼워집니다.',
+        caution: '이번 달은 한 박자 늦추셔야 하는 달이에요. 한 달 안에 큰 결정 두세 개가 몰리시면 그중 하나가 어긋나기 쉬우니, 큰 결정은 이번 달 안에 “한 가지”만 골라 처리하십시오.',
+        tough:   '이번 달은 단단히 지키셔야 하는 달이에요. 큰돈·큰 약속·큰 변화는 이번 달엔 멈추시고, “지금 있는 것을 무너지지 않게 점검하는” 데 시간을 쓰시면 다음 달이 자연스럽게 풀립니다.'
+    })[mTone];
+
+    // ── 다섯 영역 풀이 (대운+세운+월운 종합) ──
+    var sipseong = data.sipseong || {};
+    var sipTotal = Math.max(Object.values(sipseong).reduce(function(a,b){return a+b;}, 0), 1);
+    var jaeC = (sipseong['정재']||0) + (sipseong['편재']||0);
+    var gwanC = (sipseong['정관']||0) + (sipseong['편관']||0);
+    var inC = (sipseong['정인']||0) + (sipseong['편인']||0);
+    var sikC = (sipseong['식신']||0) + (sipseong['상관']||0);
+
+    function domainLine(t, body) {
+        return body;
+    }
+
+    var loveLine = '지금 ' + nmUi(name) + ' 연애·관계 운은 — ' + (
+        totalTone === 'good' ? '대운·세운·월운이 함께 받쳐 주는 흐름이라, **이번 시기에 시작되는 인연은 오래 갈 가능성이 큽니다.** 이미 만나고 계신 분이라면 한 단계 깊은 약속(결혼·동거·공식화)을 이 시기에 매듭지으시면 자연스럽게 풀려요. 새로 시작하시는 분이라면, 큰 모임보다 같은 결의 소모임에서 만나는 인연이 더 단단합니다.' :
+        totalTone === 'mild' ? '큰 풍파는 없고 잔잔한 흐름이에요. 새 인연을 적극적으로 찾으시기보다, 지금 옆에 계신 사람과 약속을 한 가지씩 차곡차곡 쌓아 가시는 게 가장 큰 이득이 됩니다. **무리한 고백·이별보다는 “말 한마디 더 따뜻하게”** 정도로 가시면 충분해요.' :
+        totalTone === 'flat' ? '연애 흐름 자체는 평온해요. 큰 사건이 일어나는 시기는 아니니, 오히려 이 시기에 ' + nmDnim(name) + ' 자신의 연애 패턴을 한 번 돌아보시기 좋아요. 같은 사람에게 반복해서 끌리시는 이유, 매번 어긋나는 지점 — 한 번 노트에 적어 보시면 다음 인연이 보입니다.' :
+        '큰 결정을 미루시는 게 좋은 시기예요. **이별·결혼·동거·고백** 같은 큰 결정은 가능하면 이 시기를 지나신 뒤로 미루시는 게 좋아요. 지금 당장의 감정에 휩쓸려 큰 결정을 내리시면, 시간이 지난 뒤에 후회로 돌아올 가능성이 큽니다.'
+    );
+
+    var healthLine = '지금 ' + nmUi(name) + ' 건강 운은 — ' + (
+        totalTone === 'good' ? '체력이 평소보다 한 단계 위로 올라온 시기예요. 다만 컨디션이 좋다고 무리하시면 그게 다음 시기에 한꺼번에 돌아옵니다. **운동·수면 루틴**을 이때 한 번 단단히 고정해 두시면 평생의 자산이 됩니다.' :
+        totalTone === 'mild' ? '큰 건강 이슈는 없는 시기지만, 정기 검진을 미루지 않으시는 게 좋아요. 1년에 한 번, 본인 건강검진 + 안과·치과 정도는 같은 달에 묶어 두시면 빼먹지 않으십니다.' :
+        totalTone === 'flat' ? '몸은 무난하지만 마음의 피로가 쌓이기 쉬운 시기예요. **수면 시간 한 가지**만 평소보다 30분 일찍 고정하셔도 다음 시기가 한결 가볍습니다.' :
+        '면역이 평소보다 얇아진 시기예요. 술·철야·과로 — 이 셋 중 두 가지가 겹치는 주를 만들지 마시고, **건강검진을 이 시기 안에 한 번 더** 잡아 두십시오. 마음 건강(불안·우울·불면)도 같이 점검하시는 게 좋습니다.'
+    );
+
+    var hapLine = '지금 ' + nmUi(name) + ' 합격 운(시험·자격·취직·문서)은 — ' + (
+        (totalTone === 'good' || totalTone === 'mild') && inC / sipTotal >= 0.15 ?
+            '인성(印) 기운이 받쳐 주고 운까지 맞물려 들어오는, **합격에 가장 가까운 시기**예요. 미뤄 두셨던 시험·자격증·서류 작업이 있다면 이 시기 안에 매듭짓고 가시는 게 가장 좋습니다.' :
+        totalTone === 'good' || totalTone === 'mild' ?
+            '큰 막힘 없이 진행되는 시기예요. 다만 인성(印, 공부·자격) 기운은 평균이라, **꾸준한 누적**(평일 1시간 학습 같은 작은 루틴)이 결실로 돌아오는 시기입니다. 단번 합격을 노리시기보다 분기별로 한 단계씩 올라가시는 게 자연스러워요.' :
+        totalTone === 'flat' ?
+            '시험·자격을 새로 시작하시기엔 자극이 부족한 시기예요. 다만 한 번 시작하신 공부를 “끊지 않고 이어 가는 데”는 좋은 시기라, **이미 시작하신 공부를 한 단계 마무리하는 데** 시간을 쓰시면 좋습니다.' :
+            '큰 시험·큰 면접·큰 계약은 가능하면 이 시기를 지나신 뒤로 미루시는 게 좋아요. 지금 당장의 결과보다, 다음 인성(印) 기운(임·계·인·묘·해·자 글자가 들어오는 해)이 들어오는 시기를 기다리시는 게 결실이 훨씬 단단해집니다.'
+    );
+
+    var workLine = '지금 ' + nmUi(name) + ' 직업·일 운은 — ' + (
+        totalTone === 'good' && gwanC / sipTotal >= 0.15 ?
+            '관성(官, 조직·자리) 기운에 운이 함께 실리는 흐름이라, **승진·이직·창업 같은 큰 자리 이동이 잘 풀리는 시기**예요. 미뤄 두셨던 직장 관련 결정 한두 가지를 이 시기 안에 매듭지으시면 좋습니다.' :
+        totalTone === 'good' || totalTone === 'mild' ?
+            '하시는 일에 빛이 드는 시기예요. **성과를 숫자로 남기는 것**(매출·작품·발표 같은 식으로)이 이 시기에 가장 큰 이득이 됩니다. 평소보다 한 단계 더 적극적으로 본인의 결과물을 외부에 드러내 보십시오.' :
+        totalTone === 'flat' ?
+            '큰 변동 없이 평탄한 직장 흐름이에요. 새 이직·새 사업보다, **지금 자리에서의 신뢰를 한 단계 더 쌓는 데** 무게를 두시는 게 더 큰 이득이 됩니다.' :
+            '큰 직장 결정(이직·창업·퇴사)은 이 시기를 지나신 뒤로 미루시는 게 좋아요. 지금 자리에서 어쩔 수 없는 변화는 받아들이시되, **본인이 먼저 흔드는 큰 결정은 보류**하시면 다음 시기가 훨씬 가볍게 풀립니다.'
+    );
+
+    var wealthLine = '지금 ' + nmUi(name) + ' 재물 운은 — ' + (
+        totalTone === 'good' && jaeC / sipTotal >= 0.15 ?
+            '재성(財) 기운에 운이 함께 실리는 흐름이라, **벌이 통로가 한두 갈래 더 열리는 시기**예요. 다만 동시에 새는 통로도 함께 늘기 쉬우니, “이번 달에 들어오고 나가는 돈” 표 한 장만은 꼭 만들어 두십시오.' :
+        totalTone === 'good' || totalTone === 'mild' ?
+            '평소보다 수입이 안정적으로 흐르는 시기예요. **새 투자보다 기존 통장 정리**(고정비·구독·보험)에 시간을 쓰시면 다음 시기로 갈 때 가장 큰 이득이 됩니다.' :
+        totalTone === 'flat' ?
+            '돈의 큰 굴곡이 적은 시기예요. **저축·실물 자산**처럼 천천히 쌓이는 쪽에만 무게를 두시면 됩니다. 변동 큰 자산이나 큰 보증·동업은 이번 시기에 절대 늘리지 마십시오.' :
+            '재물이 새기 쉬운 시기예요. **빌린 돈으로 버는 투자, 보증, 큰 동업, 보증금이 큰 임대**는 이 시기를 지나신 뒤로 미루십시오. 큰 결정은 “이틀 밤을 자고 글로 받은 뒤에만” 내리시면 큰 손해는 막을 수 있습니다.'
+    );
+
+    // ── HTML 조립 ──
+    var chHead = (typeof buildChapterHead === 'function')
+        ? buildChapterHead((typeof buildTopicMetaphorTitle === 'function' ? buildTopicMetaphorTitle('daeun', data) : ''), '지금 이 시절 — 대운 · 세운 · 월운 통합 풀이')
+        : '<h3 class="ch-title">지금 이 시절 — 대운 · 세운 · 월운 통합 풀이</h3>';
+
+    function bigPillarCard(label, color, kk, hh, oh, periodText, body) {
+        return '<div style="background:rgba(255,255,255,0.045);border-radius:14px;padding:20px 22px;margin-bottom:14px;border:1px solid ' + color + '33;border-left:4px solid ' + color + ';">'
+            + '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px;">'
+            + '<div><div style="font-size:11px;letter-spacing:0.12em;color:' + color + ';font-weight:700;margin-bottom:4px;">' + label + '</div>'
+            + '<div style="font-size:22px;font-weight:800;color:#fff;font-family:\'Noto Sans KR\',sans-serif;letter-spacing:0.04em;">' + kk + '<span style="font-size:14px;color:#aaa;margin-left:6px;">(' + hh + ')</span></div></div>'
+            + '<div style="text-align:right;"><div style="font-size:11px;color:#888;">' + periodText + '</div>'
+            + '<div style="font-size:11px;color:' + color + ';font-weight:600;margin-top:2px;">' + oh + '</div></div></div>'
+            + '<p style="font-size:13.5px;color:#ddd;line-height:1.95;margin:0;">' + body + '</p></div>';
+    }
+
+    function domainCard(label, color, body) {
+        return '<div style="background:rgba(255,255,255,0.035);border-radius:10px;padding:14px 16px;border-left:3px solid ' + color + ';">'
+            + '<div style="font-size:11px;font-weight:700;color:' + color + ';letter-spacing:0.08em;margin-bottom:8px;">' + label + '</div>'
+            + '<p style="font-size:13px;color:#ccc;line-height:1.9;margin:0;">' + body + '</p></div>';
+    }
+
+    var dColor = toneColor(dTone); var yColor = toneColor(yTone); var mColor = toneColor(mTone);
+    var dPeriod = (curDae ? curDae.age : 0) + '세 ~ ' + endAge + '세 · ' + toneLabel(dTone);
+    var yPeriod = curYear + '년 한 해 · ' + toneLabel(yTone);
+    var mPeriod = curYear + '년 ' + monthNo + '월 · ' + toneLabel(mTone);
+    var dOhTag = (dGanOh || '') + ' · ' + (dJiOh || '');
+    var yOhTag = (OH_KR[GAN_OH[yGan]] || '') + ' · ' + (OH_KR[JI_OH[yJi]] || '');
+    var mOhTag = (OH_KR[GAN_OH[mGan]] || '') + ' · ' + (OH_KR[JI_OH[mJi]] || '');
+
+    return '<div class="report-chapter">'
+        + chHead
+        + '<p class="ch-text" style="font-size:14px;color:var(--text);line-height:2;margin:0 0 18px;">' + _vp('“지금 ' + nmUi(name) + ' 인생은 어디쯤 와 있는가”를 사주는 세 겹의 시간(대운·세운·월운)으로 한꺼번에 보여 줍니다. 먼저 이 세 시간이 무엇인지부터 짚고, 그 위에 ' + nmIGa(name) + ' 지금 어디 서 계신지를 한 흐름으로 풀어 드릴게요.') + '</p>'
+        + conceptHtml
+        + '<div style="display:flex;flex-direction:column;gap:0;margin:18px 0 22px;">'
+        + bigPillarCard('현재 대운', dColor, dGanKr + dJiKr, dGan + dJi, dOhTag, dPeriod, _bs(daeunBody))
+        + bigPillarCard('현재 세운 (올해)', yColor, yGanKr + yJiKr, yGan + yJi, yOhTag, yPeriod, _bs(sewunBody))
+        + bigPillarCard('현재 월운 (이번 달)', mColor, mGanKr + mJiKr, mGan + mJi, mOhTag, mPeriod, _bs(wolunBody))
+        + '</div>'
+        + '<div style="background:rgba(199,167,106,0.06);border-radius:12px;padding:18px 20px;margin:14px 0 20px;border:1px solid rgba(199,167,106,0.18);">'
+        + '<div style="font-size:11px;letter-spacing:0.12em;color:var(--gold);font-weight:700;margin-bottom:10px;">이 흐름에 비추어 본 다섯 영역</div>'
+        + '<p style="font-size:13px;color:#ccc;line-height:1.9;margin:0 0 14px;">' + _vp('대운·세운·월운 세 흐름이 겹친 자리에서, ' + nmUi(name) + ' 지금 시기를 다섯 영역으로 나눠 풀어 드립니다. (해당 영역의 자세한 평생 풀이는 다음 「삶의 영역」 챕터에서 한 번 더 깊이 들여다보겠습니다.)') + '</p>'
+        + '<div style="display:grid;grid-template-columns:1fr;gap:10px;">'
+        + domainCard('연애 · 인연', '#e07aa8', _bs(loveLine))
+        + domainCard('건강 · 컨디션', '#5fc4a4', _bs(healthLine))
+        + domainCard('합격 · 자격 · 문서', '#7fa5d6', _bs(hapLine))
+        + domainCard('직업 · 일', '#c7a76a', _bs(workLine))
+        + domainCard('재물 · 돈의 흐름', '#d4b46a', _bs(wealthLine))
+        + '</div></div></div>';
+}
+
+
+/** ─────────────────────────────────────────
+ *  buildUpcomingDaewunCards — 다음 대운 + 그 다음 대운 (각 200~300자)
+ * ───────────────────────────────────────── */
+function buildUpcomingDaewunCards(data) {
+    if (!data || !data.dayStem) return '';
+    var name = data.name || '고객';
+    var rows = (data.daeunRows && data.daeunRows.length) ? data.daeunRows : (data.daewunList || []);
+    if (!rows.length) return '';
+    var curAge = (typeof getClientAgeYearsAtReport === 'function') ? getClientAgeYearsAtReport(data) : 0;
+
+    var nextRows = [];
+    for (var i = 0; i < rows.length; i++) {
+        var r = rows[i];
+        var a = (typeof r.age === 'number') ? r.age : (typeof r.startAge === 'number' ? r.startAge : 0);
+        if (a > curAge) nextRows.push({ row: r, age: a });
+        if (nextRows.length >= 2) break;
+    }
+    if (!nextRows.length) return '';
+
+    var GAN_OH = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
+    var JI_OH  = {'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'};
+    var HK = {'甲':'갑','乙':'을','丙':'병','丁':'정','戊':'무','己':'기','庚':'경','辛':'신','壬':'임','癸':'계','子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해'};
+    var OH_KR = { wood:'목(나무)', fire:'화(불)', earth:'토(흙)', metal:'금(쇠)', water:'수(물)' };
+    var yong = data.yong || ''; var hee = data.hee || ''; var gi = data.gi || ''; var goo = data.goo || '';
+    function score(g, j) {
+        var s = 0; var go = GAN_OH[g]; var jo = JI_OH[j];
+        if (go === yong || go === hee) s += 2; if (go === gi || go === goo) s -= 2;
+        if (jo === yong || jo === hee) s += 2; if (jo === gi || jo === goo) s -= 2;
+        return s;
+    }
+
+    var STAGE_TEMPLATE = {
+        wood:    nmDnim(name) + ' 이 시기에는 “시작·확장·새 학습”의 기운이 깔립니다. 새 일·이사·이직처럼 ‘처음 디뎌 보는 자리’가 자주 열려요. 다만 동시에 시작만 잦아지면 마무리가 밀리기 쉬우니, 새 도전은 1년에 한두 개로만 묶어 가시는 게 좋습니다.',
+        fire:    nmDnim(name) + ' 이 시기에는 “드러남·성취·이름”의 기운이 깔립니다. 평소보다 ' + nmIGa(name) + ' 외부에 노출되는 일이 늘고, 한 번 인정받기 시작하면 그 흐름이 빠르게 커집니다. 다만 빛이 커진 만큼 수면·지출이 같이 흔들리기 쉬우니, 이 두 가지의 상한선을 미리 정해 두세요.',
+        earth:   nmDnim(name) + ' 이 시기에는 “안정·축적·완성”의 기운이 깔립니다. 큰 사건보다는 그동안 쌓아 오신 것들을 정리하고 결실로 거두는 쪽이 자연스러워요. 서두르지 않으셔도 흐름이 받쳐 주니, 자산·관계·역할 중 한 가지만 골라 마무리해 가시면 됩니다.',
+        metal:   nmDnim(name) + ' 이 시기에는 “결단·정리·전문성”의 기운이 깔립니다. 안 맞는 사람·일·물건을 잘라 내실 때 ' + nmKke(name) + ' 가장 큰 이득이 돌아옵니다. 한 분야를 깊게 파시면 그 깊이가 다음 시기의 가장 큰 자산이 돼요.',
+        water:   nmDnim(name) + ' 이 시기에는 “통찰·정보·인맥”의 기운이 깔립니다. 말보다 기록이 이기는 시기라, 본인이 보고 들은 것을 한 권의 노트·한 폴더로만 정리해 두시면 그게 다음 시기의 가장 큰 자본이 됩니다. 다만 말이 많아질수록 손해도 커지니, 메모는 늘리시고 발언은 절반으로 줄이세요.'
+    };
+    var TONE_TAIL = {
+        good:    ' 이 흐름은 ' + nmKke(name) + ' 본래 잘 맞는 기운과 겹쳐, 평생 두세 번 만나기 어려운 ‘공격해도 좋은 10년’에 가까워요. 미뤄 두셨던 큰 일 한두 가지를 이 시기 안에 풀고 가시는 게 가장 큰 이득입니다.',
+        mild:    ' 큰 풍파 없이 한 발씩 내딛으시는 만큼 결과가 돌아오는 흐름이라, 평소 페이스를 유지하시는 게 정답이에요.',
+        flat:    ' 큰 길도 큰 흉도 적은 평탄한 흐름이라, 새로 시작하시기보다 ‘이미 손에 쥐고 계신 것들’을 다듬는 데 시간을 쓰시면 좋습니다.',
+        caution: ' 부담이 약간 깔린 흐름이라, 큰 결정은 평소보다 한 박자 늦추시고 ‘지키는 쪽’에 무게를 두시면 됩니다.',
+        tough:   ' 부담이 큰 흐름이라, 이 시기에는 새로 벌이기보다 ‘지금 있는 것을 무너지지 않게 지키는 데’ 가장 큰 힘이 있습니다. 큰 결정은 다음 대운으로 미루셔도 늦지 않아요.'
+    };
+    function tone(s) { return s >= 3 ? 'good' : s >= 1 ? 'mild' : s === 0 ? 'flat' : s >= -2 ? 'caution' : 'tough'; }
+    function toneColor(t) { return ({ good:'#c7a76a', mild:'#5ec183', flat:'#9b9b9b', caution:'#e0a040', tough:'#c84a4a' })[t] || '#888'; }
+    function toneLabel(t) { return ({ good:'잘 풀리는 10년', mild:'한 발 더 내디뎌도 좋은 10년', flat:'안정·정돈에 좋은 10년', caution:'한 박자 늦추는 10년', tough:'단단히 지키는 10년' })[t] || '안정 10년'; }
+
+    var cards = nextRows.map(function (nx, idx) {
+        var rr = nx.row;
+        var g = (rr.gz && rr.gz[0]) || (rr.h && rr.h[0]) || rr.gan || '';
+        var j = (rr.gz && rr.gz[1]) || (rr.h && rr.h[1]) || rr.ji || '';
+        if (!g || !j) return '';
+        var sc = score(g, j);
+        var t = tone(sc);
+        var gOh = GAN_OH[g] || ''; var jOh = JI_OH[j] || '';
+        // 대운의 주된 오행: 천간 기준 (전통적으로 상반은 천간, 하반은 지지)
+        var primary = gOh || jOh || 'earth';
+        var body = STAGE_TEMPLATE[primary] + TONE_TAIL[t];
+        var col = toneColor(t);
+        var orderLabel = idx === 0 ? '다음 대운' : '그 다음 대운';
+        var ageRange = nx.age + '세 ~ ' + (nx.age + 9) + '세';
+        var ohTag = (OH_KR[gOh] || '') + ' · ' + (OH_KR[jOh] || '');
+        return '<div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:18px 20px;margin-bottom:14px;border:1px solid ' + col + '22;border-left:3px solid ' + col + ';">'
+            + '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px;">'
+            + '<div><div style="font-size:10px;letter-spacing:0.12em;color:' + col + ';font-weight:700;margin-bottom:4px;">' + orderLabel + '</div>'
+            + '<div style="font-size:18px;font-weight:800;color:#fff;font-family:\'Noto Sans KR\',sans-serif;">' + (HK[g] || g) + (HK[j] || j) + '<span style="font-size:12px;color:#888;margin-left:6px;">(' + g + j + ')</span></div></div>'
+            + '<div style="text-align:right;"><div style="font-size:11px;color:#888;">' + ageRange + '</div>'
+            + '<div style="font-size:10px;color:' + col + ';margin-top:2px;">' + ohTag + ' · ' + toneLabel(t) + '</div></div></div>'
+            + '<p style="font-size:13px;color:#ccc;line-height:1.95;margin:0;">' + boldStarsToStrong(voicePolishParagraph(data, body)) + '</p>'
+            + '</div>';
+    }).join('');
+
+    var chHead = (typeof buildChapterHead === 'function')
+        ? buildChapterHead('', '앞으로 올 대운 — 다음 10년 · 그 다음 10년 한눈에')
+        : '<h3 class="ch-title">앞으로 올 대운 — 다음 10년 · 그 다음 10년 한눈에</h3>';
+
+    return '<div class="report-chapter">'
+        + chHead
+        + '<p class="ch-text" style="font-size:14px;color:var(--text);line-height:2;margin:0 0 14px;">' + voicePolishParagraph(data, '지금 시기를 살핀 다음에는, ' + nmKke(name) + ' 곧 다가올 두 개의 큰 10년을 짧게 짚어 드릴게요. 한 시기당 한 문단 정도라 가볍게 읽으셔도 충분하고, 미리 알아 두시면 “다음 시기가 어떤 공기인지” 마음의 준비가 됩니다.') + '</p>'
+        + cards
+        + '</div>';
+}
+
+
+/** ─────────────────────────────────────────
+ *  buildUpcomingSewunCards — 다음 해부터 10년 세운 (각 200~300자)
+ * ───────────────────────────────────────── */
+function buildUpcomingSewunCards(data) {
+    if (!data || !data.dayStem) return '';
+    var name = data.name || '고객';
+    var baseNow = (typeof getReportBaseDate === 'function') ? getReportBaseDate(data) : new Date();
+    var startYear = baseNow.getFullYear() + 1;
+
+    var GAN_HJ_ARR = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+    var JI_HJ_ARR  = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+    var HK = {'甲':'갑','乙':'을','丙':'병','丁':'정','戊':'무','己':'기','庚':'경','辛':'신','壬':'임','癸':'계','子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해'};
+    var GAN_OH = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
+    var JI_OH  = {'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'};
+    var yong = data.yong || ''; var hee = data.hee || ''; var gi = data.gi || ''; var goo = data.goo || '';
+
+    function scoreY(g, j) {
+        var s = 0; var go = GAN_OH[g]; var jo = JI_OH[j];
+        if (go === yong || go === hee) s += 2; if (go === gi || go === goo) s -= 2;
+        if (jo === yong || jo === hee) s += 2; if (jo === gi || jo === goo) s -= 2;
+        return s;
+    }
+    function tone(s) { return s >= 3 ? 'good' : s >= 1 ? 'mild' : s === 0 ? 'flat' : s >= -2 ? 'caution' : 'tough'; }
+    function toneColor(t) { return ({ good:'#c7a76a', mild:'#5ec183', flat:'#9b9b9b', caution:'#e0a040', tough:'#c84a4a' })[t] || '#888'; }
+    function toneLabel(t) { return ({ good:'잘 풀리는 해', mild:'순한 흐름의 해', flat:'정돈의 해', caution:'한 박자 늦추는 해', tough:'단단히 지키는 해' })[t] || '안정 해'; }
+
+    // 천간/지지별 한 줄 키워드 (간결)
+    var GAN_KW = {
+        '甲':'시작·새 학습', '乙':'관계·협력', '丙':'드러남·홍보', '丁':'깊이·전문', '戊':'안정·축적',
+        '己':'정리·마무리', '庚':'결단·정리', '辛':'완성·세련', '壬':'정보·확장', '癸':'학습·내공'
+    };
+    var JI_KW = {
+        '子':'집중·기획', '丑':'인내·저력', '寅':'활동·변화', '卯':'인맥·확장', '辰':'잠재·변수',
+        '巳':'결단·변신', '午':'성취·인정', '未':'창작·풍요', '申':'판단·속도', '酉':'완성·보상',
+        '戌':'정리·전환', '亥':'잠복·준비'
+    };
+
+    function bodyFor(yr, g, j, t) {
+        var gKw = GAN_KW[g] || '흐름'; var jKw = JI_KW[j] || '흐름';
+        var head = yr + '년(' + (HK[g] || g) + (HK[j] || j) + ')은 ' + nmKke(name) + ' ';
+        var middle = '“' + gKw + '”의 천간 위에 “' + jKw + '”의 지지가 받치는 한 해예요. ';
+        var tail = ({
+            good:    '대체로 ' + nmKke(name) + ' 잘 맞는 기운이 두껍게 깔리는 해라, **새로 시작하시거나 미뤄 두셨던 큰 결정을 매듭짓기에 좋은 시기**예요. 한 해의 처음에 우선순위 한 줄을 정하고, 분기마다 숫자로 결과를 한 번씩 확인하시면 다음 해가 한결 단단해집니다.',
+            mild:    '큰 풍파 없이 결실이 따라붙는 해예요. 검증된 한 가지에 속도를 올리시고, 새 시도는 분기에 한 번씩 가볍게 더하시는 정도가 가장 자연스럽습니다.',
+            flat:    '큰 사건보다 정리·점검에 무게가 실리는 해예요. 새 시작보다 “끊을 한 가지·이어 갈 한 가지”를 가르시는 데 마음을 쓰시면 다음 해가 한결 가볍게 풀립니다.',
+            caution: '결정의 무게가 평소보다 무거워지는 해예요. 큰돈·큰 관계·큰 자리 — 이 셋 중 두 가지를 동시에 흔들지 마시고, 한 가지에만 집중하시면 한 해가 부드럽게 흘러갑니다. 새 시도보다 이미 있는 것을 단단히 지키시는 쪽이 더 큰 이득입니다.',
+            tough:   '한 발 물러서 보시는 게 정답에 가까운 해예요. 새 시작·큰 투자·보증·동업 확장은 가능하면 다음 해 이후로 미루시고, 올해는 “지금 있는 것을 흔들리지 않게 지키는” 한 가지 목표만 가져가시면 결과가 단단해집니다.'
+        })[t];
+        return head + middle + tail;
+    }
+
+    var cards = '';
+    for (var k = 0; k < 10; k++) {
+        var yr = startYear + k;
+        var gI = ((yr - 4) % 10 + 10) % 10;
+        var jI = ((yr - 4) % 12 + 12) % 12;
+        var g = GAN_HJ_ARR[gI]; var j = JI_HJ_ARR[jI];
+        var sc = scoreY(g, j);
+        var t = tone(sc);
+        var col = toneColor(t);
+        var body = bodyFor(yr, g, j, t);
+        cards += '<div style="background:rgba(255,255,255,0.03);border-radius:10px;padding:14px 16px;border-left:3px solid ' + col + ';margin-bottom:10px;">'
+              + '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:6px;">'
+              + '<div style="font-size:15px;font-weight:800;color:#fff;font-family:\'Noto Sans KR\',sans-serif;">' + yr + '년 <span style="color:var(--gold);">' + (HK[g] || g) + (HK[j] || j) + '</span><span style="font-size:11px;color:#888;margin-left:6px;">(' + g + j + ')</span></div>'
+              + '<span style="font-size:10px;background:rgba(255,255,255,0.06);color:' + col + ';padding:2px 8px;border-radius:8px;letter-spacing:0.03em;">' + toneLabel(t) + '</span>'
+              + '</div>'
+              + '<p style="font-size:12.5px;color:#ccc;line-height:1.92;margin:0;">' + boldStarsToStrong(voicePolishParagraph(data, body)) + '</p>'
+              + '</div>';
+    }
+
+    var chHead = (typeof buildChapterHead === 'function')
+        ? buildChapterHead('', '앞으로 올 세운 — 다음 해부터 10년')
+        : '<h3 class="ch-title">앞으로 올 세운 — 다음 해부터 10년</h3>';
+
+    return '<div class="report-chapter">'
+        + chHead
+        + '<p class="ch-text" style="font-size:14px;color:var(--text);line-height:2;margin:0 0 14px;">' + voicePolishParagraph(data, '대운이 “10년짜리 큰 계절”이라면 세운은 “그 안의 한 해 날씨”예요. 아래는 ' + nmKke(name) + ' 곧 찾아올 10년의 한 해 한 해를 짧게 짚어 드린 것이에요. 한 해당 한 문단 정도로 가볍게 읽으시면서, 본인이 큰 결정을 잡고 싶으신 해가 “어떤 결의 해”인지를 미리 알아 두십시오.') + '</p>'
+        + '<div style="display:flex;flex-direction:column;gap:0;">' + cards + '</div>'
+        + '</div>';
+}
+
+
+/** ─────────────────────────────────────────
+ *  buildUpcomingWolunCards — 다음 11개월 월운 (각 200~300자)
+ * ───────────────────────────────────────── */
+function buildUpcomingWolunCards(data) {
+    if (!data || !data.dayStem) return '';
+    var name = data.name || '고객';
+    var baseNow = (typeof getReportBaseDate === 'function') ? getReportBaseDate(data) : new Date();
+    var startYear = baseNow.getFullYear();
+    var startMonth = baseNow.getMonth() + 1; // 1-indexed, 이번 달
+    // 다음 달부터 11개월
+    var firstMonth = startMonth + 1;
+
+    var GAN_OH = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
+    var JI_OH  = {'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'};
+    var HK = {'甲':'갑','乙':'을','丙':'병','丁':'정','戊':'무','己':'기','庚':'경','辛':'신','壬':'임','癸':'계','子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해'};
+    var GAN_KR_ARR = ['갑','을','병','정','무','기','경','신','임','계'];
+    var GAN_HJ_FROM_KR = {'갑':'甲','을':'乙','병':'丙','정':'丁','무':'戊','기':'己','경':'庚','신':'辛','임':'壬','계':'癸'};
+    var JI_HJ_FROM_KR  = {'자':'子','축':'丑','인':'寅','묘':'卯','진':'辰','사':'巳','오':'午','미':'未','신':'申','유':'酉','술':'戌','해':'亥'};
+    var MONTH_JI_KR = ['인','묘','진','사','오','미','신','유','술','해','자','축'];
+    var MONTH_GAN_START_TBL = [2, 4, 6, 8, 0];
+    var yong = data.yong || ''; var hee = data.hee || ''; var gi = data.gi || ''; var goo = data.goo || '';
+
+    function scoreM(g, j) {
+        var s = 0; var go = GAN_OH[g]; var jo = JI_OH[j];
+        if (go === yong || go === hee) s += 2; if (go === gi || go === goo) s -= 2;
+        if (jo === yong || jo === hee) s += 2; if (jo === gi || jo === goo) s -= 2;
+        return s;
+    }
+    function tone(s) { return s >= 3 ? 'good' : s >= 1 ? 'mild' : s === 0 ? 'flat' : s >= -2 ? 'caution' : 'tough'; }
+    function toneColor(t) { return ({ good:'#c7a76a', mild:'#5ec183', flat:'#9b9b9b', caution:'#e0a040', tough:'#c84a4a' })[t] || '#888'; }
+    function toneLabel(t) { return ({ good:'잘 풀리는 달', mild:'순한 달', flat:'정돈의 달', caution:'한 박자 늦추는 달', tough:'단단히 지키는 달' })[t] || '안정 달'; }
+
+    var JI_KW = {
+        '子':'집중·기획·문서', '丑':'인내·저력', '寅':'활동·새 출발', '卯':'인맥·협업', '辰':'잠재·변수',
+        '巳':'결단·변신', '午':'성취·인정', '未':'창작·풍요', '申':'판단·속도', '酉':'완성·보상',
+        '戌':'정리·전환', '亥':'잠복·준비'
+    };
+
+    function bodyForMonth(yr, mo, g, j, t) {
+        var jKw = JI_KW[j] || '흐름';
+        var head = yr + '년 ' + mo + '월(' + (HK[g] || g) + (HK[j] || j) + ')은 ' + nmKke(name) + ' “' + jKw + '”의 결이 깔리는 한 달이에요. ';
+        var tail = ({
+            good:    '이번 달은 한 해 안에서도 특히 결정의 결과가 빨리 보이는 시기에 가까워요. 미뤄 두신 큰 안건 한 가지만 이 달 안에 매듭지으시면, 다음 달이 한결 가볍게 풀립니다. 약속·계약·발표 — 셋 중 하나를 일정의 중심으로 두세요.',
+            mild:    '큰 풍파 없이 차분하게 흘러가는 달이에요. 새 시도 한 가지를 가볍게 더하시거나, 지난달의 리듬을 그대로 이어 가시는 정도가 가장 자연스럽습니다.',
+            flat:    '큰 사건 없이 평탄한 달이에요. 새 일을 벌이시기보다 평소 빠져 있던 자기 관리(수면·식사·관계 정리)에 시간을 쓰시면 다음 달이 가볍게 풀립니다.',
+            caution: '한 박자 늦추셔야 하는 달이에요. 한 달 안에 큰 결정이 두세 개 몰리시면 그중 하나가 어긋나기 쉬우니, 큰 결정은 이번 달 안에 한 가지만 골라 처리하십시오.',
+            tough:   '단단히 지키셔야 하는 달이에요. 큰돈·큰 약속·큰 변화는 이번 달엔 멈추시고, “지금 있는 것을 무너지지 않게 점검하는” 데 시간을 쓰시면 다음 달이 자연스럽게 풀립니다.'
+        })[t];
+        return head + tail;
+    }
+
+    var cards = '';
+    var addedCount = 0;
+    var moPointer = firstMonth;
+    var yrPointer = startYear;
+    while (addedCount < 11) {
+        if (moPointer > 12) { moPointer = 1; yrPointer += 1; }
+        var yGanI = ((yrPointer - 4) % 10 + 10) % 10;
+        var mGanStart = MONTH_GAN_START_TBL[yGanI % 5];
+        var monthIdx = moPointer - 1; // 0~11 for Jan..Dec
+        // Wolun uses 인월 = January in this approximation
+        var mJiKr = MONTH_JI_KR[monthIdx];
+        var mGanIdx = (mGanStart + monthIdx) % 10;
+        var mGanKr = GAN_KR_ARR[mGanIdx];
+        var mGan = GAN_HJ_FROM_KR[mGanKr] || '甲';
+        var mJi  = JI_HJ_FROM_KR[mJiKr] || '寅';
+        var sc = scoreM(mGan, mJi);
+        var t = tone(sc);
+        var col = toneColor(t);
+        var body = bodyForMonth(yrPointer, moPointer, mGan, mJi, t);
+        cards += '<div style="background:rgba(255,255,255,0.03);border-radius:10px;padding:14px 16px;border-left:3px solid ' + col + ';margin-bottom:10px;">'
+              + '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:6px;">'
+              + '<div style="font-size:14.5px;font-weight:800;color:#fff;font-family:\'Noto Sans KR\',sans-serif;">' + yrPointer + '년 ' + moPointer + '월 <span style="color:var(--gold);margin-left:4px;">' + (HK[mGan] || mGan) + (HK[mJi] || mJi) + '</span><span style="font-size:11px;color:#888;margin-left:4px;">(' + mGan + mJi + ')</span></div>'
+              + '<span style="font-size:10px;background:rgba(255,255,255,0.06);color:' + col + ';padding:2px 8px;border-radius:8px;letter-spacing:0.03em;">' + toneLabel(t) + '</span>'
+              + '</div>'
+              + '<p style="font-size:12.5px;color:#ccc;line-height:1.9;margin:0;">' + boldStarsToStrong(voicePolishParagraph(data, body)) + '</p>'
+              + '</div>';
+        addedCount += 1;
+        moPointer += 1;
+    }
+
+    var chHead = (typeof buildChapterHead === 'function')
+        ? buildChapterHead('', '앞으로 올 월운 — 다음 달부터 11개월')
+        : '<h3 class="ch-title">앞으로 올 월운 — 다음 달부터 11개월</h3>';
+
+    return '<div class="report-chapter">'
+        + chHead
+        + '<p class="ch-text" style="font-size:14px;color:var(--text);line-height:2;margin:0 0 14px;">' + voicePolishParagraph(data, '세운이 한 해의 날씨라면 월운은 그 안의 “시간대”예요. 아래는 다음 달부터 11개월의 한 달 한 달을 짧게 짚어 드린 거예요. 큰 안건을 잡으실 달과 한 박자 늦추실 달을 미리 표시해 두시면 한 해가 훨씬 가볍게 흘러갑니다.') + '</p>'
+        + '<div style="display:flex;flex-direction:column;gap:0;">' + cards + '</div>'
+        + '</div>';
+}
+
+
+/** ─────────────────────────────────────────
  *  4대 영역 레이더 차트 — 3부 개요 히어로 비주얼
  *  재물/직업/애정/건강 4각 SVG 폴리곤
  * ───────────────────────────────────────── */
@@ -5933,15 +6444,7 @@ function buildChapter4_Wealth(data) {
             <p style="font-size:13px;color:var(--text-soft);line-height:1.9;margin:0;"><strong style="color:#ffc7a0;">⚠ 조심할 것.</strong> ${boldStarsToStrong(wealthCaution)}</p>
         </div>
 
-        <p class="ch-text">${voicePolishParagraph(data, '구조를 살폈으니, 그 구조가 시간 위에서 어떻게 흘러가는지 — 10년 단위 대운의 결을 따라 ' + nmUi(name) + ' 인생 재물 타임라인을 펼쳐 드리겠습니다.')}</p>
-
-        <div class="wealth-timeline sajux-print-surface" style="background:rgba(199,167,106,0.05);border-radius:12px;padding:22px;margin:14px 0 20px;border:1px solid rgba(199,167,106,0.15);">
-            <div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:14px;letter-spacing:0.10em;">💰 대운별 재물 흐름 — ${nmUi(name)} 인생 재물 타임라인</div>
-            <p style="font-size:12.5px;color:var(--text-soft);line-height:1.85;margin:0 0 14px;">10년마다 '벌기'와 '지키기'의 비중이 달라집니다. 각 구간에서 단 하나의 행동만 골라 실행하시면 됩니다.</p>
-            ${daewunRows || `<p style="color:var(--text-dim);font-size:12px;">대운 데이터가 없습니다.</p>`}
-        </div>
-
-        <p class="ch-text">${voicePolishParagraph(data, '시기별 흐름을 보았으니, 마지막으로 어느 시기에 무엇을 멈추고 무엇을 밀어야 하는지 — 재물을 지키는 가장 단단한 두 원칙을 정리해 드립니다.')}</p>
+        <p class="ch-text">${voicePolishParagraph(data, '구조를 살폈으니, 마지막으로 어느 시기에 무엇을 멈추고 무엇을 밀어야 하는지 — ' + nmUi(name) + ' 재물을 지키는 가장 단단한 두 원칙을 정리해 드립니다. (대운·세운·월운에 따라 돈이 어떻게 움직이는지는 「지금 이 시절」 챕터에서 한 번에 풀어 드렸으니, 여기서는 평생을 관통하는 두 가지 원칙만 짚어 드립니다.)')}</p>
 
         <div class="wealth-rule sajux-print-surface" style="background:rgba(255,255,255,0.03);border-radius:12px;padding:20px 22px;margin:14px 0 18px;border:1px solid rgba(199,167,106,0.18);">
             <div style="font-size:12px;color:var(--gold);margin-bottom:14px;letter-spacing:0.10em;font-weight:700;">재물을 지키는 핵심 원칙</div>
@@ -8464,6 +8967,50 @@ function buildForewordPage(data) {
 //   를 하나의 블록으로 보여 줍니다. UX를 흩뜨리지 않도록 메인 콘텐츠
 //   사이가 아니라 가장 마지막에서만 등장합니다.
 // ===================================================================
+
+/** 보고서 본문이 끝난 직후, 자미두수(별첨) 앞에 두는 서프라이즈 인트로. */
+function buildZiweiSurpriseIntro(data) {
+    var name = (data && data.name) ? data.name : '고객';
+    return '<div class="ziwei-surprise-intro" style="margin:36px 0 0;padding:26px 24px;border-radius:16px;'
+        + 'background:linear-gradient(135deg, rgba(122,184,212,0.10), rgba(199,167,106,0.06));'
+        + 'border:1px solid rgba(122,184,212,0.30);text-align:center;">'
+        + '<div style="font-size:10px;letter-spacing:0.22em;color:rgba(157,211,255,0.80);font-weight:700;margin-bottom:10px;">SURPRISE · 보너스 챕터</div>'
+        + '<h2 style="font-family:\'Noto Sans KR\',sans-serif;font-size:24px;font-weight:800;color:#fff;margin:0 0 12px;line-height:1.4;letter-spacing:-0.01em;">끝난 줄 알았죠?</h2>'
+        + '<p style="font-size:14px;color:#cfe1ea;line-height:1.95;margin:0 auto 8px;max-width:620px;">'
+        + voicePolishParagraph(data, nmDnim(name) + ', 사실 하나 더 준비되어 있어요. 사주는 “언제”와 “어떤 결”을 알려 주는 거울이지만, '
+            + '<strong>자미두수(紫微斗數)</strong>는 같은 인생을 “어떤 무대 위에서 어떤 별빛으로 살아가는지” 비춰 주는 또 다른 거울이에요. '
+            + '대만·중국 등지에서 발전한 별자리 기반의 점성 체계로, 한 사람의 인생을 <strong>12개의 무대(궁)</strong>로 나누고 그 위에 14개의 별을 놓아 풀어 보는 방식이에요.')
+        + '</p>'
+        + '<p style="font-size:13px;color:#a8c4d4;line-height:1.9;margin:0 auto;max-width:600px;">'
+        + voicePolishParagraph(data, '같은 인생을 다른 렌즈로 한 번 더 비추는 보너스 챕터예요. 본문이 길었으니 가볍게, 본인이 가장 신경 쓰이는 자리(연애·돈·일·가족 중 하나)만 골라 그 자리의 풀이 한 줄에 마음을 두고 읽어 보십시오.')
+        + '</p>'
+        + '</div>';
+}
+
+/** 보고서 가장 마지막에 두는 리뷰 안내 카드. */
+function buildReviewCallout(data) {
+    var name = (data && data.name) ? data.name : '고객';
+    var REVIEW_URL = (typeof window !== 'undefined' && window.SAJUX_REVIEW_URL) ? window.SAJUX_REVIEW_URL : '';
+    var btn = REVIEW_URL
+        ? '<a href="' + REVIEW_URL + '" target="_blank" rel="noopener" style="display:inline-block;margin-top:18px;padding:12px 28px;border-radius:999px;background:linear-gradient(135deg, #c7a76a, #8a6f3c);color:#fff;font-size:13.5px;font-weight:700;letter-spacing:0.05em;text-decoration:none;box-shadow:0 4px 12px rgba(199,167,106,0.30);">리뷰 남기러 가기 →</a>'
+        : '<div style="display:inline-block;margin-top:18px;padding:10px 22px;border-radius:999px;background:rgba(199,167,106,0.12);color:#c7a76a;font-size:12.5px;letter-spacing:0.04em;border:1px solid rgba(199,167,106,0.25);">리뷰 채널은 곧 안내드려요</div>';
+
+    return '<div class="report-review-callout" style="margin:36px 0 24px;padding:28px 26px;border-radius:18px;'
+        + 'background:linear-gradient(135deg, rgba(199,167,106,0.10), rgba(255,255,255,0.02));'
+        + 'border:1px solid rgba(199,167,106,0.28);text-align:center;">'
+        + '<div style="font-size:10px;letter-spacing:0.22em;color:var(--gold);font-weight:700;margin-bottom:12px;">REVIEW · 잠깐만요</div>'
+        + '<h3 style="font-family:\'Noto Sans KR\',sans-serif;font-size:21px;font-weight:800;color:#fff;margin:0 0 14px;line-height:1.45;">'
+        + nmDnim(name) + ', 마지막 한 가지만 부탁드려도 될까요?</h3>'
+        + '<p style="font-size:14px;color:#ddd;line-height:1.95;margin:0 auto 6px;max-width:560px;">'
+        + voicePolishParagraph(data, '저희 시스템이 마음에 드셨거나, 또는 아쉬운 점이 있으셨다면 <strong>리뷰로 남겨 주세요.</strong> 별 다섯 개도 좋고, “이 부분은 좀 더 자세했으면 좋겠어요” 같은 한 줄도 좋아요. ' + nmUi(name) + ' 한마디가 다음 분의 보고서를 한 단계 더 따뜻하게 만들어 줍니다.')
+        + '</p>'
+        + '<p style="font-size:12px;color:#999;line-height:1.85;margin:6px auto 0;max-width:480px;">'
+        + voicePolishParagraph(data, '여기까지 함께해 주셔서 고마워요. 한 줄의 리뷰가 사주X의 가장 큰 응원입니다.')
+        + '</p>'
+        + btn
+        + '</div>';
+}
+
 function buildReportFooterUtilities(data) {
     var name = (data && data.name) ? data.name : '고객';
     var nmDn = nmDnim(name);
