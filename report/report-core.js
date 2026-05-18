@@ -3315,28 +3315,33 @@ function generateDeepReport(data) {
     ), 'part1section');
 
     // ── 2부: 지금 이 시절 ──
+    //   ① 대운 — 현재 대운부터 다음 대운까지의 흐름 (타임라인 + 대운 카드 + 다음 대운 풀이)
+    //   ② 세운 — 현재 포함 10년 (buildSewunLoop)
+    //   ③ 월운 — 현재 포함 12개월 (buildWolunLoop)
+    //   ※ 옛 buildChapter6_SeYun(올해)·buildChapter7_NextYears(내·내후년) 두 챕터는
+    //     buildSewunLoop(10년 카드)에 흡수되었습니다. 사용자 요청: "현재 세운 포함 10년 이후까지"
     var part2Body = '';
     part2Body += safeCall(()=>buildDaeunTimeline(data)||'', 'daeun-timeline');
     part2Body += safeCall(()=>buildDaewunLoop(data)||'', 'daewun-loop');
+    part2Body += safeCall(()=>buildChapter8_NextDaewun(data)||'', 'ch8-next-daewun');
+    part2Body += safeCall(()=>buildSewunLoop(data)||'', 'sewun-loop-10y');
+    part2Body += safeCall(()=>buildChapter9_Monthly(data)||'', 'ch9-monthly');
     html += safeCall(()=>wrapPartSection(
-        buildPartHeader(2,'지금 이 시절','대운 위치 · 올해 · 이달','sec-part2-now',{name:data.name}),
+        buildPartHeader(2,'지금 이 시절','대운 · 10년 세운 · 12개월 월운','sec-part2-now',{name:data.name}),
         part2Body
-    ), 'part2headerBlock');
-    html += '<div class="seyun-premium-vertical" style="display:flex;flex-direction:column;gap:24px;width:100%;max-width:100%;box-sizing:border-box;">';
-    html += safeCall(()=>buildChapter6_SeYun(data), 'ch6seyun');
-    html += safeCall(()=>buildChapter7_NextYears(data), 'ch7next');
-    html += '</div>';
-    html += safeCall(()=>buildChapter8_NextDaewun(data), 'ch8dw');
-    html += safeCall(()=>buildChapter9_Monthly(data), 'ch9monthly');
+    ), 'part2section');
 
-    // ── 3부: 삶의 네 영역 ──
+    // ── 3부: 삶의 영역 ──
+    //   ① 애정(친구·애인·결혼·가정·자식)  ② 재물  ③ 합격(시험·취직·문서)
+    //   ④ 직업(이직·사업·추천 직업)        ⑤ 건강(검진·정신건강·예방)
     var part3Body = '';
-    part3Body += safeCall(()=>buildChapter4_Wealth(data)||'', 'ch4-wealth');
-    part3Body += safeCall(()=>buildChapter5_Career(data)||'', 'ch5-career');
     part3Body += safeCall(()=>buildChapter6_Love(data)||'', 'ch6-love');
+    part3Body += safeCall(()=>buildChapter4_Wealth(data)||'', 'ch4-wealth');
+    part3Body += safeCall(()=>buildChapter_HapGyeok(data)||'', 'ch-hapgyeok');
+    part3Body += safeCall(()=>buildChapter5_Career(data)||'', 'ch5-career');
     part3Body += safeCall(()=>buildChapter8_Health(data)||'', 'ch8-health');
     html += safeCall(()=>wrapPartSection(
-        buildPartHeader(3,'삶의 네 영역','재물 · 직업 · 애정 · 건강','sec-part3-four',{name:data.name}),
+        buildPartHeader(3,'삶의 영역','애정 · 재물 · 합격 · 직업 · 건강','sec-part3-life',{name:data.name}),
         part3Body
     ), 'part3section');
 
@@ -5383,59 +5388,139 @@ function buildFourDomainRadar(data) {
 function buildChapter2_Wuxing(data) {
     const name = data.name || '고객';
     const wuxing = data.wuxing || {};
-    const OH_DAY = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
-    const dayOh = OH_DAY[data.dayStem||'丙']||'fire';
     const OHKR2 = {wood:'목',fire:'화',earth:'토',metal:'금',water:'수'};
-    let maxW = 'earth', minW = 'water';
-    if(Object.keys(wuxing).length > 0) {
-        maxW = Object.keys(wuxing).reduce((a,b) => wuxing[a]>wuxing[b]?a:b);
-        minW = Object.keys(wuxing).reduce((a,b) => wuxing[a]<wuxing[b]?a:b);
-    }
-    const excessText = window.SAJU_DB?.WUXING_EXCESS?.[maxW] || '기운이 한쪽으로 강하게 쏠려 있습니다.';
-    const maxKr = OHKR2[maxW]||maxW; const minKr = OHKR2[minW]||minW;
-    const excessPer = {wood:'확장 본능이 강합니다. 멈추면 답답한 것은 성격이 아니라 구조입니다. 개척·선도에 강하고, 시작이 많으면 마무리가 밀립니다. **진행 중 프로젝트는 세 개까지만** 두고 나머지는 끊거나 넘기십시오.',
-        fire:'주목과 표현에 강합니다. 열정이 곧 브랜드입니다. 제어 없으면 번아웃·충돌로 돌아갑니다. **하루 30분 냉각 블록**을 달력에 박아 넣으십시오.',
-        earth:'묵직한 신뢰가 자산입니다. 변화에 둔하면 기회만 스칩니다. **분기마다 ‘작은 실험’ 하나**만 의무로 넣으십시오.',
-        metal:'쳐내는 결단이 날카롭습니다. 전문권위와 잘 맞고, 정서선이 얇게 보일 수 있습니다. **중요한 말은 24시간 유예** 후 보내십시오.',
-        water:'통찰·전략에 강합니다. 분석이 길어지면 행동이 늦습니다. **정보 수집 시간 상한**을 정하고 그다음은 실행만 하십시오.'
-    }[maxW] || '';
-    const lackDesc = {
-        wood:'시작이 무겁게 느껴질 수 있습니다. 그건 나약함이 아니라 관성입니다. **주간 ‘새 시도’ 슬롯 90분**을 먼저 확보하십시오.',
-        fire:'열정이 겉으로 덜 드러납니다. 표현이 곧 기회입니다. **주 1회 공개 발표·피드백**을 고정하십시오.',
-        earth:'한골만 파는 힘이 약해 보일 수 있습니다. **매일 같은 시각에 같은 루틴** 하나만 30일 고정하십시오.',
-        metal:'마무리가 흔들리면 신뢰가 깎입니다. **‘완료 정의’ 한 줄**을 미리 쓰고 끝낼 때까지 넘기지 마십시오.',
-        water:'판단 전 검토가 짧을 수 있습니다. **큰 결정은 이틀 유예**만 지켜도 사고 비용이 줄어듭니다.'
-    }[minW] || '';
-    const wxSum = Math.max(1, Object.values(wuxing).reduce((a,b)=>a+(Number(b)||0),0));
+    const OHHJ2 = {wood:'木',fire:'火',earth:'土',metal:'金',water:'水'};
     const OH_BAR = {wood:'var(--wood)',fire:'var(--fire)',earth:'var(--earth)',metal:'var(--metal)',water:'var(--water)'};
-    const balanceRows = Object.entries(wuxing).sort((a,b)=>b[1]-a[1]).map(([k,v]) => {
-        const pct = Math.round((Number(v)||0)/wxSum*100); const isMax = k===maxW; const isMin = k===minW;
-        const col = OH_BAR[k] || (isMax ? 'var(--gold)' : isMin ? '#666' : '#aaa');
-        const ohChar = {wood:'木',fire:'火',earth:'土',metal:'金',water:'水'}[k]||k;
-        const barW = Math.max(2, Math.min(100, pct));
-        return `<div class="wuxing-bar-row" style="display:flex;align-items:center;gap:12px;margin-bottom:11px;"><div style="min-width:52px;text-align:right;font-size:13px;font-weight:${isMax?800:500};color:${isMax?'var(--gold)':'#bbb'};">${ohChar} ${OHKR2[k]}</div><div style="flex:1;min-width:0;background:rgba(255,255,255,0.08);border-radius:6px;height:14px;overflow:hidden;border:1px solid rgba(255,255,255,0.06);"><div style="width:${barW}%;max-width:100%;height:100%;background:linear-gradient(90deg,${col},rgba(255,255,255,0.15));border-radius:5px;transition:width .3s;"></div></div><div style="min-width:40px;font-size:13px;font-weight:700;color:${isMax?'var(--gold)':'#999'};">${pct}%</div>${isMax?'<span style="font-size:9px;background:rgba(199,167,106,0.25);color:var(--gold);padding:2px 6px;border-radius:6px;">최다</span>':''}${isMin?'<span style="font-size:9px;color:#666;padding:2px 6px;">최소</span>':''}</div>`;
+
+    const oh5 = ['wood','fire','earth','metal','water'];
+    const totalRaw = oh5.reduce((s,k)=>s+(Number(wuxing[k])||0), 0);
+    const wxSum = Math.max(1, totalRaw);
+    const pct = {};
+    oh5.forEach(k => { pct[k] = totalRaw>0 ? Math.round((Number(wuxing[k])||0)/wxSum*100) : 0; });
+
+    // ── 과다·부족 판정 (다중 케이스 대응) ──
+    //   평균 = 20%. 과다 기준 ≈ 1.4배(28%) 이상, 부족 기준 ≈ 0.5배(10%) 이하.
+    //   0%는 "비어있음"으로 별도 강조.
+    const HIGH = 28;
+    const LOW  = 10;
+    const sortedDesc = Object.entries(pct).sort((a,b)=>b[1]-a[1]);
+    let excessKeys = sortedDesc.filter(([,p])=>p>=HIGH).map(([k])=>k);
+    let lackKeys = sortedDesc.filter(([,p])=>p<=LOW).map(([k])=>k).reverse();
+    if(excessKeys.length===0) excessKeys = [sortedDesc[0][0]];
+    if(lackKeys.length===0)   lackKeys   = [sortedDesc[sortedDesc.length-1][0]];
+    // 같은 키가 양쪽에 들어간 비정상 케이스 방어
+    lackKeys = lackKeys.filter(k => !excessKeys.includes(k));
+
+    const maxW = excessKeys[0];
+    const minW = lackKeys[0] || sortedDesc[sortedDesc.length-1][0];
+    const maxKr = OHKR2[maxW]||maxW;
+    const minKr = OHKR2[minW]||minW;
+    // ── 막대 그래프 (과다·부족·비어있음 배지) ──
+    const balanceRows = sortedDesc.map(([k,p]) => {
+        const isExc  = excessKeys.includes(k);
+        const isLack = lackKeys.includes(k);
+        const isZero = p === 0;
+        const col = OH_BAR[k] || '#aaa';
+        const barW = Math.max(2, Math.min(100, p));
+        const labelColor = isExc ? 'var(--gold)' : (isZero ? '#888' : '#bbb');
+        return `<div class="wuxing-bar-row" style="display:flex;align-items:center;gap:12px;margin-bottom:11px;">
+            <div style="min-width:52px;text-align:right;font-size:13px;font-weight:${isExc?800:500};color:${labelColor};">${OHHJ2[k]} ${OHKR2[k]}</div>
+            <div style="flex:1;min-width:0;background:rgba(255,255,255,0.08);border-radius:6px;height:14px;overflow:hidden;border:1px solid rgba(255,255,255,0.06);">
+                <div style="width:${barW}%;max-width:100%;height:100%;background:linear-gradient(90deg,${col},rgba(255,255,255,0.15));border-radius:5px;transition:width .3s;"></div>
+            </div>
+            <div style="min-width:40px;font-size:13px;font-weight:700;color:${isExc?'var(--gold)':'#999'};">${p}%</div>
+            ${isExc ? '<span style="font-size:10px;background:rgba(199,167,106,0.25);color:var(--gold);padding:2px 7px;border-radius:6px;font-weight:700;letter-spacing:0.04em;">과다</span>' : ''}
+            ${(isLack && !isZero) ? '<span style="font-size:10px;background:rgba(120,120,120,0.18);color:#bbb;padding:2px 7px;border-radius:6px;letter-spacing:0.04em;">부족</span>' : ''}
+            ${isZero ? '<span style="font-size:10px;background:rgba(120,120,120,0.18);color:#bbb;padding:2px 7px;border-radius:6px;letter-spacing:0.04em;">비어있음</span>' : ''}
+        </div>`;
     }).join('');
+
+    // ── 도입 한 단락 ──
+    function joinExc(arr) {
+        if (arr.length === 1) return '<strong>' + OHKR2[arr[0]] + '(' + OHHJ2[arr[0]] + ') 기운</strong>';
+        return '<strong>' + arr.map(k => OHKR2[k] + '(' + OHHJ2[k] + ')').join('·') + ' 기운</strong>';
+    }
+    function joinLack(arr) {
+        if (arr.length === 1) return '<strong>' + OHKR2[arr[0]] + '(' + OHHJ2[arr[0]] + ') 기운</strong>';
+        return '<strong>' + arr.map(k => OHKR2[k] + '(' + OHHJ2[k] + ')').join('·') + ' 기운</strong>';
+    }
+    const hasZeroLack = lackKeys.some(k => pct[k] === 0);
+    const introLine = '사주에는 다섯 가지 기운 — <strong>목·화·토·금·수</strong> — 이 있어요. 이 다섯이 어떻게 섞여 있느냐가 한 사람의 기질·방향·습관을 만듭니다. '
+        + nmUi(name) + ' 사주에는 ' + joinExc(excessKeys) + (excessKeys.length>=2 ? '이 함께 두껍게 자리잡고 있어요. ' : '이 가장 두껍게 자리잡고 있어요. ')
+        + (lackKeys.length === 0
+            ? '나머지는 비교적 고르게 흐르고 있어서, 균형 자체는 잘 맞춰진 사주예요. '
+            : (hasZeroLack
+                ? '반대로 ' + joinLack(lackKeys) + '은 사주 안에 거의 자리 잡고 있지 않아요. '
+                : '반대로 ' + joinLack(lackKeys) + '은 얇게 흐르고 있어요. '))
+        + '아래에서 한 기운씩 풀어 드릴게요.';
+
+    // ── 과다 풀이 (각 키마다 한 단락 + 2개 이상이면 결합 단락) ──
+    const EXCESS_NARR = {
+        wood: '<strong>목(木)</strong>이 두껍다는 건 — ' + nmDnim(name) + ' 안에 “새로 시작하고 뻗어 나가는 본능”이 가장 큰 자리를 차지하고 있다는 뜻이에요. 멈춰 있으면 답답해지고, 일을 벌이는 쪽이 자연스러우세요. 다만 시작이 잦으면 마무리가 밀리기 쉽고, 익숙해진 자리는 금세 싫증을 내실 수 있어요. **진행 중인 일은 세 가지 이하**로 묶어 두시고, 끝맺는 일에는 함께 책임질 한 사람과 짝을 짓는 게 좋습니다.',
+        fire: '<strong>화(火)</strong>가 두껍다는 건 — 표현·열정·주목이 ' + nmUi(name) + ' 가장 큰 에너지원이라는 뜻이에요. 분위기를 띄우는 힘이 강하고, 무대 위에 서 계실 때 가장 자연스러우세요. 다만 열이 앞서면 번아웃이나 즉흥 결정으로 비용이 커지고, 말이 부딪히는 일도 잦아져요. **감정이 올랐을 때는 하룻밤 넘긴 뒤** 말하시고, 하루 30분은 의도적으로 비워 두십시오.',
+        earth: '<strong>토(土)</strong>가 두껍다는 건 — 묵직한 신뢰와 안정감이 ' + nmUi(name) + ' 가장 큰 자산이라는 뜻이에요. 사람들이 ' + nmEulReul(name) + ' “맡길 수 있는 사람”으로 기억합니다. 다만 변화에 둔하면 기회가 그냥 스쳐 가고, “팀 속도를 늦춘다”는 오해를 받으실 수도 있어요. **분기마다 작은 실험 하나**씩만 의무로 넣어 두시면 됩니다.',
+        metal: '<strong>금(金)</strong>이 두껍다는 건 — 결단·전문성·잘라내는 힘이 ' + nmUi(name) + ' 가장 큰 무기라는 뜻이에요. 원칙이 분명해서 어디서든 깊이를 만들어 내십니다. 다만 정이 없어 보이거나, 내 성과만 챙긴다는 말을 들으실 수도 있어요. **중요한 말은 24시간 유예** 후 보내시고, 짧은 메모에는 “사실 한 줄 + 내가 느낀 점 한 줄”을 함께 적어 두십시오.',
+        water: '<strong>수(水)</strong>가 두껍다는 건 — 깊이 보고 길게 생각하는 힘이 ' + nmUi(name) + ' 가장 큰 자산이라는 뜻이에요. 정보·전략·통찰에 강하고, 한 발 떨어져 흐름을 읽는 눈이 남다르세요. 다만 머릿속 정리가 길어지면 행동이 늦어지고, 확인을 거듭하다 보면 상대만 굳어 보이실 수 있어요. **정보 수집은 45분에 끊고**, 그 뒤로는 “다음 행동 한 가지”만 실행하십시오.'
+    };
+    const EXCESS_DUO_TAIL = '두 기운이 함께 두꺼우시면 — 한쪽이 다른 쪽을 부추겨 일이 한꺼번에 커지기 쉬워요. **이번 달의 메인은 하나만** 정하시고 나머지는 보조로 흘려보내십시오. 두 기운을 동시에 다 살리려 하시면 체력과 시간이 먼저 갑니다.';
+
+    // ── 부족 풀이 ──
+    const LACK_NARR = {
+        wood: '<strong>목(木)</strong>이 얇거나 비어 있다는 건 — “새로 시작하는 일”이 ' + nmUi(name) + ' 가장 무거운 자리라는 뜻이에요. 게으름이 아니라 그저 그쪽으로 시동이 잘 안 걸리는 거예요. **매주 한 번, 90분짜리 “새 시도” 슬롯**을 달력에 미리 박아 두시면 흐름이 살아납니다.',
+        fire: '<strong>화(火)</strong>가 얇거나 비어 있다는 건 — 열정이 안에는 있어도 겉으로 잘 드러나지 않는 분이라는 뜻이에요. 표현이 곧 기회로 바뀌는 자리에서는 손해를 보실 수 있어요. **주 1회 공개 발표나 피드백 자리**를 일정에 고정해 두시면, 안에 있던 불씨가 자연스럽게 살아납니다.',
+        earth: '<strong>토(土)</strong>가 얇거나 비어 있다는 건 — 한 자리를 묵묵히 지키는 힘이 다른 분들보다 적다는 뜻이에요. 흥미가 떨어지면 금세 자리를 옮기시기 쉽습니다. **매일 같은 시각에 같은 루틴 하나**를 30일만 고정해 보시면, 그것만으로도 안정감이 자라납니다.',
+        metal: '<strong>금(金)</strong>이 얇거나 비어 있다는 건 — 마무리·결단·정리하는 힘이 약하다는 뜻이에요. 일을 펼치시는 건 잘하시지만 끝까지 가는 길에서 흔들리실 수 있습니다. 시작하시기 전에 **“완료 정의” 한 줄**을 미리 적어 두시고, 끝낼 때까지 그 한 줄에 묶어 두십시오.',
+        water: '<strong>수(水)</strong>가 얇거나 비어 있다는 건 — 큰 결정을 내리시기 전에 충분히 들여다보는 시간이 짧을 수 있다는 뜻이에요. 행동이 빠르신 건 강점이지만, 큰 결정에서는 비용이 커집니다. **큰 결정은 이틀만 유예**해 보십시오. 그 사이에 보이는 것이 의외로 많습니다.'
+    };
+    const LACK_ZERO_PREFIX = '특히 사주 안에 <strong>한 글자도 들어 있지 않다</strong>는 건, 평생에 걸쳐 그 자리를 의식적으로 채워 가셔야 한다는 뜻이에요. ';
+    const LACK_DUO_TAIL = '두 기운이 함께 얇으실 때는, 보충을 동시에 하지 마시고 **한 가지를 30일** 정도 충분히 익힌 다음에 다음으로 넘어가시는 게 좋습니다. 두 가지를 동시에 채우려 하시면 어느 쪽도 자리를 잡지 못합니다.';
+
+    // ── 본문 조립 ──
+    function para(text) { return '<p class="ch-text" style="font-size:14px;color:var(--text);line-height:2;margin:0 0 18px;">' + boldStarsToStrong(voicePolishParagraph(data, text)) + '</p>'; }
+
+    let excessHtml = '';
+    excessKeys.forEach(k => { excessHtml += para(EXCESS_NARR[k]); });
+    if (excessKeys.length >= 2) excessHtml += para(EXCESS_DUO_TAIL);
+
+    let lackHtml = '';
+    if (lackKeys.length > 0) {
+        const lackOpener = '반대로 ' + joinLack(lackKeys) + (lackKeys.length===1 ? '에 대해서도 한 번 짚어 드릴게요. ' : '이 함께 얇은 경우라, 두 자리를 모두 짚어 드릴게요. ')
+            + '부족함을 부끄러워하실 일은 아닙니다. 다만 보이지 않는 쪽이 의외로 통제력을 쥐기 쉬운 자리라 미리 알아 두시는 게 좋아요.';
+        lackHtml += para(lackOpener);
+        lackKeys.forEach(k => {
+            let txt = LACK_NARR[k];
+            if (pct[k] === 0) txt = LACK_ZERO_PREFIX + txt;
+            lackHtml += para(txt);
+        });
+        if (lackKeys.length >= 2) lackHtml += para(LACK_DUO_TAIL);
+    } else {
+        lackHtml += para('나머지 기운은 비교적 고르게 흐르고 있어서, 따로 보충해야 할 자리는 없어요. 이미 가지신 두꺼운 기운을 어디에 풀어내실지만 잘 고르시면 됩니다.');
+    }
+
     var chHead2 = buildChapterHead(buildTopicMetaphorTitle('wuxing', data), SAJUX_SECTION_LABELS.wuxing);
     var chIntro2 = buildChapterIntroHtml(data, 'wuxing');
     return `<div class="report-chapter">
         ${chHead2}
         ${chIntro2}
-        <div class="wuxing-bar-chart" style="background:var(--panel,rgba(0,0,0,0.22));border:1px solid rgba(199,167,106,0.2);border-radius:12px;padding:18px 20px;margin:0 0 20px;">
-            <div style="font-size:12px;font-weight:800;color:var(--gold);margin-bottom:14px;letter-spacing:0.5px;">오행 비율 — 가로 막대 그래프</div>
+        ${para(introLine)}
+        <div class="wuxing-bar-chart" style="background:var(--panel,rgba(0,0,0,0.22));border:1px solid rgba(199,167,106,0.2);border-radius:12px;padding:18px 20px;margin:0 0 22px;">
+            <div style="font-size:12px;font-weight:800;color:var(--gold);margin-bottom:14px;letter-spacing:0.5px;">오행 비율</div>
             ${balanceRows}
         </div>
-        <div style="background:rgba(199,167,106,0.06);border-radius:10px;padding:14px 18px;margin-bottom:16px;border-left:3px solid var(--gold);">
-            <span style="font-size:12px;color:var(--text-dim);">핵심 에너지</span><br>
-            <span style="font-size:15px;font-weight:700;color:var(--gold);">${maxKr} 우세</span> &nbsp;·&nbsp; <span style="font-size:13px;color:#bbb;">${nmUi(name)} 판단·관계·재물 방식의 중심</span>
-        </div>
-        <div style="background:rgba(199,167,106,0.07);border-left:3px solid var(--gold);padding:16px 18px;border-radius:0 8px 8px 0;margin:16px 0;">
-            <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;letter-spacing:1px;">${maxKr} 기운 집중 분석</div>
-            <p style="font-size:14.5px;color:#ddd;line-height:1.9;margin:0 0 12px;">${excessText}</p>
-            <p style="font-size:14px;color:#ccc;line-height:1.85;margin:0;">${excessPer}</p>
-        </div>
-        <p class="ch-text">반대로 <b>${minKr}</b> 기운이 가장 얇습니다. 부족을 탓하지 마십시오. ${lackDesc}</p>
-        <p class="ch-text">강한 기운을 누르지 말고 채널만 정하십시오. **${maxKr}에 맞는 직무·환경 하나**를 먼저 고르고, ${minKr} 보충은 생활 습관으로만 붙이십시오.</p>
+        ${excessHtml}
+        ${lackHtml}
+    </div>`;
+}
 
+// ── 오행 챕터에서 분리한 옛 건강·개운법 블록은 buildChapter8_Health / buildChapter9_Remedy로 일원화. ──
+// (옛 큰 박스 묶음은 모두 제거됨)
+function _buildChapter2_Wuxing_LEGACY_REMOVED() {
+    return '';
+}
+function _buildChapter2_Wuxing_DEAD(_data) {
+    var name = ''; var nmIGa = function(){return '';}; var maxKr = ''; var minW = ''; var minKr = ''; var maxW = '';
+    /* placeholder — 진짜 코드는 위 buildChapter2_Wuxing 에 있음. 아래 빈 박스만 유지. */
+    return `<div style="display:none;">
         <div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:22px;margin:24px 0;">
             <div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:18px;letter-spacing:1px;">&#9670; ${nmIGa(name)} 가장 주의해야 할 건강 신호</div>
             ${(()=>{
@@ -6302,6 +6387,113 @@ function buildWolunLoop(data) {
 }
 
 
+// ═══════════════════════════════════════════════════════
+// 합격 — 시험·취직·문서운 (인성·관성·식상·재성 비중 기반)
+// ═══════════════════════════════════════════════════════
+function buildChapter_HapGyeok(data) {
+    const name = data.name || '고객';
+    const sipseong = data.sipseong || {};
+    const inC   = (sipseong['정인']||0)+(sipseong['편인']||0);
+    const gwanC = (sipseong['정관']||0)+(sipseong['편관']||0);
+    const sikC  = (sipseong['식신']||0)+(sipseong['상관']||0);
+    const jaeC  = (sipseong['정재']||0)+(sipseong['편재']||0);
+    const total = Math.max(Object.values(sipseong).reduce((a,b)=>a+b,0), 1);
+    const inPct   = Math.round(inC/total*100);
+    const gwanPct = Math.round(gwanC/total*100);
+    const sikPct  = Math.round(sikC/total*100);
+    const jaePct  = Math.round(jaeC/total*100);
+
+    function band(p) {
+        if (p >= 30) return { col:'var(--gold)', tone:'strong', label:'두꺼움' };
+        if (p >= 15) return { col:'#4a9e6a',     tone:'mid',    label:'적정'   };
+        if (p >= 5)  return { col:'#999',        tone:'thin',   label:'얇음'   };
+        return { col:'#888', tone:'lack', label:'거의 없음' };
+    }
+    const testBand = band(inPct);
+    const hireBand = band(gwanPct);
+    const interviewBand = band(sikPct);
+    const fieldBand = band(jaePct);
+
+    // 영역별 한 단락
+    const examLine = {
+        strong: nmEunNeun(name) + ' 인성(印) 기운이 두껍게 자리잡은 분이라, **공부·자격·시험에서 가장 빛나는 결**을 갖고 계세요. 한 번 마음먹으신 시험은 평균 이상의 결과로 마무리되시고, 자격증 한 장이 인생의 큰 무기가 되는 사주예요. 다만 욕심내어 여러 시험을 동시에 잡으시면 깊이가 흐려지니, **같은 시기에 큰 시험은 한 가지만** 잡으십시오.',
+        mid: nmEunNeun(name) + ' 인성(印)이 적정 수준으로 자리잡으셔서, 시험·자격 자체에 막힘은 없으세요. 다만 폭발적인 단번 합격보다는 **꾸준한 누적이 결실로 돌아오는 결**이라, 1년 단위로 차근차근 쌓아 가시는 게 좋습니다.',
+        thin: nmEunNeun(name) + ' 인성(印)이 얇은 편이라, 시험·자격을 잡으실 때 흐름이 한 번에 안 풀릴 수 있어요. 단번에 끝내려 하지 마시고 **인성 운이 실리는 대운·세운**(임·계·인·묘·해·자 글자가 들어오는 시기)에 큰 시험을 맞춰 잡으십시오.',
+        lack: '인성(印)이 사주에 거의 자리 잡고 있지 않으세요. 시험·자격에서 자주 헛도시는 패턴이 반복되실 수 있어요. 큰 시험은 인성 기운이 들어오는 시기를 꼭 기다리시고, 평소엔 **요약 정리 노트 한 권**을 평생 무기로 가지고 가시는 게 좋습니다.'
+    }[testBand.tone];
+
+    const hireLine = {
+        strong: '관성(官)이 두껍게 자리잡으셔서, **조직에 들어가 자리 잡는 운**이 굵직하게 깔린 사주세요. 공무·공기업·대기업·공공 영역에서 ' + nmUi(name) + ' 결이 가장 잘 살아납니다. 다만 책임이 무거워지면 어깨가 빠르게 짓눌릴 수 있으니, **승진 직후 6개월은 일정의 20%를 의도적으로 비워** 두십시오.',
+        mid: '관성(官)이 적정 수준으로 잡혀 있으셔서, 취업·이직 자체에 큰 어려움은 없는 사주세요. 다만 **첫 직장에서 평생 자리 잡는 결**은 아니라, 두세 번의 이직을 거쳐 진짜 자리를 찾으시는 게 자연스럽습니다.',
+        thin: '관성(官)이 얇은 편이라, 큰 조직보다는 **중소·전문·소규모 팀**에서 ' + nmUi(name) + ' 결이 더 잘 살아납니다. 큰 회사에 들어가신다면 그 안에서도 “전문가 트랙”을 일찍 잡으시는 게 좋습니다.',
+        lack: '관성(官)이 거의 비어 있으세요. **조직에 매여 사는 결**이 아니라 — 프리랜서·자영업·개인 사업처럼 “스스로 만든 자리”에서 가장 자연스러우십니다. 취업을 하시더라도 “퇴사 후 독립”의 가능성을 늘 마음 한 쪽에 두고 일하시는 게 좋습니다.'
+    }[hireBand.tone];
+
+    const interviewLine = {
+        strong: '식상(食傷)이 두꺼우셔서 **면접·발표·말로 푸는 자리에서 가장 큰 무기**가 빛납니다. 분위기를 만들고, 핵심을 짚어 내는 힘이 또래 평균보다 한 단계 위세요. 다만 너무 자신 있으시면 “준비 부족”의 인상을 줄 수 있으니, **첫 1분 자기소개는 미리 외워** 두십시오.',
+        mid: '식상이 적정 수준이라, 면접·발표에서 평균 이상은 하시는 결이에요. 다만 결정적인 자리에서 한 번 더 빛나시려면 **모범 답안 10개 + 본인만의 키워드 3개**를 미리 정리해 두십시오.',
+        thin: '식상이 얇으셔서 면접·발표에서 “표현이 부족하다”는 평을 들으실 수 있어요. 실력이 부족한 게 아니라, 말로 풀어내는 통로가 좁은 것뿐입니다. **모의 면접을 5회 이상** 반복하시는 게 어떤 책 한 권보다 효과가 큽니다.',
+        lack: '식상이 거의 없으세요. 말로 풀어 보이는 자리는 늘 부담되시지만, **서류·실기·필기 위주의 시험**에서는 오히려 강하십니다. 자기소개서·포트폴리오 같은 “글로 적는 자리”에 평소 힘을 쌓아 두십시오.'
+    }[interviewBand.tone];
+
+    const fieldLine = {
+        strong: '재성(財)이 두꺼우셔서 **실무·현장·영업에서 실력이 가장 빨리 드러나는 결**이에요. 시험·자격보다 “일을 직접 해 보면서 배우는 자리”에서 ' + nmUi(name) + ' 진가가 발휘됩니다. 신입 시절부터 작은 성과 하나를 손에 쥐고 시작하시는 게 좋아요.',
+        mid: '재성이 적정 수준이라, 실무에서도 평균 이상의 적응력을 보이시는 결입니다. 한 분야에서 3년만 버티시면, 그때부터 ' + nmIGa(name) + ' 진짜 ' + nmUi(name) + ' 색이 드러나기 시작합니다.',
+        thin: '재성이 얇으셔서, 실무에서 한 번에 큰 성과를 내시기보다는 — **신중하고 꼼꼼한 처리**가 강점인 결이에요. “돈을 빨리 벌어야 한다”는 부담을 내려놓으시면, 오히려 본인의 진가가 자연스럽게 드러납니다.',
+        lack: '재성이 거의 비어 있어, 실무·영업에서 “숫자에 약한 사람”으로 보일 수 있어요. 약점이 아니라, **돈을 직접 다루는 자리보다 가치를 만드는 자리**가 ' + nmKke(name) + ' 더 잘 맞다는 신호입니다. 평생 회계·재무 관련은 전문가 한 명을 옆에 두시는 게 좋습니다.'
+    }[fieldBand.tone];
+
+    // 문서운 — 인성(印) 비중이 핵심
+    const docLine = (inPct >= 25)
+        ? '문서운이 두꺼워서 자격증·계약서·공증·졸업장 같은 “종이”가 ' + nmUi(name) + ' 가장 큰 무기로 작동합니다. **평생 한 권의 자격증·학위**가 든든한 방패가 되는 사주예요. 다만 한 번에 큰 계약은 영업일 이틀만 비워 두신 뒤 도장을 찍으시는 습관을 들이십시오.'
+        : (inPct >= 10)
+            ? '문서운이 적정 수준이라 자격증·계약을 잡으실 때 흐름이 막히지는 않아요. 다만 큰 시험·큰 계약은 **인성(印) 기운이 들어오는 해**(임·계·인·묘·해·자 글자가 실리는 시기)에 맞춰 잡으시면 결실이 훨씬 단단해집니다.'
+            : '문서운이 얇거나 거의 비어 있는 편이라, 자격증·시험·계약서에서 자주 헛도실 수 있어요. **큰 결정은 인성(印) 기운이 실리는 대운·세운에 맞춰** 잡으시고, 평소엔 본인 이름으로 들어오는 모든 문서를 한 폴더에 모아 두십시오.';
+
+    // 큰 추천 한 줄
+    let mainAdvice;
+    if (inPct >= gwanPct && inPct >= sikPct && inPct >= jaePct) {
+        mainAdvice = '<strong>' + nmEunNeun(name) + ' 사주의 무게중심이 “공부·자격”에 가장 가까이 가 있는 분</strong>이세요. 평생 한 권의 자격증·학위를 손에 쥐고 사시면 그게 가장 큰 무기가 됩니다.';
+    } else if (gwanPct >= sikPct && gwanPct >= jaePct) {
+        mainAdvice = '<strong>' + nmEunNeun(name) + ' 사주의 무게중심이 “조직과 자리”에 가장 가까이 가 있는 분</strong>이세요. 큰 조직 안에서 책임을 맡으시면서 자리 잡는 결이 가장 자연스럽습니다.';
+    } else if (sikPct >= jaePct) {
+        mainAdvice = '<strong>' + nmEunNeun(name) + ' 사주의 무게중심이 “표현과 결과물”에 가장 가까이 가 있는 분</strong>이세요. 시험·취업 모두 “보여주는 자리”에서 빛이 납니다.';
+    } else {
+        mainAdvice = '<strong>' + nmEunNeun(name) + ' 사주의 무게중심이 “실무와 현장”에 가장 가까이 가 있는 분</strong>이세요. 시험·이론보다 일을 직접 해 보면서 익히시는 길이 가장 빠릅니다.';
+    }
+
+    function _vp(t){ return voicePolishParagraph(data, t); }
+    function box(label, val, b, body) {
+        return '<div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:14px 16px;">'
+            + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">'
+            + '<div style="font-size:11px;letter-spacing:0.10em;color:var(--text-dim);">' + label + '</div>'
+            + '<div style="display:flex;align-items:center;gap:8px;">'
+            + '<span style="font-size:13px;font-weight:700;color:' + b.col + ';">' + val + '%</span>'
+            + '<span style="font-size:10px;background:rgba(255,255,255,0.08);color:' + b.col + ';padding:2px 7px;border-radius:6px;letter-spacing:0.04em;">' + b.label + '</span>'
+            + '</div></div>'
+            + '<p style="font-size:13px;color:#ccc;line-height:1.88;margin:0;">' + boldStarsToStrong(_vp(body)) + '</p>'
+            + '</div>';
+    }
+
+    var chHeadH = buildChapterHead(buildTopicMetaphorTitle('career', data), '합격 — 시험 · 취직 · 문서운');
+    return `<div class="report-chapter">
+        ${chHeadH}
+        <p class="ch-text" style="font-size:14px;color:var(--text);line-height:2;margin:0 0 18px;">${_vp('합격은 사주에서 네 가지 기둥이 함께 만드는 결과예요. <strong>인성(印, 공부·자격)</strong>, <strong>관성(官, 조직·취업)</strong>, <strong>식상(食傷, 표현·면접)</strong>, <strong>재성(財, 실무·현장)</strong> — 이 네 가지의 두께를 보면 ' + nmIGa(name) + ' 어떤 “합격 자리”에서 가장 잘 풀리시는지가 거의 다 드러납니다.')}</p>
+        <p class="ch-text" style="font-size:14px;color:var(--text);line-height:2;margin:0 0 18px;">${boldStarsToStrong(_vp(mainAdvice))}</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0 18px;">
+            ${box('시험 · 자격 (인성)', inPct, testBand, examLine)}
+            ${box('취직 · 조직 (관성)', gwanPct, hireBand, hireLine)}
+            ${box('면접 · 표현 (식상)', sikPct, interviewBand, interviewLine)}
+            ${box('실무 · 현장 (재성)', jaePct, fieldBand, fieldLine)}
+        </div>
+        <div style="background:rgba(199,167,106,0.06);border-radius:12px;padding:18px 20px;margin:18px 0;border-left:3px solid var(--gold);">
+            <div style="font-size:11px;letter-spacing:0.10em;color:var(--gold);margin-bottom:10px;font-weight:700;">문서운 — 계약 · 자격 · 공증</div>
+            <p style="font-size:13.5px;color:#ddd;line-height:1.95;margin:0;">${boldStarsToStrong(_vp(docLine))}</p>
+        </div>
+        <p class="ch-text" style="font-size:14px;color:var(--text);line-height:2;margin:0 0 18px;">${_vp('마지막으로 — 합격에는 “타이밍”도 중요합니다. ' + nmKke(name) + ' 인성(印) 기운이 들어오는 시기(임수·계수·인목·묘목·해수·자수 글자가 실리는 해)에는 시험·자격·문서가 평소보다 두 배쯤 잘 풀려요. 큰 시험·큰 계약은 그 시기에 맞춰 잡으시는 것만으로도 결과가 달라집니다.')}</p>
+    </div>`;
+}
+
 function buildChapter5_Career(data) {
     const name = data.name || '고객';
     const sipseong = data.sipseong || {};
@@ -6362,6 +6554,47 @@ function buildChapter5_Career(data) {
                 <div style="font-size:12px;color:#bbb;line-height:1.8;"><b style="color:#ddd;">역풍 대운 커리어</b><br>내실 다지기·자격증·학습·네트워크 — 조용한 준비가 다음 도약의 연료가 됩니다.</div>
             </div>
         </div>
+
+        ${(()=>{
+            const OH_DAY_CR = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
+            const dayOhCR = OH_DAY_CR[data.dayStem||'丙'] || 'fire';
+            const OH_JOBS = {
+                wood:  { tag:'성장·기획·교육·생명',  jobs:['교사·강사','교육 콘텐츠 기획','출판·편집','심리·상담','복지·NGO','환경·생명과학 분야','조경·임업·식물 관련 사업','크리에이터(성장 콘텐츠)','코칭·멘토링'] },
+                fire:  { tag:'표현·열정·연결',         jobs:['방송·미디어','광고·마케팅','이벤트·기획자','강연자·진행자','요식업(불 다루는 분야)','뷰티·패션·트렌드','연예·엔터테인먼트','영업·세일즈(대인 중심)','예술·공연 분야'] },
+                earth: { tag:'안정·중개·축적',         jobs:['부동산·건설·인테리어','회계·세무·총무','요식업·식품 유통','보험·연금','중개·플랫폼 매니저','HR·총무','농수산·로컬 비즈니스','부동산 임대업','관광·숙박 운영'] },
+                metal: { tag:'결단·정밀·전문',         jobs:['의료(외과·치과·정형)','법조·검찰·법무','금융·증권·투자','회계·감사·세무사','경찰·군인·보안','정밀기계·반도체','보석·시계·금속 가공','품질관리·QA','전문 컨설팅'] },
+                water: { tag:'통찰·정보·연구',         jobs:['연구원·학계','데이터·분석·통계','심리·정신과·임상','무역·물류','금융 분석·자산운용','작가·번역·기록','정보 분석','전략 기획·컨설팅','심리 상담·코치'] }
+            };
+            const ohRec = OH_JOBS[dayOhCR];
+            const dominantSip = (function(){
+                const arr = Object.entries(sipseong).sort((a,b)=>b[1]-a[1]);
+                return arr.length>0 ? arr[0][0] : '';
+            })();
+            const sipExtra = {
+                '비견':'동업·공동대표·파트너십이 들어간 자리에서 잘 풀리시고',
+                '겁재':'경쟁이 치열한 시장(영업·트레이딩·세일즈 대회)에서 오히려 결이 살고',
+                '식신':'한 분야의 깊이를 쌓아 “장인·전문가”로 알려지는 길이 잘 맞으시고',
+                '상관':'기존 틀을 깨는 창작·기획·1인 미디어에서 가장 빠르게 결실이 보이고',
+                '편재':'단기 프로젝트·영업·중개·자영업처럼 “손에 잡히는 돈의 흐름”이 잦은 자리에서 빛나시고',
+                '정재':'월급·계약·고정 거래처처럼 “안정적인 현금 흐름”이 있는 자리에서 가장 자연스러우시고',
+                '편관':'위기 대응·구조조정·법무·군경처럼 “큰 압박을 견디는 자리”에서 진가가 발휘되시고',
+                '정관':'공무·공기업·대기업처럼 “규칙과 위계가 분명한 자리”에서 안정적으로 자리 잡으시고',
+                '편인':'독립·1인 전문가·연구·창작처럼 “나만의 길”을 가는 자리가 잘 맞으시고',
+                '정인':'교육·연구·자격 기반 전문직처럼 “공부의 결과가 직업이 되는 자리”가 가장 자연스럽고'
+            }[dominantSip] || '';
+            const jobsList = '<ul style="margin:6px 0 0 0;padding-left:18px;color:#ddd;line-height:1.85;font-size:13px;">'
+                + ohRec.jobs.map(j=>'<li>'+j+'</li>').join('') + '</ul>';
+            const ohKr = (dayOhCR==='wood'?'목(木)':dayOhCR==='fire'?'화(火)':dayOhCR==='earth'?'토(土)':dayOhCR==='metal'?'금(金)':'수(水)');
+            return '<div style="background:rgba(199,167,106,0.06);border-radius:12px;padding:20px 22px;margin:18px 0;border:1px solid rgba(199,167,106,0.18);">'
+                + '<div style="font-size:12px;color:var(--gold);margin-bottom:10px;letter-spacing:1px;font-weight:700;">&#9670; ' + nmKke(name) + ' 추천드리는 구체적 직업</div>'
+                + '<p style="font-size:13.5px;color:#ccc;line-height:1.95;margin:0 0 12px;">' + boldStarsToStrong(voicePolishParagraph(data, nmEunNeun(name) + ' 일간(태어난 날의 천간)이 <strong>' + ohKr + '</strong> 기운에 속하시고, 사주에서 가장 두꺼운 자리가 <strong>' + (dominantSip||'균형형') + '</strong>이세요. 그래서 ' + (sipExtra ? sipExtra + ' ' : '') + ohRec.tag + '의 결과 잘 맞으세요. 아래는 그 결에서 자연스럽게 자리 잡으시는 직업들을 추려 본 거예요.')) + '</p>'
+                + '<div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:14px 16px;">'
+                + '<div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;letter-spacing:0.10em;">결에 가장 잘 맞는 자리</div>'
+                + jobsList + '</div>'
+                + '<p style="font-size:12.5px;color:#aaa;line-height:1.8;margin:12px 0 0;">이 목록은 “정답”이 아니라 <strong>결이 살아나는 방향</strong>이에요. 같은 직무 안에서도 결정권·표현 비중·근무 환경이 어떻게 짜여 있는지가 더 중요합니다. 한 직업을 정하시기 전에 “이 자리에서 내 권한은 어디까지인가”를 먼저 글로 적어 보십시오.</p>'
+                + '</div>';
+        })()}
+
         <p class="ch-text" style="margin-top:16px;">일은 오래 버틸 **한 문장 직무 정의**가 있을 때 남습니다. 그 문장을 이번 분기 안에 쓰십시오.</p>
     </div>`;
 }
@@ -6750,6 +6983,88 @@ function buildChapter8_Health(data) {
                 <div style="font-size:12px;color:#bbb;line-height:1.8;"><b style="color:#ddd;">&#10003; 계절별 예방 검진</b><br>취약 오행의 계절에는 해당 장기 검진을 집중적으로 받으십시오.</div>
             </div>
         </div>
+
+        ${(()=>{
+            // ── 정신 건강 — 사주 결로 본 “미리 알아두실 가능성과 예방법” ──
+            //   ※ 진단이 아니라 “쉽게 영향받을 수 있는 결”을 미리 짚는 가이드입니다.
+            const sipseong = data.sipseong || {};
+            const inC   = (sipseong['정인']||0)+(sipseong['편인']||0);
+            const sikC  = (sipseong['식신']||0)+(sipseong['상관']||0);
+            const gwanC = (sipseong['정관']||0)+(sipseong['편관']||0);
+            const total = Math.max(Object.values(sipseong).reduce((a,b)=>a+b,0), 1);
+            const inPct   = Math.round(inC/total*100);
+            const sikPct  = Math.round(sikC/total*100);
+            const gwanPct = Math.round(gwanC/total*100);
+            const wx = data.wuxing || {};
+            const wxSum = Math.max(1, Object.values(wx).reduce((a,b)=>a+(Number(b)||0),0));
+            function p(k){ return Math.round((Number(wx[k])||0)/wxSum*100); }
+            const hwa = p('fire'), sui = p('water'), geum = p('metal'), to = p('earth'), mok = p('wood');
+
+            // 가능성 신호들 (가장 흔한 명리적 결—진단 아님)
+            const signals = [];
+            if (hwa >= 28 && sui < 15) signals.push({
+                tone: '<strong>불면·과한 흥분·공황 결</strong>',
+                desc: '화(火) 기운이 두껍고 수(水)가 얇으신 분은, 누워도 머릿속이 환하게 켜져 있는 느낌이 자주 오실 수 있어요. 갑자기 가슴이 두근거리거나 숨이 짧아지는 패턴이 반복되시면, 공황으로 발전할 수 있는 결입니다.',
+                prevent: '잠들기 2시간 전부터 화면을 줄이시고, <strong>오후 2시 이후 카페인을 끊는</strong> 것만으로도 큰 차이가 납니다. 한 달 안에 3회 이상 두근거림이 반복되시면 가벼운 검진(심전도·내과)을 받아 두십시오.'
+            });
+            if (sui >= 30 && hwa < 10) signals.push({
+                tone: '<strong>우울감·만성 무기력 결</strong>',
+                desc: '수(水) 기운이 두껍고 화(火)가 얇으신 분은, 별 이유 없이 가라앉는 시기가 길게 따라올 수 있어요. 특히 겨울(11~1월)에 그 결이 더 짙어지십니다.',
+                prevent: '햇볕을 매일 30분씩 직접 받으시고, <strong>주 2회 이상 사람을 만나는 자리</strong>를 미리 약속으로 잡아 두십시오. 2주 이상 가라앉음이 풀리지 않으시면 정신건강의학과 상담을 미루지 마십시오.'
+            });
+            if ((sikPct >= 25 || (mok >= 30 && hwa >= 25)) && inPct < 15) signals.push({
+                tone: '<strong>집중 어려움 · 충동성 결 (ADHD스러운 패턴)</strong>',
+                desc: '식상(食傷)이 두껍고 인성(印)이 얇으시거나, 목(木)·화(火)가 함께 두꺼우신 분은 — 한 가지에 오래 앉아 있기 어려우시고, 시작이 잦은데 마무리가 밀리는 결이세요. 어른이 되어서도 ADHD 진단으로 이어지는 경우가 종종 있습니다.',
+                prevent: '한 번에 한 가지만 손에 잡으시는 “단일 작업 30분 + 5분 휴식” 패턴을 일상에 박아 두십시오. 일상 기능에 큰 지장이 있으시면 정신건강의학과에서 정식 평가를 받아 두시는 게 좋습니다 (진단은 사주가 아니라 의료의 영역입니다).'
+            });
+            if (gwanPct >= 25 && inPct < 15) signals.push({
+                tone: '<strong>불안 · 만성 긴장 결</strong>',
+                desc: '관성(官)이 두꺼우신데 인성(印)이 얇으신 분은 — “해야만 한다”는 압박을 늘 마음에 지고 사시는 결이세요. 위장 쪽 불편, 어깨 긴장, 잠들기 어려움이 동시에 오면 만성 불안의 신호입니다.',
+                prevent: '하루 한 번 <strong>“오늘은 여기까지”</strong>라고 의식적으로 닫는 시간을 정해 두십시오. 호흡 명상(5분)·따뜻한 차·일정의 20% 비우기 — 이 세 가지가 가장 가성비 좋은 예방법입니다.'
+            });
+            if (geum >= 28 && mok < 15) signals.push({
+                tone: '<strong>강박 · 완벽주의 결</strong>',
+                desc: '금(金) 기운이 두꺼우시고 목(木)이 얇으신 분은, 한 번 마음에 안 드는 게 보이면 그 자리를 떠나지 못하시는 결이세요. 같은 동작을 반복하시거나, “이 정도면 됐다”가 안 만들어지시면 강박의 결입니다.',
+                prevent: '<strong>“80%에서 한 번 손을 떼는”</strong> 연습을 작은 일부터 의도적으로 하십시오. 일상 기능에 지장이 있으시면 강박장애(OCD)도 의료적으로 잘 풀리는 영역이니, 망설이지 마시고 전문가를 만나 보십시오.'
+            });
+            if (to >= 30 && mok < 15) signals.push({
+                tone: '<strong>걱정·반추 결</strong>',
+                desc: '토(土) 기운이 두꺼우시고 목(木)이 얇으신 분은, 같은 걱정이 답을 못 찾고 머릿속에서 빙글빙글 도는 시간이 길어지실 수 있어요. 위·소화기 신호와 함께 오는 경우가 많습니다.',
+                prevent: '걱정이 시작되면 <strong>종이에 단어로만 적어 두시고</strong>, 그 자리에서 “지금 내가 할 수 있는 한 가지”만 적고 덮으십시오. 2주 이상 같은 걱정이 반복되시면 상담을 한 번 받아 보시는 것이 좋습니다.'
+            });
+
+            // 신호가 하나도 없으면 일반 가이드
+            const itemsHtml = signals.length > 0
+                ? signals.map(s =>
+                    '<div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:14px 16px;margin-bottom:10px;border-left:3px solid rgba(199,167,106,0.5);">'
+                    + '<div style="font-size:12.5px;color:#ddd;margin-bottom:8px;line-height:1.7;">' + s.tone + '</div>'
+                    + '<p style="font-size:13px;color:#ccc;line-height:1.88;margin:0 0 8px;">' + boldStarsToStrong(voicePolishParagraph(data, s.desc)) + '</p>'
+                    + '<p style="font-size:13px;color:#bbb;line-height:1.88;margin:0;"><strong style="color:#bda979;">예방 · 습관 ▸</strong> ' + boldStarsToStrong(voicePolishParagraph(data, s.prevent)) + '</p>'
+                    + '</div>'
+                  ).join('')
+                : '<div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:14px 16px;"><p style="font-size:13px;color:#ccc;line-height:1.88;margin:0;">' + boldStarsToStrong(voicePolishParagraph(data, nmUi(name) + ' 사주는 정신건강 측면에서 특별히 한쪽으로 쏠리는 패턴이 강하지 않은 결이세요. 다만 어느 누구든 — 2주 이상 가라앉음이 풀리지 않거나, 일상 기능에 지장이 있을 정도의 불안·강박·집중 어려움이 이어지신다면, 사주와 무관하게 가까운 정신건강의학과 상담을 받아 보시는 것이 가장 빠른 회복법입니다.')) + '</p></div>';
+
+            return '<div style="background:rgba(180,140,200,0.06);border-radius:12px;padding:20px 22px;margin:18px 0;border:1px solid rgba(180,140,200,0.22);">'
+                + '<div style="font-size:12px;color:#c9a8d8;margin-bottom:10px;letter-spacing:1px;font-weight:700;">&#9670; 마음의 건강 — 미리 알아두실 가능성과 예방법</div>'
+                + '<p style="font-size:13px;color:#d8c8d8;line-height:1.85;margin:0 0 14px;">' + boldStarsToStrong(voicePolishParagraph(data, '사주로 정신 질환을 진단할 수는 없지만, “어떤 결의 사람이 어떤 어려움에 더 영향을 받기 쉬운지”는 보입니다. 아래는 ' + nmUi(name) + ' 사주에서 미리 알아두시면 좋은 가능성과 예방법이에요. 해당되지 않으시는 항목도 있을 수 있고, 일상 기능에 지장이 있으시면 <strong>사주와 별개로 정신건강의학과 상담을 미루지 마시는 것</strong>이 가장 중요합니다.')) + '</p>'
+                + itemsHtml
+                + '</div>';
+        })()}
+
+        <div style="background:rgba(74,158,106,0.06);border-radius:12px;padding:18px 22px;margin:16px 0;border-left:3px solid #4a9e6a;">
+            <div style="font-size:12px;color:#7fcf9f;margin-bottom:10px;letter-spacing:1px;font-weight:700;">&#9670; 검진 — 미루지 마시고 미리 잡아 두실 자리</div>
+            <p style="font-size:13.5px;color:#d8e8d8;line-height:1.95;margin:0 0 10px;">${boldStarsToStrong(voicePolishParagraph(data, '병이 생기고 나서가 아니라, 사주에서 약한 자리를 “먼저” 챙기시는 게 평생 가장 비용 적게 드는 건강 전략이에요. ' + nmUi(name) + ' 사주에서 미리 챙겨 두실 검진은 다음과 같습니다.'))}</p>
+            <ul style="font-size:13px;color:#d0e0d0;line-height:1.9;margin:0;padding-left:18px;">
+                <li><strong>연 1회 종합 검진</strong> — 위·간 기능·콜레스테롤·갑상선까지 한 번에 묶으십시오.</li>
+                <li><strong>${(()=>{
+                    const dict = { wood:'간·담낭·갑상선·안과 검진', fire:'심전도·혈압·지질 검사', earth:'위·대장 내시경·혈당·복부 초음파', metal:'폐·기관지·피부·대장 검진', water:'신장·호르몬·요로계 초음파' };
+                    return dict[maxWuxing] || '종합 검진';
+                })()}</strong> — ${ohKr} 기운이 두꺼우신 분이 특히 챙기실 항목입니다. 분기 한 번씩 컨디션이 떨어지는 시기에 미리 예약해 두십시오.</li>
+                <li><strong>2년에 한 번 정신건강 자기 진단</strong> — 우울감·불안·집중 어려움이 일상에 영향을 주는지 짧은 자가검사(예: PHQ-9, GAD-7)를 1년에 한 번씩만 해 보십시오. 점수가 한 번이라도 중등도 이상으로 나오시면 정신건강의학과 한 번 다녀오시는 것이 가장 빠른 길입니다.</li>
+                <li><strong>50대 이후</strong>는 위·대장 내시경 주기를 짧게 가져가시고, 골밀도·치아 정기 검진도 함께 챙기십시오.</li>
+            </ul>
+        </div>
+
         <p class="ch-text" style="margin-top:16px;">건강은 버티는 힘이 아니라 회복 리듬입니다. 몸의 신호를 설명으로 덮지 마십시오. **피곤한 날은 일정을 비우는 것**이 곧 전략입니다.</p>
     </div>`;
 }
