@@ -70,19 +70,19 @@ html:not([data-theme="light"]) .part-tier-title {
 /* 과거 규칙 호환 — 이제 소챕터가 파트 헤더보다 크게 보이면 안 됨 */
 .part-header-title {
   font-size: clamp(16px, 3.85vw, 20px) !important;
-  font-weight: 750 !important;
+  font-weight: 700 !important;
 }
 
-/* 소챕터 제목 — 파트 헤더보다 작게 유지 */
+/* 소챕터 제목 — 파트 헤더(한 줄)보다 한 단계 작게 */
 .ch-main-topic-title,
 h2.ch-main-topic-title {
-  font-size: clamp(17px, 3.8vw, 21px) !important;
-  font-weight: 800 !important;
+  font-size: clamp(15px, 3.55vw, 19px) !important;
+  font-weight: 700 !important;
 }
 .ch-title-current-period,
 h2.ch-title-current-period {
-  font-size: clamp(17px, 3.8vw, 21px) !important;
-  font-weight: 800 !important;
+  font-size: clamp(15px, 3.55vw, 19px) !important;
+  font-weight: 700 !important;
 }
 
 /* ─────────────────────────────────
