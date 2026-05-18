@@ -354,6 +354,12 @@ body::before {
 
     <div id="compat-voice-overview" class="compat-voice-wrap" style="margin:20px 0 8px;"></div>
 
+    <div id="section-positioning">
+      <div style="font-size:14px;font-weight:700;color:var(--gold);margin:24px 0 12px;padding:10px 0;border-bottom:1px solid rgba(199,167,106,0.2);">⚖ 관계 포지셔닝 — 속도·역할·조율</div>
+      <div id="compat-voice-positioning" class="compat-voice-wrap" style="margin:0 0 8px;"></div>
+      <div id="panel-positioning" class="rel-panel"></div>
+    </div>
+
     <div id="section-personality">
       <div style="font-size:14px;font-weight:700;color:var(--gold);margin:24px 0 12px;padding:10px 0;border-bottom:1px solid rgba(199,167,106,0.2);">🌟 두 사람의 타고난 성격과 기질</div>
       <div id="panel-personality" class="rel-panel"></div>
@@ -377,6 +383,12 @@ body::before {
     <div id="section-spouse">
       <div style="font-size:14px;font-weight:700;color:var(--gold);margin:24px 0 12px;padding:10px 0;border-bottom:1px solid rgba(199,167,106,0.2);">💎 배우자궁 분석 — 두 사람이 끌어당기는 이성</div>
       <div id="panel-spouse" class="rel-panel"></div>
+    </div>
+
+    <div id="section-ideal-family">
+      <div style="font-size:14px;font-weight:700;color:var(--gold);margin:24px 0 12px;padding:10px 0;border-bottom:1px solid rgba(199,167,106,0.2);">✨ 이상형 거리 · 자녀 인연 · 자미두수 보강</div>
+      <div id="compat-voice-ideal-family" class="compat-voice-wrap" style="margin:0 0 8px;"></div>
+      <div id="panel-ideal-appendix" class="rel-panel"></div>
     </div>
 
     <div class="timeline-section">
@@ -943,6 +955,13 @@ function buildRelPanels(params, a, b, result) {
   compatCtx.aOh = aOh;
   compatCtx.bOh = bOh;
 
+  const posVoiceEl = document.getElementById('compat-voice-positioning');
+  const posPanelEl = document.getElementById('panel-positioning');
+  if (posVoiceEl) posVoiceEl.innerHTML = voice('positioning');
+  if (posPanelEl && typeof buildCompatPositioningPanelHtml === 'function') {
+    posPanelEl.innerHTML = buildCompatPositioningPanelHtml(compatCtx);
+  }
+
   // ── 타고난 성격 패널 ──
   const aChar = (STEM_CHAR[a.dayStem]||'') + ' ' + (BRANCH_CHAR[aDB]||'');
   const bChar = (STEM_CHAR[b.dayStem]||'') + ' ' + (BRANCH_CHAR[bDB]||'');
@@ -1159,9 +1178,13 @@ function buildRelPanels(params, a, b, result) {
       </div>
     </div>`;
 
-  // panel-spouse 안에 추가 (없으면 body에 append)
-  const spouseEl = document.getElementById('panel-spouse');
-  if (spouseEl) spouseEl.insertAdjacentHTML('beforeend', childPanel);
+  const idealVoiceEl = document.getElementById('compat-voice-ideal-family');
+  const idealPanelEl = document.getElementById('panel-ideal-appendix');
+  if (idealVoiceEl) idealVoiceEl.innerHTML = voice('idealFamily');
+  if (idealPanelEl) {
+    const idealHtml = (typeof buildCompatIdealFamilyAppendixHtml === 'function' ? buildCompatIdealFamilyAppendixHtml(compatCtx) : '') + childPanel;
+    idealPanelEl.innerHTML = idealHtml;
+  }
 }
 
 // ══════════════════════════════════════
