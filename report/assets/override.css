@@ -691,3 +691,73 @@ html[data-theme="light"] .ilju-hanja-col [style*="color:rgba(255,255,255,0.32)"]
   .vip-row-label { color: #555 !important; }
   td[style*="font-size:9.5px"] { color: #444 !important; }
 }
+
+/* ── 라이트 모드: 별 캔버스 비활성 (바탕이 검게 깔리는 착시 방지) ── */
+body.light-mode #star-canvas,
+html[data-theme="light"] #star-canvas {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* ── 인생 한 편 — 글래스 히어로 (유리 질감 · 과한 테두리 완화) ── */
+@media screen {
+  #sec-personal-portrait.personal-portrait-hero .personal-portrait-inner {
+    max-width: 720px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  html:not([data-theme="light"]) #sec-personal-portrait.personal-portrait-hero .personal-portrait-inner {
+    padding: 26px 28px 30px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.045);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(199,167,106,0.22);
+    box-shadow:
+      0 16px 48px rgba(0,0,0,0.26),
+      inset 0 1px 0 rgba(255,255,255,0.055);
+  }
+  html[data-theme="light"] #sec-personal-portrait.personal-portrait-hero .personal-portrait-inner,
+  body.light-mode #sec-personal-portrait.personal-portrait-hero .personal-portrait-inner {
+    padding: 26px 28px 30px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.9);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(199,167,106,0.14);
+    box-shadow: 0 10px 36px rgba(28,24,18,0.065);
+  }
+  #sec-personal-portrait .personal-portrait-eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: rgba(199,167,106,0.82);
+    margin: 0 0 14px;
+    font-weight: 600;
+  }
+  #sec-personal-portrait .personal-portrait-title {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: clamp(21px, 4.6vw, 27px);
+    font-weight: 700;
+    color: var(--text);
+    margin: 0 0 12px;
+    line-height: 1.38;
+    letter-spacing: -0.02em;
+  }
+  html[data-theme="light"] #sec-personal-portrait .personal-portrait-title,
+  body.light-mode #sec-personal-portrait .personal-portrait-title {
+    color: #0c0904 !important;
+  }
+  #sec-personal-portrait .personal-portrait-lede {
+    font-size: 13px;
+    color: rgba(199,167,106,0.78);
+    margin: 0 0 22px;
+    line-height: 1.68;
+    letter-spacing: 0.03em;
+    font-weight: 500;
+  }
+  html[data-theme="light"] #sec-personal-portrait .personal-portrait-lede,
+  body.light-mode #sec-personal-portrait .personal-portrait-lede {
+    color: #7a5e28 !important;
+  }
+}
