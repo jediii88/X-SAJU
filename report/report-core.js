@@ -3585,19 +3585,14 @@ function generateDeepReport(data) {
 
     // ── 1부: 나라는 사람 ──
     var part1Body = '';
-    // 손님 동선 (고객 의도 = "나는 어떤 사람인가"에 답하는 흐름):
-    //   ① ★ 메인 인생 스토리 — 태어남부터 마지막 장면까지 한 흐름 (가장 큰 메인)
-    //   ② 일주 프로필 — 한 줄 메타포·키워드 (보조 도입)
-    //   ③ 만세력 안내 → 표 — 풀이의 근거 자료
-    //   ④ 사주 기본 종합 풀이 — 보강
-    //   ⑤·⑥ 오행·십성 — 참고 분석
-    part1Body += safeCall(()=>buildPersonalPortrait(data)||'', 'personal-portrait');
+    // 손님 동선: 원국 해부(buildChapter1_Basic)는 한 줄기 서사와 중복되어 생략합니다.
+    //   ① 일주 카드 → ② 만세력 안내 → ③ 원국 표 → ④ 오행 · 십성 → ⑤ 인생 한 줄기 서사
     part1Body += safeCall(()=>buildIljuProfileCard(data)||'', 'ilju-card');
     part1Body += safeCall(()=>buildManseGuide(data)||'', 'manse-guide');
     part1Body += safeCall(()=>buildVipEvidenceBlock(data)||'', 'vip-evidence');
-    part1Body += safeCall(()=>buildChapter1_Basic(data)||'', 'ch1-basic');
     part1Body += safeCall(()=>buildChapter2_Wuxing(data)||'', 'ch2-wuxing');
     part1Body += safeCall(()=>buildChapter3_Sipseong(data)||'', 'ch3-sip');
+    part1Body += safeCall(()=>buildPersonalPortrait(data)||'', 'personal-portrait');
     html += safeCall(()=>wrapPartSection(
         buildPartHeader(1,'나라는 사람','원국 · 기질 · 타고난 패턴','sec-part1-narrative',{name:data.name}),
         part1Body
@@ -3696,7 +3691,7 @@ function injectSectionInterpretations(data) {
         }
     }
     // 1. 만세력 원국 아래
-    setEl('manse-inline-summary', () => buildChapter1_Basic(data) + buildCurrentPeriodSummary(data) + buildMasterFullReading(data));
+    setEl('manse-inline-summary', () => buildCurrentPeriodSummary(data) + buildMasterFullReading(data));
     // 2. 합충형파해 아래
     setEl('relation-inline-summary', () => buildRelationSummary(data));
     // 3. 신살 아래
@@ -4828,484 +4823,10 @@ function detectPillarInteractions(pillars) {
     return results;
 }
 
-function buildChapter1_Basic(data) {
-    const name = data.name || '고객';
-    const pillars = data.pillars || [];
-    const iljuKey = (data.dayStem||'') + (data.dayBranch||'');
-    const dbEntry = getIljuDbEntry(data, iljuKey);
-    const isStrong = data.strengthText && (data.strengthText.includes('신강') || data.strengthText.includes('강'));
-    const gongmangBranches = data.gongmang || [];
-    const birthYear = data.birthYear || new Date(data.birthDate||'1988-01-01').getFullYear() || 1988;
-
-    const OH = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
-    const ds = data.dayStem || '丙';
-    const dayOh = OH[ds] || 'fire';
-    const HK = {'甲':'갑','乙':'을','丙':'병','丁':'정','戊':'무','己':'기','庚':'경','辛':'신','壬':'임','癸':'계','子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해'};
-    const toKr = s => s ? [...s].map(c=>HK[c]||c).join('') : '';
-
-
-    // ─── 나이대 기반 인생 기승전결 서사 (통합판) ───
-    let _careerText = '', _loveText = '';
-    let lifeNarr = (function() {
-        var OH_KR = {'甲':'갑목','乙':'을목','丙':'병화','丁':'정화','戊':'무토','己':'기토','庚':'경금','辛':'신금','壬':'임수','癸':'계수'};
-        var BRANCH_KR = {'子':'자수','丑':'축토','寅':'인목','卯':'묘목','辰':'진토','巳':'사화','午':'오화','未':'미토','申':'신금','酉':'유금','戌':'술토','亥':'해수'};
-        var OH_ENG = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
-        var BRANCH_ENG = {'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'};
-        var GENERATES = {wood:'fire',fire:'earth',earth:'metal',metal:'water',water:'wood'};
-        var CONTROLS  = {wood:'earth',fire:'metal',earth:'water',metal:'wood',water:'fire'};
-        var generates = function(a,b){return GENERATES[a]===b;};
-        var controls  = function(a,b){return CONTROLS[a]===b;};
-
-        var ps = pillars || [];
-        var getH = function(p) { return p && p.h ? (typeof p.h==='string' ? p.h : p.h.join('')) : ''; };
-        var yH = getH(ps[3])||''; var mH = getH(ps[2])||''; var dH = getH(ps[1])||''; var hH = getH(ps[0])||'';
-        var yStem=yH[0]||''; var yBr=yH[1]||'';
-        var mStem=mH[0]||''; var mBr=mH[1]||'';
-        var dStem=dH[0]||''; var dBr=dH[1]||'';
-        var hStem=hH[0]||''; var hBr=hH[1]||'';
-        var yOh=OH_ENG[yStem]||''; var mOh=OH_ENG[mStem]||'';
-        var dOh=OH_ENG[dStem]||''; var hOh=OH_ENG[hStem]||'';
-        var mBrOh=BRANCH_ENG[mBr]||''; var dBrOh=BRANCH_ENG[dBr]||'';
-
-        var gm = data.gongmang || [];
-        var gg = data.geokguk;
-        var ggName = gg && gg.geokName ? gg.geokName : '';
-        var sipseong = data.sipseong || {};
-        var sortedSip = Object.entries(sipseong).sort(function(a,b){return b[1]-a[1];});
-        var mainSip = sortedSip.length>0 ? sortedSip[0][0] : null;
-        var iProf = (typeof getIljuProfilePolished === 'function') ? getIljuProfilePolished(data, dStem, dBr) : null;
-
-        // 60일주 물상 핵심 한 줄
-        var iljuImage = iProf ? iProf.image : '';
-        var iljuCore = iProf ? iProf.core : '';
-
-        // 신강/신약
-        var strongText = isStrong
-            ? nmDnimEun(name) + ' 사주는 신강(身强)에 가깝다고 볼 수 있어요. 에너지가 넘치면 방향만 틀려도 큰 마찰이 생깁니다. 그건 성격이 나빠서가 아니라, 일간의 기운이 원국에서 먼저 서 있기 때문입니다. **옳은 방향을 잡으면 폭발적인 성과가 나옵니다.** 소진이 빠르므로, 쉬는 날을 죄책감 없이 넣으십시오.'
-            : nmDnimEun(name) + ' 사주는 신약(身弱)에 가깝다고 볼 수 있어요. 혼자 끌어가려다 지친 적이 있었을 수 있습니다. 그건 나약함이 아니라, 기운이 사람·환경과 맞물릴 때 배가 되는 구조입니다. **용신 쪽 기운이 있는 자리를 가까이 두면 체감이 달라집니다.**';
-
-        // 오행 분포 핵심
-        var wx = data.wuxing || {};
-        var total = Object.values(wx).reduce(function(a,b){return a+b;},0)||1;
-        var pct = function(k){return Math.round((wx[k]||0)/total*100);};
-        var woodP=pct('wood'),fireP=pct('fire'),earthP=pct('earth'),metalP=pct('metal'),waterP=pct('water');
-        var ohCore = '';
-        if(woodP+fireP>=60) ohCore = '열정과 표현이 앞서는 구조입니다. 멈추면 가라앉는다고 느꼈을 수 있으나, 그건 결함이 아니라 속도의 부작용에 가깝습니다. **한 번에 세 가지 이상은 열지 마십시오.** 냉각 시간을 먼저 달력에 박으십시오.';
-        else if(earthP+metalP>=60) ohCore = '안정과 결단이 삶의 축입니다. 변화가 두려워 타이밍을 놓친 적이 있었을 수 있습니다. 그건 비겁함이 아니라, 묵직함의 그림자입니다. **70%에서 한 번 밀어붙이는 연습**만 해도 기회가 살아납니다.';
-        else if(waterP>=35) ohCore = '통찰이 먼저 옵니다. 분석이 완벽해질 때까지 기다리다 시기를 놓친 적이 있었을 수 있습니다. 감각은 틀리지 않았습니다. **완벽보다 먼저 한 걸음**을 밟는 날짜만 정하십시오.';
-        else if(woodP>=35) ohCore = '성장과 도전 본능이 강합니다. 여러 갈래로 뻗다 핵심을 잃은 적이 있었을 수 있습니다. **이번 분기 메인 축은 하나만** 적고 나머지는 보류하십시오.';
-        else if(metalP>=35) ohCore = '완성도와 기준이 높습니다. 완벽한 타이밍을 기다리다 기회를 놓친 적이 있었을 수 있습니다. **60% 확신에서 실행**으로만 규칙을 바꾸십시오.';
-
-        // 격국 핵심 풀이
-        var GG_LIFE = {
-            '정재격':'꾸준히 자산을 쌓는 구조입니다. 화려한 한 방보다 복리와 신뢰가 이 사주의 재물 공식입니다. **고정비 한 줄을 매주 금요일에만** 열어보십시오.',
-            '편재격':'사람과 기회 사이에서 흐름을 만드는 구조입니다. 한 축보다 여러 수입 줄이 맞습니다. **새 통장·새 계좌는 분기에 하나만** 허용하십시오.',
-            '정관격':'조직과 원칙 안에서 올라가는 구조입니다. 명예가 수입보다 먼저 올 수 있습니다. **직함보다 보고 라인을 먼저** 고정하십시오.',
-            '편관격':'압박이 클수록 단단해지는 구조입니다. 편안한 자리보다 긴장이 있는 판에서 진가가 납니다. **밤 11시 이후 결정은 다음 날 아침**으로만 미루십시오.',
-            '식신격':'재능이 수입으로 이어지는 구조입니다. 좋아하는 것을 갈고닦을수록 돈이 따라옵니다. **포트폴리오 한 건을 끝까지** 보여주십시오.',
-            '상관격':'틀을 새로 쓰는 힘이 있습니다. 조직보다 자율이 맞는 경우가 많습니다. **말하기 전 1초, 문자 보내기 전 1분**을 스스로 걸으십시오.',
-            '편인격':'남들이 안 가는 길에서 전문성이 생깁니다. **지식재산·계약서 한 장**을 먼저 챙기십시오.',
-            '정인격':'배울수록 가치가 오릅니다. 자격·신뢰가 장기 수입의 기둥입니다. **검증되지 않은 강의 투자는 유예**하십시오.',
-            '비겁격':'자율이 보장될 때 능력이 폭발합니다. 독립과 경쟁이 키워드입니다. **동업 제안은 서면 범위 없이 답하지 마십시오.**'
-        };
-        var ggText = ggName ? (GG_LIFE[ggName]||ggName) : '';
-
-        // 기둥 간 생극 — 인생 서사 연결
-        var GENEK = {wood:{fire:'목생화',fire2:'불'},fire:{earth:'화생토'},earth:{metal:'토생금'},metal:{water:'금생수'},water:{wood:'수생목'}};
-        var CTRL  = {wood:{earth:'목극토'},fire:{metal:'화극금'},earth:{water:'토극수'},metal:{wood:'금극목'},water:{fire:'수극화'}};
-        var OH_NM = {wood:'나무',fire:'태양·불꽃',earth:'흙·산',metal:'쇠·금속',water:'물·강'};
-
-        // 월지→일간 관계 (가장 중요 — 청년기)
-        var mBrDRelation = '';
-        if(generates(mBrOh,dOh)) {
-            var genNm = (GENEK[mBrOh]&&GENEK[mBrOh][dOh])||('');
-            mBrDRelation = '15~35세에는 든든한 멘토나 파트너를 만나면 능력이 배로 붙는 구조입니다. 혼자서 버티느라 지쳤을 수 있습니다. 그건 약함이 아니라, 아직 맞는 손을 못 잡았기 때문입니다. **도움을 청하는 연습을 먼저** 하십시오.';
-        } else if(controls(mBrOh,dOh)) {
-            mBrDRelation = '15~35세에는 직장·사회에서 압박이 반복될 수 있습니다. 능력이 부족해서가 아니라, 아직 맞는 환경을 찾지 못했기 때문에 가깝습니다. **이때 쌓인 내공은 이후 20년의 방패**가 됩니다.';
-        } else if(controls(dOh,mBrOh)) {
-            mBrDRelation = '15~35세에는 순응보다 자기 방식을 세우는 기질이 강합니다. 조직보다 독립 포지션에서 진가가 드러나기 쉽습니다. **R&R을 글로 남기는 습관**만으로도 마찰이 줄어듭니다.';
-        } else {
-            mBrDRelation = '15~35세에는 말·속도·돈 기준이 비슷한 사람들이 곁에 붙습니다. 감정 소모가 큰 관계는 길게 가기 어렵습니다. **만남은 주 2회로 줄이고, 약속은 같은 요일·같은 시간대**로만 잡으십시오.';
-        }
-
-        // 공망: 원국 네 기둥 중 지지가 일주 기준 공망에 해당할 때만 통변 문단에 포함 (일주만으로 정해지는 공망 두 지지 자체로는 글을 붙이지 않음)
-        var gmText = '';
-        var gmHitPillars = (ps||[]).filter(function(p){
-            var h = getH(p);
-            return h.length > 1 && gm.indexOf(h[1]) !== -1;
-        });
-        if(gmHitPillars.length > 0) {
-            var BRKR={'子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해'};
-            var gmKr=gm.map(function(b){return (BRKR[b]||b);}).join('·');
-            gmText = '\n\n⚠ '+nmUi(name)+' 사주에는 '+gmKr+' 기운이 공망입니다. 갈망이 큰 영역일수록 결정을 서두르고 싶어집니다. 그건 결핍이 아니라, 그 기운을 더 깊이 파고들라는 신호에 가깝습니다. **공망이 강하게 들어오는 대운·세운에는** 전세·근로·투자·가맹처럼 **한 번 동의하면 돈·기간이 묶이는 계약·전자서명**을 받은 당일 찍지 말고 **영업일 이틀만 비우십시오.** 그동안 조건·해지만 글로 점검하면 됩니다.';
-        }
-
-        // 십성 나이대별 사건
-        var sipEventText = '';
-        if(mainSip && SIPSEONG_AGE_EVENT[mainSip]) {
-            var sev = SIPSEONG_AGE_EVENT[mainSip];
-            sipEventText = '\n\n**['+mainSip+'] 기질로 본 나이대별 흐름:**\n• 15~35세: '+sev.youth+'\n• 35~55세: '+sev.middle+'\n• 55세~: '+sev.late;
-        }
-
-        // 기둥 합충 이벤트
-        var pillarInts = (typeof detectPillarInteractions==='function') ? detectPillarInteractions(pillars) : [];
-        var pillarIntText = '';
-        if(pillarInts.length>0) {
-            var HAPkr={'지합':'합','방합':'방합','충':'충'};
-            pillarInts.forEach(function(r){
-                var posText = (r && r.pos) ? r.pos : ((r && r.label) ? r.label : '');
-                if(!posText) return;
-                var descText = '';
-                if (r && r.desc) {
-                    var parts = String(r.desc).split('—');
-                    descText = (parts[1] || parts[0] || '').trim();
-                }
-                var head = (r && r.type==='충')
-                    ? ('원국에 '+posText+' 충(冲)이 있습니다.')
-                    : '';
-                var t = descText ? ((head ? (head + ' ') : '') + descText) : head;
-                if(!t) return;
-                pillarIntText += '\\n• '+t.trim();
-            });
-        }
-
-        // ─── 서사 조립 ───
-        var narr = '';
-
-        // 1) 일주 핵심 — 물상 이미지로 소개 (한자 대신 그림 언어)
-        var ILJU_IMG = {
-            '甲子':{i:'대나무 숲을 달리는 쥐', d:'깊은 물기 위에서 쉼 없이 달리는 쥐처럼, 영리하고 재빠르게 기회를 잡는 형상입니다.'},
-            '甲寅':{i:'원시림을 누비는 호랑이와 거목', d:'숲의 제왕 호랑이가 거대한 나무 사이를 당당히 누비는 형상입니다.'},
-            '甲辰':{i:'용이 서린 산꼭대기의 소나무', d:'용의 기운을 품은 산 정상에 굳건히 자리한 소나무의 형상입니다.'},
-            '甲午':{i:'태양 아래 뛰어오르는 말과 고목', d:'뜨거운 태양 아래 고목 옆에서 힘차게 달리는 말의 형상입니다.'},
-            '甲申':{i:'절벽을 오르는 원숭이와 나무', d:'바위 절벽에서도 나무를 타고 자유롭게 오르내리는 원숭이의 형상입니다.'},
-            '甲戌':{i:'가을 들판을 지키는 개와 거목', d:'황금빛 가을 들판에서 의리 있게 자리를 지키는 개와 거목의 형상입니다.'},
-            '乙丑':{i:'겨울 논밭에서 일하는 소', d:'차가운 겨울 땅을 묵묵히 갈아엎는 소처럼 강인하고 성실한 형상입니다.'},
-            '乙卯':{i:'봄 들판을 뛰어다니는 토끼', d:'봄기운 가득한 들판에서 자유롭게 뛰어노는 토끼처럼 생동감 넘치는 형상입니다.'},
-            '乙巳':{i:'꽃을 감아 오르는 뱀', d:'따사로운 햇살 아래 피어난 꽃을 부드럽게 감아 오르는 뱀의 형상입니다.'},
-            '乙未':{i:'꽃밭에서 노니는 양', d:'향기로운 여름 꽃밭에서 평화롭게 노니는 양의 형상입니다.'},
-            '乙酉':{i:'서리 속에 우는 닭', d:'차가운 가을 서리 속에서도 새벽을 알리는 닭처럼 의연한 형상입니다.'},
-            '乙亥':{i:'연못 위를 헤엄치는 돼지', d:'잔잔한 연못 수련 위를 여유롭게 노니는 돼지처럼 풍요로운 형상입니다.'},
-            '丙子':{i:'겨울 밤 횃불 앞의 쥐', d:'어둡고 차가운 겨울 밤, 횃불 빛에 반짝이는 눈으로 기회를 노리는 쥐의 형상입니다.'},
-            '丙寅':{i:'한낮 태양이 등에 탄 붉은 호랑이', d:'찬란한 태양 빛을 등에 두른 호랑이가 산을 달리는 형상입니다.'},
-            '丙辰':{i:'구름 위로 솟아오르는 용', d:'두터운 구름을 뚫고 태양 빛을 등에 업은 용이 당당히 솟아오르는 형상입니다.'},
-            '丙午':{i:'정오 태양 아래 달리는 천마', d:'하늘 한가운데 강렬한 태양 아래 천둥처럼 달리는 말의 형상입니다.'},
-            '丙申':{i:'황금빛 노을을 달리는 원숭이', d:'석양의 붉은 빛 속에서 빠르고 영리하게 움직이는 원숭이의 형상입니다.'},
-            '丙戌':{i:'석양 황야를 달리는 개', d:'붉게 물드는 저녁 노을 속에서 자유롭게 달리는 개의 형상입니다.'},
-            '丁丑':{i:'겨울 화로 곁의 소', d:'혹독한 추위 속에서 화로 곁에 묵묵히 앉아 있는 소처럼 따뜻하고 강인한 형상입니다.'},
-            '丁卯':{i:'봄밤 달빛 아래 토끼', d:'고요한 봄밤 달빛 아래 조용히 앉아 있는 토끼처럼 섬세하고 감성적인 형상입니다.'},
-            '丁巳':{i:'촛불 주위를 감도는 뱀', d:'신비롭게 타오르는 촛불 주위를 천천히 감도는 뱀의 형상입니다.'},
-            '丁未':{i:'달빛 아래 잠드는 양', d:'부드러운 여름 달빛 아래 풀밭에서 평화롭게 잠드는 양의 형상입니다.'},
-            '丁酉':{i:'가을 달빛 속의 금빛 닭', d:'가을 달빛을 받아 황금빛으로 빛나는 닭처럼 정교하고 빛나는 형상입니다.'},
-            '丁亥':{i:'깊은 물 속에서 빛나는 돼지별', d:'깊은 물 속에서도 꺼지지 않는 불꽃처럼, 돼지의 풍요로운 기운이 빛나는 형상입니다.'},
-            '戊子':{i:'깊은 호수를 지키는 쥐와 산', d:'거대한 산이 쥐처럼 영리한 눈으로 호수를 품고 지키는 묵직한 형상입니다.'},
-            '戊寅':{i:'호랑이가 서식하는 깊은 산', d:'생명력이 넘치는 산속에서 호랑이가 자유롭게 누비는 웅장한 형상입니다.'},
-            '戊辰':{i:'용이 사는 깊은 산맥', d:'용이 구름 위를 오가는 거대하고 신비로운 산맥의 형상입니다.'},
-            '戊午':{i:'사막 산을 달리는 말', d:'뜨거운 태양 아래 거대한 사막 산을 질주하는 말의 형상입니다.'},
-            '戊申':{i:'바위산을 뛰노는 원숭이', d:'금속처럼 단단한 바위산에서 자유롭게 도약하는 원숭이의 형상입니다.'},
-            '戊戌':{i:'황토 산을 지키는 개', d:'황금빛 노을 속에서 굳건히 산을 지키는 충직한 개의 형상입니다.'},
-            '己丑':{i:'논밭을 가는 소', d:'비옥한 논밭을 묵묵히 갈아엎는 소처럼 성실하고 실용적인 형상입니다.'},
-            '己卯':{i:'봄 들판을 뛰어다니는 토끼', d:'봄비를 맞으며 초록 들판을 생기 넘치게 뛰어다니는 토끼의 형상입니다.'},
-            '己巳':{i:'햇살 가득한 들판의 뱀', d:'따뜻한 햇살 아래 들판을 유유히 가로지르는 뱀의 형상입니다.'},
-            '己未':{i:'초록 목장을 노니는 양 떼', d:'풍요롭고 부드러운 초록 목장에서 양 떼가 평화롭게 노니는 형상입니다.'},
-            '己酉':{i:'황금 들판의 닭', d:'가을 황금빛 들판에서 당당히 서 있는 닭처럼 풍요롭고 완성된 형상입니다.'},
-            '己亥':{i:'강물 흐르는 논밭의 돼지', d:'차갑고 깊은 물이 흐르는 논밭에서 여유롭게 노니는 돼지처럼 풍요로운 형상입니다.'},
-            '庚子':{i:'깊은 물 속 쥐가 지키는 보검', d:'영리한 쥐가 차가운 깊은 물 속에서 날카로운 보검을 지키는 형상입니다.'},
-            '庚寅':{i:'호랑이가 문 날카로운 검', d:'호랑이의 날카로운 이빨처럼 강렬하고 두려운 검의 형상입니다.'},
-            '庚辰':{i:'용의 비늘 같은 강철 갑옷', d:'용처럼 강인하고 눈부시게 빛나는 금속 갑옷의 형상입니다.'},
-            '庚午':{i:'불 속에서 단련되는 명검과 말', d:'뜨거운 불꽃 속에서 달리는 말처럼 단련되며 더 강해지는 명검의 형상입니다.'},
-            '庚申':{i:'원숭이가 든 번개 도끼', d:'번개처럼 빠른 원숭이가 날카로운 도끼를 휘두르는 형상입니다.'},
-            '庚戌':{i:'개가 지키는 가을 황야의 철검', d:'서늘한 가을 황야에서 충직한 개가 날카로운 철검을 지키는 형상입니다.'},
-            '辛丑':{i:'소가 캐낸 땅 속의 원석', d:'묵묵히 땅을 파는 소가 찾아낸 빛나는 원석처럼 숨겨진 가치의 형상입니다.'},
-            '辛卯':{i:'토끼가 발견한 봄빛 보석', d:'봄 들판을 뛰어다니는 토끼가 발견한 햇빛 속 보석처럼 반짝이는 형상입니다.'},
-            '辛巳':{i:'뱀의 비늘처럼 빛나는 은빛 장신구', d:'뱀의 비늘처럼 섬세하고 신비롭게 빛나는 은빛 장신구의 형상입니다.'},
-            '辛未':{i:'양이 발견한 다이아몬드', d:'온순한 양이 풀밭에서 발견한 다이아몬드처럼 숨겨진 특별한 가치의 형상입니다.'},
-            '辛酉':{i:'닭이 쪼아낸 완성된 백금 보석', d:'날카로운 닭의 부리로 정교하게 쪼아 완성한 백금 보석의 형상입니다.'},
-            '辛亥':{i:'돼지가 찾은 깊은 바다의 진주', d:'깊은 바닷속에서 돼지의 복스러운 기운이 만들어낸 영롱한 진주의 형상입니다.'},
-            '壬子':{i:'한겨울 밤 대양을 헤엄치는 쥐', d:'광활하고 깊은 겨울 대양을 두려움 없이 헤엄치는 쥐처럼 대담한 형상입니다.'},
-            '壬寅':{i:'폭포를 거슬러 오르는 호랑이', d:'호랑이처럼 거침없이 산속 폭포를 거슬러 오르는 힘찬 강물의 형상입니다.'},
-            '壬辰':{i:'용이 잠든 깊은 연못', d:'용이 잠든 신비롭고 깊은 연못처럼 헤아릴 수 없는 깊이를 품은 형상입니다.'},
-            '壬午':{i:'불꽃 위를 달리는 붉은 말', d:'뜨거운 불기운 위를 달리는 말처럼 역동적이고 강렬한 에너지의 형상입니다.'},
-            '壬申':{i:'원숭이가 노는 폭포', d:'금속 같은 바위를 타고 자유롭게 뛰어내리는 폭포 위의 원숭이 형상입니다.'},
-            '壬戌':{i:'황혼 속 강을 달리는 개', d:'노을이 지는 하늘 아래 강물 따라 자유롭게 달리는 개의 형상입니다.'},
-            '癸丑':{i:'겨울 논밭을 갈아엎는 소와 지하수', d:'차가운 땅 속 지하수처럼, 소가 묵묵히 갈아엎는 논밭 아래 숨겨진 생명력의 형상입니다.'},
-            '癸卯':{i:'봄비 속 토끼', d:'봄비를 맞으며 새싹과 함께 기뻐하는 토끼처럼 생명력 넘치는 형상입니다.'},
-            '癸巳':{i:'뱀 위의 이슬방울', d:'뜨거운 뱀의 몸 위에서도 사라지지 않는 맑고 강인한 이슬방울의 형상입니다.'},
-            '癸未':{i:'소나기를 맞는 양 떼', d:'무더운 여름 시원한 소나기를 맞으며 기뻐하는 양 떼처럼 시원하고 강렬한 형상입니다.'},
-            '癸酉':{i:'새벽 이슬을 터는 닭', d:'가을 새벽 첫 울음과 함께 나뭇잎 이슬을 터는 닭처럼 정화되고 섬세한 형상입니다.'},
-            '癸亥':{i:'겨울 밤 빗속의 돼지', d:'겨울 밤 빗소리처럼 깊고 신비로운 돼지의 풍요로운 내면의 형상입니다.'}
-        };
-        var iljuImgData = ILJU_IMG[dStem+dBr] || null;
-        if(iljuCore || iljuImgData) {
-            var imgTxt = iljuImgData ? iljuImgData.i : (dStem+dBr);
-            var descTxt = iljuImgData ? iljuImgData.d : '';
-            narr += nmUi(name)+' 사주는 그림으로 표현하면 — 「'+imgTxt+'」입니다.\n';
-            if(descTxt) narr += descTxt + '\n';
-            if(iljuCore) narr += iljuCore + ' **일주의 무게를 탓하지 마십시오. 한 달에 바깥에 꺼낼 목표는 하나만 고르십시오.**\n\n';
-        }
-
-        // 2) 신강/신약 + 오행 핵심
-        narr += strongText + '\n';
-        if(ohCore) narr += ohCore + '\n';
-        if(ggText) narr += '\n'+ggText+'\n';
-
-        // 3) 나이대 흐름
-        narr += '\n━━━━━━━━━━━━━━━━\n';
-        narr += '🌱 유년기(0~15세) — '+nmUi(name)+' 뿌리\n';
-        narr += '━━━━━━━━━━━━━━━━\n';
-        var YEAR_LIFE_SIMPLE = {
-            earth: nmUi(name)+' 0~15세는 안정을 중시하는 가정 환경 속에서 원칙과 책임감이 형성되는 시기입니다. 이 시기에 익힌 성실함과 인내가 평생의 중심축이 됩니다. ▸ 흥망: 이 시기를 어떻게 보냈느냐에 따라 평생의 안정 기반이 달라집니다. ▸ 보완: 너무 이른 책임감이 짐이 되지 않도록, 실패해도 된다는 경험을 쌓는 것이 중요합니다.',
-            wood: nmUi(name)+' 0~15세는 개척적이고 주도적인 기질이 발현되는 시기입니다. 또래보다 먼저 무언가를 시작하려는 본능이 두드러집니다. ▸ 흥망: 이 에너지가 긍정적으로 발현되면 리더십으로, 억압되면 반항심으로 나타납니다. ▸ 보완: 새로운 것을 배울 기회를 충분히 주면 타고난 잠재력이 꽃을 피웁니다.',
-            fire: nmUi(name)+' 0~15세는 표현력과 존재감이 남다른 시기입니다. 어릴 때부터 사람들 앞에 서는 것을 좋아하고 주목받는 경험이 자신감의 기초가 됩니다. ▸ 흥망: 표현과 인정의 경험이 풍부할수록 성인 이후 리더십이 강해집니다. ▸ 보완: 주목받지 못하면 크게 흔들릴 수 있으니, 작은 성취도 충분히 인정해주는 환경이 중요합니다.',
-            metal: nmUi(name)+' 0~15세는 기준이 높고 완벽을 추구하는 기질이 형성되는 시기입니다. "왜?"라는 질문과 높은 완성도 의식이 어릴 때부터 나타납니다. ▸ 흥망: 이 기질이 잘 발달하면 탁월한 전문가로, 억압되면 완벽주의 함정에 빠집니다. ▸ 보완: 80점도 충분히 잘했다는 경험이 성인 이후 실행력을 높입니다.',
-            water: nmUi(name)+' 0~15세는 섬세한 관찰력과 사색적 감수성이 형성되는 시기입니다. 남들보다 더 많이 느끼고 생각하는 내면의 풍부함이 이 시기에 뿌리를 내립니다. ▸ 흥망: 이 감수성이 잘 발달하면 깊은 통찰력으로, 너무 억압되면 사회 불안으로 발전할 수 있습니다. ▸ 보완: 감정을 말·일기·운동 등 건전한 통로로 바깥으로 보내는 습관을 어릴 때부터 익히는 것이 중요합니다.'
-        };
-        narr += (YEAR_LIFE_SIMPLE[yOh]||'') + '\n';
-
-        narr += '\n━━━━━━━━━━━━━━━━\n';
-        narr += '🔥 청년기(15~35세) — 방향을 찾는 시절\n';
-        narr += '━━━━━━━━━━━━━━━━\n';
-        narr += mBrDRelation + '\n';
-
-
-
-        narr += '\n━━━━━━━━━━━━━━━━\n';
-        narr += '⚡ 중년기(35~55세) — 꽃이 피는 시절\n';
-        narr += '━━━━━━━━━━━━━━━━\n';
-        var MID = {
-            fire: nmUi(name)+' 35~55세는 【흥(興)의 절정기】입니다. 직업: 20~30대에 흩어졌던 에너지가 하나로 모이며, 처음으로 "내 힘으로 만든 결과"가 세상에 드러납니다. 이 시기에 사업 확장·직급 상승·사회적 인정이 집중됩니다. 재물: 가장 많이 벌고 가장 많이 쓰는 시기입니다. 수입이 늘어나는 만큼 장기 자산 구조를 잡아야 합니다. 보완: 과로와 건강 방치가 이 시기 최대 위험입니다. 연 1회 이상 정기 검진을 가능하면 받으십시오.',
-            wood: nmUi(name)+' 35~55세는 방향이 잡히며 진짜 도약이 시작되는 시기입니다. 직업: 35세 전후 중요한 방향 전환 결정이 기다립니다. 이 결정이 이후 20년을 결정합니다. 늦었다고 느껴도 지금이 가장 빠른 시작입니다. 재물: 초기 투자·창업·신규 수입원 개척에 가장 강한 에너지를 받는 시기입니다. 보완: 너무 많은 방향으로 동시에 뻗으려는 충동을 제어하십시오. 하나에 집중해야 결과가 납니다.',
-            earth: nmUi(name)+' 35~55세가 인생 전성기입니다. 직업: 지금까지 묵묵히 쌓아온 신뢰와 전문성이 가장 강력한 무기가 됩니다. 이 시기에 안정적 직위·사업 기반·사회적 신망이 확보됩니다. 재물: 부동산·장기 투자·안정적 자산 구축에 최적의 시기입니다. 보완: 너무 안정만 추구하다 기회를 놓치지 않도록, 계산된 리스크를 감수하는 용기가 필요합니다.',
-            metal: nmUi(name)+' 35~55세는 전문성이 권위로 전환되는 시기입니다. 직업: 이 시기에 해당 분야에서 타의 추종을 불허하는 전문성이 완성됩니다. 누군가 의견을 구하는 사람이 되는 것이 목표입니다. 재물: 전문성 기반의 고수익 구조를 만드는 시기입니다. 컨설팅·강의·지식 판매 등 전문성을 상품화하십시오. 보완: 고집이 강해지는 시기입니다. 새로운 방식에 열린 태도를 의식적으로 유지하십시오.',
-            water: nmUi(name)+' 35~55세는 오랜 축적이 가치로 전환되는 시기입니다. 직업: 분석력과 통찰이 인정받기 시작합니다. 자연스럽게 조언을 구하는 사람들이 모여드는 시기입니다. 재물: 정보와 지식이 돈으로 전환됩니다. 자신의 노하우를 체계화하면 장기적 수입원이 됩니다. 보완: 불안감이 커지기 쉬운 시기입니다. 행동하지 않으면 기회가 지나갑니다. 계획이 충분할 때에는 단계적으로 실행에 옮기십시오.'
-        };
-        narr += (MID[dOh]||nmUi(name)+' 35~55세는 인생의 꽃이 피는 시기입니다.') + '\n';
-
-        // 일지 배우자궁 (중년기에 결합)
-        var SPOUSE_SHORT = {
-            '子':'배우자 관계에서 깊은 감성 교감이 핵심 포인트입니다. 대화가 통하는 지적인 파트너와 가장 잘 맞습니다.',
-            '丑':'시간이 쌓일수록 더 든든해지는 관계를 만들어갑니다. 신뢰가 핵심 포인트입니다.',
-            '寅':'서로의 독립성을 존중하는 것이 관계 지속의 열쇠입니다.',
-            '卯':'소통과 감성적 연결이 핵심 포인트입니다. 대화가 잘 통하는 파트너와 최상의 관계가 됩니다.',
-            '辰':'파트너를 통해 인생의 전환점이 찾아오는 구조입니다.',
-            '巳':'지적 자극을 주는 관계여야 오래 갑니다. 함께 성장하는 파트너십이 맞습니다.',
-            '午':'처음의 열정을 유지하는 것이 이 관계의 핵심 과제입니다.',
-            '未':'서로를 부드럽게 감싸주는 따뜻한 관계가 맞습니다.',
-            '申':'현실적 역할 분담과 능력 중심의 관계가 맞습니다.',
-            '酉':'서로의 전문성을 인정하는 파트너십이 오래 갑니다.',
-            '戌':'한번 맺은 관계를 오래 지키는 구조입니다. 의리가 핵심 포인트입니다.',
-            '亥':'서로의 공간을 존중하는 지혜로운 관계가 맞습니다.'
-        };
-        if(SPOUSE_SHORT[dBr]) narr += '▸ 배우자·관계: '+SPOUSE_SHORT[dBr]+'\n';
-
-        narr += '\n━━━━━━━━━━━━━━━━\n';
-        narr += '🌙 황혼 무렵(55세~) — 열매의 시절\n';
-        narr += '━━━━━━━━━━━━━━━━\n';
-        var LATE = {
-            '子':'말년에 깊은 지혜가 주변 사람들을 모여들게 합니다. 조용하지만 영향력 있는 노년입니다.',
-            '丑':'평생 쌓아온 것들이 든든한 울타리가 됩니다. 늦게 빛나는 시주로, 55세 이후가 가장 안정적인 시기입니다.',
-            '寅':'말년에도 새로운 시작과 도전이 기다립니다. 노년에도 활동적인 삶이 계속됩니다.',
-            '卯':'자녀·주변 사람들과의 풍성한 관계망이 노후를 지탱하는 가장 큰 자산입니다.',
-            '辰':'예상치 못한 기회가 노년에도 찾아옵니다. 변화를 두려워하지 않으면 역동적인 노년이 됩니다.',
-            '巳':'평생 쌓아온 전문성이 55세 이후 가장 빛납니다.',
-            '午':'말년에도 에너지가 넘칩니다. 주변에 활력과 영감을 주는 어른이 됩니다.',
-            '未':'감성과 따뜻함이 가득한 노년입니다. 예술·자연·인간적 온기가 삶을 풍요롭게 합니다.',
-            '申':'빠른 변화 속에서도 현명한 판단력이 유지됩니다.',
-            '酉':'평생의 전문성이 완전히 인정받는 시기입니다. 늦게 빛나는 유금의 속성대로 55세 이후가 전성기입니다.',
-            '戌':'오래된 인연들이 노후를 지탱하는 가장 든든한 울타리가 됩니다.',
-            '亥':'깊고 조용한 지혜가 빛나는 말년입니다. 영적·철학적 성숙이 이루어집니다.'
-        };
-        if(LATE[hBr]) narr += (LATE[hBr]||'') + '\n';
-
-        // 합충 이벤트 (간략하게)
-        if(pillarIntText) {
-            narr += '\n━━━━━━━━━━━━━━━━\n';
-            narr += '🔗 원국의 기운 특이점\n';
-            narr += '━━━━━━━━━━━━━━━━\n';
-            narr += pillarIntText + '\n';
-        }
-
-        // 십성 나이대 흐름 (간략하게)
-        if(sipEventText) narr += sipEventText + '\n';
-
-        // 공망
-        if(gmText) narr += gmText + '\n';
-
-        return narr;
-    })();
-
-
-
-    // 조후(태어난 계절 기운)와 격국(사주 구조)을 서사에 자연스럽게 녹임
-    (function(){
-        const johu = data.johu || '';
-        const gg = data.geokguk;
-        const mb = data.monthBranch || '';
-        const SEASON_KR = {'寅':'이른 봄','卯':'한창 봄','辰':'늦봄','巳':'초여름','午':'한여름','未':'늦여름','申':'초가을','酉':'한가을','戌':'늦가을','亥':'초겨울','子':'한겨울','丑':'겨울 끝자락'};
-        const seasonKr = SEASON_KR[mb] || '';
-
-        // 조후 서사: "X월에 태어났다"는 식의 교과서 설명 제거 → 삶에 미치는 영향만 추출
-        let johuNarr = '';
-        if(johu && seasonKr) {
-            // 조후 텍스트에서 핵심 균형 정보만 추출 (마지막 두 문장)
-            const johuSentences = johu.replace(/[甲乙丙丁戊己庚辛壬癸]/g, '').split('。').join('.').split('.');
-            const johuKey = johu.includes('절실히 필요') ? '절실히 필요한 기운이 있는 구조' :
-                           johu.includes('없으면') ? '균형을 잡는 핵심 기운이 중요한 구조' :
-                           johu.includes('폭발적') ? '봄이 오면 폭발적으로 성장하는 구조' :
-                           johu.includes('황금기') ? '전성기가 뚜렷한 구조' : '균형이 잡히면 크게 도약하는 구조';
-            johuNarr = `
-
-${nmEunNeun(name)} ${seasonKr}에 태어났습니다. 이 계절의 기운이 사주 전체의 온도와 습도를 결정합니다. ${johu.split('.').slice(-3).join('.').trim()} 이 균형이 맞는 대운·세운이 찾아올 때 삶이 가장 크게 도약합니다.`;
-        }
-
-        // 격국 서사: "격국이 뭐야" 설명 없이 → 사회적 성취 방식만 서술
-        let ggNarr = '';
-        if(gg && gg.geokName && gg.info) {
-            const GG_OH = {'정재격':'earth','편재격':'earth','정관격':'metal','편관격':'metal','식신격':'fire','상관격':'fire','편인격':'water','정인격':'water','비겁격':'wood'};
-            const ggOh = GG_OH[gg.geokName] || '';
-            const isSeong = data.yong && (data.yong === ggOh || data.hee === ggOh);
-            const GG_NARR = {
-                '정재격': isSeong
-                    ? `재물에 관해 꼭 기억하셔야 할 것이 있습니다. ${nmIGa(name)} 돈을 버는 가장 강력한 방식은 화려한 한탕이 아닙니다. 한 사람 한 사람에게 쌓아온 신뢰가 결국 자산이 됩니다. 빠른 돈벌이를 좇아 이직을 반복하거나 충동적 투자에 뛰어드는 시기가 오면, 그때가 오히려 가장 위험한 순간입니다. 지금 있는 자리에서 신뢰를 쌓으십시오. 그것이 10년 후 가장 큰 자산이 됩니다.`
-                    : `${nmDnim(name)}, 재물과 관련해서 반복되는 위험한 패턴이 있습니다. 가까운 사람에 의해 돈이 새거나 막히는 상황이 생깁니다. 이것을 막는 방법은 하나입니다 — 돈이 오고 가는 모든 관계에 계약서와 문서를 남기십시오. 감정이 있는 관계일수록 더 철저히 해야 합니다.`,
-                '편재격': isSeong
-                    ? `${nmEge(name)} 고정 월급만으로 사는 삶은 답답하실 수 있습니다. 검증된 부업·프로젝트 채널을 단계적으로 여시면 숨통이 트입니다. 사람과 사람 사이에서 기회를 만들어내고, 아이디어가 돈이 되는 방식이 이 사주에 맞는 구조입니다. 큰 판을 벌이는 것을 겁내지 않는 편이 좋습니다. 단, 한 번에 모든 것을 거는 도박은 피하십시오. 여러 판을 동시에 벌이는 것이 전략입니다.`
-                    : `${nmEunNeun(name)} 재물을 크게 다루는 감각이 있지만, 한 번의 판단 실수로 크게 잃는 리스크가 함께 옵니다. 큰 투자 전에 가능하면 안전장치를 먼저 만드십시오. 잃어도 다시 시작할 수 있는 구조를 유지하는 것이 최우선입니다.`,
-                '정관격': isSeong
-                    ? `${nmIGa(name)} 사회에서 인정받는 방식은 분명합니다. 원칙을 지키고, 약속을 지키고, 자리에서 흔들리지 않는 것이 쌓이면 조직과 사람들이 먼저 당신을 찾아옵니다. 조급해하지 않는 편이 좋습니다. 꾸준히 쌓는 사람이 결국 가장 높은 곳에 올라가는 구조입니다.`
-                    : `${nmDnim(name)}, 한 가지만 기억하십시오. 명예와 사회적 위치는 말 한마디, 행동 하나에 달려 있습니다. 감정이 격해지는 순간의 발언, 원칙을 조금만 어겨도 괜찮겠지라는 생각이 한순간에 모든 것을 무너뜨립니다. 평소에 지킨 원칙이 위기 때 당신을 지킵니다.`,
-                '편관격': isSeong
-                    ? `${nmUi(name)} 진짜 능력은 편한 환경에서 나오지 않습니다. 역경이 클수록, 경쟁이 치열할수록 더 강해지는 것이 이 사주의 특징입니다. 지금 힘들다면 — 그것은 당신이 맞는 자리에 있다는 신호일 수 있습니다. 버텨내는 것 자체가 당신의 무기입니다.`
-                    : `${nmEge(name)} 가능하면 필요한 것이 있습니다 — 충동을 제어하는 구조. 강한 추진력이 방향 없이 폭발하면 사고, 갈등, 법적 문제로 이어질 수 있습니다. 당신을 냉정하게 붙잡아줄 수 있는 멘토나 파트너를 가능하면 옆에 두십시오.`,
-                '식신격': isSeong
-                    ? `${nmDnim(name)}, 좋아하는 일을 계속 파고드십시오. 재능과 수입이 연결되는 구조입니다. 예술, 요리, 교육, 기획, 창작 — 형태는 무엇이든 자신이 잘하고 즐기는 것을 업으로 삼으면 돈이 따라옵니다. 빠른 수익보다 재능의 깊이를 먼저 쌓으십시오.`
-                    : `${nmDnim(name)}, 재능이 있어도 알리지 않으면 없는 것과 같습니다. 지금 당신에게 부족한 것은 능력이 아니라 알리는 방법입니다. 당신이 잘하는 것을 세상에 보여주는 방법을 찾는 것이 지금 가장 시급한 과제입니다.`,
-                '상관격': isSeong
-                    ? `${nmUi(name)} 가장 강력한 무기는 말과 생각입니다. 남들이 당연하다고 받아들이는 것에 "왜?"라고 묻는 능력이 당신을 차별화합니다. 조직 안에서 답답함을 느낀다면 독립적인 환경을 찾으십시오. 비판적 사고가 제약 없이 펼쳐질 때 가장 빛납니다.`
-                    : `${nmDnim(name)}, 솔직히 말씀드립니다. 당신의 말이 때로 가장 중요한 관계를 끊습니다. 틀린 말이 아닐 수 있습니다. 그러나 맞는 말을 잘못된 방식으로 하면 결과는 같습니다. 말하기 전에 1초만 더 생각하십시오. 그 1초가 인생을 바꿉니다.`,
-                '편인격': isSeong
-                    ? `${nmEunNeun(name)} 남들이 가지 않은 길에서 나만의 전문성을 만들어내는 사람입니다. 기존의 방식을 답습하지 않는 편이 좋습니다. 독창적으로 파고든 분야에서 타의 추종을 불허하는 깊이가 만들어집니다. 고독하더라도 그 길을 가십시오. 그것이 당신만의 권위가 됩니다.`
-                    : `${nmUi(name)} 전문성이 다른 사람에 의해 가로막히는 패턴이 반복됩니다. 내가 쌓아온 것을 지키는 것이 먼저입니다. 지식재산권, 계약 문서, 독립적 활동 환경을 가능하면 챙기십시오.`,
-                '정인격': isSeong
-                    ? `${nmEunNeun(name)} 배울수록 가치가 올라가는 사주입니다. 지금 당장의 돈보다 자격증, 학위, 공인된 전문성을 쌓는 것이 장기적으로 훨씬 더 큰 수입을 만들어냅니다. 배움을 멈추지 않는 편이 좋습니다. 노력이 배신하지 않는 구조입니다.`
-                    : `${nmDnim(name)}, 배움에 대한 열망이 강한데 결실로 이어지지 않는 경험이 있으실 것입니다. 조심해야 할 것: 스승을 잘못 만나면 시간과 돈을 동시에 잃습니다. 검증되지 않은 교육 투자를 서두르지 않는 편이 좋습니다.`,
-                '비겁격': isSeong
-                    ? `${nmDnim(name)}, 조직 안에서 답답함을 느끼는 것은 당연합니다. 통제받는 환경보다 스스로 판을 벌이는 환경에서 진가가 나오는 사주입니다. 사업, 프리랜서, 전문직 — 방향은 달라도 독립이 핵심 포인트입니다. 언제 독립할 것인지를 항상 준비하십시오.`
-                    : `${nmDnim(name)}, 혼자 다 하려 하지 않는 편이 좋습니다. 강한 자아가 오히려 더 큰 성과를 막고 있을 수 있습니다. 당신이 못하는 것을 잘하는 사람을 파트너로 두는 것이 지금 가장 필요한 전략입니다.`
-            };
-            ggNarr = '\n\n' + (GG_NARR[gg.geokName] || '');
-        }
-
-        if(johuNarr || ggNarr) {
-            lifeNarr = lifeNarr + ggNarr + johuNarr;
-        }
-
-        // 재물/직업/애정/건강 단락 추가 — 아래 변수는 IIFE 바깥 스코프로 노출
-        const OH2KR = {wood:'목(나무)',fire:'화(불)',earth:'토(흙)',metal:'금(쇠)',water:'수(물)'};
-        const WX = data.wuxing || {};
-        const maxOh2 = Object.keys(WX).length ? Object.keys(WX).reduce((a,b)=>WX[a]>WX[b]?a:b) : dayOh;
-
-        const CAREER_MAP = {
-            wood: isStrong ? nmEunNeun(name)+' 조직의 규칙이나 남이 정해놓은 틀 안에서는 반이 이하의 능력밖에 발휘하지 못합니다. 직접 기획하고, 개척하고, 처음 만들어나가는 자리에서 진짜 능력이 나옵니다. 창업, 신사업 기획, 1인 전문가, 선도자 — 이런 포지션이 맞습니다. 조직에 있다면 새로운 프로젝트를 먼저 제안하고 이끄는 역할을 찾으십시오.'
-                : nmEunNeun(name)+' 강한 파트너나 든든한 조직의 지원을 받을 때 진짜 능력이 나옵니다. 혼자보다 팀으로, 독립보다 협력으로 직업적 성취를 쌓아가는 것이 이 사주의 전략입니다. 당신을 알아봐주는 리더 한 명을 찾는 것이 커리어의 분기점이 됩니다.',
-            fire: isStrong ? nmEge(name)+' 무대가 없으면 에너지가 안으로 향합니다. 사람들 앞에 서고, 영향력을 발휘하고, 내 아이디어가 세상에 퍼지는 일 — 강연, 컨텐츠 창작, 세일즈, 리더십, 브랜딩이 천직입니다. 혼자 책상에 앉아 조용히 하는 일은 장기적으로 맞지 않습니다.'
-                : nmEunNeun(name)+' 나를 알아봐 주는 환경에서 열정이 폭발합니다. 아직 그런 환경을 못 찾았다면, 지금이 바로 그것을 찾아야 할 시기입니다. 직업 선택보다 직장 환경과 상사 선택이 더 중요합니다.',
-            earth: isStrong ? nmEunNeun(name)+' 장기적인 신뢰 관계를 기반으로 하는 직업에서 가장 빛납니다. 부동산, 금융, 컨설팅, 교육, 의료 — 오랫동안 같은 자리를 지키며 신뢰를 쌓아가는 직업이 맞습니다. 빠른 변화가 잦은 직종보다 안정적이고 깊이 있는 전문성을 쌓을 수 있는 분야를 선택하십시오.'
-                : nmEge(name)+' 직업적 안정감은 선택이 아닌 필수 조건입니다. 수입이 들쭉날쭉한 환경은 실력과 상관없이 성과를 떨어뜨립니다. 기반을 먼저 만들고 그 위에서 도전하십시오.',
-            metal: isStrong ? nmEunNeun(name)+' 전문성과 원칙이 인정받는 분야에서 타의 추종을 불허합니다. 법, 의학, 회계, 정밀 기술, 컨설팅 — 높은 기준이 요구되는 분야가 맞습니다. 하나의 전문 분야를 깊이 파고드는 전략이 넓게 아는 전략을 압도합니다.'
-                : nmEunNeun(name)+' 능력이 있어도 그것을 인정받을 환경을 못 찾아 헤매는 시기가 길 수 있습니다. 환경 탓이 아니라 환경을 바꾸는 것이 답입니다. 지금의 직장이 당신의 기준을 알아봐 주지 않는다면, 그곳에서 소진되지 않는 편이 좋습니다.',
-            water: isStrong ? nmUi(name)+' 직업적 강점은 통찰력과 전략적 사고입니다. 데이터 분석, 전략 기획, 투자, 연구, 컨설팅, 작가 — 깊이 생각하고 패턴을 읽어내는 능력이 핵심 경쟁력인 분야가 맞습니다. 단, 실행력을 의식적으로 끌어올리지 않으면 기회를 놓치는 패턴이 반복됩니다.'
-                : nmEunNeun(name)+' 오랜 시간 준비하고 축적한 것이 한 번에 빛을 발하는 구조입니다. 조급해하지 않는 편이 좋습니다. 지금 쌓고 있는 것이 가능하면 결실이 됩니다.'
-        };
-
-        const LOVE_MAP = {
-            wood: isStrong ? nmEunNeun(name)+' 연애와 결혼에서도 자신만의 방식을 고집하는 편입니다. 상대방이 내 방향성을 지지하고 함께 성장하려는 사람이어야 관계가 오래 갑니다. 내 길을 막거나 통제하려는 상대와는 가능하면 갈등이 생깁니다. 파트너를 선택할 때 "이 사람이 나의 성장을 응원하는가"를 가장 먼저 보십시오.'
-                : nmEunNeun(name)+' 관계에서 헌신적이지만 그만큼 상처도 깊게 받는 구조입니다. 나를 지워가며 관계를 유지하는 패턴을 조심하십시오. 좋은 관계는 내가 나로 있을 수 있는 관계입니다.',
-            fire: isStrong ? nmEunNeun(name)+' 연애에서 강렬하고 빠르게 타오릅니다. 그만큼 빠르게 식을 수도 있습니다. 처음의 뜨거운 감정이 식었을 때 진짜 감정이 무엇인지 스스로 물어보십시오. 장기적인 관계를 위해서는 상대방에게 공간을 주고 감정을 강요하지 않는 훈련이 필요합니다.'
-                : nmEunNeun(name)+' 연애에서 상대방의 인정과 관심이 특히 필요합니다. 이것을 주는 사람을 찾는 것이 중요하지만, 그 필요 때문에 맞지 않는 관계에 오래 머무는 패턴도 조심하십시오.',
-            earth: isStrong ? nmEunNeun(name)+' 신중하게 관계를 시작하고, 한번 마음을 주면 끝까지 지키는 스타일입니다. 이것이 가장 큰 강점이자 동시에 상처를 오래 품는 이유이기도 합니다. 관계에서 충분히 검증하는 것은 좋지만, 너무 오래 확인하다가 기회를 놓치지 않는 편이 좋습니다.'
-                : nmEunNeun(name)+' 안정적인 관계에 대한 열망이 강합니다. 이 열망이 때로 맞지 않는 관계에도 매달리게 만듭니다. 관계의 안정보다 나 자신의 안정을 먼저 찾는 것이 순서입니다.',
-            metal: isStrong ? nmEunNeun(name)+' 관계에서도 높은 기준을 적용합니다. 이상형이 구체적이고, 상대방에게 기대하는 것도 명확합니다. 이것이 잘 맞는 상대를 만나면 최고의 파트너십이 되지만, 현실의 사람에게 너무 높은 기준을 요구하면 외로워집니다. 완벽한 사람보다 함께 성장할 수 있는 사람을 찾으십시오.'
-                : nmEunNeun(name)+' 연애에서 이상과 현실 사이에서 갈등하는 경우가 많습니다. 충분히 좋은 사람을 완벽하지 않다는 이유로 놓치지 않는 편이 좋습니다.',
-            water: isStrong ? nmEunNeun(name)+' 상대방을 깊이 읽는 능력이 있습니다. 상대가 말하지 않은 것도 감지하는 예민함이 있습니다. 그러나 이 감각이 지나치면 관계에서 지나치게 분석하고, 상대의 작은 변화에 불안해하는 패턴이 생깁니다. 직관을 믿되, 결론을 너무 빨리 내리지 않는 편이 좋습니다.'
-                : nmEunNeun(name)+' 관계에서 신중하고 천천히 마음을 여는 스타일입니다. 처음에는 느려 보여도 한번 깊어진 관계는 오래 갑니다. 마음을 여는 데 시간이 걸리는 자신을 탓하지 않는 편이 좋습니다. 그것이 당신의 방식입니다.'
-        };
-
-        // IIFE 반환값: career/love 텍스트 노출
-        _careerText = CAREER_MAP[maxOh2] || CAREER_MAP[dayOh] || '';
-        _loveText   = LOVE_MAP[maxOh2]   || LOVE_MAP[dayOh]   || '';
-    })();
-
-
-
-    const HAN_KOR_GM = {'子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해'};
-    const BRANCH_OH_GM = {'子':'수','丑':'토','寅':'목','卯':'목','辰':'토','巳':'화','午':'화','未':'토','申':'금','酉':'금','戌':'토','亥':'수'};
-    const PILLAR_NAME_GM = {'시주':'시주(황혼·자녀)','일주':'일주(배우자·나 자신)','월주':'월주(부모·직업)','년주':'년주(조상·사회)'};
-    // 공망이 있는 기둥 찾기
-    const gongmangPillars = (pillars||[]).filter(p => p.h && gongmangBranches.includes(p.h[1]));
-    const gmPillarNames = gongmangPillars.map(p => PILLAR_NAME_GM[p.n]||p.n).join(', ');
-    const gmBranchNames = gongmangBranches.map(b => `${b}(${HAN_KOR_GM[b]||b}·${BRANCH_OH_GM[b]||''})`).join('·');
-    // 공망 박스: 원국 8자에 실제로 공망 지지가 있는 경우만 표시
-    const gongmangText = (() => {
-        if (gongmangBranches.length === 0) return '';
-        if (gongmangPillars.length === 0) return '';
-        var gmCopy = buildGongmangDeepHookCopy({ name: name, gongmang: gongmangBranches, pillars: pillars });
-        if (!gmCopy) return '';
-        return `<div class="sajux-gongmang-note sajux-panel-plain" style="background:transparent;border-left:3px solid rgba(231,76,60,0.4);padding:14px 18px;border-radius:0 10px 10px 0;margin-top:16px;border:1px solid rgba(231,76,60,0.25);">
-            <div style="font-size:11px;color:#e74c3c;margin-bottom:8px;font-weight:700;letter-spacing:1px;">⚠ 공망 — ${gmBranchNames}</div>
-            <p style="font-size:13px;color:#ddd;line-height:1.85;margin:0;">${boldStarsToStrong(gmCopy)}</p>
-        </div>`;
-    })();
-
-    const yPillar = pillars[3] || {};
-    const mPillar = pillars[2] || {};
-    const dPillar = pillars[1] || {};
-    const hPillar = pillars[0] || {};
-    const yH = yPillar.h ? (typeof yPillar.h==='string' ? yPillar.h : yPillar.h.join('')) : '';
-    const mH = mPillar.h ? (typeof mPillar.h==='string' ? mPillar.h : mPillar.h.join('')) : '';
-    const dH = dPillar.h ? (typeof dPillar.h==='string' ? dPillar.h : dPillar.h.join('')) : '';
-    const hH = hPillar.h ? (typeof hPillar.h==='string' ? hPillar.h : hPillar.h.join('')) : '';
-
-    var chHead = buildChapterHeadTopicFirst('원국 해부', '01 · 태어난 순간의 별자리 지도', buildTopicMetaphorTitle('basic', data));
-    var chIntro = buildChapterIntroHtml(data, 'basic');
-    return `<div class="report-chapter chapter-start">
-        ${chHead}
-        ${chIntro}
-        <div style="background:rgba(199,167,106,0.06);border-left:3px solid var(--gold);padding:22px 24px;border-radius:0 12px 12px 0;margin:22px 0;">
-            <div style="font-size:11px;color:var(--text-dim);margin-bottom:14px;letter-spacing:0.18em;font-weight:600;">${nmUi(name)} 인생을 한 흐름으로</div>
-            ${lifeNarr.split('\n\n').map((para,i) => {
-                if(!para.trim()) return '';
-                const isHeader = para.startsWith('💼') || para.startsWith('❤') || para.startsWith('🌡') || para.startsWith('🏛');
-                if(isHeader) {
-                    const lines = para.split('\n');
-                    var hdrPolished = voicePolishParagraph(data, lines.slice(1).join('\n')).replace(/\n/g,'<br>');
-                    return '<div style="margin-top:22px;padding-top:18px;border-top:1px solid rgba(199,167,106,0.14);">'
-                         + '<div style="font-size:12px;color:var(--gold);font-weight:700;margin-bottom:10px;letter-spacing:0.06em;">'+lines[0]+'</div>'
-                         + '<p style="font-size:13.5px;color:#ddd;line-height:1.95;margin:0;">'+boldStarsToStrong(hdrPolished)+'</p>'
-                         + '</div>';
-                }
-                return '<p style="font-size:'+(i===0?'14.5':'13.5')+'px;color:#ddd;line-height:'+(i===0?'2.1':'1.95')+';white-space:pre-line;margin:0 0 14px;">'+boldStarsToStrong(voicePolishParagraph(data, para))+'</p>';
-            }).join('')}
-        </div>
-
-
-
-        ${gongmangText}
-
-        ${(_careerText||_loveText) ? `
-        <div class="ilju-career-love-block" style="margin-top:30px;border-top:1px solid rgba(199,167,106,0.16);padding-top:22px;">
-            <p style="font-size:12.5px;color:var(--text-dim);margin:0 0 18px;line-height:1.85;font-style:italic;">위 흐름이 ${nmUi(name)} 큰 그림이라면, 같은 결이 일과 관계에서는 어떻게 드러나는지 한 발 더 들어가 보겠습니다.</p>
-            ${_careerText ? `<div style="margin-bottom:22px;">
-                <div style="font-size:11px;color:var(--gold);font-weight:700;letter-spacing:0.10em;margin-bottom:10px;">직업 방향 — 타고난 에너지가 빛나는 무대</div>
-                <p style="font-size:13.5px;color:#ddd;line-height:2.0;margin:0;">${boldStarsToStrong(voicePolishParagraph(data, _careerText))}</p>
-            </div>` : ''}
-            ${_loveText ? `<div>
-                <div style="font-size:11px;color:var(--gold);font-weight:700;letter-spacing:0.10em;margin-bottom:10px;">관계 패턴 — 마음이 열리는 방식</div>
-                <p style="font-size:13.5px;color:#ddd;line-height:2.0;margin:0;">${boldStarsToStrong(voicePolishParagraph(data, _loveText))}</p>
-            </div>` : ''}
-        </div>` : ''}
-
-    </div>`;
+function buildChapter1_Basic() {
+    /* 제거됨(2026): 한 줄기 서사(buildPersonalPortrait)·일주 카드와 중복되어 노출하지 않음.
+       만세력 인라인 요약(injectSectionInterpretations)에서도 호출하지 않습니다. */
+    return '';
 }
 
 /** 십성 장·일주 보강용 — 업무형 한 줄(비견~정인) */
@@ -5380,110 +4901,52 @@ function buildChapter3SipseongSynthesisParagraph(primaryList, data) {
     return nm + ' 원국에서는 **' + list.join('·') + '** 축이 차례로 두껍게 겹칩니다. 한 번에 다 고치려 하지 말고, **한 시즌에는 이름 하나만** 고정해 조정하십시오.';
 }
 
-/** 일지 지장간 천간별 일간 대비 성향 한 줄 */
-function getIljuJijangganSipseongOneLiner(sip) {
-    var M = {
-        '비견': '무의식 안에 나와 비슷한 온도의 기준이 하나 더 있어, 혼자서도 결을 세우려는 순간이 깊습니다.',
-        '겁재': '안쪽에서 승부와 손익이 빨리 들어나, 양보 없이 밀어붙였다가 뒤늦게 비용을 보기도 합니다.',
-        '식신': '만들고 보여 주고 나누는 데 에너지가 새며, 손끝 결과가 곧 안정감으로 이어지려 합니다.',
-        '상관': '말과 표현이 앞서 나가 기준을 새로 쓰려 하니, 조직 안에서는 간격 조절이 숙제가 되기 쉽습니다.',
-        '편재': '밖에서 들어오는 기회 줄에 민감하고, 여러 갈래를 동시에 잡으려는 충동이 깔립니다.',
-        '정재': '꾸준히 쌓이는 보상과 약속 이행에 마음이 기대며, 루틴이 깨지면 불안이 커질 수 있습니다.',
-        '편관': '압박과 마감 앞에서 각이 서고, 스스로를 몰아붙이는 방식으로 버티려 합니다.',
-        '정관': '체계와 명예를 무의식적으로 중시해, 선을 넘는 일에는 내면에서부터 거부감이 일어납니다.',
-        '편인': '남들과 다른 각도로 배우고 직관으로 연결하려 하며, 설명하기 어려운 끌림을 품습니다.',
-        '정인': '배움·보호·문서로 마음의 바닥을 깔아 두려 하며, 인정받는 방식이 성향과 맞을 때 가장 편안합니다.'
+/**
+ * 일주 히어로 카드 본문 — 다른 풀이 카드처럼 한 덩어리, 약 100자 목표.
+ * voicePolishParagraph를 거치지 않음(일간·일지·십성마다 괄호 풀이가 붙어 길어지는 것 방지).
+ */
+function buildIljuProfileCardShortSummary(data, prof) {
+    var ds = data.dayStem || '';
+    var db = data.dayBranch || '';
+    var iljuKr = '';
+    if (typeof HAN_KOR !== 'undefined' && HAN_KOR) {
+        iljuKr = (HAN_KOR[ds] || '') + (HAN_KOR[db] || '');
+    }
+    if (!iljuKr) iljuKr = (ds || '') + (db || '');
+    var sip = typeof getSipseong === 'function' ? getSipseong(ds, db) : '';
+    var sipTail = {
+        '비견': '스스로 중심을 세우려 해요.',
+        '겁재': '승부가 빨리 붙을 수 있어요.',
+        '식신': '만들고 표현하는 게 힘이 돼요.',
+        '상관': '말과 재능이 먼저 나와요.',
+        '편재': '돈·기회 줄이 여러 갈래로 와요.',
+        '정재': '꾸준히 쌓는 방식이 편해요.',
+        '편관': '긴장이 생길수록 각이 서요.',
+        '정관': '약속·직함을 중요하게 봐요.',
+        '편인': '느낌·상상이 먼저 달려가요.',
+        '정인': '배우고 받침이 있어야 편해요.'
     };
-    return M[sip] || '일간과 맺는 관계에 따라 배우자궁 안쪽 동기가 조금씩 달라집니다.';
+    var imgHook = '';
+    if (prof && prof.image) {
+        imgHook = String(prof.image).split('—')[0].trim().replace(/\s+/g, ' ');
+    }
+    if (imgHook.length > 16) imgHook = imgHook.slice(0, 14) + '…';
+    var mid = imgHook ? ('「' + imgHook + '」 같은 그림이에요. ') : '';
+    var sipLine = sip
+        ? ('일지는 ' + sip + '이라 ' + (sipTail[sip] || '속 성향이 여러 겹이에요.'))
+        : '일지 쪽 성향을 한 줄로만 짚었어요.';
+    var advice = ' 목표는 한 번에 하나만 잡으면 편해요.';
+    var out = iljuKr + '일주는 ' + mid + sipLine + advice;
+    var MAX = 108;
+    if (out.length > MAX) {
+        out = out.slice(0, MAX - 1) + '…';
+    }
+    return out;
 }
 
-function iljuJijangganPhaseLabel(idx, total) {
-    if (total < 2) return '';
-    if (total === 3) return (['여기(餘氣)', '중기(中氣)', '정기(正氣)'][idx] || '') + ' · ';
-    return (idx === 0 ? '앞쪽 숨은 기운 · ' : '뒤쪽 숨은 기운 · ');
-}
-
-function buildIljuHiddenStemSynthesisLine(dayStem, uniqSips) {
-    var arr = uniqSips || [];
-    var set = {};
-    arr.forEach(function (x) {
-        set[x] = true;
-    });
-    var hasIn = set['정인'] || set['편인'];
-    var hasSik = set['식신'] || set['상관'];
-    var hasBi = set['비견'] || set['겁재'];
-    if (hasIn && hasSik) {
-        return '겉 모습은 한 가지처럼 보여도, 안쪽에서는 배움으로 버티는 축과 만들어 내는 축이 동시에 걸려 있습니다. 둘을 나눠 쓰면 같은 일주라도 훨씬 탄탄해집니다.';
-    }
-    if (hasBi && hasIn) {
-        return '혼자 서려는 기준과 배움으로 묶으려는 마음이 함께 있어, 결정은 빠른데 정리는 느리게 느껴질 수 있습니다.';
-    }
-    if (hasSik) {
-        return '표현과 산출 본능이 배우자궁 바닥에 깔려 있어, 관계 속에서도 ‘보여 줄 것’이 마음의 안전판이 되기 쉽습니다.';
-    }
-    if (hasIn) {
-        return '받침과 배움이 무의식의 축이라, 인정·문서·근거가 있을 때 비로소 속이 놓이는 편입니다.';
-    }
-    return '숨은 간지마다 일간과 맺는 십성이 달라, 한 줄로 단정하기 어려운 다층 결을 품은 일주입니다.';
-}
-
-/** 일주 카드 — 일지 겉글자·지장간 십성 해설(볼륨·정확도 보강) */
-function buildIljuBranchSipseongSupplementHtml(data) {
-    try {
-        var ds = data.dayStem || '';
-        var db = data.dayBranch || '';
-        if (!ds || !db || typeof getSipseong !== 'function') return '';
-        var stems = BRANCH_HIDDEN[db] || [];
-        if (!stems.length) return '';
-
-        var blocks = [];
-        var krB = (typeof HAN_KOR !== 'undefined' && HAN_KOR[db]) || '';
-        var surfaceSip = getSipseong(ds, db);
-        if (surfaceSip) {
-            blocks.push('일지 ' + krB + '(' + db + ') 겉글자는 일간에게 **' + surfaceSip + '** 자리로 읽힙니다. 배우자궁과 내적 바탕이 어떤 과제를 들고 오는지 여기서 한 번 짚습니다.');
-        }
-
-        var uniqOrder = [];
-        var seen = {};
-        var stemLines = [];
-        for (var i = 0; i < stems.length; i++) {
-            var st = stems[i];
-            var sip = getSipseong(ds, st);
-            if (!sip) continue;
-            if (!seen[sip]) {
-                seen[sip] = 1;
-                uniqOrder.push(sip);
-            }
-            var phase = iljuJijangganPhaseLabel(i, stems.length);
-            var krS = (typeof HAN_KOR !== 'undefined' && HAN_KOR[st]) || st;
-            stemLines.push(phase + krS + '(' + st + ') — 일간에게 **' + sip + '**. ' + getIljuJijangganSipseongOneLiner(sip));
-        }
-        if (stemLines.length) {
-            blocks.push('같은 일지 안에는 지장간 천간이 겹겹이 있습니다. ‘안 보이지만 나를 움직이는 방향’으로만 짚어 보면 됩니다.\n' + stemLines.join('\n'));
-        }
-
-        var synthOrder = [];
-        var seen2 = {};
-        if (surfaceSip && !seen2[surfaceSip]) {
-            seen2[surfaceSip] = 1;
-            synthOrder.push(surfaceSip);
-        }
-        for (var j = 0; j < uniqOrder.length; j++) {
-            var u = uniqOrder[j];
-            if (!seen2[u]) {
-                seen2[u] = 1;
-                synthOrder.push(u);
-            }
-        }
-        blocks.push('종합하면, ' + buildIljuHiddenStemSynthesisLine(ds, synthOrder));
-
-        return blocks.map(function (b) {
-            return '<p style="font-size:12.5px;color:rgba(255,255,255,0.74);line-height:1.88;margin:0 0 10px;">'
-                + boldStarsToStrong(voicePolishParagraph(data, b)) + '</p>';
-        }).join('');
-    } catch (e) {
-        return '';
-    }
+/** 예전 일주 카드 하단 장문 제거 — 요약은 buildIljuProfileCardShortSummary. 상세는 지장간 챕터. */
+function buildIljuBranchSipseongSupplementHtml() {
+    return '';
 }
 
 
@@ -5498,7 +4961,6 @@ function buildIljuProfileCard(data) {
     const prof = getIljuProfilePolished(data, ds, db);
     if (!prof) return '';
 
-    const name = data.name || '고객';
     function iljuHanjaSpan(char, sizeStyle) {
         return `<div style="line-height:1.1;${sajuxHanjaInlineStyle(char, sizeStyle||'46px', 200)}">${char}</div>`;
     }
@@ -5523,6 +4985,16 @@ function buildIljuProfileCard(data) {
     }
     var iljuTitleWhite = (iljuHangul || iljuKey) + ' 일주';
 
+    var iljuImageTagline = '';
+    if (prof.image) {
+        var imFull = String(prof.image);
+        var mdash = imFull.indexOf('—');
+        if (mdash >= 0) iljuImageTagline = imFull.slice(mdash + 1).trim();
+    }
+    var iljuTaglineHtml = iljuImageTagline
+        ? `<div style="font-size:12px;color:${accentColor};font-style:italic;margin-bottom:10px;line-height:1.45;opacity:0.92;">${iljuImageTagline}</div>`
+        : '';
+
     return `<div class="ilju-profile-card" style="display:flex;gap:20px;align-items:flex-start;background:linear-gradient(135deg,rgba(30,28,22,0.6),rgba(12,12,16,0.4));border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:22px 24px;margin-bottom:24px;position:relative;overflow:hidden;">
         <div class="ilju-hanja-col" style="flex:0 0 auto;text-align:center;min-width:72px;">
             ${iljuHanjaSpan(ds, '46px')}
@@ -5534,22 +5006,8 @@ function buildIljuProfileCard(data) {
                 <span style="font-size:15px;font-weight:800;color:rgba(255,255,255,0.95);letter-spacing:-0.3px;">${iljuTitleWhite}</span>
                 ${strengthBadge}
             </div>
-            <div style="font-size:13px;color:${accentColor};font-style:italic;margin-bottom:12px;line-height:1.45;">${prof.image || ''}</div>
-            <p style="font-size:13px;color:rgba(255,255,255,0.78);line-height:1.85;margin:0 0 14px;">${prof.core || ''}</p>
-            ${(() => {
-                var coreShort = !prof.core || String(prof.core).length < 170 || String(prof.core).split(/[.。]/).filter(Boolean).length < 2;
-                var sup = buildIljuBranchSipseongSupplementHtml(data);
-                var weakExtra = (coreShort && prof.weakness)
-                    ? '<p style="font-size:12.5px;color:rgba(255,255,255,0.68);line-height:1.85;margin:0 0 10px;">'
-                    + boldStarsToStrong(voicePolishParagraph(data, '과제로는 ' + prof.weakness + ' 쪽을 의식해 두시면, 같은 일주라도 훨씬 부드럽게 굴러갑니다.'))
-                    + '</p>'
-                    : '';
-                if (!sup && !weakExtra) return '';
-                return '<div style="margin-top:2px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.08);">'
-                    + '<div style="font-size:10px;color:rgba(199,167,106,0.85);font-weight:700;letter-spacing:0.12em;margin-bottom:10px;">일지 · 지장간 십성</div>'
-                    + sup + weakExtra
-                    + '</div>';
-            })()}
+            ${iljuTaglineHtml}
+            <p style="font-size:13px;color:rgba(255,255,255,0.82);line-height:1.75;margin:0 0 14px;">${buildIljuProfileCardShortSummary(data, prof)}</p>
             <div style="line-height:1.8;">${kwBadges}</div>
         </div>
     </div>`;
@@ -5762,7 +5220,7 @@ function buildPersonalPortrait(data) {
             '늦은 인정이 또 한 번 따라옵니다. 그게 사회적인 상이든, 가족이 전하는 한 마디든 — 평생 가장 진한 자국으로 남습니다. ',
             '몸이 마음만큼 따라 주지 않는 때지만, ' + nmDnim(name) + '의 마음 안쪽 풍경은 평생 가장 평화로워집니다. ',
             '특별한 사건 없이 잔잔히 흘러가지만, 그 잔잔함이야말로 평생 ' + nmDnim(name) + '이 만들어 오신 “자기 자리”의 결정체입니다. ')
-        + '마침표를 찍는 순간, ' + nmDnim(name) + '이 남기시는 것은 — ' + (careerRaw ? '평생 ' + careerRaw + ' 분야에서 다듬어 온 손길과 ' : '') + '“말이 아니라 남는 습관 한 줄”입니다. 큰 재산이나 화려한 직책보다, ' + nmUi(name) + ' 한 마디 한 마디가 누군가의 일생에 끼친 작은 영향들이 진짜 유산이 돼요. ' + nmEunNeun(name) + ' 평생 “' + (firstImpression || '진중한 분') + '”의 인상으로 사셨고, 그 인상이 마지막 순간에도 변하지 않은 채 그대로 남습니다. 시기에 따라 풍경은 바뀌고 빛의 각도도 달라졌지만, ' + nmDnim(name) + ' 안의 본질은 첫 호흡과 마지막 호흡 사이에서 단 한 번도 흔들리지 않았어요. 그 본질대로 사셨을 때 ' + nmDnim(name) + '은 가장 자연스러우셨고, 그래서 가장 빛나셨습니다.';
+        + '긴 호흡으로 넘겨보면, ' + nmDnim(name) + '에게 오래 남는 건 — ' + (careerRaw ? '평생 ' + careerRaw + ' 분야에서 다듬어 온 손길과 ' : '') + '“말이 아니라 남는 습관 한 줄”입니다. 큰 재산이나 화려한 직책보다, ' + nmUi(name) + ' 한 마디 한 마디가 누군가의 삶에 스민 작은 영향이 진짜 무게예요. ' + nmEunNeun(name) + ' “' + (firstImpression || '진중한 분') + '”으로 기억되실 때가 많았던 것처럼, 그 인상은 앞으로도 변하지 않는 축으로 이어집니다. 장면만 바뀔 뿐 ' + nmDnim(name) + ' 안의 본질은 흔들리지 않아요. 그 본질에 충실하실 때마다 가장 편안하시고, 그 길에서는 지금도 앞으로도 가장 빛이 나실 거예요.';
 
     var introText = nmDnim(name) + '의 인생을 한 편의 이야기로 들려 드릴게요. 태어남부터 마지막 장면까지 — 어떤 환경에서 자라셨고, 어떤 시기를 지나, 어디에 닿게 되는지를 흐름 그대로 따라가 봅니다. 사주의 글자가 무엇인지는 잠시 잊으셔도 좋아요. 결과적으로 ' + nmIGa(name) + ' 어떤 사람으로 태어나, 어떻게 살아가시게 되는지를 그대로 읽으시면 됩니다.';
 
@@ -6736,6 +6194,30 @@ function _buildChapter2_Wuxing_DEAD(_data) {
     </div>`;
 }
 
+/** 십성 챕터 — 개별 십성 카드 없이 묶음·축만 보고 약 1000자 전후로 통합 서술 */
+function buildChapter3SipseongUnifiedNarrative(data, topG, secondG, primaryList) {
+    var nmDn = nmDnim(data.name || '고객');
+    var topLabelPlain = String(topG.label || '').replace(/:\s*$/, '');
+    var secPlain = (secondG && secondG.sum > 0) ? String(secondG.label || '').replace(/:\s*$/, '') : '';
+    var prominent = (primaryList && primaryList.length) ? primaryList.join('·') : (primaryList && primaryList[0]) ? primaryList[0] : '';
+    var p1 = nmDn + ' 원국에서 십성은 성격 테스트가 아니라, 사람·돈·평가 앞에서 어디로 에너지가 먼저 새는지 보여 주는 이름표에 가깝습니다. ';
+    p1 += '아래 다섯 줄은 비겁·식상·재성·관성·인성 묶음의 두께입니다. 지금 가장 두꺼운 줄기는 ‘' + topLabelPlain + '’로 읽히며, 비중은 대략 ' + topG.pct + '% 전후예요. ';
+    if (secPlain) {
+        p1 += '이어서 ‘' + secPlain + '’ 묶음도 붙어 있어, 한 가지 패턴으로만 단정하기 어렵습니다. ';
+    }
+    p1 += '이름을 하나하나 외우실 필요는 없습니다. 일과 관계에서 자동으로 나오는 반응만 보면 충분합니다.';
+    var pMid = buildChapter3SipseongSynthesisParagraph(primaryList, data);
+    var p3 = '실생활에만 붙여 보셔도 됩니다. 현금과 거래 앞에서는 재성 줄기, 말과 산출물 앞에서는 식상 줄기, 책임과 서열 앞에서는 관성 줄기, 배움과 근거 앞에서는 인성 줄기가 앞서 나올 때가 많습니다. ';
+    p3 += nmDn + '에게 특히 자주 찍히는 축은 ‘' + prominent + '’입니다. **한 달에 몰입 주 하나와 숨 고르는 주 하나**만 달력에 정해 두면, 두꺼운 줄기를 도구로 쓰기 시작하신 거예요.';
+    var raw = p1 + '\n\n' + pMid + '\n\n' + p3;
+    var polished = voicePolishParagraph(data, raw);
+    var MAX = 1000;
+    if (polished.length > MAX) {
+        polished = polished.slice(0, MAX - 1) + '…';
+    }
+    return polished;
+}
+
 function buildChapter3_Sipseong(data) {
     const sipseong = data.sipseong || {};
     const total = Math.max(Object.values(sipseong).reduce((a, b) => a + b, 0), 1);
@@ -6771,22 +6253,13 @@ function buildChapter3_Sipseong(data) {
     }).join('');
 
     const prominentLabels = primaryList.length ? primaryList.join('·') : mainSip;
-    const detailBoxes = primaryList.map(function (sip, idx) {
-        var sipText = getChapter3SipShortDb(sip);
-        var sipPersonality = getChapter3SipPersonalityLine(sip) || sipText;
-        var title = idx === 0
-            ? sip + ' — 원국에서 가장 자주 찍히는 이름'
-            : idx === 1 ? sip + ' — 두 번째로 두꺼운 이름' : sip + ' — 세 번째 축';
-        var bg = idx === 0 ? '0.07' : '0.05';
-        var marginTop = idx === 0 ? '16px' : '12px';
-        return '<div style="background:rgba(199,167,106,' + bg + ');border-left:3px solid var(--gold);padding:16px 18px;border-radius:0 8px 8px 0;margin:' + marginTop + ' 0 0;">'
-            + '<div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;letter-spacing:1px;">' + title + '</div>'
-            + '<p style="font-size:14.5px;color:#ddd;line-height:1.9;margin:0 0 10px;">' + sipText + '</p>'
-            + '<p style="font-size:14px;color:#ccc;line-height:1.85;margin:0;">' + sipPersonality + '</p>'
-            + '</div>';
+    var secondG = groupRank.length > 1 ? groupRank[1] : null;
+    var unifiedEssay = buildChapter3SipseongUnifiedNarrative(data, topG, secondG, primaryList);
+    var essayChunks = String(unifiedEssay || '').split(/\n\n+/).map(function (s) { return s.trim(); }).filter(Boolean);
+    if (!essayChunks.length && unifiedEssay) essayChunks = [String(unifiedEssay).trim()];
+    var essayHtml = essayChunks.map(function (chunk) {
+        return '<p class="ch-text" style="font-size:14px;color:#ddd;line-height:2;margin:0 0 16px;">' + boldStarsToStrong(chunk) + '</p>';
     }).join('');
-
-    const synthesis = buildChapter3SipseongSynthesisParagraph(primaryList, data);
     const topLabelPlain = String(topG.label || '').replace(/:\s*$/, '');
 
     var chHead3 = buildChapterHeadTopicFirst('십성 — 역할과 관계의 무늬', SAJUX_SECTION_LABELS.sipseong, buildTopicMetaphorTitle('sipseong', data));
@@ -6794,18 +6267,15 @@ function buildChapter3_Sipseong(data) {
     return `<div class="report-chapter">
         ${chHead3}
         ${chIntro3}
-        <div class="sipseong-bar-chart" style="background:var(--panel,rgba(0,0,0,0.22));border:1px solid rgba(199,167,106,0.2);border-radius:12px;padding:18px 20px;margin:0 0 18px;">
-            <div style="font-size:12px;font-weight:800;color:var(--gold);margin-bottom:14px;letter-spacing:0.5px;">업무 스타일 비율 — 비겁·식상·재성·관성·인성</div>
+        <div class="sipseong-bar-chart sajux-glass-heavy" style="background:rgba(255,255,255,0.06);border:1px solid rgba(199,167,106,0.22);border-radius:12px;padding:18px 20px;margin:0 0 14px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
+            <div style="font-size:12px;font-weight:800;color:var(--gold);margin-bottom:14px;letter-spacing:0.5px;">다섯 묶음 비중 — 비겁 · 식상 · 재성 · 관성 · 인성</div>
             ${sipRows || '<p style="color:#888;font-size:12px;margin:0;">분포 데이터를 불러오는 중입니다.</p>'}
         </div>
-        <p class="ch-text">에너지가 몸이라면, 아래 다섯 줄은 <strong>비겁·식상·재성·관성·인성</strong> 각 묶음의 비중입니다. 같은 묶음 안의 두 십성(예: 편관·정관)은 합산되어, 돈·사람·권위 앞에서 자동으로 튀어나오는 업무 반응의 큰 줄기로 읽으면 됩니다.</p>
-        <p class="ch-text">묶음 기준으로는 <b style="color:var(--gold);">${topLabelPlain}</b> 비중이 약 ${topG.pct}%로 가장 두껍습니다. 개별 글자 이름으로는 <b>${prominentLabels}</b> 축을 앞세워 읽습니다.</p>
-        ${detailBoxes}
-        <div style="background:rgba(255,255,255,0.03);border-radius:10px;padding:18px;margin:20px 0;border:1px solid rgba(255,255,255,0.06);">
-            <div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:10px;">&#9670; 십성이 겹쳐 만드는 성품 한 덩어리</div>
-            <p style="font-size:13px;color:#ccc;line-height:1.88;margin:0;">${synthesis}</p>
+        <p class="ch-text" style="font-size:12.5px;color:var(--text-dim);margin:0 0 18px;">막대는 같은 종류 십성을 합친 비율입니다. 이름보다 <strong>어느 묶음이 두꺼운지</strong>만 보셔도 됩니다. 가장 긴 줄은 <b style="color:var(--gold);">${topLabelPlain}</b>(약 ${topG.pct}%), 자주 튀는 축은 <b>${prominentLabels}</b>입니다.</p>
+        <div class="sipseong-unified-body sajux-glass-heavy" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:22px 22px 10px;margin:0 0 8px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);">
+            <div style="font-size:11px;color:var(--gold);font-weight:700;letter-spacing:0.14em;margin-bottom:14px;">십성 통합 풀이</div>
+            ${essayHtml || '<p class="ch-text">십성 풀이를 불러오는 중입니다.</p>'}
         </div>
-        <p class="ch-text">이 기질을 도구로 쓰면 속도가 납니다. 기질에게 끌리면 같은 자리에서 반복됩니다. **한 달에 ‘몰입 주’와 ‘회복 주’**를 번갈아 가며 정하십시오.</p>
     </div>`;
 }
 
@@ -9684,7 +9154,6 @@ function buildReportFooterUtilities(data) {
 // buildTOC: 목차 페이지
 // ===================================================================
 function buildTOC(data) {
-    var tocNm = nmDnim((data && data.name) || '고객');
     var gHead = 'font-size:11.5px;font-weight:800;color:rgba(212,175,55,0.98);letter-spacing:0.14em;margin:26px 0 10px;padding-bottom:8px;border-bottom:1px solid rgba(199,167,106,0.28);';
     var gSub = 'display:block;font-size:10.5px;color:var(--text-dim,rgba(255,255,255,0.55));font-weight:600;letter-spacing:0.04em;margin-top:5px;';
     var row = 'display:flex;align-items:baseline;gap:12px;padding:11px 0 11px 14px;border-bottom:1px solid rgba(128,128,128,0.12);';
@@ -9694,9 +9163,9 @@ function buildTOC(data) {
             { t: '고객 정보 확인', s: '생년월일시 · 양음력', p: '—' }
         ]},
         { head: '1부 · 나라는 사람', sub: '원국에서 비친 줄기', items: [
-            { t: '한 줄기 서사', s: voiceTwilightSpan(name + 'tocArc') + ' 흐름', p: '—' },
-            { t: '일주 한 장 · 만세력 안내 · 원국', s: '표와 짧은 해설', p: '—' },
-            { t: '원국 · 오행 · 십성', s: '참고 풀이', p: '—' }
+            { t: '일주 · 만세력 안내 · 원국 표', s: '근거 표까지 같은 순서', p: '—' },
+            { t: '오행 · 십성', s: '참고 분석', p: '—' },
+            { t: '한 줄기 서사', s: voiceTwilightSpan(((data && data.name) || '고객') + 'tocArc') + ' 흐름', p: '—' }
         ]},
         { head: '2부 · 지금 이 시절', sub: '큰 계절과 앞선 기운', items: [
             { t: '지금 맞은 기운', s: '대운 · 세운 · 월운 · 다섯 영역 한 흐름', p: '—' },
