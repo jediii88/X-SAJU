@@ -186,7 +186,7 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--go
       <div class="form-row col2">
         <div><label>생시 (HHMM)</label><input type="text" id="lnk-time" placeholder="0104" maxlength="4"></div>
         <div><label>유효기간</label>
-          <select id="lnk-expire"><option value="7">7일</option><option value="30" selected>30일</option><option value="60">60일</option><option value="0">무제한</option></select>
+          <div style="font-size:13px;color:#888;padding-top:6px;">링크 생성 시점부터 <strong style="color:var(--gold);">30일</strong> (고정)</div>
         </div>
       </div>
       <div class="toggle-row">
@@ -230,9 +230,9 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--go
     </div>
     <div class="card">
       <div class="card-title">링크 옵션</div>
-      <div class="form-row" style="max-width:300px;">
+      <div class="form-row" style="max-width:340px;">
         <div><label>유효기간</label>
-          <select id="couple-expire"><option value="7">7일</option><option value="30" selected>30일</option><option value="60">60일</option><option value="0">무제한</option></select>
+          <div style="font-size:13px;color:#888;padding-top:6px;">링크 생성 시점부터 <strong style="color:var(--gold);">30일</strong> (고정)</div>
         </div>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;">
@@ -330,7 +330,8 @@ function parseTimeInput(raw){
 function fmtDate(c){return String(c.y)+'-'+String(c.mo).padStart(2,'0')+'-'+String(c.d).padStart(2,'0');}
 function fmtTime(c){return c.unknown?'시간 모름':String(c.h).padStart(2,'0')+':'+String(c.mi).padStart(2,'0');}
 
-// ── 만료 타임스탬프
+// ── 만료 타임스탬프 (고객 전달 링크 공통: 생성 시점 + 일수)
+const CUSTOMER_LINK_EXPIRE_DAYS = 30;
 function calcExpAt(days){
   if(!days||days===0)return 0;
   return Date.now()+days*24*60*60*1000;
@@ -491,8 +492,7 @@ function getLinkParams() {
   if(!parsed){alert('생년월일을 입력하세요');return null;}
   const unknown=document.getElementById('lnk-unknown').checked;
   const t=parseTimeInput(document.getElementById('lnk-time').value);
-  const expDays=parseInt(document.getElementById('lnk-expire').value);
-  const expAt=expDays?calcExpAt(expDays):0;
+  const expAt=calcExpAt(CUSTOMER_LINK_EXPIRE_DAYS);
   const cust={id:selectedLinkCust?selectedLinkCust.id:Date.now(),name,
     gender:document.getElementById('lnk-gender').value,
     cal:document.getElementById('lnk-cal').value,
@@ -568,8 +568,7 @@ function generateCoupleLink(){
   if(!selectedCoupleA)return alert('A 사람을 선택하세요');
   if(!selectedCoupleB)return alert('B 사람을 선택하세요');
   if(selectedCoupleA.id===selectedCoupleB.id)return alert('서로 다른 고객을 선택하세요');
-  const expDays=parseInt(document.getElementById('couple-expire').value);
-  const expAt=expDays?calcExpAt(expDays):0;
+  const expAt=calcExpAt(CUSTOMER_LINK_EXPIRE_DAYS);
   const previewUrl=buildCoupleUrl(selectedCoupleA,selectedCoupleB,0);
   const url=buildCoupleUrl(selectedCoupleA,selectedCoupleB,expAt);
   document.getElementById('couple-url-text').textContent=url;
