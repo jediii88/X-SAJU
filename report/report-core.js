@@ -111,6 +111,19 @@ function getJosa(word, pair) {
 }
 
 /**
+ * 괄호 한자/병기 표기를 가진 단어(예: "금(金)", "토(土)") 뒤 조사 판단.
+ * 끝의 "(…)" 괄호 한자를 떼어내고 한글 마지막 음절 받침으로 판단합니다.
+ * — 일반 텍스트에서는 그대로 getJosa와 동일하게 동작.
+ */
+function getJosaFlex(word, pair) {
+    var s = String(word == null ? '' : word).replace(/\s+$/, '');
+    if (!s) return '';
+    var stripped = s.replace(/\s*\([^)]*\)\s*$/, '').replace(/\s+$/, '');
+    if (stripped.length === 0) stripped = s;
+    return getJosa(stripped, pair);
+}
+
+/**
  * 십성(두 글자 명) 뒤 조사 — 비견·겁재·식신·상관·편인·정인·편관·정관은 이/은/과/을 쪽,
  * 편재·정재만 가/는/와/를 쪽(리포트 톤 통일용; 일반 한글 받침 규칙과 의도적으로 다를 수 있음).
  */
@@ -3128,10 +3141,12 @@ function generateDeepReport(data) {
     var html = '';
 
     // 인트로 구간 (커버·요약·목차)
+    // ※ 이용 안내(법적·연령·보관 정책)·PDF 저장 버튼 등 유틸리티 컴포넌트는
+    //   문서 최하단(buildReportFooterUtilities)으로 일괄 이동했습니다.
+    //   인트로는 본문 몰입을 해치지 않도록 표지 → 고객 표지 → 목차 → 프리미엄 브리프 흐름만 유지합니다.
     html += safeCall(()=>buildCoverPage(data), 'cover');
     html += safeCall(()=>buildClientCoverPage(data), 'clientCover');
     html += safeCall(()=>buildTOC(data), 'toc');
-    html += safeCall(()=>buildForewordPage(data), 'foreword');
     html += safeCall(()=>buildPremiumExecutiveSummary(data), 'premium');
 
     // ── 1부: 나라는 사람 ──
@@ -3197,6 +3212,9 @@ function generateDeepReport(data) {
               + ziweiBlock
               + '</div>';
     }
+
+    // ── 문서 최하단: 이용 안내·열람 정책·면책 고지·PDF 저장 버튼을 한 곳에 정리 ──
+    html += safeCall(()=>buildReportFooterUtilities(data), 'footerUtilities');
 
     document.getElementById('report-container').innerHTML = html;
 
@@ -3947,24 +3965,26 @@ function buildPremiumExecutiveSummary(data) {
     var yongFull = OH_KR2[data.yong] || (KN[data.yong] ? KN[data.yong]+' 기운' : '용신');
     var giFull   = OH_KR2[data.gi]   || (KN[data.gi]   ? KN[data.gi]  +' 기운' : '기신');
 
+    // daeunLabel 뒤 조사 — getJosa로 안전 처리 (대부분 '은'이 맞지만 라벨 확장 대비)
+    var dJosaEun = getJosa(daeunLabel, '은/는');
     var pools = [
         {
-            m1: iljuScene + ' — 이 물상처럼 ' + nmUi(nm) + ' 에너지는 한 방향으로 모아질 때 진짜 힘이 납니다. 지금은 여러 가지를 동시에 하려는 분산을 줄이는 것이 먼저입니다.',
-            m2: daeunLabel + '은 ' + dTrend + ' 국면입니다. 지금 이 10년은 다음 20년을 위한 기반을 다지는 시기입니다. 크게 벌리기보다 내 것을 단단하게 만드는 쪽이 맞습니다.',
-            m3: curY + '년은 ' + yTrend + ' 흐름의 해입니다. 올해는 새로운 시작보다 이미 시작한 것을 마무리하는 데 집중할수록 결과가 좋습니다.',
-            m4: curM + '월은 ' + mTrend + ' 흐름입니다. 이달은 속도보다 정확도가 중요합니다. 연락처·계약·결제 흐름을 한 번 점검하고, 무리한 일정을 걷어내는 것이 우선입니다.'
+            m1: iljuScene + ' — 이 물상처럼 ' + nmUi(nm) + ' 에너지는 한 방향으로 모아질 때 비로소 진짜 힘이 나는 결이네요. 지금은 여러 갈래를 동시에 펼치시려는 분산만 살짝 줄여 두시면 충분해요.',
+            m2: daeunLabel + dJosaEun + ' ' + dTrend + ' 국면이네요. 지금 이 10년은 다음 20년을 받쳐 줄 기반을 차곡차곡 다지는 시기로 보여요. 크게 벌리기보다 내 것을 단단하게 만드시는 쪽이 더 어울리는 흐름입니다.',
+            m3: curY + '년은 ' + yTrend + ' 흐름의 한 해예요. 올해는 새로운 출발보다 이미 시작해 둔 일을 끝까지 마무리하는 데 손을 모아 보십시오. 결과가 한결 곱게 떨어집니다.',
+            m4: curM + '월은 ' + mTrend + ' 결의 달이군요. 이달은 속도보다 정확도가 더 중요해요. 연락처·계약·결제 흐름을 한 번만 정돈해 두시고, 무리한 일정은 미리 걷어내 두십시오.'
         },
         {
-            m1: iljuScene + ' — ' + nmUi(nm) + ' 추진력은 이미 충분합니다. 지금 필요한 건 더 많이 하는 것이 아니라, 가장 중요한 한 가지에 집중하는 것입니다.',
-            m2: daeunLabel + '의 핵심 방향은 ' + dTrend + '입니다. 이 10년 동안 쌓은 것이 앞으로 30년을 결정합니다. 지금은 버티기가 아니라 재현 가능한 습관과 구조를 만드는 시기입니다.',
-            m3: curY + '년은 ' + yTrend + ' 기운의 해입니다. 계약, 브랜드, 핵심 관계 중 하나를 올해 안에 확실히 정리해 두면 내년이 훨씬 가벼워집니다.',
-            m4: curM + '월은 ' + mTrend + ' 흐름입니다. 이달은 새로운 것을 시작하기보다 이미 진행 중인 것을 완성하는 데 에너지를 씁니다. 무리한 약속은 줄이고 체력과 수면부터 지키십시오.'
+            m1: iljuScene + ' — ' + nmUi(nm) + ' 추진력은 이미 차고 넘치는 편이세요. 지금 필요한 건 더 많이 벌리는 일이 아니라, 가장 중요한 한 가지에 손과 마음을 모으는 일입니다.',
+            m2: daeunLabel + '의 핵심 방향은 ' + dTrend + ' 쪽으로 잡혀 있어요. 이 10년 동안 쌓아 두신 것이 앞으로 30년의 모양을 결정짓는 흐름이에요. 지금은 버티기만이 아니라, 다시 써먹을 수 있는 습관과 구조를 차분히 만들어 두시는 시기입니다.',
+            m3: curY + '년은 ' + yTrend + ' 기운의 해예요. 계약·브랜드·핵심 관계 가운데 하나만 올해 안에 또렷이 정리해 두시면, 내년이 한결 가뿐해지실 거예요.',
+            m4: curM + '월은 ' + mTrend + ' 흐름이네요. 이달은 새 일을 벌이기보다 이미 굴러가는 일을 마무리에 닿게 두시는 편이 더 좋습니다. 무리한 약속은 줄이시고, 체력과 수면부터 가장 먼저 챙기십시오.'
         },
         {
-            m1: iljuScene + ' — ' + nmUi(nm) + ' 강점은 이미 있습니다. 문제는 에너지가 여러 방향으로 흩어지는 것입니다. 가장 잘할 수 있는 하나를 먼저 선택하십시오.',
-            m2: daeunLabel + '은 ' + dTrend + ' 구간입니다. 지금의 10년은 공격이 아니라 내실을 다지는 시기입니다. 인력, 원가, 의사결정 흐름을 단순화할수록 다음 도약이 빨라집니다.',
-            m3: curY + '년은 ' + yTrend + ' 전술 구간입니다. 올해는 시장에 나를 알리기 좋은 해입니다. 제안, 가격, 메시지 중 하나를 올해 안에 정돈해 두십시오.',
-            m4: curM + '월은 ' + mTrend + ' 흐름입니다. 이달은 가속보다 정렬이 우선입니다. 연락처·계약·결제 흐름을 점검하고, 체력을 무너뜨리는 일정은 먼저 지우십시오.'
+            m1: iljuScene + ' — ' + nmUi(nm) + ' 강점은 이미 또렷이 자리잡고 있어요. 다만 에너지가 여러 방향으로 흩어지는 점이 아쉬운 결인데, 가장 잘 해내실 수 있는 한 가지를 먼저 골라 보십시오.',
+            m2: daeunLabel + dJosaEun + ' ' + dTrend + ' 구간이네요. 지금의 10년은 공격보다 내실을 다지는 흐름이 더 어울려요. 인력·원가·의사결정 흐름을 단순화하실수록 다음 도약이 한층 빨라집니다.',
+            m3: curY + '년은 ' + yTrend + ' 전술 구간이에요. 올해는 시장에 자신을 자연스럽게 알리기 좋은 해입니다. 제안·가격·메시지 가운데 하나만 올해 안에 정돈해 두십시오.',
+            m4: curM + '월은 ' + mTrend + ' 흐름이에요. 이달은 가속보다 정렬이 먼저예요. 연락처·계약·결제 흐름을 한 번 점검하시고, 체력을 무너뜨리는 일정은 가장 먼저 지워 두십시오.'
         }
     ];
 
@@ -3978,31 +3998,37 @@ function buildPremiumExecutiveSummary(data) {
         { title: vipTitles[3], body: chosen.m4 }
     ];
 
-    var accessLine = formatReportAccessLine(data);
-    var reportDate = getReportBaseDate(data);
-    var reportDateStr = reportDate.getFullYear() + '년 ' + (reportDate.getMonth() + 1) + '월 ' + reportDate.getDate() + '일';
-
-    // 표지형 압축 — 군더더기 단락 3개 제거. 메타포 + 한눈에 보기 카드 + PDF 안내만 남김.
-    // 진짜 본문(타고난 결·메인 인생 한 흐름·시기별 흐름·네 영역·개운법)은 1~4부에서 풀린다.
-    var quickGlanceLine = '대운은 <strong>' + daeunLabel + '</strong>(' + dTrend + ' 국면), '
-        + '올해는 <strong>' + curY + '년</strong> ' + yTrend + ' 흐름, '
-        + '이번 달은 <strong>' + curM + '월</strong> ' + mTrend + ' 결. '
-        + nmUi(nm) + ' 사주는 ' + yongFull + '을 기다리고, ' + giFull + '이 두꺼워질 때 무리하지 않으시는 편이 좋습니다.';
+    // 표지형 압축 — 메타포 제목 + 한눈에 보기 카드만 남김.
+    // PDF 저장 버튼·열람 안내·면책 고지·이용 안내 등 유틸리티 컴포넌트는 본문 렌더링이 끝난 뒤
+    // 문서 최하단(buildReportFooterUtilities)에 모아 배치합니다. 진짜 본문 풀이는 1~4부에서 이어집니다.
+    var trendNuance = function (t) {
+        if (t === '공격') return '한 발 더 내디뎌도 좋은 공격 국면';
+        if (t === '균형') return '들숨 날숨이 고르게 맞아가는 균형 흐름';
+        return '한 박자 쉬어 가는 방어 결';
+    };
+    var monthFlavor = function (t) {
+        if (t === '공격') return '속도를 한 단계 올려도 무리가 없는 달';
+        if (t === '균형') return '리듬을 그대로 유지하기 좋은 달';
+        return '욕심을 내려놓고 다듬어 가기 좋은 달';
+    };
+    var yongJosa = getJosaFlex(yongFull, '을/를');
+    var giJosa = getJosaFlex(giFull, '이/가');
+    var dLabelJosa = getJosa(daeunLabel, '은/는');
+    var quickGlanceLine = '지금 ' + nmUi(nm) + ' 흐름을 한 문장으로 정리해 드리면, '
+        + '<strong>' + daeunLabel + '</strong>' + dLabelJosa + ' ' + trendNuance(dTrend) + '이고, '
+        + '올해 <strong>' + curY + '년</strong>은 ' + trendNuance(yTrend) + ', '
+        + '이달 <strong>' + curM + '월</strong>은 ' + monthFlavor(mTrend) + '이에요. '
+        + nmUi(nm) + ' 사주는 <strong>' + yongFull + '</strong>' + yongJosa + ' 기다리고 있어요. '
+        + '<strong>' + giFull + '</strong>' + giJosa + ' 두꺼워질 때는 한 박자만 늦추시고, 무리한 결정은 잠깐 미뤄 두시는 편이 결과가 더 단단해집니다.';
 
     return '<div id="sec-premium-summary" class="report-chapter premium-executive-summary chapter-start sajux-panel-plain" style="margin-bottom:40px;padding:28px 22px;border-radius:14px;border:1px solid rgba(199,167,106,0.30);background:transparent;text-align:center;">' +
         '<div style="font-size:10.5px;letter-spacing:0.20em;color:rgba(199,167,106,0.72);margin-bottom:14px;font-weight:600;">사주X · 프리미엄 리포트</div>' +
         '<h2 style="font-family:\'Noto Sans KR\',sans-serif;font-size:24px;font-weight:700;color:var(--text, #f5f0e6);margin:0 0 8px;line-height:1.45;letter-spacing:-0.01em;">' + escHtmlAttr(metaphorLead) + '</h2>' +
-        '<p style="font-size:11.5px;letter-spacing:0.14em;color:var(--text-dim, rgba(199,167,106,0.72));margin:0 0 22px;font-weight:500;">' + escHtmlAttr(nmUi(nm)) + ' 사주를 한 흐름으로 풀어 드립니다</p>' +
-        '<button type="button" class="sajux-pdf-wide-btn pdf-btn" onclick="window.print()" style="margin-bottom:24px;">PDF 저장</button>' +
-        '<div class="brief-glance sajux-print-surface" style="text-align:left;margin:0 0 18px;padding:18px 20px;border-radius:12px;background:rgba(199,167,106,0.06);border-left:3px solid var(--gold);">' +
+        '<p style="font-size:11.5px;letter-spacing:0.14em;color:var(--text-dim, rgba(199,167,106,0.72));margin:0 0 22px;font-weight:500;">' + escHtmlAttr(nmUi(nm)) + ' 사주를 한 흐름으로 부드럽게 풀어 드릴게요</p>' +
+        '<div class="brief-glance sajux-print-surface" style="text-align:left;margin:0;padding:18px 20px;border-radius:12px;background:rgba(199,167,106,0.06);border-left:3px solid var(--gold);">' +
         '<div style="font-size:10.5px;color:var(--gold);font-weight:700;letter-spacing:0.12em;margin-bottom:10px;">한눈에 보는 지금의 결</div>' +
         '<p style="font-size:14px;color:var(--text);line-height:2;margin:0;">' + boldStarsToStrong(quickGlanceLine) + '</p>' +
         '</div>' +
-        '<div class="sajux-access-note" style="text-align:left;margin-top:0;padding:14px 16px;border-radius:10px;border:1px solid rgba(199,167,106,0.25);font-size:12.5px;line-height:1.85;">' +
-        '<div style="color:var(--gold, #c9a55a);font-weight:700;margin-bottom:6px;letter-spacing:0.05em;">열람·PDF 안내</div>' +
-        accessLine + '<br>발행일(출력 기준): ' + reportDateStr + '<br>브라우저에서 <strong>인쇄 → PDF로 저장</strong>을 실행해 전략 문서를 보관하십시오.' +
-        '</div>' +
-        '<p class="premium-disclaimer" style="text-align:left;margin:16px 0 0;font-size:11.5px;line-height:1.85;color:var(--text-dim, #777);">본 리포트는 전통 명리학 기반의 전략 해석 자료입니다. 의학·법률·투자 자문이 아니며, 실제 실행 판단과 책임은 본인에게 있습니다.<br><span style="display:block;margin-top:8px;">' + getAgeBasisNoteHtml('disclaimer') + '</span></p>' +
         '</div>';
 }
 
@@ -7425,36 +7451,84 @@ function buildClientCoverPage(data) {
 }
 
 // ===================================================================
-// buildForewordPage: 머릿말 (목차 다음)
+// buildForewordPage: 머릿말 (구버전)
+//   - 더 이상 인트로 구간에 노출하지 않습니다.
+//   - buildReportFooterUtilities()가 문서 최하단에서 동일한 컨텐츠를 묶어
+//     이용 안내·열람 정책·면책 고지를 한 번에 보여줍니다.
+//   - 외부 호출 호환을 위해 빈 문자열을 반환하도록만 남겨 두었습니다.
 // ===================================================================
 function buildForewordPage(data) {
-    const name = data.name || '고객';
-    const accessLine = formatReportAccessLine(data);
-    return `<div id="sec-book-foreword" class="toc-page chapter-start book-foreword-page" style="padding:56px 36px 72px;border-bottom:1px solid rgba(199,167,106,0.12);margin-bottom:40px;max-width:700px;margin-left:auto;margin-right:auto;">
-        <div style="font-size:10px;letter-spacing:0.2em;color:rgba(199,167,106,0.75);margin-bottom:16px;font-weight:700;">[ 이용 안내 ]</div>
-        <h2 style="font-family:'Noto Sans KR',serif;font-size:28px;font-weight:700;color:var(--text,rgba(255,255,255,0.95));margin:0 0 18px;">이용 안내</h2>
+    return '';
+}
 
-        <div style="text-align:left;padding:16px 18px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(199,167,106,0.14);margin-bottom:14px;">
-            <div style="font-size:12px;color:var(--gold);letter-spacing:0.08em;margin-bottom:8px;font-weight:700;">법적 안내</div>
-            <p style="margin:0;font-size:13px;line-height:1.9;color:#d6dae2;">본 리포트는 명리학(사주) 해석을 기반으로 한 참고 정보입니다. 투자, 의료, 법률, 세무 등 전문 자문을 대체하지 않으며, 최종 판단과 책임은 이용자 본인에게 있습니다.</p>
-        </div>
+// ===================================================================
+// buildReportFooterUtilities: 리포트 본문이 끝난 뒤 문서 최하단에 묶어
+//   1) PDF 저장 안내 + 인쇄 버튼
+//   2) 이용 안내(법적 안내·만 나이 표기·권장 사용법·보관 정책)
+//   3) 짧은 면책 고지
+//   를 하나의 블록으로 보여 줍니다. UX를 흩뜨리지 않도록 메인 콘텐츠
+//   사이가 아니라 가장 마지막에서만 등장합니다.
+// ===================================================================
+function buildReportFooterUtilities(data) {
+    var name = (data && data.name) ? data.name : '고객';
+    var nmDn = nmDnim(name);
+    var accessLine = formatReportAccessLine(data);
+    var reportDate = getReportBaseDate(data);
+    var reportDateStr = reportDate.getFullYear() + '년 ' + (reportDate.getMonth() + 1) + '월 ' + reportDate.getDate() + '일';
 
-        <div style="text-align:left;padding:16px 18px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(199,167,106,0.14);margin-bottom:14px;">
-            <div style="font-size:12px;color:var(--gold);letter-spacing:0.08em;margin-bottom:8px;font-weight:700;">연령 표기 (만 나이)</div>
-            <p style="margin:0;font-size:13px;line-height:1.9;color:#d6dae2;">대운·세운·나이대 조언에 나오는 ○○세는 <b>만 나이</b>(양력 생일 기준)입니다. 한국식 세는 나이(생일 전후로 +1하는 방식)와 다를 수 있으니, 숫자를 비교할 때 참고하십시오.</p>
-        </div>
+    var cardStyle = 'text-align:left;padding:16px 18px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(199,167,106,0.14);margin-bottom:14px;';
+    var headStyle = 'font-size:12px;color:var(--gold);letter-spacing:0.08em;margin-bottom:8px;font-weight:700;';
+    var pStyle = 'margin:0;font-size:13px;line-height:1.9;color:#d6dae2;';
 
-        <div style="text-align:left;padding:16px 18px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(199,167,106,0.14);margin-bottom:14px;">
-            <div style="font-size:12px;color:var(--gold);letter-spacing:0.08em;margin-bottom:8px;font-weight:700;">권장 사용법</div>
-            <p style="margin:0;font-size:13px;line-height:1.9;color:#d6dae2;">${name} 고객님에게 필요한 부분부터 읽으시되, 먼저 "고객 맞춤 요약"을 확인한 뒤 본문에서 상세 해석을 보시면 이해가 빠릅니다. 중요한 결정은 현실 여건과 전문가 의견을 함께 검토하십시오.</p>
-        </div>
+    var html = ''
+        + '<section id="sec-report-footer-utilities" class="report-footer-utilities" '
+        + 'style="margin:48px auto 0;padding:36px 24px 56px;max-width:720px;border-top:1px dashed rgba(199,167,106,0.28);">'
 
-        <div style="text-align:left;padding:16px 18px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(199,167,106,0.14);">
-            <div style="font-size:12px;color:var(--gold);letter-spacing:0.08em;margin-bottom:8px;font-weight:700;">보관 정책 및 PDF 저장</div>
-            <p style="margin:0 0 8px;font-size:13px;line-height:1.9;color:#d6dae2;">${accessLine}</p>
-            <p style="margin:0;font-size:13px;line-height:1.9;color:#d6dae2;">링크 만료 후 재열람이 어려울 수 있으니, 필요한 경우 반드시 PDF로 저장해 개인 보관하십시오.</p>
-        </div>
-    </div>`;
+        + '<div style="font-size:10px;letter-spacing:0.22em;color:rgba(199,167,106,0.72);margin-bottom:12px;font-weight:700;text-align:center;">[ 리포트 부록 · 이용 안내 ]</div>'
+        + '<h2 style="font-family:\'Noto Sans KR\',serif;font-size:22px;font-weight:700;color:var(--text,rgba(255,255,255,0.95));margin:0 0 6px;text-align:center;">' + escHtmlAttr(nmDn) + ', 여기까지 함께 봐 주셔서 고마워요</h2>'
+        + '<p style="margin:0 0 22px;font-size:12.5px;line-height:1.85;color:var(--text-dim,rgba(255,255,255,0.6));text-align:center;">아래는 본문이 모두 끝난 뒤 보시는 보관·이용 안내예요. 한 번만 훑어 두시면 충분합니다.</p>'
+
+        // ── 1) PDF 저장 안내 + 인쇄 버튼 ──
+        + '<div class="sajux-access-note" style="text-align:left;margin:0 0 18px;padding:16px 18px;border-radius:12px;border:1px solid rgba(199,167,106,0.28);background:rgba(199,167,106,0.05);font-size:13px;line-height:1.9;">'
+        + '<div style="' + headStyle + '">열람 · PDF 저장 안내</div>'
+        + '<p style="' + pStyle + '">' + accessLine + '</p>'
+        + '<p style="margin:6px 0 0;font-size:13px;line-height:1.9;color:#d6dae2;">발행일(출력 기준)은 <strong>' + reportDateStr + '</strong>이에요. 브라우저에서 <strong>인쇄 → PDF로 저장</strong>을 한 번만 실행해 두시면, 링크 만료 이후에도 같은 문서를 두고두고 보실 수 있어요.</p>'
+        + '<div style="display:flex;justify-content:center;margin-top:14px;">'
+        + '<button type="button" class="sajux-pdf-wide-btn pdf-btn" onclick="window.print()" style="margin:0;max-width:320px;">PDF로 저장하기</button>'
+        + '</div>'
+        + '</div>'
+
+        // ── 2) 이용 안내 4종 ──
+        + '<div style="' + cardStyle + '">'
+        + '<div style="' + headStyle + '">법적 안내</div>'
+        + '<p style="' + pStyle + '">본 리포트는 명리학(사주) 해석을 토대로 정리한 참고 자료예요. 투자·의료·법률·세무 등 전문 자문을 대체하지 않으며, 최종 판단과 책임은 이용자 본인에게 있다는 점만 가볍게 기억해 주시면 좋아요.</p>'
+        + '</div>'
+
+        + '<div style="' + cardStyle + '">'
+        + '<div style="' + headStyle + '">연령 표기 (만 나이 기준)</div>'
+        + '<p style="' + pStyle + '">대운·세운·연령대 조언에 등장하는 ○○세는 모두 <b>만 나이</b>(양력 생일 기준)예요. 한국식 세는 나이(생일을 기점으로 ±1)와는 숫자가 다를 수 있으니, 본문 속 숫자를 비교하실 때 살짝 참고만 해 주세요.</p>'
+        + '</div>'
+
+        + '<div style="' + cardStyle + '">'
+        + '<div style="' + headStyle + '">권장 사용법</div>'
+        + '<p style="' + pStyle + '">' + escHtmlAttr(nmDn) + '에게 가장 와닿는 부분부터 천천히 읽으시면 돼요. 먼저 <b>한눈에 보는 지금의 결</b>을 한 번 훑고, 그다음 본문에서 깊은 풀이를 따라가시면 흐름이 자연스럽게 잡힙니다. 큰 결정 앞에서는 현실 여건과 가까운 전문가 의견을 함께 살펴 주세요.</p>'
+        + '</div>'
+
+        + '<div style="' + cardStyle + 'margin-bottom:0;">'
+        + '<div style="' + headStyle + '">보관 정책 · 다시 보기</div>'
+        + '<p style="margin:0 0 8px;font-size:13px;line-height:1.9;color:#d6dae2;">' + accessLine + '</p>'
+        + '<p style="' + pStyle + '">링크가 만료되면 동일 페이지로 다시 들어오기 어려울 수 있어요. 마음에 드는 페이지가 있다면 <b>PDF로 저장</b>해 두시는 편을 가장 추천드립니다.</p>'
+        + '</div>'
+
+        // ── 3) 짧은 면책 고지 ──
+        + '<p class="premium-disclaimer" style="text-align:left;margin:22px 0 0;font-size:11.5px;line-height:1.9;color:var(--text-dim, #777);">'
+        + '본 리포트는 전통 명리학에 기반한 전략 해석 자료예요. 의학·법률·투자 자문이 아니며, 실제 실행과 그에 따르는 책임은 본인에게 있다는 점만 다정하게 기억해 주세요.'
+        + '<br><span style="display:block;margin-top:8px;">※ ' + getAgeBasisNoteHtml('disclaimer') + '</span>'
+        + '</p>'
+
+        + '</section>';
+
+    return html;
 }
 
 
