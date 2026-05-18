@@ -480,12 +480,14 @@ function voiceInlineInterpHeader(topic, data) {
 /** ═══ 궁합(2인) — 사주아이형 톤 (couple · compatibility 공용) ═══ */
 var SAJUX_COMPAT_SECTION_LABELS = {
     overview: '궁합 총평 — 두 격이 만나는 자리',
+    positioning: '관계 포지셔닝 — 속도·역할·조율점',
     personality: '성격·기질 — 타고난 온도',
     lover: '연인 — 마음의 리듬',
     married: '부부 — 삶의 설계',
     friend: '우정 — 오래 가는 거리',
     business: '동업 — 역할과 돈',
     spouse: '배우자궁 — 끌림의 방향',
+    idealFamily: '이상형 거리 · 자녀 인연 · 자미두수 보강',
     wuxing: '오행 대칭 — 에너지 보완',
     strategy: '관계 전략 — 소통·동업·친밀',
     timeline: '시기 — 대운·세운 싱크',
@@ -554,6 +556,18 @@ function buildCompatTopicMetaphor(topic, ctx) {
         strategy: function () {
             return '소통·돈·친밀 — 세 전장에서 승부가 갈리는 시기가 분명한 궁합이네요';
         },
+        positioning: function () {
+            return pickVoiceLine([
+                '좋은 관계도 **포지션**이 먼저예요. 누가 속도를 내고 무엇을 같이 맞출지부터 정하면 부담이 줄어요.',
+                nA + '님과 ' + nB + '님, “서포트만” 보지 말고 **한 방으로 가려면 무엇을 조율할지**부터 짚는 구간이에요.'
+            ], seed + 'pos');
+        },
+        idealFamily: function () {
+            return pickVoiceLine([
+                '끌림은 무의식이 만들고, 현실은 **말 버릇·돈 규칙·휴식**으로 굳습니다. 여기부터 맞춰 보세요.',
+                nA + '님 일지에는 눈에 그리던 그림이, ' + nB + '님 일지에는 또 다른 그림이 있어요. 겹침만이 답은 아니에요.'
+            ], seed + 'ifam');
+        },
         timeline: function () {
             return voiceMingliLine('대운은 10년짜리 계절입니다.') + ' 두 사람 계절이 겹칠 때만 크게 움직이십시오.';
         },
@@ -621,6 +635,14 @@ function buildCompatOpenerInner(topic, ctx) {
         brief: [
             '브리프는 예쁜 말이 아니라 **이번 달에 지킬 한 줄**이에요. 냉장고에 붙여 두셔도 좋습니다.',
             nA + '님과 ' + nB + '님, 공동 목표를 문장으로 고정하면 시너지가 커져요.'
+        ],
+        positioning: [
+            voiceMingliLine('관계에는 이끔과 맞춤이 같이 있습니다.') + ' 에너지 숫자는 “힘 자랑”이 아니라 **호흡 각도**의 힌트예요.',
+            '좋은 결과는 감정만이 아니라 **역할 한 줄과 일정 규칙**이 같이 갈 때 오래 가요.'
+        ],
+        idealFamily: [
+            '배우자궁에 그려진 무의식의 그림과, 지금 상대의 표정이 다르게 느껴질 수 있어요. 그 간극을 줄이려면 한 가지 규칙부터 맞추면 충분해요.',
+            '자미두수는 자녀궁·부부궁에서 **양육 톤과 가정 무게중심**을 또 한 번 거울처럼 비추는 학문입니다. 아래 안내는 흐름만 열어 두고, 표질성 배치까지 곁들인 풀이는 **별첨 리포트 단계에서** 이어 가면 좋습니다.'
         ]
     };
     var pool = pools[topic];
@@ -652,13 +674,15 @@ function buildCompatBridge(topic, ctx) {
     var nB = nmNormalize((ctx && ctx.bName) || '') || '다른 한 분';
     var bridges = {
         overview:    null, // 첫 챕터 — 풀 인사
-        personality: '두 분의 관계를 풀기 전에, 먼저 ' + nA + '님과 ' + nB + '님 각자의 결을 짚어 보겠습니다.',
+        positioning: '총점 옆에서는 “잘 맞는가” 다음으로, **어떻게 같이 살아갈 호흡을 짤지**를 먼저 정하면 덜 피곤합니다.',
+        personality: '포지션을 적어 두었으니, 이제 ' + nA + '님과 ' + nB + '님 각자의 결을 카드로 짚어 보겠습니다.',
         lover:       '서로의 결을 보았으니, 이제 두 분이 연인으로서 어떤 리듬을 만드는지 살피겠습니다.',
         married:     '연인의 호흡을 살폈으니, 부부로서 함께 살아가는 그림은 어떻게 그려지는지 풀어 보겠습니다.',
         friend:      '관계의 무게를 잠시 내려놓고, 두 분이 친구·동료로서는 어떤 거리를 지키면 좋은지 봅니다.',
         business:    '감정의 자리에서 한 발 비켜서서, 함께 일하거나 동업할 때의 그림을 짚어 보겠습니다.',
         child:       '두 분 사이에 새 식구가 더해진다면 어떤 결이 어우러지는지, 자녀와의 관계도 살펴봅니다.',
         spouse:      '배우자궁(일지)이 서로 어떻게 닿는지, 두 분의 가장 깊은 자리를 들여다봅니다.',
+        idealFamily: '배우자궁을 보았으니, 이상형과의 거리·자녀 인연 가능성은 사주 원국으로 한 번 더, 향후 **자미두수 별궁**으로 디테일을 더할 여지까지 짚습니다.',
         crisis:      '관계에는 흐름이 있습니다. 어떤 시기가 같이 있기 좋은 시절이고, 어떤 시기에 한 발 거리를 두는 것이 좋은지 짚겠습니다.',
         timeline:    '대운(10년 흐름)이 두 분에게서 어떻게 겹치는지, 함께 갈 길의 색지도를 살펴봅니다.',
         caution:     '관계를 오래 지키려면 지뢰를 미리 알아두는 것이 좋습니다. 두 분이 특히 조심해야 할 자리를 정리해 드립니다.',
@@ -981,6 +1005,98 @@ function buildCompatChildHtml(ctx, score) {
     ], aName + bName + 'ch');
     return '<div class="insight-card"><div class="tag">👶 자녀운</div><br><p style="font-size:13.5px;color:#bbb;line-height:1.85;margin:0;">'
         + boldStarsToStrong(open + tail) + '</p></div>';
+}
+
+/** 궁합 — 포지셔닝: 에너지 게이지·이끔/맞춤·같이 조율할 축 (단순 서포트 지도가 아님) */
+function buildCompatPositioningPanelHtml(ctx) {
+    ctx = ctx || {};
+    var aName = compatNm(ctx, 'a');
+    var bName = compatNm(ctx, 'b');
+    var a = ctx.a || {};
+    var b = ctx.b || {};
+    var sc = ctx.score != null ? Number(ctx.score) : 62;
+    function energyBase(st) {
+        var e = 54;
+        if (st === '신강') e += 21;
+        else if (st === '신약') e -= 14;
+        if (sc >= 72) e += 7;
+        else if (sc < 46) e -= 9;
+        return Math.max(22, Math.min(98, e));
+    }
+    var eA = energyBase(a.strength) + 3;
+    var eB = energyBase(b.strength) - 2;
+    function barRow(nm, v) {
+        return '<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;font-size:11.5px;color:var(--text-dim);margin-bottom:4px;"><span>' + escHtmlAttr(nm) + '</span><span><strong style="color:var(--gold);">' + String(v) + '</strong> / 100</span></div>'
+            + '<div style="height:8px;border-radius:999px;background:rgba(255,255,255,0.08);overflow:hidden;">'
+            + '<div style="width:' + String(v) + '%;height:100%;border-radius:999px;background:linear-gradient(90deg,rgba(199,167,106,0.75),rgba(199,167,106,0.25));"></div></div></div>';
+    }
+    var gap = Math.abs(eA - eB);
+    var rhythm = gap >= 16
+        ? (eA > eB
+            ? escHtmlAttr(aName) + '님 발이 조금 더 빠르고, ' + escHtmlAttr(bName) + '님이 템포를 맞추는 식이 편해 보입니다. “빠른 쪽이 줄이기”를 번갈 말로 정해 두면 부담이 줄어요.'
+            : escHtmlAttr(bName) + '님 발이 조금 더 빠르고, ' + escHtmlAttr(aName) + '님이 템포를 맞추는 식이 편해 보입니다.')
+        : escHtmlAttr(aName) + '님과 ' + escHtmlAttr(bName) + '님은 비슷한 속도대예요. 한 사람에게만 호흡이 몰리지 않도록 **역할 교대**(이번 일은 내가 고른다 등) 한 줄만 정해 두면 좋아요.';
+    var lead = (a.strength === '신강' && b.strength !== '신강')
+        ? escHtmlAttr(aName) + '님이 큰 방향과 일정 줄기를 먼저 잡고, ' + escHtmlAttr(bName) + '님이 말 버릇·세부 타협을 다듬는 구조가 덜 들어요.'
+        : (b.strength === '신강' && a.strength !== '신강')
+        ? escHtmlAttr(bName) + '님이 큰 방향을 열고, ' + escHtmlAttr(aName) + '님이 공감·합의 고리를 잡아 주면 좋습니다.'
+        : '둘 다 주도 기운이 있으면 큰 줄기만 번갈 잡고, 세부 결정은 **한 사람에게만 묶어** 같은 날 재논의하지 않는 규칙이 좋아요.';
+    var coordMoney = ctx.shengAB || ctx.shengBA
+        ? '돈: 상생 결은 “한쪽이 벌면 다른 한쪽이 지켜 줄 범위”부터 문장으로 정하십시오.'
+        : '돈: 양쪽이 비슷한 무게면 **통장 카테고리**만이라도 같은 양식으로 나누십시오.';
+    var coordTalk = ctx.isChung
+        ? '말 버릇: 충 결은 속도 차이입니다. 같은 날 밤에는 결맺지 말고 **한낮 20분 카드**만 쓰십시오.'
+        : '말 버릇: 다투는 순간에는 “내가 놓치고 있던 것 하나”부터 말해 보세요.';
+    var coordRest = escHtmlAttr(aName) + '님·' + escHtmlAttr(bName) + '님 모두 회복 시간을 **달력 겹 칸**으로 박아 두면, 피곤함이 로맨스 비용으로 덜 넘어갑니다.';
+    var coordGoal = sc >= 60
+        ? '공동 결과: 목표 한 줄만 같이 적고 나머지는 각자 담당처럼 두어 **칭찬 한 마디 규칙**을 붙이면 오래 가요.'
+        : '공동 결과: 큰 결과보다 작은 성공부터 맞춰 주면 신뢰가 쌓여요.';
+    return '<div class="insight-card" style="border-left:3px solid rgba(122,184,212,0.55);margin-bottom:10px;"><div class="tag" style="color:#7ab8d4;font-weight:700;">⚖ 관계 속도 게이지(참고)</div>'
+        + '<p style="font-size:11.5px;color:#888;line-height:1.75;margin:8px 0 14px;font-style:italic;">'
+        + '숫자는 힘 과시가 아니라 <strong>누가 오늘 앞번호를 줄일지</strong> 정하기 위한 눈대중이에요.</p>'
+        + barRow(aName + '님', eA) + barRow(bName + '님', eB)
+        + '<p style="font-size:13.5px;color:#bbb;line-height:1.9;margin:14px 0 0;">' + boldStarsToStrong(rhythm) + '</p></div>'
+        + '<div class="insight-card" style="margin-bottom:10px;"><div class="tag">📍 이끎·조율·번갈</div>'
+        + '<p style="font-size:13.5px;color:#bbb;line-height:1.9;margin:10px 0 0;">' + boldStarsToStrong(lead) + '</p></div>'
+        + '<div class="insight-card"><div class="tag">🤝 좋은 관계 유지용 — 같이 조율할 축 네 줄</div>'
+        + '<ul style="margin:12px 0 0;padding-left:18px;font-size:13.5px;color:#bbb;line-height:1.9;">'
+        + '<li>' + boldStarsToStrong(coordMoney) + '</li>'
+        + '<li>' + boldStarsToStrong(coordTalk) + '</li>'
+        + '<li>' + boldStarsToStrong(coordRest) + '</li>'
+        + '<li>' + boldStarsToStrong(coordGoal) + '</li>'
+        + '</ul></div>';
+}
+
+/** 이상형 거리 요약 · 자미두수로 보강할 수 있는 레이어(별배열은 별첨에서 디테일) */
+function buildCompatIdealFamilyAppendixHtml(ctx) {
+    ctx = ctx || {};
+    var aName = compatNm(ctx, 'a');
+    var bName = compatNm(ctx, 'b');
+    var aDb = (ctx.a && ctx.a.dayBranch) || '';
+    var bDb = (ctx.b && ctx.b.dayBranch) || '';
+    var fit = ctx.isHap
+        ? escHtmlAttr(aName) + '님 배우자궁 일지(' + escHtmlAttr(aDb) + ')와 ' + escHtmlAttr(bName) + '님의 실제 일지(' + escHtmlAttr(bDb) + ')가 **합(合)**으로 맞닿아 있어, 서로의 무의식 그림이 비교적 잘 겹치는 편으로 읽힙니다.'
+        : ctx.isChung
+        ? escHtmlAttr(aName) + '님의 배우자궁(' + escHtmlAttr(aDb) + ')과 ' + escHtmlAttr(bName) + '님의 일지(' + escHtmlAttr(bDb) + ')가 **충(冲)**이라, “그리던 얼굴”과는 다르게 느껴져도 **긴장·성장**을 같이 쓰는 인연으로 읽힙니다.'
+        : '일지끼리 직접 합·충이 없어도, 오행·십성으로 필요한 결을 채우는 인연이면 “그림은 다른데 생활은 맞는” 경우가 흔합니다.';
+    var ideal = ctx.isHap
+        ? '합(合)으로 맞닿아 있어, 무의식에 그려 둔 “편하게 숨 쉴 수 있는 사람” 상과 **결이 비슷한 온도**로 닿아 있어요.'
+        : ctx.isChung
+        ? '일지 충은 이상형과 정반대처럼 느껴져도 자극 때문에 오래 마음에 남는 결일 수 있어요. 현실에서는 **속도 차이 규칙**이 우선입니다.'
+        : '직합·직충이 없어도 일간·오행으로 빈칸을 채우는 인연일 수 있어요. 무의식의 그림이 다르면 “그림이 다른데 왜 편하지?”처럼 느껴지기도 합니다.';
+    var mirror = voiceMingliLine('무의식 배우자궁 일지 안의 형상입니다.') + ' 표면 성격만으로 판별하지 마시고, “내가 존중받았다고 느낄 포인트 한 가지”로만 비교해 보세요.';
+    var ziweiNote = ''
+        + '자미두수로는 **부부궁·자녀궁(子息)** 과 **명궁** 등을 함께 놓아 보면, 같은 시기 가정 무게중심이 어디로 쏠리는지·자식 기운을 어떤 톤으로 맞추면 덜 들지가 한 화면에 정리되기 좋습니다. '
+        + '별의 이름까지 붙여 “이럴 아이다”처럼 단정하는 글은 **생년 정보가 정확히 맞물린 별첨**에서 하는 편이 안전하고, 현재 카드에서는 **사주 원국에서 본 빈 칸**(식상·관성·인성 균형)과 자녀궁 톤의 설명만 참고 레이어로 두시면 좋습니다.';
+    return '<div class="insight-card" style="border-left:3px solid rgba(199,167,106,0.45);margin-bottom:10px;"><div class="tag">💫 이상형과의 거리(일지 무의식 기준)</div>'
+        + '<p style="font-size:13.5px;color:#d4c4a8;line-height:1.9;margin:12px 0 0;font-weight:500;">' + boldStarsToStrong(fit) + '</p>'
+        + '<p style="font-size:13.5px;color:#bbb;line-height:1.9;margin:12px 0 0;">' + boldStarsToStrong(mirror + ' ' + ideal) + '</p>'
+        + '<p style="font-size:11.5px;color:#777;line-height:1.75;margin:12px 0 0;font-style:italic;">'
+        + escHtmlAttr(aName) + '님 무의식 일지: ' + escHtmlAttr(aDb) + ' · ' + escHtmlAttr(bName) + '님 무의식 일지: ' + escHtmlAttr(bDb) + '</p></div>'
+        + '<div class="insight-card"><div class="tag" style="letter-spacing:0.08em;">✨ 자미두수로 보강할 수 있는 지점</div>'
+        + '<p style="font-size:13.5px;color:#bbb;line-height:1.9;margin:12px 0 0;">' + ziweiNote + '</p>'
+        + '<p style="font-size:12px;color:#888;line-height:1.8;margin:12px 0 0;">'
+        + '※ 자녀에 관한 선택은 명리 한 장만으로 세우지 마시고, 의학·양육·정책은 전문 분야 정보와 함께 보셔야 합니다.</p></div>';
 }
 
 function compatCrisisNarrative(oh, isGood, isBad, seed) {
@@ -7796,7 +7912,7 @@ function buildPartHeader(num, title, subtitle, anchorId, opts) {
         ? '<div class="part-prelude" style="margin-top:18px;padding-top:16px;border-top:1px dashed rgba(' + color + ',0.32);font-size:13px;line-height:1.95;color:var(--text-dim);font-style:italic;">' + preludes[num] + '</div>'
         : '';
     return '<div' + idAttr + ' class="part-header-block report-chapter sajux-print-surface sajux-glass-panel" style="display:block;background:rgba(255,255,255,0.04);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:none;border-radius:16px;padding:24px 28px;margin:40px 0 4px;page-break-before:always;break-before:page;page-break-inside:avoid;break-inside:avoid;page-break-after:avoid;break-after:avoid;box-shadow:0 12px 44px rgba(0,0,0,0.28);border-top:3px solid ' + border + ';">'
-        + '<div class="part-header-label part-tier-title" style="display:block;font-size:clamp(16px,4vw,21px);font-weight:700;color:rgba(248,246,238,0.96);margin-bottom:8px;letter-spacing:-0.025em;line-height:1.35;"><span style="color:' + border + ';font-weight:700;margin-right:8px;">' + num + ' ·</span>' + icon + ' ' + title + '</div>'
+        + '<div class="part-header-label part-tier-title" style="display:block;font-size:clamp(16px,4vw,21px);font-weight:700;color:rgba(248,246,238,0.96);margin-bottom:8px;letter-spacing:-0.025em;line-height:1.35;"><span style="color:' + border + ';font-weight:700;margin-right:8px;">' + num + ' ·</span>' + title + icon + '</div>'
         + '<div class="part-header-sub" style="display:block;font-size:12.5px;color:rgba(255,255,255,0.52);letter-spacing:0.04em;line-height:1.55;">' + subtitle + '</div>'
         + preludeHtml
         + '</div>';
