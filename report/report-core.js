@@ -7796,7 +7796,7 @@ function buildPartHeader(num, title, subtitle, anchorId, opts) {
         ? '<div class="part-prelude" style="margin-top:18px;padding-top:16px;border-top:1px dashed rgba(' + color + ',0.32);font-size:13px;line-height:1.95;color:var(--text-dim);font-style:italic;">' + preludes[num] + '</div>'
         : '';
     return '<div' + idAttr + ' class="part-header-block report-chapter sajux-print-surface sajux-glass-panel" style="display:block;background:rgba(255,255,255,0.04);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:none;border-radius:16px;padding:24px 28px;margin:40px 0 4px;page-break-before:always;break-before:page;page-break-inside:avoid;break-inside:avoid;page-break-after:avoid;break-after:avoid;box-shadow:0 12px 44px rgba(0,0,0,0.28);border-top:3px solid ' + border + ';">'
-        + '<div class="part-header-label part-tier-title" style="display:block;font-size:clamp(16px,4vw,21px);font-weight:750;color:rgba(248,246,238,0.96);margin-bottom:8px;letter-spacing:-0.025em;line-height:1.35;"><span style="color:' + border + ';font-weight:800;margin-right:8px;">' + num + ' ·</span>' + icon + ' ' + title + '</div>'
+        + '<div class="part-header-label part-tier-title" style="display:block;font-size:clamp(16px,4vw,21px);font-weight:700;color:rgba(248,246,238,0.96);margin-bottom:8px;letter-spacing:-0.025em;line-height:1.35;"><span style="color:' + border + ';font-weight:700;margin-right:8px;">' + num + ' ·</span>' + icon + ' ' + title + '</div>'
         + '<div class="part-header-sub" style="display:block;font-size:12.5px;color:rgba(255,255,255,0.52);letter-spacing:0.04em;line-height:1.55;">' + subtitle + '</div>'
         + preludeHtml
         + '</div>';
