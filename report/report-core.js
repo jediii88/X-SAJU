@@ -4663,6 +4663,71 @@ function getIljuProfile(dayStem, dayBranch) {
     return ILJU_60_DB[key] || null;
 }
 
+/** 원국 십성 분포에 편재·정재가 한 번도 없을 때(통변상 무재에 가깝다고 볼 때) */
+function chartHasWealthStars(data) {
+    try {
+        var sip = (data && data.sipseong) || {};
+        return ((Number(sip['정재']) || 0) + (Number(sip['편재']) || 0)) > 0;
+    } catch (e) {
+        return true;
+    }
+}
+
+/**
+ * 일주 카드는 일주론(일간·일지 물상과 그 기운)만 다룬다. 원국 통변·팔자 십성 요약은 여기 붙이지 않는다.
+ * 다만 60일주 DB가 지장간 등으로 ‘편재·정재·재물 감각’을 적은 문장은,
+ * 원국 십성에 재성이 없을 때는 개인 원국과 모순되므로 일주 core에서만 제거한다(남는 문장은 일주 물상).
+ */
+function sentenceClaimsWealthStarOrAssetIlju(sent) {
+    if (!sent || typeof sent !== 'string') return false;
+    if (/편재/.test(sent) || /정재/.test(sent)) return true;
+    if (/재물\s*감각/.test(sent)) return true;
+    if (/재물\s*본능/.test(sent)) return true;
+    if (/재물\s*능력/.test(sent)) return true;
+    if (/재물\s*축적/.test(sent)) return true;
+    if (/창의적\s*재물/.test(sent)) return true;
+    if (/창의성과\s*재물/.test(sent)) return true;
+    if (/현실적\s*재물\s*감각/.test(sent)) return true;
+    if (/미적\s*재물/.test(sent)) return true;
+    if (/감성적\s*재물/.test(sent)) return true;
+    if (/다양한\s*수입원/.test(sent)) return true;
+    return false;
+}
+
+function stripFalseWealthClaimsFromIljuCoreForMujae(s) {
+    if (!s || typeof s !== 'string') return s;
+    var t = s.replace(/\s+/g, ' ').trim().replace(/。/g, '. ');
+    var parts = t.split(/\.\s+/);
+    var kept = [];
+    for (var i = 0; i < parts.length; i++) {
+        var sent = parts[i].trim();
+        if (!sent) continue;
+        if (sentenceClaimsWealthStarOrAssetIlju(sent)) continue;
+        kept.push(sent);
+    }
+    if (!kept.length) return '';
+    var out = kept.join('. ');
+    if (!/[.。!?]$/.test(out)) out += '.';
+    return out;
+}
+
+function filterIljuStrengthLineForMujae(strengthStr) {
+    if (!strengthStr || typeof strengthStr !== 'string') return strengthStr;
+    var parts = strengthStr.split('·').map(function (x) {
+        return x.trim();
+    }).filter(Boolean);
+    parts = parts.filter(function (seg) {
+        return !/재물/.test(seg);
+    });
+    return parts.length ? parts.join('·') : '';
+}
+
+function applyMujaeGuardToIljuProfilePolished(data, prof) {
+    if (!prof || chartHasWealthStars(data)) return;
+    if (prof.core) prof.core = stripFalseWealthClaimsFromIljuCoreForMujae(prof.core);
+    if (prof.strength) prof.strength = filterIljuStrengthLineForMujae(prof.strength);
+}
+
 /** SAJU_DB.ILJU — 렌더 시 이름·톤 정리 */
 function getIljuDbEntry(data, iljuKey) {
     var key = iljuKey || ((data && data.dayStem && data.dayBranch) ? (data.dayStem + data.dayBranch) : '');
@@ -4684,6 +4749,7 @@ function getIljuProfilePolished(data, dayStem, dayBranch) {
         if (prof[f] != null && prof[f] !== '') out[f] = voicePolishParagraph(data, prof[f]);
     });
     if (prof.image) out.image = prof.image;
+    applyMujaeGuardToIljuProfilePolished(data, out);
     return out;
 }
 
@@ -5274,6 +5340,12 @@ function buildIljuProfileCard(data) {
         ? `<span title="${isStrong?'신강(身强)':'신약(身弱)'}" style="font-size:10px;padding:3px 9px;border-radius:10px;background:rgba(199,167,106,0.10);color:var(--gold);border:1px solid rgba(199,167,106,0.30);font-weight:600;letter-spacing:0.2px;">${strengthLabel}</span>`
         : '';
 
+    var iljuHangul = '';
+    if (typeof HAN_KOR !== 'undefined' && HAN_KOR) {
+        iljuHangul = (HAN_KOR[ds] || '') + (HAN_KOR[db] || '');
+    }
+    var iljuTitleWhite = (iljuHangul || iljuKey) + ' 일주';
+
     return `<div class="ilju-profile-card" style="display:flex;gap:20px;align-items:flex-start;background:linear-gradient(135deg,rgba(30,28,22,0.6),rgba(12,12,16,0.4));border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:22px 24px;margin-bottom:24px;position:relative;overflow:hidden;">
         <div class="ilju-hanja-col" style="flex:0 0 auto;text-align:center;min-width:72px;">
             ${iljuHanjaSpan(ds, '46px')}
@@ -5282,7 +5354,7 @@ function buildIljuProfileCard(data) {
         </div>
         <div style="flex:1;min-width:0;">
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;">
-                <span style="font-size:15px;font-weight:800;color:rgba(255,255,255,0.95);letter-spacing:-0.3px;">${iljuKey} 일주</span>
+                <span style="font-size:15px;font-weight:800;color:rgba(255,255,255,0.95);letter-spacing:-0.3px;">${iljuTitleWhite}</span>
                 ${strengthBadge}
             </div>
             <div style="font-size:13px;color:${accentColor};font-style:italic;margin-bottom:12px;line-height:1.45;">${prof.image || ''}</div>
