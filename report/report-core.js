@@ -5358,9 +5358,9 @@ function buildPersonalPortrait(data) {
 
     return '<div id="sec-personal-portrait" class="report-chapter chapter-start sajux-panel-plain personal-portrait-hero" style="margin:32px 0 44px;padding:0;border:none;background:transparent;">'
         + '<div class="personal-portrait-inner">'
-        + '<p class="personal-portrait-eyebrow">' + escHtmlAttr(nmUi(name)) + '님 · 인생 한 편</p>'
-        + '<h2 class="personal-portrait-title">' + escHtmlAttr(nmDnim(name)) + '의 인생 — 태어남에서 마지막 장면까지</h2>'
-        + '<p class="personal-portrait-lede">유년기부터 말년까지 — 한 사람의 이야기로 이어서 풀어 드립니다</p>'
+        + '<p class="personal-portrait-eyebrow">' + escHtmlAttr(nmDnim(name)) + ' · 한 줄기 서사</p>'
+        + '<h2 class="personal-portrait-title">처음 숨부터, 마침표까지</h2>'
+        + '<p class="personal-portrait-lede">유년부터 말년까지 — 이름 없이도 읽히는 한 사람의 흐름</p>'
         + para(introText)
         + para(pYou)
         + para(pChu)
@@ -7785,7 +7785,7 @@ function buildPartHeader(num, title, subtitle, anchorId, opts) {
     var preludes = {
         1: '먼저 ' + (opts.name ? nmUi(opts.name) : '이') + ' 타고난 결, 즉 사주의 본바탕을 살펴보겠습니다. 이 결이 모든 흐름의 출발점입니다.',
         2: '타고난 결은 그대로지만, 그 결이 시간 위에서 어떻게 흘러가는지는 또 다른 이야기입니다. 지금 시기의 흐름을 함께 살펴보겠습니다.',
-        3: '결과 흐름을 보았으니, 이번에는 그것이 삶의 네 가지 영역 — 재물·직업·애정·건강 — 에서 어떻게 드러나는지 들어가 보겠습니다.',
+        3: '흐름을 봤으니, 애정·돈·합격·일·건강 다섯 방에서 어떻게 드러나는지 따라가 봅니다.',
         4: '여기까지 ' + (opts.name ? nmUi(opts.name) : '이') + ' 사주를 차근차근 살폈습니다. 마지막으로, 일상에서 운을 다듬어 가는 실천 지침을 정리해 드립니다.'
     };
     var idAttr = anchorId ? (' id="' + String(anchorId).replace(/[^a-zA-Z0-9_-]/g, '') + '"') : '';
@@ -7795,10 +7795,9 @@ function buildPartHeader(num, title, subtitle, anchorId, opts) {
     var preludeHtml = preludes[num]
         ? '<div class="part-prelude" style="margin-top:18px;padding-top:16px;border-top:1px dashed rgba(' + color + ',0.32);font-size:13px;line-height:1.95;color:var(--text-dim);font-style:italic;">' + preludes[num] + '</div>'
         : '';
-    return '<div' + idAttr + ' class="part-header-block report-chapter sajux-print-surface sajux-glass-panel" style="display:block;background:rgba(255,255,255,0.04);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,0.09);border-top:3px solid ' + border + ';border-radius:16px;padding:28px 32px;margin:40px 0 4px;page-break-before:always;break-before:page;page-break-inside:avoid;break-inside:avoid;page-break-after:avoid;break-after:avoid;box-shadow:0 8px 40px rgba(0,0,0,0.22);">'
-        + '<div class="part-header-label part-title" style="display:block;font-size:11px;color:' + border + ';letter-spacing:0.12em;margin-bottom:10px;font-weight:700;">[ 제 ' + num + '부 ]</div>'
-        + '<div class="part-header-title" style="display:block;font-size:clamp(22px,4.5vw,28px);font-weight:800;color:var(--text-primary);margin-bottom:8px;letter-spacing:-0.02em;">' + icon + ' ' + title + '</div>'
-        + '<div class="part-header-sub" style="display:block;font-size:13px;color:var(--text-dim);letter-spacing:1px;">' + subtitle + '</div>'
+    return '<div' + idAttr + ' class="part-header-block report-chapter sajux-print-surface sajux-glass-panel" style="display:block;background:rgba(255,255,255,0.04);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:none;border-radius:16px;padding:24px 28px;margin:40px 0 4px;page-break-before:always;break-before:page;page-break-inside:avoid;break-inside:avoid;page-break-after:avoid;break-after:avoid;box-shadow:0 12px 44px rgba(0,0,0,0.28);border-top:3px solid ' + border + ';">'
+        + '<div class="part-header-label part-tier-title" style="display:block;font-size:clamp(16px,4vw,21px);font-weight:750;color:rgba(248,246,238,0.96);margin-bottom:8px;letter-spacing:-0.025em;line-height:1.35;"><span style="color:' + border + ';font-weight:800;margin-right:8px;">' + num + ' ·</span>' + icon + ' ' + title + '</div>'
+        + '<div class="part-header-sub" style="display:block;font-size:12.5px;color:rgba(255,255,255,0.52);letter-spacing:0.04em;line-height:1.55;">' + subtitle + '</div>'
         + preludeHtml
         + '</div>';
 }
@@ -9191,9 +9190,7 @@ function buildReviewCallout(data) {
     var name = (data && data.name) ? data.name : '고객';
 
     return '<div id="sec-review-callout" class="report-review-callout sajux-glass-heavy" style="margin:40px auto 32px;padding:32px 26px;border-radius:22px;text-align:center;max-width:640px;">'
-        + '<div style="font-size:10px;letter-spacing:0.22em;color:var(--gold);font-weight:700;margin-bottom:12px;opacity:0.9;">REVIEW · 잠깐만요</div>'
-        + '<h3 class="review-callout-heading" style="font-family:\'Noto Sans KR\',sans-serif;font-size:clamp(17px,4vw,20px);font-weight:800;color:#fff;margin:0 0 16px;line-height:1.5;">'
-        + nmDnim(name) + ', 마지막 한 가지만 부탁드려도 될까요?</h3>'
+        + '<div style="font-size:10px;letter-spacing:0.22em;color:var(--gold);font-weight:700;margin-bottom:14px;opacity:0.9;">REVIEW · 잠깐만요</div>'
         + '<p style="font-size:14px;color:rgba(232,228,218,0.88);line-height:1.95;margin:0 auto 8px;max-width:560px;">'
         + voicePolishParagraph(data, '저희 시스템이 마음에 드셨거나, 또는 아쉬운 점이 있으셨다면 <strong>리뷰로 남겨 주세요.</strong> 별 다섯 개도 좋고, “이 부분은 좀 더 자세했으면 좋겠어요” 같은 한 줄도 좋아요. ' + nmUi(name) + ' 한마디가 다음 분의 보고서를 한 단계 더 따뜻하게 만들어 줍니다.')
         + '</p>'
@@ -9268,28 +9265,28 @@ function buildTOC(data) {
     var gSub = 'display:block;font-size:10.5px;color:var(--text-dim,rgba(255,255,255,0.55));font-weight:600;letter-spacing:0.04em;margin-top:5px;';
     var row = 'display:flex;align-items:baseline;gap:12px;padding:11px 0 11px 14px;border-bottom:1px solid rgba(128,128,128,0.12);';
     var groups = [
-        { head: '인트로', sub: '전략 요약 · 열람 안내', items: [
-            { t: '표지 · 소개 · 고객 정보', s: '브랜드 톤 · 생년월일시 확인', p: '—' },
-            { t: '프리미엄 브리프 — 4대 실행 모듈', s: '은유 제목 · PDF 저장', p: '—' }
+        { head: '앞부분', sub: '표지 · 확인', items: [
+            { t: '표지 · 인사', s: '브랜드 톤 · 제목', p: '—' },
+            { t: '고객 정보 확인', s: '생년월일시 · 양음력', p: '—' }
         ]},
-        { head: '1부 — 나라는 사람', sub: '원국 · 기질 · 타고난 패턴', items: [
-            { t: '인생 한 편 — 나라는 사람', s: '태어남부터 오늘까지 서사', p: '—' },
-            { t: '일주 프로필 · 만세력 읽는 법 · 원국 표', s: '표 아래 원국 구조 한 줄 요약', p: '—' },
-            { t: '원국 해부 · 오행 · 십성', s: '기본 풀이와 참고 분석', p: '—' }
+        { head: '1부 · 나라는 사람', sub: '원국에서 비친 줄기', items: [
+            { t: '한 줄기 서사', s: '태어남부터 말년까지 흐름', p: '—' },
+            { t: '일주 한 장 · 만세력 안내 · 원국', s: '표와 짧은 해설', p: '—' },
+            { t: '원국 · 오행 · 십성', s: '참고 풀이', p: '—' }
         ]},
-        { head: '2부 — 지금 이 시절', sub: '현재의 운세 · 앞으로의 운', items: [
-            { t: '현재의 운세', s: '대운 · 세운 · 월운 · 다섯 영역', p: '—' },
-            { t: '인생 80년 지도', s: '10년마다 바뀌는 큰 계절', p: '—' },
-            { t: '앞으로의 운', s: '다가올 대운 · 세운 · 월운', p: '—' }
+        { head: '2부 · 지금 이 시절', sub: '큰 계절과 앞선 기운', items: [
+            { t: '지금 맞은 기운', s: '대운 · 세운 · 월운 · 다섯 영역 한 흐름', p: '—' },
+            { t: '인생 80년 지도', s: '열 해마다 계절', p: '—' },
+            { t: '다가올 해·달', s: '앞선 대운 · 세운 · 월운', p: '—' }
         ]},
-        { head: '3부 — 삶의 네 영역', sub: '재물 · 직업 · 애정 · 건강', items: [
-            { t: '4대 영역 레이더', s: '타고난 에너지 영역 비교', p: '—' },
-            { t: '재물 전략', s: '용신 기반 재물 타이밍', p: '6p' },
-            { t: '직업 · 소명 · 애정 · 건강', s: '일주×십성 패턴 · 배우자궁 · 체질', p: '10p' }
+        { head: '3부 · 삶의 영역', sub: '애정 · 재물 · 합격 · 직업 · 건강', items: [
+            { t: '다섯 방 살피기', s: '타고난 무게 분포', p: '—' },
+            { t: '재물', s: '용신 타이밍', p: '—' },
+            { t: '직업 · 애정 · 합격 · 건강', s: '일주·십성·배우자궁', p: '—' }
         ]},
-        { head: '4부 — 지금부터의 선택', sub: '개운법 · 일상 적용', items: [
-            { t: '[별첨] 자미두수 운명 설계도', s: '심리·재물·관계 축 근사 해석', p: '—' },
-            { t: '개운법 · 실행 지침', s: '루틴 · 공간 · 나이대별 조언', p: '—' }
+        { head: '4부 · 오늘부터', sub: '다듬는 법 · 별첨', items: [
+            { t: '개운법 · 실천', s: '루틴 · 공간 · 나이대', p: '—' },
+            { t: '별첨 · 자미두수 청사진', s: '참고 렌즈(명리와 별개)', p: '—' }
         ]}
     ];
     var body = '';
