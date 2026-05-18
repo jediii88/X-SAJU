@@ -57,7 +57,7 @@
       // 자동실행은 window.load IIFE에서 처리 (하단 스크립트 참조)
     })();
     </script>
-    <meta name="version" content="1778878545">
+    <meta name="version" content="1779087376">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -98,7 +98,9 @@
             --fire: #cf3e39;
             --earth: #c9a632;
             --metal: #b8c0d0;
-            --water: #355fb8;
+            /* 수(水)·현색(玄色): 명리 정통 검정. 다크 배경 가시성은 --water-stroke의 흰 윤곽으로 확보 */
+            --water: #181828;
+            --water-stroke: rgba(255,255,255,0.85);
             --text-muted: rgba(255,255,255,0.55);
             --bg-rgb: 8, 8, 16;
         }
@@ -142,7 +144,9 @@
             --fire: #b4221a;
             --earth: #856321;
             --metal: #3d4c5a;
-            --water: #1e5aa8;
+            /* 라이트 모드: 흰 배경 위의 잉크 검정. 흰 윤곽은 보이지 않게 alpha 0 */
+            --water: #0d1020;
+            --water-stroke: rgba(255,255,255,0);
         }
 
         #theme-toggle {
@@ -2196,10 +2200,59 @@
     </script>
 
 <!-- SAJUX_CACHE_BUSTER_START -->
-<meta name="sajux-build" content="1778878545">
-<script>(function(){var v='1778878545';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
+<meta name="sajux-build" content="1779087376">
+<script>(function(){var v='1779087376';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
 <!-- SAJUX_CACHE_BUSTER_END -->
 <link rel="stylesheet" href="assets/css/core.css">
+<link rel="stylesheet" href="assets/override.css">
+<style id="override-inline">
+/* Inline override to ensure dark-mode card contrast and light-mode readability */
+html:not([data-theme="light"]) .card,
+html:not([data-theme="light"]) .yearly-card,
+html:not([data-theme="light"]) .monthly-card,
+html:not([data-theme="light"]) .inner-card,
+html:not([data-theme="light"]) .detail-box,
+html:not([data-theme="light"]) .jijanggan,
+html:not([data-theme="light"]) .badge,
+html:not([data-theme="light"]) .tag,
+html:not([data-theme="light"]) div[class*="box"],
+html:not([data-theme="light"]) div[class*="card"] {
+  background: rgba(8,10,12,0.72) !important;
+  border: 1px solid rgba(255,255,255,0.04) !important;
+  box-shadow: none !important;
+  color: rgba(255,255,255,0.94) !important;
+}
+html:not([data-theme="light"]) .glass-card,
+html:not([data-theme="light"]) .inline-interp,
+html:not([data-theme="light"]) .section-interp {
+  background: rgba(12,12,14,0.66) !important;
+  border-color: rgba(255,255,255,0.03) !important;
+}
+html[data-theme="light"] body,
+html[data-theme="light"] .report-chapter,
+html[data-theme="light"] .card,
+html[data-theme="light"] .inline-interp,
+html[data-theme="light"] .section-title,
+html[data-theme="light"] .part-title,
+html[data-theme="light"] p,
+html[data-theme="light"] li,
+html[data-theme="light"] .ii-text,
+html[data-theme="light"] .ii-text p {
+  color: #111111 !important;
+}
+html[data-theme="light"] h1,
+html[data-theme="light"] h2,
+html[data-theme="light"] h3,
+html[data-theme="light"] .section-title {
+  color: #0b0b0b !important;
+  font-weight: 700;
+}
+html:not([data-theme="light"]) .gold,
+html:not([data-theme="light"]) .brand {
+  color: #b8923a !important;
+  text-shadow: none !important;
+}
+</style>
 <style type="text/css" media="print">
   .card, .yearly-card, .monthly-card, .inner-card, .detail-box, 
   .jijanggan, .jijanggan span, .badge, .tag, div[class*="box"], div[class*="card"] {

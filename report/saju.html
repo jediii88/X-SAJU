@@ -57,7 +57,7 @@
       // 자동실행은 window.load IIFE에서 처리 (하단 스크립트 참조)
     })();
     </script>
-    <meta name="version" content="1778881103">
+    <meta name="version" content="1779087376">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -98,7 +98,9 @@
             --fire: #cf3e39;
             --earth: #c9a632;
             --metal: #b8c0d0;
-            --water: #355fb8;
+            /* 수(水)·현색(玄色): 명리 정통 검정 + 다크 배경 가시성용 흰 윤곽 */
+            --water: #181828;
+            --water-stroke: rgba(255,255,255,0.85);
             --text-muted: rgba(255,255,255,0.55);
             --bg-rgb: 8, 8, 16;
         }
@@ -142,7 +144,9 @@
             --fire: #b4221a;
             --earth: #856321;
             --metal: #3d4c5a;
-            --water: #1e5aa8;
+            /* 라이트 모드: 흰 배경 위의 잉크 검정. 흰 윤곽은 보이지 않게 alpha 0 */
+            --water: #0d1020;
+            --water-stroke: rgba(255,255,255,0);
         }
 
         #theme-toggle {
@@ -1038,7 +1042,7 @@
             opacity: 0.96;
         }
         .cover-page .cover-ilju-big {
-            font-family: 'Noto Serif KR', serif;
+            font-family: 'Noto Sans KR', sans-serif;
             font-size: clamp(42px, 9vw, 64px);
             font-weight: 500;
             letter-spacing: 0.35em;
@@ -1046,7 +1050,7 @@
             margin: 4px 0 0;
         }
         .cover-page .cover-pillar-strip .pz-hanja {
-            font-family: 'Noto Serif KR', serif;
+            font-family: 'Noto Sans KR', sans-serif;
             font-size: 17px;
             font-weight: 500;
             letter-spacing: 0.06em;
@@ -1800,7 +1804,7 @@
             font-size: 17px;
             font-weight: 700;
             color: var(--text-primary);
-            font-family: 'Noto Serif KR', serif;
+            font-family: 'Noto Sans KR', sans-serif;
             margin-bottom: 12px;
             line-height: 1.5;
         }
@@ -1816,7 +1820,7 @@
         /* 분야별 운세 카드 */
         .cat-header { display:flex; align-items:center; gap:10px; margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.08); }
         .cat-icon { font-size:22px; }
-        .cat-title { font-size:17px; font-weight:700; color:var(--gold); font-family:Noto Serif KR,serif; }
+        .cat-title { font-size:17px; font-weight:700; color:var(--gold); font-family:Noto Sans KR, sans-serif; }
         .cat-body { display:flex; flex-direction:column; gap:14px; }
         .cat-text { font-size:14px; line-height:2.05; color:var(--text-soft); word-break:keep-all; margin:0; }
         .cat-highlight { background:rgba(199,167,106,0.06); border-left:3px solid var(--gold); border-radius:0 8px 8px 0; padding:14px 16px; font-size:13.5px; line-height:1.8; color:var(--text-soft); }
@@ -1852,7 +1856,7 @@
             font-weight: 700;
             color: var(--text-primary);
             margin-bottom: 10px;
-            font-family: 'Noto Serif KR', serif;
+            font-family: 'Noto Sans KR', sans-serif;
         }
         .ii-text {
             font-size: 14px;
@@ -1996,7 +2000,7 @@
         }
         .premium-executive-summary { break-inside: avoid; }
         .print-doc-footer { display: none; }
-        .ch-title { color: var(--gold); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 15px; font-family: 'Noto Serif KR', 'Nanum Myeongjo', 'Batang', serif; font-weight: 300; font-size: 20px; }
+        .ch-title { color: var(--gold); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 15px; font-family: 'Noto Sans KR', sans-serif; font-weight: 300; font-size: 20px; }
         .ch-text { font-size: 15px; line-height: 1.8; color: var(--text-soft); margin-bottom: 15px; text-align: justify; word-break: keep-all; }
         .axe-advice { background: var(--card-bg); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); padding: 18px; border-radius: 8px; border-left: 3px solid var(--gold); box-shadow: 0 4px 24px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06); font-size: 14.5px; line-height: 1.6; color: var(--text-soft); box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
 
@@ -2082,8 +2086,8 @@
     </script>
 
 <!-- SAJUX_CACHE_BUSTER_START -->
-<meta name="sajux-build" content="1778881103">
-<script>(function(){var v='1778881103';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
+<meta name="sajux-build" content="1779087376">
+<script>(function(){var v='1779087376';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
 <!-- SAJUX_CACHE_BUSTER_END -->
 <link rel="stylesheet" href="assets/css/core.css">
 <link rel="stylesheet" href="assets/override.css">
@@ -2164,21 +2168,19 @@ html:not([data-theme="light"]) .brand {
 <div id="floating-toc" class="nav-floating" style="display:none; position:fixed; right:12px; top:50%; transform:translateY(-50%); z-index:9999; background:var(--panel); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid var(--line); border-radius:14px; padding:10px 6px; box-shadow:0 8px 32px rgba(0,0,0,0.45); max-width:44px; overflow:hidden; transition:max-width 0.3s, padding 0.3s;" onmouseenter="expandToc()" onmouseleave="collapseToc()">
     <div style="font-size:10px; color:var(--gold); text-align:center; margin-bottom:8px; letter-spacing:1px; white-space:nowrap; opacity:0.85;">☰</div>
     <div id="toc-links" style="display:flex; flex-direction:column; gap:4px; min-width:168px;">
-        <a onclick="tocGo('sec-part1-narrative'); return false;" href="#sec-part1-narrative" class="toc-link" title="1부 당신이라는 사람">1부 당신이라는 사람</a>
-        <a onclick="tocGo('sec-part2-hardware'); return false;" href="#sec-part2-hardware" class="toc-link" title="2부 하드웨어 스펙">2부 하드웨어 스펙</a>
-        <a onclick="tocGo('sec-part3-four'); return false;" href="#sec-part3-four" class="toc-link" title="3부 핵심 4대운">3부 핵심 4대운</a>
-        <a onclick="tocGo('sec-part4-timeline'); return false;" href="#sec-part4-timeline" class="toc-link" title="4부 타임라인 전략">4부 타임라인 전략</a>
-        <a onclick="tocGo('sec-part5-final'); return false;" href="#sec-part5-final" class="toc-link" title="5부 최종 지침">5부 최종 지침</a>
+        <a onclick="tocGo('sec-part1-narrative'); return false;" href="#sec-part1-narrative" class="toc-link" title="1부 나라는 사람">1부 나라는 사람</a>
+        <a onclick="tocGo('sec-part2-now'); return false;" href="#sec-part2-now" class="toc-link" title="2부 지금 이 시절">2부 지금 이 시절</a>
+        <a onclick="tocGo('sec-part3-four'); return false;" href="#sec-part3-four" class="toc-link" title="3부 삶의 네 영역">3부 삶의 네 영역</a>
+        <a onclick="tocGo('sec-part4-final'); return false;" href="#sec-part4-final" class="toc-link" title="4부 지금부터의 선택">4부 지금부터의 선택</a>
         <div style="border-top:1px solid var(--line); margin:6px 0 4px;"></div>
         <a onclick="window.print(); return false;" class="toc-link toc-link-print" href="#">🖨 PDF 저장</a>
     </div>
 </div>
-<nav id="sticky-part-nav" class="sticky-part-nav nav-floating" aria-label="리포트 5부 이동">
-    <button type="button" class="spn-item" onclick="tocGo('sec-part1-narrative')" title="1부">1부<br><span class="spn-sub">당신</span></button>
-    <button type="button" class="spn-item" onclick="tocGo('sec-part2-hardware')" title="2부">2부<br><span class="spn-sub">스펙</span></button>
-    <button type="button" class="spn-item" onclick="tocGo('sec-part3-four')" title="3부">3부<br><span class="spn-sub">4대운</span></button>
-    <button type="button" class="spn-item" onclick="tocGo('sec-part4-timeline')" title="4부">4부<br><span class="spn-sub">타임라인</span></button>
-    <button type="button" class="spn-item" onclick="tocGo('sec-part5-final')" title="5부">5부<br><span class="spn-sub">지침</span></button>
+<nav id="sticky-part-nav" class="sticky-part-nav nav-floating" aria-label="리포트 4부 이동">
+    <button type="button" class="spn-item" onclick="tocGo('sec-part1-narrative')" title="1부">1부<br><span class="spn-sub">나라는</span></button>
+    <button type="button" class="spn-item" onclick="tocGo('sec-part2-now')" title="2부">2부<br><span class="spn-sub">이 시절</span></button>
+    <button type="button" class="spn-item" onclick="tocGo('sec-part3-four')" title="3부">3부<br><span class="spn-sub">네 영역</span></button>
+    <button type="button" class="spn-item" onclick="tocGo('sec-part4-final')" title="4부">4부<br><span class="spn-sub">선택</span></button>
 </nav>
 <style>
 .toc-link {
@@ -2300,8 +2302,7 @@ function initTheme(){
     if(saved === 'light' || saved === 'dark'){
         applyTheme(saved);
     } else {
-        var prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
-        applyTheme(prefersLight ? 'light' : 'dark');
+        applyTheme('dark'); // 디폴트: 다크모드
     }
 }
 if(document.readyState === 'loading'){
@@ -2370,7 +2371,7 @@ function collapseToc() {
 <div class="loading" id="loading">
     <div style="text-align:center;">
         <div class="spinner"></div>
-        <div style="font-size:11px;letter-spacing:3px;color:rgba(199,167,106,0.6);margin-bottom:16px;font-family:Noto Serif KR,serif;">X · S A J U</div>
+        <div style="font-size:11px;letter-spacing:3px;color:rgba(199,167,106,0.6);margin-bottom:16px;font-family:Noto Sans KR, sans-serif;">X · S A J U</div>
         <div class="loading-text" id="loading-msg">사주 원국을 계산하는 중...</div>
         <div style="margin-top:20px;display:flex;justify-content:center;gap:6px;">
             <span style="width:6px;height:6px;background:var(--gold);border-radius:50%;animation:dotPulse 1.4s ease-in-out 0s infinite;display:inline-block;"></span>
