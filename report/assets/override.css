@@ -729,19 +729,19 @@ html[data-theme="light"] #star-canvas {
     box-shadow: 0 10px 36px rgba(28,24,18,0.065);
   }
   #sec-personal-portrait .personal-portrait-eyebrow {
-    font-size: 11px;
-    letter-spacing: 0.12em;
-    color: rgba(199,167,106,0.82);
-    margin: 0 0 14px;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    color: rgba(199,167,106,0.72);
+    margin: 0 0 10px;
     font-weight: 600;
   }
   #sec-personal-portrait .personal-portrait-title {
     font-family: 'Noto Sans KR', sans-serif;
-    font-size: clamp(21px, 4.6vw, 27px);
-    font-weight: 700;
+    font-size: clamp(24px, 5.4vw, 34px);
+    font-weight: 800;
     color: var(--text);
-    margin: 0 0 12px;
-    line-height: 1.38;
+    margin: 0 0 10px;
+    line-height: 1.28;
     letter-spacing: -0.02em;
   }
   html[data-theme="light"] #sec-personal-portrait .personal-portrait-title,
@@ -749,11 +749,11 @@ html[data-theme="light"] #star-canvas {
     color: #0c0904 !important;
   }
   #sec-personal-portrait .personal-portrait-lede {
-    font-size: 13px;
-    color: rgba(199,167,106,0.78);
+    font-size: 12px;
+    color: rgba(199,167,106,0.72);
     margin: 0 0 22px;
-    line-height: 1.68;
-    letter-spacing: 0.03em;
+    line-height: 1.62;
+    letter-spacing: 0.04em;
     font-weight: 500;
   }
   html[data-theme="light"] #sec-personal-portrait .personal-portrait-lede,
