@@ -100,7 +100,7 @@ h2.ch-title-current-period {
   pointer-events: none !important;
 }
 html:not([data-theme="light"]) #star-canvas {
-  opacity: 0.55 !important;
+  opacity: 0.62 !important;
 }
 html[data-theme="light"] #star-canvas {
   opacity: 0.18 !important;
@@ -750,9 +750,11 @@ html[data-theme="light"] table td { color: #1a1510 !important; }
 /* ─────────────────────────────────
    일주 프로파일 카드
 ───────────────────────────────── */
-.ilju-profile-card {
-  position: relative;
-  transition: box-shadow var(--sajux-transition);
+/* 리포트 본문 — 일주 키워드 칩 톤 통일(골드 뱃지와 회색 칩 혼재 완화) */
+html:not([data-theme="light"]) #report-container .ilju-profile-card .ilju-kw-badge {
+  background: rgba(255, 255, 255, 0.075) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  color: rgba(248, 244, 236, 0.9) !important;
 }
 .ilju-profile-card:hover {
   box-shadow: 0 4px 24px rgba(200,160,80,0.10) !important;
