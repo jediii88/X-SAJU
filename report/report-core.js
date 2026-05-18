@@ -1259,6 +1259,121 @@ function voicePolishParagraph(data, text) {
     s = s.replace(/분할 매입/g, '나눠서 사기');
     s = s.replace(/배당/g, '배당(투자한 회사가 주는 수익)');
 
+    // ─── 10대 친화 어휘 정리: 한자식 추상어 → 일상어 ───
+    // ※ '천간/지지/십성/지장간/일주/대운/세운/월운/원국/일간/일지/조후/공망/통근'
+    //   같은 명리학 기본 용어는 .cursorrules에 의해 보호되며 위쪽 풀이 단계에서
+    //   괄호로 풀어 줍니다. 이 블록은 오직 '주변 일상 어휘'만 손봅니다.
+
+    // 라벨로 굳어진 표현은 보호 (예: '압박·마감', '거래·기회: 편재' 같은 표 라벨)
+    s = s.replace(/압박·마감/g, '\u0000PRESS_DEADLINE\u0000');
+
+    // 사주식 어구가 부자연스럽게 끊긴 경우 자연어로
+    s = s.replace(/환경이\s*나를\s*압박,/g, '환경이 나를 밀어붙이는 흐름,');
+
+    // ── '~적' 형용사 묶음 — '인/이고/이면/이라/인지/인데/이나' 어미까지 한 번에 정리
+    s = s.replace(/(?<![가-힣])장기적인\s*/g, '오래 두고 보면 좋은 ');
+    s = s.replace(/(?<![가-힣])장기적\s/g, '오래 두고 봐도 좋은 ');
+    s = s.replace(/(?<![가-힣])단기적인\s*/g, '당장의 ');
+    s = s.replace(/(?<![가-힣])단기적\s/g, '당장 눈에 보이는 ');
+    s = s.replace(/(?<![가-힣])중장기적인\s*/g, '꽤 오래 가는 ');
+    s = s.replace(/(?<![가-힣])중장기\s/g, '꽤 오래 가는 ');
+    s = s.replace(/(?<![가-힣])보수적인\s*/g, '조심스러운 ');
+    s = s.replace(/(?<![가-힣])보수적\s/g, '조심스러운 ');
+    s = s.replace(/(?<![가-힣])진취적인\s*/g, '앞으로 치고 나가는 ');
+    s = s.replace(/(?<![가-힣])진취적\s/g, '앞으로 치고 나가는 ');
+
+    // ── 합성 명사 (긴 형태 먼저)
+    s = s.replace(/(?<![가-힣])깊은\s+통찰력/g, '깊은 안목');
+    s = s.replace(/(?<![가-힣])통찰력/g, '꿰뚫어 보는 안목');
+    s = s.replace(/(?<![가-힣])사사로운\s*/g, '개인적인 ');
+    s = s.replace(/(?<![가-힣])허심탄회/g, '솔직');
+    s = s.replace(/(?<![가-힣])명실상부/g, '이름값에 딱 맞');
+    s = s.replace(/(?<![가-힣])불가피/g, '어쩔 수 없');
+    s = s.replace(/(?<![가-힣])불가결/g, '꼭 필요');
+
+    // ── 단독 명사·부사
+    s = s.replace(/(?<![가-힣])국면/g, '시기');
+    s = s.replace(/(?<![가-힣])깊은\s+통찰(?![력])/g, '깊이 꿰뚫어 보는 시선');
+    s = s.replace(/(?<![가-힣])통찰(?![력])/g, '꿰뚫어 보는 시선');
+    // 협업·협력은 (1) 동사형 먼저, (2) 명사를 수식하는 경우(공백+한글)는 '~하는'형으로,
+    //   (3) 그 외(조사·문장부호·문장끝)는 명사형으로 정리합니다.
+    s = s.replace(/(?<![가-힣])협업하/g, '함께 일하');
+    s = s.replace(/(?<![가-힣])협업(?=\s+[가-힣])/g, '함께 일하는');
+    s = s.replace(/(?<![가-힣])협업/g, '함께 일하는 일');
+    s = s.replace(/(?<![가-힣])협력하/g, '서로 손발을 맞추');
+    s = s.replace(/(?<![가-힣])협력(?=\s+[가-힣])/g, '함께 손잡는');
+    s = s.replace(/(?<![가-힣])협력/g, '함께 손잡는 일');
+    s = s.replace(/(?<![가-힣])압박/g, '부담');
+    s = s.replace(/(?<![가-힣])이른바\s*/g, '흔히 말하는 ');
+    s = s.replace(/(?<![가-힣])깊은\s*숙고\s*끝에/g, '한참 곰곰이 생각한 끝에');
+    s = s.replace(/(?<![가-힣])숙고\s/g, '곰곰이 생각 ');
+    // 권태/권태로운/권태로움 깨짐 방지 (긴 형태 먼저)
+    s = s.replace(/(?<![가-힣])권태로운/g, '지루한');
+    s = s.replace(/(?<![가-힣])권태로움/g, '지루함');
+    s = s.replace(/(?<![가-힣])권태/g, '지루함');
+    s = s.replace(/(?<![가-힣])응당/g, '당연히');
+    s = s.replace(/(?<![가-힣])도리어/g, '오히려');
+    s = s.replace(/(?<![가-힣])모름지기/g, '마땅히');
+    s = s.replace(/(?<![가-힣])왕성(?=한|히|함)/g, '활발');
+    s = s.replace(/(?<![가-힣])왕왕/g, '가끔');
+    s = s.replace(/(?<![가-힣])작금/g, '요즘');
+    s = s.replace(/(?<![가-힣])차후/g, '앞으로');
+    s = s.replace(/(?<![가-힣])차제/g, '이참');
+    s = s.replace(/(?<![가-힣])범상(?=하|치)/g, '평범');
+    s = s.replace(/(?<![가-힣])희박(?=하|함|해)/g, '낮');
+    s = s.replace(/(?<![가-힣])소위\s*/g, '흔히 말하는 ');
+    s = s.replace(/(?<![가-힣])약진/g, '쑥쑥 성장');
+    s = s.replace(/(?<![가-힣])답보/g, '제자리걸음');
+    s = s.replace(/(?<![가-힣])견인(?![차])/g, '끌어 주는 힘');
+    s = s.replace(/(?<![가-힣])대두(?=되|함)/g, '떠오름');
+    s = s.replace(/(?<![가-힣])견지(?=하|함)/g, '지켜 가');
+    s = s.replace(/(?<![가-힣])감속/g, '속도 줄이기');
+    s = s.replace(/(?<![가-힣])도모(?=하|함)/g, '챙기');
+    s = s.replace(/(?<![가-힣])강구(?=하|함)/g, '마련하');
+    s = s.replace(/(?<![가-힣])단행(?=하|함)/g, '실행에 옮기');
+    s = s.replace(/(?<![가-힣])만전/g, '빈틈없이');
+    s = s.replace(/(?<![가-힣])만끽(?=하|함)/g, '마음껏 누리');
+    s = s.replace(/(?<![가-힣])영위(?=하|함)/g, '꾸려 가');
+    s = s.replace(/(?<![가-힣])차치(?=하|함)/g, '잠시 두');
+    s = s.replace(/(?<![가-힣])천명(?=하|함)/g, '분명히 말하');
+    s = s.replace(/(?<![가-힣])양해(?=를|해)/g, '이해를');
+    s = s.replace(/(?<![가-힣])타진(?=하|함)/g, '살펴 보');
+    s = s.replace(/(?<![가-힣])모색(?=하|함)/g, '찾아 보');
+    s = s.replace(/(?<![가-힣])피력(?=하|함)/g, '드러내');
+    s = s.replace(/(?<![가-힣])피습(?=하|당)/g, '공격받');
+    s = s.replace(/(?<![가-힣])형국/g, '모양새');
+    s = s.replace(/(?<![가-힣])판국/g, '판');
+    s = s.replace(/(?<![가-힣])일익(?=을|이|을\s)/g, '한 부분');
+    s = s.replace(/(?<![가-힣])일례/g, '한 가지 예');
+    s = s.replace(/(?<![가-힣])일환/g, '한 부분');
+    s = s.replace(/(?<![가-힣])파급/g, '퍼지는 힘');
+    s = s.replace(/(?<![가-힣])관건/g, '가장 중요한 점');
+    s = s.replace(/(?<![가-힣])관망/g, '지켜보기');
+    s = s.replace(/(?<![가-힣])견책/g, '꾸중');
+    s = s.replace(/(?<![가-힣])귀결/g, '결론');
+    s = s.replace(/(?<![가-힣])필두(?=로)/g, '시작으로');
+
+    // ── 자주 등장하는 한자어를 일상어로
+    s = s.replace(/(?<![가-힣])유예하십시오/g, '미뤄 두세요');
+    s = s.replace(/(?<![가-힣])유예\s*후/g, '미루고 난 뒤');
+    s = s.replace(/(?<![가-힣])유예하/g, '미루');
+    s = s.replace(/(?<![가-힣])유예/g, '미루기');
+    // '서면 + 조사' 변환 (받침이 사라지므로 조사도 함께 바꿉니다)
+    s = s.replace(/(?<![가-힣])서면으로/g, '문서로');
+    s = s.replace(/(?<![가-힣])서면은/g, '문서는');
+    s = s.replace(/(?<![가-힣])서면이/g, '문서가');
+    s = s.replace(/(?<![가-힣])서면을/g, '문서를');
+    s = s.replace(/(?<![가-힣])서면에서/g, '문서에서');
+    s = s.replace(/(?<![가-힣])서면에/g, '문서에');
+    s = s.replace(/(?<![가-힣])서면/g, '문서');
+    s = s.replace(/(?<![가-힣])심층\s+(분석|해부|풀이|가이드|서사|이야기)/g, '깊이 보는 $1');
+    s = s.replace(/(?<![가-힣])심층/g, '깊이 보는');
+    s = s.replace(/(?<![가-힣])철회/g, '취소');
+    s = s.replace(/(?<![가-힣])삼가/g, '피하');
+
+    // 라벨 복원
+    s = s.replace(/\u0000PRESS_DEADLINE\u0000/g, '압박·마감');
+
     // ※ 과거에 있던 "캐주얼 → 격식" 어미 일괄 변환 블록은 제거했습니다.
     //   ~네요·~군요·~이시군요·~것 같아요·~좋아요·~돼요 등 따뜻한 구어체 어미를
     //   ~입니다·~합니다로 강제 변환하던 로직이 .cursorrules의 톤 가이드와 충돌했고,
@@ -2312,7 +2427,7 @@ window.GEOKGUK_DB = {
         name:'편인격', type:'인성격',
         success:'편인격이 성격되었습니다. 학문, 기술, 종교, 예술 등 특화된 분야의 깊은 전문성이 핵심 포인트입니다. 관성이 인성을 생하면 사회적 명예와 지식이 결합됩니다. 독창적인 연구와 창작 활동에서 두각을 나타냅니다.',
         fail:'편인격이 파격 위기에 있습니다. 재성이 편인을 극하거나, 식신을 탈취합니다. 전문 분야에서 방해꾼이 생기거나, 노력의 결과가 다른 사람에게 돌아가는 상황이 반복됩니다.',
-        chars:'독창성, 심층적 사고, 직관, 전문성, 고독함'
+        chars:'독창성, 깊이 파고드는 사고, 직관, 전문성, 고독함'
     },
     '정인격':{
         name:'정인격', type:'인성격',
@@ -3655,7 +3770,7 @@ function buildCurrentPeriodSummary(data) {
 }
 
 
-// ─── 대가 수준 전체 심층 풀이 (원국 아래 종합연) — 톤: 멘토 3단·합쇼체 ───
+// ─── 대가 수준 전체 깊이 풀이 (원국 아래 종합연) — 톤: 멘토 3단·합쇼체 ───
 function buildMasterFullReading(data) {
     const nm = data.name || '고객';
     const ds = data.dayStem||'병';
@@ -5250,9 +5365,14 @@ function buildChapter3_Sipseong(data) {
 }
 
 function buildDomainSummaryTable(opts) {
-    var keyword = opts.keyword || '핵심 키워드';
-    var route = opts.route || '최적 루트';
-    var caution = opts.caution || '주의 사항';
+    // opts.data를 받으면 어휘 정리(voicePolishParagraph)를 적용해 어려운 표현을 일상어로 풀어 줍니다.
+    var d = opts.data || {};
+    var polish = function (t) {
+        try { return voicePolishParagraph(d, t || ''); } catch (e) { return t || ''; }
+    };
+    var keyword = polish(opts.keyword || '핵심 키워드');
+    var route = polish(opts.route || '최적 루트');
+    var caution = polish(opts.caution || '주의 사항');
     var boxTitle = opts.boxTitle || '핵심 요약 (3칸)';
     return '<div class="domain-summary-3box" style="background:rgba(255,255,255,0.035);border:1px solid rgba(199,167,106,0.22);border-radius:10px;padding:12px;margin:12px 0 18px;">'
         + '<div style="font-size:11px;color:var(--gold);font-weight:800;letter-spacing:1px;margin:0 0 10px;">' + boxTitle + '</div>'
@@ -5392,6 +5512,7 @@ function buildChapter4_Wealth(data) {
         ${chHead4}
         ${chIntro4}
         ${buildDomainSummaryTable({
+            data,
             boxTitle: nmEulReul(name) + ' 위한 재물 전략',
             keyword:'통장 들줄 · 지출 한도 · 언제 멈출지',
             route:'벌이는 2~3갈래만 두고, 한 달에 한 번 숫자만 맞추기',
@@ -5435,7 +5556,7 @@ function buildChapter4_Wealth(data) {
 function buildDaewunLoop(data) {
     var curClientAgeLoop = getClientAgeYearsAtReport(data);
     const rows = filterDaeunRowsByClientAge(data.daeunRows || [], curClientAgeLoop);
-    if(!rows.length) return `<div class="report-chapter"><h3 class="ch-title">대운 80년 심층 해부</h3><p class="ch-text">대운 데이터를 계산할 수 없습니다. 생년월일시를 정확히 입력하십시오.</p></div>`;
+    if(!rows.length) return `<div class="report-chapter"><h3 class="ch-title">대운 80년 깊이 보는 풀이</h3><p class="ch-text">대운 데이터를 계산할 수 없습니다. 생년월일시를 정확히 입력하십시오.</p></div>`;
 
     const OH = {'甲':'목','乙':'목','丙':'화','丁':'화','戊':'토','己':'토','庚':'금','辛':'금','壬':'수','癸':'수'};
     const JI_OH = {'子':'수','丑':'토','寅':'목','卯':'목','辰':'토','巳':'화','午':'화','未':'토','申':'금','酉':'금','戌':'토','亥':'수'};
@@ -5972,6 +6093,7 @@ function buildChapter5_Career(data) {
         ${chHead5}
         ${chIntro5}
         ${buildDomainSummaryTable({
+            data,
             boxTitle: nmEulReul(name) + ' 위한 직업 전략',
             keyword:'권한 범위 · 성과 기준 · 평판 자산',
             route:'핵심 역할 문서화 + 분기 목표 수치화',
@@ -6067,6 +6189,7 @@ function buildChapter6_Love(data) {
         ${chHead6}
         ${chIntro6}
         ${buildDomainSummaryTable({
+            data,
             boxTitle: nmEulReul(name) + ' 위한 애정 전략',
             keyword:'만남의 리듬 · 소개 경로 · 관계 경계',
             route:'취미·직무가 맞는 모임을 고르고, 첫 만남은 가벼운 대화로 확인한 뒤 대면으로 넘기십시오',
@@ -6075,7 +6198,7 @@ function buildChapter6_Love(data) {
 
         <p class="ch-text">${voicePolishParagraph(data, '먼저 ' + nmUi(name) + ' 사랑이 어떤 결로 흐르는지 큰 그림부터 살펴보겠습니다. 그 다음 일지(배우자궁), 사랑의 언어, 다툼이 일어났을 때의 호흡 순서로 차근차근 풀어 드릴게요.')}</p>
 
-        <p class="ch-text">애정은 횟수가 아니라 **리듬**입니다. 만난 지 얼마 안 됐거나 다툰 직후처럼 **감정이 가장 높은 날**에는, 동거·결혼 준비 서류·**큰 돈이 오가는 차용 증서**·부동산·맞벌·지분처럼 **나중에 철회하기 어려운 약속**은 날짜를 미루십시오. 여기서 말하는 것은 **법적·재정 구속이 생기는 서명**이며, 단순 앱 결제나 일상적인 이름 적기와는 다릅니다.</p>
+        <p class="ch-text">${voicePolishReportHtml(data, '애정은 횟수가 아니라 **리듬**입니다. 만난 지 얼마 안 됐거나 다툰 직후처럼 **감정이 가장 높은 날**에는, 동거·결혼 준비 서류·**큰 돈이 오가는 차용 증서**·부동산·맞벌·지분처럼 **나중에 되돌리기 어려운 약속**은 날짜를 미루십시오. 여기서 말하는 것은 **법적으로·돈으로 묶이는 서명**이며, 단순 앱 결제나 일상적인 이름 적기와는 다릅니다.')}</p>
         <p class="ch-text">이성운의 핵은 “누구를 만나느냐”가 아니라 **나는 어떤 패턴으로 만남과 이별을 반복하느냐**입니다. 패턴을 알면 같은 상처를 반값에 삽니다.</p>
 
         <div style="background:rgba(199,167,106,0.07);border-left:3px solid var(--gold);padding:16px 18px;border-radius:0 8px 8px 0;margin:20px 0;">
@@ -6111,7 +6234,7 @@ function buildChapter6_Love(data) {
         </div>
 
         <div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:22px;margin:20px 0;">
-            <div style="font-size:12px;color:var(--gold);margin-bottom:16px;letter-spacing:1px;">&#9670; 연애·결혼 심층 분석</div>
+            <div style="font-size:12px;color:var(--gold);margin-bottom:16px;letter-spacing:1px;">&#9670; 연애·결혼 — 한 발 더 들어가 보기</div>
             <div style="display:flex;flex-direction:column;gap:12px;">
                 <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:14px;">
                     <div style="font-size:12px;font-weight:700;color:#ddd;margin-bottom:6px;">연애 패턴의 반복 구조</div>
@@ -6294,6 +6417,7 @@ function buildChapter8_Health(data) {
         ${chHead8}
         ${chIntro8}
         ${buildDomainSummaryTable({
+            data,
             boxTitle: nmEulReul(name) + ' 위한 건강 전략',
             keyword:'수면 리듬 · 검진 루틴 · 회복 탄력',
             route:'주간 운동 3회 + 분기 검진 선예약을 고정하십시오',
@@ -6371,7 +6495,7 @@ function buildChapter8_Health(data) {
         <p class="ch-text" style="margin-top:16px;">${voicePolishParagraph(data, '연료로 몸을 태우지 마세요. 멈출 수 있는 사람이 긴 레이스에서 이깁니다.')}</p>
 
         <div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:22px;margin:20px 0;">
-            <div style="font-size:12px;color:var(--gold);margin-bottom:16px;letter-spacing:1px;">&#9670; ${nmUi(name)}님의 취약 오행 — 심층 건강 가이드</div>
+            <div style="font-size:12px;color:var(--gold);margin-bottom:16px;letter-spacing:1px;">&#9670; ${nmUi(name)}님의 취약 오행 — 한 발 더 들어가는 건강 가이드</div>
             <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:16px;border-left:3px solid rgba(231,76,60,0.5);">
                 <div style="font-size:13px;font-weight:700;color:#ff8a80;margin-bottom:8px;">⚠ ${ohKr}(${maxWuxing}) 기운 과부하 — ${organ} 집중 관리</div>
                 <p style="font-size:13px;color:#ddd;line-height:1.88;margin:0 0 10px;"><b>${ohKr}</b> 과다는 <b>${organ}</b>에 쌓입니다. 경보는 <b>${emotion}</b>입니다.</p>
@@ -6600,7 +6724,7 @@ function buildVipEvidenceBlock(data) {
     return ev;
 }
 
-/** 자미두수 심층 서사 — 명궁(년지 근사) · 재백·관록 · 천이·노복 (3단: 공감→팩트→실행) */
+/** 자미두수 깊이 풀이 — 명궁(년지 근사) · 재백·관록 · 천이·노복 (3단: 공감→팩트→실행) */
 function buildZiWeiDestinyBlueprintSection(data) {
     var nm = data.name || '고객';
     var yb = data.yearBranch || '午';
@@ -6764,7 +6888,7 @@ function buildChapter10_Legacy(data){
     return '';
 }
 
-/** 개운법: 보완 오행을 채우는 심리·행동 심층 (합쇼체, **강조**) — 고객 면 전문 용어 비노출 */
+/** 개운법: 보완 오행을 채우는 심리·행동 깊이 풀이 (합쇼체, **강조**) — 고객 면 전문 용어 비노출 */
 function buildRemedyYongHeeMindsetHTML(data) {
     var ohKr = { wood: '목', fire: '화', earth: '토', metal: '금', water: '수' };
     var mindset = {
@@ -9490,7 +9614,7 @@ var strat = _dText(s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>'
             })[stemEl] || '오행 균형에 따라 계절별 건강 관리가 중요합니다.';
 
             document.getElementById('cat-health').innerHTML = `
-                <div class="cat-header"><span class="cat-icon">🫀</span><span class="cat-title">건강운 심층 분석</span></div>
+                <div class="cat-header"><span class="cat-icon">🫀</span><span class="cat-title">건강운 자세히 보기</span></div>
                 <div class="cat-body">
                     <p class="cat-text">${_catV(healthOverall)}</p>
                     <div class="cat-highlight">${healthDetail}</div>
@@ -9512,7 +9636,7 @@ var strat = _dText(s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>'
                 : `<b>💰 재물 창출 전략:</b> 용신 운이 들어오는 대운과 세운에서 재물 확장 기회가 집중됩니다. 해당 시기를 미리 파악하고 준비하는 것이 수십 년의 재산 차이를 만듭니다.`;
 
             document.getElementById('cat-wealth').innerHTML = `
-                <div class="cat-header"><span class="cat-icon">💰</span><span class="cat-title">재물운 심층 분석</span></div>
+                <div class="cat-header"><span class="cat-icon">💰</span><span class="cat-title">재물운 자세히 보기</span></div>
                 <div class="cat-body">
                     <div class="cat-stat-row">
                         <div class="cat-stat"><span class="cat-stat-label">재성 비중</span><span class="cat-stat-val">${pct(jaeC)}%</span></div>
@@ -9536,7 +9660,7 @@ var strat = _dText(s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>'
 
             const careerFlowHint = `${flowAnchor} 직업 결정은 내 강점이 잘 살아나는 쪽을 먼저 고르고, 속도를 한 번에 올리기보다 단계별로 가면 실패 확률이 낮아집니다.`;
             document.getElementById('cat-career').innerHTML = `
-                <div class="cat-header"><span class="cat-icon">🏆</span><span class="cat-title">직업운 심층 분석</span></div>
+                <div class="cat-header"><span class="cat-icon">🏆</span><span class="cat-title">직업운 자세히 보기</span></div>
                 <div class="cat-body">
                     <div class="cat-stat-row">
                         <div class="cat-stat"><span class="cat-stat-label">조직·책임 비중</span><span class="cat-stat-val">${pct(gwanC)}%</span></div>
@@ -9565,7 +9689,7 @@ var strat = _dText(s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>'
 
             const loveFlowHint = `${flowAnchor} 애정운은 원국의 일지 성향과 현재 운의 십성 자극이 겹칠 때 사건화가 빨라집니다. 중요한 관계 결정은 흐름이 완화되는 달에 잡는 편이 안정적입니다.`;
             document.getElementById('cat-love').innerHTML = `
-                <div class="cat-header"><span class="cat-icon">❤️</span><span class="cat-title">애정운 심층 분석</span></div>
+                <div class="cat-header"><span class="cat-icon">❤️</span><span class="cat-title">애정운 자세히 보기</span></div>
                 <div class="cat-body">
                     <p class="cat-text">${loveMain}</p>
                     <div class="cat-highlight">
@@ -9589,7 +9713,7 @@ var strat = _dText(s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>'
                 ? '기출 반복 비중을 높이고, 오답노트는 매일 20분 고정으로 유지하십시오.'
                 : '새 교재 추가를 멈추고, 기존 오답 유형 3개만 반복 교정하십시오.';
             document.getElementById('cat-pass').innerHTML = `
-                <div class="cat-header"><span class="cat-icon">📘</span><span class="cat-title">합격운 심층 분석</span></div>
+                <div class="cat-header"><span class="cat-icon">📘</span><span class="cat-title">합격운 자세히 보기</span></div>
                 <div class="cat-body">
                     <div class="cat-stat-row">
                         <div class="cat-stat"><span class="cat-stat-label">합격 체감지수</span><span class="cat-stat-val">${passPower}%</span></div>
@@ -9825,7 +9949,7 @@ var strat = _dText(s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>'
         (function(){
             var OH={'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
             var JO={'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'};
-            var GAN_T={'甲':'갑목의 기운이 지배하는 이 시기는 새로운 시작과 도전의 계절입니다. 봄에 처음 땅을 뚫고 나오는 새싹처럼 강인하고 직진하는 에너지가 넘칩니다. 두려움 없이 앞으로 나아가는 것이 핵심 전략입니다. 새로운 사업, 이직, 이사, 학업 시작 등 도전적 행보가 이 에너지와 정확히 공명합니다.','乙':'을목은 덩굴처럼 유연하게 뻗어나가는 기운입니다. 인간관계와 네트워크가 이 시기 최고의 자산입니다. 직접 밀어붙이기보다 옆으로 돌아가는 유연한 전략이 큰 성과를 냅니다.','丙':'병화는 태양처럼 모든 것을 밝게 드러내는 기운입니다. 숨겨왔던 재능과 성과가 세상에 드러나는 시기입니다. 강의, 출판, 브랜딩, 발표 등 자신을 드러내는 모든 활동이 극대화됩니다.','丁':'정화는 촛불처럼 집중적이고 섬세한 기운입니다. 한 분야를 깊이 파고드는 전문성의 시기입니다. 장인정신, 전문직, 심층 연구가 이 기운과 가장 잘 맞습니다.','戊':'무토는 거대한 산처럼 묵직하고 안정적인 기운입니다. 부동산, 자산 축적, 사업 기반 확장 등 10년 후를 내다보는 투자가 이 에너지를 극대화합니다.','己':'기토는 비옥한 농토처럼 실용적이고 섬세한 기운입니다. 이전에 뿌린 씨앗들이 실질적인 결과물로 돌아오는 시기입니다. 꼼꼼한 관리와 내실 있는 운영이 빛을 발합니다.','庚':'경금은 날카로운 도끼처럼 불필요한 것을 과감히 쳐내는 기운입니다. 혁신과 개혁의 에너지가 강합니다. 과감한 결단과 구조 개혁이 필요하며 망설임이 가장 큰 적입니다.','辛':'신금은 보석을 세공하듯 정밀하게 완성도를 높이는 기운입니다. 디테일에 집중하고 품질을 극대화할 때 최고의 결과물이 나옵니다.','壬':'임수는 큰 강처럼 에너지가 넓게 확산되는 기운입니다. 인맥이 폭발적으로 확장되고 새로운 기회가 사방에서 찾아오는 시기입니다.','癸':'계수는 깊은 지하수처럼 보이지 않는 곳에서 힘을 키우는 기운입니다. 이 시기를 분석·연구·학습으로 채운 사람과 허비한 사람의 차이는 다음 대운에서 극명하게 드러납니다.'};
+            var GAN_T={'甲':'갑목의 기운이 지배하는 이 시기는 새로운 시작과 도전의 계절입니다. 봄에 처음 땅을 뚫고 나오는 새싹처럼 강인하고 직진하는 에너지가 넘칩니다. 두려움 없이 앞으로 나아가는 것이 핵심 전략입니다. 새로운 사업, 이직, 이사, 학업 시작 등 도전적 행보가 이 에너지와 정확히 공명합니다.','乙':'을목은 덩굴처럼 유연하게 뻗어나가는 기운입니다. 인간관계와 네트워크가 이 시기 최고의 자산입니다. 직접 밀어붙이기보다 옆으로 돌아가는 유연한 전략이 큰 성과를 냅니다.','丙':'병화는 태양처럼 모든 것을 밝게 드러내는 기운입니다. 숨겨왔던 재능과 성과가 세상에 드러나는 시기입니다. 강의, 출판, 브랜딩, 발표 등 자신을 드러내는 모든 활동이 극대화됩니다.','丁':'정화는 촛불처럼 집중적이고 섬세한 기운입니다. 한 분야를 깊이 파고드는 전문성의 시기입니다. 장인정신, 전문직, 깊이 파고드는 연구가 이 기운과 가장 잘 맞습니다.','戊':'무토는 거대한 산처럼 묵직하고 안정적인 기운입니다. 부동산, 자산 축적, 사업 기반 확장 등 10년 후를 내다보는 투자가 이 에너지를 극대화합니다.','己':'기토는 비옥한 농토처럼 실용적이고 섬세한 기운입니다. 이전에 뿌린 씨앗들이 실질적인 결과물로 돌아오는 시기입니다. 꼼꼼한 관리와 내실 있는 운영이 빛을 발합니다.','庚':'경금은 날카로운 도끼처럼 불필요한 것을 과감히 쳐내는 기운입니다. 혁신과 개혁의 에너지가 강합니다. 과감한 결단과 구조 개혁이 필요하며 망설임이 가장 큰 적입니다.','辛':'신금은 보석을 세공하듯 정밀하게 완성도를 높이는 기운입니다. 디테일에 집중하고 품질을 극대화할 때 최고의 결과물이 나옵니다.','壬':'임수는 큰 강처럼 에너지가 넓게 확산되는 기운입니다. 인맥이 폭발적으로 확장되고 새로운 기회가 사방에서 찾아오는 시기입니다.','癸':'계수는 깊은 지하수처럼 보이지 않는 곳에서 힘을 키우는 기운입니다. 이 시기를 분석·연구·학습으로 채운 사람과 허비한 사람의 차이는 다음 대운에서 극명하게 드러납니다.'};
             var JI_T={'子':'자 지지는 지혜와 집중력의 기운입니다. 분석력이 극대화되는 시기로 계획 수립, 자격증 취득, 학업에 유리합니다.','丑':'축 지지는 인내와 저력의 기운입니다. 눈에 보이는 성과보다 내공이 쌓이는 시기입니다. 이 기간을 묵묵히 견디며 쌓은 실력이 이후 운에서 폭발적 결과로 이어집니다.','寅':'인 지지는 강렬한 활동과 변화의 기운입니다. 이동, 변화, 새로운 출발의 에너지가 강하게 발동합니다. 이 시기에 시작한 일이 오래도록 지속됩니다.','卯':'묘 지지는 성장과 관계의 기운입니다. 인맥이 넓어지고 협력 기회가 풍부해집니다. 혼자보다 함께할 때 성과가 배가됩니다.','辰':'진 지지는 잠재력이 폭발하는 변화의 기운입니다. 예상치 못한 변수가 많지만 유연하게 대응하면 인생의 전환점이 됩니다.','巳':'사 지지는 내면의 결단력이 요구됩니다. 오래 고민해온 문제의 답이 이 시기에 명확해집니다. 과감한 선택이 이후 10년의 방향을 결정합니다.','午':'오 지지는 성취와 인정의 기운입니다. 쌓아온 노력이 사회적으로 드러나고 인정받습니다. 이 기세를 타고 더 큰 목표로 나아가야 합니다.','未':'미 지지는 풍요로운 감성과 창작의 기운입니다. 인간적인 관계가 깊어지고 예술·교육 활동에서 빛을 발합니다.','申':'신 지지는 판단력과 실행력의 기운입니다. 기회가 빠르게 스쳐 지나가므로 체크리스트를 짧게 정한 뒤 검증된 범위에서 신속히 실행에 옮기십시오.','酉':'유 지지는 완성과 보상의 기운입니다. 쌓아온 전문성이 인정받고 노력에 대한 정당한 대가가 돌아옵니다.','戌':'술 지지는 통찰과 마무리의 기운입니다. 불필요한 것을 정리하고 핵심 가치에 집중하게 됩니다.','亥':'해 지지는 잠복과 준비의 기운입니다. 표면적으로는 정체처럼 보이지만 내면에서 엄청난 에너지가 축적됩니다.'};
             var sc={wood:0,fire:0,earth:0,metal:0,water:0}; if(yong) sc[yong]+=2; if(hee) sc[hee]+=1; if(gi) sc[gi]-=2; if(goo) sc[goo]-=1;
             function gs(g,j){return (sc[OH[g]]||0)+(sc[JO[j]]||0);}
