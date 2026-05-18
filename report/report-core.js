@@ -3390,6 +3390,7 @@ function generateDeepReport(data) {
     //   ④ 사주 기본 종합 풀이 — 보강
     //   ⑤·⑥ 오행·십성 — 부속 분석 (참고용)
     part1Body += safeCall(()=>buildIljuProfileCard(data)||'', 'ilju-card');
+    part1Body += safeCall(()=>buildManseGuide(data)||'', 'manse-guide');
     part1Body += safeCall(()=>buildVipEvidenceBlock(data)||'', 'vip-evidence');
     part1Body += safeCall(()=>buildPersonalPortrait(data)||'', 'personal-portrait');
     part1Body += safeCall(()=>buildChapter1_Basic(data)||'', 'ch1-basic');
@@ -3412,11 +3413,13 @@ function generateDeepReport(data) {
     var part2Body = '';
     part2Body += safeCall(()=>buildDaeunTimeline(data)||'', 'daeun-timeline');
     part2Body += safeCall(()=>buildCurrentPeriodCard(data)||'', 'current-period-card');
+    // 앞으로의 운 도입(개념 설명) → 다가올 대운/세운/월운 카드
+    part2Body += safeCall(()=>buildUpcomingFortuneIntro(data)||'', 'upcoming-intro');
     part2Body += safeCall(()=>buildUpcomingDaewunCards(data)||'', 'upcoming-daewun');
     part2Body += safeCall(()=>buildUpcomingSewunCards(data)||'', 'upcoming-sewun-10y');
     part2Body += safeCall(()=>buildUpcomingWolunCards(data)||'', 'upcoming-wolun-11m');
     html += safeCall(()=>wrapPartSection(
-        buildPartHeader(2,'지금 이 시절','대운 · 세운 · 월운 — 지금 흐름과 앞으로 올 흐름','sec-part2-now',{name:data.name}),
+        buildPartHeader(2,'지금 이 시절','현재의 운세 · 앞으로의 운','sec-part2-now',{name:data.name}),
         part2Body
     ), 'part2section');
 
@@ -5226,7 +5229,7 @@ function buildPersonalPortrait(data) {
         : '“충분히 살피고 함께 만들어 가는” 방식';
 
     // ─── 7개 인생 단계 시나리오 ───
-    //   유년기 → 청소년기 → 청년기 → 장년기 → 중년기 → 노년기 → 만년
+    //   유년기 → 청소년기 → 청년기 → 장년기 → 중년기 → 노년기 → 말년
     //   카드 박싱 없이 한 편의 글로 이어서 풀어 줍니다.
     var tYou = periodTone(0, 13);       // 유년기
     var tChu = periodTone(14, 19);      // 청소년기
@@ -5234,7 +5237,7 @@ function buildPersonalPortrait(data) {
     var tJ   = periodTone(35, 49);      // 장년기
     var tM   = periodTone(50, 69);      // 중년기
     var tN   = periodTone(70, 89);      // 노년기
-    var tMan = periodTone(90, 120);     // 만년
+    var tMan = periodTone(90, 120);     // 말년
 
     // 유년기 — 첫 풍경 + 또래 첫 만남
     var pYou = '<strong>유년기</strong> — ' + nmDnim(name) + '은 ' + birthScene + '. ' + (firstImpression ? '그 시절의 ' + nmDnim(name) + '은 어른들의 눈에 “' + firstImpression + '” 같은 인상이었을 가능성이 큽니다. ' : '')
@@ -5284,8 +5287,8 @@ function buildPersonalPortrait(data) {
             '큰 행사 없이 일상의 깊이가 ' + nmUi(name) + ' 노년을 빛냅니다. 한 권의 책, 한 사람과의 산책, 한 끼의 정성스러운 식사 — 그런 작은 일들이 사실 평생의 결실입니다. ')
         + '시간이 더 지나면 외부 무대는 거의 정리되고, ' + nmDnim(name) + '의 진짜 본질이 풍경처럼 펼쳐집니다. ' + (coreLine ? '“' + coreLine + '” — ' + nmDnim(name) + '을 한 줄로 정리하는 이 인상이 이때만큼 ' + nmEulReul(name) + ' 닮은 적이 없습니다. ' : '') + '이 시기에 ' + nmEulReul(name) + ' 찾아오는 사람들은 더 이상 ' + nmUi(name) + ' 직책이나 성취가 아니라 ' + nmUi(name) + ' “사람 그 자체”를 보러 옵니다.';
 
-    // 만년 — 만년의 깊이 + 마지막 장면·유산
-    var pMan = '<strong>만년</strong>에 닿으시면 시간이 천천히 흐르고, 작은 일 하나하나가 큰 의미가 됩니다. 평생 ' + nmUi(name) + ' 마음을 풀어 놓으실 자리가 의외로 적었던 분이라, 이 시기에 와서야 비로소 “있는 그대로의 ' + nmDnim(name) + '”으로 살아 보시는 자유가 따라옵니다. 손에 잡히는 것들 — 책 한 권, 차 한 잔, 창밖의 햇살 — 그런 가벼운 것들의 무게가 가장 크게 다가오는 때예요. '
+    // 말년 — 말년의 깊이 + 마지막 장면·유산
+    var pMan = '<strong>말년</strong>에 닿으시면 시간이 천천히 흐르고, 작은 일 하나하나가 큰 의미가 됩니다. 평생 ' + nmUi(name) + ' 마음을 풀어 놓으실 자리가 의외로 적었던 분이라, 이 시기에 와서야 비로소 “있는 그대로의 ' + nmDnim(name) + '”으로 살아 보시는 자유가 따라옵니다. 손에 잡히는 것들 — 책 한 권, 차 한 잔, 창밖의 햇살 — 그런 가벼운 것들의 무게가 가장 크게 다가오는 때예요. '
         + tonePhrase(tMan,
             '늦은 인정이 또 한 번 따라옵니다. 그게 사회적인 상이든, 가족이 전하는 한 마디든 — 평생 가장 진한 자국으로 남습니다. ',
             '몸이 마음만큼 따라 주지 않는 때지만, ' + nmDnim(name) + '의 마음 안쪽 풍경은 평생 가장 평화로워집니다. ',
@@ -5301,7 +5304,7 @@ function buildPersonalPortrait(data) {
     return '<div id="sec-personal-portrait" class="report-chapter chapter-start sajux-panel-plain" style="margin:28px 0 40px;padding:28px 24px;border-radius:14px;border:1px solid rgba(199,167,106,0.30);background:transparent;">'
         + '<div style="font-size:11px;letter-spacing:0.20em;color:rgba(199,167,106,0.85);margin-bottom:10px;font-weight:700;">메인 — ' + escHtmlAttr(nmUi(name)) + ' 인생 한 편</div>'
         + '<h2 style="font-family:Noto Sans KR,sans-serif;font-size:24px;font-weight:700;color:var(--text);margin:0 0 6px;line-height:1.45;letter-spacing:-0.01em;">' + escHtmlAttr(nmDnim(name)) + '의 인생 — 태어남에서 마지막 장면까지</h2>'
-        + '<p style="font-size:12px;color:rgba(199,167,106,0.75);margin:0 0 22px;letter-spacing:0.04em;">유년기부터 만년까지 — 한 사람의 이야기로 이어서 풀어 드립니다</p>'
+        + '<p style="font-size:12px;color:rgba(199,167,106,0.75);margin:0 0 22px;letter-spacing:0.04em;">유년기부터 말년까지 — 한 사람의 이야기로 이어서 풀어 드립니다</p>'
         + para(introText)
         + para(pYou)
         + para(pChu)
@@ -5378,10 +5381,10 @@ function buildDaeunTimeline(data) {
 
 
 /** ─────────────────────────────────────────
- *  buildCurrentPeriodCard — 현재 대운·세운·월운 통합 디테일 카드
- *  · 도입: 대운·세운·월운 개념 설명
- *  · 현재 대운/세운/월운 한 흐름으로 풀이
- *  · 이 흐름에 비추어 본 다섯 영역 (연애·건강·합격·직업·재물)
+ *  buildCurrentPeriodCard — "현재의 운세"
+ *  · 카드 분리 없이 한 흐름의 서사로 2000자+
+ *  · 대운·세운·월운 + 다섯 영역(연애·건강·합격·직업·재물)을 한 편의 글로 버무림
+ *  · 대운·세운·월운 개념 설명은 「앞으로의 운」 도입에서 다룸
  * ───────────────────────────────────────── */
 function buildCurrentPeriodCard(data) {
     if (!data || !data.dayStem) return '';
@@ -5465,54 +5468,14 @@ function buildCurrentPeriodCard(data) {
     var totalScore = dScore + yScore + mScore;
     var totalTone = tone(totalScore / 2);
 
-    // ── 개념 설명 박스 ──
-    function conceptBox(label, body, color) {
-        return '<div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:13px 16px;border-left:3px solid ' + color + ';">'
-            + '<div style="font-size:11px;font-weight:700;color:' + color + ';letter-spacing:0.08em;margin-bottom:6px;">' + label + '</div>'
-            + '<p style="font-size:12.5px;color:#bbb;line-height:1.85;margin:0;">' + body + '</p></div>';
-    }
-    var conceptHtml = '<div style="display:grid;grid-template-columns:1fr;gap:10px;margin:14px 0 22px;">'
-        + conceptBox('대운 (大運) — 10년짜리 큰 계절', '인생 전체를 10년 단위로 끊었을 때, 그 시기에 ' + nmKke(name) + ' 어떤 공기가 둘러싸고 있는지를 보여 줘요. 큰 방향성·전반적인 분위기·이 시기에 살아 봐야 할 주제를 정해 주는 가장 큰 흐름입니다.', '#c7a76a')
-        + conceptBox('세운 (歲運) — 그해 한 해의 날씨', '대운이 “큰 계절”이라면, 세운은 “그 계절 안의 한 해 날씨”에 해당해요. 같은 봄이라도 비가 잦은 해와 햇살이 좋은 해가 다르듯, 한 해 안에서 어떤 일이 잦아질지를 보여 줍니다.', '#5ec183')
-        + conceptBox('월운 (月運) — 한 달 안의 시간대', '세운이 한 해의 날씨라면, 월운은 그 안의 “하루 중 시간대”에 가까워요. 한 달 단위로 컨디션·관계·돈의 흐름이 미세하게 바뀌니, 이번 달 안에서 어디에 힘을 실을지를 잡는 데 가장 좋습니다.', '#7fa5d6');
-    conceptHtml += '</div>';
-
-    // ── 현재 대운/세운/월운 풀이 ──
-    function pillarLine(g, j, gOh, jOh) {
-        return '<strong>' + (HK[g] || g) + (HK[j] || j) + '</strong> (' + (gOh || '') + '·' + (jOh || '') + ')';
-    }
+    // ── 헬퍼 ──
     function _vp(t) { return voicePolishParagraph(data, t); }
     function _bs(t) { return boldStarsToStrong(_vp(t)); }
+    function para(text) {
+        return '<p class="ch-text" style="font-size:14px;color:var(--text);line-height:2.05;margin:0 0 18px;">' + _bs(text) + '</p>';
+    }
 
     var endAge = (curDae ? curDae.age : 0) + 9;
-    var daeunBody = '지금 ' + nmEunNeun(name) + ' ' + (curDae ? curDae.age : 0) + '세부터 ' + endAge + '세까지 약 10년 동안, ' + pillarLine(dGan, dJi, dGanOh, dJiOh) + ' 대운 속에 들어와 계세요. ';
-    daeunBody += ({
-        good:    '이 10년은 ' + nmKke(name) + ' 가장 잘 맞는 기운이 두껍게 깔려 있어요. 같은 일을 해도 결과가 빨리 붙고, 한 번 잡은 기회가 다음 기회로 자연스럽게 이어집니다. 무리하지만 않으시면, 이 시기에 평생 끌고 갈 한두 가지 큰 축이 정해질 가능성이 큽니다.',
-        mild:    '이 10년은 ' + nmKke(name) + ' 한 발 더 내디뎌도 좋은 흐름이에요. 큰 위협은 적고, 꾸준히 노력하시는 만큼 그 결실이 차곡차곡 쌓이는 시기입니다. 한꺼번에 크게 가시기보다 평소 페이스를 유지하시는 게 가장 큰 이득이 됩니다.',
-        flat:    '이 10년은 큰 길도 큰 흉도 적은 평탄한 흐름이에요. 새로 벌이실 일을 만드시기보다는, 그동안 벌여 두신 일들 가운데 진짜 남길 한두 가지를 정리하고 다듬는 데 시간을 쓰시면 다음 대운이 훨씬 가벼워집니다.',
-        caution: '이 10년은 ' + nmKke(name) + ' 살짝 부담스러운 기운이 깔린 시기예요. 결정의 무게는 무거워지고, 같은 노력이라도 결과가 느리게 돌아옵니다. 이때는 새로 벌이시기보다 “이미 가지고 계신 것들을 단단히 지키시는 쪽”이 정답에 가까워요.',
-        tough:   '이 10년은 ' + nmKke(name) + ' 가장 부담이 큰 기운이 자리 잡고 있어요. 일·돈·건강 중 한 자리가 자주 흔들릴 수 있으니, 큰 결정은 평소보다 두 배 더 천천히, 글로 적어 두신 뒤에만 내리십시오. 지키는 쪽에 무게를 두시면 이 시기가 의외로 단단한 인생의 기반이 됩니다.'
-    })[dTone];
-
-    var sewunBody = '그 큰 계절 안에서, 올해(' + curYear + '년) ' + nmEunNeun(name) + ' <strong>' + yGanKr + yJiKr + '(' + yGan + yJi + ')</strong> 세운 위에 서 계세요. ';
-    sewunBody += ({
-        good:    '대운이 좋고 세운까지 맞물려 들어오는 흐름이라, **올 한 해는 평생 손에 꼽힐 만한 해**가 될 가능성이 커요. 미루어 두셨던 큰 결정 한두 가지를 올해 안에 푸시는 게 좋습니다.',
-        mild:    '올해는 큰 풍파 없이 차곡차곡 결실이 따라붙는 해예요. 지난해까지 쌓아 오신 것들이 올해 안에 작은 모양으로 한 번씩 드러납니다. 한 해의 성과를 분기마다 한 줄씩 기록해 두시면 다음 해 흐름이 또렷이 보입니다.',
-        flat:    '올해는 큰 사건보다는 정리·점검의 한 해예요. 새로 시작하기보다, 작년·재작년에 벌이신 일 중에 끊을 한 가지·이어 갈 한 가지를 가르는 데 마음을 쓰시면 좋아요.',
-        caution: '올해는 ' + nmKke(name) + ' 결정의 무게가 평소보다 무거워지는 해예요. 큰돈·큰 관계·큰 자리 — 이 셋 중 두 가지를 동시에 흔들지 마시고, 한 가지에만 집중하시면 한 해가 한결 가볍게 흘러갑니다.',
-        tough:   '올해는 한 발 물러서 보시는 게 정답에 가까운 해예요. 새 시작은 가능하면 내년 이후로 미루시고, 올해는 “지금 있는 것을 흔들리지 않게 지키는” 한 가지 목표만 가지고 가시면 결과가 단단해집니다.'
-    })[yTone];
-
-    var wolunBody = '그 한 해 안에서, 이번 달(' + monthNo + '월) ' + nmEunNeun(name) + ' <strong>' + mGanKr + mJiKr + '(' + mGan + mJi + ')</strong> 월운 위에 서 계세요. ';
-    wolunBody += ({
-        good:    '이번 달은 한 해 중에서도 특히 결정의 결과가 빨리 보이는 달이에요. 미뤄 두신 큰 안건을 이번 달 안에 한 가지만 매듭짓고 가시면, 다음 달이 한결 가볍게 풀립니다.',
-        mild:    '이번 달은 새 시도 한두 가지를 가볍게 더하셔도 무리가 없는 달이에요. 지난달의 리듬을 그대로 이어 가시면서, 이번 달 안에 “한 가지 마무리·한 가지 시작”만 잡으시면 균형이 좋습니다.',
-        flat:    '이번 달은 큰 굴곡 없이 평탄한 달이에요. 새 일을 벌이기보다 평소 빠져 있던 자기 관리(수면·식사·관계 정리) 쪽에 시간을 쓰시면 다음 달이 한결 가벼워집니다.',
-        caution: '이번 달은 한 박자 늦추셔야 하는 달이에요. 한 달 안에 큰 결정 두세 개가 몰리시면 그중 하나가 어긋나기 쉬우니, 큰 결정은 이번 달 안에 “한 가지”만 골라 처리하십시오.',
-        tough:   '이번 달은 단단히 지키셔야 하는 달이에요. 큰돈·큰 약속·큰 변화는 이번 달엔 멈추시고, “지금 있는 것을 무너지지 않게 점검하는” 데 시간을 쓰시면 다음 달이 자연스럽게 풀립니다.'
-    })[mTone];
-
-    // ── 다섯 영역 풀이 (대운+세운+월운 종합) ──
     var sipseong = data.sipseong || {};
     var sipTotal = Math.max(Object.values(sipseong).reduce(function(a,b){return a+b;}, 0), 1);
     var jaeC = (sipseong['정재']||0) + (sipseong['편재']||0);
@@ -5520,107 +5483,172 @@ function buildCurrentPeriodCard(data) {
     var inC = (sipseong['정인']||0) + (sipseong['편인']||0);
     var sikC = (sipseong['식신']||0) + (sipseong['상관']||0);
 
-    function domainLine(t, body) {
-        return body;
+    // ── 짧은 한눈 헤더 ──
+    function chip(label, color, ko, hj) {
+        return '<div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:10px 14px;border-left:3px solid ' + color + ';flex:1;min-width:140px;">'
+            + '<div style="font-size:10px;letter-spacing:0.10em;color:' + color + ';font-weight:700;margin-bottom:4px;">' + label + '</div>'
+            + '<div style="font-size:15px;font-weight:800;color:#fff;font-family:\'Noto Sans KR\',sans-serif;">' + ko + '<span style="font-size:11px;color:#888;margin-left:5px;">(' + hj + ')</span></div>'
+            + '</div>';
     }
+    var snapshotHtml = '<div style="display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 24px;">'
+        + chip('현재 대운', toneColor(dTone), dGanKr + dJiKr, dGan + dJi)
+        + chip('현재 세운', toneColor(yTone), yGanKr + yJiKr, yGan + yJi)
+        + chip('현재 월운', toneColor(mTone), mGanKr + mJiKr, mGan + mJi)
+        + '</div>';
+    var sub = (curDae ? curDae.age : 0) + '세 ~ ' + endAge + '세 대운 안에서 ' + curYear + '년 ' + monthNo + '월을 살고 계세요.';
 
-    var loveLine = '지금 ' + nmUi(name) + ' 연애·관계 운은 — ' + (
-        totalTone === 'good' ? '대운·세운·월운이 함께 받쳐 주는 흐름이라, **이번 시기에 시작되는 인연은 오래 갈 가능성이 큽니다.** 이미 만나고 계신 분이라면 한 단계 깊은 약속(결혼·동거·공식화)을 이 시기에 매듭지으시면 자연스럽게 풀려요. 새로 시작하시는 분이라면, 큰 모임보다 같은 결의 소모임에서 만나는 인연이 더 단단합니다.' :
-        totalTone === 'mild' ? '큰 풍파는 없고 잔잔한 흐름이에요. 새 인연을 적극적으로 찾으시기보다, 지금 옆에 계신 사람과 약속을 한 가지씩 차곡차곡 쌓아 가시는 게 가장 큰 이득이 됩니다. **무리한 고백·이별보다는 “말 한마디 더 따뜻하게”** 정도로 가시면 충분해요.' :
+    // ── 1) 인트로 ──
+    var intro = '지금 ' + nmEunNeun(name) + ' ' + (curDae ? curDae.age : 0) + '세부터 ' + endAge + '세까지의 큰 10년(대운) 한가운데에 들어와 계세요. 그 10년 안에 올해(' + curYear + '년)가 흐르고, 올해 안에 이번 달(' + monthNo + '월)이 와 있습니다. 사주에서 “지금의 운”이라는 건 사실 이 세 겹의 시간이 한 자리에 겹친 모습이에요. ' + nmKke(name) + ' 지금 어떤 공기가 둘러싸여 있고, 그 공기 안에서 일·돈·사람·몸이 어떻게 움직이실지를 — 카드로 끊지 않고 한 편의 흐름으로 풀어 드릴게요.';
+
+    // ── 2) 현재 대운 (~400자) ──
+    var daeunStory = '먼저 가장 큰 흐름인 대운부터 보시면, ' + nmEunNeun(name) + ' 지금 <strong>' + dGanKr + dJiKr + '(' + dGan + dJi + ')</strong> 대운 — 천간 ' + (dGanOh || '') + '에 지지 ' + (dJiOh || '') + '이 받치는 10년에 들어와 계세요. ';
+    daeunStory += ({
+        good:    nmKke(name) + ' 가장 잘 맞는 기운이 두껍게 깔린 시기라, 평생을 통틀어 보아도 두세 번 만나기 어려운 “공격해도 좋은 10년”에 가까운 흐름입니다. 같은 시간을 들여도 결과가 빨리 붙고, 한 번 잡으신 기회가 다음 기회로 자연스럽게 이어집니다. 다만 너무 빨리 풀린다고 사방으로 손을 뻗으시면 그중 한두 자리가 어긋날 수 있으니, 평생 끌고 가실 큰 축 한두 가지를 이 10년 안에 정해 두시는 게 가장 큰 이득이 됩니다. 미뤄 두셨던 큰 결정 — 결혼·이직·창업·자격 — 가운데 한 가지를 이 시기 안에 매듭지으시면, 그게 다음 10년의 가장 단단한 토대가 됩니다.',
+        mild:    nmKke(name) + ' 한 발 더 내디뎌도 좋은 흐름이 깔린 10년이에요. 큰 위협은 적고, 꾸준히 노력하신 만큼 결실이 차곡차곡 쌓이는 시기입니다. 폭발적으로 한 번에 가시기보다 평소 페이스를 유지하시면서 본인이 진짜 잘하는 것 한 가지를 깊이 가시면, 이 10년이 끝났을 때 — 사회 안에서 ' + nmUi(name) + ' 자리가 한 단계 또렷해져 있을 거예요. 새 시도는 1년에 한두 개로만 묶으시고, 끝맺음을 책임질 동료 한 명만 옆에 두십시오.',
+        flat:    '큰 길도 큰 흉도 적은 평탄한 10년이에요. 이 시기에는 새로 벌이시기보다, 그동안 벌여 두신 일들 가운데 진짜 남길 한두 가지를 정리하고 다듬는 데 시간을 쓰시는 게 다음 대운을 훨씬 가볍게 만들어 줍니다. 직장이라면 한 분야의 깊이를, 사업이라면 거래처와의 신뢰를, 관계라면 가까운 다섯 명과의 약속을 — 이 셋 중 한 가지만 골라 단단히 다지시면 충분합니다.',
+        caution: nmKke(name) + ' 살짝 부담스러운 기운이 깔린 10년이에요. 결정의 무게는 무거워지고, 같은 노력이라도 결과가 평소보다 느리게 돌아옵니다. 이 시기에 새로 벌이시면 그게 다음 시기까지 짐으로 따라오기 쉬우니, “이미 가지고 계신 것들을 단단히 지키는 쪽”이 정답에 더 가까워요. 큰 보증·큰 동업·큰 빚을 쓰는 투자는 이 10년 동안 가급적 피하시고, 본인의 건강·가족·핵심 거래처 셋만 흔들리지 않게 챙기시면 다음 대운이 다시 가벼워집니다.',
+        tough:   nmKke(name) + ' 가장 부담이 큰 기운이 자리 잡은 10년이에요. 일·돈·건강·관계 중 한 자리가 자주 흔들릴 수 있으니, 큰 결정은 평소보다 두 배 더 천천히, 글로 적어 두신 뒤에만 내리십시오. 이 시기엔 새로 벌이는 일보다 “지금 있는 것을 무너지지 않게 지키는” 한 가지 목표가 가장 큰 힘을 발휘해요. 의외로 이 10년을 무사히 지나신 분들이, 다음 대운에서 가장 단단한 자리에 안착하시는 경우가 많습니다.'
+    })[dTone];
+
+    // ── 3) 현재 세운 (~300자) ──
+    var sewunStory = '이 큰 10년 안에서, <strong>올해 ' + curYear + '년</strong> ' + nmEunNeun(name) + ' <strong>' + yGanKr + yJiKr + '(' + yGan + yJi + ')</strong> 한 해 위에 서 계세요. ';
+    sewunStory += ({
+        good:    '대운이 좋고 세운까지 맞물려 들어오는 흐름이라, 올 한 해는 평생 손에 꼽힐 만한 해가 될 가능성이 큽니다. 미뤄 두셨던 큰 결정 한두 가지를 올해 안에 푸시면, 그게 앞으로 10년 동안의 가장 빛나는 기둥이 돼요. 다만 운이 좋다고 한꺼번에 손을 펼치시면 그중 한 자리가 어긋나기 쉬우니, 한 분기에 큰 결정은 한 가지만 잡으십시오.',
+        mild:    '큰 풍파 없이 한 해가 차곡차곡 쌓이는 흐름이에요. 지난해까지 쌓아 오신 것들이 올해 안에 작은 모양으로 한 번씩 결실이 되어 돌아옵니다. 한 해의 성과를 분기마다 한 줄씩 기록해 두시면 다음 해 흐름이 또렷이 보입니다.',
+        flat:    '올해는 큰 사건보다 정리·점검에 무게가 실리는 한 해예요. 새로 시작하시기보다, 작년·재작년에 벌이신 일 가운데 “끊을 한 가지·이어 갈 한 가지”를 가르시는 데 마음을 쓰시면 좋습니다. 그 가르기 한 번이 다음 해를 결정하니까요.',
+        caution: '올해는 ' + nmKke(name) + ' 결정의 무게가 평소보다 무거워지는 해예요. 큰돈·큰 관계·큰 자리 — 이 셋 중 두 가지를 동시에 흔들지 마시고, 한 가지에만 집중하시면 한 해가 한결 가볍게 흘러갑니다.',
+        tough:   '올해는 한 발 물러서 보시는 게 정답에 가까운 해예요. 새 시작은 가능하면 내년 이후로 미루시고, “지금 있는 것을 흔들리지 않게 지키는” 한 가지 목표만 가지고 가시면 결과가 단단해집니다.'
+    })[yTone];
+
+    // ── 4) 이번 달 월운 (~250자) ──
+    var wolunStory = '그 한 해 안에서, <strong>이번 달 ' + monthNo + '월</strong>은 ' + nmKke(name) + ' <strong>' + mGanKr + mJiKr + '(' + mGan + mJi + ')</strong> 월운이 깔린 한 달이에요. ';
+    wolunStory += ({
+        good:    '한 해 안에서도 특히 결정의 결과가 빨리 보이는 달이라, 미뤄 두신 큰 안건 한 가지를 이 달 안에 매듭지으시면 다음 달이 한결 가볍게 풀립니다. 발표·계약·고백 — 셋 중 하나를 이 달 안에 정중앙에 두십시오.',
+        mild:    '새 시도 한두 가지를 가볍게 더하셔도 무리가 없는 달이에요. 지난달의 리듬을 그대로 이어 가시면서, “한 가지 마무리 + 한 가지 시작”만 잡으시면 균형이 좋습니다.',
+        flat:    '큰 굴곡 없이 평탄한 달이에요. 새 일을 벌이기보다 평소 빠져 있던 자기 관리(수면·식사·관계 정리)에 시간을 쓰시면 다음 달이 한결 가벼워집니다.',
+        caution: '한 박자 늦추셔야 하는 달이에요. 한 달 안에 큰 결정 두세 개가 몰리시면 그중 하나가 어긋나기 쉬우니, 큰 결정은 이번 달 안에 한 가지만 골라 처리하십시오.',
+        tough:   '단단히 지키셔야 하는 달이에요. 큰돈·큰 약속·큰 변화는 이번 달엔 멈추시고, “지금 있는 것을 무너지지 않게 점검하는” 데 시간을 쓰시면 다음 달이 자연스럽게 풀립니다.'
+    })[mTone];
+
+    // ── 5) 세 시간이 만나는 자리 — 종합 한 문단 (~250자) ──
+    var totalStoryBase = '세 시간을 한 자리에 겹쳐 보면, ' + nmUi(name) + ' 지금 시기는 ';
+    var totalStory = totalStoryBase + ({
+        good:    '말 그대로 “기운이 한꺼번에 모이는 시기”예요. 큰 10년이 좋고, 올 한 해가 좋고, 이번 달까지 좋은 — 평생 두세 번 만나기 어려운 자리에 와 계세요. 다만 운이 좋다고 곳곳에 손을 펼치시면 결과가 흩어지기 쉬우니, 평생 끌고 가실 한두 가지에만 이 시기의 힘을 모아 두십시오.',
+        mild:    '큰 위협 없이 부드럽게 흘러가는 시기예요. 평소 페이스를 유지하시면서 본인이 잘하는 것 한 가지를 깊이 가시면, 이 시기가 끝날 무렵 한 단계 또렷한 자리에 닿아 있을 거예요.',
+        flat:    '큰 굴곡 없이 평탄한 시기예요. 새로 벌이기보다 정리·점검에 마음을 쓰시면 다음 시기의 출발선이 훨씬 가벼워집니다.',
+        caution: '결정의 무게가 평소보다 무거워지는 시기예요. 새 일보다 “지금 있는 것을 흔들리지 않게 지키는 쪽”이 정답에 가깝습니다.',
+        tough:   '단단히 지키셔야 하는 시기예요. 이 시기에 새로 벌인 일은 다음 시기까지 짐으로 따라오기 쉬우니, 새로 시작하는 것보다 무너지지 않게 지키는 데 가장 큰 힘이 있습니다.'
+    })[totalTone];
+
+    // ── 6) 다섯 영역을 한 흐름으로 (~연애·건강·합격·직업·재물) ──
+    var loveText = '이 흐름이 ' + nmUi(name) + ' <strong>연애와 인연</strong>에 비추어지는 모양은 — ' + (
+        totalTone === 'good' ? '이번 시기에 시작되는 인연은 오래 갈 가능성이 큽니다. 이미 만나고 계신 분이라면 한 단계 깊은 약속(결혼·동거·공식화)을 이 시기에 매듭지으시면 자연스럽게 풀려요. 새로 시작하시는 분이라면, 큰 모임보다 같은 결의 소모임에서 만나는 인연이 더 단단합니다. 한 사람을 깊이 보시는 시간을 의도적으로 비워 두십시오.' :
+        totalTone === 'mild' ? '큰 풍파 없이 잔잔하게 흐릅니다. 새 인연을 적극적으로 찾으시기보다, 지금 옆에 계신 사람과 약속을 한 가지씩 차곡차곡 쌓아 가시는 게 가장 큰 이득이 됩니다. 무리한 고백·이별보다는 “말 한마디 더 따뜻하게” 정도면 충분해요.' :
         totalTone === 'flat' ? '연애 흐름 자체는 평온해요. 큰 사건이 일어나는 시기는 아니니, 오히려 이 시기에 ' + nmDnim(name) + ' 자신의 연애 패턴을 한 번 돌아보시기 좋아요. 같은 사람에게 반복해서 끌리시는 이유, 매번 어긋나는 지점 — 한 번 노트에 적어 보시면 다음 인연이 보입니다.' :
-        '큰 결정을 미루시는 게 좋은 시기예요. **이별·결혼·동거·고백** 같은 큰 결정은 가능하면 이 시기를 지나신 뒤로 미루시는 게 좋아요. 지금 당장의 감정에 휩쓸려 큰 결정을 내리시면, 시간이 지난 뒤에 후회로 돌아올 가능성이 큽니다.'
+        '큰 결정을 미루시는 게 좋은 시기예요. 이별·결혼·동거·고백 같은 큰 결정은 가능하면 이 시기를 지나신 뒤로 미루시는 게 좋아요. 지금 당장의 감정에 휩쓸려 큰 결정을 내리시면, 시간이 지난 뒤에 후회로 돌아올 가능성이 큽니다. 다만 갈등이 있다면, 큰 결정을 내리지 않은 채로 “대화 한 번 더”를 더해 두십시오.'
     );
 
-    var healthLine = '지금 ' + nmUi(name) + ' 건강 운은 — ' + (
-        totalTone === 'good' ? '체력이 평소보다 한 단계 위로 올라온 시기예요. 다만 컨디션이 좋다고 무리하시면 그게 다음 시기에 한꺼번에 돌아옵니다. **운동·수면 루틴**을 이때 한 번 단단히 고정해 두시면 평생의 자산이 됩니다.' :
+    var healthText = '<strong>건강과 컨디션</strong>은 — ' + (
+        totalTone === 'good' ? '체력이 평소보다 한 단계 위로 올라온 시기예요. 다만 컨디션이 좋다고 무리하시면 그게 다음 시기에 한꺼번에 돌아옵니다. 운동·수면 루틴을 이때 한 번 단단히 고정해 두시면 평생의 자산이 됩니다.' :
         totalTone === 'mild' ? '큰 건강 이슈는 없는 시기지만, 정기 검진을 미루지 않으시는 게 좋아요. 1년에 한 번, 본인 건강검진 + 안과·치과 정도는 같은 달에 묶어 두시면 빼먹지 않으십니다.' :
-        totalTone === 'flat' ? '몸은 무난하지만 마음의 피로가 쌓이기 쉬운 시기예요. **수면 시간 한 가지**만 평소보다 30분 일찍 고정하셔도 다음 시기가 한결 가볍습니다.' :
-        '면역이 평소보다 얇아진 시기예요. 술·철야·과로 — 이 셋 중 두 가지가 겹치는 주를 만들지 마시고, **건강검진을 이 시기 안에 한 번 더** 잡아 두십시오. 마음 건강(불안·우울·불면)도 같이 점검하시는 게 좋습니다.'
+        totalTone === 'flat' ? '몸은 무난하지만 마음의 피로가 쌓이기 쉬운 시기예요. 수면 시간 한 가지만 평소보다 30분 일찍 고정하셔도 다음 시기가 한결 가볍습니다.' :
+        '면역이 평소보다 얇아진 시기예요. 술·철야·과로 — 이 셋 중 두 가지가 겹치는 주를 만들지 마시고, 건강검진을 이 시기 안에 한 번 더 잡아 두십시오. 마음 건강(불안·우울·불면)도 같이 점검하시는 게 좋습니다.'
     );
 
-    var hapLine = '지금 ' + nmUi(name) + ' 합격 운(시험·자격·취직·문서)은 — ' + (
+    var hapText = ' 그리고 <strong>시험·자격·문서</strong> 쪽은 — ' + (
         (totalTone === 'good' || totalTone === 'mild') && inC / sipTotal >= 0.15 ?
-            '인성(印) 기운이 받쳐 주고 운까지 맞물려 들어오는, **합격에 가장 가까운 시기**예요. 미뤄 두셨던 시험·자격증·서류 작업이 있다면 이 시기 안에 매듭짓고 가시는 게 가장 좋습니다.' :
+            '인성(印) 기운이 받쳐 주고 운까지 맞물려 들어오는, 합격에 가장 가까운 시기예요. 미뤄 두셨던 시험·자격증·서류 작업이 있다면 이 시기 안에 매듭짓고 가시는 게 가장 좋습니다.' :
         totalTone === 'good' || totalTone === 'mild' ?
-            '큰 막힘 없이 진행되는 시기예요. 다만 인성(印, 공부·자격) 기운은 평균이라, **꾸준한 누적**(평일 1시간 학습 같은 작은 루틴)이 결실로 돌아오는 시기입니다. 단번 합격을 노리시기보다 분기별로 한 단계씩 올라가시는 게 자연스러워요.' :
+            '큰 막힘 없이 진행되는 시기예요. 다만 인성(印, 공부·자격) 기운은 평균이라, 꾸준한 누적(평일 1시간 학습 같은 작은 루틴)이 결실로 돌아오는 시기입니다. 단번 합격을 노리시기보다 분기별로 한 단계씩 올라가시는 게 자연스러워요.' :
         totalTone === 'flat' ?
-            '시험·자격을 새로 시작하시기엔 자극이 부족한 시기예요. 다만 한 번 시작하신 공부를 “끊지 않고 이어 가는 데”는 좋은 시기라, **이미 시작하신 공부를 한 단계 마무리하는 데** 시간을 쓰시면 좋습니다.' :
+            '시험·자격을 새로 시작하시기엔 자극이 부족한 시기예요. 다만 한 번 시작하신 공부를 “끊지 않고 이어 가는 데”는 좋은 시기라, 이미 시작하신 공부를 한 단계 마무리하는 데 시간을 쓰시면 좋습니다.' :
             '큰 시험·큰 면접·큰 계약은 가능하면 이 시기를 지나신 뒤로 미루시는 게 좋아요. 지금 당장의 결과보다, 다음 인성(印) 기운(임·계·인·묘·해·자 글자가 들어오는 해)이 들어오는 시기를 기다리시는 게 결실이 훨씬 단단해집니다.'
     );
 
-    var workLine = '지금 ' + nmUi(name) + ' 직업·일 운은 — ' + (
+    var workText = '<strong>직업과 일</strong>에 비추어지는 모양은 — ' + (
         totalTone === 'good' && gwanC / sipTotal >= 0.15 ?
-            '관성(官, 조직·자리) 기운에 운이 함께 실리는 흐름이라, **승진·이직·창업 같은 큰 자리 이동이 잘 풀리는 시기**예요. 미뤄 두셨던 직장 관련 결정 한두 가지를 이 시기 안에 매듭지으시면 좋습니다.' :
+            '관성(官, 조직·자리) 기운에 운이 함께 실리는 흐름이라, 승진·이직·창업 같은 큰 자리 이동이 잘 풀리는 시기예요. 미뤄 두셨던 직장 관련 결정 한두 가지를 이 시기 안에 매듭지으시면 좋습니다.' :
         totalTone === 'good' || totalTone === 'mild' ?
-            '하시는 일에 빛이 드는 시기예요. **성과를 숫자로 남기는 것**(매출·작품·발표 같은 식으로)이 이 시기에 가장 큰 이득이 됩니다. 평소보다 한 단계 더 적극적으로 본인의 결과물을 외부에 드러내 보십시오.' :
+            '하시는 일에 빛이 드는 시기예요. 성과를 숫자로 남기는 것(매출·작품·발표 같은 식으로)이 이 시기에 가장 큰 이득이 됩니다. 평소보다 한 단계 더 적극적으로 본인의 결과물을 외부에 드러내 보십시오.' :
         totalTone === 'flat' ?
-            '큰 변동 없이 평탄한 직장 흐름이에요. 새 이직·새 사업보다, **지금 자리에서의 신뢰를 한 단계 더 쌓는 데** 무게를 두시는 게 더 큰 이득이 됩니다.' :
-            '큰 직장 결정(이직·창업·퇴사)은 이 시기를 지나신 뒤로 미루시는 게 좋아요. 지금 자리에서 어쩔 수 없는 변화는 받아들이시되, **본인이 먼저 흔드는 큰 결정은 보류**하시면 다음 시기가 훨씬 가볍게 풀립니다.'
+            '큰 변동 없이 평탄한 직장 흐름이에요. 새 이직·새 사업보다, 지금 자리에서의 신뢰를 한 단계 더 쌓는 데 무게를 두시는 게 더 큰 이득이 됩니다.' :
+            '큰 직장 결정(이직·창업·퇴사)은 이 시기를 지나신 뒤로 미루시는 게 좋아요. 지금 자리에서 어쩔 수 없는 변화는 받아들이시되, 본인이 먼저 흔드는 큰 결정은 보류하시면 다음 시기가 훨씬 가볍게 풀립니다.'
     );
 
-    var wealthLine = '지금 ' + nmUi(name) + ' 재물 운은 — ' + (
+    var wealthText = '마지막으로 <strong>재물과 돈의 흐름</strong>은 — ' + (
         totalTone === 'good' && jaeC / sipTotal >= 0.15 ?
-            '재성(財) 기운에 운이 함께 실리는 흐름이라, **벌이 통로가 한두 갈래 더 열리는 시기**예요. 다만 동시에 새는 통로도 함께 늘기 쉬우니, “이번 달에 들어오고 나가는 돈” 표 한 장만은 꼭 만들어 두십시오.' :
+            '재성(財) 기운에 운이 함께 실리는 흐름이라, 벌이 통로가 한두 갈래 더 열리는 시기예요. 다만 동시에 새는 통로도 함께 늘기 쉬우니, “이번 달에 들어오고 나가는 돈” 표 한 장만은 꼭 만들어 두십시오.' :
         totalTone === 'good' || totalTone === 'mild' ?
-            '평소보다 수입이 안정적으로 흐르는 시기예요. **새 투자보다 기존 통장 정리**(고정비·구독·보험)에 시간을 쓰시면 다음 시기로 갈 때 가장 큰 이득이 됩니다.' :
+            '평소보다 수입이 안정적으로 흐르는 시기예요. 새 투자보다 기존 통장 정리(고정비·구독·보험)에 시간을 쓰시면 다음 시기로 갈 때 가장 큰 이득이 됩니다.' :
         totalTone === 'flat' ?
-            '돈의 큰 굴곡이 적은 시기예요. **저축·실물 자산**처럼 천천히 쌓이는 쪽에만 무게를 두시면 됩니다. 변동 큰 자산이나 큰 보증·동업은 이번 시기에 절대 늘리지 마십시오.' :
-            '재물이 새기 쉬운 시기예요. **빌린 돈으로 버는 투자, 보증, 큰 동업, 보증금이 큰 임대**는 이 시기를 지나신 뒤로 미루십시오. 큰 결정은 “이틀 밤을 자고 글로 받은 뒤에만” 내리시면 큰 손해는 막을 수 있습니다.'
+            '돈의 큰 굴곡이 적은 시기예요. 저축·실물 자산처럼 천천히 쌓이는 쪽에만 무게를 두시면 됩니다. 변동 큰 자산이나 큰 보증·동업은 이번 시기에 절대 늘리지 마십시오.' :
+            '재물이 새기 쉬운 시기예요. 빌린 돈으로 버는 투자, 보증, 큰 동업, 보증금이 큰 임대는 이 시기를 지나신 뒤로 미루십시오. 큰 결정은 “이틀 밤을 자고 글로 받은 뒤에만” 내리시면 큰 손해는 막을 수 있습니다.'
     );
+
+    var closing = '이렇게 ' + nmUi(name) + ' 지금 시기를 — 가장 큰 대운부터 한 달의 월운까지, 그리고 그 위에 비친 다섯 자리의 모양까지 — 한 흐름으로 풀어 드렸어요. 다음 챕터에서는 이 흐름이 “앞으로” 어떻게 이어지는지 — 다가올 대운 두 개와, 다음 해부터의 10년, 다음 11개월까지 차근차근 짚어 드릴게요.';
 
     // ── HTML 조립 ──
     var chHead = (typeof buildChapterHead === 'function')
-        ? buildChapterHead((typeof buildTopicMetaphorTitle === 'function' ? buildTopicMetaphorTitle('daeun', data) : ''), '지금 이 시절 — 대운 · 세운 · 월운 통합 풀이')
-        : '<h3 class="ch-title">지금 이 시절 — 대운 · 세운 · 월운 통합 풀이</h3>';
-
-    function bigPillarCard(label, color, kk, hh, oh, periodText, body) {
-        return '<div style="background:rgba(255,255,255,0.045);border-radius:14px;padding:20px 22px;margin-bottom:14px;border:1px solid ' + color + '33;border-left:4px solid ' + color + ';">'
-            + '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px;">'
-            + '<div><div style="font-size:11px;letter-spacing:0.12em;color:' + color + ';font-weight:700;margin-bottom:4px;">' + label + '</div>'
-            + '<div style="font-size:22px;font-weight:800;color:#fff;font-family:\'Noto Sans KR\',sans-serif;letter-spacing:0.04em;">' + kk + '<span style="font-size:14px;color:#aaa;margin-left:6px;">(' + hh + ')</span></div></div>'
-            + '<div style="text-align:right;"><div style="font-size:11px;color:#888;">' + periodText + '</div>'
-            + '<div style="font-size:11px;color:' + color + ';font-weight:600;margin-top:2px;">' + oh + '</div></div></div>'
-            + '<p style="font-size:13.5px;color:#ddd;line-height:1.95;margin:0;">' + body + '</p></div>';
-    }
-
-    function domainCard(label, color, body) {
-        return '<div style="background:rgba(255,255,255,0.035);border-radius:10px;padding:14px 16px;border-left:3px solid ' + color + ';">'
-            + '<div style="font-size:11px;font-weight:700;color:' + color + ';letter-spacing:0.08em;margin-bottom:8px;">' + label + '</div>'
-            + '<p style="font-size:13px;color:#ccc;line-height:1.9;margin:0;">' + body + '</p></div>';
-    }
-
-    var dColor = toneColor(dTone); var yColor = toneColor(yTone); var mColor = toneColor(mTone);
-    var dPeriod = (curDae ? curDae.age : 0) + '세 ~ ' + endAge + '세 · ' + toneLabel(dTone);
-    var yPeriod = curYear + '년 한 해 · ' + toneLabel(yTone);
-    var mPeriod = curYear + '년 ' + monthNo + '월 · ' + toneLabel(mTone);
-    var dOhTag = (dGanOh || '') + ' · ' + (dJiOh || '');
-    var yOhTag = (OH_KR[GAN_OH[yGan]] || '') + ' · ' + (OH_KR[JI_OH[yJi]] || '');
-    var mOhTag = (OH_KR[GAN_OH[mGan]] || '') + ' · ' + (OH_KR[JI_OH[mJi]] || '');
+        ? buildChapterHead((typeof buildTopicMetaphorTitle === 'function' ? buildTopicMetaphorTitle('daeun', data) : ''), '현재의 운세 — 대운 · 세운 · 월운 그리고 다섯 영역')
+        : '<h3 class="ch-title">현재의 운세 — 대운 · 세운 · 월운 그리고 다섯 영역</h3>';
 
     return '<div class="report-chapter">'
         + chHead
-        + '<p class="ch-text" style="font-size:14px;color:var(--text);line-height:2;margin:0 0 18px;">' + _vp('“지금 ' + nmUi(name) + ' 인생은 어디쯤 와 있는가”를 사주는 세 겹의 시간(대운·세운·월운)으로 한꺼번에 보여 줍니다. 먼저 이 세 시간이 무엇인지부터 짚고, 그 위에 ' + nmIGa(name) + ' 지금 어디 서 계신지를 한 흐름으로 풀어 드릴게요.') + '</p>'
-        + conceptHtml
-        + '<div style="display:flex;flex-direction:column;gap:0;margin:18px 0 22px;">'
-        + bigPillarCard('현재 대운', dColor, dGanKr + dJiKr, dGan + dJi, dOhTag, dPeriod, _bs(daeunBody))
-        + bigPillarCard('현재 세운 (올해)', yColor, yGanKr + yJiKr, yGan + yJi, yOhTag, yPeriod, _bs(sewunBody))
-        + bigPillarCard('현재 월운 (이번 달)', mColor, mGanKr + mJiKr, mGan + mJi, mOhTag, mPeriod, _bs(wolunBody))
-        + '</div>'
-        + '<div style="background:rgba(199,167,106,0.06);border-radius:12px;padding:18px 20px;margin:14px 0 20px;border:1px solid rgba(199,167,106,0.18);">'
-        + '<div style="font-size:11px;letter-spacing:0.12em;color:var(--gold);font-weight:700;margin-bottom:10px;">이 흐름에 비추어 본 다섯 영역</div>'
-        + '<p style="font-size:13px;color:#ccc;line-height:1.9;margin:0 0 14px;">' + _vp('대운·세운·월운 세 흐름이 겹친 자리에서, ' + nmUi(name) + ' 지금 시기를 다섯 영역으로 나눠 풀어 드립니다. (해당 영역의 자세한 평생 풀이는 다음 「삶의 영역」 챕터에서 한 번 더 깊이 들여다보겠습니다.)') + '</p>'
-        + '<div style="display:grid;grid-template-columns:1fr;gap:10px;">'
-        + domainCard('연애 · 인연', '#e07aa8', _bs(loveLine))
-        + domainCard('건강 · 컨디션', '#5fc4a4', _bs(healthLine))
-        + domainCard('합격 · 자격 · 문서', '#7fa5d6', _bs(hapLine))
-        + domainCard('직업 · 일', '#c7a76a', _bs(workLine))
-        + domainCard('재물 · 돈의 흐름', '#d4b46a', _bs(wealthLine))
-        + '</div></div></div>';
+        + '<p style="font-size:12px;color:rgba(199,167,106,0.75);margin:-6px 0 6px;letter-spacing:0.04em;">' + sub + '</p>'
+        + snapshotHtml
+        + para(intro)
+        + para(daeunStory)
+        + para(sewunStory)
+        + para(wolunStory)
+        + para(totalStory)
+        + para(loveText)
+        + para(healthText + ' ' + hapText)
+        + para(workText)
+        + para(wealthText)
+        + para(closing)
+        + '</div>';
 }
 
 
 /** ─────────────────────────────────────────
- *  buildUpcomingDaewunCards — 다음 대운 + 그 다음 대운 (각 200~300자)
+ *  buildUpcomingFortuneIntro — "앞으로의 운" 챕터 도입 카드
+ *  · 대운·세운·월운 개념 설명을 이 자리에서 한 번 정리
+ *  · 앞으로 올 대운/세운/월운 3개 챕터의 공통 도입 역할
+ * ───────────────────────────────────────── */
+function buildUpcomingFortuneIntro(data) {
+    var name = (data && data.name) ? data.name : '고객';
+    function _vp(t) { return voicePolishParagraph(data, t); }
+
+    function conceptBox(label, body, color) {
+        return '<div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:13px 16px;border-left:3px solid ' + color + ';">'
+            + '<div style="font-size:11px;font-weight:700;color:' + color + ';letter-spacing:0.08em;margin-bottom:6px;">' + label + '</div>'
+            + '<p style="font-size:12.5px;color:#bbb;line-height:1.92;margin:0;">' + _vp(body) + '</p></div>';
+    }
+    var conceptHtml = '<div style="display:grid;grid-template-columns:1fr;gap:10px;margin:14px 0 4px;">'
+        + conceptBox('대운 (大運) — 10년짜리 큰 계절', '인생 전체를 10년 단위로 끊었을 때, 그 시기에 ' + nmKke(name) + ' 어떤 공기가 둘러싸여 있는지를 보여 줘요. 큰 방향성·전반적인 분위기·이 시기에 살아 봐야 할 주제를 정해 주는 가장 큰 흐름입니다.', '#c7a76a')
+        + conceptBox('세운 (歲運) — 그해 한 해의 날씨', '대운이 “큰 계절”이라면, 세운은 “그 계절 안의 한 해 날씨”에 해당해요. 같은 봄이라도 비가 잦은 해와 햇살이 좋은 해가 다르듯, 한 해 안에서 어떤 일이 잦아질지를 보여 줍니다.', '#5ec183')
+        + conceptBox('월운 (月運) — 한 달 안의 시간대', '세운이 한 해의 날씨라면, 월운은 그 안의 “하루 중 시간대”에 가까워요. 한 달 단위로 컨디션·관계·돈의 흐름이 미세하게 바뀌니, 이번 달 안에서 어디에 힘을 실을지를 잡는 데 가장 좋습니다.', '#7fa5d6')
+        + '</div>';
+
+    var chHead = (typeof buildChapterHead === 'function')
+        ? buildChapterHead('', '앞으로의 운 — 다가올 대운 · 세운 · 월운을 한 번에')
+        : '<h3 class="ch-title">앞으로의 운 — 다가올 대운 · 세운 · 월운을 한 번에</h3>';
+
+    return '<div class="report-chapter">'
+        + chHead
+        + '<p class="ch-text" style="font-size:14px;color:var(--text);line-height:2.05;margin:0 0 14px;">'
+        + _vp('지금 시기를 한 흐름으로 살펴 드렸다면, 이제 “앞으로” 어떤 시간이 다가오는지 — 다가올 대운 두 개, 다음 해부터 10년의 세운, 다음 달부터 11개월의 월운을 차례대로 짚어 드릴게요. 시작 전에, 이 세 단어가 정확히 무엇을 가리키는지 다시 한 번 정리해 둘게요.')
+        + '</p>'
+        + conceptHtml
+        + '<p class="ch-text" style="font-size:13px;color:#999;line-height:1.92;margin:14px 0 0;">'
+        + _vp('아래는 한 시기당 한 문단 정도로 짧게 짚어 드렸어요. 본인이 가장 신경 쓰이시는 시기 — 큰 결정을 잡고 싶으신 해, 또는 한 박자 늦추고 싶으신 달 — 한두 자리만 골라 마음에 두시면 충분합니다.')
+        + '</p>'
+        + '</div>';
+}
+
+
+/** ─────────────────────────────────────────
+ *  buildUpcomingDaewunCards — 다음 대운 + 그 다음 대운 (각 ~500자)
  * ───────────────────────────────────────── */
 function buildUpcomingDaewunCards(data) {
     if (!data || !data.dayStem) return '';
@@ -5651,18 +5679,18 @@ function buildUpcomingDaewunCards(data) {
     }
 
     var STAGE_TEMPLATE = {
-        wood:    nmDnim(name) + ' 이 시기에는 “시작·확장·새 학습”의 기운이 깔립니다. 새 일·이사·이직처럼 ‘처음 디뎌 보는 자리’가 자주 열려요. 다만 동시에 시작만 잦아지면 마무리가 밀리기 쉬우니, 새 도전은 1년에 한두 개로만 묶어 가시는 게 좋습니다.',
-        fire:    nmDnim(name) + ' 이 시기에는 “드러남·성취·이름”의 기운이 깔립니다. 평소보다 ' + nmIGa(name) + ' 외부에 노출되는 일이 늘고, 한 번 인정받기 시작하면 그 흐름이 빠르게 커집니다. 다만 빛이 커진 만큼 수면·지출이 같이 흔들리기 쉬우니, 이 두 가지의 상한선을 미리 정해 두세요.',
-        earth:   nmDnim(name) + ' 이 시기에는 “안정·축적·완성”의 기운이 깔립니다. 큰 사건보다는 그동안 쌓아 오신 것들을 정리하고 결실로 거두는 쪽이 자연스러워요. 서두르지 않으셔도 흐름이 받쳐 주니, 자산·관계·역할 중 한 가지만 골라 마무리해 가시면 됩니다.',
-        metal:   nmDnim(name) + ' 이 시기에는 “결단·정리·전문성”의 기운이 깔립니다. 안 맞는 사람·일·물건을 잘라 내실 때 ' + nmKke(name) + ' 가장 큰 이득이 돌아옵니다. 한 분야를 깊게 파시면 그 깊이가 다음 시기의 가장 큰 자산이 돼요.',
-        water:   nmDnim(name) + ' 이 시기에는 “통찰·정보·인맥”의 기운이 깔립니다. 말보다 기록이 이기는 시기라, 본인이 보고 들은 것을 한 권의 노트·한 폴더로만 정리해 두시면 그게 다음 시기의 가장 큰 자본이 됩니다. 다만 말이 많아질수록 손해도 커지니, 메모는 늘리시고 발언은 절반으로 줄이세요.'
+        wood:    nmDnim(name) + ' 이 10년에는 <strong>“시작·확장·새 학습”</strong>의 기운이 두껍게 깔립니다. 새 일·새 사람·이사·이직처럼 “처음 디뎌 보는 자리”가 자주 열려요. 평소보다 호기심이 늘고, 새 것에 대한 흡수력이 가장 좋은 시기라, 한 분야의 자격증 한 장이나 새로운 기술 한 가지를 익히기에 평생을 통틀어 가장 적기에 가까워요. 다만 동시에 “시작만 잦아지고 마무리가 밀리는” 패턴이 따라오기 쉬우니, 새 도전은 1년에 한두 개로만 묶어 가시고, 끝맺음을 책임질 동료 한 명만 옆에 두십시오. 가족 안에서도 이사·동거·결혼처럼 “새 자리”가 한 번씩 열리는 시기예요.',
+        fire:    nmDnim(name) + ' 이 10년에는 <strong>“드러남·성취·이름”</strong>의 기운이 두껍게 깔립니다. 평소보다 ' + nmIGa(name) + ' 외부에 노출되는 일이 늘고, 한 번 인정받기 시작하면 그 흐름이 한 분기 안에 빠르게 커지는 시기예요. 발표·강연·매체 노출·승진 — 셋 중 하나는 이 10년 안에 반드시 한 번 따라옵니다. 다만 빛이 커진 만큼 그 뒷면도 같이 흔들리기 쉬워요. 수면 시간·지출 한도·건강검진 — 이 세 가지의 상한선을 시작 시점에 미리 정해 두지 않으시면, 10년이 끝날 무렵 빛만큼 그림자도 길어집니다. “인정받을 때 가장 차분해야 한다”는 한 줄을 늘 기억해 두세요.',
+        earth:   nmDnim(name) + ' 이 10년에는 <strong>“안정·축적·완성”</strong>의 기운이 두껍게 깔립니다. 큰 사건보다는 그동안 쌓아 오신 것들을 정리하고 결실로 거두는 쪽이 자연스러워요. 서두르지 않으셔도 흐름이 받쳐 주니, 자산·관계·역할 중 한 가지만 골라 마무리해 가시면 됩니다. 특히 부동산·실물 자산·반복 계약처럼 “느려도 단단하게 쌓이는 것”들이 이 시기의 가장 큰 친구예요. 가족·동료와의 신뢰가 한 단계 더 깊어지는 시기이기도 합니다. 다만 변화에 대한 적응이 평소보다 더디게 느껴질 수 있으니, 큰 이직·큰 이사 같은 결정은 시기 초반에 다 풀고, 후반부엔 정착에 무게를 두십시오.',
+        metal:   nmDnim(name) + ' 이 10년에는 <strong>“결단·정리·전문성”</strong>의 기운이 두껍게 깔립니다. 안 맞는 사람·일·물건을 잘라 내실 때 ' + nmKke(name) + ' 가장 큰 이득이 돌아옵니다. 한 분야를 깊게 파시면 그 깊이가 다음 시기의 가장 큰 자산이 돼요. 평소 “이건 끊어야 하는데” 미루셨던 관계·역할·습관 한두 가지를 이 10년 안에 정리하시면, 그게 인생의 큰 전환점이 됩니다. 다만 결단이 너무 잦아지면 주위 사람이 “찬 사람”으로 ' + nmEulReul(name) + ' 볼 수 있으니, 자르는 순간 한마디 따뜻한 설명을 곁들이시는 습관을 들이세요.',
+        water:   nmDnim(name) + ' 이 10년에는 <strong>“통찰·정보·인맥”</strong>의 기운이 두껍게 깔립니다. 말보다 기록이 이기는 시기라, 본인이 보고 들은 것을 한 권의 노트·한 폴더로만 정리해 두시면 그게 다음 시기의 가장 큰 자본이 됩니다. 사람들이 ' + nmEulReul(name) + ' 찾아와 의논하는 일이 늘어요. 그 자리에서 듣고 정리하시는 힘이 평생 ' + nmUi(name) + ' 직업이 되기도 합니다. 다만 말이 많아질수록 손해도 같이 커지는 시기라, 메모는 두 배로 늘리시고 발언은 절반으로 줄이세요. 깊이 보는 안목이 가장 빛나는 10년이라, 큰 결정은 늘 며칠 자고 내리시는 습관을 만들어 두시면 좋습니다.'
     };
     var TONE_TAIL = {
-        good:    ' 이 흐름은 ' + nmKke(name) + ' 본래 잘 맞는 기운과 겹쳐, 평생 두세 번 만나기 어려운 ‘공격해도 좋은 10년’에 가까워요. 미뤄 두셨던 큰 일 한두 가지를 이 시기 안에 풀고 가시는 게 가장 큰 이득입니다.',
-        mild:    ' 큰 풍파 없이 한 발씩 내딛으시는 만큼 결과가 돌아오는 흐름이라, 평소 페이스를 유지하시는 게 정답이에요.',
-        flat:    ' 큰 길도 큰 흉도 적은 평탄한 흐름이라, 새로 시작하시기보다 ‘이미 손에 쥐고 계신 것들’을 다듬는 데 시간을 쓰시면 좋습니다.',
-        caution: ' 부담이 약간 깔린 흐름이라, 큰 결정은 평소보다 한 박자 늦추시고 ‘지키는 쪽’에 무게를 두시면 됩니다.',
-        tough:   ' 부담이 큰 흐름이라, 이 시기에는 새로 벌이기보다 ‘지금 있는 것을 무너지지 않게 지키는 데’ 가장 큰 힘이 있습니다. 큰 결정은 다음 대운으로 미루셔도 늦지 않아요.'
+        good:    ' 이 흐름은 ' + nmKke(name) + ' 본래 잘 맞는 기운과 겹쳐, 평생 두세 번 만나기 어려운 “공격해도 좋은 10년”에 가까워요. 미뤄 두셨던 큰 일 — 결혼·창업·이직·자격증·자산 매입 — 가운데 한두 가지를 이 시기 안에 풀고 가시는 게 가장 큰 이득이 됩니다. 다만 운이 좋다고 모든 자리에 손을 펼치시면 결과가 흩어지기 쉬우니, 평생 끌고 가실 큰 축 한두 가지에만 이 시기의 힘을 모아 두십시오.',
+        mild:    ' 큰 풍파 없이 한 발씩 내디디시는 만큼 결과가 돌아오는 흐름이에요. 평소 페이스를 유지하시는 게 정답입니다. 한 해에 한 번씩, 본인이 무엇을 쌓아 오셨는지 짧게 정리해 두시면 10년이 끝났을 때 그 기록이 가장 큰 무기가 돼요.',
+        flat:    ' 큰 길도 큰 흉도 적은 평탄한 흐름이에요. 새로 시작하시기보다 “이미 손에 쥐고 계신 것들”을 다듬는 데 시간을 쓰시면 좋습니다. 직업이라면 한 분야의 깊이를, 관계라면 가까운 다섯 명과의 약속을, 자산이라면 흩어 놓으신 것들을 한 줄로 정리하시는 한 가지를 가져가십시오.',
+        caution: ' 부담이 약간 깔린 흐름이라, 큰 결정은 평소보다 한 박자 늦추시고 “지키는 쪽”에 무게를 두시면 됩니다. 이 시기에 새로 벌이신 일은 다음 시기까지 짐으로 따라오기 쉬우니, 신규 보증·신규 동업·신규 대출은 이 10년 동안 가능한 한 피하시는 게 안전합니다.',
+        tough:   ' 부담이 큰 흐름이라, 이 시기에는 새로 벌이기보다 “지금 있는 것을 무너지지 않게 지키는 데” 가장 큰 힘이 있어요. 큰 결정은 다음 대운으로 미루셔도 늦지 않습니다. 이 시기를 무사히 지나신 분들이, 다음 대운에서 가장 단단한 자리에 안착하시는 경우가 많아요. “지키는 게 곧 다음 시기의 출발선”이라고 마음에 새겨 두십시오.'
     };
     function tone(s) { return s >= 3 ? 'good' : s >= 1 ? 'mild' : s === 0 ? 'flat' : s >= -2 ? 'caution' : 'tough'; }
     function toneColor(t) { return ({ good:'#c7a76a', mild:'#5ec183', flat:'#9b9b9b', caution:'#e0a040', tough:'#c84a4a' })[t] || '#888'; }
@@ -5742,18 +5770,45 @@ function buildUpcomingSewunCards(data) {
         '戌':'정리·전환', '亥':'잠복·준비'
     };
 
+    // 천간 한 줄 — 한 해의 큰 분위기
+    var GAN_LINE = {
+        '甲':'시작과 새 학습이 잦아지는 한 해라, 새 일·새 사람·새 환경이 평소보다 빨리 들어옵니다.',
+        '乙':'사람과 관계로 길이 열리는 한 해라, 혼자 끌어가시기보다 협업 한두 자리가 큰 도움이 됩니다.',
+        '丙':'드러남·표현·홍보의 기운이 강해, 본인의 결과물이 외부에 노출되는 일이 평소보다 늘어납니다.',
+        '丁':'깊이와 전문성에 빛이 드는 해라, 한 분야를 깊게 파시면 그 깊이가 즉시 보상으로 돌아옵니다.',
+        '戊':'안정과 축적의 기운이 두꺼워, 큰 사건보다 신뢰가 차곡차곡 쌓이는 한 해가 됩니다.',
+        '己':'정리·마무리·연장의 기운이 깔려, 이미 벌이신 일들의 결산을 보시기 좋은 한 해예요.',
+        '庚':'결단과 정리의 기운이 강해, 안 맞는 한두 가지를 잘라 내시면 큰 이득이 따라옵니다.',
+        '辛':'완성과 세련의 기운이 도드라져, 한 가지를 “브랜드”로 다듬는 데 가장 좋은 한 해입니다.',
+        '壬':'흐름과 확장의 기운이 강해, 정보·인맥·새 채널 가운데 한 자리가 크게 열립니다.',
+        '癸':'학습·연구·내공의 기운이 깔려, 조용히 내면을 채우시는 데 좋은 한 해예요.'
+    };
+    // 지지 한 줄 — 그 해의 현장 분위기
+    var JI_LINE = {
+        '子':'기획·문서·집중이 빛나는 자리라, 큰 결정을 위한 자료 정리에 가장 좋은 시기입니다.',
+        '丑':'느려도 단단히 쌓이는 한 해라, 눈에 띄지 않는 노력이 미래의 토대가 됩니다.',
+        '寅':'활동과 새 출발의 자리라, 이사·이직·새 과제 가운데 한 가지가 자연스럽게 따라옵니다.',
+        '卯':'인맥과 협업의 자리라, 사람을 통해 길이 열리는 한 해입니다.',
+        '辰':'잠재력과 변수가 함께 오는 자리라, 큰 결정은 분기 초·말에만 잡으시는 게 좋습니다.',
+        '巳':'결단과 변신이 따라오는 자리라, 미뤄 두신 결정 한 가지가 자연스럽게 풀려나갑니다.',
+        '午':'성취와 인정의 자리라, 본인의 결과물이 외부에서 인정받는 일이 한 번 따라옵니다.',
+        '未':'창작과 풍요가 깔린 자리라, 콘텐츠·예술·교육 쪽으로 길이 열리기 쉽습니다.',
+        '申':'판단과 속도가 승부를 가르는 자리라, 빠른 결정이 큰 차이를 만듭니다.',
+        '酉':'완성과 보상의 자리라, 그동안 쌓아 오신 노력이 결실로 돌아옵니다.',
+        '戌':'정리와 전환의 자리라, 끊을 것과 남길 것을 가르시기에 가장 좋은 한 해예요.',
+        '亥':'잠복과 준비의 자리라, 큰 무대보다 내실을 채우는 데 무게를 두시면 좋습니다.'
+    };
+
     function bodyFor(yr, g, j, t) {
-        var gKw = GAN_KW[g] || '흐름'; var jKw = JI_KW[j] || '흐름';
-        var head = yr + '년(' + (HK[g] || g) + (HK[j] || j) + ')은 ' + nmKke(name) + ' ';
-        var middle = '“' + gKw + '”의 천간 위에 “' + jKw + '”의 지지가 받치는 한 해예요. ';
-        var tail = ({
-            good:    '대체로 ' + nmKke(name) + ' 잘 맞는 기운이 두껍게 깔리는 해라, **새로 시작하시거나 미뤄 두셨던 큰 결정을 매듭짓기에 좋은 시기**예요. 한 해의 처음에 우선순위 한 줄을 정하고, 분기마다 숫자로 결과를 한 번씩 확인하시면 다음 해가 한결 단단해집니다.',
-            mild:    '큰 풍파 없이 결실이 따라붙는 해예요. 검증된 한 가지에 속도를 올리시고, 새 시도는 분기에 한 번씩 가볍게 더하시는 정도가 가장 자연스럽습니다.',
-            flat:    '큰 사건보다 정리·점검에 무게가 실리는 해예요. 새 시작보다 “끊을 한 가지·이어 갈 한 가지”를 가르시는 데 마음을 쓰시면 다음 해가 한결 가볍게 풀립니다.',
-            caution: '결정의 무게가 평소보다 무거워지는 해예요. 큰돈·큰 관계·큰 자리 — 이 셋 중 두 가지를 동시에 흔들지 마시고, 한 가지에만 집중하시면 한 해가 부드럽게 흘러갑니다. 새 시도보다 이미 있는 것을 단단히 지키시는 쪽이 더 큰 이득입니다.',
-            tough:   '한 발 물러서 보시는 게 정답에 가까운 해예요. 새 시작·큰 투자·보증·동업 확장은 가능하면 다음 해 이후로 미루시고, 올해는 “지금 있는 것을 흔들리지 않게 지키는” 한 가지 목표만 가져가시면 결과가 단단해집니다.'
+        var head = yr + '년 (' + (HK[g] || g) + (HK[j] || j) + ') — ' + nmKke(name) + ' 한 해의 큰 결을 말씀드리면, 천간은 ' + (GAN_LINE[g] || '') + ' 지지에 깔린 ' + (HK[j] || j) + '(' + j + ') 자리는 ' + (JI_LINE[j] || '') + ' 두 기운이 한 해 동안 ' + nmEulReul(name) + ' 둘러싸고 흐릅니다.';
+        var body = ({
+            good:    ' 대체로 ' + nmKke(name) + ' 잘 맞는 기운이 두껍게 깔리는 한 해라, 새로 시작하시거나 미뤄 두셨던 큰 결정을 매듭짓기에 좋은 시기예요. 한 해의 처음에 “올해의 우선순위 한 줄”을 정해 두시고, 분기마다 한 번씩 숫자나 한 줄 기록으로 진행 상황을 확인하시면 다음 해가 한결 단단해집니다. 다만 운이 좋다고 곳곳에 손을 펼치시면 그중 한두 자리가 어긋날 수 있으니, 큰 결정은 분기당 한 가지만 잡으십시오.',
+            mild:    ' 큰 풍파 없이 결실이 차곡차곡 따라붙는 한 해예요. 검증된 한 가지 일에 속도를 올리시고, 새 시도는 분기에 한 번씩 가볍게 더하시는 정도가 가장 자연스럽습니다. 평소 페이스를 유지하시는 게 가장 큰 이득이 되니, 무리해서 한 해 안에 다 끝내려 하지 마시고 “이번 해의 1순위 한 가지”를 정해 그것만 마무리하셔도 충분합니다.',
+            flat:    ' 큰 사건보다 정리와 점검에 무게가 실리는 한 해예요. 새로 시작하시기보다 “끊을 한 가지·이어 갈 한 가지”를 가르시는 데 마음을 쓰시면 다음 해가 한결 가볍게 풀립니다. 직장이라면 본인의 역할 한 줄을, 관계라면 가까운 다섯 명의 이름을, 자산이라면 들어오고 나가는 돈 한 줄을 — 셋 중 한 가지를 깔끔하게 정리해 두시는 한 해로 잡으세요.',
+            caution: ' 결정의 무게가 평소보다 무거워지는 한 해예요. 큰돈·큰 관계·큰 자리 — 이 셋 중 두 가지를 동시에 흔들지 마시고, 한 가지에만 집중하시면 한 해가 부드럽게 흘러갑니다. 새 시도보다 이미 있는 것을 단단히 지키시는 쪽이 더 큰 이득이 되는 시기라, 새 계약·새 보증·새 큰 지출은 한 분기 정도 미루셨다가 다시 검토하시는 습관을 들이세요.',
+            tough:   ' 한 발 물러서 보시는 게 정답에 가까운 한 해예요. 새 시작·큰 투자·보증·동업 확장은 가능하면 다음 해 이후로 미루시고, 올해는 “지금 있는 것을 흔들리지 않게 지키는” 한 가지 목표만 가져가시면 결과가 단단해집니다. 본인의 건강·가족·핵심 거래처 셋만 흔들리지 않게 챙기시면, 이 해가 의외로 다음 시기의 가장 단단한 출발선이 됩니다.'
         })[t];
-        return head + middle + tail;
+        return head + body;
     }
 
     var cards = '';
@@ -7712,6 +7767,69 @@ function getHiddenVipTableCell(branch, dayStem) {
                 + '</div>';
         }).join('')
         + '</div>';
+}
+
+/**
+ * 만세력 가이드 카드 — 만세력 표가 나오기 직전에 두는 "용어 안내" 챕터.
+ *   고객이 사주를 처음 접해도 표를 읽을 수 있도록 — 만세력의 정체, 오행 5종,
+ *   사주 8자 구조(시·일·월·년주), 천간/지지, 십성, 지장간, 12운성, 신살, 공망을
+ *   각 한두 줄로 풀어 줍니다. "흥미 없으시면 건너뛰셔도 좋아요" 안내 포함.
+ */
+function buildManseGuide(data) {
+    var name = (data && data.name) ? data.name : '고객';
+    function _vp(t) { return voicePolishParagraph(data, t); }
+
+    function termBox(label, body) {
+        return '<div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:13px 16px;">'
+            + '<div style="font-size:12px;font-weight:700;color:var(--gold);letter-spacing:0.04em;margin-bottom:6px;">' + label + '</div>'
+            + '<p style="font-size:12.5px;color:#bbb;line-height:1.92;margin:0;">' + _vp(body) + '</p>'
+            + '</div>';
+    }
+
+    function ohBox(color, name, body) {
+        return '<div style="background:rgba(255,255,255,0.035);border-radius:10px;padding:12px 14px;border-left:3px solid ' + color + ';">'
+            + '<div style="font-size:12px;font-weight:700;color:' + color + ';margin-bottom:4px;">' + name + '</div>'
+            + '<p style="font-size:12px;color:#bbb;line-height:1.85;margin:0;">' + _vp(body) + '</p>'
+            + '</div>';
+    }
+
+    var ohGrid = '<div style="display:grid;grid-template-columns:1fr;gap:10px;margin:10px 0 4px;">'
+        + ohBox('#4fc3a1', '목(木) — 나무 기운', '시작·성장·뻗어 나가는 힘이에요. 새 일을 벌이고, 사람을 끌어모으고, 위로 자라는 결을 갖습니다. 부드럽지만 한 번 뿌리내리면 잘 흔들리지 않는 기운이에요.')
+        + ohBox('#ef6b56', '화(火) — 불 기운', '드러남·표현·열정의 힘이에요. 자신을 보여 주고, 사람을 끌어당기는 빛이에요. 화는 따뜻하지만 너무 세지면 본인이 먼저 타들어 가니, 다스리는 것이 핵심이에요.')
+        + ohBox('#e0b452', '토(土) — 흙 기운', '받쳐 주고 쌓이는 힘이에요. 사람·일·돈을 가만히 품어 두는 결로, 큰 변화보다 안정·축적·신뢰가 어울려요. 사주의 중심을 잡아 주는 기운이에요.')
+        + ohBox('#cfcfcf', '금(金) — 쇠 기운', '결단·정리·맺고 끊는 힘이에요. 안 맞는 것을 잘라 내고, 한 가지를 깊이 단단하게 만드는 결이에요. 금이 강한 분은 “끝맺음”에서 진가가 드러납니다.')
+        + ohBox('#7fa5d6', '수(水) — 물 기운', '흐름·통찰·정보의 힘이에요. 깊이 보고 길게 생각하는 결로, 정보·전략·인맥이 자본이 됩니다. 보이지 않는 곳에서 쌓이는 기운이에요.')
+        + '</div>';
+
+    var termGrid = '<div style="display:grid;grid-template-columns:1fr;gap:10px;margin:10px 0 4px;">'
+        + termBox('사주 8자 (年柱 · 月柱 · 日柱 · 時柱)', '사주는 <strong>태어난 연·월·일·시 네 기둥</strong>이고, 각 기둥은 위·아래 한 글자씩 — 모두 여덟 글자로 이루어져요. 그래서 “사주팔자(四柱八字)”라고 부릅니다. <strong>년주</strong>는 부모·뿌리, <strong>월주</strong>는 사회·직장, <strong>일주</strong>는 나 자신·배우자, <strong>시주</strong>는 자식·말년·내면을 보여 줘요.')
+        + termBox('천간(天干) · 지지(地支)', '각 기둥의 <strong>위 글자</strong>가 “천간”이에요. 갑·을·병·정·무·기·경·신·임·계 — 모두 10개. 겉으로 드러난 모습·역할에 해당해요. <strong>아래 글자</strong>가 “지지”예요. 자·축·인·묘·진·사·오·미·신·유·술·해 — 모두 12개. 속에 자리 잡은 본성·환경이에요. 천간이 “내가 어떻게 보이느냐”라면, 지지는 “내가 진짜 어떤 결로 살아가느냐”입니다.')
+        + termBox('일간(日干) — 사주의 주인공', '네 기둥 중 <strong>일주의 위 글자</strong>가 바로 “나”예요. 다른 일곱 글자는 모두 이 일간과의 관계로 풀이됩니다. ' + nmUi(name) + ' 일간은 사주 풀이의 가장 큰 기준점이 돼요.')
+        + termBox('십성(十星) — 나와 다른 글자들의 관계', '“십성”은 일간(나)과 나머지 글자들이 맺는 <strong>10가지 관계 이름</strong>이에요. 비견·겁재(나와 같은 결), 식신·상관(나의 표현·재능), 정재·편재(현실의 돈·실무), 정관·편관(책임·자리·압박), 정인·편인(배움·받쳐 줌). 이 십성의 분포가 ' + nmUi(name) + ' 직업·연애·돈의 큰 패턴을 만들어 줍니다.')
+        + termBox('지장간(地藏干) — 지지 안에 숨은 천간', '지지 글자 하나하나 안에는 사실 <strong>또 다른 천간 1~3개</strong>가 숨어 있어요. 겉으로는 보이지 않지만 무의식·잠재력·숨겨진 동기로 작동합니다. 예) “인(寅)” 안에는 갑·병·무가 같이 살고 있어요. 그래서 같은 “인” 글자라도 안쪽에서 어떤 기운이 더 활성화되는지에 따라 결이 미세하게 달라집니다.')
+        + termBox('12운성(十二運星) — 글자의 인생 단계', '하나의 글자가 “지금 어느 생애 단계에 있는가”를 12가지로 표시해요. 장생(태어남)·욕(씻김)·관대(자리잡음)·록(전성기)·왕(절정)·쇠(기울기 시작)·병(잠시 힘 빠짐)·사(잠잠)·묘(쉼)·절(끊김)·태(다시 잉태)·양(자람). 같은 글자라도 단계가 다르면 힘의 크기가 달라져요.')
+        + termBox('신살(神煞) — 특정 글자 조합이 만드는 별', '글자 조합으로 만들어지는 “별”이에요. <strong>도화살</strong>은 매력·인기, <strong>역마살</strong>은 이동·변화, <strong>화개살</strong>은 예술·종교 감각, <strong>천을귀인</strong>은 도움을 주는 귀한 인연 같은 식이에요. 신살은 단독으로 “좋다·나쁘다”가 아니라, 어느 자리에 박혀 있느냐에 따라 결이 달라집니다.')
+        + termBox('공망(空亡) — 채워도 채워지지 않는 빈자리', '사주에서 일주를 기준으로 한 “비어 있는 글자”예요. 그 자리에 해당하는 영역(가족·돈·자리 등)은 평소엔 잘 보이지만, 결정적인 순간에 한 번씩 비어 보일 수 있어요. 결핍의 자리가 아니라 — <strong>이 자리에는 평생 다른 보완축을 두고 가셔야 한다</strong>는 신호로 읽으시면 됩니다.')
+        + '</div>';
+
+    return '<details class="manse-guide" style="background:rgba(255,255,255,0.025);border:1px solid rgba(199,167,106,0.22);border-radius:14px;padding:16px 20px;margin:12px 0 18px;">'
+        + '<summary style="cursor:pointer;list-style:none;padding:4px 0;">'
+        + '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">'
+        + '<div><div style="font-size:10px;letter-spacing:0.18em;color:var(--gold);font-weight:700;margin-bottom:4px;">SAJU GUIDE · 만세력 읽는 법</div>'
+        + '<div style="font-size:16px;font-weight:800;color:#fff;line-height:1.45;">만세력 표가 어떤 의미인지, 잠깐 짚고 가실래요?</div></div>'
+        + '<span class="manse-guide-toggle" style="font-size:11px;color:#aaa;padding:5px 10px;border-radius:999px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.10);">건너뛰셔도 좋아요 · 펼쳐 보기</span>'
+        + '</div>'
+        + '<p style="font-size:12.5px;color:#aaa;line-height:1.85;margin:10px 0 0;">' + _vp('아래 표(만세력)에는 ' + nmUi(name) + ' 사주가 한 장으로 정리되어 있어요. 처음 보시면 한자와 용어가 빽빽하지만, 사실 몇 가지 기본만 짚으시면 “아 그래서 이런 풀이가 나오는구나” 정도는 충분히 따라가실 수 있어요. <strong>사주의 원리가 궁금하지 않으시면 이 안내는 건너뛰셔도 됩니다.</strong> 표만 보시고 풀이 본문으로 바로 넘어가셔도 좋아요.') + '</p>'
+        + '</summary>'
+        + '<div style="margin-top:18px;padding-top:16px;border-top:1px dashed rgba(199,167,106,0.18);">'
+        + '<div style="font-size:13.5px;color:#ddd;line-height:1.95;margin-bottom:14px;">' + _vp('<strong>만세력(萬歲曆)</strong>이란 — 태어난 시각의 천체 흐름을 사주 8글자로 환산해 둔 한 장의 표예요. 같은 날 태어난 사람이라도 시(時)에 따라 결이 다르고, 그 결을 다섯 가지 기운(오행)과 열 가지 관계(십성)로 풀어 보는 게 사주의 기본 원리입니다.') + '</div>'
+        + '<div style="font-size:11px;letter-spacing:0.10em;color:var(--gold);font-weight:700;margin:14px 0 8px;">① 오행 — 사주를 이루는 다섯 가지 기운</div>'
+        + ohGrid
+        + '<div style="font-size:11px;letter-spacing:0.10em;color:var(--gold);font-weight:700;margin:18px 0 8px;">② 표의 각 줄이 무엇을 가리키는지</div>'
+        + termGrid
+        + '<p style="font-size:12px;color:#888;line-height:1.85;margin:16px 0 0;">' + _vp('여기까지가 사주 표를 읽으실 때 알아 두시면 좋은 기본이에요. 외우지 않으셔도 됩니다. 아래 만세력 표를 한 번 훑어보시고, 그 다음 풀이 본문으로 넘어가시면 — 본문 안에서 이 용어들이 어떻게 쓰이는지 자연스럽게 보이실 거예요.') + '</p>'
+        + '</div>'
+        + '</details>';
 }
 
 // VIP 근거: 원국 8자 만세력 표 (프리미엄 요약 직후 배치)
