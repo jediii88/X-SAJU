@@ -1,7 +1,7 @@
 /* ══════════════════════════════════════════════════════
    SAJUX OVERRIDE v6 — 단일 다크 · 글래스모피즘
-   ▸ 배경: 은은한 메시 그라데이션(보라·골드·남색 광원)
-   ▸ 표면: 블러 + 채도 + 상단 하이라이트 + 이중 그림자
+   ▸ 배경: 순검정 + 별 캔버스(별도 레이어)
+   ▸ 표면: 블러 + 저채도 반투명 · 외곽선 최소화
    ▸ 라이트 전용 규칙은 하위 호환용으로 남음(화면에서는 다크 고정)
    ══════════════════════════════════════════════════════ */
 
@@ -62,12 +62,15 @@ html[data-theme="light"] [class~="water"] .bottom {
   gap: 8px 10px !important;
 }
 
-/* 파트 헤더 — 본문 소제목보다 항상 우위 */
+/* 파트 카드 헤더: 한 줄 티어 제목이 본파트의 기준 크기 */
+html:not([data-theme="light"]) .part-tier-title {
+  font-size: clamp(16px, 3.85vw, 20px) !important;
+}
+
+/* 과거 규칙 호환 — 이제 소챕터가 파트 헤더보다 크게 보이면 안 됨 */
 .part-header-title {
-  font-size: clamp(22px, 4.5vw, 28px) !important;
-  font-weight: 800 !important;
-  letter-spacing: -0.03em !important;
-  line-height: 1.28 !important;
+  font-size: clamp(16px, 3.85vw, 20px) !important;
+  font-weight: 750 !important;
 }
 
 /* 소챕터 제목 — 파트 헤더보다 작게 유지 */
@@ -93,18 +96,18 @@ h2.ch-title-current-period {
   pointer-events: none !important;
 }
 html:not([data-theme="light"]) #star-canvas {
-  opacity: 0.42 !important;
+  opacity: 0.55 !important;
 }
 html[data-theme="light"] #star-canvas {
   opacity: 0.18 !important;
 }
 
 html:not([data-theme="light"]) body {
-  background:
-    radial-gradient(ellipse 120% 70% at 15% -15%, rgba(99, 76, 168, 0.14), transparent 52%),
-    radial-gradient(ellipse 90% 55% at 88% 8%, rgba(199, 167, 106, 0.10), transparent 48%),
-    radial-gradient(ellipse 80% 50% at 50% 105%, rgba(30, 58, 95, 0.12), transparent 55%),
-    linear-gradient(168deg, #16171f 0%, #0c0d14 42%, #060708 100%) fixed !important;
+  background: #000000 !important;
+}
+
+html:not([data-theme="light"]) html {
+  background: #000000 !important;
 }
 
 /* 리포트 영역은 단색 레이어 없이 배경 그라데이션이 카드 뒤로 비치도록 */
@@ -895,13 +898,17 @@ html[data-theme="light"] #star-canvas {
   html:not([data-theme="light"]) #sec-personal-portrait.personal-portrait-hero .personal-portrait-inner {
     padding: 26px 28px 30px;
     border-radius: 16px;
-    background: rgba(255,255,255,0.045);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(199,167,106,0.22);
+    background: linear-gradient(
+      155deg,
+      rgba(255, 255, 255, 0.058) 0%,
+      rgba(255, 255, 255, 0.022) 100%
+    );
+    backdrop-filter: blur(36px) saturate(158%);
+    -webkit-backdrop-filter: blur(36px) saturate(158%);
+    border: none;
     box-shadow:
-      0 16px 48px rgba(0,0,0,0.26),
-      inset 0 1px 0 rgba(255,255,255,0.055);
+      0 14px 48px rgba(0, 0, 0, 0.34),
+      0 2px 12px rgba(0, 0, 0, 0.18);
   }
   html[data-theme="light"] #sec-personal-portrait.personal-portrait-hero .personal-portrait-inner,
   body.light-mode #sec-personal-portrait.personal-portrait-hero .personal-portrait-inner {
@@ -922,8 +929,8 @@ html[data-theme="light"] #star-canvas {
   }
   #sec-personal-portrait .personal-portrait-title {
     font-family: 'Noto Sans KR', sans-serif;
-    font-size: clamp(24px, 5.4vw, 34px);
-    font-weight: 800;
+    font-size: clamp(17px, 4.2vw, 23px);
+    font-weight: 700;
     color: var(--text);
     margin: 0 0 10px;
     line-height: 1.28;
