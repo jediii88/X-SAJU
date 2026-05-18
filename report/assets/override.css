@@ -86,11 +86,17 @@ h2.ch-title-current-period {
    다크모드 — 밤 하늘 / 우주
 ───────────────────────────────── */
 
-/* 우주 별 파티클 끔 — 정적 다크 그라데이션만 */
+/* 우주 별 파티클 — 리포트 HTML의 canvas 애니메이션과 함께 사용 */
 #star-canvas {
-  display: none !important;
-  visibility: hidden !important;
+  display: block !important;
+  visibility: visible !important;
   pointer-events: none !important;
+}
+html:not([data-theme="light"]) #star-canvas {
+  opacity: 0.42 !important;
+}
+html[data-theme="light"] #star-canvas {
+  opacity: 0.18 !important;
 }
 
 html:not([data-theme="light"]) body {
