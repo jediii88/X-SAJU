@@ -20,7 +20,7 @@
 })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>X-사주 궁합 리포트</title>
+<title>사주X — 두 사람의 인연 구조</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;700;900&display=swap" rel="stylesheet">
 <style>
@@ -98,7 +98,32 @@ body::before {
   font-size: 11px; letter-spacing: 0.4em;
   color: var(--text-dim); margin-bottom: 12px;
 }
-.page-header h1 { font-size: 22px; font-weight: 300; letter-spacing: 0.05em; }
+.page-header h1 { font-size: 22px; font-weight: 300; letter-spacing: 0.05em; line-height: 1.35; }
+.page-header .hero-sub {
+  font-size: 12px; font-weight: 300; color: var(--text-dim);
+  max-width: 420px; margin: 14px auto 0; line-height: 1.75;
+  letter-spacing: 0.02em;
+}
+.compat-section-title {
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 8px;
+  padding-bottom: 10px; margin: 28px 0 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+  font-size: 12px; color: var(--text-soft); font-weight: 300;
+  letter-spacing: 0.02em;
+}
+.compat-section-title .title-left { display: flex; align-items: center; gap: 6px; font-weight: 500; color: var(--text); }
+.compat-section-title > span:last-child {
+  font-size: 11px; color: var(--text-dim); font-weight: 300;
+}
+.compat-person-tag {
+  font-size: 11px; letter-spacing: 0.2em;
+  color: rgba(199,167,106,0.88); margin-bottom: 6px; font-weight: 700;
+}
+.compat-person-hint {
+  font-size: 10px; color: var(--text-dim); margin-bottom: 10px;
+  letter-spacing: 0.04em; line-height: 1.5;
+}
 .rel-badge {
   display: inline-block; margin-top: 10px;
   background: rgba(199,167,106,0.12);
@@ -112,10 +137,13 @@ body::before {
 
 .duo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 24px 0; }
 .person-card {
-  border-radius: 12px;
-  padding: 16px 12px;
-  border: 1px solid rgba(255,255,255,0.1);
-  background: rgba(255,255,255,0.035);
+  border-radius: 14px;
+  padding: 18px 14px;
+  border: 1px solid rgba(199,167,106,0.22);
+  background: rgba(255,255,255,0.06);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
 }
 .person-card.a { border-left: 3px solid rgba(199,167,106,0.55); }
 .person-card.b { border-left: 3px solid rgba(199,167,106,0.28); }
@@ -138,7 +166,14 @@ body::before {
 .ohaeng-row .of { height: 2px; border-radius: 1px; position: absolute; top: 0; left: 0; }
 .ohaeng-row .ov { width: 20px; text-align: right; color: var(--text-dim); }
 
-.score-section { text-align: center; padding: 32px 0 24px; }
+.score-section { text-align: center; padding: 32px 18px 28px; margin: 16px 0;
+  border-radius: 14px;
+  border: 1px solid rgba(199,167,106,0.2);
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.14);
+}
 .score-ring-wrap { position: relative; width: 160px; height: 160px; margin: 0 auto 16px; }
 .score-ring-wrap svg { width: 100%; height: 100%; transform: rotate(-90deg); }
 .score-ring-bg { fill: none; stroke: rgba(255,255,255,0.06); stroke-width: 10; }
@@ -310,8 +345,9 @@ body::before {
 
 <div id="main-content" style="display:none;">
   <div class="page-header">
-    <div class="brand">X-SAJU · 궁합 리포트</div>
-    <h1>두 사람의 사주 궁합</h1>
+    <div class="brand">SAJU X</div>
+    <h1>두 사람의 인연 구조</h1>
+    <p class="hero-sub">궁합 리포트 — 원국 표는 개인 만세력과 같은 규칙으로 계산합니다. 출생 시각은 한국 경도에 맞춰 약 32분 당겨 적용하며, 왼쪽부터 년주 · 월주 · 일주 · 시주 순입니다.</p>
     <div class="rel-badge" id="rel-badge">연인 궁합</div>
     <div id="couple-issuer-hint" style="font-size:10px;color:var(--text-dim);margin-top:10px;letter-spacing:0.06em;"></div>
   </div>
@@ -319,7 +355,8 @@ body::before {
   <div class="container">
     <div class="duo-grid">
       <div class="person-card a">
-        <div class="person-label">◆ 첫번째</div>
+        <div class="compat-person-tag">첫 번째 사주</div>
+        <div class="compat-person-hint">원국 요약 · 만세력 동일 산출</div>
         <div class="person-name" id="a-name"></div>
         <div class="person-ilju" id="a-ilju"></div>
         <div class="person-meta" id="a-meta"></div>
@@ -327,7 +364,8 @@ body::before {
         <div class="ohaeng-wrap" id="a-ohaeng"></div>
       </div>
       <div class="person-card b">
-        <div class="person-label">◆ 두번째</div>
+        <div class="compat-person-tag">두 번째 사주</div>
+        <div class="compat-person-hint">원국 요약 · 만세력 동일 산출</div>
         <div class="person-name" id="b-name"></div>
         <div class="person-ilju" id="b-ilju"></div>
         <div class="person-meta" id="b-meta"></div>
@@ -355,44 +393,44 @@ body::before {
     <div id="compat-voice-overview" class="compat-voice-wrap" style="margin:20px 0 8px;"></div>
 
     <div id="section-positioning">
-      <div style="font-size:14px;font-weight:700;color:var(--gold);margin:24px 0 12px;padding:10px 0;border-bottom:1px solid rgba(199,167,106,0.2);">⚖ 관계 포지셔닝 — 속도·역할·조율</div>
+      <div class="compat-section-title"><div class="title-left"><span>관계 포지셔닝</span></div><span>속도 · 역할 · 조율</span></div>
       <div id="compat-voice-positioning" class="compat-voice-wrap" style="margin:0 0 8px;"></div>
       <div id="panel-positioning" class="rel-panel"></div>
     </div>
 
     <div id="section-personality">
-      <div style="font-size:14px;font-weight:700;color:var(--gold);margin:24px 0 12px;padding:10px 0;border-bottom:1px solid rgba(199,167,106,0.2);">🌟 두 사람의 타고난 성격과 기질</div>
+      <div class="compat-section-title"><div class="title-left"><span>타고난 성격과 기질</span></div><span>두 사람의 본색</span></div>
       <div id="panel-personality" class="rel-panel"></div>
     </div>
     <div id="section-lover">
-      <div style="font-size:14px;font-weight:700;color:var(--gold);margin:24px 0 12px;padding:10px 0;border-bottom:1px solid rgba(199,167,106,0.2);">💕 연인으로서의 궁합</div>
+      <div class="compat-section-title"><div class="title-left"><span>연인으로서</span></div><span>애정 · 밀당 · 미래 설계</span></div>
       <div id="panel-lover" class="rel-panel"></div>
     </div>
     <div id="section-married">
-      <div style="font-size:14px;font-weight:700;color:var(--gold);margin:24px 0 12px;padding:10px 0;border-bottom:1px solid rgba(199,167,106,0.2);">💍 부부로서의 궁합</div>
+      <div class="compat-section-title"><div class="title-left"><span>부부로서</span></div><span>생활 · 돈 · 가족 · 말의 무게</span></div>
       <div id="panel-married" class="rel-panel"></div>
     </div>
     <div id="section-friend">
-      <div style="font-size:14px;font-weight:700;color:var(--gold);margin:24px 0 12px;padding:10px 0;border-bottom:1px solid rgba(199,167,106,0.2);">🤝 친구로서의 궁합</div>
+      <div class="compat-section-title"><div class="title-left"><span>친구로서</span></div><span>신뢰 · 거리 · 오래 가는 결</span></div>
       <div id="panel-friend" class="rel-panel"></div>
     </div>
     <div id="section-business">
-      <div style="font-size:14px;font-weight:700;color:var(--gold);margin:24px 0 12px;padding:10px 0;border-bottom:1px solid rgba(199,167,106,0.2);">💼 비즈니스 파트너로서의 궁합</div>
+      <div class="compat-section-title"><div class="title-left"><span>동업 · 파트너</span></div><span>역할 분담 · 리스크 · 속도</span></div>
       <div id="panel-business" class="rel-panel"></div>
     </div>
     <div id="section-spouse">
-      <div style="font-size:14px;font-weight:700;color:var(--gold);margin:24px 0 12px;padding:10px 0;border-bottom:1px solid rgba(199,167,106,0.2);">💎 배우자궁 분석 — 두 사람이 끌어당기는 이성</div>
+      <div class="compat-section-title"><div class="title-left"><span>배우자궁</span></div><span>끌림 · 거리감 · 관계의 무게</span></div>
       <div id="panel-spouse" class="rel-panel"></div>
     </div>
 
     <div id="section-ideal-family">
-      <div style="font-size:14px;font-weight:700;color:var(--gold);margin:24px 0 12px;padding:10px 0;border-bottom:1px solid rgba(199,167,106,0.2);">✨ 이상형 거리 · 자녀 인연 · 자미두수 보강</div>
+      <div class="compat-section-title"><div class="title-left"><span>인연 보강</span></div><span>이상형 거리 · 자녀 인연 · 자미두수</span></div>
       <div id="compat-voice-ideal-family" class="compat-voice-wrap" style="margin:0 0 8px;"></div>
       <div id="panel-ideal-appendix" class="rel-panel"></div>
     </div>
 
     <div class="timeline-section">
-      <div class="sec-title">◆ 대운 싱크 — 시기별 궁합 흐름</div>
+      <div class="compat-section-title"><div class="title-left"><span>대운 싱크</span></div><span>시기별 관계 리듬</span></div>
       <div class="timeline-scroll" id="timeline-scroll"></div>
     </div>
   </div>
@@ -499,6 +537,33 @@ const BRANCH_CHUNG = {'子':'午','午':'子','丑':'未','未':'丑','寅':'申
 const SAMHAP = [['寅','午','戌'],['申','子','辰'],['亥','卯','未'],['巳','酉','丑']];
 const DOHWA  = {'子':'酉','丑':'午','寅':'卯','卯':'子','辰':'酉','巳':'午','午':'卯','未':'子','申':'酉','酉':'午','戌':'卯','亥':'子'};
 
+/** 만세력 엔진 출력 간지 통일 (문자열·배열 모두) */
+function gzString(h) {
+  if (h == null || h === '') return '';
+  if (typeof h === 'string') return h.length >= 2 ? h : '';
+  if (Array.isArray(h)) return String(h[0] || '') + String(h[1] || '');
+  return '';
+}
+
+/**
+ * 개인 리포트(runAnalysis)와 동일: 한국 경도 보정으로 출생 시각을 약 32분 당겨 시주 등을 산출합니다.
+ * 보정으로 날짜가 넘어가면 입력 양력 일자는 유지합니다.
+ */
+function applyKoreaLongitudeAdjust(solarObj, unknown) {
+  if (unknown || !solarObj || typeof Solar === 'undefined' || !Solar.fromYmdHms) return solarObj;
+  try {
+    var baseY = solarObj.getYear(), baseM = solarObj.getMonth(), baseD = solarObj.getDay();
+    var dt = new Date(baseY, baseM - 1, baseD, solarObj.getHour(), solarObj.getMinute());
+    dt.setMinutes(dt.getMinutes() - 32);
+    if (dt.getFullYear() !== baseY || (dt.getMonth() + 1) !== baseM || dt.getDate() !== baseD) {
+      dt.setFullYear(baseY, baseM - 1, baseD);
+    }
+    return Solar.fromYmdHms(dt.getFullYear(), dt.getMonth() + 1, dt.getDate(), dt.getHours(), dt.getMinutes(), 0);
+  } catch (eAdj) {
+    return solarObj;
+  }
+}
+
 // 대운 오행 성격 (단순 positive/negative 판단)
 const OH_POSITIVE = {wood:true, fire:true, earth:true, metal:true, water:true}; // 기준 필요시 확장
 
@@ -583,24 +648,29 @@ function calcSaju(info) {
     solarObj = Solar.fromYmdHms(y, m, d, hrUse, 0, 0);
   }
 
+  solarObj = applyKoreaLongitudeAdjust(solarObj, unknown);
+
   const lunar = solarObj.getLunar();
   const ec = lunar.getEightChar();
 
   const pillars = [
-    { n:'시주', h: ec.getTime() },
-    { n:'일주', h: ec.getDay() },
-    { n:'월주', h: ec.getMonth() },
-    { n:'년주', h: ec.getYear() }
+    { n:'시주', h: gzString(ec.getTime()) },
+    { n:'일주', h: gzString(ec.getDay()) },
+    { n:'월주', h: gzString(ec.getMonth()) },
+    { n:'년주', h: gzString(ec.getYear()) }
   ];
 
-  const dayStem   = ec.getDay()[0];
-  const dayBranch = ec.getDay()[1];
-  const yearBranch = ec.getYear()[1];
+  const dayGz = gzString(ec.getDay());
+  const dayStem   = dayGz.charAt(0);
+  const dayBranch = dayGz.charAt(1);
+  const yearBranch = gzString(ec.getYear()).charAt(1);
 
   const counts = {wood:0,fire:0,earth:0,metal:0,water:0};
   pillars.forEach(p => {
-    const so = STEM_OH[p.h[0]]; if(so) counts[so]++;
-    const bo = BRANCH_OH[p.h[1]]; if(bo) counts[bo]++;
+    const gz = p.h;
+    if (!gz || gz.length < 2) return;
+    const so = STEM_OH[gz[0]]; if(so) counts[so]++;
+    const bo = BRANCH_OH[gz[1]]; if(bo) counts[bo]++;
   });
   const totalW = Object.values(counts).reduce((a,b)=>a+b,0);
 
@@ -752,7 +822,12 @@ function renderPersonCard(prefix, info, saju) {
     var dbStroke = dbWater ? '-webkit-text-stroke:0.5px rgba(255,255,255,0.7);paint-order:stroke fill;' : '';
     iljuEl.innerHTML = `<span class="${HAN_COLOR[ds]}" style="font-family:'Noto Sans KR',sans-serif;font-weight:300;${dsStroke}">${ds}</span><span class="${HAN_COLOR[db]}" style="font-family:'Noto Sans KR',sans-serif;font-weight:300;${dbStroke}">${db}</span> <span style="font-size:13px;color:var(--text-dim);">${HAN_KOR[ds]}${HAN_KOR[db]}</span>`;
   })();
-  metaEl.innerHTML  = `${saju.solarYear}년생 · ${info.gender==='male'?'남':'여'} · ${saju.strength}`;
+  metaEl.innerHTML = `${saju.solarYear}년생 · ${info.gender==='male'?'남':'여'} · ${saju.strength}`
+    + (function(){
+      var tg = gzString(saju.pillars && saju.pillars[0] && saju.pillars[0].h);
+      if (tg.length < 2) return '';
+      return '<br><span style="font-size:10px;color:var(--text-dim);line-height:1.65;">시주 <strong style="color:rgba(232,228,218,0.88);font-weight:600;">' + tg + '</strong> ' + (HAN_KOR[tg[0]]||'') + (HAN_KOR[tg[1]]||'') + ' · 표 가장 오른쪽 칸</span>';
+    })();
 
   // 원국 8자 만세력 표
   const order  = [3,2,1,0];
@@ -785,7 +860,8 @@ function renderPersonCard(prefix, info, saju) {
     return "font-family:'Noto Sans KR',sans-serif;font-weight:300;font-size:22px;" + stroke;
   }
   pillarsEl.innerHTML = `
-    <table style="width:100%;border-collapse:collapse;margin-top:8px;table-layout:fixed;">
+    <p style="margin:10px 0 6px;font-size:9.5px;color:var(--text-dim);line-height:1.5;letter-spacing:0.02em;text-align:left;">왼쪽부터 <strong style="color:var(--text-soft);font-weight:600;">년주(연도)</strong> · 월주 · 일주(나) · 시주입니다. <strong style="color:var(--text-soft);font-weight:600;">무진(戊辰)</strong>처럼 보이는 첫 칸은 시가 아니라 년입니다.</p>
+    <table style="width:100%;border-collapse:collapse;margin-top:2px;table-layout:fixed;">
       <tr style="border-bottom:1px solid rgba(199,167,106,0.22);">
         <td style="padding:5px 2px;width:42px;"></td>
         ${order.map((i,li)=>`<td style="text-align:center;padding:5px 4px;color:var(--gold);font-size:10.5px;font-weight:600;letter-spacing:0.04em;">${labels[li]}</td>`).join('')}
@@ -794,7 +870,9 @@ function renderPersonCard(prefix, info, saju) {
         <td style="color:var(--text-dim);font-size:10px;padding:5px 2px;font-weight:600;">십성</td>
         ${order.map((i,li)=>{
           const p = saju.pillars[i];
-          const ss = li===2 ? '일원' : getSS(ds, p.h[0]);
+          const gz = gzString(p && p.h);
+          if (!gz || gz.length < 2) return '<td></td>';
+          const ss = li===2 ? '일원' : getSS(ds, gz[0]);
           return `<td style="text-align:center;padding:3px 3px;"><span style="font-size:10px;background:rgba(199,167,106,0.08);color:var(--text-soft);padding:1px 6px;border-radius:6px;">${ss}</span></td>`;
         }).join('')}
       </tr>
@@ -802,16 +880,20 @@ function renderPersonCard(prefix, info, saju) {
         <td style="color:var(--text-dim);font-size:10px;padding:5px 2px;font-weight:600;">천간</td>
         ${order.map((i,li)=>{
           const p = saju.pillars[i];
-          const col = HAN_COLOR[p.h[0]]||'';
-          return `<td style="text-align:center;padding:6px 2px;"><span class="${col}" style="${_hanjaStyle(p.h[0])}">${p.h[0]}</span><br><span style="font-size:9px;color:var(--text-dim);font-weight:500;">${KOR_MAP[p.h[0]]||''}</span></td>`;
+          const gz = gzString(p && p.h);
+          if (!gz || gz.length < 2) return '<td></td>';
+          const col = HAN_COLOR[gz[0]]||'';
+          return `<td style="text-align:center;padding:6px 2px;"><span class="${col}" style="${_hanjaStyle(gz[0])}">${gz[0]}</span><br><span style="font-size:9px;color:var(--text-dim);font-weight:500;">${KOR_MAP[gz[0]]||''}</span></td>`;
         }).join('')}
       </tr>
       <tr>
         <td style="color:var(--text-dim);font-size:10px;padding:5px 2px;font-weight:600;">지지</td>
         ${order.map((i,li)=>{
           const p = saju.pillars[i];
-          const col = HAN_COLOR[p.h[1]]||'';
-          return `<td style="text-align:center;padding:6px 2px;"><span class="${col}" style="${_hanjaStyle(p.h[1])}">${p.h[1]}</span><br><span style="font-size:9px;color:var(--text-dim);font-weight:500;">${KOR_MAP[p.h[1]]||''}</span></td>`;
+          const gz = gzString(p && p.h);
+          if (!gz || gz.length < 2) return '<td></td>';
+          const col = HAN_COLOR[gz[1]]||'';
+          return `<td style="text-align:center;padding:6px 2px;"><span class="${col}" style="${_hanjaStyle(gz[1])}">${gz[1]}</span><br><span style="font-size:9px;color:var(--text-dim);font-weight:500;">${KOR_MAP[gz[1]]||''}</span></td>`;
         }).join('')}
       </tr>
     </table>`;
