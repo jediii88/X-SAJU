@@ -23,7 +23,15 @@
 <title>사주X — 두 사람의 인연 구조</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Brush+Script&display=swap" rel="stylesheet">
 <style>
+@font-face {
+  font-family: 'Jeongseon Arirang Ppuri';
+  src: url('../report/fonts/JeongseonArirangPpuri.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
 :root {
   --bg: #000;
   --panel: rgba(255,255,255,0.04);
@@ -91,18 +99,36 @@ body::before {
 
 .page-header {
   text-align: center;
-  padding: 36px 20px 20px;
+  padding: 36px 20px 24px;
   border-bottom: 1px solid rgba(199,167,106,0.1);
 }
+/* 개인 리포트 표지(view · hero-brush-title / cover-brush-sub)와 동급 스케일 */
 .page-header .brand {
-  font-size: 11px; letter-spacing: 0.4em;
-  color: var(--text-dim); margin-bottom: 12px;
+  font-size: 15px;
+  font-weight: 300;
+  letter-spacing: 0.35em;
+  color: rgba(255, 255, 255, 0.88);
+  margin-bottom: 14px;
 }
-.page-header h1 { font-size: 22px; font-weight: 300; letter-spacing: 0.05em; line-height: 1.35; }
+.page-header h1 {
+  font-family: 'Jeongseon Arirang Ppuri', 'Nanum Brush Script', cursive;
+  font-size: clamp(28px, 6.5vw, 48px);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.22;
+  color: rgba(244, 246, 250, 0.97);
+  margin: 0 auto;
+  max-width: 760px;
+}
 .page-header .hero-sub {
-  font-size: 12px; font-weight: 300; color: var(--text-dim);
-  max-width: 420px; margin: 14px auto 0; line-height: 1.75;
-  letter-spacing: 0.02em;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 13px;
+  font-weight: 300;
+  color: rgba(210, 214, 223, 0.72);
+  max-width: 520px;
+  margin: 16px auto 0;
+  line-height: 1.75;
+  letter-spacing: 0.06em;
 }
 .compat-section-title {
   display: flex; justify-content: space-between; align-items: center;
@@ -117,12 +143,19 @@ body::before {
   font-size: 11px; color: var(--text-dim); font-weight: 300;
 }
 .compat-person-tag {
-  font-size: 11px; letter-spacing: 0.2em;
-  color: rgba(199,167,106,0.88); margin-bottom: 6px; font-weight: 700;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 13px;
+  font-weight: 300;
+  letter-spacing: 0.28em;
+  color: rgba(210, 214, 223, 0.72);
+  margin-bottom: 8px;
 }
 .compat-person-hint {
-  font-size: 10px; color: var(--text-dim); margin-bottom: 10px;
-  letter-spacing: 0.04em; line-height: 1.5;
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-bottom: 12px;
+  letter-spacing: 0.04em;
+  line-height: 1.55;
 }
 .rel-badge {
   display: inline-block; margin-top: 10px;
@@ -150,10 +183,30 @@ body::before {
 .person-label { font-size: 10px; letter-spacing: 0.2em; margin-bottom: 8px; font-weight: 500; }
 .person-card.a .person-label { color: var(--gold); }
 .person-card.b .person-label { color: var(--gold-soft); }
-.person-name { font-size: 18px; font-weight: 700; margin-bottom: 4px; color: var(--text); }
-.person-ilju { font-size: 22px; font-weight: 300; letter-spacing: 0.05em; margin: 8px 0; }
+.person-name {
+  font-size: 28px;
+  font-weight: 300;
+  letter-spacing: -0.03em;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+.person-ilju {
+  font-size: clamp(20px, 4.8vw, 26px);
+  font-weight: 300;
+  letter-spacing: 0.05em;
+  margin: 10px 0;
+}
 .person-meta { font-size: 11px; color: var(--text-dim); line-height: 1.6; }
-.pillar-mini { display: flex; gap: 3px; margin-top: 10px; }
+/* 만세력 표는 <p> + <table> — flex면 두 요소가 가로로 붙어 십성·천간·지지가 겹침 */
+.pillar-mini {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  margin-top: 10px;
+}
+.pillar-mini table {
+  border-collapse: collapse;
+}
 .pillar-chip { flex: 1; background: rgba(255,255,255,0.05); border-radius: 6px; padding: 5px 2px; text-align: center; }
 .pillar-chip .pn { font-size: 9px; color: var(--text-dim); margin-bottom: 2px; }
 .pillar-chip .pg { font-size: 13px; }
@@ -857,7 +910,7 @@ function renderPersonCard(prefix, info, saju) {
   function _hanjaStyle(ch){
     var isWater = (ch==='壬'||ch==='癸'||ch==='子'||ch==='亥');
     var stroke = isWater ? '-webkit-text-stroke:0.5px rgba(255,255,255,0.7);paint-order:stroke fill;' : '';
-    return "font-family:'Noto Sans KR',sans-serif;font-weight:300;font-size:22px;" + stroke;
+    return "font-family:'Noto Sans KR',sans-serif;font-weight:300;font-size:19px;" + stroke;
   }
   pillarsEl.innerHTML = `
     <p style="margin:10px 0 6px;font-size:9.5px;color:var(--text-dim);line-height:1.5;letter-spacing:0.02em;text-align:left;">왼쪽부터 <strong style="color:var(--text-soft);font-weight:600;">년주(연도)</strong> · 월주 · 일주(나) · 시주입니다. <strong style="color:var(--text-soft);font-weight:600;">무진(戊辰)</strong>처럼 보이는 첫 칸은 시가 아니라 년입니다.</p>
