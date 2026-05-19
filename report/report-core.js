@@ -5254,7 +5254,7 @@ function buildConnectedLifeArcParagraphs(data, ctx) {
     }
 
     function stagePara(lo, hi, seed, label, bodyHtml) {
-        var beat = sajuxLifeArcBeatForRange(data, lo, hi, seed);
+        var beat = sajuxLifeArcBeatPlain(data, lo, hi, seed);
         var html = (beat ? beat + ' ' : '') + '<strong>' + label + '</strong>에는 ' + bodyHtml + msInline(lo, hi);
         return ctx.para(html);
     }
@@ -5286,7 +5286,7 @@ function buildConnectedLifeArcParagraphs(data, ctx) {
         '첫 직장·자취·연애 같은 굵직한 결정이 ' + nmEulReul(nm) + ' 받쳐 주기 쉬운 흐름입니다. ',
         '첫 사회 진입에서 한 번 흔들려도, 그 학습이 다음 안착의 자산이 됩니다. ',
         '작은 결정들이 차곡차곡 쌓여 방향을 잡는 흐름입니다. ')
-        + nmUi(nm) + '의 강점 “' + ctx.strengthRaw + '”이 시장에서 처음 확인되는 시기이고, ' + nmDnim(nm) + '은 ' + ctx.dominantSip + '이세요. '
+        + nmUi(nm) + '의 강점 “' + ctx.strengthRaw + '”이 밖에서 처음 인정받기 쉬운 시기이고, ' + nmDnim(nm) + '은 ' + ctx.dominantSip + '. '
         + ctx.decisionLine;
 
     var pJ = ctx.tonePhrase(tJ,
@@ -5300,7 +5300,7 @@ function buildConnectedLifeArcParagraphs(data, ctx) {
         '평생 평판이 한꺼번에 결실로 돌아오는 흐름이기도 합니다. ',
         '건강·가족을 동시에 챙기셔야 하는 무거운 어깨의 시기입니다. ',
         '50대에 시작한 일이 60대의 명함이 될 수 있는 후반전이 열립니다. ')
-        + '자녀·부모·본업·재정의 줄기가 한꺼번에 몰려오는 시기라, 무리한 확장보다 지키는 쪽이 ' + nmUi(nm) + ' 사주와 맞습니다. '
+        + '자녀·부모·본업·돈이 한꺼번에 몰려오는 시기라, 무리하게 새로 벌리기보다 지금 있는 걸 지키는 편이 낫습니다. '
         + '후반에 가면 비로소 “진짜 ' + nmUi(nm) + ' 시간”이 돌아옵니다.';
 
     var pN = ctx.tonePhrase(tN,
@@ -5450,7 +5450,7 @@ function buildPersonalPortraitInnerHtml(data) {
         ? '“스스로 결정하고 끝까지 책임지는” 방식'
         : '“충분히 살피고 함께 만들어 가는” 방식';
 
-    var introText = nmDnim(name) + '의 인생을 <strong>한 호흡</strong>으로 이어 읽어 드릴게요. 유년기부터 차례대로 쓰되, 어려운 말은 줄이고 “그때 뭐가 일어나기 쉬운지”만 따라가시면 됩니다. 대운·세운은 처음부터 끝까지 계산해 두었고, 그중 특히 눈에 띄는 해는 문장 안에 자연스럽게 끼워 넣었어요.';
+    var introText = nmDnim(name) + '의 인생을 <strong>한 호흡</strong>으로 이어 읽어 드릴게요. 사주 용어는 쓰지 않고, <strong>그때 무슨 일이 생기기 쉬운지·그래서 뭐가 남는지</strong>만 말씀드립니다.';
 
     function para(text) { return buildNarrativePara(data, text); }
 
@@ -5890,6 +5890,41 @@ function sajuxLifeArcBeatForRange(data, lo, hi, seed) {
     ], seed + '|beat');
 }
 
+/** 인생 서사용 — 10년 흐름을 결과만 짧게(간지·대운·용신 등 미노출) */
+function sajuxLifeArcBeatPlain(data, lo, hi, seed) {
+    var rows = data.daeunRows || data.daewunList || [];
+    var hits = [];
+    for (var i = 0; i < rows.length; i++) {
+        var p = sajuxParseDaeunRow(rows[i]);
+        if (!p.g || !p.j) continue;
+        if (p.age + 9 < lo || p.age > hi) continue;
+        hits.push({ p: p, sc: sajuxFortuneScore(data, p.g, p.j) });
+    }
+    if (!hits.length) return '';
+    hits.sort(function (a, b) { return a.p.age - b.p.age; });
+    var main = hits[0];
+    for (var h = 1; h < hits.length; h++) {
+        if (Math.abs(hits[h].sc) > Math.abs(main.sc)) main = hits[h];
+    }
+    var sc = main.sc;
+    if (sc >= 2) {
+        return pickVoiceLine([
+            lo + '세부터 ' + hi + '세 사이는 일·이름·돈이 붙기 쉬운 시기로 읽힙니다.',
+            '이 무렵(' + lo + '~' + hi + '세)은 밀려 두었던 일을 매듭지우기 좋고, 밖에 드러나도 부담이 적은 편입니다.'
+        ], seed + '|beatp+');
+    }
+    if (sc <= -2) {
+        return pickVoiceLine([
+            lo + '세부터 ' + hi + '세 사이는 몸·돈·일 중 한곳에 무게가 실리기 쉬운 시기입니다. 크게 벌리기보다 지키는 쪽이 낫습니다.',
+            '이 무렵(' + lo + '~' + hi + '세)은 무리한 확장보다 회복·정리·계약 점검이 먼저입니다.'
+        ], seed + '|beatp-');
+    }
+    return pickVoiceLine([
+        lo + '세부터 ' + hi + '세 사이는 큰 사건 하나보다 작은 약속이 쌓이는 시기입니다.',
+        '이 무렵(' + lo + '~' + hi + '세)은 화려한 도약보다 하루 루틴이 삶을 바꿉니다.'
+    ], seed + '|beatp0');
+}
+
 /** ═══ 인생 큰 이정표 — 전 운 계산 후 고득점만 서사화 ═══ */
 var SAJUX_GAN_HJ_CYCLE = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
 var SAJUX_JI_HJ_CYCLE  = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
@@ -6051,73 +6086,51 @@ function sajuxMilestoneChungAxisText(chungLabels) {
     return axes.join(' · ');
 }
 
-/** 한 줄기 서사 안에 끼워 넣는 짧은 문장 — 박스·라벨 없이, 10대도 읽기 쉬운 말 */
+/** 인생 서사·이정표 — 계산은 사주로, 문장은 결과만(용어 없음) */
+function sajuxMilestonePlainClause(data, m) {
+    if (!m || !m.g || !m.j) return '';
+    var a = sajuxAnalyzePeriod(data, m.g, m.j);
+    var tier = sajuxMilestoneTierKey(m.age);
+    var out = sajuxMilestoneMergedOutcome(a, tier);
+    var chung = sajuxNatalChungHits(data, m.j);
+    var fruitBit = (out.fruit.split('·')[0] || out.fruit).replace(/\([^)]*\)/g, '').replace(/<[^>]+>/g, '').trim();
+
+    if (chung.length) {
+        if (tier === 'child') return '이사·부모 일·학교·몸 상태 중 하나가 크게 움직일 수 있어요';
+        if (tier === 'teen') return '전학·가족·연애·진로 중 하나를 크게 고르게 될 수 있어요';
+        return '이사·직장·관계·계약 중 하나가 갈라지고, 그때 고른 길이 몇 년 남아요';
+    }
+    if (a.giHit || a.score <= -2) {
+        if (tier === 'child') return '몸살·불면·집안 분위기처럼 무거운 일이 붙을 수 있어요. 어른이 일정·병원·학교만 먼저 정리해 주시면 반쯤은 나아집니다';
+        if (tier === 'teen') return '시험·친구·가족 중 한곳에서 마음이 무겁게 느껴질 수 있어요. 혼자 끌어안지 말고 믿을 어른 한 명과 일주일 안에 정리해 보세요';
+        return '돈·건강·직장·관계 중 한곳에 무게가 실릴 수 있어요. 크게 벌리기보다 지키는 편이 낫습니다';
+    }
+    if (a.yongHit || a.score >= 2) {
+        return fruitBit + ' 가능성이 큽니다';
+    }
+    if (fruitBit) return fruitBit + ' 쪽으로 마무리되기 쉬워요';
+    return '겉으로는 잔잔해도 속에서 정리가 진행되기 쉬워요';
+}
+
 function sajuxMilestoneFlowWeave(data, m) {
     if (!m || !m.g || !m.j) return '';
     var a = sajuxAnalyzePeriod(data, m.g, m.j);
-    var nm = data.name || '고객';
-    var age = m.age;
-    var tier = sajuxMilestoneTierKey(age);
-    var out = sajuxMilestoneMergedOutcome(a, tier);
-    var chung = sajuxNatalChungHits(data, m.j);
     var when = m.kind === 'daeun'
         ? (m.age + '세부터 ' + (m.ageEnd != null ? m.ageEnd : m.age + 9) + '세 무렵')
-        : ((m.year ? m.year + '년 ' : '') + age + '세쯤');
-    var fruitBit = (out.fruit.split('·')[0] || out.fruit).replace(/\([^)]*\)/g, '').trim();
-
-    if (chung.length) {
-        if (tier === 'child') {
-            return ' 그중 ' + when + '에는 집·학교·가족 기운이 부딪혀 이사·부모 일·몸 상태 중 하나가 튀기 쉬우세요.';
-        }
-        if (tier === 'teen') {
-            return ' 그중 ' + when + '에는 주변이 한 번 흔들려 전학·가족·연애·진로 중 하나를 크게 고르게 되기 쉬우세요.';
-        }
-        return ' 그중 ' + when + '에는 ' + (sajuxMilestoneChungAxisText(chung) || '삶의 한 축') + '이 흔들려 이사·직장·관계·계약 중 하나가 갈라지기 쉬우시고, 그때 고르신 길이 몇 년은 남아요.';
-    }
-
-    if (a.giHit || a.score <= -2) {
-        if (tier === 'child') {
-            return ' 다만 ' + when + '에는 몸살·불면·집안 분위기처럼 무거운 일이 붙기 쉬운 해예요. 어른이 먼저 일정·병원·학교만 정리해 주시면 아이에게는 반쯤 회복됩니다.';
-        }
-        if (tier === 'teen') {
-            return ' 다만 ' + when + '에는 시험·친구·가족 중 한곳에서 마음이 무겁게 느껴지기 쉬운 해예요. 혼자 끌어안지 말고, 믿을 어른 한 명과 일주일 안에 정리해 보세요.';
-        }
-        return ' 다만 ' + when + '에는 기신(忌, 나를 지치게 하는 기운)이 겹쳐 돈·건강·직장·관계 중 한곳에 무게가 실리기 쉬우세요. 크게 벌리기보다 지키는 쪽이 ' + nmUi(nm) + ' 사주와 맞습니다.';
-    }
-
-    if (a.yongHit || a.score >= 2) {
-        return ' 특히 ' + when + '에는 ' + nmIGa(nm) + ' 바라던 일—' + fruitBit + '—에 손이 닿기 쉬운 해로 잡혀요.';
-    }
-
-    var sceneBit = out.scene.replace(/체험|니다|습니다|해입니다/g, '').trim();
-    if (sceneBit.length > 48) sceneBit = sceneBit.slice(0, 48) + '…';
-    return ' ' + when + '엔 ' + sceneBit + '기 쉽고, ' + fruitBit + ' 쪽으로 마무리되기도 해요.';
+        : ((m.year ? m.year + '년 ' : '') + m.age + '세쯤');
+    var clause = sajuxMilestonePlainClause(data, m);
+    if (!clause) return '';
+    if (a.giHit || a.score <= -2) return ' 다만 ' + when + '에는 ' + clause + '.';
+    return ' 그중 ' + when + '에는 ' + clause + '.';
 }
 
-/** “경험 + 성취” 두 줄 — 이정표 타임라인 카드용(본문 한 호흡과 분리) */
 function sajuxMilestoneExperienceAchievement(data, m, a, cat, chung) {
-    var tier = sajuxMilestoneTierKey(m.age);
-    var out = sajuxMilestoneMergedOutcome(a, tier);
-    var yongNote = a.yongHit ? ' 용신(用)이 받쳐 주어 체감이 평소보다 빠릅니다.' : '';
-    var chungAxis = sajuxMilestoneChungAxisText(chung);
-
-    if (chung.length && chungAxis) {
-        return '<strong>겪기 쉬운 경험</strong> — ' + chung.join('·') + '와 지지 충(沖)으로 <strong>'
-            + chungAxis + '</strong> 축이 ' + (m.year ? m.year + '년 ' : '') + m.age + '세 전후에 한 번 흔들립니다. '
-            + '<strong>맺어지기 쉬운 결과</strong> — ' + out.fruit
-            + ' (그해의 선택·이사·계약·관계 통보가 이후 3~5년을 가릅니다).' + yongNote;
-    }
-
-    if (cat === 'trial' || a.giHit) {
-        return '<strong>겪기 쉬운 경험</strong> — ' + out.scene
-            + ' 다만 기신(忌) 쪽이라 체력·돈·관계 중 한 곳에서 무게가 먼저 옵니다. '
-            + '<strong>맺어지기 쉬운 결과</strong> — 크게 벌기보다 지키기·회복·계약 정리가 성과에 가깝습니다.'
-            + (tier === 'adult' ? ' 여기서 무너지지 않으시면 다음 대운에서 같은 노력이 더 잘 붙습니다.' : '');
-    }
-
-    return '<strong>겪기 쉬운 경험</strong> — ' + out.scene + '. '
-        + '<strong>맺어지기 쉬운 결과</strong> — ' + out.fruit + '.' + yongNote;
+    var when = m.kind === 'daeun'
+        ? (m.age + '세~' + (m.ageEnd != null ? m.ageEnd : m.age + 9) + '세')
+        : ((m.year ? m.year + '년 ' : '') + m.age + '세');
+    return when + ' — ' + sajuxMilestonePlainClause(data, m) + '.';
 }
+
 
 function sajuxMilestoneAgeCat(age, cat, a) {
     var st = sajuxLifeStageForAge(age);
@@ -6146,31 +6159,20 @@ function sajuxMilestoneActionHint(data, cat, age, a, chung) {
     if (cat === 'trial' || a.giHit) return '새 투자·큰 약속은 미루고, 건강 검진·계약 갱신만 챙기셔도 충분합니다';
     if (cat === 'wealth') return '그해 수입·지출 한 줄 + 큰 지출 상한액만 정해 두십시오';
     if (cat === 'career') return '맡은 역할을 한 문장으로 적어 두고, 그 밖 요청은 “내년”으로 미루십시오';
-    return '위 <strong>맺어지기 쉬운 결과</strong>와 맞는 일 한 가지만 골라, 그해 안에 끝까지 가 보십시오';
+    return '위 결과와 맞는 일 한 가지만 골라, 그해 안에 끝까지 가 보십시오';
 }
 
 function sajuxMilestoneConcreteLine(data, m) {
     if (!m || !m.g || !m.j) return '';
-    var a = sajuxAnalyzePeriod(data, m.g, m.j);
-    var nm = data.name || '고객';
     var age = m.age;
-    var cat = sajuxMilestoneAgeCat(age, m.cat || 'flow', a);
+    var cat = sajuxMilestoneAgeCat(age, m.cat || 'flow', sajuxAnalyzePeriod(data, m.g, m.j));
     var chung = sajuxNatalChungHits(data, m.j);
     var when = m.kind === 'daeun'
-        ? (m.age + '세~' + (m.ageEnd != null ? m.ageEnd : m.age + 9) + '세(10년 대운)')
-        : ((m.year ? m.year + '년 ' : '') + age + '세(그 해 세운)');
-    var kindNote = m.kind === 'daeun' ? '10년 바탕' : '그 해 겹침';
-    var mech = '<strong>' + a.gzKr + '</strong> — ' + SAJUX_OH_KR_LONG[a.ganOh] + '·' + SAJUX_OH_KR_LONG[a.jiOh] + '(' + kindNote + ')';
-    if (a.yongHit) mech += '이 ' + nmUi(nm) + ' 용신(用)과 맞물리고';
-    else if (a.heeHit) mech += '이 희신(喜)으로 받쳐 주며';
-    else if (a.giHit) mech += '이 기신(忌)·구신(仇) 쪽으로 무겁고';
-    else mech += '이 원국과 맞닿아';
-    if (a.sipGan) mech += ', 천간 십성 <strong>' + a.sipGan + '</strong>';
-    if (a.sipJi && a.sipJi !== a.sipGan) mech += '·지지 <strong>' + a.sipJi + '</strong>';
-    mech += '으로 ' + a.gil.tag + ' 흐름입니다';
-    var what = sajuxMilestoneWhatHappens(data, m, a, cat, chung);
-    var act = sajuxMilestoneActionHint(data, cat, age, a, chung);
-    return when + ' · ' + mech + '. ' + what + ' ' + act;
+        ? (m.age + '세~' + (m.ageEnd != null ? m.ageEnd : m.age + 9) + '세')
+        : ((m.year ? m.year + '년 ' : '') + age + '세');
+    var body = sajuxMilestonePlainClause(data, m);
+    var act = sajuxMilestoneActionHint(data, cat, age, sajuxAnalyzePeriod(data, m.g, m.j), chung);
+    return when + ' — ' + body + '. ' + act;
 }
 
 function sajuxMilestoneThemeLine(data, cat, ageLo, ageHi, yr, mOpt) {
