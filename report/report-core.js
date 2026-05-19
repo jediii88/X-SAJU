@@ -3878,50 +3878,18 @@ function ensureSajuxPdfPrintForceStyles() {
     box-shadow: none !important;
   }
 
-  /* 지장간, 십성 배지, 태그 — 배경만 */
-  .jijanggan, .jijanggan span, .jijanggan div,
-  .badge, .tag, .m-badge, .m-badge-shinsal, .m-badge--gongmang-hit,
-  .highlight, [class*="badge"], [class*="tag"] {
-    background: #ffffff !important;
-    background-color: #ffffff !important;
-    border: 1px solid #999999 !important;
+  /* PDF 문서형 — 카드 UI 제거 (report-print.css와 동일) */
+  .card, .glass-panel, .yearly-card, .monthly-card, .sajux-glass-heavy,
+  [class*="card"], #report-container div[style*="background:rgba"],
+  #report-container div[style*="border-left"] {
+    background: transparent !important;
+    border: none !important;
+    border-left: none !important;
+    border-radius: 0 !important;
     box-shadow: none !important;
     backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
   }
-
-  /* 카드·내부 박스 — 배경만 (글자색 건드리지 않음) */
-  .card, .yearly-card, .monthly-card, .module-item,
-  .inner-card, .detail-box, .content-box,
-  .sajux-print-surface, .report-inner-box,
-  .vip-evidence-block table,
-  .manse-cell, .manse-table,
-  [class*="box"]:not(.checkbox):not(.search-box),
-  [class*="card"] {
-    background: #ffffff !important;
-    background-color: #ffffff !important;
-    border: 1px solid #cccccc !important;
-    box-shadow: none !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-  }
-
-  /* report-core 인라인 반투명 박스 */
-  #report-container div[style*="background:rgba(255,255,255"],
-  #report-container div[style*="background:rgba(0,0,0"],
-  #report-container div[style*="background:rgba(199,167,106"],
-  #report-container div[style*="background:rgba(231,76,60"],
-  .sajux-panel-plain, .deep-hook-panel, .premium-executive-summary,
-  #sec-life-panorama, .sajux-gongmang-note {
-    background: #ffffff !important;
-    background-color: #ffffff !important;
-    border: 1px solid #cccccc !important;
-    box-shadow: none !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-  }
+  .badge, .tag, .m-badge { background: transparent !important; border: none !important; }
 
   .m-hanja, .vip-hanja, .report-pillar-hanja, .hanja-main {
     font-family: 'Noto Sans KR', sans-serif !important;
