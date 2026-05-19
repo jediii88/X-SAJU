@@ -5331,56 +5331,63 @@ function buildPersonalPortraitInnerHtml(data) {
     var tN   = periodTone(70, 89);      // 노년기
     var tMan = periodTone(90, 120);     // 극노년
 
+    var arcYou = sajuxLifeArcBeatForRange(data, 0, 13, name + 'you');
     // 유년기 — 첫 풍경 + 또래 첫 만남
-    var pYou = '<strong>유년기</strong> — ' + nmDnim(name) + '은 ' + birthScene + '. ' + (firstImpression ? '그 시절의 ' + nmDnim(name) + '은 어른들의 눈에 “' + firstImpression + '” 같은 인상이었을 가능성이 큽니다. ' : '')
+    var pYou = (arcYou ? arcYou + ' ' : '') + '<strong>유년기</strong> — ' + nmDnim(name) + '은 ' + birthScene + '. ' + (firstImpression ? '그 시절의 ' + nmDnim(name) + '은 어른들의 눈에 “' + firstImpression + '” 같은 인상이었을 가능성이 큽니다. ' : '')
         + tonePhrase(tYou,
             '큰 사고나 떠들썩한 사건은 거의 없었고, 가족의 따뜻한 시선이 ' + nmEulReul(name) + ' 든든히 받쳐 줍니다. 그때 받은 작은 칭찬 한 줄이 사실 평생 가는 자존감의 가장 깊은 바닥에 깔립니다. ',
             '이사·전학·집안 사정의 변화가 한두 번 따라왔을 수 있어요. 안정보다 변화에 먼저 적응해야 했던 그 시기 덕분에 — ' + nmDnim(name) + '은 또래보다 일찍 어른의 표정을 읽는 법을 익히셨습니다. ',
             '잔잔한 시기였지만, 그 잔잔함 속에서 어린 ' + nmDnim(name) + '은 “나는 어떤 사람일까”라는 물음을 이미 마음 한구석에 품기 시작하셨습니다. ')
         + '초등학교에 들어가신 뒤로는 또래 사이에서 “조용하지만 속이 깊은 아이”로 기억되셨을 가능성이 큽니다. 친구들이 떠들썩하게 어울릴 때도 한 발 떨어져 그 흐름을 지켜보는 편이었고, 그 자리에서 또래보다 한 박자 일찍 “사람의 마음”에 눈을 뜨셨어요. 작은 일에서도 의미를 캐내는 그 습관이, 사실 평생 ' + nmUi(name) + ' 깊이 보는 안목의 첫 뿌리가 됩니다.';
 
+    var arcChu = sajuxLifeArcBeatForRange(data, 14, 19, name + 'chu');
     // 청소년기 — 자아의 출발 + 첫인상/속내
-    var pChu = '<strong>청소년기</strong>에 접어드시면 ' + nmUi(name) + ' 자아가 본격적으로 첫 모습을 드러냅니다. 겉으로 보기엔 ' + (firstImpression || '진중한 분') + '의 이미지가 굳어 가지만, 속내는 한참 달랐어요. ' + (inSelfNote || '겉과 속이 다른 이중성을 일찍부터 안고 사신 시기') + '. '
+    var pChu = (arcChu ? arcChu + ' ' : '') + '<strong>청소년기</strong>에 접어드시면 ' + nmUi(name) + ' 자아가 본격적으로 첫 모습을 드러냅니다. 겉으로 보기엔 ' + (firstImpression || '진중한 분') + '의 이미지가 굳어 가지만, 속내는 한참 달랐어요. ' + (inSelfNote || '겉과 속이 다른 이중성을 일찍부터 안고 사신 시기') + '. '
         + tonePhrase(tChu,
             '이 시기에 학교든 동아리든 아르바이트든 — ' + nmEulReul(name) + ' 알아봐 주는 어른이나 선배가 한 명 등장하고, 그분의 한 마디가 첫 진로 선택을 빠르게 만들어요. 또래 친구 중 한 명은 평생을 같이 가는 인연이 되는 시기이기도 합니다. ',
             '진로 선택을 두고 부모님과 한 번 깊게 부딪치셨을 가능성이 큽니다. 가고 싶은 길과 부모님이 원하시는 길이 어긋났을 수 있고, 첫 사랑이나 첫 친한 친구 관계에서도 한 번 크게 다치셨을 수 있어요. 그 흔들림이 결국 ' + nmUi(name) + ' 세상을 보는 눈을 깊이 만듭니다. ',
             '큰 풍파 없이도 “나는 어떤 사람인가”라는 질문을 일찍부터 마음에 품기 시작하시고, 답을 빨리 내리지 않으셔도 그 질문 자체가 평생 ' + nmEulReul(name) + ' 받치는 축이 됩니다. ')
         + '“관심 있는 한 가지에는 폭발적으로 빠지고, 그 외에는 적당히 흘려보내는” 패턴이 이 무렵 또렷해지고, 그 패턴은 평생 ' + nmUi(name) + ' 본 모습으로 따라옵니다.';
 
+    var arcCh = sajuxLifeArcBeatForRange(data, 20, 34, name + 'ch');
     // 청년기 — 사회 진출 + 강점 발견
-    var pCh = '<strong>청년기</strong>로 접어드시면 비로소 사회의 문 앞에 서시게 됩니다. ' + nmUi(name) + ' 가장 큰 강점이 “' + strengthRaw + '”이라는 것이 이 시기에 처음 시장에서 확인되고, ' + nmDnim(name) + '은 ' + dominantSip + '이세요. 이 강점은 누가 가르쳐 준 것이 아니라 태어나실 때 이미 안에 새겨져 있던 자질이라, 노력으로 키운 능력과는 질감 자체가 다릅니다. '
+    var pCh = (arcCh ? arcCh + ' ' : '') + '<strong>청년기</strong>로 접어드시면 비로소 사회의 문 앞에 서시게 됩니다. ' + nmUi(name) + ' 가장 큰 강점이 “' + strengthRaw + '”이라는 것이 이 시기에 처음 시장에서 확인되고, ' + nmDnim(name) + '은 ' + dominantSip + '이세요. 이 강점은 누가 가르쳐 준 것이 아니라 태어나실 때 이미 안에 새겨져 있던 자질이라, 노력으로 키운 능력과는 질감 자체가 다릅니다. '
         + tonePhrase(tCh,
             '첫 직장·첫 자취·첫 큰 연애 — 굵직한 결정들이 의외로 ' + nmEulReul(name) + ' 받쳐 줍니다. 작은 성공 하나가 “나는 이 길로 가도 되겠구나”라는 확신을 키워 주고, 그 확신이 다음 단계 자리잡기의 토양이 됩니다. ',
             '첫 사회 진입에서 한 번 크게 흔들리시거나, 첫 직장이 오래 가지 못할 수 있어요. 그때의 학습이 다음 단계에 진짜 자기 자리를 찾을 때의 가장 큰 자산이 되니, 그 흔들림은 부끄러운 일이 아닙니다. ',
             '큰 도약보다 작은 결정들이 차곡차곡 쌓이는 흐름이에요. 한 번에 자리잡지는 못하셔도, 이 10여 년 동안 만난 사람·해 본 일들이 다음 단계의 진짜 정착을 위한 재료가 됩니다. ')
         + decisionLine + '. 큰 결정의 무게가 점점 늘어나는 시기라, 이 패턴을 일찍 알아채시는 것만으로도 평생의 자산이 됩니다.';
 
+    var arcJ = sajuxLifeArcBeatForRange(data, 35, 49, name + 'jang');
     // 장년기 — 자리잡기·결혼 + 인생의 중간점·재정의
-    var pJ = '<strong>장년기</strong>에 들어서면 ' + nmUi(name) + ' 본 모습이 사회에서 가장 활발하게 펼쳐집니다. 직업·결혼·이주·창업·자녀 같은 굵직한 결정이 한꺼번에 몰려와요. ' + relationLine + '. '
+    var pJ = (arcJ ? arcJ + ' ' : '') + '<strong>장년기</strong>에 들어서면 ' + nmUi(name) + ' 본 모습이 사회에서 가장 활발하게 펼쳐집니다. 직업·결혼·이주·창업·자녀 같은 굵직한 결정이 한꺼번에 몰려와요. ' + relationLine + '. '
         + tonePhrase(tJ,
             '평생 일군 노력이 처음으로 또렷한 결실로 돌아오고, 30대 후반에서 40대 후반 사이에 ' + nmUi(name) + ' 이름이 적힌 통장·집·작품 가운데 하나가 자리를 잡습니다. ' + (careerRaw ? '특히 ' + careerRaw + ' 분야의 일이 ' + nmUi(name) + ' 기질과 가장 잘 맞아, 그 안에서 두 배쯤 빠르게 자리를 잡으십니다. ' : ''),
             '결혼이 늦춰지거나 한 번 깊은 학습을 거쳐 진짜 짝을 만나시는 흐름일 수 있어요. 직장에서도 “이게 정말 내 자리인가”를 자주 묻게 되시지만, 그 학습이 장년기 후반의 단단한 안착을 가능하게 합니다. ',
             '화려한 도약보다 한 걸음씩 자기 자리를 다지는 흐름이고, 이 시기를 다 지나고 나서야 비로소 ' + nmDnim(name) + '만의 색이 시장에서 인정받기 시작합니다. 그때가 사실상의 “진짜 시작”이에요. ')
         + '동시에 이 시기는 인생의 중간점 — ' + nmIGa(name) + ' 자주 부딪히시는 벽인 “' + weaknessRaw + '”이 가장 또렷이 모습을 드러내는 자리이기도 합니다. ' + (emptyNote ? emptyNote + '. ' : '') + '강한 기질의 뒷면에는 늘 그 그늘이 따라오니, 약점이라며 부끄러워하실 일은 아니에요. 미리 알아채시는 것만으로도 그 그늘은 절반쯤 약해집니다.';
 
+    var arcM = sajuxLifeArcBeatForRange(data, 50, 69, name + 'jung');
     // 중년기 — 책임의 무게 + 자유 회복
-    var pM = '<strong>중년기</strong>에 들어서면 인생에서 가장 어깨가 무거운 자리에 서시게 됩니다. 자녀가 있다면 그 진로 결정, 부모님의 건강, 본업의 마무리·전환, 재정의 큰 줄기가 한꺼번에 몰려와요. 위로는 부모님 세대의 마무리를 봐 드리고, 아래로는 후배·자녀의 자리를 받쳐 주셔야 하는 — 인생에서 가장 무거운 어깨의 시기입니다. '
+    var pM = (arcM ? arcM + ' ' : '') + '<strong>중년기</strong>에 들어서면 인생에서 가장 어깨가 무거운 자리에 서시게 됩니다. 자녀가 있다면 그 진로 결정, 부모님의 건강, 본업의 마무리·전환, 재정의 큰 줄기가 한꺼번에 몰려와요. 위로는 부모님 세대의 마무리를 봐 드리고, 아래로는 후배·자녀의 자리를 받쳐 주셔야 하는 — 인생에서 가장 무거운 어깨의 시기입니다. '
         + tonePhrase(tM,
             '평생 일군 평판이 한꺼번에 결실로 돌아오는 흐름이라, 50대 후반·60대 초반에 “이름이 적힌 한 줄” — 한 권의 책, 한 사람의 제자, 한 채의 집 — 그 결과가 손에 잡힙니다. ',
             '건강과 가족을 동시에 챙기셔야 하는 시기예요. 50대 초반의 건강 검진을 절대 미루지 마시고, 한 가지 만성 신호가 보이면 그때부터 “관리의 습관”으로 넘어가셔야 합니다. ',
             '안쪽보다 바깥에서 새 무대가 한 번 더 열리는 흐름이라, 50대에 시작한 일이 60대의 명함이 될 수 있어요. 너무 일찍 “다 끝났다”고 마음 놓지 마십시오. ')
         + '이 시기의 후반에 접어들면 자녀(있다면)가 독립하고 회사도 자리를 정리하면서, 비로소 “진짜 ' + nmUi(name) + ' 시간”이 다시 돌아옵니다. 평생 “나만의 색을 인정받는 자리”를 가장 중요하게 여겨 오신 분이라, 이때야말로 그 색이 처음으로 자유로워지는 자리예요.';
 
+    var arcN = sajuxLifeArcBeatForRange(data, 70, 89, name + 'no');
     // 노년기 — 본 모습이 자연스러워지고 본질이 또렷이 드러남
-    var pN = '<strong>노년기</strong>에 접어드시면 외부의 책임이 한 발 멀어지고, ' + nmDnim(name) + '의 진짜 본 모습이 가장 자연스럽게 드러납니다. 일을 대하실 때 늘 ' + workLine + '으로 살아오신 분이라, 이 시기에도 한가하게 흘려보내기보다는 “덜 무거운, 그러나 의미 있는 한 가지”에 손을 두십니다. '
+    var pN = (arcN ? arcN + ' ' : '') + '<strong>노년기</strong>에 접어드시면 외부의 책임이 한 발 멀어지고, ' + nmDnim(name) + '의 진짜 본 모습이 가장 자연스럽게 드러납니다. 일을 대하실 때 늘 ' + workLine + '으로 살아오신 분이라, 이 시기에도 한가하게 흘려보내기보다는 “덜 무거운, 그러나 의미 있는 한 가지”에 손을 두십니다. '
         + tonePhrase(tN,
             '몸이 따라 주는 만큼, 후배·자녀·제자 한 명에게 ' + nmDnim(name) + '의 한 마디가 인생을 바꾸는 일이 일어납니다. 그 일이 평생 가장 큰 보람이 되어 줘요. ',
             '몸의 신호가 본격적으로 시작되니, 무리한 일정보다 회복의 시간이 가장 큰 자산이 됩니다. 작은 산책·일정한 식사·짧은 낮잠 같은 단순한 리듬이 ' + nmEulReul(name) + ' 가장 오래 가게 합니다. ',
             '큰 행사 없이 일상의 깊이가 ' + nmUi(name) + ' 노년을 빛냅니다. 한 권의 책, 한 사람과의 산책, 한 끼의 정성스러운 식사 — 그런 작은 일들이 사실 평생의 결실입니다. ')
         + '시간이 더 지나면 외부 무대는 거의 정리되고, ' + nmDnim(name) + '의 진짜 본질이 풍경처럼 펼쳐집니다. ' + (coreLine ? '“' + coreLine + '” — ' + nmDnim(name) + '을 한 줄로 정리하는 이 인상이 이때만큼 ' + nmEulReul(name) + ' 닮은 적이 없습니다. ' : '') + '이 시기에 ' + nmEulReul(name) + ' 찾아오는 사람들은 더 이상 ' + nmUi(name) + ' 직책이나 성취가 아니라 ' + nmUi(name) + ' “사람 그 자체”를 보러 옵니다.';
 
+    var arcMan = sajuxLifeArcBeatForRange(data, 90, 120, name + 'man');
     // 인생 후반(황혼 무렵) — 깊이 + 마지막 장면·유산
-    var pMan = '<strong>' + voiceTwilightChapter(name + 'pMan') + '</strong>에 닿으시면 시간이 천천히 흐르고, 작은 일 하나하나가 큰 의미가 됩니다. 평생 ' + nmUi(name) + ' 마음을 풀어 놓으실 자리가 의외로 적었던 분이라, 이 시기에 와서야 비로소 “있는 그대로의 ' + nmDnim(name) + '”으로 살아 보시는 자유가 따라옵니다. 손에 잡히는 것들 — 책 한 권, 차 한 잔, 창밖의 햇살 — 그런 가벼운 것들의 무게가 가장 크게 다가오는 때예요. '
+    var pMan = (arcMan ? arcMan + ' ' : '') + '<strong>' + voiceTwilightChapter(name + 'pMan') + '</strong>에 닿으시면 시간이 천천히 흐르고, 작은 일 하나하나가 큰 의미가 됩니다. 평생 ' + nmUi(name) + ' 마음을 풀어 놓으실 자리가 의외로 적었던 분이라, 이 시기에 와서야 비로소 “있는 그대로의 ' + nmDnim(name) + '”으로 살아 보시는 자유가 따라옵니다. 손에 잡히는 것들 — 책 한 권, 차 한 잔, 창밖의 햇살 — 그런 가벼운 것들의 무게가 가장 크게 다가오는 때예요. '
         + tonePhrase(tMan,
             '늦은 인정이 또 한 번 따라옵니다. 그게 사회적인 상이든, 가족이 전하는 한 마디든 — 평생 가장 진한 자국으로 남습니다. ',
             '몸이 마음만큼 따라 주지 않는 때지만, ' + nmDnim(name) + '의 마음 안쪽 풍경은 평생 가장 평화로워집니다. ',
@@ -5391,10 +5398,13 @@ function buildPersonalPortraitInnerHtml(data) {
 
     function para(text) { return buildNarrativePara(data, text); }
 
+    var gilHeungMap = (typeof buildLifeGilHeungMapHtml === 'function') ? buildLifeGilHeungMapHtml(data) : '';
+
     return '<p class="personal-portrait-eyebrow">' + escHtmlAttr(nmDnim(name)) + ' · 한 줄기 서사</p>'
         + '<h2 class="personal-portrait-title">처음 숨부터, 마침표까지</h2>'
         + '<p class="personal-portrait-lede">' + voiceTwilightSpan(name + 'portraitLede') + ' — 이름 없이도 읽히는 한 사람의 흐름</p>'
         + para(introText)
+        + gilHeungMap
         + para(pYou)
         + para(pChu)
         + para(pCh)
@@ -5576,74 +5586,17 @@ function sajuxYongsinLayerNote(data, g, j, seed) {
     ], seed + '|yong');
 }
 function sajuxDescribeGzPair(data, g, j, seed) {
-    var HK = sajuxFortuneHK();
-    var gzKr = (HK[g] || g) + (HK[j] || j);
-    var gan = _SAJUX_GAN_LINE[g] || ('천간 ' + (HK[g] || g) + '의 기운이 앞을 이끕니다.');
-    var ji = _SAJUX_JI_LINE[j] || ('지지 ' + (HK[j] || j) + '가 바탕을 받칩니다.');
-    var yong = sajuxYongsinLayerNote(data, g, j, seed);
-    var combo = pickVoiceLine([
-        '<strong>' + gzKr + '(' + g + j + ')</strong> 조합은 ' + gan + ' ' + ji,
-        '<strong>' + gzKr + '(' + g + j + ')</strong> — ' + gan + ' 그 위에 ' + ji
-    ], seed + '|pair');
-    return combo + (yong ? ' ' + yong : '');
+    return sajuxNarratePeriod(data, g, j, seed);
 }
 function sajuxLayerBridgeDaeunSewun(data, daeun, g, j, sewunScore, yr) {
     if (!daeun || !g || !j) return '';
-    var HK = sajuxFortuneHK();
-    var dKr = daeun.gKr + daeun.jKr;
-    var sKr = (HK[g] || g) + (HK[j] || j);
-    var seed = (daeun.gz || '') + '|' + g + j + '|' + yr;
-    var parts = [pickVoiceLine([
-        yr + '년은 <strong>' + dKr + ' 대운</strong>(' + daeun.startAge + '세~' + daeun.endAge + '세) 안에 깔린 한 해로, 먼저 그 10년의 바탕 위에 <strong>' + sKr + ' 세운</strong>이 겹칩니다.',
-        '큰 틀은 <strong>' + dKr + ' 대운</strong>, 그 안의 한 해가 <strong>' + sKr + ' 세운</strong>(' + yr + '년)입니다.'
-    ], seed + '|open')];
-    if (sajuxBranchPairHit(_SAJUX_BRANCH_CHUNG, daeun.j, j)) {
-        parts.push(pickVoiceLine([
-            '대운 지지와 세운 지지가 충(沖)으로 맞서, 한 해 안에 방향이 두 번 꺾이기 쉽습니다. 큰 결정은 분기당 한 가지만 잡으십시오.',
-            '지지가 정면으로 부딪혀, 겉으로는 기회처럼 보여도 마음이 갈라지는 선택이 잦을 수 있어요. 서두르지 마시고 한 번 더 적어 보십시오.'
-        ], seed + '|chung'));
-    } else if (sajuxBranchPairHit(_SAJUX_BRANCH_LIUHE, daeun.j, j)) {
-        parts.push('대운·세운 지지가 합(合)으로 맞물려, 관계·돈·자리가 빠르게 붙는 해로 읽힙니다.');
-    }
-    var delta = sewunScore - daeun.score;
-    if (delta >= 2) parts.push(pickVoiceLine([
-        '세운이 대운보다 한 단계 밝아, 이 해에 미뤄 두신 일을 밀기 좋습니다.',
-        '대운은 받쳐 주는데 세운이 더 앞서 나가, 올해가 10년 안에서 눈에 띄는 해가 될 수 있어요.'
-    ], seed + '|up'));
-    else if (delta <= -2) parts.push(pickVoiceLine([
-        '대운은 버티는데 세운이 앞서 당겨, 무리한 확장은 올해 피하시는 편이 낫습니다.',
-        '큰 10년의 무게는 있는데 한 해 기운이 가볍지 않아, 새 계약·새 보증은 한 번 더 검토하십시오.'
-    ], seed + '|down'));
-    return parts.join(' ');
+    return sajuxNarrateLayeredStack(data, daeun, g, j, null, null, yr, null);
 }
 function sajuxLayerBridgeWolun(data, daeun, seyun, g, j, monthScore, yr, mo) {
     if (!g || !j) return '';
-    var HK = sajuxFortuneHK();
-    var mKr = (HK[g] || g) + (HK[j] || j);
-    var seed = yr + '-' + mo + '|' + g + j;
-    var open = '';
-    if (daeun && seyun) {
-        open = pickVoiceLine([
-            '<strong>' + (daeun.gKr + daeun.jKr) + ' 대운</strong>과 <strong>' + (seyun.gKr + seyun.jKr) + ' ' + seyun.year + '년 세운</strong> 위에, <strong>' + mKr + ' 월운</strong>이 ' + yr + '년 ' + mo + '월을 짧게 흔듭니다.',
-            '막고 계신 <strong>' + (daeun.gKr + daeun.jKr) + ' 대운</strong>·<strong>' + seyun.year + '년 ' + (seyun.gKr + seyun.jKr) + ' 세운</strong> 위에 이번 달 <strong>' + mKr + '</strong>이 겹칩니다.'
-        ], seed + '|open');
-    } else {
-        open = yr + '년 ' + mo + '월 <strong>' + mKr + ' 월운</strong>은 한 달 단위의 결이에요.';
-    }
-    var parts = [open, _SAJUX_GAN_LINE[g] || '', _SAJUX_JI_LINE[j] || ''];
-    if (seyun && sajuxBranchPairHit(_SAJUX_BRANCH_CHUNG, seyun.j, j)) {
-        parts.push(pickVoiceLine([
-            '세운 지지와 월운 지지가 충(沖)이라, 이번 달은 한 달 안에 감정·일정이 급격히 바뀌기 쉽습니다.',
-            '연간 흐름과 달의 지지가 부딪혀, 작은 일에도 크게 느껴지실 수 있어요. 큰 결정은 이번 달 한 가지만.'
-        ], seed + '|mchung'));
-    }
-    if (daeun && seyun) {
-        var base = (daeun.score + seyun.score) / 2;
-        var md = monthScore - base;
-        if (md >= 2) parts.push('월운이 대운·세운보다 밝게 들어와, 이번 달이 올해의 작은 전성기처럼 느껴질 수 있어요.');
-        else if (md <= -2) parts.push('월운이 위 두 층보다 무거워, 이번 달은 쉬고 점검하는 쪽이 낫습니다.');
-    }
-    return parts.filter(Boolean).join(' ');
+    var sg = seyun ? seyun.g : null;
+    var sj = seyun ? seyun.j : null;
+    return sajuxNarrateLayeredStack(data, daeun, sg, sj, g, j, yr, mo);
 }
 function sajuxToneAdvice(data, tone, kind, seed) {
     var nm = data.name || '고객';
@@ -5672,6 +5625,198 @@ function sajuxToneAdvice(data, tone, kind, seed) {
     };
     var arr = (pools[kind] || pools.seyun)[tone] || pools.seyun.flat;
     return pickVoiceLine(arr, seed + '|' + kind + '|' + tone);
+/** ═══ 사주X 오행 조합 엔진 + 120세 인생 길흉 지도 ═══ */
+var SAJUX_OH_KR_SHORT = { wood: '목', fire: '화', earth: '토', metal: '금', water: '수' };
+var SAJUX_OH_KR_LONG = { wood: '목(木)', fire: '화(火)', earth: '토(土)', metal: '금(金)', water: '수(水)' };
+var SAJUX_SHENG_NEXT = { wood: 'fire', fire: 'earth', earth: 'metal', metal: 'water', water: 'wood' };
+var SAJUX_KE_TARGET = { wood: 'earth', fire: 'metal', metal: 'wood', water: 'fire', earth: 'water' };
+
+function sajuxOhRelation(fromOh, toOh) {
+    if (!fromOh || !toOh) return 'none';
+    if (fromOh === toOh) return 'same';
+    if (SAJUX_SHENG_NEXT[fromOh] === toOh) return 'sheng_out';
+    if (SAJUX_SHENG_NEXT[toOh] === fromOh) return 'sheng_in';
+    if (SAJUX_KE_TARGET[fromOh] === toOh) return 'ke_out';
+    if (SAJUX_KE_TARGET[toOh] === fromOh) return 'ke_in';
+    return 'cross';
+}
+
+function sajuxNatalWxProfile(data) {
+    var wx = data.wuxing || {};
+    var keys = ['wood', 'fire', 'earth', 'metal', 'water'];
+    var total = 0;
+    keys.forEach(function (k) { total += Math.max(0, Number(wx[k]) || 0); });
+    if (total <= 0) total = 1;
+    var pct = {};
+    keys.forEach(function (k) { pct[k] = Math.round((Math.max(0, Number(wx[k]) || 0) / total) * 100); });
+    var weakest = keys[0], strongest = keys[0];
+    keys.forEach(function (k) {
+        if (pct[k] < pct[weakest]) weakest = k;
+        if (pct[k] > pct[strongest]) strongest = k;
+    });
+    return {
+        pct: pct, weakest: weakest, strongest: strongest,
+        dayOh: _SAJUX_FORTUNE_GAN_OH[data.dayStem] || 'earth',
+        yong: data.yong || '', hee: data.hee || '', gi: data.gi || '', goo: data.goo || ''
+    };
+}
+
+function sajuxGilHeungLabel(sc) {
+    if (sc >= 4) return { tag: '대길', tone: 'good' };
+    if (sc >= 2) return { tag: '길', tone: 'good' };
+    if (sc >= 0) return { tag: '평', tone: 'flat' };
+    if (sc >= -2) return { tag: '주의', tone: 'caution' };
+    return { tag: '흉', tone: 'tough' };
+}
+
+function sajuxAnalyzePeriod(data, g, j) {
+    var ganOh = _SAJUX_FORTUNE_GAN_OH[g] || '';
+    var jiOh = _SAJUX_FORTUNE_JI_OH[j] || '';
+    var natal = sajuxNatalWxProfile(data);
+    var sc = sajuxFortuneScore(data, g, j);
+    var HK = sajuxFortuneHK();
+    var sipGan = (typeof getSipseong === 'function') ? (getSipseong(data.dayStem, g) || '') : '';
+    var sipJi = (typeof getSipseong === 'function' && j) ? (getSipseong(data.dayStem, j) || '') : '';
+    var pctStrong = natal.pct[natal.strongest] || 0;
+    return {
+        g: g, j: j, gzKr: (HK[g] || g) + (HK[j] || j),
+        ganOh: ganOh, jiOh: jiOh,
+        ganJiRel: sajuxOhRelation(ganOh, jiOh),
+        yongHit: (ganOh === natal.yong || jiOh === natal.yong),
+        heeHit: (ganOh === natal.hee || jiOh === natal.hee),
+        giHit: (ganOh === natal.gi || jiOh === natal.gi || ganOh === natal.goo || jiOh === natal.goo),
+        fillsWeak: (ganOh === natal.weakest || jiOh === natal.weakest),
+        floodsStrong: (pctStrong >= 32 && (ganOh === natal.strongest || jiOh === natal.strongest)),
+        score: sc, gil: sajuxGilHeungLabel(sc),
+        sipGan: sipGan, sipJi: sipJi, natal: natal
+    };
+}
+
+function sajuxNarratePeriod(data, g, j, seed) {
+    if (!g || !j) return '';
+    var a = sajuxAnalyzePeriod(data, g, j);
+    var nm = data.name || '고객';
+    var parts = [];
+    parts.push('<strong>' + a.gzKr + '(' + g + j + ')</strong> — 천간 ' + SAJUX_OH_KR_LONG[a.ganOh] + ', 지지 ' + SAJUX_OH_KR_LONG[a.jiOh] + '이 한 덩어리로 들어옵니다.');
+    var relLine = {
+        sheng_out: '천간이 지지를 생(生)해, 겉으로 드러나는 방향이 속바탕을 끌고 올라오는 형태예요.',
+        sheng_in: '지지가 천간을 받쳐 생(生)해, 겉은 조용해도 밑에서 힘이 쌓이는 형태예요.',
+        ke_out: '천간이 지지를 극(克)해, 말·결정과 현장 리듬이 어긋나기 쉬운 형태예요.',
+        ke_in: '지지가 천간을 눌러, 겉으론 버티는데 속이 먼저 지치는 형태예요.',
+        same: '천간·지지 오행이 겹쳐 한 기운이 짙게 깔립니다. 방향은 분명한데 과하면 한쪽으로 치우칠 수 있어요.',
+        cross: '천간·지지 오행이 엇갈려, 한 시기 안에 두 결이 동시에 움직입니다.'
+    }[a.ganJiRel] || '';
+    if (relLine) parts.push(relLine);
+    if (a.yongHit) parts.push(pickVoiceLine([
+        '이 조합은 ' + nmUi(nm) + ' 용신(用) 오행과 직접 맞물려, 같은 글자라도 체감이 달라집니다.',
+        '용신(用) 쪽 오행이 들어와, 원국에서 비어 있던 자리를 이 시기에 채우는 쪽에 가깝습니다.'
+    ], seed + '|yong'));
+    else if (a.heeHit) parts.push('희신(喜) 쪽으로 받쳐 주는 시기라, 무리하지 않아도 흐름이 붙기 쉽습니다.');
+    else if (a.giHit) parts.push('기신(忌)·구신(仇) 쪽 오행이 겹쳐, 크게 벌리기보다 지키는 쪽이 ' + nmUi(nm) + ' 사주와 맞습니다.');
+    if (a.fillsWeak && !a.giHit) parts.push('원국에서 상대적으로 약했던 ' + SAJUX_OH_KR_LONG[a.natal.weakest] + ' 기운이 보충됩니다.');
+    if (a.floodsStrong && !a.yongHit) parts.push('원국에서 이미 두툼한 ' + SAJUX_OH_KR_LONG[a.natal.strongest] + ' 기운에 더해져, 과열·지출·성급함을 한 단계 낮추는 게 이득입니다.');
+    if (a.sipGan) parts.push('천간은 일간 기준 <strong>' + a.sipGan + '</strong>(십성)으로 ' + nmEulReul(nm) + ' 둘러싸며, 이 시기의 일·관계의 결이 여기서 갈립니다.');
+    if (a.sipJi && a.sipJi !== a.sipGan) parts.push('지지는 <strong>' + a.sipJi + '</strong>(십성) 쪽으로 현장·몸·돈의 결을 만듭니다.');
+    return parts.join(' ');
+}
+
+function sajuxNarrateLayeredStack(data, daeun, seyunG, seyunJ, wolunG, wolunJ, yr, mo) {
+    var parts = [];
+    if (daeun && daeun.g && daeun.j) {
+        var dA = sajuxAnalyzePeriod(data, daeun.g, daeun.j);
+        parts.push('바탕 대운 <strong>' + dA.gzKr + '</strong> — ' + SAJUX_OH_KR_LONG[dA.ganOh] + '·' + SAJUX_OH_KR_LONG[dA.jiOh] + ' (' + dA.gil.tag + ')');
+    }
+    if (seyunG && seyunJ) {
+        var sA = sajuxAnalyzePeriod(data, seyunG, seyunJ);
+        parts.push((yr ? yr + '년 ' : '') + '세운 <strong>' + sA.gzKr + '</strong> — ' + SAJUX_OH_KR_LONG[sA.ganOh] + '·' + SAJUX_OH_KR_LONG[sA.jiOh] + ' (' + sA.gil.tag + ')');
+        if (daeun && daeun.j && sajuxBranchPairHit(_SAJUX_BRANCH_CHUNG, daeun.j, seyunJ)) parts.push('대운·세운 지지 충(沖) — 한 해 안 방향 전환이 잦을 수 있습니다.');
+        if (daeun && daeun.g) {
+            var delta = sA.score - sajuxFortuneScore(data, daeun.g, daeun.j);
+            if (delta >= 2) parts.push('세운이 대운보다 밝아 올해가 10년 안에서 돋보입니다.');
+            else if (delta <= -2) parts.push('대운은 무겁고 세운이 가볍지 않아, 올해는 지키고 내년을 준비하는 해입니다.');
+        }
+    }
+    if (wolunG && wolunJ) {
+        var mA = sajuxAnalyzePeriod(data, wolunG, wolunJ);
+        parts.push((yr && mo ? yr + '년 ' + mo + '월 ' : '') + '월운 <strong>' + mA.gzKr + '</strong> — ' + SAJUX_OH_KR_LONG[mA.ganOh] + '·' + SAJUX_OH_KR_LONG[mA.jiOh] + ' (' + mA.gil.tag + ')');
+        if (seyunJ && sajuxBranchPairHit(_SAJUX_BRANCH_CHUNG, seyunJ, wolunJ)) parts.push('세운·월운 지지 충(沖) — 이번 달 감정·일정이 급변하기 쉽습니다.');
+        if (daeun && daeun.g && seyunG) {
+            var base = (sajuxFortuneScore(data, daeun.g, daeun.j) + sajuxFortuneScore(data, seyunG, seyunJ)) / 2;
+            if (mA.score - base >= 2) parts.push('월운이 위 두 층보다 밝아 이번 달이 작은 전성기처럼 느껴질 수 있습니다.');
+            else if (mA.score - base <= -2) parts.push('월운이 무거워 쉬고 점검하는 달이 낫습니다.');
+        }
+    }
+    return parts.join(' ');
+}
+
+function sajuxParseDaeunRow(r) {
+    var g = (r.gz && r.gz[0]) || (r.h && r.h[0]) || r.gan || '';
+    var j = (r.gz && r.gz[1]) || (r.h && r.h[1]) || r.ji || '';
+    var gz = (r.name || (g && j ? g + j : '')) || '';
+    if (!g && gz.length > 1) { g = gz.charAt(0); j = gz.charAt(1); }
+    var age = (typeof r.age === 'number') ? r.age : (typeof r.startAge === 'number' ? r.startAge : 0);
+    return { g: g, j: j, age: age };
+}
+
+function buildLifeGilHeungMapHtml(data) {
+    var rows = (data.daeunRows && data.daeunRows.length) ? data.daeunRows : (data.daewunList || []);
+    if (!rows.length) return '';
+    var name = data.name || '고객';
+    var items = [], best = null, worst = null;
+    for (var i = 0; i < rows.length; i++) {
+        var p = sajuxParseDaeunRow(rows[i]);
+        if (!p.g || !p.j || p.age > 115) continue;
+        var sc = sajuxFortuneScore(data, p.g, p.j);
+        var gil = sajuxGilHeungLabel(sc);
+        var HK = sajuxFortuneHK();
+        var it = { age: p.age, end: p.age + 9, g: p.g, j: p.j, gzKr: (HK[p.g] || p.g) + (HK[p.j] || p.j), sc: sc, gil: gil };
+        items.push(it);
+        if (!best || sc > best.sc) best = it;
+        if (!worst || sc < worst.sc) worst = it;
+    }
+    if (!items.length) return '';
+    var macro = (best && worst && best.age !== worst.age)
+        ? nmDnim(name) + ' 인생을 10년 계절로 훑으면, <strong>' + best.gzKr + '(' + best.age + '세~' + best.end + '세)</strong>이 가장 밝고, <strong>' + worst.gzKr + '(' + worst.age + '세~' + worst.end + '세)</strong>은 단단히 지키셔야 하는 구간입니다. 아래는 길·흉·평만 골라 둔 지도예요.'
+        : nmDnim(name) + ' 인생을 10년 단위 큰 계절로 펼친 지도입니다.';
+    var cells = items.map(function (it) {
+        var col = sajuxFortuneToneColor(it.gil.tone);
+        return '<div style="flex:0 0 auto;min-width:72px;padding:10px 8px;border-radius:10px;background:rgba(255,255,255,0.04);border:1px solid ' + col + '33;border-left:3px solid ' + col + ';text-align:center;box-sizing:border-box;">'
+            + '<div style="font-size:9px;color:' + col + ';font-weight:700;">' + it.gil.tag + '</div>'
+            + '<div style="font-size:14px;font-weight:800;color:#fff;margin:4px 0;">' + it.gzKr + '</div>'
+            + '<div style="font-size:10px;color:#888;">' + it.age + '세~' + it.end + '세</div>'
+            + '<div style="font-size:9px;color:rgba(255,255,255,0.4);margin-top:3px;">' + SAJUX_OH_KR_SHORT[_SAJUX_FORTUNE_GAN_OH[it.g]] + '·' + SAJUX_OH_KR_SHORT[_SAJUX_FORTUNE_JI_OH[it.j]] + '</div></div>';
+    }).join('<div style="flex:0 0 8px;align-self:stretch;"></div>');
+    return '<div class="life-gilheung-map" style="margin:20px 0 28px;padding:18px 16px;border-radius:14px;background:rgba(255,255,255,0.03);border:1px solid rgba(199,167,106,0.15);">'
+        + '<p style="font-size:11px;letter-spacing:0.12em;color:rgba(199,167,106,0.75);font-weight:700;margin:0 0 8px;">인생 120세 · 10년마다 큰 길흉</p>'
+        + '<p style="font-size:13px;color:#ccc;line-height:1.9;margin:0 0 14px;">' + macro + '</p>'
+        + '<div style="display:flex;align-items:stretch;gap:0;overflow-x:auto;padding-bottom:6px;-webkit-overflow-scrolling:touch;">' + cells + '</div></div>';
+}
+
+function sajuxLifeArcBeatForRange(data, lo, hi, seed) {
+    var rows = data.daeunRows || data.daewunList || [];
+    var hits = [];
+    for (var i = 0; i < rows.length; i++) {
+        var p = sajuxParseDaeunRow(rows[i]);
+        if (!p.g || !p.j) continue;
+        if (p.age + 9 < lo || p.age > hi) continue;
+        hits.push({ p: p, sc: sajuxFortuneScore(data, p.g, p.j) });
+    }
+    if (!hits.length) return '';
+    hits.sort(function (a, b) { return a.p.age - b.p.age; });
+    var main = hits[0];
+    for (var h = 1; h < hits.length; h++) {
+        if (Math.abs(hits[h].sc) > Math.abs(main.sc)) main = hits[h];
+    }
+    var HK = sajuxFortuneHK();
+    var gzKr = (HK[main.p.g] || main.p.g) + (HK[main.p.j] || main.p.j);
+    var gil = sajuxGilHeungLabel(main.sc);
+    var narr = sajuxNarratePeriod(data, main.p.g, main.p.j, seed + '|' + lo + '-' + hi);
+    return pickVoiceLine([
+        '이 무렵(' + lo + '~' + hi + '세) 큰 계절은 <strong>' + gzKr + ' 대운</strong>(' + main.p.age + '세부터, ' + gil.tag + ')입니다. ' + narr,
+        lo + '세부터 ' + hi + '세 사이, 겉으로 드러나는 10년의 중심은 <strong>' + gzKr + '</strong>(' + gil.tag + ')입니다. ' + narr
+    ], seed + '|beat');
+}
+
 }
 
 /** ─────────────────────────────────────────
@@ -6070,12 +6215,10 @@ function buildUpcomingSewunCards(data) {
     };
 
     function bodyFor(yr, g, j, t, sc) {
-        var parts = [];
         var daeunCtx = sajuxGetDaeunContext(data, yr);
-        if (daeunCtx) parts.push(sajuxLayerBridgeDaeunSewun(data, daeunCtx, g, j, sc, yr));
-        parts.push(sajuxDescribeGzPair(data, g, j, 'seyun-' + yr));
-        parts.push(sajuxToneAdvice(data, t, 'seyun', yr + g + j));
-        return parts.join(' ');
+        var stack = sajuxNarrateLayeredStack(data, daeunCtx, g, j, null, null, yr, null);
+        var detail = sajuxNarratePeriod(data, g, j, 'seyun-' + yr);
+        return (stack ? stack + ' ' : '') + detail + ' ' + sajuxToneAdvice(data, t, 'seyun', yr + g + j);
     }
 
     var cards = '';
@@ -6154,11 +6297,9 @@ function buildUpcomingWolunCards(data) {
         var yGi = ((yr - 4) % 10 + 10) % 10;
         var yJi = ((yr - 4) % 12 + 12) % 12;
         var sg = SEWUN_GAN_ARR[yGi]; var sj = SEWUN_JI_ARR[yJi];
-        var seyunSc = sajuxFortuneScore(data, sg, sj);
-        var seyunCtx = { g: sg, j: sj, gKr: HK[sg] || sg, jKr: HK[sj] || sj, year: yr, score: seyunSc };
-        var parts = [sajuxLayerBridgeWolun(data, daeunCtx, seyunCtx, g, j, sc, yr, mo)];
-        parts.push(sajuxToneAdvice(data, t, 'wolun', yr + '-' + mo + g + j));
-        return parts.join(' ');
+        var stack = sajuxNarrateLayeredStack(data, daeunCtx, sg, sj, g, j, yr, mo);
+        var detail = sajuxNarratePeriod(data, g, j, 'wolun-' + yr + '-' + mo);
+        return (stack ? stack + ' ' : '') + detail + ' ' + sajuxToneAdvice(data, t, 'wolun', yr + '-' + mo + g + j);
     }
 
     var cards = '';
