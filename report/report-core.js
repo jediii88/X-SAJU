@@ -1256,7 +1256,7 @@ function buildTopicOpenerInner(topic, data) {
             nmDnim(nm) + ' 안에서는 ' + (OH_KR[oh.maxW] || '') + ' 기운이 먼저 움직이고, 나머지는 그에 맞춰 조율되는 그림으로 읽으시면 됩니다.'
         ],
         sipseong: [
-            '일과 관계에서 **' + sipGroupBarLabel(sipToSipGroupKey(mainSip)) + '** 쪽이 먼저 움직이는, ' + nmDnim(nm) + '만의 무늬예요. 인성·식상 같은 이름은 몰라도, “돈·말·책임·배움·동료 중 어디에 힘이 실리는지”만 보면 됩니다.',
+            '일과 관계에서 **' + sipGroupBarLabel(sipToSipGroupKey(mainSip)) + '** 쪽이 먼저 움직이는, ' + nmDnim(nm) + '만의 무늬예요. 전문 용어는 몰라도, “돈·말·책임·배움·동료 중 어디에 힘이 실리는지”만 보면 됩니다.',
             nmDnim(nm) + '에게 **' + sipGroupBarLabel(sipToSipGroupKey(mainSip)) + '** 쪽이 앞장서는 날이 많을수록, 그날의 선택이 한 줄기로 이어진다고 보시면 됩니다.'
         ],
         wealth: [
@@ -1439,6 +1439,208 @@ function boldStarsToStrong(s) {
     return colorizeHanjaInline(html);
 }
 
+/**
+ * [십성 Ten Gods · 현대적 언어화 사전]
+ * - 계산·만세력 배지: 비견·식신 등 한글명 유지 (sipToManseBadge)
+ * - 고객 본문·LLM 최종 출력: 개별 십성 한자명 직접 노출 금지 → 아래 현대어로 1:1 치환
+ */
+var SAJUX_SIP_MODERN = {
+    group: {
+        비겁: {
+            bar: '주체성·실행',
+            keywords: ['주체성', '독립적 실행력', '승부욕', '돌파력'],
+            result: '혼자서도 버티려 하고, 동료·경쟁·지분 앞에서 주체성과 실행력이 먼저 움직입니다',
+            scene: '동업·실력 겨루기·내 방식 고집'
+        },
+        식상: {
+            bar: '전문성·표현',
+            keywords: ['장인정신', '깊은 전문성', '혁신적 기획력', '탁월한 표현력'],
+            result: '말·글·기획·작품처럼 손끝 전문성과 표현력이 먼저 튀어나옵니다',
+            scene: '발표·기획·콘텐츠·말로 푸는 일'
+        },
+        재성: {
+            bar: '안목·현실',
+            keywords: ['거시적 안목', '네트워크 확장', '치밀한 디테일', '안정적 데이터 관리'],
+            result: '월급·거래·견적·생활비처럼 현실 감각과 데이터가 먼저 움직입니다',
+            scene: '입금·지출·계약·실무 성과'
+        },
+        관성: {
+            bar: '리더십·책임',
+            keywords: ['난세의 리더십', '막중한 책임감', '원칙과 신뢰', '시스템 최적화'],
+            result: '직함·평가·규칙·마감 앞에서 리더십과 책임감이 먼저 반응합니다',
+            scene: '승진·조직·약속·책임'
+        },
+        인성: {
+            bar: '통찰·수용',
+            keywords: ['비판적 직관력', '철학적 통찰', '지적 수용력', '스펀지 같은 흡수력'],
+            result: '자격·문서·귀인·공부로 버티는 통찰과 수용력이 먼저 열립니다',
+            scene: '시험·자격·서류·멘토'
+        }
+    },
+    individual: {
+        '비견': '주체성',
+        '겁재': '독립적 실행력',
+        '식신': '장인정신',
+        '상관': '혁신적 기획력',
+        '편재': '거시적 안목',
+        '정재': '안정적 데이터 관리',
+        '편관': '난세의 리더십',
+        '정관': '원칙과 신뢰',
+        '편인': '비판적 직관력',
+        '정인': '지적 수용력'
+    },
+    /** 부정·저가 표현 → 프리미엄 컨설팅 톤 (특징 승화 + 솔루션) */
+    consultativeReframes: [
+        [/고집이\s*세[다한]?/g, '자신만의 확고한 기준이 있어 타협에 에너지가 소모될 수 있'],
+        [/고집이\s*강/g, '확고한 기준이 있어'],
+        [/돈이\s*샌다/g, '재물 흐름을 여러 갈래로 쓰다 보면 관리 포인트가 늘어날 수'],
+        [/돈이\s*새다/g, '재물 흐름 관리가 중요해질 수'],
+        [/구설수가\s*많/g, '말과 기준이 앞서 나갈 때 오해가 생기기 쉬운'],
+        [/구설수/g, '말과 기준의 오해'],
+        [/관살혼잡/g, '책임과 압박이 겹치는'],
+        [/관살\s*혼잡/g, '책임과 압박이 겹치는'],
+        [/무재사주/g, '돈·거래 축이 얇아 숫자보다 실력·이름이 먼저 쌓이는 구조'],
+        [/무재/g, '재물 축이 얇은'],
+        [/재다\s*없/g, '재물 축이 얇은'],
+        [/식신\s*과다/g, '표현·산출 에너지가 풍부한'],
+        [/인성\s*과다/g, '배움·수용 에너지가 풍부한'],
+        [/비겁\s*과다/g, '주체성·실행 에너지가 풍부한'],
+        [/재성\s*과다/g, '현실·데이터 감각이 풍부한'],
+        [/관성\s*과다/g, '책임·리더십 에너지가 풍부한'],
+        [/찬\s*사람/g, '결단이 빠른 사람'],
+        [/게으르/g, '속도를 천천히 가져가는 편'],
+        [/나약/g, '혼자 짊어지기 어려운 구조'],
+        [/약하/g, '에너지가 분산된'],
+        [/실패/g, '다음 시도로 넘어가야 하는 구간']
+    ]
+};
+
+/** LLM·텍스트 생성 백엔드 system/user 프롬프트에 주입할 블록 */
+function getSajuxSipseongModernPromptBlock() {
+    var g = SAJUX_SIP_MODERN.group;
+    var lines = [
+        '[십성(Ten Gods) 현대적 언어화 사전 — 최종 출력 필수]',
+        '',
+        '1) 전문 용어 노출 금지 · 1:1 치환',
+        '명식 분석은 십성으로 하되, 고객에게 보이는 문장에 비견·상관·편관·식신·정재·편인 등 개별 십성 한자명을 직접 쓰지 마세요.',
+        '대신 아래 [현대적 컨설팅 키워드]로만 서술하세요.',
+        '- 비견·겁재 → ' + g.비겁.keywords.join(', '),
+        '- 식신·상관 → ' + g.식상.keywords.join(', '),
+        '- 편재·정재 → ' + g.재성.keywords.join(', '),
+        '- 편관·정관 → ' + g.관성.keywords.join(', '),
+        '- 편인·정인 → ' + g.인성.keywords.join(', '),
+        '',
+        '2) 부정적 단어 금지 · 프리미엄 컨설팅 톤',
+        '「고집이 세다, 돈이 샨다, 구설수」 등 저가 표현 금지.',
+        '단점은 특징으로 승화하고 행동 솔루션 1개를 붙이세요.',
+        '예: 「자신만의 확고한 기준이 있어 타협에 에너지가 소모될 수 있다」',
+        '예: 「결과에 집착하기보다 과정을 즐길 때 더 큰 그릇이 완성된다」',
+        '',
+        '3) 문장 구조: 공감 1~2문장 → 구체적·현실적 행동 1개(~하십시오).',
+        '천간·지지·용신·지장간 등 다른 명리 용어는 풀이 맥락에서 필요할 때만, 십성 개별명은 절대 노출하지 마세요.'
+    ];
+    return lines.join('\n');
+}
+SAJUX_VOICE.sipseongModernPrompt = '';
+(function bindSipModernPrompt() {
+    try { SAJUX_VOICE.sipseongModernPrompt = getSajuxSipseongModernPromptBlock(); } catch (e) { /* early parse */ }
+})();
+
+function sipModernKeyword(sip) {
+    return SAJUX_SIP_MODERN.individual[sip] || '';
+}
+function sipGroupBarLabel(groupKey) {
+    var g = SAJUX_SIP_MODERN.group[groupKey];
+    return (g && g.bar) ? g.bar : String(groupKey || '');
+}
+function sipGroupResultBlurb(groupKey, pct) {
+    var g = SAJUX_SIP_MODERN.group[groupKey];
+    if (!g) return '';
+    var p = (pct != null && pct !== '') ? (' 대략 ' + pct + '% 전후로, ') : ' ';
+    return '지금 가장 강한 쪽은 **' + g.bar + '**이고,' + p + g.result + '.';
+}
+function sipToSipGroupKey(sip) {
+    if (sip === '비견' || sip === '겁재') return '비겁';
+    if (sip === '식신' || sip === '상관') return '식상';
+    if (sip === '편재' || sip === '정재') return '재성';
+    if (sip === '편관' || sip === '정관') return '관성';
+    if (sip === '편인' || sip === '정인') return '인성';
+    return '';
+}
+function sipPlainOneLiner(sip) {
+    var kw = sipModernKeyword(sip);
+    var scene = {
+        '비견': '동료와 나란히 서는 자리',
+        '겁재': '돈·승부가 겹치는 자리',
+        '식신': '만든 결과물이 곧 평가로 이어지는 자리',
+        '상관': '말과 기준이 먼저 나가는 자리',
+        '편재': '거래·부업·외주가 열리는 자리',
+        '정재': '월급·정산·루틴이 중심인 자리',
+        '편관': '마감·압박·현장이 있는 자리',
+        '정관': '직함·평가·약속이 걸린 자리',
+        '편인': '공부·틈새·직관이 깊은 자리',
+        '정인': '문서·자격·귀인이 열리는 자리'
+    };
+    if (!kw) return '**일과 관계에서 자주 쓰는 반응**이 앞서 나오고';
+    return '**' + (scene[sip] || '삶의 현장') + '**에서는 **' + kw + '**이(가) 먼저 움직이고';
+}
+
+/** 고객-facing 본문 — 십성 한자명 제거 · 현대어 치환 · 컨설팅 톤 승화 */
+function voiceModernizeSipseong(s) {
+    if (!s || typeof s !== 'string') return s;
+    var t = s;
+    var ind = SAJUX_SIP_MODERN.individual;
+    var grp = SAJUX_SIP_MODERN.group;
+    var sipNames = ['편재', '정재', '편관', '정관', '식신', '상관', '편인', '정인', '비견', '겁재'];
+    var i;
+    for (i = 0; i < sipNames.length; i++) {
+        var sn = sipNames[i];
+        var kw = ind[sn];
+        if (!kw) continue;
+        t = t.replace(new RegExp(sn + '\\s*\\([^)]*\\)', 'g'), kw);
+        t = t.replace(new RegExp(sn + '\\s*\\[[^\\]]*\\]', 'g'), kw);
+    }
+    var grpKeys = ['비겁', '식상', '재성', '관성', '인성'];
+    for (i = 0; i < grpKeys.length; i++) {
+        var gk = grpKeys[i];
+        var g = grp[gk];
+        if (!g) continue;
+        var gkw = g.keywords[0];
+        t = t.replace(new RegExp(gk + '\\s*\\([^)]*\\)', 'g'), g.bar);
+        t = t.replace(new RegExp(gk + '\\s*\\[[^\\]]*\\]', 'g'), g.bar);
+        t = t.replace(new RegExp('(?<![가-힣])' + gk + '(?=\\s*축|\\s*줄기|\\s*묶음|이\\s*두|가\\s*두|은\\s*두|이\\s*얇|가\\s*얇|이\\s*과다|가\\s*과다)', 'g'), g.bar);
+    }
+    t = t.replace(/인성\s*\(\s*印[^)]*\)/g, grp.인성.bar);
+    t = t.replace(/관성\s*\(\s*官[^)]*\)/g, grp.관성.bar);
+    t = t.replace(/재성\s*\(\s*財[^)]*\)/g, grp.재성.bar);
+    t = t.replace(/식상\s*\(\s*食[^)]*\)/g, grp.식상.bar);
+    t = t.replace(/식신\s*\(\s*食[^)]*\)/g, ind['식신']);
+    t = t.replace(/상관\s*\(\s*傷[^)]*\)/g, ind['상관']);
+    function replaceSipToken(text, token, keyword) {
+        if (!token || !keyword) return text;
+        return text.replace(
+            new RegExp('(?<![가-힣])' + token + '(?=[이은가을를와도의]|\\s|,|\\.|;|:|\\?|!|$)', 'g'),
+            keyword
+        );
+    }
+    for (i = 0; i < sipNames.length; i++) {
+        replaceSipToken(t, sipNames[i], ind[sipNames[i]]);
+        t = replaceSipToken(t, sipNames[i], ind[sipNames[i]]);
+    }
+    for (i = 0; i < grpKeys.length; i++) {
+        gk = grpKeys[i];
+        g = grp[gk];
+        if (!g) continue;
+        t = replaceSipToken(t, gk, g.bar);
+    }
+    var refr = SAJUX_SIP_MODERN.consultativeReframes;
+    for (i = 0; i < refr.length; i++) {
+        t = t.replace(refr[i][0], refr[i][1]);
+    }
+    t = t.replace(/\s{2,}/g, ' ').replace(/\s+([,.])/g, '$1');
+    return t;
+}
+
 /** 고객-facing — 「두껍다·결」 등 명리 은유를 일상어로 (결정·결혼·결실 등은 유지) */
 function voiceCustomerLexicon(s) {
     if (!s || typeof s !== 'string') return s;
@@ -1528,37 +1730,7 @@ function voicePolishParagraph(data, text) {
     //   예) "편재(偏財)와 정재가" → "편재(흐름이 큰 재물 기운)와 정재가"
     //   ※ 그 다음 단계의 풀이 규칙이 "정재(...)"도 같은 한글 풀이로 보충해 줘서
     //     "편재(...)와 정재(...)"의 비대칭이 사라집니다.
-    s = s.replace(/편재\s*\(\s*偏財\s*\)/g, '편재(흐름이 큰 재물 기운)');
-    s = s.replace(/정재\s*\(\s*正財\s*\)/g, '정재(꾸준히 쌓이는 재물 기운)');
-    s = s.replace(/편관\s*\(\s*偏官\s*\)/g, '편관(나를 강하게 단련시키는 기운)');
-    s = s.replace(/정관\s*\(\s*正官\s*\)/g, '정관(원칙·책임을 부여하는 기운)');
-    s = s.replace(/식신\s*\(\s*食神\s*\)/g, '식신(즐거움을 만들어내는 표현 기운)');
-    s = s.replace(/상관\s*\(\s*傷官\s*\)/g, '상관(말과 재능이 빛나는 기운)');
-    s = s.replace(/편인\s*\(\s*偏印\s*\)/g, '편인(직관·창의가 깊어지는 기운)');
-    s = s.replace(/정인\s*\(\s*正印\s*\)/g, '정인(나를 든든히 받쳐주는 기운)');
-    s = s.replace(/비견\s*\(\s*比肩\s*\)/g, '비견(나와 같은 기운의 사람·동료)');
-    s = s.replace(/겁재\s*\(\s*劫財\s*\)/g, '겁재(경쟁을 부르는 같은 기운)');
-    s = s.replace(/식상\s*\(\s*食傷[^\)]*\)/g, '식상(표현·창작 기운)');
-    s = s.replace(/관성\s*\(\s*官星[^\)]*\)/g, '관성(책임·권위 기운)');
-    s = s.replace(/재성\s*\(\s*財星[^\)]*\)/g, '재성(재물·현실 감각)');
-    s = s.replace(/인성\s*\(\s*印星[^\)]*\)/g, '인성(배움·수용의 기운)');
-    s = s.replace(/비겁\s*\(\s*比劫[^\)]*\)/g, '동료·자아');
-    s = s.replace(/인성\s*축/g, '배움·자격 쪽');
-    s = s.replace(/식상\s*축/g, '표현·산출 쪽');
-    s = s.replace(/재성\s*축/g, '돈·현실 쪽');
-    s = s.replace(/관성\s*축/g, '책임·직장 쪽');
-    s = s.replace(/비겁\s*축/g, '동료·자아 쪽');
-    s = s.replace(/인성\s*줄기/g, '배움·지지 쪽');
-    s = s.replace(/식상\s*줄기/g, '만들고 표현 쪽');
-    s = s.replace(/재성\s*줄기/g, '돈·현실 쪽');
-    s = s.replace(/관성\s*줄기/g, '책임·직장 쪽');
-    s = s.replace(/비겁\s*줄기/g, '동료·자아 쪽');
-    s = s.replace(/인성\s*묶음/g, '배움·지지');
-    s = s.replace(/식상\s*묶음/g, '만들고 표현');
-    s = s.replace(/재성\s*묶음/g, '돈·현실');
-    s = s.replace(/관성\s*묶음/g, '책임·직장');
-    s = s.replace(/비겁\s*묶음/g, '동료·자아');
-    s = s.replace(/칠살\s*\(\s*七殺\s*\)/g, '칠살(나를 단련시키는 강한 기운)');
+    s = s.replace(/칠살\s*\(\s*七殺\s*\)/g, '강한 압박·단련의 힘');
     // 오행 한자 → 한글
     s = s.replace(/목\s*\(\s*木\s*\)/g, '목(나무)');
     s = s.replace(/화\s*\(\s*火\s*\)/g, '화(불)');
@@ -1576,8 +1748,7 @@ function voicePolishParagraph(data, text) {
     s = s.replace(/배당/g, '배당(투자한 회사가 주는 수익)');
 
     // ─── 10대 친화 어휘 정리: 한자식 추상어 → 일상어 ───
-    // ※ '천간/지지/십성/지장간/일주/대운/세운/월운/원국/일간/일지/조후/공망/통근'
-    //   십성·천간·지지 등 명리 기본 용어는 그대로 두고, 주변 일상 어휘만 손봅니다.
+    // ※ 고객 본문 십성 한자명 → SAJUX_SIP_MODERN(voiceModernizeSipseong). 만세력 배지는 제외.
 
     // 라벨로 굳어진 표현은 보호 (예: '압박·마감', '거래·기회: 편재' 같은 표 라벨)
     s = s.replace(/압박·마감/g, '\u0000PRESS_DEADLINE\u0000');
@@ -1780,6 +1951,7 @@ function voicePolishParagraph(data, text) {
     //   ~입니다·~합니다로 강제 변환하던 로직이 .cursorrules의 톤 가이드와 충돌했고,
     //   본문 어디서나 동일하게 톤이 평탄해지는 부작용이 있었습니다. 이제는 템플릿이
     //   고른 어미를 그대로 살리고, 격식이 필요한 곳에서는 템플릿 단계에서 결정합니다.
+    s = voiceModernizeSipseong(s);
     s = voiceCustomerLexicon(s);
     return s;
 }
@@ -1929,68 +2101,6 @@ function pickLoveAdviceByScore(sc, seedKey) {
     ];
     var pool = sc >= 2 ? hi : sc >= 0 ? mid : low;
     return pool[Math.abs(hashSeed(String(seedKey || 'love'))) % pool.length];
-}
-/** 십성 묶음(비겁·식상 등) — 고객-facing 라벨·결과 문장 (용어 암시 금지) */
-var SIP_GROUP_CUSTOMER = {
-    비겁: {
-        bar: '동료·자아',
-        result: '혼자서도 버티려 하고, 동료·경쟁·지분 앞에서 반응이 먼저 나옵니다',
-        scene: '동업·실력 겨루기·내 방식 고집'
-    },
-    식상: {
-        bar: '만들고 표현',
-        result: '말·글·기획·작품처럼 손끝 산출물이 먼저 튀어나옵니다',
-        scene: '발표·기획·콘텐츠·말로 푸는 일'
-    },
-    재성: {
-        bar: '돈·현실',
-        result: '월급·거래·견적·생활비처럼 숫자와 현실 감각이 먼저 움직입니다',
-        scene: '입금·지출·계약·실무 성과'
-    },
-    관성: {
-        bar: '책임·직장',
-        result: '직함·평가·규칙·마감 앞에서 몸이 먼저 반응합니다',
-        scene: '승진·조직·약속·책임'
-    },
-    인성: {
-        bar: '배움·지지',
-        result: '자격·문서·귀인·공부로 버티는 쪽이 먼저 열립니다',
-        scene: '시험·자격·서류·멘토'
-    }
-};
-function sipGroupBarLabel(groupKey) {
-    var g = SIP_GROUP_CUSTOMER[groupKey];
-    return (g && g.bar) ? g.bar : String(groupKey || '');
-}
-function sipGroupResultBlurb(groupKey, pct) {
-    var g = SIP_GROUP_CUSTOMER[groupKey];
-    if (!g) return '';
-    var p = (pct != null && pct !== '') ? (' 대략 ' + pct + '% 전후로, ') : ' ';
-    return '지금 가장 강한 쪽은 **' + g.bar + '**이고,' + p + g.result + '.';
-}
-/** 개별 십성 — 한 줄 결과(이름만 던지지 않음) */
-function sipPlainOneLiner(sip) {
-    var m = {
-        '비견': '**동료와 나란히 서는 자리**에서 자존심과 주도권이 먼저 움직이고',
-        '겁재': '**돈·승부가 겹치는 자리**에서 속도가 빨라지며',
-        '식신': '**만든 결과물**이 곧 평가로 이어지는 편이고',
-        '상관': '**말과 기준**이 먼저 나가며',
-        '편재': '**거래·부업·외주** 줄이 여러 갈래로 열리고',
-        '정재': '**월급·정산·루틴**이 삶의 축이며',
-        '편관': '**마감·압박·현장**에서 각이 서고',
-        '정관': '**직함·평가·약속**을 무겁게 여기며',
-        '편인': '**공부·틈새·직관**으로 길을 찾고',
-        '정인': '**문서·자격·귀인**이 안전벨트인 편이에요'
-    };
-    return m[sip] || '**일과 관계에서 자주 쓰는 반응**이 앞서 나오고';
-}
-function sipToSipGroupKey(sip) {
-    if (sip === '비견' || sip === '겁재') return '비겁';
-    if (sip === '식신' || sip === '상관') return '식상';
-    if (sip === '편재' || sip === '정재') return '재성';
-    if (sip === '편관' || sip === '정관') return '관성';
-    if (sip === '편인' || sip === '정인') return '인성';
-    return '';
 }
 /** 십성 코드 → 고객 면 산업/일 방식(한글 명칭 비노출, **볼드** 유지) */
 function sipToIndustryWorkStyle(sip) {
@@ -13111,4 +13221,10 @@ var strat = _dText(s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>'
         updateFloatingToc();
         window.addEventListener('resize', updateFloatingToc);
     });
+}
+
+if (typeof window !== 'undefined') {
+    window.SAJUX_SIP_MODERN = SAJUX_SIP_MODERN;
+    window.getSajuxSipseongModernPromptBlock = getSajuxSipseongModernPromptBlock;
+    window.voiceModernizeSipseong = voiceModernizeSipseong;
 }
