@@ -837,10 +837,10 @@ function buildInlineIljuSummaryHtml(data) {
     var prof = getIljuProfilePolished(data, data.dayStem, data.dayBranch);
     var nm = nmNormalize(data.name || '') || '고객';
     var scene = getIljuScenePhrase(data) || '원국의 중심';
-    var coreBit = prof && prof.core ? String(prof.core).split('.')[0] : '삶의 방향을 이끄는 한 가지 결이';
+    var coreBit = prof && prof.core ? String(prof.core).split('.')[0] : '삶의 방향을 이끄는 한 가지 흐름';
     var text = pickVoiceLine([
         nmDnim(nm) + '의 하루를 가장 깊이 받쳐 주는 자리가 일주예요. 겉으로는 ' + scene + '처럼 보이시지만, 속으로는 ' + coreBit + '을 오래 지키려 하시는 분이에요. 아래 표와 한 줄기 서사에서 그 흐름을 이어서 읽으시면 됩니다.',
-        '만세력 표의 가운데 줄이 ' + nmUi(nm) + ' 자신이에요. ' + scene + '의 결이 ' + coreBit + '이라는 뜻으로, 이름보다 삶의 리듬이 먼저 보이게 풀어 드릴게요.'
+        '만세력 표의 가운데 줄이 ' + nmUi(nm) + ' 자신이에요. ' + scene + '의 모습이 ' + coreBit + '이라는 뜻으로, 이름보다 삶의 리듬이 먼저 보이게 풀어 드릴게요.'
     ], iljuKey + 'iljuNarr');
     return buildNarrativePara(data, text, { color: 'rgba(255,255,255,0.82)', marginBottom: '14px' });
 }
@@ -856,7 +856,7 @@ function buildInlineWuxingSummaryHtml(data) {
     var maxK = OH_KR[oh.maxW] || '';
     var minK = OH_KR[oh.minW] || '';
     var text = pickVoiceLine([
-        nmDnim(nm) + ' 사주 안에서는 ' + maxL + '(' + maxK + ') 기운이 가장 두껍게 깔려 있고, ' + minL + '(' + minK + ') 쪽은 상대적으로 얇게 흐르는 편이에요. 이건 성격이 단순하다는 뜻이 아니라, 에너지가 어디로 먼저 쓰이는지를 보여 주는 지도예요. 아래 막대는 그 비율을 숫자로 옮긴 것이고, 다음 장에서 한 기운씩 장면처럼 풀어 드릴게요.',
+        nmDnim(nm) + ' 사주 안에서는 ' + maxL + '(' + maxK + ') 기운이 가장 강하게 깔려 있고, ' + minL + '(' + minK + ') 쪽은 상대적으로 약하게 흐르는 편이에요. 이건 성격이 단순하다는 뜻이 아니라, 에너지가 어디로 먼저 쓰이는지를 보여 주는 지도예요. 아래 막대는 그 비율을 숫자로 옮긴 것이고, 다음 장에서 한 기운씩 장면처럼 풀어 드릴게요.',
         '다섯 기운 가운데 ' + maxL + '의 색이 ' + nmUi(nm) + ' 삶의 중심을 잡고 있어요. ' + minL + ' 쪽은 비어 보일 때가 있어도, 그 빈칸을 의식적으로 채우는 습관 하나가 평생 체감을 바꿉니다.'
     ], (oh.maxW || '') + 'wxNarr');
     return buildNarrativePara(data, text, { color: 'rgba(255,255,255,0.82)', marginBottom: '14px' });
@@ -1436,6 +1436,48 @@ function boldStarsToStrong(s) {
     return colorizeHanjaInline(html);
 }
 
+/** 고객-facing — 「두껍다·결」 등 명리 은유를 일상어로 (결정·결혼·결실 등은 유지) */
+function voiceCustomerLexicon(s) {
+    if (!s || typeof s !== 'string') return s;
+    var t = s;
+    t = t.replace(/두껍게\s*깔/g, '강하게 깔');
+    t = t.replace(/두껍게\s*자리/g, '강하게 자리');
+    t = t.replace(/두껍게\s*박/g, '진하게 박');
+    t = t.replace(/두껍게\s*겹/g, '강하게 겹');
+    t = t.replace(/두껍게\s*흐르/g, '강하게 흐르');
+    t = t.replace(/두꺼우/g, '강한 편이');
+    t = t.replace(/두껍은/g, '진한');
+    t = t.replace(/두껍다/g, '진하다');
+    t = t.replace(/두껍게/g, '진하게');
+    t = t.replace(/삶의\s*결/g, '삶의 방향');
+    t = t.replace(/타고난\s*결/g, '타고난 성향');
+    t = t.replace(/자기만의\s*결/g, '자기만의 색');
+    t = t.replace(/한\s*결이/g, '한 흐름이');
+    t = t.replace(/두\s*결이/g, '두 흐름이');
+    t = t.replace(/결이\s*또렷/g, '성향이 또렷');
+    t = t.replace(/결이\s*살/g, '무게가 살');
+    t = t.replace(/결이\s*비슷/g, '성향이 비슷');
+    t = t.replace(/결이\s*맞/g, '성향이 맞');
+    t = t.replace(/결이\s*갈/g, '방향이 갈');
+    t = t.replace(/결이\s*얇/g, '기운이 얇');
+    t = t.replace(/결이\s*두꺼/g, '기운이 강');
+    t = t.replace(/단위의\s*결/g, '단위의 리듬');
+    t = t.replace(/인생의\s*결/g, '인생의 전환');
+    t = t.replace(/에너지\s*공명/g, '성향이 비슷한 사람끼리 끌리는 힘');
+    t = t.replace(/결이\s*([가-힣]{2,8})/g, '모습이 $1');
+    t = t.replace(/어느\s*결이/g, '어느 기운이');
+    t = t.replace(/의\s*결이/g, '의 모습이');
+    t = t.replace(/두껍게\s*겹/g, '강하게 겹');
+    t = t.replace(/두껍게\s*자리잡/g, '강하게 자리잡');
+    t = t.replace(/가장\s*두껍게\s*자리/g, '가장 강하게 자리');
+    t = t.replace(/함께\s*두껍게/g, '함께 강하게');
+    t = t.replace(/이\s*두껍다는/g, '이 진하고 강하다는');
+    t = t.replace(/가\s*두껍다는/g, '가 진하고 강하다는');
+    t = t.replace(/두꺼우시면/g, '강하시면');
+  t = t.replace(/결이\s*살짝/g, '리듬이 살짝');
+    return t;
+}
+
 /** 사주아이형 톤 정리 — VIP·카드·고정문 공통 (【】·당신→님은·IT슬랭 완화) */
 function voicePolishParagraph(data, text) {
     var s = String(text == null ? '' : text);
@@ -1636,7 +1678,7 @@ function voicePolishParagraph(data, text) {
     s = s.replace(/확인을\s*거듭하다\s*보면\s*상대만\s*굳어\s*보이기도\s*합니다/g, '여러 번 다시 확인하다 보면, 그 사이에 상대방이 답답해져 먼저 마음을 닫아 버리기도 합니다');
     s = s.replace(/머릿속\s*정리가\s*길어지면\s*행동이\s*늦어지고/g, '머릿속에서 생각만 길어지면 정작 행동으로 옮기는 시점이 늦어지고');
     s = s.replace(/머릿속\s*정리가\s*길어지면\s*몸이\s*움직이는\s*시점이\s*늦어지고/g, '머릿속에서 생각만 길어지면 정작 행동으로 옮기는 시점이 늦어지고');
-    s = s.replace(/(?<![가-힣])에너지\s*공명/g, '결이 비슷한 사람끼리 자연스럽게 끌어당기는 힘');
+    s = s.replace(/(?<![가-힣])에너지\s*공명/g, '성향이 비슷한 사람끼리 자연스럽게 끌어당기는 힘');
     s = s.replace(/(?<![가-힣])약속의\s*리듬을/g, '약속이 지켜지는 속도를');
     s = s.replace(/(?<![가-힣])약속의\s*리듬이/g, '약속이 지켜지는 속도가');
     s = s.replace(/(?<![가-힣])약속의\s*리듬은/g, '약속이 지켜지는 속도는');
@@ -1720,6 +1762,7 @@ function voicePolishParagraph(data, text) {
     //   ~입니다·~합니다로 강제 변환하던 로직이 .cursorrules의 톤 가이드와 충돌했고,
     //   본문 어디서나 동일하게 톤이 평탄해지는 부작용이 있었습니다. 이제는 템플릿이
     //   고른 어미를 그대로 살리고, 격식이 필요한 곳에서는 템플릿 단계에서 결정합니다.
+    s = voiceCustomerLexicon(s);
     return s;
 }
 
@@ -4440,7 +4483,7 @@ function buildPremiumExecutiveSummary(data) {
     var dJosaEun = getJosa(daeunLabel, '은/는');
     var pools = [
         {
-            m1: iljuScene + ' — 이 물상처럼 ' + nmUi(nm) + ' 에너지는 한 방향으로 모아질 때 비로소 진짜 힘이 나는 결이네요. 지금은 여러 갈래를 동시에 펼치시려는 분산만 살짝 줄여 두시면 충분해요.',
+            m1: iljuScene + ' — 이 물상처럼 ' + nmUi(nm) + ' 에너지는 한 방향으로 모아질 때 비로소 진짜 힘이 나는 모습이에요. 지금은 여러 갈래를 동시에 펼치시려는 분산만 살짝 줄여 두시면 충분해요.',
             m2: daeunLabel + dJosaEun + ' ' + dTrend + ' 국면이네요. 지금 이 10년은 다음 20년을 받쳐 줄 기반을 차곡차곡 다지는 시기로 보여요. 크게 벌리기보다 내 것을 단단하게 만드시는 쪽이 더 어울리는 흐름입니다.',
             m3: curY + '년은 ' + yTrend + ' 흐름의 한 해예요. 올해는 새로운 출발보다 이미 시작해 둔 일을 끝까지 마무리하는 데 손을 모아 보십시오. 결과가 한결 곱게 떨어집니다.',
             m4: curM + '월은 ' + mTrend + ' 결의 달이군요. 이달은 속도보다 정확도가 더 중요해요. 연락처·계약·결제 흐름을 한 번만 정돈해 두시고, 무리한 일정은 미리 걷어내 두십시오.'
@@ -5075,7 +5118,7 @@ function buildChapter3SipseongSynthesisParagraph(primaryList, data) {
     if (list.length === 1) {
         return nm + ' 원국에서는 **' + list[0] + '** 한 축이 특히 두드러집니다. 다른 글자도 있지만, 일과 관계에서 먼저 튀는 반응은 이 이름으로 짚는 편이 맞습니다.';
     }
-    return nm + ' 원국에서는 **' + list.join('·') + '** 축이 차례로 두껍게 겹칩니다. 한 번에 다 고치려 하지 말고, **한 시즌에는 이름 하나만** 고정해 조정하십시오.';
+    return nm + ' 원국에서는 **' + list.join('·') + '** 축이 차례로 강하게 겹칩니다. 한 번에 다 고치려 하지 말고, **한 시즌에는 이름 하나만** 고정해 조정하십시오.';
 }
 
 /**
@@ -5439,6 +5482,67 @@ function lifeNarrativePlainWeave(data, g, j, opts) {
     return soft !== skip ? soft : '';
 }
 
+/** 앞으로의 운 — 층별 한 줄 조언(대운·세운·월운 중복 방지) */
+var _UPCOMING_TONE_TAIL = {
+    good:    '미뤄 두신 큰 일 한 가지를 이 시기 안에 매듭지으시면 다음이 가벼워집니다.',
+    mild:    '평소 페이스를 유지하시면서 한 가지씩만 쌓아 가시면 됩니다.',
+    flat:    '새로 벌리기보다 정리·점검에 시간을 쓰시면 다음 시기가 편해집니다.',
+    caution: '큰 결정은 한 박자 늦추고, 지키는 쪽에 무게를 두시면 낫습니다.',
+    tough:   '새로 시작보다 지금 있는 것을 무너지지 않게 지키는 데 힘을 쓰시면 됩니다.'
+};
+
+/** 세운 카드 — 올해 한 해 분위기만(대운·월운 풀스택 반복 없음) */
+function upcomingSeyunBodyBrief(data, yr, g, j, t) {
+    var GAN_LINE = {
+        '甲':'시작과 새 학습이 잦아지는 한 해예요.',
+        '乙':'사람과 협업으로 길이 열리는 한 해예요.',
+        '丙':'드러남·표현·홍보가 앞서는 한 해예요.',
+        '丁':'한 분야를 깊게 파면 바로 보상이 따라오는 한 해예요.',
+        '戊':'안정과 축적이 앞서는 한 해예요.',
+        '己':'정리·마무리·연장이 앞서는 한 해예요.',
+        '庚':'결단과 정리로 이득이 큰 한 해예요.',
+        '辛':'완성과 세련이 돋보이는 한 해예요.',
+        '壬':'정보·인맥·새 통로가 열리는 한 해예요.',
+        '癸':'학습·연구·내공을 채우기 좋은 한 해예요.'
+    };
+    var JI_LINE = {
+        '子':'기획·문서·집중이 빛나요.', '丑':'느리지만 단단히 쌓이는 해예요.', '寅':'활동·새 출발이 따라와요.',
+        '卯':'인맥·협업으로 길이 열려요.', '辰':'변수가 있어 큰 결정은 분기 초·말에만 잡으세요.',
+        '巳':'미루던 결정이 풀리기 쉬워요.', '午':'성과·인정이 한 번 따라와요.',
+        '未':'창작·교육 쪽으로 길이 열려요.', '申':'빠른 판단이 승부를 가려요.',
+        '酉':'그동안 쌓은 노력이 결실로 돌아와요.', '戌':'끊을 것과 남길 것을 가르기 좋아요.',
+        '亥':'큰 무대보다 내실을 채우는 해예요.'
+    };
+    var parts = [(GAN_LINE[g] || ''), (JI_LINE[j] || '')];
+    var daeunCtx = sajuxGetDaeunContext(data, yr);
+    if (daeunCtx && typeof sajuxFortuneScore === 'function') {
+        var yrSc = sajuxFortuneScore(data, g, j);
+        var dSc = daeunCtx.score != null ? daeunCtx.score : sajuxFortuneScore(data, daeunCtx.g, daeunCtx.j);
+        if (yrSc - dSc >= 2) parts.push('지금 겪는 10년 흐름보다 이 해가 한 단계 밝습니다.');
+        else if (yrSc - dSc <= -2) parts.push('큰 10년 흐름보다 이 해는 숨 고르는 해로 잡으시면 낫습니다.');
+    }
+    parts.push(_UPCOMING_TONE_TAIL[t] || '');
+    return parts.join(' ').replace(/\s+/g, ' ').trim();
+}
+
+/** 월운 카드 — 그 달만(대운·세운 장문 반복 없음) */
+function upcomingWolunBodyBrief(data, yr, mo, g, j, t) {
+    var JI_MOOD = {
+        '子':'집중·기획·문서', '丑':'인내·저력', '寅':'활동·새 출발', '卯':'인맥·협업',
+        '辰':'변수·점검', '巳':'결단·전환', '午':'성취·인정', '未':'창작·풍요',
+        '申':'판단·속도', '酉':'완성·보상', '戌':'정리·마무리', '亥':'휴식·준비'
+    };
+    var moLead = mo + '월은 <strong>' + (JI_MOOD[j] || '일상 리듬') + '</strong> 쪽이 앞에 섭니다. ';
+    var act = {
+        good:    '이달 안에 미뤄 두신 안건 한 가지를 매듭지으시면 다음 달이 가벼워집니다.',
+        mild:    '작은 시작 하나와 작은 마무리 하나만 잡으시면 균형이 좋습니다.',
+        flat:    '새 일보다 수면·식사·관계 정리에 시간을 쓰시면 다음 달이 편해집니다.',
+        caution: '이달 큰 결정은 한 가지만, 나머지는 다음 달로 미루십시오.',
+        tough:   '큰돈·큰 약속·큰 변화는 멈추고 점검만 하시면 됩니다.'
+    };
+    return moLead + (act[t] || act.flat);
+}
+
 function lifeNarrativePickMilestone(milestones, lo, hi) {
     var hits = (milestones || []).filter(function (m) {
         if (m.age < lo || m.age > hi) return false;
@@ -5704,7 +5808,7 @@ function buildPersonalPortraitInnerHtml(data) {
     else if (pctJae >= 30) dominantSip = '추상보다 구체, 이상보다 실리에 강한 — 현실 감각이 또렷한 분';
     else if (pctIn >= 30) dominantSip = '한 분야를 끝까지 파고드시며 깊이를 쌓아 가시는 분';
     else if (pctBi >= 30) dominantSip = '자기 색이 또렷하고, 누구의 그늘 아래보다 스스로의 자리를 만들고 싶어 하시는 분';
-    else dominantSip = '한 가지에 깊이 들어가시는 — 자기만의 결이 또렷한 분';
+    else dominantSip = '한 가지에 깊이 들어가시는 — 자기만의 색이 또렷한 분';
 
     var emptyNote = '';
     if (pctSig === 0) emptyNote = '마음에 담은 것을 밖으로 풀어내지 않고 안에 쌓아두시는 패턴이 있어서, 의식적으로 글이나 말로 표현하는 작은 통로 하나를 두시는 편이 평생 도움이 됩니다';
@@ -6441,7 +6545,7 @@ function stripLifeArcPlainKo(html) {
     s = s.replace(/[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]/g, '');
     s = s.replace(/\(\s*偏[財官印]|正[財官印]|食神|傷官|比肩|劫財|七殺\s*\)/g, '');
     s = s.replace(/\s*·\s*·/g, '·').replace(/\s{2,}/g, ' ').replace(/\s+([,.])/g, '$1').trim();
-    return s;
+    return voiceCustomerLexicon(s);
 }
 
 /** 인생 서사·이정표 — 계산은 사주로, 문장은 결과만(용어 없음) */
@@ -6765,7 +6869,7 @@ function buildCurrentPeriodCard(data) {
     // ── 2) 현재 대운 (~400자) ──
     var daeunStory = '먼저 가장 큰 흐름인 대운부터 보시면, ' + nmEunNeun(name) + ' 지금 <strong>' + dGanKr + dJiKr + '(' + dGan + dJi + ')</strong> 대운 — 천간 ' + (dGanOh || '') + '에 지지 ' + (dJiOh || '') + '이 받치는 10년에 들어와 계세요. ';
     daeunStory += ({
-        good:    nmKke(name) + ' 가장 잘 맞는 기운이 두껍게 깔린 시기라, 평생을 통틀어 보아도 두세 번 만나기 어려운 “공격해도 좋은 10년”에 가까운 흐름입니다. 같은 시간을 들여도 결과가 빨리 붙고, 한 번 잡으신 기회가 다음 기회로 자연스럽게 이어집니다. 다만 너무 빨리 풀린다고 사방으로 손을 뻗으시면 그중 한두 자리가 어긋날 수 있으니, 평생 끌고 가실 큰 축 한두 가지를 이 10년 안에 정해 두시는 게 가장 큰 이득이 됩니다. 미뤄 두셨던 큰 결정 — 결혼·이직·창업·자격 — 가운데 한 가지를 이 시기 안에 매듭지으시면, 그게 다음 10년의 가장 단단한 토대가 됩니다.',
+        good:    nmKke(name) + ' 가장 잘 맞는 기운이 강하게 깔린 시기라, 평생을 통틀어 보아도 두세 번 만나기 어려운 “공격해도 좋은 10년”에 가까운 흐름입니다. 같은 시간을 들여도 결과가 빨리 붙고, 한 번 잡으신 기회가 다음 기회로 자연스럽게 이어집니다. 다만 너무 빨리 풀린다고 사방으로 손을 뻗으시면 그중 한두 자리가 어긋날 수 있으니, 평생 끌고 가실 큰 축 한두 가지를 이 10년 안에 정해 두시는 게 가장 큰 이득이 됩니다. 미뤄 두셨던 큰 결정 — 결혼·이직·창업·자격 — 가운데 한 가지를 이 시기 안에 매듭지으시면, 그게 다음 10년의 가장 단단한 토대가 됩니다.',
         mild:    nmKke(name) + ' 한 발 더 내디뎌도 좋은 흐름이 깔린 10년이에요. 큰 위협은 적고, 꾸준히 노력하신 만큼 결실이 차곡차곡 쌓이는 시기입니다. 폭발적으로 한 번에 가시기보다 평소 페이스를 유지하시면서 본인이 진짜 잘하는 것 한 가지를 깊이 가시면, 이 10년이 끝났을 때 — 사회 안에서 ' + nmUi(name) + ' 자리가 한 단계 또렷해져 있을 거예요. 새 시도는 1년에 한두 개로만 묶으시고, 끝맺음을 책임질 동료 한 명만 옆에 두십시오.',
         flat:    '큰 길도 큰 흉도 적은 평탄한 10년이에요. 이 시기에는 새로 벌이시기보다, 그동안 벌여 두신 일들 가운데 진짜 남길 한두 가지를 정리하고 다듬는 데 시간을 쓰시는 게 다음 대운을 훨씬 가볍게 만들어 줍니다. 직장이라면 한 분야의 깊이를, 사업이라면 거래처와의 신뢰를, 관계라면 가까운 다섯 명과의 약속을 — 이 셋 중 한 가지만 골라 단단히 다지시면 충분합니다.',
         caution: nmKke(name) + ' 살짝 부담스러운 기운이 깔린 10년이에요. 결정의 무게는 무거워지고, 같은 노력이라도 결과가 평소보다 느리게 돌아옵니다. 이 시기에 새로 벌이시면 그게 다음 시기까지 짐으로 따라오기 쉬우니, “이미 가지고 계신 것들을 단단히 지키는 쪽”이 정답에 더 가까워요. 큰 보증·큰 동업·큰 빚을 쓰는 투자는 이 10년 동안 가급적 피하시고, 본인의 건강·가족·핵심 거래처 셋만 흔들리지 않게 챙기시면 다음 대운이 다시 가벼워집니다.',
@@ -6879,12 +6983,12 @@ function buildCurrentPeriodCard(data) {
  * ───────────────────────────────────────── */
 function buildUpcomingFortuneIntro(data) {
     var chHead = (typeof buildChapterHeadMainSub === 'function')
-        ? buildChapterHeadMainSub('앞으로의 운', '다가올 대운 · 세운 · 월운을 한 번에 정리')
+        ? buildChapterHeadMainSub('앞으로의 운', '큰 10년 → 한 해 → 한 달, 겹치지 않게')
         : '<h2 class="ch-title">앞으로의 운</h2>';
 
     return '<div class="report-chapter">'
         + chHead
-        + buildNarrativePara(data, '지금 시기를 한 흐름으로 살펴 드렸다면, 이제 다가올 대운 두 번·다음 10년의 세운·앞으로 11개월의 월운을 차례대로 짚어 드릴게요. 한 시기당 한 문단 정도라, 신경 쓰이는 해·달만 골라 마음에 두셔도 충분합니다.', { marginBottom: '0' })
+        + buildNarrativePara(data, '「현재의 운세」에서 대운·세운·월운을 한 번에 풀어 드렸다면, 아래는 같은 말을 반복하지 않고 <strong>층만 나눠</strong> 짚습니다. 다가올 <strong>대운 두 번</strong>은 10년의 큰 기후만, <strong>세운 10장</strong>은 그해의 분위기와 지금 10년과의 차이만, <strong>월운 11장</strong>은 그달의 리듬과 한 가지 행동만 담았어요. 신경 쓰이는 해·달만 골라 두셔도 충분합니다.', { marginBottom: '0' })
         + '</div>';
 }
 
@@ -6920,13 +7024,6 @@ function buildUpcomingDaewunCards(data) {
         return s;
     }
 
-    var STAGE_TEMPLATE = {
-        wood:    nmDnim(name) + ' 이 10년에는 <strong>“시작·확장·새 학습”</strong>의 기운이 두껍게 깔립니다. 새 일·새 사람·이사·이직처럼 “처음 디뎌 보는 자리”가 자주 열려요. 평소보다 호기심이 늘고, 새 것에 대한 흡수력이 가장 좋은 시기라, 한 분야의 자격증 한 장이나 새로운 기술 한 가지를 익히기에 평생을 통틀어 가장 적기에 가까워요. 다만 동시에 “시작만 잦아지고 마무리가 밀리는” 패턴이 따라오기 쉬우니, 새 도전은 1년에 한두 개로만 묶어 가시고, 끝맺음을 책임질 동료 한 명만 옆에 두십시오. 가족 안에서도 이사·동거·결혼처럼 “새 자리”가 한 번씩 열리는 시기예요.',
-        fire:    nmDnim(name) + ' 이 10년에는 <strong>“드러남·성취·이름”</strong>의 기운이 두껍게 깔립니다. 평소보다 ' + nmIGa(name) + ' 외부에 노출되는 일이 늘고, 한 번 인정받기 시작하면 그 흐름이 한 분기 안에 빠르게 커지는 시기예요. 발표·강연·매체 노출·승진 — 셋 중 하나는 이 10년 안에 반드시 한 번 따라옵니다. 다만 빛이 커진 만큼 그 뒷면도 같이 흔들리기 쉬워요. 수면 시간·지출 한도·건강검진 — 이 세 가지의 상한선을 시작 시점에 미리 정해 두지 않으시면, 10년이 끝날 무렵 빛만큼 그림자도 길어집니다. “인정받을 때 가장 차분해야 한다”는 한 줄을 늘 기억해 두세요.',
-        earth:   nmDnim(name) + ' 이 10년에는 <strong>“안정·축적·완성”</strong>의 기운이 두껍게 깔립니다. 큰 사건보다는 그동안 쌓아 오신 것들을 정리하고 결실로 거두는 쪽이 자연스러워요. 서두르지 않으셔도 흐름이 받쳐 주니, 자산·관계·역할 중 한 가지만 골라 마무리해 가시면 됩니다. 특히 부동산·실물 자산·반복 계약처럼 “느려도 단단하게 쌓이는 것”들이 이 시기의 가장 큰 친구예요. 가족·동료와의 신뢰가 한 단계 더 깊어지는 시기이기도 합니다. 다만 변화에 대한 적응이 평소보다 더디게 느껴질 수 있으니, 큰 이직·큰 이사 같은 결정은 시기 초반에 다 풀고, 후반부엔 정착에 무게를 두십시오.',
-        metal:   nmDnim(name) + ' 이 10년에는 <strong>“결단·정리·전문성”</strong>의 기운이 두껍게 깔립니다. 안 맞는 사람·일·물건을 잘라 내실 때 ' + nmKke(name) + ' 가장 큰 이득이 돌아옵니다. 한 분야를 깊게 파시면 그 깊이가 다음 시기의 가장 큰 자산이 돼요. 평소 “이건 끊어야 하는데” 미루셨던 관계·역할·습관 한두 가지를 이 10년 안에 정리하시면, 그게 인생의 큰 전환점이 됩니다. 다만 결단이 너무 잦아지면 주위 사람이 “찬 사람”으로 ' + nmEulReul(name) + ' 볼 수 있으니, 자르는 순간 한마디 따뜻한 설명을 곁들이시는 습관을 들이세요.',
-        water:   nmDnim(name) + ' 이 10년에는 <strong>“통찰·정보·인맥”</strong>의 기운이 두껍게 깔립니다. 말보다 기록이 이기는 시기라, 본인이 보고 들은 것을 한 권의 노트·한 폴더로만 정리해 두시면 그게 다음 시기의 가장 큰 자본이 됩니다. 사람들이 ' + nmEulReul(name) + ' 찾아와 의논하는 일이 늘어요. 그 자리에서 듣고 정리하시는 힘이 평생 ' + nmUi(name) + ' 직업이 되기도 합니다. 다만 말이 많아질수록 손해도 같이 커지는 시기라, 메모는 두 배로 늘리시고 발언은 절반으로 줄이세요. 깊이 보는 안목이 가장 빛나는 10년이라, 큰 결정은 늘 며칠 자고 내리시는 습관을 만들어 두시면 좋습니다.'
-    };
     var TONE_TAIL = {
         good:    ' 이 흐름은 ' + nmKke(name) + ' 본래 잘 맞는 기운과 겹쳐, 평생 두세 번 만나기 어려운 “공격해도 좋은 10년”에 가까워요. 미뤄 두셨던 큰 일 — 결혼·창업·이직·자격증·자산 매입 — 가운데 한두 가지를 이 시기 안에 풀고 가시는 게 가장 큰 이득이 됩니다. 다만 운이 좋다고 모든 자리에 손을 펼치시면 결과가 흩어지기 쉬우니, 평생 끌고 가실 큰 축 한두 가지에만 이 시기의 힘을 모아 두십시오.',
         mild:    ' 큰 풍파 없이 한 발씩 내디디시는 만큼 결과가 돌아오는 흐름이에요. 평소 페이스를 유지하시는 게 정답입니다. 한 해에 한 번씩, 본인이 무엇을 쌓아 오셨는지 짧게 정리해 두시면 10년이 끝났을 때 그 기록이 가장 큰 무기가 돼요.',
@@ -7040,10 +7137,7 @@ function buildUpcomingSewunCards(data) {
     };
 
     function bodyFor(yr, g, j, t, sc) {
-        var daeunCtx = sajuxGetDaeunContext(data, yr);
-        var stack = sajuxNarrateLayeredStack(data, daeunCtx, g, j, null, null, yr, null);
-        var detail = sajuxNarratePeriod(data, g, j, 'seyun-' + yr);
-        return (stack ? stack + ' ' : '') + detail + ' ' + sajuxToneAdvice(data, t, 'seyun', yr + g + j);
+        return upcomingSeyunBodyBrief(data, yr, g, j, t);
     }
 
     var cards = '';
@@ -7071,7 +7165,7 @@ function buildUpcomingSewunCards(data) {
 
     return '<div class="report-chapter">'
         + chHead
-        + buildNarrativePara(data, '아래는 ' + nmKke(name) + ' 곧 찾아올 10년을 한 해씩 짧게 짚어 드린 것이에요. 큰 결정을 잡고 싶으신 해만 골라 두셔도 충분합니다.', { lineHeight: '2', marginBottom: '14px' })
+        + buildNarrativePara(data, '아래 10장은 <strong>그해의 분위기</strong>만 담았어요. 「현재의 운세」나 앞의 대운 설명을 다시 풀지 않고, 지금 겪는 10년과 비교해 밝은 해·숨 고를 해를 짚습니다.', { lineHeight: '2', marginBottom: '14px' })
         + '<div style="display:flex;flex-direction:column;gap:0;">' + cards + '</div>'
         + '</div>';
 }
@@ -7118,13 +7212,7 @@ function buildUpcomingWolunCards(data) {
     var SEWUN_GAN_ARR = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
     var SEWUN_JI_ARR  = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
     function bodyForMonth(yr, mo, g, j, t, sc) {
-        var daeunCtx = sajuxGetDaeunContext(data, yr);
-        var yGi = ((yr - 4) % 10 + 10) % 10;
-        var yJi = ((yr - 4) % 12 + 12) % 12;
-        var sg = SEWUN_GAN_ARR[yGi]; var sj = SEWUN_JI_ARR[yJi];
-        var stack = sajuxNarrateLayeredStack(data, daeunCtx, sg, sj, g, j, yr, mo);
-        var detail = sajuxNarratePeriod(data, g, j, 'wolun-' + yr + '-' + mo);
-        return (stack ? stack + ' ' : '') + detail + ' ' + sajuxToneAdvice(data, t, 'wolun', yr + '-' + mo + g + j);
+        return upcomingWolunBodyBrief(data, yr, mo, g, j, t);
     }
 
     var cards = '';
@@ -7163,7 +7251,7 @@ function buildUpcomingWolunCards(data) {
 
     return '<div class="report-chapter">'
         + chHead
-        + buildNarrativePara(data, '다음 달부터 11개월을 한 달씩 짧게 짚어 드렸어요. 밀고 싶은 달과 쉬고 싶은 달만 표시해 두셔도 한 해가 가벼워집니다.', { lineHeight: '2', marginBottom: '14px' })
+        + buildNarrativePara(data, '아래 11장은 <strong>그달의 리듬과 행동 한 가지</strong>만 담았어요. 세운·대운 설명은 생략하고, 밀고 싶은 달·쉬고 싶은 달만 표시해 두셔도 됩니다.', { lineHeight: '2', marginBottom: '14px' })
         + '<div style="display:flex;flex-direction:column;gap:0;">' + cards + '</div>'
         + '</div>';
 }
@@ -7331,7 +7419,7 @@ function buildChapter2_Wuxing(data) {
         return '<strong>' + arr.map(k => OHKR2[k] + '(' + OHHJ2[k] + ')').join('·') + ' 기운</strong>';
     }
     const hasZeroLack = lackKeys.some(k => pct[k] === 0);
-    const introLine = nmUi(name) + ' 사주에는 ' + joinExc(excessKeys) + (excessKeys.length>=2 ? '이 함께 두껍게 자리잡고 있어요. ' : '이 가장 두껍게 자리잡고 있어요. ')
+    const introLine = nmUi(name) + ' 사주에는 ' + joinExc(excessKeys) + (excessKeys.length>=2 ? '이 함께 강하게 자리잡고 있어요. ' : '이 가장 강하게 자리잡고 있어요. ')
         + (lackKeys.length === 0
             ? '나머지는 비교적 고르게 흐르고 있어서, 균형 자체는 잘 맞춰진 사주예요. '
             : (hasZeroLack
@@ -7341,13 +7429,13 @@ function buildChapter2_Wuxing(data) {
 
     // ── 과다 풀이 (각 키마다 한 단락 + 2개 이상이면 결합 단락) ──
     const EXCESS_NARR = {
-        wood: '<strong>목(木)</strong>이 두껍다는 건 — ' + nmDnim(name) + ' 안에 “새로 시작하고 뻗어 나가는 본능”이 가장 큰 자리를 차지하고 있다는 뜻이에요. 멈춰 있으면 답답해지고, 일을 벌이는 쪽이 자연스러우세요. 다만 시작이 잦으면 마무리가 밀리기 쉽고, 익숙해진 자리는 금세 싫증을 내실 수 있어요. **진행 중인 일은 세 가지 이하**로 묶어 두시고, 끝맺는 일에는 함께 책임질 한 사람과 짝을 짓는 게 좋습니다.',
-        fire: '<strong>화(火)</strong>가 두껍다는 건 — 표현·열정·주목이 ' + nmUi(name) + ' 가장 큰 에너지원이라는 뜻이에요. 분위기를 띄우는 힘이 강하고, 무대 위에 서 계실 때 가장 자연스러우세요. 다만 열이 앞서면 번아웃이나 즉흥 결정으로 비용이 커지고, 말이 부딪히는 일도 잦아져요. **감정이 올랐을 때는 하룻밤 넘긴 뒤** 말하시고, 하루 30분은 의도적으로 비워 두십시오.',
-        earth: '<strong>토(土)</strong>가 두껍다는 건 — 묵직한 신뢰와 안정감이 ' + nmUi(name) + ' 가장 큰 자산이라는 뜻이에요. 사람들이 ' + nmEulReul(name) + ' “맡길 수 있는 사람”으로 기억합니다. 다만 변화에 둔하면 기회가 그냥 스쳐 가고, “팀 속도를 늦춘다”는 오해를 받으실 수도 있어요. **분기마다 작은 실험 하나**씩만 의무로 넣어 두시면 됩니다.',
-        metal: '<strong>금(金)</strong>이 두껍다는 건 — 결단·전문성·잘라내는 힘이 ' + nmUi(name) + ' 가장 큰 무기라는 뜻이에요. 원칙이 분명해서 어디서든 깊이를 만들어 내십니다. 다만 정이 없어 보이거나, 내 성과만 챙긴다는 말을 들으실 수도 있어요. **중요한 말은 24시간 유예** 후 보내시고, 짧은 메모에는 “사실 한 줄 + 내가 느낀 점 한 줄”을 함께 적어 두십시오.',
-        water: '<strong>수(水)</strong>가 두껍다는 건 — 깊이 보고 길게 생각하는 힘이 ' + nmUi(name) + ' 가장 큰 자산이라는 뜻이에요. 정보·전략·통찰에 강하고, 한 발 떨어져 흐름을 읽는 눈이 남다르세요. 다만 머릿속에서 생각만 길어지면 정작 행동으로 옮기는 시점이 늦어지고, 같은 일을 여러 번 다시 확인하시다 보면 그 사이에 상대방이 답답해져 마음을 먼저 닫아 버리실 수 있어요. **자료 조사·고민은 한 번에 45분으로 끊으시고**, 그 다음에는 “지금 할 수 있는 가장 작은 행동 한 가지”만 바로 실행하십시오.'
+        wood: '<strong>목(木)</strong> 기운이 진하고 강하다는 뜻은 — ' + nmDnim(name) + ' 안에 “새로 시작하고 뻗어 나가는 본능”이 가장 큰 자리를 차지하고 있다는 뜻이에요. 멈춰 있으면 답답해지고, 일을 벌이는 쪽이 자연스러우세요. 다만 시작이 잦으면 마무리가 밀리기 쉽고, 익숙해진 자리는 금세 싫증을 내실 수 있어요. **진행 중인 일은 세 가지 이하**로 묶어 두시고, 끝맺는 일에는 함께 책임질 한 사람과 짝을 짓는 게 좋습니다.',
+        fire: '<strong>화(火)</strong> 기운이 진하고 강하다는 뜻은 — 표현·열정·주목이 ' + nmUi(name) + ' 가장 큰 에너지원이라는 뜻이에요. 분위기를 띄우는 힘이 강하고, 무대 위에 서 계실 때 가장 자연스러우세요. 다만 열이 앞서면 번아웃이나 즉흥 결정으로 비용이 커지고, 말이 부딪히는 일도 잦아져요. **감정이 올랐을 때는 하룻밤 넘긴 뒤** 말하시고, 하루 30분은 의도적으로 비워 두십시오.',
+        earth: '<strong>토(土)</strong> 기운이 진하고 강하다는 뜻은 — 묵직한 신뢰와 안정감이 ' + nmUi(name) + ' 가장 큰 자산이라는 뜻이에요. 사람들이 ' + nmEulReul(name) + ' “맡길 수 있는 사람”으로 기억합니다. 다만 변화에 둔하면 기회가 그냥 스쳐 가고, “팀 속도를 늦춘다”는 오해를 받으실 수도 있어요. **분기마다 작은 실험 하나**씩만 의무로 넣어 두시면 됩니다.',
+        metal: '<strong>금(金)</strong> 기운이 진하고 강하다는 뜻은 — 결단·전문성·잘라내는 힘이 ' + nmUi(name) + ' 가장 큰 무기라는 뜻이에요. 원칙이 분명해서 어디서든 깊이를 만들어 내십니다. 다만 정이 없어 보이거나, 내 성과만 챙긴다는 말을 들으실 수도 있어요. **중요한 말은 24시간 유예** 후 보내시고, 짧은 메모에는 “사실 한 줄 + 내가 느낀 점 한 줄”을 함께 적어 두십시오.',
+        water: '<strong>수(水)</strong> 기운이 진하고 강하다는 뜻은 — 깊이 보고 길게 생각하는 힘이 ' + nmUi(name) + ' 가장 큰 자산이라는 뜻이에요. 정보·전략·통찰에 강하고, 한 발 떨어져 흐름을 읽는 눈이 남다르세요. 다만 머릿속에서 생각만 길어지면 정작 행동으로 옮기는 시점이 늦어지고, 같은 일을 여러 번 다시 확인하시다 보면 그 사이에 상대방이 답답해져 마음을 먼저 닫아 버리실 수 있어요. **자료 조사·고민은 한 번에 45분으로 끊으시고**, 그 다음에는 “지금 할 수 있는 가장 작은 행동 한 가지”만 바로 실행하십시오.'
     };
-    const EXCESS_DUO_TAIL = '두 기운이 함께 두꺼우시면 — 한쪽이 다른 쪽을 부추겨 일이 한꺼번에 커지기 쉬워요. **이번 달의 메인은 하나만** 정하시고 나머지는 보조로 흘려보내십시오. 두 기운을 동시에 다 살리려 하시면 체력과 시간이 먼저 갑니다.';
+    const EXCESS_DUO_TAIL = '두 기운이 함께 강하시면 — 한쪽이 다른 쪽을 부추겨 일이 한꺼번에 커지기 쉬워요. **이번 달의 메인은 하나만** 정하시고 나머지는 보조로 흘려보내십시오. 두 기운을 동시에 다 살리려 하시면 체력과 시간이 먼저 갑니다.';
 
     // ── 부족 풀이 ──
     const LACK_NARR = {
