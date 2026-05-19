@@ -251,33 +251,57 @@ function pickVoiceLine(arr, seed) {
     return arr[Math.abs(hashSeed(String(seed || ''))) % arr.length];
 }
 
-/** 고객 향 서술 — 인생 후반을 부르는 표현(과장 없음). 이름·구간 문자열로 시드 고정 */
+/** 인생 서사 7단 — 마지막은「죽음을 앞둔 시점」(극노년·만년 등 미사용) */
+var SAJUX_LIFE_STAGES = [
+    { key: 'child',  label: '유년기',           lo: 0,  hi: 13 },
+    { key: 'teen',   label: '청소년기',         lo: 14, hi: 19 },
+    { key: 'youth',  label: '청년기',           lo: 20, hi: 34 },
+    { key: 'prime',  label: '장년기',           lo: 35, hi: 49 },
+    { key: 'middle', label: '중년기',           lo: 50, hi: 69 },
+    { key: 'elder',  label: '노년기',           lo: 70, hi: 89 },
+    { key: 'final',  label: '죽음을 앞둔 시점', lo: 90, hi: 120 }
+];
+function sajuxLifeStageForAge(age) {
+    age = Number(age);
+    if (isNaN(age) || age < 0) age = 0;
+    for (var i = SAJUX_LIFE_STAGES.length - 1; i >= 0; i--) {
+        if (age >= SAJUX_LIFE_STAGES[i].lo) return SAJUX_LIFE_STAGES[i];
+    }
+    return SAJUX_LIFE_STAGES[0];
+}
+function sajuxLifeStageLabel(age) { return sajuxLifeStageForAge(age).label; }
+function sajuxLifeStageRangeText(st) {
+    if (!st) return '';
+    return st.hi >= 120 ? (st.lo + '세 이후') : (st.lo + '세~' + st.hi + '세');
+}
+
+/** 고객 향 서술 — 노년·마지막 무렵(과장 없음). 이름·구간 문자열로 시드 고정 */
 function voiceTwilightChapter(seed) {
     return pickVoiceLine([
-        '여생 무렵',
+        '죽음을 앞둔 시점',
         '인생의 끝자락',
-        '말년 무렵',
+        '노년을 지난 마지막 무렵',
         '서사가 잔잔히 접어지는 때'
     ], String(seed || '') + '\x00twCh');
 }
 function voiceTwilightPossessive(seed) {
     return pickVoiceLine([
-        '여생의',
+        '죽음을 앞둔 시점의',
         '인생 끝자락의',
-        '말년의'
+        '노년기 이후의'
     ], String(seed || '') + '\x00twPos');
 }
 function voiceTwilightSeatPhrase(seed) {
     return pickVoiceLine([
-        '여생의 자리',
+        '죽음을 앞둔 시점의 자리',
         '인생 끝자락의 자리',
-        '말년의 자리'
+        '노년기의 자리'
     ], String(seed || '') + '\x00twSeat');
 }
 function voiceTwilightSpan(seed) {
     return pickVoiceLine([
-        '유년부터 말년까지',
-        '처음 숨부터 눈 감는 순간까지',
+        '유년기부터 죽음을 앞둔 시점까지',
+        '유년기부터 노년을 거쳐 마침표까지',
         '태어난 순간부터 인생의 끝자락까지'
     ], String(seed || '') + '\x00twSpan');
 }
@@ -3553,8 +3577,7 @@ function generateDeepReport(data) {
                         .replace(/>\s+</g, '><');
                 }
                 if (out.indexOf('undefined') !== -1) {
-                    console.warn('generateDeepReport ' + label + ': stripped fragment with undefined');
-                    return '';
+                    console.warn('generateDeepReport ' + label + ': removed stray undefined tokens');
                 }
             }
             return out;
@@ -5111,7 +5134,15 @@ function buildIljuProfileCard(data) {
     const db = data.dayBranch || '';
     const iljuKey = ds + db;
     const prof = getIljuProfilePolished(data, ds, db);
-    var narrativeInner = buildPersonalPortraitInnerHtml(data) || '';
+    var narrativeInner = '';
+    try {
+        narrativeInner = buildPersonalPortraitInnerHtml(data) || '';
+    } catch (e) {
+        console.error('buildPersonalPortraitInnerHtml:', e.message);
+        narrativeInner = '<p class="personal-portrait-eyebrow">' + escHtmlAttr(nmDnim(data.name || '고객')) + ' · 한 줄기 서사</p>'
+            + '<p class="ch-text sajux-narrative-para" style="font-size:14px;color:var(--text);line-height:2.1;">'
+            + '인생 서사를 불러오는 중 오류가 있었습니다. 페이지를 새로 고침한 뒤 다시 생성해 주세요.</p>';
+    }
     if (!prof && !narrativeInner) return '';
 
     function iljuHanjaSpan(char, sizeStyle) {
@@ -5169,7 +5200,7 @@ function buildIljuProfileCard(data) {
 
     var divider = (prof && narrativeInner) ? '<div class="ilju-narrative-divider" aria-hidden="true"></div>' : '';
     var portraitBlock = narrativeInner
-        ? `<div class="personal-portrait-inner ilju-narrative-portrait">${narrativeInner}</div>`
+        ? `<div id="sec-han-line-narrative" class="personal-portrait-inner ilju-narrative-portrait">${narrativeInner}</div>`
         : '';
 
     return `<div id="sec-ilju-narrative-unified" class="ilju-profile-card ilju-narrative-unified report-chapter chapter-start" style="display:flex;flex-direction:column;align-items:stretch;gap:0;margin-bottom:24px;padding:22px 24px;border-radius:16px;position:relative;overflow:hidden;border:1px solid rgba(255,255,255,0.08);background:transparent;box-sizing:border-box;">
@@ -5199,6 +5230,101 @@ function buildIljuProfileCard(data) {
  *  - 인물 초상의 7요소(첫인상·속내·강점·과제·결정·관계·일·본질)는
  *    해당 시기에 자연스럽게 녹여 배치합니다
  * ───────────────────────────────────────── */
+/** 한 줄기 서사 — 시기별 한 편으로 이어지는 본문(카드 분리 없음) */
+function buildConnectedLifeArcParagraphs(data, ctx) {
+    var milestones = [];
+    try {
+        milestones = (typeof sajuxScanLifeMilestones === 'function') ? (sajuxScanLifeMilestones(data) || []) : [];
+    } catch (e) { console.error('sajuxScanLifeMilestones:', e.message); }
+
+    function msInline(lo, hi) {
+        var hits = milestones.filter(function (m) { return m.age >= lo && m.age <= hi; });
+        if (!hits.length) return '';
+        return hits.slice(0, 2).map(function (m) {
+            var ageNote = m.kind === 'daeun'
+                ? (m.age + '세~' + (m.ageEnd || m.age + 9) + '세')
+                : (m.year + '년 · ' + m.age + '세');
+            var theme = sajuxMilestoneThemeLine(data, m.cat, m.age, m.ageEnd || m.age, m.year);
+            return ' <span style="color:rgba(199,167,106,0.88);">▸ ' + ageNote + ' — ' + theme + '</span>';
+        }).join('');
+    }
+
+    function stagePara(lo, hi, seed, label, bodyHtml) {
+        var beat = sajuxLifeArcBeatForRange(data, lo, hi, seed);
+        var html = (beat ? beat + ' ' : '') + '<strong>' + label + '</strong> — ' + bodyHtml + msInline(lo, hi);
+        return ctx.para(html);
+    }
+
+    var nm = ctx.name;
+    var tYou = ctx.periodTone(0, 13);
+    var tChu = ctx.periodTone(14, 19);
+    var tCh = ctx.periodTone(20, 34);
+    var tJ = ctx.periodTone(35, 49);
+    var tM = ctx.periodTone(50, 69);
+    var tN = ctx.periodTone(70, 89);
+    var tFin = ctx.periodTone(90, 120);
+
+    var pYou = ctx.tonePhrase(tYou,
+        '큰 사고보다 집안의 시선이 ' + nmEulReul(nm) + ' 든든히 받쳐 주는 흐름이었을 가능성이 큽니다. ',
+        '이사·집안 변화가 한두 번 있었을 수 있어, ' + nmDnim(nm) + '은 또래보다 일찍 어른의 표정을 읽는 법을 익히셨습니다. ',
+        '잔잔하지만 그 안에서 “나는 어떤 사람일까”라는 물음이 이미 마음에 깔렸습니다. ')
+        + nmDnim(nm) + '은 ' + ctx.birthScene + ' '
+        + (ctx.firstImpression ? '어른들의 눈에는 “' + ctx.firstImpression + '” 같은 인상이었을 가능성이 큽니다. ' : '')
+        + '또래 사이에서도 조용하지만 속이 깊은 아이로 기억되셨을 수 있고, 그 습관이 평생 ' + nmUi(nm) + ' 안목의 뿌리가 됩니다.';
+
+    var pChu = ctx.tonePhrase(tChu,
+        '알아봐 주는 어른·선배 한 명이 진로를 빠르게 열어 주는 시기일 수 있습니다. ',
+        '진로·관계에서 한 번 크게 흔들리며 ' + nmUi(nm) + ' 세상을 보는 눈이 깊어지는 시기일 수 있습니다. ',
+        '“나는 어떤 사람인가”를 일찍 묻기 시작하시고, 답을 서두르지 않아도 그 질문이 평생 ' + nmEulReul(nm) + ' 받칩니다. ')
+        + (ctx.inSelfNote || '') + ' 관심 있는 한 가지에는 폭발적으로 빠지고, 그 외는 흘려보내는 패턴이 이 무렵 또렷해집니다.';
+
+    var pCh = ctx.tonePhrase(tCh,
+        '첫 직장·자취·연애 같은 굵직한 결정이 ' + nmEulReul(nm) + ' 받쳐 주기 쉬운 흐름입니다. ',
+        '첫 사회 진입에서 한 번 흔들려도, 그 학습이 다음 안착의 자산이 됩니다. ',
+        '작은 결정들이 차곡차곡 쌓여 방향을 잡는 흐름입니다. ')
+        + nmUi(nm) + '의 강점 “' + ctx.strengthRaw + '”이 시장에서 처음 확인되는 시기이고, ' + nmDnim(nm) + '은 ' + ctx.dominantSip + '이세요. '
+        + ctx.decisionLine;
+
+    var pJ = ctx.tonePhrase(tJ,
+        '평생 일군 노력이 처음으로 결실로 돌아오기 쉬운 구간입니다. ' + (ctx.careerRaw ? ctx.careerRaw + ' 분야에서 특히 자리가 단단해집니다. ' : ''),
+        '결혼·직장이 한 번 학습을 거친 뒤 단단해지는 흐름일 수 있습니다. ',
+        '화려한 도약보다 한 걸음씩 자리를 다지는 흐름이고, 이 시기를 지나야 ' + nmDnim(nm) + '만의 색이 인정받기 시작합니다. ')
+        + ctx.relationLine + ' 동시에 “' + ctx.weaknessRaw + '”의 그늘이 또렷해질 수 있는데, 미리 알아채시면 절반은 약해집니다.'
+        + (ctx.emptyNote ? ' ' + ctx.emptyNote : '');
+
+    var pM = ctx.tonePhrase(tM,
+        '평생 평판이 한꺼번에 결실로 돌아오는 흐름이기도 합니다. ',
+        '건강·가족을 동시에 챙기셔야 하는 무거운 어깨의 시기입니다. ',
+        '50대에 시작한 일이 60대의 명함이 될 수 있는 후반전이 열립니다. ')
+        + '자녀·부모·본업·재정의 줄기가 한꺼번에 몰려오는 시기라, 무리한 확장보다 지키는 쪽이 ' + nmUi(nm) + ' 사주와 맞습니다. '
+        + '후반에 가면 비로소 “진짜 ' + nmUi(nm) + ' 시간”이 돌아옵니다.';
+
+    var pN = ctx.tonePhrase(tN,
+        '후배·자녀 한 명에게 ' + nmDnim(nm) + '의 한 마디가 인생을 바꾸는 일이 일어날 수 있습니다. ',
+        '몸의 신호를 먼저 챙기시는 것이 가장 큰 자산입니다. ',
+        '큰 행사 없이 일상의 깊이가 ' + nmUi(nm) + ' 노년을 빛냅니다. ')
+        + nmDnim(nm) + '은 일을 ' + ctx.workLine + '으로 살아오신 분이라, “덜 무거운, 그러나 의미 있는 한 가지”에 손을 두시는 편이 맞습니다. '
+        + (ctx.coreLine ? '“' + ctx.coreLine + '” — 이 인상이 이때만큼 ' + nmEulReul(nm) + ' 닮습니다. ' : '');
+
+    var finLabel = voiceTwilightChapter(nm + 'fin');
+    var pFin = ctx.tonePhrase(tFin,
+        '늦은 인정이 한 번 더 따라올 수 있습니다. ',
+        '몸이 마음만큼 따라 주지 않을 때지만, 마음 안쪽은 평화로워지기 쉽습니다. ',
+        '잔잔함이야말로 평생 쌓아 온 자리의 결정체입니다. ')
+        + '<strong>' + finLabel + '</strong>에 시간이 더 천천히 흐르고, 손에 잡히는 것들의 무게가 커집니다. '
+        + (ctx.coreLine ? '“' + ctx.coreLine + '” — ' : '')
+        + ctx.relationLine + ' '
+        + '큰 직책보다 ' + nmUi(nm) + ' 한 마디·한 습관이 누군가의 삶에 스민 자국이 진짜 무게입니다.';
+
+    return stagePara(0, 13, nm + 'you', '유년기', pYou)
+        + stagePara(14, 19, nm + 'chu', '청소년기', pChu)
+        + stagePara(20, 34, nm + 'ch', '청년기', pCh)
+        + stagePara(35, 49, nm + 'jang', '장년기', pJ)
+        + stagePara(50, 69, nm + 'jung', '중년기', pM)
+        + stagePara(70, 89, nm + 'no', '노년기', pN)
+        + stagePara(90, 120, nm + 'fin', finLabel, pFin);
+}
+
 /** 한 줄기 서사 본문만 — 일주 카드와 같은 글래스 카드 안에 붙일 때 공용 */
 function buildPersonalPortraitInnerHtml(data) {
     var name = data.name || '고객';
@@ -5320,98 +5446,39 @@ function buildPersonalPortraitInnerHtml(data) {
         ? '“스스로 결정하고 끝까지 책임지는” 방식'
         : '“충분히 살피고 함께 만들어 가는” 방식';
 
-    // ─── 7개 인생 단계 시나리오 ───
-    //   유년기 → 청소년기 → 청년기 → 장년기 → 중년기 → 노년기 → 극노년
-    //   카드 박싱 없이 한 편의 글로 이어서 풀어 줍니다.
-    var tYou = periodTone(0, 13);       // 유년기
-    var tChu = periodTone(14, 19);      // 청소년기
-    var tCh  = periodTone(20, 34);      // 청년기
-    var tJ   = periodTone(35, 49);      // 장년기
-    var tM   = periodTone(50, 69);      // 중년기
-    var tN   = periodTone(70, 89);      // 노년기
-    var tMan = periodTone(90, 120);     // 극노년
-
-    var arcYou = sajuxLifeArcBeatForRange(data, 0, 13, name + 'you');
-    // 유년기 — 첫 풍경 + 또래 첫 만남
-    var pYou = (arcYou ? arcYou + ' ' : '') + '<strong>유년기</strong> — ' + nmDnim(name) + '은 ' + birthScene + '. ' + (firstImpression ? '그 시절의 ' + nmDnim(name) + '은 어른들의 눈에 “' + firstImpression + '” 같은 인상이었을 가능성이 큽니다. ' : '')
-        + tonePhrase(tYou,
-            '큰 사고나 떠들썩한 사건은 거의 없었고, 가족의 따뜻한 시선이 ' + nmEulReul(name) + ' 든든히 받쳐 줍니다. 그때 받은 작은 칭찬 한 줄이 사실 평생 가는 자존감의 가장 깊은 바닥에 깔립니다. ',
-            '이사·전학·집안 사정의 변화가 한두 번 따라왔을 수 있어요. 안정보다 변화에 먼저 적응해야 했던 그 시기 덕분에 — ' + nmDnim(name) + '은 또래보다 일찍 어른의 표정을 읽는 법을 익히셨습니다. ',
-            '잔잔한 시기였지만, 그 잔잔함 속에서 어린 ' + nmDnim(name) + '은 “나는 어떤 사람일까”라는 물음을 이미 마음 한구석에 품기 시작하셨습니다. ')
-        + '초등학교에 들어가신 뒤로는 또래 사이에서 “조용하지만 속이 깊은 아이”로 기억되셨을 가능성이 큽니다. 친구들이 떠들썩하게 어울릴 때도 한 발 떨어져 그 흐름을 지켜보는 편이었고, 그 자리에서 또래보다 한 박자 일찍 “사람의 마음”에 눈을 뜨셨어요. 작은 일에서도 의미를 캐내는 그 습관이, 사실 평생 ' + nmUi(name) + ' 깊이 보는 안목의 첫 뿌리가 됩니다.';
-
-    var arcChu = sajuxLifeArcBeatForRange(data, 14, 19, name + 'chu');
-    // 청소년기 — 자아의 출발 + 첫인상/속내
-    var pChu = (arcChu ? arcChu + ' ' : '') + '<strong>청소년기</strong>에 접어드시면 ' + nmUi(name) + ' 자아가 본격적으로 첫 모습을 드러냅니다. 겉으로 보기엔 ' + (firstImpression || '진중한 분') + '의 이미지가 굳어 가지만, 속내는 한참 달랐어요. ' + (inSelfNote || '겉과 속이 다른 이중성을 일찍부터 안고 사신 시기') + '. '
-        + tonePhrase(tChu,
-            '이 시기에 학교든 동아리든 아르바이트든 — ' + nmEulReul(name) + ' 알아봐 주는 어른이나 선배가 한 명 등장하고, 그분의 한 마디가 첫 진로 선택을 빠르게 만들어요. 또래 친구 중 한 명은 평생을 같이 가는 인연이 되는 시기이기도 합니다. ',
-            '진로 선택을 두고 부모님과 한 번 깊게 부딪치셨을 가능성이 큽니다. 가고 싶은 길과 부모님이 원하시는 길이 어긋났을 수 있고, 첫 사랑이나 첫 친한 친구 관계에서도 한 번 크게 다치셨을 수 있어요. 그 흔들림이 결국 ' + nmUi(name) + ' 세상을 보는 눈을 깊이 만듭니다. ',
-            '큰 풍파 없이도 “나는 어떤 사람인가”라는 질문을 일찍부터 마음에 품기 시작하시고, 답을 빨리 내리지 않으셔도 그 질문 자체가 평생 ' + nmEulReul(name) + ' 받치는 축이 됩니다. ')
-        + '“관심 있는 한 가지에는 폭발적으로 빠지고, 그 외에는 적당히 흘려보내는” 패턴이 이 무렵 또렷해지고, 그 패턴은 평생 ' + nmUi(name) + ' 본 모습으로 따라옵니다.';
-
-    var arcCh = sajuxLifeArcBeatForRange(data, 20, 34, name + 'ch');
-    // 청년기 — 사회 진출 + 강점 발견
-    var pCh = (arcCh ? arcCh + ' ' : '') + '<strong>청년기</strong>로 접어드시면 비로소 사회의 문 앞에 서시게 됩니다. ' + nmUi(name) + ' 가장 큰 강점이 “' + strengthRaw + '”이라는 것이 이 시기에 처음 시장에서 확인되고, ' + nmDnim(name) + '은 ' + dominantSip + '이세요. 이 강점은 누가 가르쳐 준 것이 아니라 태어나실 때 이미 안에 새겨져 있던 자질이라, 노력으로 키운 능력과는 질감 자체가 다릅니다. '
-        + tonePhrase(tCh,
-            '첫 직장·첫 자취·첫 큰 연애 — 굵직한 결정들이 의외로 ' + nmEulReul(name) + ' 받쳐 줍니다. 작은 성공 하나가 “나는 이 길로 가도 되겠구나”라는 확신을 키워 주고, 그 확신이 다음 단계 자리잡기의 토양이 됩니다. ',
-            '첫 사회 진입에서 한 번 크게 흔들리시거나, 첫 직장이 오래 가지 못할 수 있어요. 그때의 학습이 다음 단계에 진짜 자기 자리를 찾을 때의 가장 큰 자산이 되니, 그 흔들림은 부끄러운 일이 아닙니다. ',
-            '큰 도약보다 작은 결정들이 차곡차곡 쌓이는 흐름이에요. 한 번에 자리잡지는 못하셔도, 이 10여 년 동안 만난 사람·해 본 일들이 다음 단계의 진짜 정착을 위한 재료가 됩니다. ')
-        + decisionLine + '. 큰 결정의 무게가 점점 늘어나는 시기라, 이 패턴을 일찍 알아채시는 것만으로도 평생의 자산이 됩니다.';
-
-    var arcJ = sajuxLifeArcBeatForRange(data, 35, 49, name + 'jang');
-    // 장년기 — 자리잡기·결혼 + 인생의 중간점·재정의
-    var pJ = (arcJ ? arcJ + ' ' : '') + '<strong>장년기</strong>에 들어서면 ' + nmUi(name) + ' 본 모습이 사회에서 가장 활발하게 펼쳐집니다. 직업·결혼·이주·창업·자녀 같은 굵직한 결정이 한꺼번에 몰려와요. ' + relationLine + '. '
-        + tonePhrase(tJ,
-            '평생 일군 노력이 처음으로 또렷한 결실로 돌아오고, 30대 후반에서 40대 후반 사이에 ' + nmUi(name) + ' 이름이 적힌 통장·집·작품 가운데 하나가 자리를 잡습니다. ' + (careerRaw ? '특히 ' + careerRaw + ' 분야의 일이 ' + nmUi(name) + ' 기질과 가장 잘 맞아, 그 안에서 두 배쯤 빠르게 자리를 잡으십니다. ' : ''),
-            '결혼이 늦춰지거나 한 번 깊은 학습을 거쳐 진짜 짝을 만나시는 흐름일 수 있어요. 직장에서도 “이게 정말 내 자리인가”를 자주 묻게 되시지만, 그 학습이 장년기 후반의 단단한 안착을 가능하게 합니다. ',
-            '화려한 도약보다 한 걸음씩 자기 자리를 다지는 흐름이고, 이 시기를 다 지나고 나서야 비로소 ' + nmDnim(name) + '만의 색이 시장에서 인정받기 시작합니다. 그때가 사실상의 “진짜 시작”이에요. ')
-        + '동시에 이 시기는 인생의 중간점 — ' + nmIGa(name) + ' 자주 부딪히시는 벽인 “' + weaknessRaw + '”이 가장 또렷이 모습을 드러내는 자리이기도 합니다. ' + (emptyNote ? emptyNote + '. ' : '') + '강한 기질의 뒷면에는 늘 그 그늘이 따라오니, 약점이라며 부끄러워하실 일은 아니에요. 미리 알아채시는 것만으로도 그 그늘은 절반쯤 약해집니다.';
-
-    var arcM = sajuxLifeArcBeatForRange(data, 50, 69, name + 'jung');
-    // 중년기 — 책임의 무게 + 자유 회복
-    var pM = (arcM ? arcM + ' ' : '') + '<strong>중년기</strong>에 들어서면 인생에서 가장 어깨가 무거운 자리에 서시게 됩니다. 자녀가 있다면 그 진로 결정, 부모님의 건강, 본업의 마무리·전환, 재정의 큰 줄기가 한꺼번에 몰려와요. 위로는 부모님 세대의 마무리를 봐 드리고, 아래로는 후배·자녀의 자리를 받쳐 주셔야 하는 — 인생에서 가장 무거운 어깨의 시기입니다. '
-        + tonePhrase(tM,
-            '평생 일군 평판이 한꺼번에 결실로 돌아오는 흐름이라, 50대 후반·60대 초반에 “이름이 적힌 한 줄” — 한 권의 책, 한 사람의 제자, 한 채의 집 — 그 결과가 손에 잡힙니다. ',
-            '건강과 가족을 동시에 챙기셔야 하는 시기예요. 50대 초반의 건강 검진을 절대 미루지 마시고, 한 가지 만성 신호가 보이면 그때부터 “관리의 습관”으로 넘어가셔야 합니다. ',
-            '안쪽보다 바깥에서 새 무대가 한 번 더 열리는 흐름이라, 50대에 시작한 일이 60대의 명함이 될 수 있어요. 너무 일찍 “다 끝났다”고 마음 놓지 마십시오. ')
-        + '이 시기의 후반에 접어들면 자녀(있다면)가 독립하고 회사도 자리를 정리하면서, 비로소 “진짜 ' + nmUi(name) + ' 시간”이 다시 돌아옵니다. 평생 “나만의 색을 인정받는 자리”를 가장 중요하게 여겨 오신 분이라, 이때야말로 그 색이 처음으로 자유로워지는 자리예요.';
-
-    var arcN = sajuxLifeArcBeatForRange(data, 70, 89, name + 'no');
-    // 노년기 — 본 모습이 자연스러워지고 본질이 또렷이 드러남
-    var pN = (arcN ? arcN + ' ' : '') + '<strong>노년기</strong>에 접어드시면 외부의 책임이 한 발 멀어지고, ' + nmDnim(name) + '의 진짜 본 모습이 가장 자연스럽게 드러납니다. 일을 대하실 때 늘 ' + workLine + '으로 살아오신 분이라, 이 시기에도 한가하게 흘려보내기보다는 “덜 무거운, 그러나 의미 있는 한 가지”에 손을 두십니다. '
-        + tonePhrase(tN,
-            '몸이 따라 주는 만큼, 후배·자녀·제자 한 명에게 ' + nmDnim(name) + '의 한 마디가 인생을 바꾸는 일이 일어납니다. 그 일이 평생 가장 큰 보람이 되어 줘요. ',
-            '몸의 신호가 본격적으로 시작되니, 무리한 일정보다 회복의 시간이 가장 큰 자산이 됩니다. 작은 산책·일정한 식사·짧은 낮잠 같은 단순한 리듬이 ' + nmEulReul(name) + ' 가장 오래 가게 합니다. ',
-            '큰 행사 없이 일상의 깊이가 ' + nmUi(name) + ' 노년을 빛냅니다. 한 권의 책, 한 사람과의 산책, 한 끼의 정성스러운 식사 — 그런 작은 일들이 사실 평생의 결실입니다. ')
-        + '시간이 더 지나면 외부 무대는 거의 정리되고, ' + nmDnim(name) + '의 진짜 본질이 풍경처럼 펼쳐집니다. ' + (coreLine ? '“' + coreLine + '” — ' + nmDnim(name) + '을 한 줄로 정리하는 이 인상이 이때만큼 ' + nmEulReul(name) + ' 닮은 적이 없습니다. ' : '') + '이 시기에 ' + nmEulReul(name) + ' 찾아오는 사람들은 더 이상 ' + nmUi(name) + ' 직책이나 성취가 아니라 ' + nmUi(name) + ' “사람 그 자체”를 보러 옵니다.';
-
-    var arcMan = sajuxLifeArcBeatForRange(data, 90, 120, name + 'man');
-    // 인생 후반(황혼 무렵) — 깊이 + 마지막 장면·유산
-    var pMan = (arcMan ? arcMan + ' ' : '') + '<strong>' + voiceTwilightChapter(name + 'pMan') + '</strong>에 닿으시면 시간이 천천히 흐르고, 작은 일 하나하나가 큰 의미가 됩니다. 평생 ' + nmUi(name) + ' 마음을 풀어 놓으실 자리가 의외로 적었던 분이라, 이 시기에 와서야 비로소 “있는 그대로의 ' + nmDnim(name) + '”으로 살아 보시는 자유가 따라옵니다. 손에 잡히는 것들 — 책 한 권, 차 한 잔, 창밖의 햇살 — 그런 가벼운 것들의 무게가 가장 크게 다가오는 때예요. '
-        + tonePhrase(tMan,
-            '늦은 인정이 또 한 번 따라옵니다. 그게 사회적인 상이든, 가족이 전하는 한 마디든 — 평생 가장 진한 자국으로 남습니다. ',
-            '몸이 마음만큼 따라 주지 않는 때지만, ' + nmDnim(name) + '의 마음 안쪽 풍경은 평생 가장 평화로워집니다. ',
-            '특별한 사건 없이 잔잔히 흘러가지만, 그 잔잔함이야말로 평생 ' + nmDnim(name) + '이 만들어 오신 “자기 자리”의 결정체입니다. ')
-        + '긴 호흡으로 넘겨보면, ' + nmDnim(name) + '에게 오래 남는 건 — ' + (careerRaw ? '평생 ' + careerRaw + ' 분야에서 다듬어 온 손길과 ' : '') + '“말이 아니라 남는 습관 한 줄”입니다. 큰 재산이나 화려한 직책보다, ' + nmUi(name) + ' 한 마디 한 마디가 누군가의 삶에 스민 작은 영향이 진짜 무게예요. ' + nmEunNeun(name) + ' “' + (firstImpression || '진중한 분') + '”으로 기억되실 때가 많았던 것처럼, 그 인상은 앞으로도 변하지 않는 축으로 이어집니다. 장면만 바뀔 뿐 ' + nmDnim(name) + ' 안의 본질은 흔들리지 않아요. 그 본질에 충실하실 때마다 가장 편안하시고, 그 길에서는 지금도 앞으로도 가장 빛이 나실 거예요.';
-
-    var introText = nmDnim(name) + '의 인생을 한 편의 이야기로 들려 드릴게요. 태어남부터 마지막 장면까지 — 어떤 환경에서 자라셨고, 어떤 시기를 지나, 어디에 닿게 되는지를 흐름 그대로 따라가 봅니다. 사주의 글자가 무엇인지는 잠시 잊으셔도 좋아요. 결과적으로 ' + nmIGa(name) + ' 어떤 사람으로 태어나, 어떻게 살아가시게 되는지를 그대로 읽으시면 됩니다.';
+    var introText = nmDnim(name) + '의 인생을 <strong>한 편의 이야기</strong>로 이어 읽어 드릴게요. 유년기부터 노년을 거쳐 죽음을 앞둔 시점까지 — 끊기지 않고 흐름만 따라가시면 됩니다. 대운·세운은 처음부터 끝까지 계산해 두었고, 그중 <strong>크게 갈라지는 해</strong>만 문장 사이에 짚어 둡니다. 사주 글자는 잠시 잊으셔도 좋아요.';
 
     function para(text) { return buildNarrativePara(data, text); }
 
-    var gilHeungMap = (typeof buildLifeGilHeungMapHtml === 'function') ? buildLifeGilHeungMapHtml(data) : '';
+    var connectedArc = buildConnectedLifeArcParagraphs(data, {
+        name: name,
+        para: para,
+        periodTone: periodTone,
+        tonePhrase: tonePhrase,
+        birthScene: birthScene,
+        firstImpression: firstImpression,
+        inSelfNote: inSelfNote,
+        strengthRaw: strengthRaw,
+        weaknessRaw: weaknessRaw,
+        careerRaw: careerRaw,
+        dominantSip: dominantSip,
+        relationLine: relationLine,
+        decisionLine: decisionLine,
+        emptyNote: emptyNote,
+        workLine: workLine,
+        coreLine: coreLine,
+        nmDnim: nmDnim,
+        nmUi: nmUi,
+        nmEulReul: nmEulReul,
+        nmIGa: nmIGa,
+        nmKke: nmKke
+    });
 
     return '<p class="personal-portrait-eyebrow">' + escHtmlAttr(nmDnim(name)) + ' · 한 줄기 서사</p>'
-        + '<h2 class="personal-portrait-title">처음 숨부터, 마침표까지</h2>'
+        + '<h2 class="personal-portrait-title">유년기부터, 죽음을 앞둔 시점까지</h2>'
         + '<p class="personal-portrait-lede">' + voiceTwilightSpan(name + 'portraitLede') + ' — 이름 없이도 읽히는 한 사람의 흐름</p>'
         + para(introText)
-        + gilHeungMap
-        + para(pYou)
-        + para(pChu)
-        + para(pCh)
-        + para(pJ)
-        + para(pM)
-        + para(pN)
-        + para(pMan);
+        + connectedArc;
 }
 
 function buildPersonalPortrait(data) {
@@ -5625,6 +5692,8 @@ function sajuxToneAdvice(data, tone, kind, seed) {
     };
     var arr = (pools[kind] || pools.seyun)[tone] || pools.seyun.flat;
     return pickVoiceLine(arr, seed + '|' + kind + '|' + tone);
+}
+
 /** ═══ 사주X 오행 조합 엔진 + 120세 인생 길흉 지도 ═══ */
 var SAJUX_OH_KR_SHORT = { wood: '목', fire: '화', earth: '토', metal: '금', water: '수' };
 var SAJUX_OH_KR_LONG = { wood: '목(木)', fire: '화(火)', earth: '토(土)', metal: '금(金)', water: '수(水)' };
@@ -5817,6 +5886,222 @@ function sajuxLifeArcBeatForRange(data, lo, hi, seed) {
     ], seed + '|beat');
 }
 
+/** ═══ 인생 큰 이정표 — 전 운 계산 후 고득점만 서사화 ═══ */
+var SAJUX_GAN_HJ_CYCLE = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+var SAJUX_JI_HJ_CYCLE  = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+var SAJUX_MILESTONE_SIP_EVENT = {
+    '편관': '직장·자리', '정관': '직장·명예', '편재': '돈·사업', '정재': '돈·안정',
+    '식신': '표현·창작', '상관': '변화·도전', '편인': '학습·이동', '정인': '학습·자격',
+    '비견': '동료·경쟁', '겁재': '관계·지출'
+};
+
+function sajuxNatalBranchList(data) {
+    var list = [];
+    var pillars = data.pillars || [];
+    var labels = ['시', '일', '월', '년'];
+    for (var i = 0; i < pillars.length; i++) {
+        var h = pillars[i] && pillars[i].h;
+        if (h && h[1]) list.push({ branch: h[1], label: labels[i] || '궁' });
+    }
+    if (data.dayBranch) list.push({ branch: data.dayBranch, label: '일지' });
+    if (data.monthBranch) list.push({ branch: data.monthBranch, label: '월지' });
+    if (data.yearBranch) list.push({ branch: data.yearBranch, label: '년지' });
+    return list;
+}
+
+function sajuxNatalChungHits(data, branchHj) {
+    var hits = [];
+    sajuxNatalBranchList(data).forEach(function (nb) {
+        if (sajuxBranchPairHit(_SAJUX_BRANCH_CHUNG, nb.branch, branchHj)) hits.push(nb.label);
+    });
+    return hits;
+}
+
+function sajuxMilestoneEventScore(data, g, j, layerKind) {
+    if (!g || !j) return 0;
+    var a = sajuxAnalyzePeriod(data, g, j);
+    var sc = a.score;
+    var ev = 0;
+    if (sc >= 3) ev += 4;
+    else if (sc >= 2) ev += 3;
+    else if (sc <= -3) ev += 4;
+    else if (sc <= -2) ev += 3;
+    if (a.yongHit) ev += 3;
+    if (a.giHit) ev += 2;
+    if (a.fillsWeak && !a.giHit) ev += 1;
+    var chung = sajuxNatalChungHits(data, j);
+    if (chung.length) ev += 2 + Math.min(chung.length, 2);
+    if (sajuxBranchPairHit(_SAJUX_BRANCH_LIUHE, j, data.dayBranch || '')) ev += 1;
+    if (a.sipGan === '편관' || a.sipGan === '정관' || a.sipGan === '편재' || a.sipGan === '정재') ev += 1;
+    if (layerKind === 'daeun') ev += 1;
+    if (layerKind === 'seyun') ev += 1;
+    return ev;
+}
+
+function sajuxMilestoneCategory(data, g, j, evScore) {
+    var a = sajuxAnalyzePeriod(data, g, j);
+    var chung = sajuxNatalChungHits(data, j);
+    if (chung.length && a.giHit) return 'turning';
+    if (a.yongHit && a.score >= 2) return 'rise';
+    if (a.score <= -2) return 'trial';
+    if (a.sipGan === '편재' || a.sipGan === '정재' || a.sipJi === '편재' || a.sipJi === '정재') return 'wealth';
+    if (a.sipGan === '편관' || a.sipGan === '정관') return 'career';
+    if (a.sipGan === '편인' || a.sipGan === '정인') return 'study';
+    if (a.sipGan === '식신' || a.sipGan === '상관') return 'express';
+    return evScore >= 5 ? 'rise' : 'flow';
+}
+
+function sajuxMilestoneThemeLine(data, cat, ageLo, ageHi, yr) {
+    var nm = data.name || '고객';
+    var pool = {
+        rise: [
+            ageLo + '세 전후, ' + nmEunNeun(nm) + ' 인생에서 <strong>크게 올라서는 구간</strong>으로 잡힙니다. 미뤄 두신 결정을 매듭지우기 좋고, 이름이 밖으로 드러나도 부담이 적은 시기예요.',
+            (yr ? yr + '년 전후, ' : '') + nmKke(nm) + ' <strong>결실이 한 번에 모이는 흐름</strong>입니다. 한 가지에만 힘을 모으시면 그게 다음 10년의 기둥이 됩니다.'
+        ],
+        turning: [
+            ageLo + '세~' + ageHi + '세 사이, <strong>방향이 바뀌는 전환</strong>이 올 수 있는 자리입니다. 이사·이직·관계·가족 일 중 하나가 크게 움직이며, 그때의 선택이 이후를 가릅니다.',
+            '원국과 부딪히는 기운이 들어와, 익숙한 방식을 놓고 새 방식을 익히게 되는 시기예요. 힘들어도 끊어야 할 것과 붙일 것을 가르는 구간입니다.'
+        ],
+        trial: [
+            ageLo + '세 전후, <strong>버티는 힘이 제일 중요한 시기</strong>로 읽힙니다. 크게 벌이기보다 지금 있는 것을 지키는 쪽이 ' + nmUi(nm) + ' 사주와 맞습니다.',
+            '무게가 실리는 구간이지만, 여기서 무너지지 않으시면 그다음 상승 구간이 훨씬 가벼워집니다.'
+        ],
+        wealth: [
+            '돈·자산·거래의 줄기가 <strong>두껍게 움직이는 시기</strong>입니다. 들어오는 통로와 새는 통로가 같이 늘 수 있으니, 한 달 수입·지출 한 줄만은 꼭 남기십시오.',
+            '재물의 기운이 앞서 나가는 해예요. 큰 보증·큰 동업은 신중히, 검증된 한 통로에만 무게를 두시면 이득이 큽니다.'
+        ],
+        career: [
+            '직장·자리·명예의 축이 <strong>한 번 크게 움직이는 시기</strong>입니다. 승진·이직·창업·브랜드 정리 중 하나가 자연스럽게 따라올 수 있어요.',
+            '사회에 ' + nmUi(nm) + ' 이름이 적히는 방식이 바뀌는 구간입니다. 맡은 역할을 한 줄로 정해 두시면 혼선이 줄어듭니다.'
+        ],
+        study: [
+            '배움·자격·전문성이 <strong>인생의 열쇠가 되는 시기</strong>입니다. 시험·이직·이사처럼 “준비가 결과로 바뀌는” 일이 잘 맞습니다.',
+            '조용히 쌓은 것이 밖으로 드러나기 시작하는 해예요. 한 권·한 자격·한 기술에 집중하시면 됩니다.'
+        ],
+        express: [
+            '말·글·작품·발표로 <strong>밖에 드러나는 힘이 강한 시기</strong>입니다. 숨기기보다 정리해서보내실수록 기회가 붙습니다.',
+            '표현과 홍보의 기운이 앞섭니다. 한 번에 여러 곳에 손을 대지 말고, 한 무대만 골라 밀어 보십시오.'
+        ],
+        flow: [
+            '큰 사건 하나보다 <strong>쌓이는 힘이 중요한 시기</strong>입니다. 작은 약속을 지키는 것만으로도 다음 이정표가 가벼워집니다.',
+            '겉으로는 잔잔해도 속에서는 정리가 진행되는 구간입니다. 끊을 것·이어 갈 것 한 가지씩만 정하시면 충분합니다.'
+        ]
+    };
+    return pickVoiceLine(pool[cat] || pool.flow, String(ageLo) + '|' + cat + '|' + (yr || ''));
+}
+
+function sajuxScanLifeMilestones(data) {
+    var birthY = data.coverSolarY != null ? Number(data.coverSolarY) : (data.birthYear != null ? Number(data.birthYear) : 1988);
+    var curAge = (typeof getClientAgeYearsAtReport === 'function') ? getClientAgeYearsAtReport(data) : 40;
+    var list = [];
+
+    var rows = (data.daeunRows && data.daeunRows.length) ? data.daeunRows : (data.daewunList || []);
+    for (var i = 0; i < rows.length; i++) {
+        var p = sajuxParseDaeunRow(rows[i]);
+        if (!p.g || !p.j || p.age > 110) continue;
+        var ev = sajuxMilestoneEventScore(data, p.g, p.j, 'daeun');
+        if (ev < 4) continue;
+        list.push({
+            kind: 'daeun', age: p.age, ageEnd: p.age + 9, year: birthY + p.age,
+            g: p.g, j: p.j, ev: ev, cat: sajuxMilestoneCategory(data, p.g, p.j, ev),
+            gzKr: sajuxAnalyzePeriod(data, p.g, p.j).gzKr
+        });
+    }
+
+    var endYear = birthY + 100;
+    for (var yr = birthY; yr <= endYear; yr++) {
+        var age = yr - birthY;
+        if (age < 0 || age > 100) continue;
+        var gI = ((yr - 4) % 10 + 10) % 10;
+        var jI = ((yr - 4) % 12 + 12) % 12;
+        var g = SAJUX_GAN_HJ_CYCLE[gI];
+        var j = SAJUX_JI_HJ_CYCLE[jI];
+        var ev = sajuxMilestoneEventScore(data, g, j, 'seyun');
+        var daeunCtx = sajuxGetDaeunContext(data, yr);
+        if (daeunCtx && daeunCtx.g && daeunCtx.j) {
+            var dSc = sajuxFortuneScore(data, daeunCtx.g, daeunCtx.j);
+            var sSc = sajuxFortuneScore(data, g, j);
+            if (Math.abs(sSc - dSc) >= 2) ev += 2;
+            if (sajuxBranchPairHit(_SAJUX_BRANCH_CHUNG, daeunCtx.j, j)) ev += 2;
+        }
+        if (ev < 5) continue;
+        list.push({
+            kind: 'seyun', age: age, ageEnd: age, year: yr,
+            g: g, j: j, ev: ev, cat: sajuxMilestoneCategory(data, g, j, ev),
+            gzKr: sajuxAnalyzePeriod(data, g, j).gzKr
+        });
+    }
+
+    list.sort(function (a, b) {
+        if (b.ev !== a.ev) return b.ev - a.ev;
+        return a.age - b.age;
+    });
+
+    var picked = [];
+    var daeunN = 0, seyunN = 0;
+    for (var k = 0; k < list.length; k++) {
+        var it = list[k];
+        if (it.kind === 'daeun' && daeunN >= 5) continue;
+        if (it.kind === 'seyun' && seyunN >= 7) continue;
+        var tooClose = picked.some(function (p) {
+            return Math.abs(p.age - it.age) <= (it.kind === 'daeun' ? 8 : 3) && p.kind === it.kind;
+        });
+        if (tooClose) continue;
+        picked.push(it);
+        if (it.kind === 'daeun') daeunN++;
+        else seyunN++;
+    }
+    picked.sort(function (a, b) { return a.age - b.age; });
+    return picked;
+}
+
+function buildLifeMilestoneTimelineHtml(data) {
+    var milestones = sajuxScanLifeMilestones(data);
+    var name = data.name || '고객';
+    if (!milestones.length) return '';
+    var intro = nmDnim(name) + ' 인생은 모든 해·달을 한 줄씩 적기보다, <strong>유년기 → 청소년기 → 청년기 → 장년기 → 중년기 → 노년기 → 죽음을 앞둔 시점</strong>으로 흐름만 잡고, 그중 <strong>크게 갈라지는 이정표</strong>만 골라 읽는 편이 맞습니다. 아래는 대운·세운을 처음부터 끝까지 계산한 뒤, 원국과 맞물려 <strong>사건이 터지기 쉬운 시기</strong>만 추린 것입니다.';
+
+    function milestoneCard(m, idx) {
+        var col = sajuxFortuneToneColor(sajuxGilHeungLabel(sajuxFortuneScore(data, m.g, m.j)).tone);
+        var st = sajuxLifeStageForAge(m.age);
+        var ageLabel = m.kind === 'daeun'
+            ? (m.age + '세~' + m.ageEnd + '세 · 10년 대운')
+            : (m.year + '년 · ' + m.age + '세');
+        var kindLabel = m.kind === 'daeun' ? '큰 계절' : '그 해의 결';
+        var theme = sajuxMilestoneThemeLine(data, m.cat, m.age, m.ageEnd || m.age, m.year);
+        var detail = sajuxNarratePeriod(data, m.g, m.j, 'ms-' + idx + '-' + m.year);
+        return '<div style="margin-bottom:16px;padding:16px 18px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid ' + col + '28;border-left:3px solid ' + col + ';">'
+            + '<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:8px;">'
+            + '<div><span style="font-size:10px;letter-spacing:0.10em;color:rgba(199,167,106,0.75);font-weight:700;">' + st.label + '</span>'
+            + '<span style="font-size:10px;letter-spacing:0.10em;color:' + col + ';font-weight:700;margin-left:8px;">' + kindLabel + '</span>'
+            + '<div style="font-size:16px;font-weight:800;color:#fff;margin-top:4px;font-family:\'Noto Sans KR\',sans-serif;">' + m.gzKr + '<span style="font-size:12px;color:#888;margin-left:6px;">(' + m.g + m.j + ')</span></div></div>'
+            + '<span style="font-size:11px;color:#aaa;">' + ageLabel + '</span></div>'
+            + '<p style="font-size:13px;color:#ccc;line-height:1.92;margin:0 0 8px;">' + theme + '</p>'
+            + '<p style="font-size:12.5px;color:#b8b8b8;line-height:1.88;margin:0;">' + detail + '</p></div>';
+    }
+
+    var byStage = {};
+    milestones.forEach(function (m, idx) {
+        var stKey = sajuxLifeStageForAge(m.age).key;
+        if (!byStage[stKey]) byStage[stKey] = [];
+        byStage[stKey].push({ m: m, idx: idx });
+    });
+
+    var body = '';
+    SAJUX_LIFE_STAGES.forEach(function (st) {
+        var items = byStage[st.key];
+        if (!items || !items.length) return;
+        body += '<div class="life-milestone-stage" style="margin:0 0 22px;">'
+            + '<p style="font-size:12px;font-weight:700;color:rgba(199,167,106,0.9);margin:0 0 12px;letter-spacing:0.06em;">'
+            + st.label + ' <span style="font-weight:500;color:#888;font-size:11px;">(' + sajuxLifeStageRangeText(st) + ')</span></p>'
+            + items.map(function (it) { return milestoneCard(it.m, it.idx); }).join('')
+            + '</div>';
+    });
+
+    return '<div class="life-milestone-timeline" style="margin:24px 0 32px;padding:18px 16px;border-radius:14px;background:rgba(255,255,255,0.03);border:1px solid rgba(199,167,106,0.18);">'
+        + '<p style="font-size:11px;letter-spacing:0.12em;color:rgba(199,167,106,0.8);font-weight:700;margin:0 0 10px;">인생의 큰 이정표</p>'
+        + '<p style="font-size:13px;color:#ccc;line-height:1.9;margin:0 0 18px;">' + intro + '</p>'
+        + body + '</div>';
 }
 
 /** ─────────────────────────────────────────
@@ -9336,12 +9621,12 @@ function buildLifePanoramaSection(data) {
         ? ' 45~65세 사이의 바깥 운은 ' + (dwT3 === 'tail' ? '평생 일군 평판이 한꺼번에 결실로 돌아오는 흐름입니다. 50대에 굵직한 인정이 따릅니다.' : (dwT3 === 'side' ? '건강과 가족을 둘 다 챙기셔야 하는 흐름입니다. 무리한 확장보다 회복과 정리가 우선입니다.' : '큰 영광보다 안정과 균형이 중심이 되는 흐름입니다. 새 무대보다 다듬은 무대가 더 오래 갑니다.')) : '';
     var c4Tail = '이 시기의 화두 — 이름 한 줄을 어떻게 남길 것인가, 그리고 그 이름이 ' + nmUi(name) + ' 진짜 모습과 같은가.';
 
-    // ── ⑤ 노년 (65세~) — 시주 (황혼·자식·정리·유산)
+    // ── ⑤ 노년기 (65~89세) — 시주 (황혼·자식·정리)
     var hOh = ohOf(hStem, hBranch);
     var hTone = favorTone(hOh.branch || hOh.stem);
-    var dw4 = dwInRange(65, 85);
+    var dw4 = dwInRange(65, 89);
     var dwT4 = dwTone(dw4);
-    var c5_p1_open = '65세 이후의 풍경은 ' + nmUi(name) + ' ' + voiceTwilightSeatPhrase(name + 'c5open') + '에 그려 보입니다.';
+    var c5_p1_open = '65세에서 89세 사이, <strong>노년기</strong>의 풍경은 ' + nmUi(name) + ' ' + voiceTwilightSeatPhrase(name + 'c5open') + '에 그려 보입니다.';
     var c5_p1_body = {
         good: ' 자녀·후배·제자 중 한 사람이 ' + nmDnim(name) + '의 길을 이어갑니다. ' + nmUi(name) + ' 노년은 외롭지 않고, 짧은 글이나 한 마디 조언으로 누군가의 결정을 도울 일이 잦습니다. 가족 안에서도 “그 어른” 자리에 자연스럽게 앉으시고, 큰 소리 내지 않아도 무게가 실리는 결입니다.',
         tough: ' 노년기의 무게는 — 가까운 사람을 떠나보내는 일과, 스스로의 몸을 돌보는 일이 한꺼번에 옵니다. 60대 중반에 한 번 큰 헤어짐(부모·배우자·친구)이 따를 수 있고, 그때의 슬픔이 ' + nmUi(name) + ' 노년의 결을 결정합니다. 다만 그때까지 쌓아 둔 신뢰와 그 사람들이 ' + nmEulReul(name) + ' 든든하게 받쳐 줍니다.',
@@ -9353,7 +9638,24 @@ function buildLifePanoramaSection(data) {
         + ' 눈을 감으실 때도 평생 지켜 온 방식대로 조용히 정리하려는 호흡으로 읽히는 편입니다.';
     var c5Daewun = dw4 && dw4.labels.length
         ? ' 60대 이후의 바깥 운은 ' + (dwT4 === 'tail' ? '쌓은 것이 한 번 더 빛나는 흐름입니다. 늦게 받는 인정이 가장 진합니다.' : (dwT4 === 'side' ? '몸을 우선하시는 흐름입니다. 무리한 일정보다 회복 시간이 더 큰 자산입니다.' : '평온한 흐름입니다. 큰 일을 벌이지 않으셔도 평생의 기록이 자연스럽게 남습니다.')) : '';
-    var c5Tail = '이 시기의 화두 — 말이 아니라, 남는 습관 한 줄로 ' + nmUi(name) + ' 마지막 모습을 새기는 일.';
+    var c5Tail = '이 시기의 화두 — 몸과 마음의 리듬을 지키며, 남기실 것을 천천히 정리하는 일.';
+
+    // ── ⑥ 죽음을 앞둔 시점 (90세~) — 마지막 정리·유산
+    var dw5 = dwInRange(90, 115);
+    var dwT5 = dwTone(dw5);
+    var c6_p1_open = '90세 이후, <strong>죽음을 앞둔 시점</strong>에 ' + nmDnim(name) + '은 시간이 더 천천히 흐르고 작은 일 하나하나가 큰 의미가 됩니다.';
+    var c6_p1_body = {
+        good: ' 늦은 인정이 한 번 더 따라오고, 가족이 전하는 한 마디가 평생 가장 진한 자국으로 남습니다. 손에 잡히는 것 — 책 한 권, 차 한 잔, 창밖 햇살 — 그 가벼움이 가장 크게 다가옵니다.',
+        tough: ' 몸이 마음만큼 따라 주지 않는 때지만, ' + nmDnim(name) + ' 마음 안쪽은 오히려 평화로워지기 쉬운 결입니다. 무리한 일정보다 회복의 시간이 가장 큰 자산입니다.',
+        mid: ' 특별한 사건 없이 잔잔히 흘러가지만, 그 잔잔함이 평생 ' + nmDnim(name) + '이 만들어 오신 자리의 결정체입니다. 있는 그대로의 ' + nmDnim(name) + '으로 살아 보시는 자유가 따라옵니다.'
+    }[hTone];
+    var c6_p2 = ' ' + nmDnim(name) + '이 남기실 것은 — ' + (legacy || '평생 다듬어 온 ' + nmUi(name) + ' 결')
+        + '입니다. 큰 재산이나 화려한 자리보다, ' + nmUi(name) + ' 한 마디·한 습관이 후세에 스민 자국이 진짜 무게입니다.'
+        + ' ' + (closeScene || '평생 지켜 온 방식대로 조용히 정리하려는 호흡으로 읽히는 편입니다.')
+        + ' 눈을 감으실 때도 그 결을 잃지 않으시는 편입니다.';
+    var c6Daewun = dw5 && dw5.labels.length
+        ? ' 90세 이후의 바깥 운은 ' + (dwT5 === 'tail' ? '쌓인 것이 한 번 더 빛나는 흐름입니다.' : (dwT5 === 'side' ? '몸을 우선하시는 흐름입니다. 지키는 것만 해도 충분합니다.' : '평온한 흐름입니다. 큰 일을 벌이지 않으셔도 기록이 남습니다.')) : '';
+    var c6Tail = '이 시기의 화두 — 말이 아니라, 남는 습관 한 줄로 ' + nmUi(name) + ' 마지막 모습을 새기는 일.';
 
     function periodCard(stripe, label, ageRange, p1, p2, daewunPart, tail) {
         var bodyHtml = ''
@@ -9368,14 +9670,15 @@ function buildLifePanoramaSection(data) {
     }
 
     var arcCards = ''
-        + periodCard('rgba(111,191,115,0.65)', '① 어린 시절', '0 ~ 14세', c1_p1_open + c1_p1_body, c1_p2, c1Daewun, c1Tail)
-        + periodCard('rgba(231,111,81,0.65)',   '② 학창·자아형성', '14 ~ 25세', c2_p1_open + c2_p1_body, c2_p2, c2Daewun, c2Tail)
-        + periodCard('rgba(212,175,55,0.65)',   '③ 청장년기', '25 ~ 45세', c3_p1_open + c3_p1_body, c3_p2, c3Daewun, c3Tail)
-        + periodCard('rgba(201,205,210,0.50)',  '④ 중장년기', '45 ~ 65세', c4_p1_open + c4_p1_body, c4_p2, c4Daewun, c4Tail)
-        + periodCard('rgba(120,140,180,0.55)',  '⑤ 노년', '65세 이후', c5_p1_open + c5_p1_body, c5_p2, c5Daewun, c5Tail);
+        + periodCard('rgba(111,191,115,0.65)', '① 유년기', '0 ~ 13세', c1_p1_open + c1_p1_body, c1_p2, c1Daewun, c1Tail)
+        + periodCard('rgba(231,111,81,0.65)',   '② 청소년기', '14 ~ 25세', c2_p1_open + c2_p1_body, c2_p2, c2Daewun, c2Tail)
+        + periodCard('rgba(212,175,55,0.65)',   '③ 청년기', '25 ~ 45세', c3_p1_open + c3_p1_body, c3_p2, c3Daewun, c3Tail)
+        + periodCard('rgba(201,205,210,0.50)',  '④ 중년기', '45 ~ 65세', c4_p1_open + c4_p1_body, c4_p2, c4Daewun, c4Tail)
+        + periodCard('rgba(120,140,180,0.55)',  '⑤ 노년기', '65 ~ 89세', c5_p1_open + c5_p1_body, c5_p2, c5Daewun, c5Tail)
+        + periodCard('rgba(90,100,130,0.55)',   '⑥ 죽음을 앞둔 시점', '90세 이후', c6_p1_open + c6_p1_body, c6_p2, c6Daewun, c6Tail);
 
     var arcIntro = '<p style="font-size:13.5px;color:var(--text);line-height:2;margin:0 0 16px;">'
-        + boldStarsToStrong(_lp(nmDnim(name) + '은 사주 여덟 글자에 평생의 흐름이 다 담겨 있습니다. 어떤 시절에 무엇이 펼쳐질지, 어떤 시기엔 어떤 결정을 어떻게 내리시는 게 자연스러울지 — 다섯 시기로 나눠 한 흐름으로 풀어 드립니다.'))
+        + boldStarsToStrong(_lp(nmDnim(name) + '은 사주 여덟 글자에 평생의 흐름이 다 담겨 있습니다. 유년기부터 노년기를 거쳐 죽음을 앞둔 시점까지 — 어떤 시절에 무엇이 펼쳐질지, 어떤 결정이 자연스러운지 여섯 시기로 나눠 한 흐름으로 풀어 드립니다.'))
         + '</p>';
 
     var arcOutro = '<div class="life-arc-tail sajux-print-surface" style="margin:18px 0 0;padding:16px 18px;border-radius:12px;background:rgba(199,167,106,0.06);border-left:3px solid var(--gold);">'
