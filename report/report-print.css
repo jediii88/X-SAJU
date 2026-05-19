@@ -144,16 +144,15 @@
     background: #ffffff !important;
     background-color: #ffffff !important;
   }
-  /* 십성·신살 배지 — 인쇄용 밝은 배경 (지장간 태그는 제외) */
+  /* 십성·신살 배지 — 인쇄는 텍스트 라벨만 (카드 박스 없음) */
   .badge:not(.jijanggan-tag), .tag:not(.jijanggan-tag),
   .m-badge:not(.jijanggan-tag), .m-badge-shinsal, .m-badge--gongmang-hit,
   .highlight, [class*="badge"]:not(.jijanggan-tag), [class*="tag"]:not(.jijanggan-tag) {
-    background: #ffffff !important;
-    background-color: #ffffff !important;
-    border: 1px solid #999999 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
     box-shadow: none !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
+    padding: 0 !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
@@ -180,35 +179,128 @@
     font-weight: 600 !important;
   }
 
-  /* 카드·내부 박스 — 배경만 (글자색 건드리지 않음) */
-  .card, .yearly-card, .monthly-card, .module-item,
-  .inner-card, .detail-box, .content-box,
-  .sajux-print-surface, .report-inner-box,
-  .vip-evidence-block table,
-  .manse-cell, .manse-table,
-  [class*="box"]:not(.checkbox):not(.search-box),
+  /* ── PDF 문서형: 카드 UI 제거 (화면 글래스는 @media screen 전용) ── */
+  .card, .glass-panel, .yearly-card, .monthly-card, .f-card,
+  .seyun-year-card, .module-item, .inner-card, .detail-box, .content-box,
+  .sajux-print-surface, .report-inner-box, .sajux-glass-heavy, .sajux-glass-panel,
+  .sajux-panel-plain, .deep-hook-panel, .premium-executive-summary,
+  .ilju-profile-card, .domain-summary-3box, .four-domain-radar,
+  .yearly-indicators, .insight-card, .report-review-callout,
+  .sajux-access-note, .sipseong-bar-chart, .sipseong-unified-body,
+  .personal-portrait-inner, .inline-interp, .interp-box,
+  [class*="box"]:not(.checkbox):not(.search-box):not(.vip-evidence-block),
   [class*="card"] {
-    background: #ffffff !important;
-    background-color: #ffffff !important;
-    border: 1px solid #cccccc !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  /* report-core 인라인 카드 스타일 일괄 해제 */
+  #report-container div[style*="background:rgba"],
+  #report-container div[style*="backdrop-filter"],
+  #report-container div[style*="border-radius"],
+  #report-container div[style*="border-left"],
+  #report-container div[style*="border:1px"],
+  #report-container div[style*="border: 1px"] {
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
+    border-left: none !important;
+    border-radius: 0 !important;
     box-shadow: none !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
   }
 
-  /* report-core 인라인 반투명 박스 */
-  #report-container div[style*="background:rgba(255,255,255"],
-  #report-container div[style*="background:rgba(0,0,0"],
-  #report-container div[style*="background:rgba(199,167,106"],
-  #report-container div[style*="background:rgba(231,76,60"],
-  .sajux-panel-plain, .deep-hook-panel, .premium-executive-summary,
-  #sec-life-panorama, .sajux-gongmang-note {
+  /* 만세력·표·진행 막대는 구조 유지 */
+  .vip-evidence-block,
+  .vip-evidence-block table,
+  .vip-manse-keep-group {
     background: #ffffff !important;
-    background-color: #ffffff !important;
-    border: 1px solid #cccccc !important;
+  }
+  .manse-table, .manse-row, .manse-cell {
+    background: transparent !important;
+    border: none !important;
+  }
+  .manse-cell {
+    border: 1px solid #e0e0e0 !important;
+    background: #ffffff !important;
+    padding: 6px 4px !important;
+  }
+  #report-container .sipseong-bar-row div[style*="border-radius"] {
+    border-radius: 999px !important;
+    border: 1px solid #e5e5e5 !important;
+    background: #f0f0f0 !important;
+  }
+
+  /* 섹션 구분 = 여백 + 얇은 선 (카드 대신) */
+  .report-chapter {
+    border-bottom: 1px solid #e5e5e5 !important;
+    padding-bottom: 12px !important;
+    margin-bottom: 8mm !important;
+  }
+  .ch-title, .ch-main-topic-title, .section-title {
+    color: #111 !important;
+    border-bottom: 1px solid #c7a76a !important;
+    padding-bottom: 6px !important;
+    margin-bottom: 10px !important;
+  }
+  .part-header-block {
+    background: transparent !important;
+    border: none !important;
+    border-top: 2px solid #8b6914 !important;
+    border-radius: 0 !important;
     box-shadow: none !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
+    padding: 14px 0 8px !important;
+    margin: 0 0 6mm !important;
+  }
+  .part-header-label { color: #8b6914 !important; }
+  .part-header-title { color: #111 !important; }
+
+  /* 운세·대운 항목 — 항목 사이 구분선만 */
+  #report-container .report-chapter > div[style*="margin-bottom"] {
+    padding-top: 8px !important;
+    padding-bottom: 10px !important;
+    margin-bottom: 0 !important;
+    border-bottom: 1px solid #ececec !important;
+  }
+  #report-container .report-chapter > div[style*="margin-bottom"]:last-child {
+    border-bottom: none !important;
+  }
+
+  .domain-summary-3box {
+    border: none !important;
+    border-top: 1px solid #ddd !important;
+    padding: 10px 0 !important;
+    margin: 12px 0 !important;
+  }
+  .domain-summary-3box [style*="background:rgba(0,0,0"],
+  .domain-summary-3box [style*="grid"] > div {
+    background: transparent !important;
+    border: none !important;
+    border-right: 1px solid #eee !important;
+    border-radius: 0 !important;
+    padding: 8px 10px !important;
+  }
+  .domain-summary-3box [style*="grid"] > div:last-child {
+    border-right: none !important;
+  }
+
+  .p, p, .ch-text, .ii-text, li {
+    color: #222 !important;
+    font-size: 13px !important;
+    line-height: 1.78 !important;
+  }
+  b, strong { color: #000 !important; }
+  [style*="color:var(--gold)"], [style*="color:#c7a76a"],
+  .gold, .part-header-label {
+    color: #8b6914 !important;
   }
 
   .m-hanja, .vip-hanja, .report-pillar-hanja, .hanja-main {
@@ -342,15 +434,21 @@
     print-color-adjust: exact !important;
   }
 
-  /* 어두운 인라인 패널 → 밝은 용지용 (오행 한자색은 유지) */
+  /* 지표·운 카드도 플랫 */
   .yearly-indicators,
   .sajux-print-panel-inner,
-  #report-container div[style*="background:rgba(0,0,0"],
   .daeun-decade-card,
   .seyun-year-card {
-    background: #f7f7f7 !important;
-    background-color: #f7f7f7 !important;
-    border-color: #cccccc !important;
+    background: transparent !important;
+    border: none !important;
+  }
+  .yearly-indicators-grid {
+    gap: 6px 8px !important;
+  }
+  .yearly-ind-cell {
+    border: none !important;
+    background: transparent !important;
+    padding: 4px 0 !important;
   }
 
   .m-hangul,
