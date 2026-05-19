@@ -1810,6 +1810,7 @@ function fixKoreanNarrativeGlitch(s) {
     return t;
 }
 SAJUX_VOICE.sipseongModernPrompt = '';
+SAJUX_VOICE.fortuneNarrativePrompt = '';
 (function bindSipModernPrompt() {
     try { SAJUX_VOICE.sipseongModernPrompt = getSajuxSipseongModernPromptBlock(); } catch (e) { /* early parse */ }
 })();
@@ -5954,66 +5955,308 @@ function lifeNarrativePlainWeave(data, g, j, opts) {
     return soft !== skip ? soft : '';
 }
 
-/** 앞으로의 운 — 층별 한 줄 조언(대운·세운·월운 중복 방지) */
-var _UPCOMING_TONE_TAIL = {
-    good:    '미뤄 두신 큰 일 한 가지를 이 시기 안에 매듭지으시면 다음이 가벼워집니다.',
-    mild:    '평소 페이스를 유지하시면서 한 가지씩만 쌓아 가시면 됩니다.',
-    flat:    '새로 벌리기보다 정리·점검에 시간을 쓰시면 다음 시기가 편해집니다.',
-    caution: '큰 결정은 한 박자 늦추고, 지키는 쪽에 무게를 두시면 낫습니다.',
-    tough:   '새로 시작보다 지금 있는 것을 무너지지 않게 지키는 데 힘을 쓰시면 됩니다.'
+/** ── 앞으로의 운 · 운세 카드 문장 생성 법칙 (템플릿·LLM 공통) ── */
+var SAJUX_FORTUNE_WRITE = {
+    layers: {
+        daeun: '10년 큰 기후만. 해마다·달마다 풀지 말 것.',
+        seyun: '그해 분위기 + 지금 10년과의 차이 1줄 + 행동 1줄. 대운 장문·월운 반복 금지.',
+        wolun: '그달만. 「○월은 ○○쪽이 앞에」 고정 서두 금지. 행동 1줄은 월마다 다른 문장.'
+    },
+    rules: [
+        '고객 본문: 십성 한자명·(십성) 괄호 노출 금지 → SAJUX_SIP_MODERN 현대어 키워드만.',
+        '차트·간지 표기(경자 등)는 유지. 명리 교과서체(용신(用)·생극 장황 설명)는 1~2문장으로 압축.',
+        '같은 조언 문장을 연속 2카드(2년·2달)에 쓰지 말 것. 톤 꼬리 한 줄만 10장에 복붙 금지.',
+        '뱃지(잘 풀리는 해/단단히 지키는 해)와 본문 첫 방향이 반대되게 쓰지 말 것.',
+        '“(이)가” 괄호 조사 금지. 키워드는 받침에 맞게 완성된 한국어로.',
+        '한 카드 = (이 시기 정의 1문장) + (이 사람에게만 1문장) + (행동 1문장). 최대 3문장.'
+    ],
+    action: {
+        daeun: {
+            good: [
+                '미뤄 두신 큰 일 — 결혼·이직·창업·자격 — 가운데 하나만 이 10년 안에 매듭지으십시오.',
+                '평생 끌고 갈 축 한두 가지에만 힘을 모으면, 이 10년이 가장 단단한 기둥이 됩니다.',
+                '분기마다 “이번 분기에 끝낼 한 가지”만 적어 두고 밀어 보십시오.'
+            ],
+            mild: [
+                '한 해에 한 번, 쌓인 것을 한 줄로 정리해 두시면 10년 뒤 자산이 됩니다.',
+                '검증된 일 한 가지에만 속도를 올리고, 나머지는 평소 페이스를 유지하십시오.',
+                '끝맺음을 책임질 동료 한 명만 옆에 두십시오.'
+            ],
+            flat: [
+                '끊을 것·이어 갈 것을 한 가지씩만 가르는 데 이 10년을 쓰시면 다음이 가벼워집니다.',
+                '새로 벌이기보다 손에 쥔 일의 깊이를 한 단계만 올리십시오.',
+                '거래처·가까운 다섯 명과의 약속을 문장으로 남기십시오.'
+            ],
+            caution: [
+                '신규 보증·동업·대출은 이 구간에서 가급적 늘리지 마십시오.',
+                '큰 결정은 글로 받은 뒤, 하룻밤 넘기고 다시 보십시오.',
+                '건강·가족·핵심 거래처만 흔들리지 않게 챙기는 쪽이 이득입니다.'
+            ],
+            tough: [
+                '이 10년은 “지키는 한 가지 목표”만 두고, 새로 벌이는 폭을 줄이십시오.',
+                '무사히 지나신 분이 다음 10년에서 가장 단단히 서는 경우가 많습니다.',
+                '중요한 약속은 구두 말고 문장으로만 남기십시오.'
+            ]
+        },
+        seyun: {
+            good: [
+                '올해는 미뤄 둔 안건 한 가지를 매듭지으시면 다음 해가 가벼워집니다.',
+                '분기마다 큰 결정은 한 가지만 잡으십시오.',
+                '발표·계약·면접 중 하나를 올해 일정의 중심에 두십시오.',
+                '올해 만든 결과물 한 가지를 밖으로 드러내 보십시오.'
+            ],
+            mild: [
+                '지난해까지 쌓은 것이 작은 결실로 돌아오는 해예요.',
+                '한 해의 성과를 분기마다 한 줄씩 기록해 두십시오.',
+                '검증된 루틴 하나만 유지해도 충분합니다.'
+            ],
+            flat: [
+                '새 시작보다 “끊을 한 가지·이어 갈 한 가지”를 가르는 해예요.',
+                '숫자·역할·약속을 한 장으로 정리하는 데 시간을 쓰십시오.',
+                '큰 변화보다 마무리 한 건에 집중하십시오.'
+            ],
+            caution: [
+                '큰돈·큰 관계·큰 자리를 동시에 흔들지 마십시오.',
+                '새 계약은 한 분기 미루고 다시 보십시오.',
+                '이번 해는 속도보다 검토 한 번이 이깁니다.'
+            ],
+            tough: [
+                '새 투자·창업·이직은 내년 이후로 미루시고, 지키는 쪽에만 무게를 두십시오.',
+                '지금 있는 것을 점검하는 데만 힘을 쓰셔도 출발선이 됩니다.',
+                '건강 검진·수면 루틴을 올해 안에 한 번 고정하십시오.'
+            ]
+        },
+        wolun: {
+            good: [
+                '이달 안에 미뤄 둔 안건 한 가지를 끝내 보십시오.',
+                '계약·발표·중요한 대화 중 하나를 이번 달 중순에 잡으십시오.',
+                '완성본 한 장을 먼저 만들고 설명하십시오.'
+            ],
+            mild: [
+                '작은 시작 하나와 작은 마무리 하나만 잡으십시오.',
+                '지난달 리듬을 유지하되, 연락 한 통만 더하십시오.',
+                '주 1회, 20분만 “다음 달 할 일”을 적어 두십시오.'
+            ],
+            flat: [
+                '새 일보다 수면·식사 시간을 먼저 맞추십시오.',
+                '구독·고정비·미수금 표만 열어 보는 주를 한 번 두십시오.',
+                '관계에서 미뤄 둔 답장 한 통을 보내 보십시오.'
+            ],
+            caution: [
+                '이달 큰 결정은 한 가지만, 나머지는 다음 달로 미루십시오.',
+                '서두르지 말고 일정을 반으로 나누어 잡으십시오.',
+                '감정이 올랐을 때는 하룻밤 넘기고 말하십시오.'
+            ],
+            tough: [
+                '큰돈·큰 약속·큰 변화는 멈추고 점검만 하십시오.',
+                '중요한 서류·계약은 이번 달 안에만 검토하십시오.',
+                '몸이 보내는 신호(수면·소화)를 먼저 챙기십시오.'
+            ]
+        }
+    }
 };
 
-/** 세운 카드 — 올해 한 해 분위기만(대운·월운 풀스택 반복 없음) */
-function upcomingSeyunBodyBrief(data, yr, g, j, t) {
-    var GAN_LINE = {
-        '甲':'시작과 새 학습이 잦아지는 한 해예요.',
-        '乙':'사람과 협업으로 길이 열리는 한 해예요.',
-        '丙':'드러남·표현·홍보가 앞서는 한 해예요.',
-        '丁':'한 분야를 깊게 파면 바로 보상이 따라오는 한 해예요.',
-        '戊':'안정과 축적이 앞서는 한 해예요.',
-        '己':'정리·마무리·연장이 앞서는 한 해예요.',
-        '庚':'결단과 정리로 이득이 큰 한 해예요.',
-        '辛':'완성과 세련이 돋보이는 한 해예요.',
-        '壬':'정보·인맥·새 통로가 열리는 한 해예요.',
-        '癸':'학습·연구·내공을 채우기 좋은 한 해예요.'
-    };
-    var JI_LINE = {
-        '子':'기획·문서·집중이 빛나요.', '丑':'느리지만 단단히 쌓이는 해예요.', '寅':'활동·새 출발이 따라와요.',
-        '卯':'인맥·협업으로 길이 열려요.', '辰':'변수가 있어 큰 결정은 분기 초·말에만 잡으세요.',
-        '巳':'미루던 결정이 풀리기 쉬워요.', '午':'성과·인정이 한 번 따라와요.',
-        '未':'창작·교육 쪽으로 길이 열려요.', '申':'빠른 판단이 승부를 가려요.',
-        '酉':'그동안 쌓은 노력이 결실로 돌아와요.', '戌':'끊을 것과 남길 것을 가르기 좋아요.',
-        '亥':'큰 무대보다 내실을 채우는 해예요.'
-    };
-    var parts = [(GAN_LINE[g] || ''), (JI_LINE[j] || '')];
-    var daeunCtx = sajuxGetDaeunContext(data, yr);
-    if (daeunCtx && typeof sajuxFortuneScore === 'function') {
-        var yrSc = sajuxFortuneScore(data, g, j);
-        var dSc = daeunCtx.score != null ? daeunCtx.score : sajuxFortuneScore(data, daeunCtx.g, daeunCtx.j);
-        if (yrSc - dSc >= 2) parts.push('지금 겪는 10년 흐름보다 이 해가 한 단계 밝습니다.');
-        else if (yrSc - dSc <= -2) parts.push('큰 10년 흐름보다 이 해는 숨 고르는 해로 잡으시면 낫습니다.');
-    }
-    parts.push(_UPCOMING_TONE_TAIL[t] || '');
-    return parts.join(' ').replace(/\s+/g, ' ').trim();
+function getSajuxFortuneNarrativeRulesBlock() {
+    var w = SAJUX_FORTUNE_WRITE;
+    return [
+        '[운세 카드 문장 생성 법칙 — 대운·세운·월운]',
+        w.layers.daeun,
+        w.layers.seyun,
+        w.layers.wolun,
+        ''
+    ].concat(w.rules).concat([
+        '',
+        '십성 현대어: ' + (typeof getSajuxSipseongModernPromptBlock === 'function' ? 'getSajuxSipseongModernPromptBlock() 참고' : 'SAJUX_SIP_MODERN')
+    ]).join('\n');
 }
 
-/** 월운 카드 — 그 달만(대운·세운 장문 반복 없음) */
-function upcomingWolunBodyBrief(data, yr, mo, g, j, t) {
-    var JI_MOOD = {
-        '子':'집중·기획·문서', '丑':'인내·저력', '寅':'활동·새 출발', '卯':'인맥·협업',
-        '辰':'변수·점검', '巳':'결단·전환', '午':'성취·인정', '未':'창작·풍요',
-        '申':'판단·속도', '酉':'완성·보상', '戌':'정리·마무리', '亥':'휴식·준비'
-    };
-    var moLead = mo + '월은 <strong>' + (JI_MOOD[j] || '일상 리듬') + '</strong> 쪽이 앞에 섭니다. ';
-    var act = {
-        good:    '이달 안에 미뤄 두신 안건 한 가지를 매듭지으시면 다음 달이 가벼워집니다.',
-        mild:    '작은 시작 하나와 작은 마무리 하나만 잡으시면 균형이 좋습니다.',
-        flat:    '새 일보다 수면·식사·관계 정리에 시간을 쓰시면 다음 달이 편해집니다.',
-        caution: '이달 큰 결정은 한 가지만, 나머지는 다음 달로 미루십시오.',
-        tough:   '큰돈·큰 약속·큰 변화는 멈추고 점검만 하시면 됩니다.'
-    };
-    return moLead + (act[t] || act.flat);
+function fortunePhraseLedger() {
+    return { lines: [], snippets: [] };
 }
+
+function fortuneSnippetUsed(ledger, snippet) {
+    var s = String(snippet || '').slice(0, 48);
+    if (!s || ledger.snippets.indexOf(s) >= 0) return true;
+    ledger.snippets.push(s);
+    return false;
+}
+
+function pickFortuneActionUnique(kind, tone, seed, ledger) {
+    var pool = (SAJUX_FORTUNE_WRITE.action[kind] && SAJUX_FORTUNE_WRITE.action[kind][tone])
+        || (SAJUX_FORTUNE_WRITE.action[kind] && SAJUX_FORTUNE_WRITE.action[kind].flat)
+        || [];
+    if (!pool.length) return '';
+    var start = Math.abs(hashSeed(seed)) % pool.length;
+    var i;
+    for (i = 0; i < pool.length; i++) {
+        var line = pool[(start + i) % pool.length];
+        if (ledger.lines.indexOf(line) < 0) {
+            ledger.lines.push(line);
+            return line;
+        }
+    }
+    var fallback = pool[start];
+    ledger.lines.push(fallback);
+    return fallback;
+}
+
+/** 운세 카드 본문 — 십성 현대어 + 괄호 조사·이중 종결 정리 (HTML 전 narrativeVp) */
+function fortunePolishPlain(data, text) {
+    var s = String(text == null ? '' : text);
+    s = voiceModernizeSipseong(s);
+    s = fixKoreanNarrativeGlitch(s);
+    return s;
+}
+
+function fortuneSipModernKw(sip) {
+    return sip ? (sipModernKeyword(sip) || '') : '';
+}
+
+function fortuneSipModernPhrase(data, sip, role) {
+    var kw = fortuneSipModernKw(sip);
+    if (!kw) return '';
+    var gk = sipToSipGroupKey(sip);
+    var scene = gk ? (SAJUX_SIP_WEAPON_SCENE[gk] || null) : null;
+    if (role === 'gan') {
+        return '일·관계에서는 **' + kw + '**' + getJosaFlex(kw, '이/가') + ' 먼저 움직이기 쉽습니다.';
+    }
+    if (role === 'ji') {
+        var ex = scene && scene.example ? scene.example.split('거나')[0] : '현장·마무리';
+        return '돈·몸·현장에서는 **' + kw + '**으로 ' + ex + ' 쪽이 편합니다.';
+    }
+    return '**' + kw + '**' + getJosaFlex(kw, '이/가') + ' 이 시기의 중심에 가깝습니다.';
+}
+
+/** 고객-facing 시기 풀이 — 십성명 노출 없음, 2~3문장 */
+function sajuxNarratePeriodCustomer(data, g, j, seed) {
+    if (!g || !j) return '';
+    var a = sajuxAnalyzePeriod(data, g, j);
+    var nm = data.name || '고객';
+    var parts = [];
+    parts.push(pickVoiceLine([
+        '<strong>' + a.gzKr + '</strong> 시기에는 겉으로 드러나는 방향과 속바탕이 함께 움직입니다.',
+        '<strong>' + a.gzKr + '</strong> — 한 시기의 결이 이렇게 잡혀 있습니다.'
+    ], seed + '|open'));
+    if (a.sipGan) parts.push(fortuneSipModernPhrase(data, a.sipGan, 'gan'));
+    if (a.sipJi && a.sipJi !== a.sipGan) parts.push(fortuneSipModernPhrase(data, a.sipJi, 'ji'));
+    if (a.yongHit) {
+        parts.push(pickVoiceLine([
+            nmUi(nm) + '에게 잘 맞는 기운이 이 시기에 들어와, 평소보다 체감이 큽니다.',
+            '원국에서 비어 있던 쪽을 이 시기에 채우는 흐름에 가깝습니다.'
+        ], seed + '|yong'));
+    } else if (a.heeHit) {
+        parts.push('무리하지 않아도 흐름이 붙기 쉬운 시기예요.');
+    } else if (a.giHit) {
+        parts.push('크게 벌리기보다 지키고 정리하는 쪽이 ' + nmUi(nm) + '에게 맞습니다.');
+    } else if (a.fillsWeak) {
+        parts.push('평소 약했던 ' + (SAJUX_OH_KR_SHORT[a.natal.weakest] || '') + ' 기운이 보충되는 시기입니다.');
+    }
+    return parts.join(' ');
+}
+
+function upcomingSeyunYearHook(g, j, seed) {
+    var hooks = {
+        '甲': ['새 과목·새 프로젝트가 들어오기 쉬운 해예요.', '배움과 확장이 앞서는 해입니다.'],
+        '乙': ['사람·협업으로 길이 열리는 해예요.', '관계가 일의 속도를 결정합니다.'],
+        '丙': ['만든 것·말한 것이 밖으로 드러나는 해예요.', '표현과 인정이 앞서는 해입니다.'],
+        '丁': ['한 분야를 깊게 파면 바로 보상이 따라오는 해예요.', '집중이 곧 평가로 이어집니다.'],
+        '戊': ['천천히 쌓이는 해예요.', '신뢰와 안정이 앞서는 해입니다.'],
+        '己': ['정리·마무리·연장이 앞서는 해예요.', '결산과 다듬기에 좋습니다.'],
+        '庚': ['잘라 내고 기준을 세우면 이득인 해예요.', '결단이 승부를 가릅니다.'],
+        '辛': ['완성·브랜딩이 빛나는 해예요.', '다듬은 것이 인정받기 쉽습니다.'],
+        '壬': ['정보·인맥·통로가 넓어지는 해예요.', '연결이 기회가 됩니다.'],
+        '癸': ['공부·연구·내공을 채우기 좋은 해예요.', '조용히 쌓는 해입니다.']
+    };
+    var ji = {
+        '子': '기획·문서·집중이 빛납니다.',
+        '丑': '느리지만 단단히 쌓입니다.',
+        '寅': '활동·이동이 따라옵니다.',
+        '卯': '인맥·협업이 열립니다.',
+        '辰': '변수가 있어 큰 결정은 분기 초·말에만 잡으세요.',
+        '巳': '미루던 결정이 풀리기 쉽습니다.',
+        '午': '성과·인정이 한 번 따라옵니다.',
+        '未': '창작·교육 쪽으로 길이 열립니다.',
+        '申': '판단 속도가 승부를 가릅니다.',
+        '酉': '그동안 쌓은 노력이 결실로 돌아옵니다.',
+        '戌': '끊을 것과 남길 것을 가르기 좋습니다.',
+        '亥': '큰 무대보다 내실을 채우는 해입니다.'
+    };
+    var a = pickVoiceLine(hooks[g] || ['이 해만의 결이 있습니다.'], seed + '|g');
+    var b = ji[j] || '';
+    return b ? (a + ' ' + b) : a;
+}
+
+function upcomingSeyunCompareLine(data, yr, g, j, tone, seed, ledger) {
+    var daeunCtx = sajuxGetDaeunContext(data, yr);
+    if (!daeunCtx || typeof sajuxFortuneScore !== 'function') return '';
+    var yrSc = sajuxFortuneScore(data, g, j);
+    var dSc = daeunCtx.score != null ? daeunCtx.score : sajuxFortuneScore(data, daeunCtx.g, daeunCtx.j);
+    var delta = yrSc - dSc;
+    if (delta >= 2) {
+        var up = pickVoiceLine([
+            '지금 겪는 10년보다 이 해가 한 단계 밝습니다.',
+            '큰 10년 흐름 위에서 올해가 눈에 띄는 해가 될 수 있어요.'
+        ], seed + '|up');
+        return fortuneSnippetUsed(ledger, up) ? '' : up;
+    }
+    if (delta <= -2 && (tone === 'caution' || tone === 'tough' || tone === 'flat')) {
+        var dn = pickVoiceLine([
+            '큰 10년 흐름보다 숨 고르는 해로 잡으시면 낫습니다.',
+            '10년 바탕은 무겁고 올해는 정리·점검에 맞추는 편이 좋아요.'
+        ], seed + '|dn');
+        return fortuneSnippetUsed(ledger, dn) ? '' : dn;
+    }
+    return '';
+}
+
+/** 세운 카드 — 법칙 3문장 · 십성 현대어 · 반복 금지 */
+function upcomingSeyunBodyBrief(data, yr, g, j, t, ledger) {
+    ledger = ledger || fortunePhraseLedger();
+    var seed = String(yr) + '|' + g + j + '|' + t;
+    var parts = [upcomingSeyunYearHook(g, j, seed)];
+    var a = sajuxAnalyzePeriod(data, g, j);
+    var sipLine = '';
+    if (a.sipGan && !a.yongHit && !a.giHit) {
+        sipLine = fortuneSipModernPhrase(data, a.sipGan, 'gan');
+        if (sipLine && fortuneSnippetUsed(ledger, sipLine)) sipLine = '';
+    }
+    if (sipLine) parts.push(sipLine);
+    var cmp = upcomingSeyunCompareLine(data, yr, g, j, t, seed, ledger);
+    if (cmp) parts.push(cmp);
+    parts.push(pickFortuneActionUnique('seyun', t, seed, ledger));
+    return fortunePolishPlain(data, parts.filter(Boolean).join(' '));
+}
+
+var _WOLUN_OPENERS = [
+    function (mo, yr, kw) { return yr + '년 ' + mo + '월, **' + kw + '**' + getJosaFlex(kw, '이/가') + ' 일의 중심에 옵니다. '; },
+    function (mo, yr, kw) { return mo + '월은 **' + kw + '** 쪽으로 무게가 실립니다. '; },
+    function (mo, yr, kw) { return mo + '월 한 달, **' + kw + '**' + getJosaFlex(kw, '으로/로') + ' 마무리하는 편이 편합니다. '; }
+];
+
+/** 월운 카드 — 달마다 다른 서두 · 행동 풀 로테이션 */
+function upcomingWolunBodyBrief(data, yr, mo, g, j, t, ledger) {
+    ledger = ledger || fortunePhraseLedger();
+    var seed = yr + '-' + mo + '|' + g + j + '|' + t;
+    var a = sajuxAnalyzePeriod(data, g, j);
+    var kw = fortuneSipModernKw(a.sipJi) || fortuneSipModernKw(a.sipGan) || '일상 리듬';
+    var openIdx = Math.abs(hashSeed(seed + '|o')) % _WOLUN_OPENERS.length;
+    var lead = _WOLUN_OPENERS[openIdx](mo, yr, kw);
+    var act = pickFortuneActionUnique('wolun', t, seed, ledger);
+    return fortunePolishPlain(data, lead + act);
+}
+
+/** 다음·그다음 대운 카드 본문 */
+function buildUpcomingDaeunBody(data, g, j, startAge, tone, ledger) {
+    ledger = ledger || fortunePhraseLedger();
+    var seed = 'daeun|' + g + j + '|' + startAge;
+    var core = sajuxNarratePeriodCustomer(data, g, j, seed);
+    var act = pickFortuneActionUnique('daeun', tone, seed, ledger);
+    return fortunePolishPlain(data, core + ' ' + act);
+}
+
+(function bindFortuneNarrativePrompt() {
+    try { SAJUX_VOICE.fortuneNarrativePrompt = getSajuxFortuneNarrativeRulesBlock(); } catch (e) { /* early parse */ }
+})();
 
 function lifeNarrativePickMilestone(milestones, lo, hi) {
     var hits = (milestones || []).filter(function (m) {
@@ -6643,8 +6886,14 @@ function sajuxNarratePeriod(data, g, j, seed) {
     else if (a.giHit) parts.push('기신(忌)·구신(仇) 쪽 오행이 겹쳐, 크게 벌리기보다 지키는 쪽이 ' + nmUi(nm) + ' 사주와 맞습니다.');
     if (a.fillsWeak && !a.giHit) parts.push('원국에서 상대적으로 약했던 ' + SAJUX_OH_KR_LONG[a.natal.weakest] + ' 기운이 보충됩니다.');
     if (a.floodsStrong && !a.yongHit) parts.push('원국에서 이미 두툼한 ' + SAJUX_OH_KR_LONG[a.natal.strongest] + ' 기운에 더해져, 과열·지출·성급함을 한 단계 낮추는 게 이득입니다.');
-    if (a.sipGan) parts.push('천간은 일간 기준 <strong>' + a.sipGan + '</strong>(십성)으로 ' + nmEulReul(nm) + ' 둘러싸며, 이 시기의 일·관계의 결이 여기서 갈립니다.');
-    if (a.sipJi && a.sipJi !== a.sipGan) parts.push('지지는 <strong>' + a.sipJi + '</strong>(십성) 쪽으로 현장·몸·돈의 결을 만듭니다.');
+    if (a.sipGan) {
+        var kwG = fortuneSipModernKw(a.sipGan);
+        if (kwG) parts.push('천간은 **' + kwG + '**' + getJosaFlex(kwG, '이/가') + ' ' + nmEulReul(nm) + ' 둘러싸며, 이 시기 일·관계의 결이 여기서 갈립니다.');
+    }
+    if (a.sipJi && a.sipJi !== a.sipGan) {
+        var kwJ = fortuneSipModernKw(a.sipJi);
+        if (kwJ) parts.push('지지는 **' + kwJ + '**' + getJosaFlex(kwJ, '으로/로') + ' 현장·몸·돈의 결을 만듭니다.');
+    }
     return parts.join(' ');
 }
 
@@ -7496,17 +7745,11 @@ function buildUpcomingDaewunCards(data) {
         return s;
     }
 
-    var TONE_TAIL = {
-        good:    ' 이 흐름은 ' + nmKke(name) + ' 본래 잘 맞는 기운과 겹쳐, 평생 두세 번 만나기 어려운 “공격해도 좋은 10년”에 가까워요. 미뤄 두셨던 큰 일 — 결혼·창업·이직·자격증·자산 매입 — 가운데 한두 가지를 이 시기 안에 풀고 가시는 게 가장 큰 이득이 됩니다. 다만 운이 좋다고 모든 자리에 손을 펼치시면 결과가 흩어지기 쉬우니, 평생 끌고 가실 큰 축 한두 가지에만 이 시기의 힘을 모아 두십시오.',
-        mild:    ' 큰 풍파 없이 한 발씩 내디디시는 만큼 결과가 돌아오는 흐름이에요. 평소 페이스를 유지하시는 게 정답입니다. 한 해에 한 번씩, 본인이 무엇을 쌓아 오셨는지 짧게 정리해 두시면 10년이 끝났을 때 그 기록이 가장 큰 무기가 돼요.',
-        flat:    ' 큰 길도 큰 흉도 적은 평탄한 흐름이에요. 새로 시작하시기보다 “이미 손에 쥐고 계신 것들”을 다듬는 데 시간을 쓰시면 좋습니다. 직업이라면 한 분야의 깊이를, 관계라면 가까운 다섯 명과의 약속을, 자산이라면 흩어 놓으신 것들을 한 줄로 정리하시는 한 가지를 가져가십시오.',
-        caution: ' 부담이 약간 깔린 흐름이라, 큰 결정은 평소보다 한 박자 늦추시고 “지키는 쪽”에 무게를 두시면 됩니다. 이 시기에 새로 벌이신 일은 다음 시기까지 짐으로 따라오기 쉬우니, 신규 보증·신규 동업·신규 대출은 이 10년 동안 가능한 한 피하시는 게 안전합니다.',
-        tough:   ' 부담이 큰 흐름이라, 이 시기에는 새로 벌이기보다 “지금 있는 것을 무너지지 않게 지키는 데” 가장 큰 힘이 있어요. 큰 결정은 다음 대운으로 미루셔도 늦지 않습니다. 이 시기를 무사히 지나신 분들이, 다음 대운에서 가장 단단한 자리에 안착하시는 경우가 많아요. “지키는 게 곧 다음 시기의 출발선”이라고 마음에 새겨 두십시오.'
-    };
     function tone(s) { return s >= 3 ? 'good' : s >= 1 ? 'mild' : s === 0 ? 'flat' : s >= -2 ? 'caution' : 'tough'; }
     function toneColor(t) { return ({ good:'#c7a76a', mild:'#5ec183', flat:'#9b9b9b', caution:'#e0a040', tough:'#c84a4a' })[t] || '#888'; }
     function toneLabel(t) { return ({ good:'잘 풀리는 10년', mild:'한 발 더 내디뎌도 좋은 10년', flat:'안정·정돈에 좋은 10년', caution:'한 박자 늦추는 10년', tough:'단단히 지키는 10년' })[t] || '안정 10년'; }
 
+    var fortuneLedger = fortunePhraseLedger();
     var cards = nextRows.map(function (nx, idx) {
         var rr = nx.row;
         var g = (rr.gz && rr.gz[0]) || (rr.h && rr.h[0]) || rr.gan || '';
@@ -7515,7 +7758,7 @@ function buildUpcomingDaewunCards(data) {
         var sc = score(g, j);
         var t = tone(sc);
         var gOh = GAN_OH[g] || ''; var jOh = JI_OH[j] || '';
-        var body = sajuxDescribeGzPair(data, g, j, 'updae-' + nx.age) + ' ' + sajuxToneAdvice(data, t, 'daeun', g + j + String(nx.age));
+        var body = buildUpcomingDaeunBody(data, g, j, nx.age, t, fortuneLedger);
         var col = toneColor(t);
         var orderLabel = idx === 0 ? '다음 대운' : '그 다음 대운';
         var ageRange = nx.age + '세 ~ ' + (nx.age + 9) + '세';
@@ -7608,10 +7851,7 @@ function buildUpcomingSewunCards(data) {
         '亥':'잠복과 준비의 자리라, 큰 무대보다 내실을 채우는 데 무게를 두시면 좋습니다.'
     };
 
-    function bodyFor(yr, g, j, t, sc) {
-        return upcomingSeyunBodyBrief(data, yr, g, j, t);
-    }
-
+    var seyunLedger = fortunePhraseLedger();
     var cards = '';
     for (var k = 0; k < 10; k++) {
         var yr = startYear + k;
@@ -7621,7 +7861,7 @@ function buildUpcomingSewunCards(data) {
         var sc = scoreY(g, j);
         var t = tone(sc);
         var col = toneColor(t);
-        var body = bodyFor(yr, g, j, t, sc);
+        var body = upcomingSeyunBodyBrief(data, yr, g, j, t, seyunLedger);
         cards += '<div style="background:rgba(255,255,255,0.03);border-radius:10px;padding:14px 16px;border-left:3px solid ' + col + ';margin-bottom:10px;">'
               + '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:6px;">'
               + '<div style="font-size:15px;font-weight:800;color:#fff;font-family:\'Noto Sans KR\',sans-serif;">' + yr + '년 <span style="color:var(--gold);">' + (HK[g] || g) + (HK[j] || j) + '</span><span style="font-size:11px;color:#888;margin-left:6px;">(' + g + j + ')</span></div>'
@@ -7683,10 +7923,7 @@ function buildUpcomingWolunCards(data) {
 
     var SEWUN_GAN_ARR = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
     var SEWUN_JI_ARR  = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
-    function bodyForMonth(yr, mo, g, j, t, sc) {
-        return upcomingWolunBodyBrief(data, yr, mo, g, j, t);
-    }
-
+    var wolunLedger = fortunePhraseLedger();
     var cards = '';
     var addedCount = 0;
     var moPointer = firstMonth;
@@ -7705,7 +7942,7 @@ function buildUpcomingWolunCards(data) {
         var sc = scoreM(mGan, mJi);
         var t = tone(sc);
         var col = toneColor(t);
-        var body = bodyForMonth(yrPointer, moPointer, mGan, mJi, t, sc);
+        var body = upcomingWolunBodyBrief(data, yrPointer, moPointer, mGan, mJi, t, wolunLedger);
         cards += '<div style="background:rgba(255,255,255,0.03);border-radius:10px;padding:14px 16px;border-left:3px solid ' + col + ';margin-bottom:10px;">'
               + '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:6px;">'
               + '<div style="font-size:14.5px;font-weight:800;color:#fff;font-family:\'Noto Sans KR\',sans-serif;">' + yrPointer + '년 ' + moPointer + '월 <span style="color:var(--gold);margin-left:4px;">' + (HK[mGan] || mGan) + (HK[mJi] || mJi) + '</span><span style="font-size:11px;color:#888;margin-left:4px;">(' + mGan + mJi + ')</span></div>'
@@ -13489,4 +13726,6 @@ if (typeof window !== 'undefined') {
     window.voiceModernizeSipseong = voiceModernizeSipseong;
     window.sipGroupInternalLabel = sipGroupInternalLabel;
     window.sipGroupBarLabel = sipGroupBarLabel;
+    window.SAJUX_FORTUNE_WRITE = SAJUX_FORTUNE_WRITE;
+    window.getSajuxFortuneNarrativeRulesBlock = getSajuxFortuneNarrativeRulesBlock;
 }
