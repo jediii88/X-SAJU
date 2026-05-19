@@ -761,16 +761,26 @@ html[data-theme="light"] table td { color: #1a1510 !important; }
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
   body, .report-chapter { background: #fff !important; color: #111 !important; }
-  .card, .yearly-card, .monthly-card, .inner-card,
-  .detail-box, .jijanggan, div[class*="card"], div[class*="box"] {
-    background: #ffffff !important;
-    border: 1px solid #d0c8bc !important;
+  .card, .yearly-card, .monthly-card, .glass-panel, .sajux-glass-heavy,
+  .inner-card, .detail-box, div[class*="card"] {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
     color: #111 !important;
   }
+  #report-container div[style*="background:rgba"],
+  #report-container div[style*="border-left"] {
+    background: transparent !important;
+    border: none !important;
+    border-left: none !important;
+    border-radius: 0 !important;
+  }
   .sajux-access-note {
-    background: #fdf8ef !important;
+    background: transparent !important;
     color: #2a2218 !important;
-    border: 1px solid rgba(200,160,80,0.38) !important;
+    border: none !important;
+    border-top: 1px solid rgba(200,160,80,0.35) !important;
+    padding-top: 10px !important;
   }
   [style*="color:#ddd"], [style*="color:#ccc"], [style*="color:#bbb"],
   [style*="color:#aaa"], [style*="color:#d6dae2"], [style*="color:#e8dcc8"],
