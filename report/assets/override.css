@@ -538,6 +538,10 @@ html[data-theme="light"] .ch-text b { color: #1a1510 !important; }
 .ch-voice-opener.sajux-narrative-para {
   letter-spacing: 0.01em;
   text-wrap: pretty;
+  display: block;
+}
+.sipseong-unified-body .sajux-narrative-para + .sajux-narrative-para {
+  margin-top: 0;
 }
 html[data-theme="light"] .sajux-narrative-para,
 html[data-theme="light"] .ch-voice-opener.sajux-narrative-para {
