@@ -5372,28 +5372,21 @@ function lifeNarrativeDaeunOverlapping(data, lo, hi) {
     return best;
 }
 
-/** 8자×대운 → 한두 문장 평문 (이어 읽기용) */
-function lifeNarrativePlainWeave(data, g, j) {
+/** 8자×대운 → 한 문장(나이·이정표 없음). raw=true면 접속어만 본문 */
+function lifeNarrativePlainWeave(data, g, j, raw) {
     var nm = data.name || '고객';
     var hits = sajuxPeriodVsNatalHits(data, g, j);
-    if (!hits.length) {
-        var a = sajuxAnalyzePeriod(data, g, j);
-        if (a.yongHit || a.score >= 2) {
-            return '그때 들어오는 기운이 ' + nmUi(nm) + '에게 맞는 쪽이라, ' + sajuxSipLifeAngle(a.sipGan || a.sipJi) + '이 비교적 잘 풀리기 쉽습니다';
-        }
-        if (a.giHit || a.score <= -2) {
-            return '그때 들어오는 기운이 ' + nmUi(nm) + '에게 부담이 되기 쉬워, ' + sajuxSipLifeAngle(a.sipGan || a.sipJi) + '에서 무리한 확장은 줄이는 편이 낫습니다';
-        }
-        return '';
-    }
-    var parts = [];
-    for (var k = 0; k < hits.length && parts.length < 2; k++) {
-        var line = lifeNarrativeHitToPlain(hits[k], nm);
-        if (line && parts.indexOf(line) < 0) parts.push(line);
-    }
-    if (!parts.length) return '';
-    if (parts.length === 1) return '그 시기엔 ' + parts[0] + '.';
-    return '그 시기엔 ' + parts[0] + ', 또 ' + parts[1] + '.';
+    if (!hits.length) return '';
+    var line = lifeNarrativeHitToPlain(hits[0], nm);
+    if (!line) return '';
+    return raw ? line : ('한편, ' + line);
+}
+
+function lifeNarrativeWeaveScore(data, g, j) {
+    if (!g || !j) return 0;
+    var hits = sajuxPeriodVsNatalHits(data, g, j);
+    if (hits.length) return hits[0].weight;
+    return 0;
 }
 
 function lifeNarrativePickMilestone(milestones, lo, hi) {
@@ -5426,22 +5419,50 @@ function lifeNarrativeMilestoneFact(data, m) {
     };
 }
 
-/** ① 계산층 — 누구 사주든 동일 스키마 */
+/** ① 계산층 — 인생 전체에서 8자×대운 강한 힌트는 최대 2시기만 */
 function buildLifeNarrativePlan(data, ctx) {
-    var stages = [];
+    var draft = [];
     SAJUX_LIFE_STAGES.forEach(function (st) {
         var label = st.label;
         if (st.key === 'final') label = voiceTwilightChapter((ctx.name || '고객') + 'fin');
         var daeun = lifeNarrativeDaeunOverlapping(data, st.lo, st.hi);
         var weave = '';
-        if (daeun) weave = lifeNarrativePlainWeave(data, daeun.g, daeun.j);
-        stages.push({
+        var wScore = 0;
+        if (daeun && st.lo >= 20) {
+            wScore = lifeNarrativeWeaveScore(data, daeun.g, daeun.j);
+            weave = lifeNarrativePlainWeave(data, daeun.g, daeun.j, true);
+        }
+        draft.push({
             key: st.key,
             label: label,
             ageLo: st.lo,
             ageHi: st.hi,
             flow: ctx.periodTone(st.lo, st.hi),
-            weave: weave
+            weave: weave,
+            weaveScore: wScore
+        });
+    });
+    draft.sort(function (a, b) { return b.weaveScore - a.weaveScore; });
+    var allow = {};
+    var used = {};
+    var n = 0;
+    for (var i = 0; i < draft.length && n < 2; i++) {
+        var d = draft[i];
+        if (d.weaveScore < 8 || !d.weave || used[d.weave]) continue;
+        allow[d.key] = d.weave;
+        used[d.weave] = true;
+        n++;
+    }
+    var stages = [];
+    SAJUX_LIFE_STAGES.forEach(function (st) {
+        var row = draft.filter(function (x) { return x.key === st.key; })[0];
+        stages.push({
+            key: st.key,
+            label: row.label,
+            ageLo: st.lo,
+            ageHi: st.hi,
+            flow: row.flow,
+            weave: allow[st.key] || ''
         });
     });
     return { stages: stages };
@@ -5449,6 +5470,7 @@ function buildLifeNarrativePlan(data, ctx) {
 
 function lifeNarrativeStageBody(ctx, stage) {
     var nm = ctx.name;
+    var isStrong = !!ctx.isStrong;
     var t = stage.flow;
     var tp = ctx.tonePhrase;
 
@@ -5470,53 +5492,50 @@ function lifeNarrativeStageBody(ctx, stage) {
     }
     if (stage.key === 'youth') {
         return tp(t,
-            '첫 직장·자취·연애 같은 굵직한 결정이 ' + nmEulReul(nm) + ' 받쳐 주기 쉬운 흐름입니다. ',
-            '첫 사회 진입에서 한 번 흔들려도, 그 학습이 다음 안착의 자산이 됩니다. ',
-            '작은 결정들이 차곡차곡 쌓여 방향을 잡는 흐름입니다. ')
-            + nmUi(nm) + '의 강점 “' + ctx.strengthRaw + '”이 밖에서 처음 인정받기 쉬운 시기이고, ' + nmDnim(nm) + '은 ' + ctx.dominantSip + '. '
-            + ctx.decisionLine;
+            '첫 직장·자취·연애 같은 굵직한 결정이 ' + nmEulReul(nm) + ' 받쳐 주기 쉽습니다. ',
+            '사회에 처음 나갈 때 한 번 흔들려도, 그 경험이 다음 자리의 밑돌이 됩니다. ',
+            '작은 선택이 모여 방향을 잡는 시기입니다. ')
+            + nmDnim(nm) + '의 강점 “' + ctx.strengthRaw + '”이 밖에서 처음 인정받기 쉽고, '
+            + (isStrong
+                ? '결정은 빠르신 편이라 큰일만 하루 자고 다시 보시면 됩니다.'
+                : '결정은 천천히 내리셔도 늦지 않습니다.');
     }
     if (stage.key === 'prime') {
         return tp(t,
-            '평생 일군 노력이 처음으로 눈에 보이기 쉬운 구간입니다. ' + (ctx.careerRaw ? ctx.careerRaw + ' 분야에서 특히 자리가 단단해집니다. ' : ''),
-            '결혼·직장이 한 번 학습을 거친 뒤 단단해지는 흐름일 수 있습니다. ',
-            '화려한 도약보다 한 걸음씩 자리를 다지는 흐름이고, 이 시기를 지나야 ' + nmDnim(nm) + '만의 색이 인정받기 시작합니다. ')
-            + ctx.relationLine + ' 동시에 “' + ctx.weaknessRaw + '”의 그늘이 또렷해질 수 있는데, 미리 알아채시면 절반은 약해집니다.'
-            + (ctx.emptyNote ? ' ' + ctx.emptyNote : '');
+            '일군 노력이 눈에 보이기 쉬운 구간입니다. ',
+            '결혼·직장이 한 번 다듬어진 뒤 단단해집니다. ',
+            '도약보다 자리 잡기에 맞는 흐름입니다. ')
+            + (ctx.careerRaw ? ctx.careerRaw + ' 쪽에서 특히 손맛이 살아납니다. ' : '')
+            + '“' + ctx.weaknessRaw + '”만 의식하셔도 그늘은 절반으로 줄어듭니다.';
     }
     if (stage.key === 'middle') {
         return tp(t,
-            '평생 쌓아 온 평판이 한꺼번에 돌아오기 쉬운 흐름이기도 합니다. ',
-            '건강·가족을 동시에 챙기셔야 하는 무거운 어깨의 시기입니다. ',
-            '50대에 시작한 일이 60대의 명함이 될 수 있는 후반전이 열립니다. ')
-            + '자녀·부모·본업·돈이 한꺼번에 몰려오는 시기라, 무리하게 새로 벌리기보다 지금 있는 걸 지키는 편이 낫습니다. '
-            + '후반에 가면 비로소 “진짜 ' + nmUi(nm) + ' 시간”이 돌아옵니다.';
+            '평판이 한꺼번에 돌아오기 쉽습니다. ',
+            '건강·가족·돈이 동시에 몰리는 시기입니다. ',
+            '후반전을 여는 흐름입니다. ')
+            + '새로 벌리기보다 지금 있는 것을 지키는 편이 낫고, 여유가 생기면 비로소 ' + nmDnim(nm) + '만의 시간이 돌아옵니다.';
     }
     if (stage.key === 'elder') {
         return tp(t,
-            '후배·자녀 한 명에게 ' + nmDnim(nm) + '의 한 마디가 인생을 바꾸는 일이 일어날 수 있습니다. ',
-            '몸의 신호를 먼저 챙기시는 것이 가장 큰 자산입니다. ',
-            '큰 행사 없이 일상의 깊이가 ' + nmUi(nm) + ' 노년을 빛냅니다. ')
-            + nmDnim(nm) + '은 일을 ' + ctx.workLine + '으로 살아오신 분이라, “덜 무거운, 그러나 의미 있는 한 가지”에 손을 두시는 편이 맞습니다. '
-            + (ctx.coreLine ? '“' + ctx.coreLine + '” — 이 인상이 이때만큼 ' + nmEulReul(nm) + ' 닮습니다. ' : '');
+            '후배·자녀에게 ' + nmDnim(nm) + '의 한 마디가 오래 남을 수 있습니다. ',
+            '몸의 신호를 먼저 챙기는 것이 최대의 자산입니다. ',
+            '큰 행사보다 일상의 깊이가 빛나는 시기입니다. ')
+            + (ctx.coreLine ? '“' + ctx.coreLine + '” — 그 인상이 이때 가장 또렷합니다. ' : '');
     }
     if (stage.key === 'final') {
         return tp(t,
-            '늦은 인정이 한 번 더 따라올 수 있습니다. ',
-            '몸이 마음만큼 따라 주지 않을 때지만, 마음 안쪽은 평화로워지기 쉽습니다. ',
-            '잔잔함이야말로 평생 쌓아 온 자리의 결정체입니다. ')
-            + '시간이 더 천천히 흐르고, 손에 잡히는 것들의 무게가 커집니다. '
-            + (ctx.coreLine ? '“' + ctx.coreLine + '” — ' : '')
-            + ctx.relationLine + ' '
-            + '큰 직책보다 ' + nmUi(nm) + ' 한 마디·한 습관이 누군가의 삶에 스민 자국이 진짜 무게입니다.';
+            '늦은 인정이 한 번 더 올 수 있습니다. ',
+            '몸은 가볍지 않아도 마음은 잔잔해지기 쉽습니다. ',
+            '잔잔함이 평생 쌓아 온 자리의 결정체입니다. ')
+            + '큰 직책보다 ' + nmDnim(nm) + '의 한 마디·한 습관이 남는 무게가 진짜 유산이 됩니다.';
     }
     return '';
 }
 
-/** ② 글쓰기층 — 원국×대운 서술만 이어 붙임 (용어·카드 없음) */
+/** ② 글쓰기층 — 짧게 이어 읽기 (나이·이정표·반복 없음) */
 function writeLifeNarrativeParagraph(data, stage, ctx) {
     var body = lifeNarrativeStageBody(ctx, stage);
-    if (stage.weave) body += ' ' + stage.weave;
+    if (stage.weave) body += '. ' + stage.weave;
     return '<strong>' + stage.label + '</strong>에는 ' + body;
 }
 
@@ -5654,7 +5673,7 @@ function buildPersonalPortraitInnerHtml(data) {
         ? '“스스로 결정하고 끝까지 책임지는” 방식'
         : '“충분히 살피고 함께 만들어 가는” 방식';
 
-    var introText = nmDnim(name) + '의 인생을 <strong>한 호흡</strong>으로 이어 읽어 드릴게요. 태어날 때의 여덟 글자와, 각 시기에 겹쳐 들어오는 기운이 <strong>어디(부모·일·돈·마음)를 건드리는지</strong>만 일상 말로 풀었습니다. 나이는 딱 맞추기보다 <strong>한두 해 넓게</strong> 잡았으니, 본인 시기와 가깝게만 읽어 주시면 됩니다.';
+    var introText = nmDnim(name) + '의 인생을 시기별로 <strong>한 편의 글</strong>처럼 이어 읽어 드릴게요. 특정 나이를 맞추기보다 <strong>흐름의 결</strong>만 보시면 됩니다.';
 
     function para(text) {
         return buildNarrativePara(data, stripLifeArcJargon(text));
@@ -5662,6 +5681,7 @@ function buildPersonalPortraitInnerHtml(data) {
 
     var connectedArc = buildConnectedLifeArcParagraphs(data, {
         name: name,
+        isStrong: isStrong,
         para: para,
         periodTone: periodTone,
         tonePhrase: tonePhrase,
@@ -6332,6 +6352,9 @@ function stripLifeArcJargon(html) {
     s = s.replace(/지지\s*충\(沖\)/g, '주변 환경');
     s = s.replace(/\(길\)|\(흉\)|\(평\)/g, '');
     s = s.replace(/\d{4}년\s*/g, '');
+    s = s.replace(/그중\s+\d+세[^\s]*\s*(부터|쯤|무렵)[^.]*\.\s*/g, '');
+    s = s.replace(/\d+세\s*(부터|쯤|무렵)[^.]*에는\s*[^.]*\.\s*/g, '');
+    s = s.replace(/이사·직장·관계·계약 중 하나가 갈라지고[^.]*\.\s*/g, '');
     s = s.replace(/\s{2,}/g, ' ').replace(/\s+([,.])/g, '$1').trim();
     return s;
 }
