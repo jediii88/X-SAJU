@@ -766,8 +766,13 @@ function buildCompatChapterIntro(ctx, topic) {
         text = bridge + (inner ? ' ' + inner : '');
     }
     var fakeData = { name: ctx && ctx.aName };
-    return '<p class="ch-text ch-voice-opener compat-voice-opener" style="margin:0 0 16px;font-size:13.5px;line-height:1.95;color:rgba(255,255,255,0.78);">'
-         + boldStarsToStrong(voicePolishParagraph(fakeData, text)) + '</p>';
+    return buildNarrativePara(fakeData, text, {
+        extraClass: 'ch-voice-opener compat-voice-opener',
+        fontSize: '13.5px',
+        lineHeight: '1.95',
+        color: 'rgba(255,255,255,0.78)',
+        marginBottom: '16px'
+    });
 }
 
 /** 궁합 챕터 헤더 — 섹션 라벨(관계 포지셔닝 등)이 제목, 은유 한 줄은 부제·설명 */
