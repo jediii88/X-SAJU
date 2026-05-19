@@ -4137,11 +4137,11 @@ function generateDeepReport(data) {
     // ── 2부: 지금 이 시절 ──
     //   ① 현재 대운/세운/월운 통합 카드 — 큰 제목「현재의 운세」가 먼저 보이도록 최상단
     //   ② 인생 80년 타임라인 (보조 도식 — 카드 다음)
-    //   ③ 앞으로 올 대운 — 다음·그 다음 (각 200~300자)
-    //   ④ 앞으로 올 세운 — 다음 해부터 10년 (각 200~300자)
-    //   ⑤ 앞으로 올 월운 — 다음 달부터 11개월 (각 200~300자)
+    //   ③ 앞으로 올 대운 — 다음·그 다음 (각 500자 이상)
+    //   ④ 앞으로 올 세운 — 다음 해부터 10년 (각 200자 이상)
+    //   ⑤ 앞으로 올 월운 — 다음 달부터 11개월 (각 100자 이상)
     //   ※ 옛 buildDaewunLoop / buildChapter8_NextDaewun / buildSewunLoop / buildChapter9_Monthly 는
-    //     사용자 피드백("현재 대운/세운/월운은 디테일하게 한 카드로, 다음 시기들은 200~300자")에 따라
+    //     앞으로의 운 카드 분량: 대운 500+ / 세운 200+ / 월운 100+ 자
     //     buildCurrentPeriodCard + buildUpcoming{Daewun,Sewun,Wolun}Cards 로 교체되었습니다.
     var part2Body = '';
     part2Body += safeCall(()=>buildCurrentPeriodCard(data)||'', 'current-period-card');
@@ -5969,7 +5969,7 @@ var SAJUX_FORTUNE_WRITE = {
         '같은 조언 문장을 연속 2카드(2년·2달)에 쓰지 말 것. 톤 꼬리 한 줄만 10장에 복붙 금지.',
         '뱃지(잘 풀리는 해/단단히 지키는 해)와 본문 첫 방향이 반대되게 쓰지 말 것.',
         '“(이)가” 괄호 조사 금지. 키워드는 받침에 맞게 완성된 한국어로.',
-        '한 카드 = (이 시기 정의 1문장) + (이 사람에게만 1문장) + (행동 1문장). 최대 3문장.'
+        '앞으로의 운 카드 최소 분량: 대운 각 500자 이상, 세운 각 200자 이상, 월운 각 100자 이상(HTML·공백 제외).',
     ],
     action: {
         daeun: {
@@ -6109,6 +6109,155 @@ function fortunePolishPlain(data, text) {
     return s;
 }
 
+/** 앞으로의 운 카드 — 최소 글자 수(HTML·공백 제외) */
+var SAJUX_UPCOMING_FORTUNE_MIN = { daeun: 500, seyun: 200, wolun: 100 };
+
+function fortunePlainCharLen(text) {
+    return String(text == null ? '' : text)
+        .replace(/<[^>]+>/g, '')
+        .replace(/\*\*/g, '')
+        .replace(/\s+/g, '')
+        .length;
+}
+
+function fortuneJoinParts(parts) {
+    var out = [];
+    for (var i = 0; i < parts.length; i++) {
+        var p = String(parts[i] == null ? '' : parts[i]).trim();
+        if (!p) continue;
+        if (out.indexOf(p) >= 0) continue;
+        out.push(p);
+    }
+    return out.join(' ');
+}
+
+function fortuneEnsureMinLen(data, text, minLen, moreFn) {
+    var s = fortunePolishPlain(data, String(text || '').trim());
+    var guard = 0;
+    while (fortunePlainCharLen(s) < minLen && guard < 32) {
+        guard++;
+        var extra = moreFn(guard);
+        if (!extra || !String(extra).trim()) continue;
+        var add = fortunePolishPlain(data, String(extra).trim());
+        if (!add || s.indexOf(add) >= 0) continue;
+        s = (s + ' ' + add).trim();
+    }
+    return s;
+}
+
+var _UPCOMING_SEYUN_GAN_NARR = {
+    '甲': '시작과 새 학습이 잦아지는 한 해라, 새 일·새 사람·새 환경이 평소보다 빨리 들어옵니다.',
+    '乙': '사람과 관계로 길이 열리는 한 해라, 혼자 끌어가시기보다 협업 한두 자리가 큰 도움이 됩니다.',
+    '丙': '드러남·표현·홍보의 기운이 강해, 본인의 결과물이 외부에 노출되는 일이 평소보다 늘어납니다.',
+    '丁': '깊이와 전문성에 빛이 드는 해라, 한 분야를 깊게 파시면 그 깊이가 즉시 보상으로 돌아옵니다.',
+    '戊': '안정과 축적의 기운이 두꺼워, 큰 사건보다 신뢰가 차곡차곡 쌓이는 한 해가 됩니다.',
+    '己': '정리·마무리·연장의 기운이 깔려, 이미 벌이신 일들의 결산을 보시기 좋은 한 해예요.',
+    '庚': '결단과 정리의 기운이 강해, 안 맞는 한두 가지를 잘라 내시면 큰 이득이 따라옵니다.',
+    '辛': '완성과 세련의 기운이 도드라져, 한 가지를 “브랜드”로 다듬는 데 가장 좋은 한 해입니다.',
+    '壬': '흐름과 확장의 기운이 강해, 정보·인맥·새 채널 가운데 한 자리가 크게 열립니다.',
+    '癸': '학습·연구·내공의 기운이 깔려, 조용히 내면을 채우시는 데 좋은 한 해예요.'
+};
+var _UPCOMING_SEYUN_JI_NARR = {
+    '子': '기획·문서·집중이 빛나는 자리라, 큰 결정을 위한 자료 정리에 가장 좋은 시기입니다.',
+    '丑': '느려도 단단히 쌓이는 한 해라, 눈에 띄지 않는 노력이 미래의 토대가 됩니다.',
+    '寅': '활동과 새 출발의 자리라, 이사·이직·새 과제 가운데 한 가지가 자연스럽게 따라옵니다.',
+    '卯': '인맥과 협업의 자리라, 사람을 통해 길이 열리는 한 해입니다.',
+    '辰': '잠재력과 변수가 함께 오는 자리라, 큰 결정은 분기 초·말에만 잡으시는 게 좋습니다.',
+    '巳': '결단과 변신이 따라오는 자리라, 미뤄 두신 결정 한 가지가 자연스럽게 풀려나갑니다.',
+    '午': '성취와 인정의 자리라, 본인의 결과물이 외부에서 인정받는 일이 한 번 따라옵니다.',
+    '未': '창작과 풍요가 깔린 자리라, 콘텐츠·예술·교육 쪽으로 길이 열리기 쉽습니다.',
+    '申': '판단과 속도가 승부를 가르는 자리라, 빠른 결정이 큰 차이를 만듭니다.',
+    '酉': '완성과 보상의 자리라, 그동안 쌓아 오신 노력이 결실로 돌아옵니다.',
+    '戌': '정리와 전환의 자리라, 끊을 것과 남길 것을 가르시기에 가장 좋은 한 해예요.',
+    '亥': '잠복과 준비의 자리라, 큰 무대보다 내실을 채우는 데 무게를 두시면 좋습니다.'
+};
+var _UPCOMING_DAEUN_WEALTH_TIP = {
+    '甲': '**자산 구조 한 장**을 먼저 그리는 편이 이익입니다.',
+    '乙': '**신뢰 가능한 파트너 한 명**을 먼저 묶으십시오.',
+    '丙': '**대외 산출물·브랜드**에 예산을 쓰십시오.',
+    '丁': '**한 분야 깊이**만 파십시오.',
+    '戊': '**10년 단위로 보이는 자산**만 고르십시오.',
+    '己': '**회수·연장·정산**부터 하십시오.',
+    '庚': '**포트폴리오를 세 줄로** 줄이십시오.',
+    '辛': '**대표 결과물 하나**에만 몰으십시오.',
+    '壬': '**둘만 남기고 나머지는 거절**하십시오.',
+    '癸': '**교육·자격·내부 시스템**에만 쓰십시오.',
+    '子': '**현금흐름 표**를 주간으로만 열십시오.',
+    '丑': '**저축·실물**만 흔들리지 않게 하십시오.',
+    '寅': '**이사·이직·새 채널** 중 하나만 고르십시오.',
+    '卯': '**소개·협업 제안**을 먼저 보내십시오.',
+    '辰': '**충동 투자는 유예**하고 관망하십시오.',
+    '巳': '**조건을 먼저 글로** 적고 도장을 찍으십시오.',
+    '午': '**약속 이행**을 먼저 쌓으십시오.',
+    '未': '**콘텐츠·교육** 하나를 완성하십시오.',
+    '申': '**손실 한도**를 숫자로 적고 움직이십시오.',
+    '酉': '**단가·연봉**을 정직하게 올리십시오.',
+    '戌': '**채권·채무·미완**부터 끊으십시오.',
+    '亥': '**내실 투자**만 하십시오.'
+};
+var _UPCOMING_DAEUN_CAREER_TIP = {
+    '甲': '**원하는 직함을 문장으로** 적고 한 걸음만 내리십시오.',
+    '乙': '**협업 파트너**를 먼저 고르십시오.',
+    '丙': '**성과를 숫자로** 남기십시오.',
+    '丁': '**한 기술 분야**만 정하십시오.',
+    '戊': '**오래 갈 포지션**을 고르십시오.',
+    '己': '**신뢰 누적**에만 집중하십시오.',
+    '庚': '**역할 범위**를 문서로 고정하십시오.',
+    '辛': '**대표 과제 하나**만 남기십시오.',
+    '壬': '**데이터·플랫폼**과 겹치는 것만 잡으십시오.',
+    '癸': '**자격·커리큘럼**에 시간을 쓰십시오.',
+    '子': '**요건·근거 정리로 결론**을 내리십시오.',
+    '丑': '**이직 충동**을 한 시즌 유예하십시오.',
+    '寅': '**새 역할**을 두려워하지 마십시오.',
+    '卯': '**밋업 후속 액션**을 고정하십시오.',
+    '辰': '**계약은 조항부터** 읽으십시오.',
+    '巳': '**미룬 결정 하나**만 끝내십시오.',
+    '午': '**더 큰 목표**를 공개하십시오.',
+    '未': '**포트폴리오**를 채우십시오.',
+    '申': '**리스크 한도**를 먼저 적으십시오.',
+    '酉': '**대외 포지션**을 한 문장으로 고치십시오.',
+    '戌': '**안 맞는 역할**은 정리하십시오.',
+    '亥': '**급한 이직**은 피하십시오.'
+};
+
+function upcomingDaeunNatalReaction(data, g, j, seed) {
+    var pillars = Array.isArray(data.pillars) ? data.pillars : [];
+    var stems = pillars.map(function (p) { return p && p.h && p.h[0]; }).filter(Boolean);
+    var branches = pillars.map(function (p) { return p && p.h && p.h[1]; }).filter(Boolean);
+    var HK = sajuxFortuneHK();
+    var ganKr = HK[g] || g;
+    var jiKr = HK[j] || j;
+    var STEM_PAIR = { '甲': '己', '己': '甲', '乙': '庚', '庚': '乙', '丙': '辛', '辛': '丙', '丁': '壬', '壬': '丁', '戊': '癸', '癸': '戊' };
+    var BRANCH_PAIR = { '子': '丑', '丑': '子', '寅': '亥', '亥': '寅', '卯': '戌', '戌': '卯', '辰': '酉', '酉': '辰', '巳': '申', '申': '巳', '午': '未', '未': '午' };
+    var BRANCH_CLASH = { '子': '午', '午': '子', '丑': '未', '未': '丑', '寅': '申', '申': '寅', '卯': '酉', '酉': '卯', '辰': '戌', '戌': '辰', '巳': '亥', '亥': '巳' };
+    var reacts = [];
+    if (stems.indexOf(g) >= 0) {
+        reacts.push('태어난 천간에 ' + ganKr + getJosaFlex(ganKr, '이/가') + ' 이미 있어, 이 10년에는 내 성향이 더 강하게 드러납니다.');
+    }
+    if (branches.indexOf(j) >= 0) {
+        reacts.push('태어난 지지에 ' + jiKr + getJosaFlex(jiKr, '이/가') + ' 겹쳐, 같은 주제가 반복되거나 크게 부각될 수 있습니다.');
+    }
+    var sb = STEM_PAIR[g];
+    if (sb && stems.indexOf(sb) >= 0) {
+        reacts.push(ganKr + getJosaFlex(ganKr, '이/가') + ' 원국과 맞물려 사람·기회가 연결되기 쉬운 흐름입니다.');
+    }
+    var bb = BRANCH_PAIR[j];
+    if (bb && branches.indexOf(bb) >= 0) {
+        reacts.push(jiKr + getJosaFlex(jiKr, '이/가') + ' 원국과 합(合)이 되어 협업·계약이 부드럽게 이어질 수 있습니다.');
+    }
+    var bc = BRANCH_CLASH[j];
+    if (bc && branches.indexOf(bc) >= 0) {
+        reacts.push(jiKr + getJosaFlex(jiKr, '이/가') + ' 원국과 충(沖)이 걸려 직장·돈·관계 변동을 먼저 관리하셔야 합니다.');
+    }
+    if (!reacts.length) {
+        return pickVoiceLine([
+            '원국과 큰 충돌은 적어, 급하게 키우기보다 계획대로 밀어붙일수록 결과가 안정적으로 쌓입니다.',
+            '태어난 글자와 부딪히지 않아, 이 10년은 페이스를 유지하며 쌓는 쪽이 이득입니다.'
+        ], seed + '|natal');
+    }
+    return reacts.slice(0, 2).join(' ');
+}
+
 function fortuneSipModernKw(sip) {
     return sip ? (sipModernKeyword(sip) || '') : '';
 }
@@ -6210,22 +6359,37 @@ function upcomingSeyunCompareLine(data, yr, g, j, tone, seed, ledger) {
     return '';
 }
 
-/** 세운 카드 — 법칙 3문장 · 십성 현대어 · 반복 금지 */
+/** 세운 카드 — 최소 200자 · 십성 현대어 · 반복 금지 */
 function upcomingSeyunBodyBrief(data, yr, g, j, t, ledger) {
     ledger = ledger || fortunePhraseLedger();
     var seed = String(yr) + '|' + g + j + '|' + t;
-    var parts = [upcomingSeyunYearHook(g, j, seed)];
+    var HK = sajuxFortuneHK();
+    var parts = [];
+    parts.push('<strong>' + yr + '년</strong> ' + (HK[g] || g) + (HK[j] || j) + ' 세운 — ' + upcomingSeyunYearHook(g, j, seed));
+    if (_UPCOMING_SEYUN_GAN_NARR[g]) parts.push(_UPCOMING_SEYUN_GAN_NARR[g]);
+    if (_UPCOMING_SEYUN_JI_NARR[j]) parts.push(_UPCOMING_SEYUN_JI_NARR[j]);
+    parts.push(sajuxNarratePeriodCustomer(data, g, j, seed));
     var a = sajuxAnalyzePeriod(data, g, j);
-    var sipLine = '';
-    if (a.sipGan && !a.yongHit && !a.giHit) {
-        sipLine = fortuneSipModernPhrase(data, a.sipGan, 'gan');
-        if (sipLine && fortuneSnippetUsed(ledger, sipLine)) sipLine = '';
+    if (a.sipGan) {
+        var sipG = fortuneSipModernPhrase(data, a.sipGan, 'gan');
+        if (sipG && !fortuneSnippetUsed(ledger, sipG.slice(0, 48))) parts.push(sipG);
     }
-    if (sipLine) parts.push(sipLine);
+    if (a.sipJi && a.sipJi !== a.sipGan) {
+        var sipJ = fortuneSipModernPhrase(data, a.sipJi, 'ji');
+        if (sipJ && !fortuneSnippetUsed(ledger, sipJ.slice(0, 48))) parts.push(sipJ);
+    }
     var cmp = upcomingSeyunCompareLine(data, yr, g, j, t, seed, ledger);
     if (cmp) parts.push(cmp);
+    parts.push(sajuxToneAdvice(data, t, 'seyun', seed));
     parts.push(pickFortuneActionUnique('seyun', t, seed, ledger));
-    return fortunePolishPlain(data, parts.filter(Boolean).join(' '));
+    var text = fortuneJoinParts(parts);
+    return fortuneEnsureMinLen(data, text, SAJUX_UPCOMING_FORTUNE_MIN.seyun, function (guard) {
+        var s2 = seed + '|pad|' + guard;
+        if (guard % 4 === 1 && _UPCOMING_SEYUN_GAN_NARR[g]) return _UPCOMING_SEYUN_GAN_NARR[g];
+        if (guard % 4 === 2 && _UPCOMING_SEYUN_JI_NARR[j]) return _UPCOMING_SEYUN_JI_NARR[j];
+        if (guard % 4 === 3) return sajuxToneAdvice(data, t, 'seyun', s2);
+        return pickFortuneActionUnique('seyun', t, s2, ledger);
+    });
 }
 
 var _WOLUN_OPENERS = [
@@ -6234,25 +6398,67 @@ var _WOLUN_OPENERS = [
     function (mo, yr, kw) { return mo + '월 한 달, **' + kw + '**' + getJosaFlex(kw, '으로/로') + ' 마무리하는 편이 편합니다. '; }
 ];
 
-/** 월운 카드 — 달마다 다른 서두 · 행동 풀 로테이션 */
+/** 월운 카드 — 최소 100자 · 달마다 다른 서두 */
 function upcomingWolunBodyBrief(data, yr, mo, g, j, t, ledger) {
     ledger = ledger || fortunePhraseLedger();
     var seed = yr + '-' + mo + '|' + g + j + '|' + t;
     var a = sajuxAnalyzePeriod(data, g, j);
     var kw = fortuneSipModernKw(a.sipJi) || fortuneSipModernKw(a.sipGan) || '일상 리듬';
     var openIdx = Math.abs(hashSeed(seed + '|o')) % _WOLUN_OPENERS.length;
-    var lead = _WOLUN_OPENERS[openIdx](mo, yr, kw);
-    var act = pickFortuneActionUnique('wolun', t, seed, ledger);
-    return fortunePolishPlain(data, lead + act);
+    var parts = [_WOLUN_OPENERS[openIdx](mo, yr, kw)];
+    if (_SAJUX_JI_LINE && _SAJUX_JI_LINE[j]) parts.push(_SAJUX_JI_LINE[j]);
+    parts.push(sajuxNarratePeriodCustomer(data, g, j, seed + '|m'));
+    parts.push(sajuxToneAdvice(data, t, 'wolun', seed));
+    parts.push(pickFortuneActionUnique('wolun', t, seed, ledger));
+    var text = fortuneJoinParts(parts);
+    return fortuneEnsureMinLen(data, text, SAJUX_UPCOMING_FORTUNE_MIN.wolun, function (guard) {
+        var s2 = seed + '|pad|' + guard;
+        if (guard % 3 === 1 && _SAJUX_GAN_LINE && _SAJUX_GAN_LINE[g]) return _SAJUX_GAN_LINE[g];
+        if (guard % 3 === 2) return sajuxToneAdvice(data, t, 'wolun', s2);
+        return pickFortuneActionUnique('wolun', t, s2, ledger);
+    });
 }
 
-/** 다음·그다음 대운 카드 본문 */
+/** 다음·그다음 대운 카드 본문 — 최소 500자 */
 function buildUpcomingDaeunBody(data, g, j, startAge, tone, ledger) {
     ledger = ledger || fortunePhraseLedger();
     var seed = 'daeun|' + g + j + '|' + startAge;
-    var core = sajuxNarratePeriodCustomer(data, g, j, seed);
-    var act = pickFortuneActionUnique('daeun', tone, seed, ledger);
-    return fortunePolishPlain(data, core + ' ' + act);
+    var HK = sajuxFortuneHK();
+    var endAge = startAge + 9;
+    var nm = data.name || '고객';
+    var parts = [];
+    parts.push(nmDnim(nm) + '에게 다가올 <strong>' + startAge + '세~' + endAge + '세</strong> '
+        + '<strong>' + (HK[g] || g) + (HK[j] || j) + '</strong>(' + g + j + ') 10년은 인생의 큰 계절이 바뀌는 구간입니다.');
+    parts.push(sajuxNarratePeriod(data, g, j, seed));
+    if (_SAJUX_GAN_LINE[g]) parts.push(_SAJUX_GAN_LINE[g]);
+    if (_SAJUX_JI_LINE[j]) parts.push(_SAJUX_JI_LINE[j]);
+    parts.push(upcomingDaeunNatalReaction(data, g, j, seed));
+    var yongNote = sajuxYongsinLayerNote(data, g, j, seed);
+    if (yongNote) parts.push(yongNote);
+    var a = sajuxAnalyzePeriod(data, g, j);
+    if (a.sipGan) {
+        var sg = fortuneSipModernPhrase(data, a.sipGan, 'gan');
+        if (sg && !fortuneSnippetUsed(ledger, sg.slice(0, 48))) parts.push(sg);
+    }
+    if (a.sipJi && a.sipJi !== a.sipGan) {
+        var sj = fortuneSipModernPhrase(data, a.sipJi, 'ji');
+        if (sj && !fortuneSnippetUsed(ledger, sj.slice(0, 48))) parts.push(sj);
+    }
+    if (_UPCOMING_DAEUN_WEALTH_TIP[g]) parts.push('재물·거래에서는 ' + _UPCOMING_DAEUN_WEALTH_TIP[g]);
+    else if (_UPCOMING_DAEUN_WEALTH_TIP[j]) parts.push('재물·거래에서는 ' + _UPCOMING_DAEUN_WEALTH_TIP[j]);
+    if (_UPCOMING_DAEUN_CAREER_TIP[g]) parts.push('일·직장에서는 ' + _UPCOMING_DAEUN_CAREER_TIP[g]);
+    else if (_UPCOMING_DAEUN_CAREER_TIP[j]) parts.push('일·직장에서는 ' + _UPCOMING_DAEUN_CAREER_TIP[j]);
+    parts.push(sajuxToneAdvice(data, tone, 'daeun', seed));
+    parts.push(pickFortuneActionUnique('daeun', tone, seed, ledger));
+    var text = fortuneJoinParts(parts);
+    return fortuneEnsureMinLen(data, text, SAJUX_UPCOMING_FORTUNE_MIN.daeun, function (guard) {
+        var s2 = seed + '|pad|' + guard;
+        if (guard % 5 === 1) return sajuxNarratePeriodCustomer(data, g, j, s2);
+        if (guard % 5 === 2) return upcomingDaeunNatalReaction(data, g, j, s2);
+        if (guard % 5 === 3) return sajuxToneAdvice(data, tone, 'daeun', s2);
+        if (guard % 5 === 4 && _SAJUX_JI_LINE[j]) return _SAJUX_JI_LINE[j];
+        return pickFortuneActionUnique('daeun', tone, s2, ledger);
+    });
 }
 
 (function bindFortuneNarrativePrompt() {
@@ -7716,7 +7922,7 @@ function buildUpcomingFortuneIntro(data) {
 
 
 /** ─────────────────────────────────────────
- *  buildUpcomingDaewunCards — 다음 대운 + 그 다음 대운 (각 ~500자)
+ *  buildUpcomingDaewunCards — 다음 대운 + 그 다음 대운 (각 500자 이상)
  * ───────────────────────────────────────── */
 function buildUpcomingDaewunCards(data) {
     if (!data || !data.dayStem) return '';
@@ -7787,7 +7993,7 @@ function buildUpcomingDaewunCards(data) {
 
 
 /** ─────────────────────────────────────────
- *  buildUpcomingSewunCards — 다음 해부터 10년 세운 (각 200~300자)
+ *  buildUpcomingSewunCards — 다음 해부터 10년 세운 (각 200자 이상)
  * ───────────────────────────────────────── */
 function buildUpcomingSewunCards(data) {
     if (!data || !data.dayStem) return '';
@@ -7885,7 +8091,7 @@ function buildUpcomingSewunCards(data) {
 
 
 /** ─────────────────────────────────────────
- *  buildUpcomingWolunCards — 다음 11개월 월운 (각 200~300자)
+ *  buildUpcomingWolunCards — 다음 11개월 월운 (각 100자 이상)
  * ───────────────────────────────────────── */
 function buildUpcomingWolunCards(data) {
     if (!data || !data.dayStem) return '';
@@ -8399,7 +8605,7 @@ function buildChapter3_Sipseong(data) {
         </div>
         <div class="sipseong-unified-body sajux-glass-heavy" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:22px 22px 10px;margin:0 0 8px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);">
             <div style="font-size:11px;color:var(--gold);font-weight:700;letter-spacing:0.14em;margin-bottom:14px;">돈·일·관계 — 십성 풀이</div>
-            ${essayHtml || '<p class="ch-text">반응 풀이를 불러오는 중입니다.</p>'}
+            ${essayHtml || '<p class="ch-text">십성 풀이를 불러오는 중입니다.</p>'}
         </div>
     </div>`;
 }
@@ -13744,5 +13950,7 @@ if (typeof window !== 'undefined') {
     window.sipGroupInternalLabel = sipGroupInternalLabel;
     window.sipGroupBarLabel = sipGroupBarLabel;
     window.SAJUX_FORTUNE_WRITE = SAJUX_FORTUNE_WRITE;
+    window.SAJUX_UPCOMING_FORTUNE_MIN = SAJUX_UPCOMING_FORTUNE_MIN;
+    window.fortunePlainCharLen = fortunePlainCharLen;
     window.getSajuxFortuneNarrativeRulesBlock = getSajuxFortuneNarrativeRulesBlock;
 }
