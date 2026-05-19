@@ -476,22 +476,45 @@ function buildChapterBridge(topic, data) {
     };
     return bridges[topic] === undefined ? null : bridges[topic];
 }
-function buildChapterIntroHtml(data, topic) {
+/** 한 줄기 서사 톤 — voicePolish + 강조 (리포트 본문 공용) */
+function narrativeVp(data, text) {
+    return boldStarsToStrong(voicePolishParagraph(data, text || ''));
+}
+
+/** 한 줄기 서사 톤 — 본문 단락 */
+function buildNarrativePara(data, text, opts) {
+    opts = opts || {};
+    var mb = opts.marginBottom != null ? opts.marginBottom : '18px';
+    var mt = opts.marginTop ? 'margin-top:' + opts.marginTop + ';' : '';
+    var fs = opts.fontSize || '14px';
+    var lh = opts.lineHeight || '2.1';
+    var col = opts.color || 'var(--text)';
+    var extra = opts.extraClass ? ' ' + opts.extraClass : '';
+    return '<p class="ch-text sajux-narrative-para' + extra + '" style="font-size:' + fs + ';color:' + col + ';line-height:' + lh + ';' + mt + 'margin:0 0 ' + mb + ';">'
+        + narrativeVp(data, text) + '</p>';
+}
+
+/** 챕터 도입 — 「일주 ○○의 기운을 타고나」 매크로 없이 한 줄기 서사식 */
+function buildNarrativeChapterIntro(data, topic) {
     var idx = _sajuxChapterCount();
+    var nm = nmNormalize((data && data.name) || '') || '고객';
     var bridge = buildChapterBridge(topic, data);
+    var inner = buildTopicOpenerInner(topic, data);
     var text;
-    if (idx <= 1 || topic === 'basic' || bridge === null) {
-        // 첫 챕터(또는 basic) — 풀 인사
-        var inner = buildTopicOpenerInner(topic, data);
-        text = buildSajuKidStyleOpener(data, inner);
+    if (topic === 'basic' || idx <= 1 || !bridge) {
+        text = pickVoiceLine([
+            nmDnim(nm) + '의 인생을 한 줄기로 이어 읽어 드릴게요. 사주 글자 이름은 잠시 접어 두셔도, ' + nmIGa(nm) + ' 어떤 사람으로 살아가시는지가 먼저 보이면 됩니다.',
+            '지금부터는 ' + nmUi(nm) + ' 원국이 평생 안에서 어떻게 흘러가는지, 장면마다 짚어 드릴게요.'
+        ], nm + (topic || '') + 'narrChIntro');
+        if (inner) text += ' ' + inner;
     } else {
-        // 그 외 — 다리 한 줄 + 토픽별 한 줄
-        var inner2 = buildTopicOpenerInner(topic, data);
-        text = bridge + (inner2 ? ' ' + inner2 : '');
+        text = bridge + (inner ? ' ' + inner : '');
     }
-    return '<p class="ch-text ch-voice-opener" style="margin-bottom:16px;line-height:1.95;font-size:14px;">'
-         + boldStarsToStrong(voicePolishParagraph(data, text))
-         + '</p>';
+    return buildNarrativePara(data, text, { extraClass: 'ch-voice-opener', marginBottom: '16px' });
+}
+
+function buildChapterIntroHtml(data, topic) {
+    return buildNarrativeChapterIntro(data, topic);
 }
 
 /** 만세력 인라인 풀이 블록 상단 — 주제 제목을 가장 크게, 은유는 한 단계 아래 */
@@ -781,52 +804,44 @@ function buildVipModuleTitles(data, daeunLabel, curY, curM) {
 
 function buildInlineIljuSummaryHtml(data) {
     var iljuKey = (data.dayStem || '') + (data.dayBranch || '');
-    var db = getIljuDbEntry(data, iljuKey);
     var prof = getIljuProfilePolished(data, data.dayStem, data.dayBranch);
-    var metaphor = buildMetaphorHookTitle(data);
-    var core = db.core || (prof && prof.core) || '원국에 쌓인 기운이 삶의 방향을 이끕니다.';
-    var inner = pickVoiceLine([
-        String(core).split('.')[0] + '이라고 볼 수 있습니다.',
-        voiceMingliLine('일주는 하루의 중심 기둥입니다.') + ' ' + String(core).split('.')[0] + '의 결이 느껴집니다.'
-    ], iljuKey + 'ilju');
-    var opener = buildSajuKidStyleOpener(data, inner);
-    return voiceInlineInterpHeader('basic', data)
-        + '<div class="inline-interp"><div class="ii-label">✦ 일주 해석</div>'
-        + '<div class="ii-title">' + escHtmlAttr(metaphor) + '</div>'
-        + '<div class="ii-text"><p class="ch-voice-opener" style="font-size:13.5px;color:#bbb;line-height:1.85;margin:0;">' + boldStarsToStrong(opener) + '</p></div></div>';
+    var nm = nmNormalize(data.name || '') || '고객';
+    var scene = getIljuScenePhrase(data) || '원국의 중심';
+    var coreBit = prof && prof.core ? String(prof.core).split('.')[0] : '삶의 방향을 이끄는 한 가지 결이';
+    var text = pickVoiceLine([
+        nmDnim(nm) + '의 하루를 가장 깊이 받쳐 주는 자리가 일주예요. 겉으로는 ' + scene + '처럼 보이시지만, 속으로는 ' + coreBit + '을 오래 지키려 하시는 분이에요. 아래 표와 한 줄기 서사에서 그 흐름을 이어서 읽으시면 됩니다.',
+        '만세력 표의 가운데 줄이 ' + nmUi(nm) + ' 자신이에요. ' + scene + '의 결이 ' + coreBit + '이라는 뜻으로, 이름보다 삶의 리듬이 먼저 보이게 풀어 드릴게요.'
+    ], iljuKey + 'iljuNarr');
+    return buildNarrativePara(data, text, { color: 'rgba(255,255,255,0.82)', marginBottom: '14px' });
 }
 
 function buildInlineWuxingSummaryHtml(data) {
     if (!data.wuxing) return '';
-    var maxW = Object.keys(data.wuxing).reduce(function (a, b) { return data.wuxing[a] > data.wuxing[b] ? a : b; });
-    var ohKr = { wood: '목', fire: '화', earth: '토', metal: '금', water: '수' }[maxW] || maxW;
-    var excessText = (window.SAJU_DB && window.SAJU_DB.WUXING_EXCESS && window.SAJU_DB.WUXING_EXCESS[maxW]) || '';
-    var inner = pickVoiceLine([
-        ohKr + ' 기운이 삶의 중심을 잡고 있어요. ' + voiceMingliLine('부족한 오행은 습관으로 채웁니다.'),
-        '에너지가 ' + ohKr + ' 쪽으로 기울어 있다고 볼 수 있어요.'
-    ], maxW + 'wx');
-    var body = buildSajuKidStyleOpener(data, inner) + (excessText ? ' ' + voicePolishParagraph(data, excessText) : '');
-    return voiceInlineInterpHeader('wuxing', data)
-        + '<div class="inline-interp"><div class="ii-label">✦ 오행 해석</div>'
-        + '<div class="ii-title">' + escHtmlAttr(ohKr + ' 오행 — 에너지 분포') + '</div>'
-        + '<div class="ii-text"><p style="font-size:13.5px;color:#bbb;line-height:1.85;margin:0;">' + boldStarsToStrong(body) + '</p></div></div>';
+    var nm = nmNormalize(data.name || '') || '고객';
+    var oh = getMinMaxOh(data);
+    var OH_KR = { wood: '목', fire: '화', earth: '토', metal: '금', water: '수' };
+    var OH_LABEL = { wood: '나무', fire: '불', earth: '흙', metal: '금', water: '물' };
+    var maxL = OH_LABEL[oh.maxW] || OH_KR[oh.maxW] || '';
+    var minL = OH_LABEL[oh.minW] || OH_KR[oh.minW] || '';
+    var maxK = OH_KR[oh.maxW] || '';
+    var minK = OH_KR[oh.minW] || '';
+    var text = pickVoiceLine([
+        nmDnim(nm) + ' 사주 안에서는 ' + maxL + '(' + maxK + ') 기운이 가장 두껍게 깔려 있고, ' + minL + '(' + minK + ') 쪽은 상대적으로 얇게 흐르는 편이에요. 이건 성격이 단순하다는 뜻이 아니라, 에너지가 어디로 먼저 쓰이는지를 보여 주는 지도예요. 아래 막대는 그 비율을 숫자로 옮긴 것이고, 다음 장에서 한 기운씩 장면처럼 풀어 드릴게요.',
+        '다섯 기운 가운데 ' + maxL + '의 색이 ' + nmUi(nm) + ' 삶의 중심을 잡고 있어요. ' + minL + ' 쪽은 비어 보일 때가 있어도, 그 빈칸을 의식적으로 채우는 습관 하나가 평생 체감을 바꿉니다.'
+    ], (oh.maxW || '') + 'wxNarr');
+    return buildNarrativePara(data, text, { color: 'rgba(255,255,255,0.82)', marginBottom: '14px' });
 }
 
 function buildInlineStrengthSummaryHtml(data) {
     if (!data.strengthText) return '';
+    var nm = nmNormalize(data.name || '') || '고객';
     var isStrong = (data.strengthText || '').indexOf('신강') >= 0 || (data.strengthText || '').indexOf('강') >= 0;
-    var inner = pickVoiceLine([
+    var text = pickVoiceLine([
         isStrong
-            ? '에너지가 넘칠 때는 방향만 틀려도 마찰이 커질 수 있어요. 자율이 보장된 자리에서 빛나는 구조예요.'
-            : '혼자 짊어지다 지치기 쉬운 구조라, 맞는 파트너·환경이 곁에 있을 때 배가 됩니다.',
-        voiceMingliLine(isStrong ? '신강은 기운의 양입니다.' : '신약은 연결의 민감도입니다.')
-            + (isStrong ? ' 팀 없이 독주하면 비용이 커져요.' : ' 귀인을 가까이 두는 것이 전략의 핵심이에요.')
-    ], (data.strengthText || '') + 'st');
-    var body = buildSajuKidStyleOpener(data, inner);
-    return voiceInlineInterpHeader('strength', data)
-        + '<div class="inline-interp"><div class="ii-label">✦ 신강·신약 해석</div>'
-        + '<div class="ii-title">' + escHtmlAttr(data.strengthText) + '</div>'
-        + '<div class="ii-text"><p style="font-size:13.5px;color:#bbb;line-height:1.85;margin:0;">' + boldStarsToStrong(body) + '</p></div></div>';
+            ? nmDnim(nm) + '은 에너지가 넘칠 때 방향만 틀려도 마찰이 커지기 쉬운, 주도형에 가까운 분이에요. 자율이 보장된 자리에서 빛나시고, 이번 주엔 “내가 따를게” 한 마디만 먼저 꺼내 보시면 관계 비용이 줄어듭니다.'
+            : nmDnim(nm) + '은 혼자 짊어지다 지치기 쉬운, 협력형에 가까운 분이에요. 맞는 사람·환경이 붙을 때 체감이 배가 되니, 결정은 “우리가 원하는 것”을 문장으로 적어 두는 것만으로도 힘이 살아납니다.'
+    ], (data.strengthText || '') + 'stNarr');
+    return buildNarrativePara(data, text, { color: 'rgba(255,255,255,0.82)', marginBottom: '14px' });
 }
 
 function compatNm(ctx, side) {
@@ -1204,12 +1219,12 @@ function buildTopicOpenerInner(topic, data) {
     var OH_KR = { wood: '목', fire: '화', earth: '토', metal: '금', water: '수' };
     var pools = {
         wuxing: [
-            '오행 중 ' + (OH_KR[oh.maxW] || '') + ' 기운이 삶의 중심을 잡고 있어요. ' + voiceMingliLine('부족한 쪽을 채우는 습관이 체감을 바꿉니다.'),
-            '에너지 분포를 보면 ' + (OH_KR[oh.maxW] || '') + ' 쪽으로 쏠려 있다고 볼 수 있어요.'
+            '다섯 기운 가운데 ' + (OH_KR[oh.maxW] || '') + ' 쪽이 ' + nmDnim(nm) + ' 삶의 중심을 잡고 있어요. 부족해 보이는 쪽은 의식적으로 채우는 습관 하나가 체감을 바꿉니다.',
+            nmDnim(nm) + ' 안에서는 ' + (OH_KR[oh.maxW] || '') + ' 기운이 먼저 움직이고, 나머지는 그에 맞춰 조율되는 그림으로 읽으시면 됩니다.'
         ],
         sipseong: [
-            '십성으로 보면 ' + mainSip + ' 축이 먼저 움직이는 구조예요. ' + voiceMingliLine('같은 묶음 안의 두 십성은 합산해 읽습니다.'),
-            '일하는 방식의 핵심은 ' + mainSip + ' 쪽 반응이에요.'
+            '일과 관계에서 ' + mainSip + ' 반응이 먼저 나오는, ' + nmDnim(nm) + '만의 무늬예요. 이름을 외우기보다 “내가 자주 쓰는 카드”만 기억하셔도 충분합니다.',
+            nmDnim(nm) + '에게 ' + mainSip + ' 축이 앞장서는 날이 많을수록, 그날의 선택이 한 줄기로 이어진다고 보시면 됩니다.'
         ],
         wealth: [
             voiceMingliLine('재성의 흐름은 감이 아니라 리듬에 가깝습니다.') + ' 쌓는 해와 지키는 해가 갈립니다.',
@@ -1290,23 +1305,14 @@ function buildTopicOpenerInner(topic, data) {
     return typeof pick === 'function' ? pick(data) : pick;
 }
 
-/** 기존 buildSajuKidStyleOpener — 겉/속 문장 로테이션 */
+/** 한 줄기 서사식 짧은 도입 (인라인·요약용 — 「일주 ○○의 기운을 타고나」 미사용) */
 function buildSajuKidStyleOpener(data, innerLine) {
     var nm = nmNormalize(data.name || '') || '고객';
-    var ds = data.dayStem || '';
-    var db = data.dayBranch || '';
-    var HK = { '甲': '갑', '乙': '을', '丙': '병', '丁': '정', '戊': '무', '己': '기', '庚': '경', '辛': '신', '壬': '임', '癸': '계' };
-    var JK = { '子': '자', '丑': '축', '寅': '인', '卯': '묘', '辰': '진', '巳': '사', '午': '오', '未': '미', '申': '신', '酉': '유', '戌': '술', '亥': '해' };
-    var iljuKr = (HK[ds] || ds) + (JK[db] || db);
-    var surface = pickVoiceLine(SAJUX_SURFACE_LINES, nm + 'opener');
-    var open = surface + ' ' + nm + '님은 일주 ' + iljuKr + '의 기운을 타고나, ';
-    if (innerLine) return open + innerLine;
-    var prof = getIljuProfilePolished(data, ds, db);
-    if (prof && prof.core) {
-        var coreShort = String(prof.core).split('.')[0];
-        return open + coreShort + '이라고 볼 수 있습니다.';
-    }
-    return open + '원국에 쌓인 기운이 삶의 방향을 이끕니다.';
+    var line = innerLine || '원국에 쌓인 기운이 삶의 방향을 이끕니다.';
+    return pickVoiceLine([
+        nmDnim(nm) + '의 이야기를 풀어 드리면, ' + line,
+        '흐름만 따라가 보시면, ' + line
+    ], nm + 'sajuKidOp');
 }
 
 /** 세운 연도별 4분야(재물·직업·문서·애정) 동적 키워드 — 용신/기신 점수·세운 십성 반영 */
@@ -2062,7 +2068,7 @@ function buildPart1DeepHookHTML(data) {
     var T1 = '집중력이 부족한 것이 아니라, 뇌의 회전이 빨라 활자보다 직관적인 정보를 선호하는 것입니다. 긴 글보다 요약·도표·한 화면에 정리된 근거를 택하면 같은 에너지로 훨씬 더 잘 흡수됩니다.';
     var T2 = '이유 없는 공허함이나 불안이 들 때, 원인을 끝까지 캐내려 하기보다 **몸의 리듬(수면·빛·이동)**을 먼저 바꿔 보십시오. 사주에서 말하는 빈자리(공망·귀문 등)는 성격 결함이 아니라, **채우려 할수록 형식만 남기 쉬운 자리**로 읽는 경우가 많습니다.';
     var html = '';
-    function _vp(t){ return voicePolishParagraph(data, String(t || '')); }
+    function _vp(t){ return narrativeVp(data, String(t || '')); }
     if (sig.triggerUnifiedEmpathy) {
         if (focusParagraph) {
             html += '<div class="deep-hook-panel card glass-panel" style="' + box + 'margin-bottom:14px;"><p style="' + bodySt + '">' + boldStarsToStrong(_vp(focusParagraph)) + '</p></div>';
@@ -2203,7 +2209,7 @@ var SEYUN_SIP_SOUL_METAPHOR = {
 
 function buildYearStrategicNarrative(name, yr, kor, evLabel, sc, sewSip, ohTag, domainFour) {
     var _polishData = { name: name };
-    function _vp(t){ return voicePolishParagraph(_polishData, String(t || '')); }
+    function _vp(t){ return narrativeVp(_polishData, String(t || '')); }
     var sip = sewSip || '정재';
     var nm = name || '고객';
     var yk = kor ? (yr + '년 ' + kor + '년') : (yr + '년');
@@ -3799,7 +3805,7 @@ function buildRelationSummary(data) {
         if(!kr || kr.includes('undefined')) kr = '해당';
         const type = rel.type || '합';
         const label = rel.label || '기본';
-        function _rd(t) { return voicePolishParagraph(data, t); }
+        function _rd(t) { return narrativeVp(data, t); }
         
         if(type.includes('천간 합')) {
             return _rd(`원국에 ${kr} 천간 합(${label})이 있습니다. 끌림이 빠르게 붙습니다. 그건 낭만이 아니라 계약입니다. 기신을 키우는 합이면 집착·불필요한 동맹이 반복됩니다. **큰 약속은 서면으로 조건을 먼저** 적으십시오.`);
@@ -4490,7 +4496,7 @@ function buildPremiumExecutiveSummary(data) {
     // "내가 어떤 환경에 태어나서, 어떤 시기를 지나, 지금 어디에 와 있는지,
     //  앞으로 어떻게 흘러갈지"를 한 단락으로 받아들 수 있게 결과적 표현만 씁니다.
     var openingNarrative = buildOpeningLifeNarrative(data);
-    openingNarrative = voicePolishParagraph(data, openingNarrative);
+    openingNarrative = narrativeVp(data, openingNarrative);
 
     return '<div id="sec-premium-summary" class="report-chapter premium-executive-summary chapter-start sajux-panel-plain" style="margin-bottom:40px;padding:28px 22px;border-radius:14px;border:1px solid rgba(199,167,106,0.30);background:transparent;text-align:center;">' +
         '<div style="font-size:10.5px;letter-spacing:0.20em;color:rgba(199,167,106,0.72);margin-bottom:14px;font-weight:600;">사주X · 프리미엄 리포트</div>' +
@@ -4499,7 +4505,7 @@ function buildPremiumExecutiveSummary(data) {
         '<div class="brief-glance sajux-print-surface" style="text-align:left;margin:0;padding:18px 20px;border-radius:12px;background:rgba(199,167,106,0.06);border-left:3px solid var(--gold);">' +
         '<div style="font-size:10.5px;color:var(--gold);font-weight:700;letter-spacing:0.12em;margin-bottom:6px;">' + escHtmlAttr(nmUi(nm)) + ' 인생 한 흐름 — 태어남부터 마지막 모습까지</div>' +
         '<p style="font-size:11.5px;color:var(--text-dim, rgba(255,255,255,0.55));margin:0 0 12px;line-height:1.7;">본문에 들어가시기 전, ' + escHtmlAttr(nmUi(nm)) + ' 인생 전체의 큰 줄기를 한 단락으로 먼저 보여 드릴게요. 다음 페이지부터는 이 흐름이 시기별로 어떻게 펼쳐지는지 자세히 풀어 드립니다.</p>' +
-        '<p style="font-size:14px;color:var(--text);line-height:2;margin:0;">' + boldStarsToStrong(openingNarrative) + '</p>' +
+        '<p class="sajux-narrative-para" style="font-size:14px;color:var(--text);line-height:2.1;margin:0;">' + openingNarrative + '</p>' +
         '</div>' +
         '</div>';
 }
@@ -5281,8 +5287,6 @@ function buildPersonalPortraitInnerHtml(data) {
         return tone === 'tail' ? t : (tone === 'side' ? s : m);
     }
 
-    function _vp(t) { return voicePolishParagraph(data, t || ''); }
-
     // ─── 데이터 기반 풀이 조각들 ───
     var birthSceneByMonth = {
         '子': '깊은 밤의 정적 속에서 작은 불씨처럼 조심스레 이름을 알리신 분이세요. 부모님 사이에는 다정한 말보다 규칙이 먼저 자리잡은 분위기가 깔려 있었고, 그래서 어린 ' + nmDnim(name) + '은 일찍부터 어른들의 표정과 말투를 살피는 데에 능숙해지셨습니다',
@@ -5418,9 +5422,7 @@ function buildPersonalPortraitInnerHtml(data) {
 
     var introText = nmDnim(name) + '의 인생을 한 편의 이야기로 들려 드릴게요. 태어남부터 마지막 장면까지 — 어떤 환경에서 자라셨고, 어떤 시기를 지나, 어디에 닿게 되는지를 흐름 그대로 따라가 봅니다. 사주의 글자가 무엇인지는 잠시 잊으셔도 좋아요. 결과적으로 ' + nmIGa(name) + ' 어떤 사람으로 태어나, 어떻게 살아가시게 되는지를 그대로 읽으시면 됩니다.';
 
-    function para(text) {
-        return '<p style="font-size:14px;color:var(--text);line-height:2.1;margin:0 0 18px;">' + boldStarsToStrong(_vp(text)) + '</p>';
-    }
+    function para(text) { return buildNarrativePara(data, text); }
 
     return '<p class="personal-portrait-eyebrow">' + escHtmlAttr(nmDnim(name)) + ' · 한 줄기 서사</p>'
         + '<h2 class="personal-portrait-title">처음 숨부터, 마침표까지</h2>'
@@ -5595,10 +5597,10 @@ function buildCurrentPeriodCard(data) {
     var totalTone = tone(totalScore / 2);
 
     // ── 헬퍼 ──
-    function _vp(t) { return voicePolishParagraph(data, t); }
+    function _vp(t) { return narrativeVp(data, t); }
     function _bs(t) { return boldStarsToStrong(_vp(t)); }
     function para(text) {
-        return '<p class="ch-text" style="font-size:14px;color:var(--text);line-height:2.05;margin:0 0 18px;">' + _bs(text) + '</p>';
+        return buildNarrativePara(data, text, { lineHeight: '2.05' });
     }
 
     var endAge = (curDae ? curDae.age : 0) + 9;
@@ -5741,7 +5743,7 @@ function buildCurrentPeriodCard(data) {
  * ───────────────────────────────────────── */
 function buildUpcomingFortuneIntro(data) {
     var name = (data && data.name) ? data.name : '고객';
-    function _vp(t) { return voicePolishParagraph(data, t); }
+    function _vp(t) { return narrativeVp(data, t); }
 
     function conceptBox(label, body, color) {
         return '<div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:13px 16px;border-left:3px solid ' + color + ';">'
@@ -5760,13 +5762,9 @@ function buildUpcomingFortuneIntro(data) {
 
     return '<div class="report-chapter">'
         + chHead
-        + '<p class="ch-text" style="font-size:14px;color:var(--text);line-height:2.05;margin:0 0 14px;">'
-        + _vp('지금 시기를 한 흐름으로 살펴 드렸다면, 이제 “앞으로” 어떤 시간이 다가오는지 — 다가올 대운 두 개, 다음 해부터 10년의 세운, 다음 달부터 11개월의 월운을 차례대로 짚어 드릴게요. 시작 전에, 이 세 단어가 정확히 무엇을 가리키는지 다시 한 번 정리해 둘게요.')
-        + '</p>'
+        + buildNarrativePara(data, '지금 시기를 한 흐름으로 살펴 드렸다면, 이제 “앞으로” 어떤 시간이 다가오는지 — 다가올 대운 두 개, 다음 해부터 10년의 세운, 다음 달부터 11개월의 월운을 차례대로 짚어 드릴게요. 시작 전에, 이 세 단어가 정확히 무엇을 가리키는지 다시 한 번 정리해 둘게요.')
         + conceptHtml
-        + '<p class="ch-text" style="font-size:13px;color:#999;line-height:1.92;margin:14px 0 0;">'
-        + _vp('아래는 한 시기당 한 문단 정도로 짧게 짚어 드렸어요. 본인이 가장 신경 쓰이시는 시기 — 큰 결정을 잡고 싶으신 해, 또는 한 박자 늦추고 싶으신 달 — 한두 자리만 골라 마음에 두시면 충분합니다.')
-        + '</p>'
+        + buildNarrativePara(data, '아래는 한 시기당 한 문단 정도로 짧게 짚어 드렸어요. 본인이 가장 신경 쓰이시는 시기 — 큰 결정을 잡고 싶으신 해, 또는 한 박자 늦추고 싶으신 달 — 한두 자리만 골라 마음에 두시면 충분합니다.', { fontSize: '13px', color: 'rgba(255,255,255,0.62)', lineHeight: '1.92', marginBottom: '0' })
         + '</div>';
 }
 
@@ -5841,7 +5839,7 @@ function buildUpcomingDaewunCards(data) {
             + '<div style="font-size:18px;font-weight:800;color:#fff;font-family:\'Noto Sans KR\',sans-serif;">' + (HK[g] || g) + (HK[j] || j) + '<span style="font-size:12px;color:#888;margin-left:6px;">(' + g + j + ')</span></div></div>'
             + '<div style="text-align:right;"><div style="font-size:11px;color:#888;">' + ageRange + '</div>'
             + '<div style="font-size:10px;color:' + col + ';margin-top:2px;">' + ohTag + ' · ' + toneLabel(t) + '</div></div></div>'
-            + '<p style="font-size:13px;color:#ccc;line-height:1.95;margin:0;">' + boldStarsToStrong(voicePolishParagraph(data, body)) + '</p>'
+            + '<p style="font-size:13px;color:#ccc;line-height:1.95;margin:0;">' + narrativeVp(data, body) + '</p>'
             + '</div>';
     }).join('');
 
@@ -5851,7 +5849,7 @@ function buildUpcomingDaewunCards(data) {
 
     return '<div class="report-chapter">'
         + chHead
-        + '<p class="ch-text" style="font-size:14px;color:var(--text);line-height:2;margin:0 0 14px;">' + voicePolishParagraph(data, '지금 시기를 살핀 다음에는, ' + nmKke(name) + ' 곧 다가올 두 개의 큰 10년을 짧게 짚어 드릴게요. 한 시기당 한 문단 정도라 가볍게 읽으셔도 충분하고, 미리 알아 두시면 “다음 시기가 어떤 공기인지” 마음의 준비가 됩니다.') + '</p>'
+        + buildNarrativePara(data, '지금 시기를 살핀 다음에는, ' + nmKke(name) + ' 곧 다가올 두 개의 큰 10년을 짧게 짚어 드릴게요. 한 시기당 한 문단 정도라 가볍게 읽으셔도 충분하고, 미리 알아 두시면 “다음 시기가 어떤 공기인지” 마음의 준비가 됩니다.', { lineHeight: '2', marginBottom: '14px' })
         + cards
         + '</div>';
 }
@@ -5950,7 +5948,7 @@ function buildUpcomingSewunCards(data) {
               + '<div style="font-size:15px;font-weight:800;color:#fff;font-family:\'Noto Sans KR\',sans-serif;">' + yr + '년 <span style="color:var(--gold);">' + (HK[g] || g) + (HK[j] || j) + '</span><span style="font-size:11px;color:#888;margin-left:6px;">(' + g + j + ')</span></div>'
               + '<span style="font-size:10px;background:rgba(255,255,255,0.06);color:' + col + ';padding:2px 8px;border-radius:8px;letter-spacing:0.03em;">' + toneLabel(t) + '</span>'
               + '</div>'
-              + '<p style="font-size:12.5px;color:#ccc;line-height:1.92;margin:0;">' + boldStarsToStrong(voicePolishParagraph(data, body)) + '</p>'
+              + '<p style="font-size:12.5px;color:#ccc;line-height:1.92;margin:0;">' + narrativeVp(data, body) + '</p>'
               + '</div>';
     }
 
@@ -5960,7 +5958,7 @@ function buildUpcomingSewunCards(data) {
 
     return '<div class="report-chapter">'
         + chHead
-        + '<p class="ch-text" style="font-size:14px;color:var(--text);line-height:2;margin:0 0 14px;">' + voicePolishParagraph(data, '대운이 “10년짜리 큰 계절”이라면 세운은 “그 안의 한 해 날씨”예요. 아래는 ' + nmKke(name) + ' 곧 찾아올 10년의 한 해 한 해를 짧게 짚어 드린 것이에요. 한 해당 한 문단 정도로 가볍게 읽으시면서, 본인이 큰 결정을 잡고 싶으신 해가 “어떤 결의 해”인지를 미리 알아 두십시오.') + '</p>'
+        + buildNarrativePara(data, '대운이 “10년짜리 큰 계절”이라면 세운은 “그 안의 한 해 날씨”예요. 아래는 ' + nmKke(name) + ' 곧 찾아올 10년의 한 해 한 해를 짧게 짚어 드린 것이에요. 한 해당 한 문단 정도로 가볍게 읽으시면서, 본인이 큰 결정을 잡고 싶으신 해가 “어떤 결의 해”인지를 미리 알아 두십시오.', { lineHeight: '2', marginBottom: '14px' })
         + '<div style="display:flex;flex-direction:column;gap:0;">' + cards + '</div>'
         + '</div>';
 }
@@ -6041,7 +6039,7 @@ function buildUpcomingWolunCards(data) {
               + '<div style="font-size:14.5px;font-weight:800;color:#fff;font-family:\'Noto Sans KR\',sans-serif;">' + yrPointer + '년 ' + moPointer + '월 <span style="color:var(--gold);margin-left:4px;">' + (HK[mGan] || mGan) + (HK[mJi] || mJi) + '</span><span style="font-size:11px;color:#888;margin-left:4px;">(' + mGan + mJi + ')</span></div>'
               + '<span style="font-size:10px;background:rgba(255,255,255,0.06);color:' + col + ';padding:2px 8px;border-radius:8px;letter-spacing:0.03em;">' + toneLabel(t) + '</span>'
               + '</div>'
-              + '<p style="font-size:12.5px;color:#ccc;line-height:1.9;margin:0;">' + boldStarsToStrong(voicePolishParagraph(data, body)) + '</p>'
+              + '<p style="font-size:12.5px;color:#ccc;line-height:1.9;margin:0;">' + narrativeVp(data, body) + '</p>'
               + '</div>';
         addedCount += 1;
         moPointer += 1;
@@ -6053,7 +6051,7 @@ function buildUpcomingWolunCards(data) {
 
     return '<div class="report-chapter">'
         + chHead
-        + '<p class="ch-text" style="font-size:14px;color:var(--text);line-height:2;margin:0 0 14px;">' + voicePolishParagraph(data, '세운이 한 해의 날씨라면 월운은 그 안의 “시간대”예요. 아래는 다음 달부터 11개월의 한 달 한 달을 짧게 짚어 드린 거예요. 큰 안건을 잡으실 달과 한 박자 늦추실 달을 미리 표시해 두시면 한 해가 훨씬 가볍게 흘러갑니다.') + '</p>'
+        + buildNarrativePara(data, '세운이 한 해의 날씨라면 월운은 그 안의 “시간대”예요. 아래는 다음 달부터 11개월의 한 달 한 달을 짧게 짚어 드린 거예요. 큰 안건을 잡으실 달과 한 박자 늦추실 달을 미리 표시해 두시면 한 해가 훨씬 가볍게 흘러갑니다.', { lineHeight: '2', marginBottom: '14px' })
         + '<div style="display:flex;flex-direction:column;gap:0;">' + cards + '</div>'
         + '</div>';
 }
@@ -6252,7 +6250,7 @@ function buildChapter2_Wuxing(data) {
     const LACK_DUO_TAIL = '두 기운이 함께 얇으실 때는, 보충을 동시에 하지 마시고 **한 가지를 30일** 정도 충분히 익힌 다음에 다음으로 넘어가시는 게 좋습니다. 두 가지를 동시에 채우려 하시면 어느 쪽도 자리를 잡지 못합니다.';
 
     // ── 본문 조립 ──
-    function para(text) { return '<p class="ch-text" style="font-size:14px;color:var(--text);line-height:2;margin:0 0 18px;">' + boldStarsToStrong(voicePolishParagraph(data, text)) + '</p>'; }
+    function para(text) { return buildNarrativePara(data, text); }
 
     let excessHtml = '';
     excessKeys.forEach(k => { excessHtml += para(EXCESS_NARR[k]); });
@@ -6398,7 +6396,7 @@ function buildChapter3SipseongUnifiedNarrative(data, topG, secondG, primaryList)
     var topLabelPlain = topG.shortLabel || String(topG.label || '').replace(/:\s*$/, '').replace(/\s*\([^)]*\)/g, '').trim();
     var secPlain = (secondG && secondG.sum > 0) ? (secondG.shortLabel || String(secondG.label || '').replace(/:\s*$/, '').replace(/\s*\([^)]*\)/g, '').trim()) : '';
     var prominent = (primaryList && primaryList.length) ? primaryList.join('·') : (primaryList && primaryList[0]) ? primaryList[0] : '';
-    var p1 = nmDn + ' 원국에서 십성은 성격 테스트가 아니라, 사람·돈·평가 앞에서 어디로 에너지가 먼저 새는지 보여 주는 이름표에 가깝습니다. ';
+    var p1 = nmDn + ' 원국에서 십성은 성격 테스트가 아니라, 사람·돈·평가 앞에서 어디로 에너지가 먼저 새는지 보여 주는 이름표에 가깝습니다. 마치 평생 같은 역할만 맡게 된 배우가 무대에 서는 것처럼, ' + nmDn + '은 익숙한 반응부터 나옵니다. ';
     p1 += '아래 다섯 줄은 비겁·식상·재성·관성·인성 묶음의 두께입니다. 지금 가장 두꺼운 줄기는 ‘' + topLabelPlain + '’로 읽히며, 비중은 대략 ' + topG.pct + '% 전후예요. ';
     if (secPlain) {
         p1 += '이어서 ‘' + secPlain + '’ 묶음도 붙어 있어, 한 가지 패턴으로만 단정하기 어렵습니다. ';
@@ -6408,12 +6406,7 @@ function buildChapter3SipseongUnifiedNarrative(data, topG, secondG, primaryList)
     var p3 = '실생활에만 붙여 보셔도 됩니다. 현금과 거래 앞에서는 재성 줄기, 말과 산출물 앞에서는 식상 줄기, 책임과 서열 앞에서는 관성 줄기, 배움과 근거 앞에서는 인성 줄기가 앞서 나올 때가 많습니다. ';
     p3 += nmDn + '에게 특히 자주 찍히는 축은 ‘' + prominent + '’입니다. **한 달에 몰입 주 하나와 숨 고르는 주 하나**만 달력에 정해 두면, 두꺼운 줄기를 도구로 쓰기 시작하신 거예요.';
     var raw = p1 + '\n\n' + pMid + '\n\n' + p3;
-    var polished = voicePolishParagraph(data, raw);
-    var MAX = 1000;
-    if (polished.length > MAX) {
-        polished = polished.slice(0, MAX - 1) + '…';
-    }
-    return polished;
+    return voicePolishParagraph(data, raw);
 }
 
 function buildChapter3_Sipseong(data) {
@@ -6478,7 +6471,7 @@ function buildChapter3_Sipseong(data) {
     var essayChunks = String(unifiedEssay || '').split(/\n\n+/).map(function (s) { return s.trim(); }).filter(Boolean);
     if (!essayChunks.length && unifiedEssay) essayChunks = [String(unifiedEssay).trim()];
     var essayHtml = essayChunks.map(function (chunk) {
-        return '<p class="ch-text" style="font-size:14px;color:#ddd;line-height:2;margin:0 0 16px;">' + boldStarsToStrong(chunk) + '</p>';
+        return buildNarrativePara(data, chunk, { color: 'rgba(255,255,255,0.88)', marginBottom: '16px' });
     }).join('');
     const topLabelPlain = topG.shortLabel || String(topG.label || '').replace(/:\s*$/, '').replace(/\s*\([^)]*\)/g, '').trim();
 
@@ -6653,7 +6646,7 @@ function buildChapter4_Wealth(data) {
             route:'벌이는 2~3갈래만 두고, 한 달에 한 번 숫자만 맞추기',
             caution:'보증·말로 잡는 동업·감정으로 큰 돈 움직이기는 멈추기'
         })}
-        <p class="ch-text">${voicePolishParagraph(data, '재물은 감이 아니라 리듬입니다. 같은 사람이라도 "돈이 잘 들어오는 해"와 "지키는 해"가 분명히 갈립니다. 사주에서 용신은 몸에 잘 맞는 기운(확장·공격에 유리한 때), 기신은 부담이 큰 기운(지출·실수가 커지기 쉬운 때)으로 읽으시면 좋습니다. 먼저 ' + nmUi(name) + ' 재물의 결부터 들여다보겠습니다.')}</p>
+        ${buildNarrativePara(data, '재물은 감이 아니라 리듬입니다. 같은 사람이라도 "돈이 잘 들어오는 해"와 "지키는 해"가 분명히 갈립니다. 사주에서 용신은 몸에 잘 맞는 기운(확장·공격에 유리한 때), 기신은 부담이 큰 기운(지출·실수가 커지기 쉬운 때)으로 읽으시면 좋습니다. 먼저 ' + nmUi(name) + ' 재물의 결부터 들여다보겠습니다.')}
 
         <div class="wealth-structure sajux-print-surface" style="background:rgba(199,167,106,0.07);border-left:3px solid var(--gold);padding:18px 20px;border-radius:0 10px 10px 0;margin:18px 0;">
             <div style="font-size:11px;color:var(--text-dim);margin-bottom:10px;letter-spacing:0.10em;font-weight:600;">${nmUi(name)} 재물 구조</div>
@@ -6661,7 +6654,7 @@ function buildChapter4_Wealth(data) {
             <p style="font-size:13px;color:var(--text-soft);line-height:1.9;margin:0;"><strong style="color:#ffc7a0;">⚠ 조심할 것.</strong> ${boldStarsToStrong(wealthCaution)}</p>
         </div>
 
-        <p class="ch-text">${voicePolishParagraph(data, '구조를 살폈으니, 마지막으로 어느 시기에 무엇을 멈추고 무엇을 밀어야 하는지 — ' + nmUi(name) + ' 재물을 지키는 가장 단단한 두 원칙을 정리해 드립니다. (대운·세운·월운에 따라 돈이 어떻게 움직이는지는 「지금 이 시절」 챕터에서 한 번에 풀어 드렸으니, 여기서는 평생을 관통하는 두 가지 원칙만 짚어 드립니다.)')}</p>
+        ${buildNarrativePara(data, '구조를 살폈으니, 마지막으로 어느 시기에 무엇을 멈추고 무엇을 밀어야 하는지 — ' + nmUi(name) + ' 재물을 지키는 가장 단단한 두 원칙을 정리해 드립니다. (대운·세운·월운에 따라 돈이 어떻게 움직이는지는 「지금 이 시절」 챕터에서 한 번에 풀어 드렸으니, 여기서는 평생을 관통하는 두 가지 원칙만 짚어 드립니다.)')}
 
         <div class="wealth-rule sajux-print-surface" style="background:rgba(255,255,255,0.03);border-radius:12px;padding:20px 22px;margin:14px 0 18px;border:1px solid rgba(199,167,106,0.18);">
             <div style="font-size:12px;color:var(--gold);margin-bottom:14px;letter-spacing:0.10em;font-weight:700;">재물을 지키는 핵심 원칙</div>
@@ -6676,7 +6669,7 @@ function buildChapter4_Wealth(data) {
                 </div>
             </div>
         </div>
-        <p class="ch-text" style="margin-top:14px;">${voicePolishParagraph(data, '돈은 빠르게 번 것보다 오래 남는 쪽이 이깁니다. ' + nmUi(name) + ' 리듬은 ' + (isStrong ? '나눠 넣고 쉬는 날을 달력에 고정해 두시는 것' : '신뢰할 수 있는 파트너와 주간 점검을 한 번씩 갖는 것') + ' — 이 한 가지를 평생 지켜 가시면 됩니다.')}</p>
+        ${buildNarrativePara(data, '돈은 빠르게 번 것보다 오래 남는 쪽이 이깁니다. ' + nmUi(name) + ' 리듬은 ' + (isStrong ? '나눠 넣고 쉬는 날을 달력에 고정해 두시는 것' : '신뢰할 수 있는 파트너와 주간 점검을 한 번씩 갖는 것') + ' — 이 한 가지를 평생 지켜 가시면 됩니다.', { marginTop: '14px' })}
     </div>`;
 }
 
@@ -7184,8 +7177,8 @@ function buildWolunLoop(data) {
     return `<div class="report-chapter">
         ${chHeadMo}
         ${chIntroMo}
-        <p class="ch-text">${voicePolishParagraph(data, '세운이 한 해의 날씨라면, 월운은 그 안의 시간대입니다. 기운이 맞는 달에는 한 발 밀고, 부딪히는 달에는 일정의 약 30%를 비우는 식으로 호흡을 가져가시면 한 해가 훨씬 길게 견뎌집니다.')}</p>
-        <p class="ch-text" style="font-size:13px;color:var(--text-dim);">${voicePolishParagraph(data, '카드와 카드 사이에 한 줄 다리를 두어, 한 달이 다음 달로 어떻게 이어지는지 한눈에 보이도록 정리했습니다.')}</p>
+        ${buildNarrativePara(data, '세운이 한 해의 날씨라면, 월운은 그 안의 시간대입니다. 기운이 맞는 달에는 한 발 밀고, 부딪히는 달에는 일정의 약 30%를 비우는 식으로 호흡을 가져가시면 한 해가 훨씬 길게 견뎌집니다.')}
+        ${buildNarrativePara(data, '카드와 카드 사이에 한 줄 다리를 두어, 한 달이 다음 달로 어떻게 이어지는지 한눈에 보이도록 정리했습니다.', { fontSize: '13px', color: 'var(--text-dim)' })}
         <div style="display:flex;flex-direction:column;gap:10px;width:100%;">
             ${_rowsWithBridges}
         </div>
@@ -7268,7 +7261,7 @@ function buildChapter_HapGyeok(data) {
         mainAdvice = '<strong>' + nmEunNeun(name) + ' 사주의 무게중심이 “실무와 현장”에 가장 가까이 가 있는 분</strong>이세요. 시험·이론보다 일을 직접 해 보면서 익히시는 길이 가장 빠릅니다.';
     }
 
-    function _vp(t){ return voicePolishParagraph(data, t); }
+    function _vp(t){ return narrativeVp(data, t); }
     function box(label, val, b, body) {
         return '<div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:14px 16px;">'
             + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">'
@@ -7284,8 +7277,8 @@ function buildChapter_HapGyeok(data) {
     var chHeadH = buildChapterHeadTopicFirst('합격 · 문서운', '시험 · 취직 · 서류 한 줄의 무게', '');
     return `<div class="report-chapter">
         ${chHeadH}
-        <p class="ch-text" style="font-size:14px;color:var(--text);line-height:2;margin:0 0 18px;">${_vp('합격은 사주에서 네 가지 기둥이 함께 만드는 결과예요. <strong>인성(印, 공부·자격)</strong>, <strong>관성(官, 조직·취업)</strong>, <strong>식상(食傷, 표현·면접)</strong>, <strong>재성(財, 실무·현장)</strong> — 이 네 가지의 두께를 보면 ' + nmIGa(name) + ' 어떤 “합격 자리”에서 가장 잘 풀리시는지가 거의 다 드러납니다.')}</p>
-        <p class="ch-text" style="font-size:14px;color:var(--text);line-height:2;margin:0 0 18px;">${boldStarsToStrong(_vp(mainAdvice))}</p>
+        ${buildNarrativePara(data, '합격은 사주에서 네 가지 기둥이 함께 만드는 결과예요. **인성(印, 공부·자격)**, **관성(官, 조직·취업)**, **식상(食傷, 표현·면접)**, **재성(財, 실무·현장)** — 이 네 가지의 두께를 보면 ' + nmIGa(name) + ' 어떤 “합격 자리”에서 가장 잘 풀리시는지가 거의 다 드러납니다.', { lineHeight: '2' })}
+        ${buildNarrativePara(data, mainAdvice, { lineHeight: '2' })}
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0 18px;">
             ${box('시험 · 자격 (인성)', inPct, testBand, examLine)}
             ${box('취직 · 조직 (관성)', gwanPct, hireBand, hireLine)}
@@ -7333,13 +7326,13 @@ function buildChapter5_Career(data) {
             route:'핵심 역할 문서화 + 분기 목표 수치화',
             caution:'권한 없는 과잉 책임과 무계획 이직을 절대 삼가십시오'
         })}
-        <p class="ch-text">${voicePolishParagraph(data, '직업은 직함이 아니라 권한의 문제입니다. 권한이 흐리면 실력이 소음이 되고, 권한이 분명하면 같은 일이라도 결과가 또렷하게 쌓입니다. ' + nmUi(name) + ' 사주는 어떤 권한 위에서 가장 빛나는지 — 먼저 그 결을 살펴보겠습니다.')}</p>
+        ${buildNarrativePara(data, '직업은 직함이 아니라 권한의 문제입니다. 권한이 흐리면 실력이 소음이 되고, 권한이 분명하면 같은 일이라도 결과가 또렷하게 쌓입니다. ' + nmUi(name) + ' 사주는 어떤 권한 위에서 가장 빛나는지 — 먼저 그 결을 살펴보겠습니다.')}
         <div class="career-type-block sajux-print-surface" style="background:rgba(199,167,106,0.07);border-radius:12px;padding:22px;margin:18px 0;border:1px solid rgba(199,167,106,0.18);">
             <div style="font-size:11px;color:var(--text-dim);margin-bottom:10px;letter-spacing:0.10em;">직업 성향 분석 결과</div>
             <div style="font-size:16px;font-weight:700;color:var(--gold);margin-bottom:12px;">${cd.label}</div>
             <p style="font-size:14.5px;color:#ddd;line-height:1.95;margin:0;">${boldStarsToStrong(cd.desc)}</p>
         </div>
-        <p class="ch-text">${voicePolishParagraph(data, '결을 알았다면, 어떤 자리에서 그 결이 가장 잘 살아나는지가 다음 질문입니다. ' + nmKke(name) + ' 어울리는 무대와, 그 무대에서 돈이 어떻게 따라붙는지 정리해 드립니다.')}</p>
+        ${buildNarrativePara(data, '결을 알았다면, 어떤 자리에서 그 결이 가장 잘 살아나는지가 다음 질문입니다. ' + nmKke(name) + ' 어울리는 무대와, 그 무대에서 돈이 어떻게 따라붙는지 정리해 드립니다.')}
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0 18px;">
             <div class="sajux-print-surface" style="background:rgba(255,255,255,0.04);border-radius:10px;padding:14px 16px;">
                 <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;letter-spacing:0.10em;">최적 직업군</div>
@@ -7350,7 +7343,7 @@ function buildChapter5_Career(data) {
                 <div style="font-size:13px;color:#ddd;line-height:1.85;">${boldStarsToStrong(wealthLink)}</div>
             </div>
         </div>
-        <p class="ch-text">${voicePolishParagraph(data, '직업 선택의 기준은 단 하나입니다. 내 결정권이 서면 실력이 살고, 없으면 같은 자리에서 소모됩니다. 명함의 무게가 아니라 권한의 두께를 보십시오.')}</p>
+        ${buildNarrativePara(data, '직업 선택의 기준은 단 하나입니다. 내 결정권이 서면 실력이 살고, 없으면 같은 자리에서 소모됩니다. 명함의 무게가 아니라 권한의 두께를 보십시오.')}
 
         <div style="background:rgba(199,167,106,0.05);border-radius:12px;padding:20px;margin:16px 0;border:1px solid rgba(199,167,106,0.1);">
             <div style="font-size:12px;color:var(--gold);margin-bottom:12px;letter-spacing:1px;">&#9670; 대운 단계별 커리어 전략</div>
@@ -7471,7 +7464,7 @@ function buildChapter6_Love(data) {
             caution:'감정 최고점·투자·지분 이야기가 겹친 날의 관계 결정은 유예하십시오'
         })}
 
-        <p class="ch-text">${voicePolishParagraph(data, '먼저 ' + nmUi(name) + ' 사랑이 어떤 결로 흐르는지 큰 그림부터 살펴보겠습니다. 그 다음 일지(배우자궁), 사랑의 언어, 다툼이 일어났을 때의 호흡 순서로 차근차근 풀어 드릴게요.')}</p>
+        ${buildNarrativePara(data, '먼저 ' + nmUi(name) + ' 사랑이 어떤 결로 흐르는지 큰 그림부터 살펴보겠습니다. 그 다음 일지(배우자궁), 사랑의 언어, 다툼이 일어났을 때의 호흡 순서로 차근차근 풀어 드릴게요.')}
 
         <p class="ch-text">${voicePolishReportHtml(data, '애정은 횟수가 아니라 **리듬**입니다. 만난 지 얼마 안 됐거나 다툰 직후처럼 **감정이 가장 높은 날**에는, 동거·결혼 준비 서류·**큰 돈이 오가는 차용 증서**·부동산·맞벌·지분처럼 **나중에 되돌리기 어려운 약속**은 날짜를 미루십시오. 여기서 말하는 것은 **법적으로·돈으로 묶이는 서명**이며, 단순 앱 결제나 일상적인 이름 적기와는 다릅니다.')}</p>
         <p class="ch-text">이성운의 핵은 “누구를 만나느냐”가 아니라 **나는 어떤 패턴으로 만남과 이별을 반복하느냐**입니다. 패턴을 알면 같은 상처를 반값에 삽니다.</p>
@@ -7481,7 +7474,7 @@ function buildChapter6_Love(data) {
             <p style="font-size:14.5px;color:#ddd;line-height:1.95;margin:0;">${boldStarsToStrong(loveText)}</p>
         </div>
 
-        <p class="ch-text" style="margin-top:14px;">${voicePolishParagraph(data, '여기까지가 ' + nmUi(name) + ' 사랑의 큰 결입니다. 이제 한 발 더 들어가서, 일상에서 어떤 표현이 ' + nmKke(name) + ' 진짜 사랑으로 닿는지 — 즉 ' + nmUi(name) + ' "사랑의 언어"를 살펴보겠습니다.')}</p>
+        ${buildNarrativePara(data, '여기까지가 ' + nmUi(name) + ' 사랑의 큰 결입니다. 이제 한 발 더 들어가서, 일상에서 어떤 표현이 ' + nmKke(name) + ' 진짜 사랑으로 닿는지 — 즉 ' + nmUi(name) + ' "사랑의 언어"를 살펴보겠습니다.', { marginTop: '14px' })}
 
         <div class="love-language-block sajux-print-surface" style="margin:18px 0;padding:20px 22px;border-radius:14px;background:linear-gradient(135deg,rgba(214,135,135,0.08),rgba(255,255,255,0.02));border:1px solid rgba(214,135,135,0.22);">
             <div style="font-size:11px;color:#e29a9a;letter-spacing:0.10em;margin-bottom:12px;font-weight:700;">${nmUi(name)} 사랑의 언어</div>
@@ -7490,14 +7483,14 @@ function buildChapter6_Love(data) {
             <p style="font-size:13px;color:#d8c8c8;line-height:1.95;margin:0;"><strong style="color:#f3c4c4;">관계를 회복하는 작은 약속 ▸</strong> ${ll.repair}.</p>
         </div>
 
-        <p class="ch-text" style="margin-top:14px;">${voicePolishParagraph(data, '사랑의 언어를 알았으니, 이제 ' + nmIGa(name) + ' 어떤 사람에게 끌리고 어떤 방식으로 그 마음을 표현하는지 — 끌림의 패턴을 들여다봅니다.')}</p>
+        ${buildNarrativePara(data, '사랑의 언어를 알았으니, 이제 ' + nmIGa(name) + ' 어떤 사람에게 끌리고 어떤 방식으로 그 마음을 표현하는지 — 끌림의 패턴을 들여다봅니다.', { marginTop: '14px' })}
 
         <p class="ch-text">${attractionPattern}</p>
 
         <p class="ch-text">${loveStyle}</p>
         <p class="ch-text">${meetTiming}</p>
 
-        <p class="ch-text" style="margin-top:18px;">${voicePolishParagraph(data, '관계가 잘 흐를 때의 모습을 살폈습니다. 그런데 어떤 관계든 부딪히는 순간이 옵니다. 그 순간 ' + nmIGa(name) + ' 어떻게 호흡하시면 좋은지, 사주의 결을 따라 정리해 드립니다.')}</p>
+        ${buildNarrativePara(data, '관계가 잘 흐를 때의 모습을 살폈습니다. 그런데 어떤 관계든 부딪히는 순간이 옵니다. 그 순간 ' + nmIGa(name) + ' 어떻게 호흡하시면 좋은지, 사주의 결을 따라 정리해 드립니다.')}
 
         <div class="love-conflict-block sajux-print-surface" style="margin:14px 0 18px;padding:18px 20px;border-radius:12px;background:rgba(255,170,120,0.06);border:1px solid rgba(255,170,120,0.20);">
             <div style="font-size:11px;color:#ffc7a0;letter-spacing:0.10em;margin-bottom:10px;font-weight:700;">다툼이 일어났을 때의 호흡</div>
@@ -7698,7 +7691,7 @@ function buildChapter8_Health(data) {
             route:'주간 운동 3회 + 분기 검진 선예약을 고정하십시오',
             caution:'과로·야간 음주·통증 방치를 절대 지속하지 마십시오'
         })}
-        <p class="ch-text">${voicePolishParagraph(data, '건강은 몸만이 아니라 ' + nmUi(name) + ' 감정과 연결된 자리입니다. 먼저 ' + nmIGa(name) + ' 어떤 식으로 피로 신호를 받는지 — 이른바 "피로의 모양"부터 짚어 보겠습니다.')}</p>
+        ${buildNarrativePara(data, '건강은 몸만이 아니라 ' + nmUi(name) + ' 감정과 연결된 자리입니다. 먼저 ' + nmIGa(name) + ' 어떤 식으로 피로 신호를 받는지 — 이른바 "피로의 모양"부터 짚어 보겠습니다.')}
 
         <div class="health-fatigue-block sajux-print-surface" style="margin:14px 0 18px;padding:18px 20px;border-radius:12px;background:rgba(255,170,170,0.05);border:1px solid rgba(255,170,170,0.18);">
             <div style="font-size:11px;color:#ff9f9f;letter-spacing:0.10em;margin-bottom:10px;font-weight:700;">${nmUi(name)} 피로의 모양</div>
@@ -7706,14 +7699,14 @@ function buildChapter8_Health(data) {
             <p style="font-size:13px;color:#ddc8c8;line-height:1.95;margin:0;">${boldStarsToStrong('이 신호가 이틀 이상 지속되면 일정을 줄이는 것이 가장 빠른 처방입니다.')}</p>
         </div>
 
-        <p class="ch-text">${voicePolishParagraph(data, '신호를 알았다면, 이번엔 ' + nmUi(name) + ' 몸이 어느 시간대에 회복하고 어느 시간대에 무리하면 안 되는지 — 시간의 결을 정리해 드립니다.')}</p>
+        ${buildNarrativePara(data, '신호를 알았다면, 이번엔 ' + nmUi(name) + ' 몸이 어느 시간대에 회복하고 어느 시간대에 무리하면 안 되는지 — 시간의 결을 정리해 드립니다.')}
 
         <div class="health-time-block sajux-print-surface" style="margin:14px 0 18px;padding:18px 20px;border-radius:12px;background:rgba(170,200,255,0.05);border:1px solid rgba(170,200,255,0.18);">
             <div style="font-size:11px;color:#9bb8ee;letter-spacing:0.10em;margin-bottom:10px;font-weight:700;">${nmUi(name)} 컨디션 시간대</div>
             <p style="font-size:13.5px;color:#dee2eb;line-height:1.95;margin:0;">${boldStarsToStrong(TIME_RHYTHM)}</p>
         </div>
 
-        <p class="ch-text">${voicePolishParagraph(data, '시간의 결을 짚었으니, 이제 일상에서 가장 영향이 큰 세 가지 — 음주·카페인·화면 — 을 어떻게 다루면 좋은지 ' + nmUi(name) + ' 사주에 맞춰 정리해 드리겠습니다.')}</p>
+        ${buildNarrativePara(data, '시간의 결을 짚었으니, 이제 일상에서 가장 영향이 큰 세 가지 — 음주·카페인·화면 — 을 어떻게 다루면 좋은지 ' + nmUi(name) + ' 사주에 맞춰 정리해 드리겠습니다.')}
 
         <div class="health-habit-grid" style="display:grid;grid-template-columns:1fr;gap:10px;margin:14px 0 18px;">
             <div class="sajux-print-surface" style="padding:14px 16px;border-radius:10px;background:rgba(255,255,255,0.03);border-left:3px solid rgba(255,170,120,0.6);">
@@ -7730,7 +7723,7 @@ function buildChapter8_Health(data) {
             </div>
         </div>
 
-        <p class="ch-text">${voicePolishParagraph(data, '몸의 신호를 살폈다면, 마음의 신호도 같은 무게로 살펴봐야 합니다. ' + nmUi(name) + ' 마음이 무너지기 직전에 보내는 신호와, 그 자리에서 가장 빠르게 회복하는 방법을 일러드립니다.')}</p>
+        ${buildNarrativePara(data, '몸의 신호를 살폈다면, 마음의 신호도 같은 무게로 살펴봐야 합니다. ' + nmUi(name) + ' 마음이 무너지기 직전에 보내는 신호와, 그 자리에서 가장 빠르게 회복하는 방법을 일러드립니다.')}
 
         <div class="health-mind-block sajux-print-surface" style="margin:14px 0 18px;padding:18px 20px;border-radius:12px;background:rgba(199,167,106,0.06);border-left:3px solid var(--gold);">
             <div style="font-size:11px;color:var(--gold);letter-spacing:0.10em;margin-bottom:10px;font-weight:700;">정신 건강 신호와 회복</div>
@@ -7750,7 +7743,7 @@ function buildChapter8_Health(data) {
             </div>
         </div>
 
-        <p class="ch-text">${voicePolishParagraph(data, '원국에서 ' + ohKr + '이 두껍게 박힌 분이라, 특히 ' + season + ' 전후로 한 번씩 검진을 미리 당겨 두시는 편이 좋습니다. 기신이 들어오는 해·대운에는 면역이 가장 빠르게 얇아지니, 신호를 참는 것은 가장 비싼 절약입니다.')}</p>
+        ${buildNarrativePara(data, '원국에서 ' + ohKr + '이 두껍게 박힌 분이라, 특히 ' + season + ' 전후로 한 번씩 검진을 미리 당겨 두시는 편이 좋습니다. 기신이 들어오는 해·대운에는 면역이 가장 빠르게 얇아지니, 신호를 참는 것은 가장 비싼 절약입니다.')}
 
         <div class="sajux-print-surface" style="background:rgba(255,255,255,0.04);border-radius:10px;padding:18px;margin:16px 0;">
             <div style="font-size:12px;color:var(--gold);margin-bottom:10px;letter-spacing:0.10em;">🥗 맞춤 식이 처방</div>
@@ -7767,7 +7760,7 @@ function buildChapter8_Health(data) {
             <p style="font-size:13.5px;color:#ddd;line-height:1.95;margin:0;">${boldStarsToStrong(checkupAdvice)}</p>
         </div>
 
-        <p class="ch-text" style="margin-top:16px;">${voicePolishParagraph(data, '연료로 몸을 태우지 마세요. 멈출 수 있는 사람이 긴 레이스에서 이깁니다.')}</p>
+        ${buildNarrativePara(data, '연료로 몸을 태우지 마세요. 멈출 수 있는 사람이 긴 레이스에서 이깁니다.', { marginTop: '16px' })}
 
         <div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:22px;margin:20px 0;">
             <div style="font-size:12px;color:var(--gold);margin-bottom:16px;letter-spacing:1px;">&#9670; ${nmUi(name)}님의 취약 오행 — 한 발 더 들어가는 건강 가이드</div>
@@ -7987,7 +7980,7 @@ function buildYeonjukStructuralBlurb(data) {
  */
 function buildManseGuide(data) {
     var name = (data && data.name) ? data.name : '고객';
-    function _vp(t) { return voicePolishParagraph(data, t); }
+    function _vp(t) { return narrativeVp(data, t); }
 
     function termBox(label, body) {
         return '<div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:13px 16px;">'
@@ -8439,7 +8432,7 @@ function buildZiWeiDestinyBlueprintSection(data) {
         }
     ];
 
-    function _vp(t) { return voicePolishParagraph(data, t || ''); }
+    function _vp(t) { return narrativeVp(data, t || ''); }
 
     // ※ 자미두수의 별 한자 표기(예: '칠살(七殺)')는 voicePolishParagraph의
     //   십성 풀이 규칙과 겹치므로, 별 이름과 궁 이름 라벨은 polish를 거치지 않고
@@ -8663,14 +8656,14 @@ function buildChapter9_Remedy(data) {
         ${chHeadR}
         ${chIntroR}
 
-        <p class="ch-text">${voicePolishParagraph(data, '여기까지 ' + nmUi(name) + ' 사주를 차근차근 살폈습니다. 이 마지막 장은 사주를 바꾸는 자리가 아니라, 타고난 결을 일상의 결로 바꿔 드리는 자리입니다. 색·방향·시간·작은 행동 — 거창하지 않은 것을 일주일만 지켜 보십시오. 덜 지친 조합이 ' + nmKke(name) + ' 가장 큰 보약입니다.')}</p>
+        ${buildNarrativePara(data, '여기까지 ' + nmUi(name) + ' 사주를 차근차근 살폈습니다. 이 마지막 장은 사주를 바꾸는 자리가 아니라, 타고난 결을 일상의 결로 바꿔 드리는 자리입니다. 색·방향·시간·작은 행동 — 거창하지 않은 것을 일주일만 지켜 보십시오. 덜 지친 조합이 ' + nmKke(name) + ' 가장 큰 보약입니다.')}
 
         <div class="remedy-mindset sajux-print-surface" style="margin:14px 0 18px;padding:18px 20px;border-radius:12px;background:rgba(199,167,106,0.06);border-left:3px solid var(--gold);">
             <div style="font-size:11px;color:var(--gold);letter-spacing:0.10em;margin-bottom:10px;font-weight:700;">${nmUi(name)} 개운(開運)의 흐름</div>
             <p style="font-size:13.5px;color:#e8e0d2;line-height:1.95;margin:0;">${boldStarsToStrong(MINDSET_RX)}</p>
         </div>
 
-        <p class="ch-text">${voicePolishParagraph(data, '먼저 색·방향·시간 같은 큰 결을 짚고, 이어서 ' + nmUi(name) + ' 일간(' + ds + ')에 맞춘 하루 루틴과 부적·향·식물 같은 손에 잡히는 작은 도구들을 풀어 드립니다.')}</p>
+        ${buildNarrativePara(data, '먼저 색·방향·시간 같은 큰 결을 짚고, 이어서 ' + nmUi(name) + ' 일간(' + ds + ')에 맞춘 하루 루틴과 부적·향·식물 같은 손에 잡히는 작은 도구들을 풀어 드립니다.')}
 
         ${typeof buildRemedyYongHeeMindsetHTML === 'function' ? buildRemedyYongHeeMindsetHTML(data) : ''}
 
@@ -8690,7 +8683,7 @@ function buildChapter9_Remedy(data) {
             </div>
         </div>
 
-        <p class="ch-text">${voicePolishParagraph(data, '큰 결을 보았으니, 이제 ' + nmUi(name) + ' 일간(' + ds + ')에 맞춘 하루 루틴을 시간 단위로 풀어 드립니다. 한 번에 다 하실 필요 없이, 이 중 두 가지만 골라 일주일 동안 같은 시간에 반복해 보십시오. 사주가 풀어지는 방식은 늘 작은 반복에서 시작합니다.')}</p>
+        ${buildNarrativePara(data, '큰 결을 보았으니, 이제 ' + nmUi(name) + ' 일간(' + ds + ')에 맞춘 하루 루틴을 시간 단위로 풀어 드립니다. 한 번에 다 하실 필요 없이, 이 중 두 가지만 골라 일주일 동안 같은 시간에 반복해 보십시오. 사주가 풀어지는 방식은 늘 작은 반복에서 시작합니다.')}
 
         <div class="daily-rx-block sajux-print-surface" style="background:rgba(255,255,255,0.03);border-radius:12px;padding:22px;margin:18px 0;border:1px solid rgba(199,167,106,0.18);">
             <div style="font-size:12px;color:var(--gold);font-weight:700;letter-spacing:0.10em;margin-bottom:14px;">${nmUi(name)} 하루 루틴 — 일간 ${ds} 기준</div>
@@ -8714,7 +8707,7 @@ function buildChapter9_Remedy(data) {
             </div>
         </div>
 
-        <p class="ch-text">${voicePolishParagraph(data, '시간의 결이 잡혔다면, 이번엔 공간의 결입니다. 향·식물·작은 소품 — 사주의 ' + yongKr + ' 기운을 일상의 공기에 들여놓는 가장 부드러운 방법입니다.')}</p>
+        ${buildNarrativePara(data, '시간의 결이 잡혔다면, 이번엔 공간의 결입니다. 향·식물·작은 소품 — 사주의 ' + yongKr + ' 기운을 일상의 공기에 들여놓는 가장 부드러운 방법입니다.')}
 
         <div class="talisman-rx-block sajux-print-surface" style="background:rgba(199,167,106,0.05);border-radius:12px;padding:22px;margin:18px 0;border:1px solid rgba(199,167,106,0.22);">
             <div style="font-size:12px;color:var(--gold);font-weight:700;letter-spacing:0.10em;margin-bottom:14px;">${yongKr}을 일상에 들이는 4가지 방법</div>
