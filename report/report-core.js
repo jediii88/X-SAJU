@@ -5902,6 +5902,69 @@ var SAJUX_MILESTONE_SIP_EVENT = {
     '식신': '표현·창작', '상관': '변화·도전', '편인': '학습·이동', '정인': '학습·자격',
     '비견': '동료·경쟁', '겁재': '관계·지출'
 };
+/** 십성별 — 겪기 쉬운 경험(scene) · 맺어지기 쉬운 결과(fruit). 연령대별 */
+var SAJUX_MILESTONE_SIP_OUTCOME = {
+    '편관': {
+        child:  { scene: '집안에 어른 일·병원·이사 같은 “큰 어른 사건”이 한 번 터지는 체험', fruit: '새 학교·새 반·새 규칙에 맞추는 과정(적응 자체가 그해의 성취)' },
+        teen:   { scene: '학교·학원 규칙이 바뀌거나 담임·선생이 갈리는 체험', fruit: '반장·회장·팀장처럼 맡는 자리가 붙거나, 진로 캠프·입시 방향이 한 번 정리됨' },
+        adult:  { scene: '부서·상사·조직이 갈리거나 책임 범위가 갑자기 넓어지는 체험', fruit: '직함·역할·프로젝트 주도권이 공식으로 바뀜(승진·전보·팀장 임명·계약 갱신 중 하나)' }
+    },
+    '정관': {
+        child:  { scene: '가족이 “착한 아이” 기준을 세우거나 칭찬·주의가 눈에 띄는 체험', fruit: '상·표창·대회 입상처럼 이름이 적히는 일이 한 번 생김' },
+        teen:   { scene: '입시·내신·면접처럼 점수·서류로 평가받는 일이 몰리는 체험', fruit: '합격 통지·등급 상승·추천서·상장처럼 “인정받았다”는 결과가 남음' },
+        adult:  { scene: '평가·면접·공적·자격 심사처럼 사회가 채점하는 일이 몰리는 체험', fruit: '승진·합격·계약 체결·브랜드·명함이 한 단계 올라가는 결과' }
+    },
+    '편재': {
+        child:  { scene: '용돈·선물·이사 비용처럼 “돈 이야기”가 집안에서 오가는 체험', fruit: '새 물건·학원·취미비처럼 쓰는 통로가 한 번 늘거나 줄어듦' },
+        teen:   { scene: '아르바이트·용돈·첫 지출 결정 같은 돈 경험이 생기는 체험', fruit: '첫 통장·첫 수입·첫 큰 지출(기기·여행) 중 하나가 기억에 남음' },
+        adult:  { scene: '부수입·투자·사업·큰 지출 견적이 동시에 올라오는 체험', fruit: '계약금·매출·보너스·부동산·차량처럼 “숫자로 남는” 결과가 한 번 찍힘' }
+    },
+    '정재': {
+        child:  { scene: '집·학교·식사 루틘이 고정되거나 이사 후 안정되는 체험', fruit: '규칙적인 생활(등하교·학원 시간)이 자리 잡히는 것' },
+        teen:   { scene: '생활비·교재비·기숙·자취 준비처럼 “매달 나가는 돈”을 보는 체험', fruit: '알바·장학·저축 목표처럼 안정적인 수입 통로가 하나 생김' },
+        adult:  { scene: '월급·연봉·저축·대출·부동산 계약이 실제로 오가는 체험', fruit: '연봉 인상·전세·본인 명의 자산·장기 계약처럼 안정 축이 한 줄 생김' }
+    },
+    '식신': {
+        child:  { scene: '그림·음악·운동·게임처럼 “만들기”에 빠지는 체험', fruit: '작품·기록·실력이 눈에 띄게 늘어 칭찬·발표 자리가 생김' },
+        teen:   { scene: '동아리·대회·SNS·포트폴리오처럼 결과물을 내놓는 체험', fruit: '수상·노출·첫 팬·첫 고객처럼 “밖에 보이는” 성과가 남음' },
+        adult:  { scene: '콘텐츠·강의·요리·디자인·글쓰기처럼 손에서 나온 것을 내놓는 체험', fruit: '작품 완성·강연·출간·매출·팔로워·포트폴리오 중 하나가 실물로 남음' }
+    },
+    '상관': {
+        child:  { scene: '말대꾸·새 친구·새 취미처럼 기존 틀을 깨는 체험', fruit: '“예전과 다른 나”를 처음 느끼는 경험(성격·말투·친구 무리)' },
+        teen:   { scene: '전학·반 바뀜·첫 연애·진로 싸움처럼 정체성이 흔들리는 체험', fruit: '이직·전공 변경·창업 아이디어·프로젝트 전환처럼 방향을 한 번 갈라 놓는 결정' },
+        adult:  { scene: '이직·창업·프로젝트 종료·관계 정리처럼 익숙한 방식을 끊는 체험', fruit: '새 직함·새 상호·새 팀·새 거주지처럼 “이전과 다른 삶”이 시작되는 결과' }
+    },
+    '편인': {
+        child:  { scene: '전학·학원·할아버지·할머니 집처럼 환경이 바뀌는 체험', fruit: '새 선생·새 교재·새 취미에 적응하는 과정' },
+        teen:   { scene: '입시·유학·자격·과외·스승 만남처럼 배움 쪽으로 손이 많이 가는 체험', fruit: '전공·학교·자격·대회 준비가 한 갈래로 좁혀짐' },
+        adult:  { scene: '이사·유학·자격·재교육·스승·멘토처럼 “배움·이동”이 겹치는 체험', fruit: '학위·자격증·면허·전직·해외 체류처럼 이력에 남는 결과' }
+    },
+    '정인': {
+        child:  { scene: '학교·학원·독서·대회 준비처럼 “공부하는 시간”이 늘는 체험', fruit: '시험·경시·글쓰기·암기 대회처럼 문서·점수로 남는 성과' },
+        teen:   { scene: '모의고사·수능·면접·자소서처럼 서류와 시험이 몰리는 체험', fruit: '합격·등급·자격·장학처럼 “준비가 종이로 돌아오는” 결과' },
+        adult:  { scene: '시험·자격·논문·계약서·면허처럼 문서가 인생을 가르는 체험', fruit: '합격 통지·자격 취득·학위·면허·공무원·전문직 합격 중 하나' }
+    },
+    '비견': {
+        child:  { scene: '형제·친구·경쟁·싸움·화해처럼 “또래” 이야기가 커지는 체험', fruit: '절친·라이벌·팀처럼 관계가 오래 남는 한 사람이 생김' },
+        teen:   { scene: '동아리·밴드·스터디·첫 알바 팀처럼 같이 일하는 체험', fruit: '공동 프로젝트·대회·창업 동아리처럼 “같이 한 일”이 결과로 남음' },
+        adult:  { scene: '동료·파트너·공동창업·경쟁자처럼 나와 비슷한 사람이 많아지는 체험', fruit: '공동 계약·지분·팀 성과·동업·협업 중 하나가 실제로 맺어짐' }
+    },
+    '겁재': {
+        child:  { scene: '용돈 싸움·친구 송별·이사·형제 다툼처럼 관계·돈이 엮이는 체험', fruit: '친구·형제 관계가 한 번 정리되거나 멀어짐' },
+        teen:   { scene: '빌려주기·빌리기·축의금·첫 소비 트러블 같은 체험', fruit: '지출·친구·연애 중 하나에서 “선 긋기”를 배우는 결과' },
+        adult:  { scene: '보증·동업·지출·인맥 청구처럼 돈과 관계가 한꺼번에 엮이는 체험', fruit: '계약 정리·손실 회수·관계 정리·재정 루틴 재설계 중 하나' }
+    }
+};
+var SAJUX_CHUNG_LIFE_AXIS = {
+    '년': '고향·조부모·가문·큰 가족 행사',
+    '월': '부모·직장·월급·거주지·집안 분위기',
+    '일': '본인 컨디션·배우자·건강·자기 결정',
+    '시': '자녀·미래 계획·말년 준비·프로젝트 마무리',
+    '시지': '자녀·미래 계획·말년 준비·프로젝트 마무리',
+    '일지': '본인 컨디션·배우자·건강·자기 결정',
+    '월지': '부모·직장·월급·거주지·집안 분위기',
+    '년지': '고향·조부모·가문·큰 가족 행사'
+};
 
 function sajuxNatalBranchList(data) {
     var list = [];
@@ -5959,6 +6022,64 @@ function sajuxMilestoneCategory(data, g, j, evScore) {
     return evScore >= 5 ? 'rise' : 'flow';
 }
 
+function sajuxMilestoneTierKey(age) {
+    var st = sajuxLifeStageForAge(age);
+    if (st.key === 'child') return 'child';
+    if (st.key === 'teen') return 'teen';
+    return 'adult';
+}
+
+function sajuxMilestoneSipOutcome(sip, tier) {
+    var O = SAJUX_MILESTONE_SIP_OUTCOME[sip];
+    if (!O) return { scene: '일상 리듬이 한 번 바뀌는 체험', fruit: '작은 약속·습관이 쌓여 다음 선택지를 여는 결과' };
+    return O[tier] || O.adult;
+}
+
+function sajuxMilestoneMergedOutcome(a, tier) {
+    var g = a.sipGan ? sajuxMilestoneSipOutcome(a.sipGan, tier) : null;
+    var j = (a.sipJi && a.sipJi !== a.sipGan) ? sajuxMilestoneSipOutcome(a.sipJi, tier) : null;
+    if (g && j) {
+        return {
+            scene: g.scene + ' 그리고 ' + j.scene,
+            fruit: g.fruit + ' · ' + j.fruit
+        };
+    }
+    return g || j || sajuxMilestoneSipOutcome('', tier);
+}
+
+function sajuxMilestoneChungAxisText(chungLabels) {
+    if (!chungLabels || !chungLabels.length) return '';
+    var axes = chungLabels.map(function (lb) {
+        return SAJUX_CHUNG_LIFE_AXIS[lb] || (lb + ' 궁');
+    });
+    return axes.join(' · ');
+}
+
+/** “경험 + 성취” 두 줄 — 추상적 ‘상승·결실’ 대신 십성·충·연령으로 구체화 */
+function sajuxMilestoneExperienceAchievement(data, m, a, cat, chung) {
+    var tier = sajuxMilestoneTierKey(m.age);
+    var out = sajuxMilestoneMergedOutcome(a, tier);
+    var yongNote = a.yongHit ? ' 용신(用)이 받쳐 주어 체감이 평소보다 빠릅니다.' : '';
+    var chungAxis = sajuxMilestoneChungAxisText(chung);
+
+    if (chung.length && chungAxis) {
+        return '<strong>겪기 쉬운 경험</strong> — ' + chung.join('·') + '와 지지 충(沖)으로 <strong>'
+            + chungAxis + '</strong> 축이 ' + (m.year ? m.year + '년 ' : '') + m.age + '세 전후에 한 번 흔들립니다. '
+            + '<strong>맺어지기 쉬운 결과</strong> — ' + out.fruit
+            + ' (그해의 선택·이사·계약·관계 통보가 이후 3~5년을 가릅니다).' + yongNote;
+    }
+
+    if (cat === 'trial' || a.giHit) {
+        return '<strong>겪기 쉬운 경험</strong> — ' + out.scene
+            + ' 다만 기신(忌) 쪽이라 체력·돈·관계 중 한 곳에서 무게가 먼저 옵니다. '
+            + '<strong>맺어지기 쉬운 결과</strong> — 크게 벌기보다 지키기·회복·계약 정리가 성과에 가깝습니다.'
+            + (tier === 'adult' ? ' 여기서 무너지지 않으시면 다음 대운에서 같은 노력이 더 잘 붙습니다.' : '');
+    }
+
+    return '<strong>겪기 쉬운 경험</strong> — ' + out.scene + '. '
+        + '<strong>맺어지기 쉬운 결과</strong> — ' + out.fruit + '.' + yongNote;
+}
+
 function sajuxMilestoneAgeCat(age, cat, a) {
     var st = sajuxLifeStageForAge(age);
     if (st.key === 'child') {
@@ -5975,59 +6096,7 @@ function sajuxMilestoneAgeCat(age, cat, a) {
 }
 
 function sajuxMilestoneWhatHappens(data, m, a, cat, chung) {
-    var nm = data.name || '고객';
-    var age = m.age;
-    var st = sajuxLifeStageForAge(age);
-    var sip = a.sipGan || a.sipJi || '';
-    var domain = SAJUX_MILESTONE_SIP_EVENT[sip] || '';
-    var gil = a.gil.tag || '';
-
-    if (st.key === 'child') {
-        if (chung.length) {
-            return chung.join('·') + '와 지지가 부딪혀, <strong>이사·부모 일·학교·몸 상태</strong> 중 한 가지가 ' + age + '세 전후에 크게 움직입니다. 어른이 정리해 주는 편이 아이에게는 부담이 덜합니다';
-        }
-        if (cat === 'trial' || a.giHit) {
-            return '집안 분위기가 무겁거나 몸이 예민해지기 쉬운 해입니다. 승진·이직 같은 말은 아직 해당 없고, <strong>수면·식사·규칙</strong>만 지켜도 반은 회복됩니다';
-        }
-        return (domain
-            ? '<strong>' + domain + '</strong> 쪽(낯선 반·새 선생·동생 관계 등)이 ' + age + '세 무렵 환경에 맞추기 쉽습니다. ' + gil + ' 흐름이라 무리한 압박은 줄이는 편이 낫습니다'
-            : age + '세 무렵 집·학교 환경이 조용히 맞춰지는 해입니다. ' + gil + ' 흐름이라 과한 기대는 낮추는 편이 낫습니다');
-    }
-    if (st.key === 'teen') {
-        if (chung.length) {
-            return chung.join('·') + ' 충으로 <strong>이사·전학·가족·첫 연애·진로</strong> 중 하나가 ' + age + '세 전후에 갈라집니다. 혼자 끌어안기보다 어른 한 명과 일주일 안에 정리하는 게 낫습니다';
-        }
-        if (cat === 'study' || sip.indexOf('인') >= 0) {
-            return '<strong>시험·진로·자격·전학</strong> 줄기가 두꺼워지는 해입니다. 여러 갈래를 동시에 열지 말고, 하나만 골라 밀면 ' + nmUi(nm) + ' 체력이 버팁니다';
-        }
-        return (domain || '관계·자아') + ' 축에서 “나는 어떤 사람인가”가 ' + age + '세 전후에 또렷해집니다';
-    }
-
-    if (chung.length) {
-        return chung.join('·') + '와 지지 충(沖)이 겹쳐 <strong>' + (domain || '집·일·관계') + '</strong> 중 한 축이 ' + (m.year ? m.year + '년 ' : '') + age + '세 전후에 방향을 바꿉니다. 그해의 선택이 이후 3~5년을 가릅니다';
-    }
-    if (cat === 'turning') {
-        return '<strong>' + (domain || '진로·관계·거주') + '</strong>에서 익숙한 방식을 내려놓고 새 방식을 익히는 해입니다. 끊을 것·붙일 것을 한 장에 적어 두시면 혼선이 줄어듭니다';
-    }
-    if (cat === 'trial' || a.giHit) {
-        return '<strong>' + (domain || '일·돈·건강') + '</strong>에서 무게가 실립니다. 크게 벌리기보다 지금 있는 자리·계약·건강을 지키는 쪽이 ' + nmUi(nm) + ' 사주와 맞고, 여기서 버티시면 다음 상승 구간이 가벼워집니다';
-    }
-    if (cat === 'wealth' || sip.indexOf('재') >= 0) {
-        return '<strong>돈·거래·자산</strong> 줄기가 두꺼워집니다. 들어오는 통로와 새는 통로가 같이 늘 수 있어, 그해에는 수입·지출을 한 줄로만 남기고 큰 보증·동업은 미루는 편이 낫습니다';
-    }
-    if (cat === 'career' || sip.indexOf('관') >= 0) {
-        return '<strong>직장·자리·명예</strong> 축이 움직입니다. 승진·이직·창업·브랜드 정리 중 하나가 자연스럽게 따라올 수 있어, 맡은 역할을 한 줄로 정해 두시면 낭비가 줄어듭니다';
-    }
-    if (cat === 'study' || sip.indexOf('인') >= 0) {
-        return '<strong>배움·자격·전문성</strong>이 결과로 바뀌기 쉬운 해입니다. 조용히 쌓아 둔 것이 ' + age + '세 전후에 밖으로 드러나기 시작합니다';
-    }
-    if (cat === 'express' || sip.indexOf('식') >= 0 || sip.indexOf('상') >= 0) {
-        return '<strong>말·글·작품·발표</strong>로 이름이 드러나기 쉬운 해입니다. 여러 무대보다 한 곳만 골라 밀면 기회가 붙습니다';
-    }
-    if (cat === 'rise' || a.yongHit) {
-        return '<strong>' + (domain || '일·관계') + '</strong>에서 밀려 두었던 일을 매듭지우기 좋은 해입니다. 용신(用)이 받쳐 주어 같은 노력도 체감이 다르게 옵니다';
-    }
-    return '겉으로는 잔잔해도 속에서 <strong>' + (domain || '정리') + '</strong>가 진행되는 해입니다. 작은 약속 하나만 지켜도 다음 이정표가 가벼워집니다';
+    return sajuxMilestoneExperienceAchievement(data, m, a, cat, chung);
 }
 
 function sajuxMilestoneActionHint(data, cat, age, a, chung) {
@@ -6038,7 +6107,7 @@ function sajuxMilestoneActionHint(data, cat, age, a, chung) {
     if (cat === 'trial' || a.giHit) return '새 투자·큰 약속은 미루고, 건강 검진·계약 갱신만 챙기셔도 충분합니다';
     if (cat === 'wealth') return '그해 수입·지출 한 줄 + 큰 지출 상한액만 정해 두십시오';
     if (cat === 'career') return '맡은 역할을 한 문장으로 적어 두고, 그 밖 요청은 “내년”으로 미루십시오';
-    return '한 가지에만 힘을 모으시면 그게 다음 10년의 기둥이 됩니다';
+    return '위 <strong>맺어지기 쉬운 결과</strong>와 맞는 일 한 가지만 골라, 그해 안에 끝까지 가 보십시오';
 }
 
 function sajuxMilestoneConcreteLine(data, m) {
