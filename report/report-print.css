@@ -1,7 +1,128 @@
 /* =========================================
-   [사주X PDF 인쇄 — 배경만 화이트닝, 오행 글자색 유지]
+   [사주X PDF 인쇄 — A4 레이아웃 · 외곽 검정 제거 · 오행 색 유지]
 ========================================= */
 @media print {
+  @page {
+    size: A4 portrait;
+    margin: 12mm 10mm 14mm;
+  }
+
+  /* 다크 테마 body #000이 인쇄에 남으면 PDF 양옆이 검게 보임 */
+  html,
+  body,
+  html[data-theme="dark"],
+  html:not([data-theme="light"]),
+  html:not([data-theme="light"]) body,
+  html[data-theme="dark"] body {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #111111 !important;
+    color-scheme: light !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  #star-canvas,
+  body::before,
+  #floating-toc,
+  #theme-toggle,
+  #sticky-part-nav,
+  #sajux-pdf-fab,
+  .pdf-btn,
+  .nav-floating,
+  .sajux-pdf-wide-btn,
+  .print-actions,
+  .jeomsin-nav,
+  #step-1,
+  .step-nav {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  /* 모바일 500px 컬럼 → A4 전폭 */
+  .container,
+  .page,
+  #step-2,
+  #step-2.page,
+  #sec-report-full,
+  .step-content,
+  #report-container,
+  .report-container,
+  .print-container,
+  .layout-wrapper {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+  }
+
+  #sec-report-full {
+    padding-bottom: 0 !important;
+  }
+
+  #report-container {
+    padding: 0 1mm !important;
+    box-sizing: border-box !important;
+  }
+
+  .report-chapter {
+    padding: 14px 0 10px !important;
+    margin: 0 0 6mm !important;
+    max-width: 100% !important;
+  }
+
+  .cover-page {
+    min-height: auto !important;
+    height: auto !important;
+    padding: 18mm 6mm 14mm !important;
+    page-break-after: always !important;
+    break-after: page !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+
+  .toc-page {
+    padding: 12mm 6mm !important;
+    page-break-after: always !important;
+  }
+
+  .yearly-card-container,
+  .monthly-card-container,
+  .seyun-premium-vertical {
+    width: 100% !important;
+    max-width: 100% !important;
+    display: block !important;
+  }
+
+  .yearly-card-container .fortune-scroll,
+  .monthly-card-container .fortune-scroll {
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: visible !important;
+    scroll-snap-type: none !important;
+  }
+
+  .yearly-card,
+  .monthly-card,
+  .f-card,
+  .seyun-year-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
   body, html {
     background: #ffffff !important;
     background-color: #ffffff !important;
