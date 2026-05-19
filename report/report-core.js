@@ -5250,16 +5250,12 @@ function buildConnectedLifeArcParagraphs(data, ctx) {
             if (a.kind !== b.kind) return a.kind === 'daeun' ? -1 : 1;
             return a.age - b.age;
         });
-        var m = hits[0];
-        var line = sajuxMilestoneConcreteLine(data, m);
-        return '<span class="life-ms-inline" style="display:block;margin-top:12px;padding:12px 14px;border-radius:10px;background:rgba(199,167,106,0.07);border-left:2px solid rgba(199,167,106,0.45);font-size:12.5px;line-height:1.9;color:rgba(255,255,255,0.9);">'
-            + '<span style="font-size:10px;letter-spacing:0.1em;color:rgba(199,167,106,0.92);font-weight:700;">이 무렵 짚어볼 흐름</span><br>'
-            + line + '</span>';
+        return sajuxMilestoneFlowWeave(data, hits[0]);
     }
 
     function stagePara(lo, hi, seed, label, bodyHtml) {
         var beat = sajuxLifeArcBeatForRange(data, lo, hi, seed);
-        var html = (beat ? beat + ' ' : '') + '<strong>' + label + '</strong> — ' + bodyHtml + msInline(lo, hi);
+        var html = (beat ? beat + ' ' : '') + '<strong>' + label + '</strong>에는 ' + bodyHtml + msInline(lo, hi);
         return ctx.para(html);
     }
 
@@ -5454,7 +5450,7 @@ function buildPersonalPortraitInnerHtml(data) {
         ? '“스스로 결정하고 끝까지 책임지는” 방식'
         : '“충분히 살피고 함께 만들어 가는” 방식';
 
-    var introText = nmDnim(name) + '의 인생을 <strong>한 편의 이야기</strong>로 이어 읽어 드릴게요. 유년기부터 노년을 거쳐 죽음을 앞둔 시점까지 — 끊기지 않고 흐름만 따라가시면 됩니다. 대운·세운은 처음부터 끝까지 계산해 두었고, 그중 <strong>크게 갈라지는 해</strong>만 문장 사이에 짚어 둡니다. 사주 글자는 잠시 잊으셔도 좋아요.';
+    var introText = nmDnim(name) + '의 인생을 <strong>한 호흡</strong>으로 이어 읽어 드릴게요. 유년기부터 차례대로 쓰되, 어려운 말은 줄이고 “그때 뭐가 일어나기 쉬운지”만 따라가시면 됩니다. 대운·세운은 처음부터 끝까지 계산해 두었고, 그중 특히 눈에 띄는 해는 문장 안에 자연스럽게 끼워 넣었어요.';
 
     function para(text) { return buildNarrativePara(data, text); }
 
@@ -5482,9 +5478,9 @@ function buildPersonalPortraitInnerHtml(data) {
         nmKke: nmKke
     });
 
-    return '<p class="personal-portrait-eyebrow">' + escHtmlAttr(nmDnim(name)) + ' · 한 줄기 서사</p>'
-        + '<h2 class="personal-portrait-title">유년기부터, 죽음을 앞둔 시점까지</h2>'
-        + '<p class="personal-portrait-lede">' + voiceTwilightSpan(name + 'portraitLede') + ' — 이름 없이도 읽히는 한 사람의 흐름</p>'
+    return '<p class="personal-portrait-eyebrow">' + escHtmlAttr(nmDnim(name)) + ' · 인생 서사</p>'
+        + '<h2 class="personal-portrait-title">' + escHtmlAttr(nmDnim(name)) + '의 인생 서사</h2>'
+        + '<p class="personal-portrait-lede">' + nmDnim(name) + '만의 시간표를, 10대도 읽기 쉬운 말로 한 편에 이어 드릴게요</p>'
         + para(introText)
         + connectedArc;
 }
@@ -6055,7 +6051,50 @@ function sajuxMilestoneChungAxisText(chungLabels) {
     return axes.join(' · ');
 }
 
-/** “경험 + 성취” 두 줄 — 추상적 ‘상승·결실’ 대신 십성·충·연령으로 구체화 */
+/** 한 줄기 서사 안에 끼워 넣는 짧은 문장 — 박스·라벨 없이, 10대도 읽기 쉬운 말 */
+function sajuxMilestoneFlowWeave(data, m) {
+    if (!m || !m.g || !m.j) return '';
+    var a = sajuxAnalyzePeriod(data, m.g, m.j);
+    var nm = data.name || '고객';
+    var age = m.age;
+    var tier = sajuxMilestoneTierKey(age);
+    var out = sajuxMilestoneMergedOutcome(a, tier);
+    var chung = sajuxNatalChungHits(data, m.j);
+    var when = m.kind === 'daeun'
+        ? (m.age + '세부터 ' + (m.ageEnd != null ? m.ageEnd : m.age + 9) + '세 무렵')
+        : ((m.year ? m.year + '년 ' : '') + age + '세쯤');
+    var fruitBit = (out.fruit.split('·')[0] || out.fruit).replace(/\([^)]*\)/g, '').trim();
+
+    if (chung.length) {
+        if (tier === 'child') {
+            return ' 그중 ' + when + '에는 집·학교·가족 기운이 부딪혀 이사·부모 일·몸 상태 중 하나가 튀기 쉬우세요.';
+        }
+        if (tier === 'teen') {
+            return ' 그중 ' + when + '에는 주변이 한 번 흔들려 전학·가족·연애·진로 중 하나를 크게 고르게 되기 쉬우세요.';
+        }
+        return ' 그중 ' + when + '에는 ' + (sajuxMilestoneChungAxisText(chung) || '삶의 한 축') + '이 흔들려 이사·직장·관계·계약 중 하나가 갈라지기 쉬우시고, 그때 고르신 길이 몇 년은 남아요.';
+    }
+
+    if (a.giHit || a.score <= -2) {
+        if (tier === 'child') {
+            return ' 다만 ' + when + '에는 몸살·불면·집안 분위기처럼 무거운 일이 붙기 쉬운 해예요. 어른이 먼저 일정·병원·학교만 정리해 주시면 아이에게는 반쯤 회복됩니다.';
+        }
+        if (tier === 'teen') {
+            return ' 다만 ' + when + '에는 시험·친구·가족 중 한곳에서 마음이 무겁게 느껴지기 쉬운 해예요. 혼자 끌어안지 말고, 믿을 어른 한 명과 일주일 안에 정리해 보세요.';
+        }
+        return ' 다만 ' + when + '에는 기신(忌, 나를 지치게 하는 기운)이 겹쳐 돈·건강·직장·관계 중 한곳에 무게가 실리기 쉬우세요. 크게 벌리기보다 지키는 쪽이 ' + nmUi(nm) + ' 사주와 맞습니다.';
+    }
+
+    if (a.yongHit || a.score >= 2) {
+        return ' 특히 ' + when + '에는 ' + nmIGa(nm) + ' 바라던 일—' + fruitBit + '—에 손이 닿기 쉬운 해로 잡혀요.';
+    }
+
+    var sceneBit = out.scene.replace(/체험|니다|습니다|해입니다/g, '').trim();
+    if (sceneBit.length > 48) sceneBit = sceneBit.slice(0, 48) + '…';
+    return ' ' + when + '엔 ' + sceneBit + '기 쉽고, ' + fruitBit + ' 쪽으로 마무리되기도 해요.';
+}
+
+/** “경험 + 성취” 두 줄 — 이정표 타임라인 카드용(본문 한 호흡과 분리) */
 function sajuxMilestoneExperienceAchievement(data, m, a, cat, chung) {
     var tier = sajuxMilestoneTierKey(m.age);
     var out = sajuxMilestoneMergedOutcome(a, tier);
