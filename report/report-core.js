@@ -747,27 +747,26 @@ function buildCompatChapterIntro(ctx, topic) {
          + boldStarsToStrong(voicePolishParagraph(fakeData, text)) + '</p>';
 }
 
-/** 궁합 섹션 상단 — 은유 제목 + 사주아이형 도입 (ctx: a,b,aName,bName,isHap,isChung,score,…) */
+/** 궁합 챕터 헤더 — 섹션 라벨(관계 포지셔닝 등)이 제목, 은유 한 줄은 부제·설명 */
+function buildCompatChapterHeadOpts() {
+    return {
+        extraStyle: 'color:#f5f0e6;',
+        subIsHtml: true,
+        mainHeadingStyle: 'font-family:\'Noto Sans KR\',sans-serif;font-size:clamp(17px,4.2vw,22px);font-weight:700;line-height:1.28;margin:0 0 8px;color:var(--text,rgba(255,255,255,0.96));',
+        subFontSize: '13px',
+        subLetterSpacing: '0.02em',
+        subColor: 'rgba(255,255,255,0.68)',
+        subFontWeight: '400',
+        subLineHeight: '1.62'
+    };
+}
+
+/** 궁합 섹션 상단 — 섹션 제목 + 은유 부제 + 사주아이형 도입 (ctx: a,b,aName,bName,isHap,isChung,score,…) */
 function buildCompatVoiceSection(topic, ctx) {
     var label = SAJUX_COMPAT_SECTION_LABELS[topic] || '';
     var metaphor = buildCompatTopicMetaphor(topic, ctx);
-    var head;
-    /* 총평만: 섹션명(궁합 총평)을 메인 타이틀로 — 은유 한 줄은 그 아래 보조 헤드로 */
-    if (topic === 'overview') {
-        var subHtml = boldStarsToStrong(escHtmlAttr(metaphor));
-        head = buildChapterHeadMainSub(label, subHtml, {
-            extraStyle: 'color:#f5f0e6;',
-            subIsHtml: true,
-            mainHeadingStyle: 'font-family:\'Noto Sans KR\',sans-serif;font-size:clamp(22px,5.2vw,32px);font-weight:700;line-height:1.22;margin:0 0 10px;color:var(--text,rgba(255,255,255,0.96));',
-            subFontSize: '13.5px',
-            subLetterSpacing: '0.03em',
-            subColor: 'rgba(255,255,255,0.76)',
-            subFontWeight: '500',
-            subLineHeight: '1.68'
-        });
-    } else {
-        head = buildChapterHead(metaphor, label, { extraStyle: 'color:#f5f0e6;' });
-    }
+    var subHtml = boldStarsToStrong(escHtmlAttr(metaphor));
+    var head = buildChapterHeadMainSub(label, subHtml, buildCompatChapterHeadOpts());
     return head + buildCompatChapterIntro(ctx, topic);
 }
 
