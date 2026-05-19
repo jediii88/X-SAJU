@@ -5254,8 +5254,7 @@ function buildConnectedLifeArcParagraphs(data, ctx) {
     }
 
     function stagePara(lo, hi, seed, label, bodyHtml) {
-        var beat = sajuxLifeArcBeatPlain(data, lo, hi, seed);
-        var html = (beat ? beat + ' ' : '') + '<strong>' + label + '</strong>에는 ' + bodyHtml + msInline(lo, hi);
+        var html = '<strong>' + label + '</strong>에는 ' + bodyHtml + msInline(lo, hi);
         return ctx.para(html);
     }
 
@@ -5450,9 +5449,11 @@ function buildPersonalPortraitInnerHtml(data) {
         ? '“스스로 결정하고 끝까지 책임지는” 방식'
         : '“충분히 살피고 함께 만들어 가는” 방식';
 
-    var introText = nmDnim(name) + '의 인생을 <strong>한 호흡</strong>으로 이어 읽어 드릴게요. 사주 용어는 쓰지 않고, <strong>그때 무슨 일이 생기기 쉬운지·그래서 뭐가 남는지</strong>만 말씀드립니다.';
+    var introText = nmDnim(name) + '의 인생을 <strong>한 호흡</strong>으로 이어 읽어 드릴게요. 사주 용어는 쓰지 않고, <strong>그때 무슨 일이 생기기 쉬운지·그래서 뭐가 남는지</strong>만 말씀드립니다. 나이는 딱 맞추기보다 <strong>한두 해 넓게</strong> 잡았으니, 본인 시기와 가깝게만 읽어 주시면 됩니다.';
 
-    function para(text) { return buildNarrativePara(data, text); }
+    function para(text) {
+        return buildNarrativePara(data, stripLifeArcJargon(text));
+    }
 
     var connectedArc = buildConnectedLifeArcParagraphs(data, {
         name: name,
@@ -6086,6 +6087,40 @@ function sajuxMilestoneChungAxisText(chungLabels) {
     return axes.join(' · ');
 }
 
+/** 인생 서사 — 나이를 한두 해 넓게(34세 → 33세부터 35세쯤) */
+function sajuxAgeFuzzySpan(centerAge) {
+    var c = Number(centerAge);
+    if (isNaN(c) || c < 0) c = 0;
+    var lo = Math.max(0, c - 1);
+    var hi = c + 1;
+    if (lo === hi) return c + '세쯤';
+    return lo + '세부터 ' + hi + '세쯤';
+}
+
+function sajuxAgeFuzzySpanRange(ageLo, ageHi) {
+    var lo = Number(ageLo);
+    var hi = Number(ageHi);
+    if (isNaN(lo)) lo = 0;
+    if (isNaN(hi)) hi = lo;
+    return Math.max(0, lo - 1) + '세부터 ' + (hi + 1) + '세 무렵';
+}
+
+/** 인생 서사 본문 — 남아 있는 명리·한자 설명 문장 제거 */
+function stripLifeArcJargon(html) {
+    if (!html || typeof html !== 'string') return html;
+    var s = html;
+    s = s.replace(/이 무렵\([^)]*\)\s*큰 계절은[\s\S]*?입니다\.\s*/g, '');
+    s = s.replace(/[^.!?]*천간[\s\S]*?지지[\s\S]*?들어옵니다\.\s*/g, '');
+    s = s.replace(/[^.!?]*천간[\s\S]*?십성[\s\S]*?\.\s*/g, '');
+    s = s.replace(/[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]\([^)]*\)\s*대운[^.]*\.\s*/g, '');
+    s = s.replace(/<strong>[^<]*[\u4e00-\u9fff][^<]*<\/strong>\s*\([^)]*\)\s*—[\s\S]*?흐름입니다\.\s*/g, '');
+    s = s.replace(/용신\([^)]*\)|희신\([^)]*\)|기신\([^)]*\)|구신\([^)]*\)/g, '');
+    s = s.replace(/지지\s*충\(沖\)/g, '주변 환경');
+    s = s.replace(/\(길\)|\(흉\)|\(평\)/g, '');
+    s = s.replace(/\s{2,}/g, ' ').replace(/\s+([,.])/g, '$1').trim();
+    return s;
+}
+
 /** 인생 서사·이정표 — 계산은 사주로, 문장은 결과만(용어 없음) */
 function sajuxMilestonePlainClause(data, m) {
     if (!m || !m.g || !m.j) return '';
@@ -6116,8 +6151,8 @@ function sajuxMilestoneFlowWeave(data, m) {
     if (!m || !m.g || !m.j) return '';
     var a = sajuxAnalyzePeriod(data, m.g, m.j);
     var when = m.kind === 'daeun'
-        ? (m.age + '세부터 ' + (m.ageEnd != null ? m.ageEnd : m.age + 9) + '세 무렵')
-        : ((m.year ? m.year + '년 ' : '') + m.age + '세쯤');
+        ? sajuxAgeFuzzySpanRange(m.age, m.ageEnd != null ? m.ageEnd : m.age + 9)
+        : ((m.year ? m.year + '년 ' : '') + sajuxAgeFuzzySpan(m.age));
     var clause = sajuxMilestonePlainClause(data, m);
     if (!clause) return '';
     if (a.giHit || a.score <= -2) return ' 다만 ' + when + '에는 ' + clause + '.';
@@ -6126,8 +6161,8 @@ function sajuxMilestoneFlowWeave(data, m) {
 
 function sajuxMilestoneExperienceAchievement(data, m, a, cat, chung) {
     var when = m.kind === 'daeun'
-        ? (m.age + '세~' + (m.ageEnd != null ? m.ageEnd : m.age + 9) + '세')
-        : ((m.year ? m.year + '년 ' : '') + m.age + '세');
+        ? sajuxAgeFuzzySpanRange(m.age, m.ageEnd != null ? m.ageEnd : m.age + 9)
+        : ((m.year ? m.year + '년 ' : '') + sajuxAgeFuzzySpan(m.age));
     return when + ' — ' + sajuxMilestonePlainClause(data, m) + '.';
 }
 
@@ -6168,8 +6203,8 @@ function sajuxMilestoneConcreteLine(data, m) {
     var cat = sajuxMilestoneAgeCat(age, m.cat || 'flow', sajuxAnalyzePeriod(data, m.g, m.j));
     var chung = sajuxNatalChungHits(data, m.j);
     var when = m.kind === 'daeun'
-        ? (m.age + '세~' + (m.ageEnd != null ? m.ageEnd : m.age + 9) + '세')
-        : ((m.year ? m.year + '년 ' : '') + age + '세');
+        ? sajuxAgeFuzzySpanRange(m.age, m.ageEnd != null ? m.ageEnd : m.age + 9)
+        : ((m.year ? m.year + '년 ' : '') + sajuxAgeFuzzySpan(age));
     var body = sajuxMilestonePlainClause(data, m);
     var act = sajuxMilestoneActionHint(data, cat, age, sajuxAnalyzePeriod(data, m.g, m.j), chung);
     return when + ' — ' + body + '. ' + act;
