@@ -57,7 +57,7 @@
       // 자동실행은 window.load IIFE에서 처리 (하단 스크립트 참조)
     })();
     </script>
-    <meta name="version" content="1779176458">
+    <meta name="version" content="1779180064">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -2028,14 +2028,24 @@
         display: table-cell !important;
         vertical-align: top !important;
     }
-    .card, .yearly-card, .monthly-card, .module-item {
-        background: #f8f9fa !important;
+    .card, .yearly-card, .monthly-card, .module-item, .glass-panel, .sajux-glass-heavy {
+        background: transparent !important;
         backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
-        border: 1px solid #ddd !important;
+        border: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+    }
+    #report-container div[style*="background:rgba"],
+    #report-container div[style*="border-left"] {
+        background: transparent !important;
+        border: none !important;
+        border-left: none !important;
+        border-radius: 0 !important;
     }
     .badge, .tag, .jijanggan {
-        background: #e9ecef !important;
+        background: transparent !important;
+        border: none !important;
         }
 
             /* 화면용 UI 전부 숨기기 */
@@ -2228,8 +2238,8 @@
     </script>
 
 <!-- SAJUX_CACHE_BUSTER_START -->
-<meta name="sajux-build" content="1779176458">
-<script>(function(){var v='1779176458';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
+<meta name="sajux-build" content="1779180064">
+<script>(function(){var v='1779180064';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
 <!-- SAJUX_CACHE_BUSTER_END -->
 <link rel="stylesheet" href="assets/css/core.css">
 <link rel="stylesheet" href="assets/override.css">
@@ -2312,14 +2322,19 @@ html:not([data-theme="light"]) .brand {
 }
 </style>
 <style type="text/css" media="print">
-  .card, .yearly-card, .monthly-card, .inner-card, .detail-box, 
-  .jijanggan, .jijanggan span, .badge, .tag, div[class*="box"], div[class*="card"] {
-      background: #ffffff !important;
-      background-color: #ffffff !important;
-      border: 1px solid #cccccc !important;
+  .card, .yearly-card, .monthly-card, .inner-card, .detail-box,
+  .glass-panel, .sajux-glass-heavy, div[class*="card"] {
+      background: transparent !important;
+      background-color: transparent !important;
+      border: none !important;
+      border-radius: 0 !important;
       box-shadow: none !important;
       -webkit-print-color-adjust: exact !important;
       print-color-adjust: exact !important;
+  }
+  .jijanggan, .jijanggan span, .badge, .tag {
+      background: transparent !important;
+      border: none !important;
   }
   h1, h2, h3, h4, h5, .section-title, .part-title, .title-card {
       page-break-after: avoid !important;
@@ -3245,46 +3260,7 @@ body.light-mode #sajux-pdf-fab {
     box-shadow: none !important;
   }
 
-  /* 지장간, 십성 배지, 태그 — 배경만 */
-  .jijanggan, .jijanggan span, .jijanggan div,
-  .badge, .tag, .m-badge, .m-badge-shinsal, .m-badge--gongmang-hit,
-  .highlight, [class*="badge"], [class*="tag"] {
-    background: #ffffff !important;
-    background-color: #ffffff !important;
-    border: 1px solid #999999 !important;
-    box-shadow: none !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-
-  /* 카드·내부 박스 — 배경만 (글자색 건드리지 않음) */
-  .card, .yearly-card, .monthly-card, .module-item,
-  .inner-card, .detail-box, .content-box,
-  .sajux-print-surface, .report-inner-box,
-  .vip-evidence-block table,
-  .manse-cell, .manse-table,
-  [class*="box"]:not(.checkbox):not(.search-box),
-  [class*="card"] {
-    background: #ffffff !important;
-    background-color: #ffffff !important;
-    border: 1px solid #cccccc !important;
-    box-shadow: none !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-  }
-
-  /* report-core 인라인 반투명 박스 */
-  #report-container div[style*="background:rgba(255,255,255"],
-  #report-container div[style*="background:rgba(0,0,0"] {
-    background: #ffffff !important;
-    background-color: #ffffff !important;
-    border: 1px solid #cccccc !important;
-    box-shadow: none !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-  }
+  /* 카드·플랫 레이아웃 — report-print.css (다음 링크) 에서 일괄 처리 */
 
   /* 오행 한자·천간지지 색상 보존 */
   .wood, .fire, .earth, .metal, .water,
@@ -3312,7 +3288,6 @@ body.light-mode #sajux-pdf-fab {
   .manse-row { display: grid !important; grid-template-columns: 60px repeat(4, 1fr) !important; gap: 4px !important; }
   .part-header-block { page-break-before: always !important; break-before: page !important; page-break-after: avoid !important; break-after: avoid !important; }
   .part-follow-content > *:first-child { page-break-before: avoid !important; break-before: avoid !important; }
-  .yearly-indicators, #report-container div[style*="background:rgba(0,0,0"] { background: #f7f7f7 !important; }
   .yearly-ind-val, .m-hangul { color: #333333 !important; }
 
   table {
