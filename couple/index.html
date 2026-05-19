@@ -140,6 +140,32 @@ body::before {
   font-size: 12px; color: var(--text-soft); font-weight: 300;
   letter-spacing: 0.02em;
 }
+/* report-core 궁합 voice가 섹션 제목·부제를 넣으면 HTML 중복 헤더 숨김 */
+.compat-section-title:has(+ .compat-voice-wrap .ch-head-main-sub),
+.compat-section-title:has(+ .rel-panel .ch-head-main-sub) {
+  display: none;
+}
+.compat-voice-wrap .ch-head-main-sub { margin-bottom: 10px; }
+.compat-voice-wrap .ch-main-heading-xl,
+.rel-panel > .ch-head-main-sub .ch-main-heading-xl {
+  font-size: clamp(17px, 4.2vw, 22px) !important;
+  font-weight: 700 !important;
+  line-height: 1.28 !important;
+}
+.compat-voice-wrap .ch-sub-under-main,
+.rel-panel > .ch-head-main-sub .ch-sub-under-main {
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  color: rgba(255, 255, 255, 0.68) !important;
+  letter-spacing: 0.02em !important;
+  line-height: 1.62 !important;
+}
+.compat-voice-wrap .compat-voice-opener,
+.rel-panel > .compat-voice-opener {
+  font-size: 13px !important;
+  line-height: 1.75 !important;
+  color: rgba(255, 255, 255, 0.62) !important;
+}
 .compat-section-title .title-left { display: flex; align-items: center; gap: 6px; font-weight: 500; color: var(--text); }
 .compat-section-title > span:last-child {
   font-size: 11px; color: var(--text-dim); font-weight: 300;
