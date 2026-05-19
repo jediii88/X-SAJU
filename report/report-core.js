@@ -5233,7 +5233,7 @@ function buildIljuProfileCard(data) {
 /* ═══ 인생 서사 2단계 (모든 고객 공통) ═══
  *  ① buildLifeNarrativePlan — 원국 8글자 × 그 시기 대운 간지 → 사실(JSON)
  *  ② writeLifeNarrativeParagraph — 사실만 이어지는 평문 (카드·이정표 상용구 없음)
- *  제목 = 고정 나이 구간 / 톤 = 구간과 겹치는 대운 / 서사 = 충·합·형·천간합 → 생활 영역
+ *  제목 = 고정 나이 구간 / 톤 = 구간과 겹치는 대운 / 시기마다 대운×8자 한 문장(나이 없음)
  */
 
 var _SAJUX_STEM_COMBINE = [['甲','己'],['乙','庚'],['丙','辛'],['丁','壬'],['戊','癸']];
@@ -5372,21 +5372,30 @@ function lifeNarrativeDaeunOverlapping(data, lo, hi) {
     return best;
 }
 
-/** 8자×대운 → 한 문장(나이·이정표 없음). raw=true면 접속어만 본문 */
-function lifeNarrativePlainWeave(data, g, j, raw) {
+/** 8자×대운 → 시기당 한 문장(나이·이정표 없음). skipLine=직전과 동일하면 다른 각도 시도 */
+function lifeNarrativePlainWeave(data, g, j, opts) {
+    opts = opts || {};
     var nm = data.name || '고객';
+    var skip = opts.skipLine || '';
     var hits = sajuxPeriodVsNatalHits(data, g, j);
-    if (!hits.length) return '';
-    var line = lifeNarrativeHitToPlain(hits[0], nm);
-    if (!line) return '';
-    return raw ? line : ('한편, ' + line);
-}
-
-function lifeNarrativeWeaveScore(data, g, j) {
-    if (!g || !j) return 0;
-    var hits = sajuxPeriodVsNatalHits(data, g, j);
-    if (hits.length) return hits[0].weight;
-    return 0;
+    var i;
+    for (i = 0; i < hits.length; i++) {
+        var line = lifeNarrativeHitToPlain(hits[i], nm);
+        if (line && line !== skip) return line;
+    }
+    var a = sajuxAnalyzePeriod(data, g, j);
+    var ang = sajuxSipLifeAngle(a.sipGan || a.sipJi);
+    var soft = '';
+    if (a.yongHit || a.score >= 2) {
+        soft = '겉으로 들어온 기운이 ' + nmEulReul(nm) + ' 받쳐 주기 쉬워, ' + ang + '이 숨통이 트이는 때입니다';
+    } else if (a.giHit || a.score <= -2) {
+        soft = '그때 들어온 기운이 부담이 되기 쉬워, ' + ang + '에서 무리한 확장은 줄이는 편이 낫습니다';
+    } else if (a.heeHit) {
+        soft = ang + '이 잔잔하게 붙어 가는 시기입니다';
+    } else {
+        soft = '큰 사건 없이도 속에서 ' + ang + '의 습관이 조금씩 굳어지는 때입니다';
+    }
+    return soft !== skip ? soft : '';
 }
 
 function lifeNarrativePickMilestone(milestones, lo, hi) {
@@ -5419,50 +5428,24 @@ function lifeNarrativeMilestoneFact(data, m) {
     };
 }
 
-/** ① 계산층 — 인생 전체에서 8자×대운 강한 힌트는 최대 2시기만 */
+/** ① 계산층 — 시기마다 겹치는 대운 × 원국 8글자 한 문장 */
 function buildLifeNarrativePlan(data, ctx) {
-    var draft = [];
+    var stages = [];
+    var prevWeave = '';
     SAJUX_LIFE_STAGES.forEach(function (st) {
         var label = st.label;
         if (st.key === 'final') label = voiceTwilightChapter((ctx.name || '고객') + 'fin');
         var daeun = lifeNarrativeDaeunOverlapping(data, st.lo, st.hi);
         var weave = '';
-        var wScore = 0;
-        if (daeun && st.lo >= 20) {
-            wScore = lifeNarrativeWeaveScore(data, daeun.g, daeun.j);
-            weave = lifeNarrativePlainWeave(data, daeun.g, daeun.j, true);
-        }
-        draft.push({
+        if (daeun) weave = lifeNarrativePlainWeave(data, daeun.g, daeun.j, { skipLine: prevWeave });
+        if (weave) prevWeave = weave;
+        stages.push({
             key: st.key,
             label: label,
             ageLo: st.lo,
             ageHi: st.hi,
             flow: ctx.periodTone(st.lo, st.hi),
-            weave: weave,
-            weaveScore: wScore
-        });
-    });
-    draft.sort(function (a, b) { return b.weaveScore - a.weaveScore; });
-    var allow = {};
-    var used = {};
-    var n = 0;
-    for (var i = 0; i < draft.length && n < 3; i++) {
-        var d = draft[i];
-        if (d.weaveScore < 8 || !d.weave || used[d.weave]) continue;
-        allow[d.key] = d.weave;
-        used[d.weave] = true;
-        n++;
-    }
-    var stages = [];
-    SAJUX_LIFE_STAGES.forEach(function (st) {
-        var row = draft.filter(function (x) { return x.key === st.key; })[0];
-        stages.push({
-            key: st.key,
-            label: row.label,
-            ageLo: st.lo,
-            ageHi: st.hi,
-            flow: row.flow,
-            weave: allow[st.key] || ''
+            weave: weave
         });
     });
     return { stages: stages };
@@ -5534,10 +5517,23 @@ function lifeNarrativeStageBody(ctx, stage) {
     return '';
 }
 
-/** ② 글쓰기층 — 짧게 이어 읽기 (나이·이정표·반복 없음) */
+var _LIFE_WEAVE_LEAD = {
+    child: ' 어린 시절 들어온 기운으로 보면, ',
+    teen: ' 그때 겹친 기운으로 보면, ',
+    youth: ' 이 무렵 들어온 기운으로 보면, ',
+    prime: ' 이 무렵 들어온 기운으로 보면, ',
+    middle: ' 이 무렵 들어온 기운으로 보면, ',
+    elder: ' 이 무렵 들어온 기운으로 보면, ',
+    final: ' 마지막 장면의 기운으로 보면, '
+};
+
+/** ② 글쓰기층 — 시기 본문 + 대운×8자 한 문장 이어 붙임 */
 function writeLifeNarrativeParagraph(data, stage, ctx) {
     var body = lifeNarrativeStageBody(ctx, stage);
-    if (stage.weave) body += '. ' + stage.weave;
+    if (stage.weave) {
+        var lead = _LIFE_WEAVE_LEAD[stage.key] || ' 이 무렵 들어온 기운으로 보면, ';
+        body += lead + stage.weave;
+    }
     return '<strong>' + stage.label + '</strong>에는 ' + body;
 }
 
