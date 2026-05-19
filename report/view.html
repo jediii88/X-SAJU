@@ -57,7 +57,7 @@
       // 자동실행은 window.load IIFE에서 처리 (하단 스크립트 참조)
     })();
     </script>
-    <meta name="version" content="1779176040">
+    <meta name="version" content="1779176458">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -2047,12 +2047,40 @@
             #step-2 > .step-content > *:not(#sec-report-full) { display: none !important; }
             #sec-report-full > #report-inline-top { display: none !important; }
             /* 배경/색상 */
-            body { background: #fff !important; color: #111 !important; margin: 0 !important; }
-            html { background: #fff !important; color-scheme: light !important; --bg-primary: #fff !important; --text-primary: #111 !important; --card-bg: #f5f5f5 !important; --accent-color: #8b6914 !important; --accent-rgb: 139, 105, 20 !important; --gold: #8b6914 !important; --text: #111 !important; --text-soft: #242424 !important; --text-dim: #444 !important; }
-            .container { max-width: 100% !important; padding: 0 !important; }
+            html, body,
+            html[data-theme="dark"] body,
+            html:not([data-theme="light"]) body {
+                background: #fff !important;
+                background-color: #fff !important;
+                color: #111 !important;
+                margin: 0 !important;
+                color-scheme: light !important;
+            }
+            html {
+                --bg-primary: #fff !important;
+                --text-primary: #111 !important;
+                --card-bg: #f5f5f5 !important;
+                --accent-color: #8b6914 !important;
+                --accent-rgb: 139, 105, 20 !important;
+                --gold: #8b6914 !important;
+                --text: #111 !important;
+                --text-soft: #242424 !important;
+                --text-dim: #444 !important;
+            }
+            .container,
+            #step-2,
+            #step-2.page,
+            #sec-report-full,
+            #report-container {
+                width: 100% !important;
+                max-width: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                background: #fff !important;
+            }
             #step-2, .step-content, #sec-report-full { padding: 0 !important; margin: 0 !important; }
             /* 리포트 챕터 스타일 */
-            .cover-page { page-break-after: always; min-height: 100vh; display: flex !important; flex-direction: column; justify-content: center; align-items: center; background: #fff !important; color: #111 !important; }
+            .cover-page { page-break-after: always; min-height: auto !important; height: auto !important; display: flex !important; flex-direction: column; justify-content: center; align-items: center; background: #fff !important; color: #111 !important; padding: 18mm 6mm !important; }
             .print-only { display: flex !important; }
             .toc-page.print-only { display: block !important; }
             .toc-page { page-break-after: always; background: #fff !important; color: #111 !important; padding: 40px !important; }
@@ -2200,8 +2228,8 @@
     </script>
 
 <!-- SAJUX_CACHE_BUSTER_START -->
-<meta name="sajux-build" content="1779176040">
-<script>(function(){var v='1779176040';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
+<meta name="sajux-build" content="1779176458">
+<script>(function(){var v='1779176458';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
 <!-- SAJUX_CACHE_BUSTER_END -->
 <link rel="stylesheet" href="assets/css/core.css">
 <link rel="stylesheet" href="assets/override.css">
