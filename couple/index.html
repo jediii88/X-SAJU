@@ -104,23 +104,59 @@ body::before {
   padding: 36px 20px 24px;
   border-bottom: 1px solid rgba(199,167,106,0.1);
 }
-/* 개인 리포트 표지 — 로고(다크: screen 블렌드) */
+/* 개인 리포트 표지(buildCoverPage) — 로고 + 사주X란? 도입부 */
 .page-header .sajux-logo-wrap {
   position: relative;
-  width: clamp(132px, 28vw, 188px);
-  margin: 0 auto 18px;
+  width: 100%;
+  max-width: 90vw;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   isolation: isolate;
 }
-.page-header .sajux-logo {
+.page-header .sajux-logo-cover-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 100%;
+}
+.page-header .sajux-logo-cover-row img {
+  width: clamp(320px, 55vw, 600px);
+  max-width: 100%;
   height: auto;
-  display: block;
+  margin: 0 auto;
 }
-.page-header .sajux-logo.dark {
-  mix-blend-mode: screen;
-  opacity: 0.96;
+@media screen {
+  .page-header .sajux-logo-cover-print { display: none !important; }
+  .page-header .sajux-logo-cover-screen {
+    display: block;
+    mix-blend-mode: screen;
+    opacity: 0.96;
+  }
 }
-.page-header .sajux-logo.light { display: none; }
+/* 사주X란? — 표지 로고 바로 아래 도입부 (view.html 동일) */
+.sajux-intro-block { width: 100%; max-width: 760px; margin: 28px auto 0; text-align: center; }
+.sajux-intro-heading { font-size: 13px; letter-spacing: 0.12em; color: rgba(199,167,106,0.9); margin-bottom: 16px; font-weight: 700; }
+.intro-text-container {
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  text-wrap: balance;
+  line-height: 1.6;
+  text-align: center;
+  margin: 0 auto;
+  max-width: 90%;
+  font-size: 15px;
+  color: rgba(228, 232, 240, 0.92);
+  font-weight: 300;
+  letter-spacing: 0.01em;
+}
+.intro-text-container p { margin-top: 0; margin-bottom: 0; }
+.page-header .sajux-intro-block { margin: 24px auto 0; }
+.page-header-couple-title {
+  margin-top: 32px;
+}
 .page-header h1 {
   font-family: 'Jeongseon Arirang Ppuri', 'Nanum Brush Script', cursive;
   font-size: clamp(28px, 6.5vw, 48px);
@@ -385,8 +421,8 @@ body::before {
   .report-container, .print-container, .layout-wrapper, .card-wrapper, body, main {
       display: block !important;
   }
-  .page-header .sajux-logo.dark { display: none !important; mix-blend-mode: normal !important; }
-  .page-header .sajux-logo.light { display: block !important; mix-blend-mode: normal !important; opacity: 1 !important; }
+  .page-header .sajux-logo-cover-screen { display: none !important; mix-blend-mode: normal !important; }
+  .page-header .sajux-logo-cover-print { display: block !important; mix-blend-mode: normal !important; opacity: 1 !important; }
 </style>
 </head>
 <body>
@@ -446,11 +482,20 @@ body::before {
 
 <div id="main-content" style="display:none;">
   <div class="page-header">
-    <div class="sajux-logo-wrap" aria-label="SAJU X">
-      <img class="sajux-logo dark" src="../report/assets/sajux-logo-dark.png" alt="SAJU X" width="188" height="auto" decoding="async" />
-      <img class="sajux-logo light" src="../report/assets/sajux-logo-light.png" alt="" width="188" height="auto" decoding="async" aria-hidden="true" />
+    <div class="sajux-logo-wrap">
+      <div class="sajux-logo-cover-row">
+        <img class="sajux-logo light sajux-logo-cover-print" src="../report/assets/sajux-logo-light.png" alt="SAJU X 로고" loading="eager" decoding="sync" />
+        <img class="sajux-logo dark sajux-logo-cover-screen" src="../report/assets/sajux-logo-dark.png" alt="SAJU X 로고" loading="eager" decoding="sync" />
+      </div>
+      <div id="sec-book-intro" class="sajux-intro-block">
+        <div class="sajux-intro-heading">사주X란?</div>
+        <div class="intro-text-container">
+          <p style="margin-bottom: 12px;">사주X는 X-파일처럼, 고객님의 깊은 내면과 흐름을 조용히 비춰보는 비밀문서입니다.</p>
+          <p>또한 사주X의 X는 사주를 이루는 네 개의 기둥이 서로 이어져 완성되는, 한 사람의 운명 구조를 상징합니다.</p>
+        </div>
+      </div>
     </div>
-    <h1>두 사람의 인연 구조</h1>
+    <h1 class="page-header-couple-title">두 사람의 인연 구조</h1>
     <p class="hero-sub">궁합 리포트 — 원국 표는 개인 만세력과 같은 규칙으로 계산합니다. 출생 시각은 한국 경도에 맞춰 약 32분 당겨 적용하며, 왼쪽부터 시주 · 일주 · 월주 · 년주 순입니다.</p>
     <div class="rel-badge" id="rel-badge">연인 궁합</div>
     <div id="couple-issuer-hint" style="font-size:10px;color:var(--text-dim);margin-top:10px;letter-spacing:0.06em;"></div>
