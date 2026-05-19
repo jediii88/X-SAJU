@@ -5324,34 +5324,64 @@ function sajuxPeriodVsNatalHits(data, pg, pj) {
     return hits;
 }
 
-function lifeNarrativeHitToPlain(hit, nm) {
+function lifeNarrativeHitToPlain(hit, nm, stageKey) {
     var dom = hit.domain;
     var ang = hit.angle;
+    var late = stageKey === 'elder' || stageKey === 'final';
+    var midPlus = stageKey === 'middle' || late;
+
     if (hit.relation === '충') {
         if (hit.palace.indexOf('월') === 0) {
+            if (late) {
+                return '집·병원·간병·생활 루틴이 한꺼번에 겹치기 쉬워, 몸과 마음을 동시에 챙기셔야 하는 시기입니다';
+            }
+            if (midPlus) {
+                return '부모님 건강·집안·본인 일이 동시에 무거워질 수 있어, 혼자 끌어안지 않는 편이 낫습니다';
+            }
             return '부모·직장·집 쪽에서 갑작스런 변화가 몰리기 쉬워, ' + nmDnim(nm) + '도 한동안 마음이 예민해질 수 있습니다';
         }
         if (hit.palace.indexOf('일') === 0) {
+            if (late) {
+                return '건강·컨디션·배우자와의 일상이 한꺼번에 신경 쓰이기 쉬워, 무리한 일정은 줄이는 편이 낫습니다';
+            }
             return '건강·배우자·자기 결정이 한꺼번에 흔들리기 쉬워, 몸과 마음을 동시에 챙겨야 하는 시기입니다';
         }
         if (hit.palace.indexOf('년') === 0) {
             return '고향·윗집안·큰 가족 행사 쪽에서 이사·분가·갈등 같은 변화가 붙을 수 있습니다';
         }
+        if (late) {
+            return '자녀·손주·남은 가족 일정과 ' + ang + '이 겹치며, 겉으로는 괜찮아도 안이 먼저 지치기 쉽습니다';
+        }
         return '자녀·미래 계획·속마음 쪽에서 ' + ang + '이 겹치며, 겉으로는 괜찮아도 안이 먼저 지치기 쉽습니다';
     }
     if (hit.relation === '합') {
         if (hit.palace.indexOf('일') === 0) {
-            return '배우자·파트너·건강 루틴이 맞물려 관계나 컨디션이 한결 편해지기 쉬운 흐름입니다';
+            return late
+                ? '건강 루틴·배우자·가까운 사람과의 일상이 한결 편해지기 쉬운 흐름입니다'
+                : '배우자·파트너·건강 루틴이 맞물려 관계나 컨디션이 한결 편해지기 쉬운 흐름입니다';
         }
         if (hit.palace.indexOf('월') === 0) {
+            if (late) {
+                return '집안·거주 환경이 한때 단단해지며, 가까운 가족이 실질적으로 돕기 쉬운 시기입니다';
+            }
+            if (midPlus) {
+                return '집안·부모님·본인 일이 한때 맞물려, ' + ang + ' 쪽에서 실질 도움이 들어오기 쉽습니다';
+            }
             return '부모·직장·집안 분위기가 한때 단단해지며, ' + ang + ' 쪽에서 실질 도움이 들어오기 쉽습니다';
         }
         return dom + ' 쪽 인연이 붙으며, ' + ang + '이 자연스럽게 풀리는 시기입니다';
     }
     if (hit.relation === '형') {
-        return dom + '·' + ang + '이 동시에 걸려, 작은 말다툼이 크게 번지지 않게 선을 미리 긋는 편이 낫습니다';
+        if (late) {
+            return '가족·간병·재산·유언 쪽 일이 겹치기 쉬워, 작은 말다툼이 크게 번지지 않게 선을 미리 긋는 편이 낫습니다';
+        }
+        var topic = (dom === ang || dom.indexOf(ang) >= 0) ? ang : (dom + '과 ' + ang);
+        return topic + '이 겹치기 쉬워, 작은 말다툼이 크게 번지지 않게 선을 미리 긋는 편이 낫습니다';
     }
     if (hit.relation === '천간합') {
+        if (late) {
+            return '오래 미루던 정리·작별·유산 나눔을 조용히 매듭지을 때입니다';
+        }
         return ang + '이 앞에서 열리며, 망설이던 한 가지를 밀어 붙이기 좋은 때입니다';
     }
     return '';
@@ -5373,20 +5403,30 @@ function lifeNarrativeDaeunOverlapping(data, lo, hi) {
     return best;
 }
 
-/** 8자×대운 → 시기당 한 문장(나이·이정표 없음). skipLine=직전과 동일하면 다른 각도 시도 */
+/** 8자×대운 → 시기당 한 문장(나이·이정표 없음). final 은 본문만 — 보조 문장 없음 */
 function lifeNarrativePlainWeave(data, g, j, opts) {
     opts = opts || {};
+    if (opts.stageKey === 'final') return '';
     var nm = data.name || '고객';
     var skip = opts.skipLine || '';
+    var stageKey = opts.stageKey || '';
     var hits = sajuxPeriodVsNatalHits(data, g, j);
     var i;
     for (i = 0; i < hits.length; i++) {
-        var line = lifeNarrativeHitToPlain(hits[i], nm);
+        var line = lifeNarrativeHitToPlain(hits[i], nm, stageKey);
         if (line && line !== skip) return line;
     }
     var a = sajuxAnalyzePeriod(data, g, j);
     var ang = sajuxSipLifeAngle(a.sipGan || a.sipJi);
     var soft = '';
+    if (opts.stageKey === 'elder') {
+        if (a.giHit || a.score <= -2) {
+            soft = '몸을 먼저 챙기는 것이 전부처럼 느껴지기 쉬운 시기입니다';
+        } else {
+            soft = '자녀·손주·오래된 인연 쪽에서 조용한 기쁨이 돌아오기 쉽습니다';
+        }
+        return soft !== skip ? soft : '';
+    }
     if (a.yongHit || a.score >= 2) {
         soft = '그때 환경이 ' + nmEulReul(nm) + ' 받쳐 주기 쉬워, ' + ang + '이 숨통이 트이는 때입니다';
     } else if (a.giHit || a.score <= -2) {
@@ -5438,7 +5478,9 @@ function buildLifeNarrativePlan(data, ctx) {
         if (st.key === 'final') label = '죽음을 앞둔 시점';
         var daeun = lifeNarrativeDaeunOverlapping(data, st.lo, st.hi);
         var weave = '';
-        if (daeun) weave = lifeNarrativePlainWeave(data, daeun.g, daeun.j, { skipLine: prevWeave });
+        if (daeun && st.key !== 'final') {
+            weave = lifeNarrativePlainWeave(data, daeun.g, daeun.j, { skipLine: prevWeave, stageKey: st.key });
+        }
         if (weave) prevWeave = weave;
         stages.push({
             key: st.key,
@@ -5538,8 +5580,7 @@ var _LIFE_WEAVE_LEAD = {
     youth: ' 이 무렵 삶의 판으로 보면, ',
     prime: ' 이 무렵 삶의 판으로 보면, ',
     middle: ' 이 무렵 삶의 판으로 보면, ',
-    elder: ' 이 무렵 삶의 판으로 보면, ',
-    final: ' 마지막 장면으로 보면, '
+    elder: ' 이 무렵 삶의 판으로 보면, '
 };
 
 /** ② 글쓰기층 — 시기 본문 + 대운×8자 한 문장 이어 붙임 */
