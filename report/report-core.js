@@ -5238,15 +5238,23 @@ function buildConnectedLifeArcParagraphs(data, ctx) {
     } catch (e) { console.error('sajuxScanLifeMilestones:', e.message); }
 
     function msInline(lo, hi) {
-        var hits = milestones.filter(function (m) { return m.age >= lo && m.age <= hi; });
+        var hits = milestones.filter(function (m) {
+            if (m.age < lo || m.age > hi) return false;
+            if (m.kind === 'seyun' && m.age < 20) return false;
+            if (lo < 14 && m.kind === 'seyun') return false;
+            return true;
+        });
         if (!hits.length) return '';
-        return hits.slice(0, 2).map(function (m) {
-            var ageNote = m.kind === 'daeun'
-                ? (m.age + '세~' + (m.ageEnd || m.age + 9) + '세')
-                : (m.year + '년 · ' + m.age + '세');
-            var theme = sajuxMilestoneThemeLine(data, m.cat, m.age, m.ageEnd || m.age, m.year);
-            return ' <span style="color:rgba(199,167,106,0.88);">▸ ' + ageNote + ' — ' + theme + '</span>';
-        }).join('');
+        hits.sort(function (a, b) {
+            if (b.ev !== a.ev) return b.ev - a.ev;
+            if (a.kind !== b.kind) return a.kind === 'daeun' ? -1 : 1;
+            return a.age - b.age;
+        });
+        var m = hits[0];
+        var line = sajuxMilestoneConcreteLine(data, m);
+        return '<span class="life-ms-inline" style="display:block;margin-top:12px;padding:12px 14px;border-radius:10px;background:rgba(199,167,106,0.07);border-left:2px solid rgba(199,167,106,0.45);font-size:12.5px;line-height:1.9;color:rgba(255,255,255,0.9);">'
+            + '<span style="font-size:10px;letter-spacing:0.1em;color:rgba(199,167,106,0.92);font-weight:700;">이 무렵 짚어볼 흐름</span><br>'
+            + line + '</span>';
     }
 
     function stagePara(lo, hi, seed, label, bodyHtml) {
@@ -5951,44 +5959,117 @@ function sajuxMilestoneCategory(data, g, j, evScore) {
     return evScore >= 5 ? 'rise' : 'flow';
 }
 
-function sajuxMilestoneThemeLine(data, cat, ageLo, ageHi, yr) {
-    var nm = data.name || '고객';
-    var pool = {
-        rise: [
-            ageLo + '세 전후, ' + nmEunNeun(nm) + ' 인생에서 <strong>크게 올라서는 구간</strong>으로 잡힙니다. 미뤄 두신 결정을 매듭지우기 좋고, 이름이 밖으로 드러나도 부담이 적은 시기예요.',
-            (yr ? yr + '년 전후, ' : '') + nmKke(nm) + ' <strong>결실이 한 번에 모이는 흐름</strong>입니다. 한 가지에만 힘을 모으시면 그게 다음 10년의 기둥이 됩니다.'
-        ],
-        turning: [
-            ageLo + '세~' + ageHi + '세 사이, <strong>방향이 바뀌는 전환</strong>이 올 수 있는 자리입니다. 이사·이직·관계·가족 일 중 하나가 크게 움직이며, 그때의 선택이 이후를 가릅니다.',
-            '원국과 부딪히는 기운이 들어와, 익숙한 방식을 놓고 새 방식을 익히게 되는 시기예요. 힘들어도 끊어야 할 것과 붙일 것을 가르는 구간입니다.'
-        ],
-        trial: [
-            ageLo + '세 전후, <strong>버티는 힘이 제일 중요한 시기</strong>로 읽힙니다. 크게 벌이기보다 지금 있는 것을 지키는 쪽이 ' + nmUi(nm) + ' 사주와 맞습니다.',
-            '무게가 실리는 구간이지만, 여기서 무너지지 않으시면 그다음 상승 구간이 훨씬 가벼워집니다.'
-        ],
-        wealth: [
-            '돈·자산·거래의 줄기가 <strong>두껍게 움직이는 시기</strong>입니다. 들어오는 통로와 새는 통로가 같이 늘 수 있으니, 한 달 수입·지출 한 줄만은 꼭 남기십시오.',
-            '재물의 기운이 앞서 나가는 해예요. 큰 보증·큰 동업은 신중히, 검증된 한 통로에만 무게를 두시면 이득이 큽니다.'
-        ],
-        career: [
-            '직장·자리·명예의 축이 <strong>한 번 크게 움직이는 시기</strong>입니다. 승진·이직·창업·브랜드 정리 중 하나가 자연스럽게 따라올 수 있어요.',
-            '사회에 ' + nmUi(nm) + ' 이름이 적히는 방식이 바뀌는 구간입니다. 맡은 역할을 한 줄로 정해 두시면 혼선이 줄어듭니다.'
-        ],
-        study: [
-            '배움·자격·전문성이 <strong>인생의 열쇠가 되는 시기</strong>입니다. 시험·이직·이사처럼 “준비가 결과로 바뀌는” 일이 잘 맞습니다.',
-            '조용히 쌓은 것이 밖으로 드러나기 시작하는 해예요. 한 권·한 자격·한 기술에 집중하시면 됩니다.'
-        ],
-        express: [
-            '말·글·작품·발표로 <strong>밖에 드러나는 힘이 강한 시기</strong>입니다. 숨기기보다 정리해서보내실수록 기회가 붙습니다.',
-            '표현과 홍보의 기운이 앞섭니다. 한 번에 여러 곳에 손을 대지 말고, 한 무대만 골라 밀어 보십시오.'
-        ],
-        flow: [
-            '큰 사건 하나보다 <strong>쌓이는 힘이 중요한 시기</strong>입니다. 작은 약속을 지키는 것만으로도 다음 이정표가 가벼워집니다.',
-            '겉으로는 잔잔해도 속에서는 정리가 진행되는 구간입니다. 끊을 것·이어 갈 것 한 가지씩만 정하시면 충분합니다.'
-        ]
-    };
-    return pickVoiceLine(pool[cat] || pool.flow, String(ageLo) + '|' + cat + '|' + (yr || ''));
+function sajuxMilestoneAgeCat(age, cat, a) {
+    var st = sajuxLifeStageForAge(age);
+    if (st.key === 'child') {
+        if (cat === 'career' || cat === 'wealth' || cat === 'express') return 'family';
+        if (cat === 'rise') return (a && a.giHit) ? 'trial' : 'growth';
+        if (cat === 'turning') return 'family';
+        return 'family';
+    }
+    if (st.key === 'teen') {
+        if (cat === 'career' || cat === 'wealth') return 'study';
+        return cat;
+    }
+    return cat;
 }
+
+function sajuxMilestoneWhatHappens(data, m, a, cat, chung) {
+    var nm = data.name || '고객';
+    var age = m.age;
+    var st = sajuxLifeStageForAge(age);
+    var sip = a.sipGan || a.sipJi || '';
+    var domain = SAJUX_MILESTONE_SIP_EVENT[sip] || '';
+    var gil = a.gil.tag || '';
+
+    if (st.key === 'child') {
+        if (chung.length) {
+            return chung.join('·') + '와 지지가 부딪혀, <strong>이사·부모 일·학교·몸 상태</strong> 중 한 가지가 ' + age + '세 전후에 크게 움직입니다. 어른이 정리해 주는 편이 아이에게는 부담이 덜합니다';
+        }
+        if (cat === 'trial' || a.giHit) {
+            return '집안 분위기가 무겁거나 몸이 예민해지기 쉬운 해입니다. 승진·이직 같은 말은 아직 해당 없고, <strong>수면·식사·규칙</strong>만 지켜도 반은 회복됩니다';
+        }
+        return (domain
+            ? '<strong>' + domain + '</strong> 쪽(낯선 반·새 선생·동생 관계 등)이 ' + age + '세 무렵 환경에 맞추기 쉽습니다. ' + gil + ' 흐름이라 무리한 압박은 줄이는 편이 낫습니다'
+            : age + '세 무렵 집·학교 환경이 조용히 맞춰지는 해입니다. ' + gil + ' 흐름이라 과한 기대는 낮추는 편이 낫습니다');
+    }
+    if (st.key === 'teen') {
+        if (chung.length) {
+            return chung.join('·') + ' 충으로 <strong>이사·전학·가족·첫 연애·진로</strong> 중 하나가 ' + age + '세 전후에 갈라집니다. 혼자 끌어안기보다 어른 한 명과 일주일 안에 정리하는 게 낫습니다';
+        }
+        if (cat === 'study' || sip.indexOf('인') >= 0) {
+            return '<strong>시험·진로·자격·전학</strong> 줄기가 두꺼워지는 해입니다. 여러 갈래를 동시에 열지 말고, 하나만 골라 밀면 ' + nmUi(nm) + ' 체력이 버팁니다';
+        }
+        return (domain || '관계·자아') + ' 축에서 “나는 어떤 사람인가”가 ' + age + '세 전후에 또렷해집니다';
+    }
+
+    if (chung.length) {
+        return chung.join('·') + '와 지지 충(沖)이 겹쳐 <strong>' + (domain || '집·일·관계') + '</strong> 중 한 축이 ' + (m.year ? m.year + '년 ' : '') + age + '세 전후에 방향을 바꿉니다. 그해의 선택이 이후 3~5년을 가릅니다';
+    }
+    if (cat === 'turning') {
+        return '<strong>' + (domain || '진로·관계·거주') + '</strong>에서 익숙한 방식을 내려놓고 새 방식을 익히는 해입니다. 끊을 것·붙일 것을 한 장에 적어 두시면 혼선이 줄어듭니다';
+    }
+    if (cat === 'trial' || a.giHit) {
+        return '<strong>' + (domain || '일·돈·건강') + '</strong>에서 무게가 실립니다. 크게 벌리기보다 지금 있는 자리·계약·건강을 지키는 쪽이 ' + nmUi(nm) + ' 사주와 맞고, 여기서 버티시면 다음 상승 구간이 가벼워집니다';
+    }
+    if (cat === 'wealth' || sip.indexOf('재') >= 0) {
+        return '<strong>돈·거래·자산</strong> 줄기가 두꺼워집니다. 들어오는 통로와 새는 통로가 같이 늘 수 있어, 그해에는 수입·지출을 한 줄로만 남기고 큰 보증·동업은 미루는 편이 낫습니다';
+    }
+    if (cat === 'career' || sip.indexOf('관') >= 0) {
+        return '<strong>직장·자리·명예</strong> 축이 움직입니다. 승진·이직·창업·브랜드 정리 중 하나가 자연스럽게 따라올 수 있어, 맡은 역할을 한 줄로 정해 두시면 낭비가 줄어듭니다';
+    }
+    if (cat === 'study' || sip.indexOf('인') >= 0) {
+        return '<strong>배움·자격·전문성</strong>이 결과로 바뀌기 쉬운 해입니다. 조용히 쌓아 둔 것이 ' + age + '세 전후에 밖으로 드러나기 시작합니다';
+    }
+    if (cat === 'express' || sip.indexOf('식') >= 0 || sip.indexOf('상') >= 0) {
+        return '<strong>말·글·작품·발표</strong>로 이름이 드러나기 쉬운 해입니다. 여러 무대보다 한 곳만 골라 밀면 기회가 붙습니다';
+    }
+    if (cat === 'rise' || a.yongHit) {
+        return '<strong>' + (domain || '일·관계') + '</strong>에서 밀려 두었던 일을 매듭지우기 좋은 해입니다. 용신(用)이 받쳐 주어 같은 노력도 체감이 다르게 옵니다';
+    }
+    return '겉으로는 잔잔해도 속에서 <strong>' + (domain || '정리') + '</strong>가 진행되는 해입니다. 작은 약속 하나만 지켜도 다음 이정표가 가벼워집니다';
+}
+
+function sajuxMilestoneActionHint(data, cat, age, a, chung) {
+    var st = sajuxLifeStageForAge(age);
+    if (st.key === 'child') return '이때는 ' + nmDnim(data.name || '고객') + '이 스스로 결정하기보다, 보호자가 일정·병원·학교만 먼저 정리해 주시면 됩니다';
+    if (st.key === 'teen') return '진로·연애·친구 중 하나만 골라 일주일 안에 정리해 보십시오';
+    if (chung.length) return '이사·계약·관계 통보는 가능하면 그해 상반기에 끝내고, 하반기는 지키는 쪽으로 두십시오';
+    if (cat === 'trial' || a.giHit) return '새 투자·큰 약속은 미루고, 건강 검진·계약 갱신만 챙기셔도 충분합니다';
+    if (cat === 'wealth') return '그해 수입·지출 한 줄 + 큰 지출 상한액만 정해 두십시오';
+    if (cat === 'career') return '맡은 역할을 한 문장으로 적어 두고, 그 밖 요청은 “내년”으로 미루십시오';
+    return '한 가지에만 힘을 모으시면 그게 다음 10년의 기둥이 됩니다';
+}
+
+function sajuxMilestoneConcreteLine(data, m) {
+    if (!m || !m.g || !m.j) return '';
+    var a = sajuxAnalyzePeriod(data, m.g, m.j);
+    var nm = data.name || '고객';
+    var age = m.age;
+    var cat = sajuxMilestoneAgeCat(age, m.cat || 'flow', a);
+    var chung = sajuxNatalChungHits(data, m.j);
+    var when = m.kind === 'daeun'
+        ? (m.age + '세~' + (m.ageEnd != null ? m.ageEnd : m.age + 9) + '세(10년 대운)')
+        : ((m.year ? m.year + '년 ' : '') + age + '세(그 해 세운)');
+    var kindNote = m.kind === 'daeun' ? '10년 바탕' : '그 해 겹침';
+    var mech = '<strong>' + a.gzKr + '</strong> — ' + SAJUX_OH_KR_LONG[a.ganOh] + '·' + SAJUX_OH_KR_LONG[a.jiOh] + '(' + kindNote + ')';
+    if (a.yongHit) mech += '이 ' + nmUi(nm) + ' 용신(用)과 맞물리고';
+    else if (a.heeHit) mech += '이 희신(喜)으로 받쳐 주며';
+    else if (a.giHit) mech += '이 기신(忌)·구신(仇) 쪽으로 무겁고';
+    else mech += '이 원국과 맞닿아';
+    if (a.sipGan) mech += ', 천간 십성 <strong>' + a.sipGan + '</strong>';
+    if (a.sipJi && a.sipJi !== a.sipGan) mech += '·지지 <strong>' + a.sipJi + '</strong>';
+    mech += '으로 ' + a.gil.tag + ' 흐름입니다';
+    var what = sajuxMilestoneWhatHappens(data, m, a, cat, chung);
+    var act = sajuxMilestoneActionHint(data, cat, age, a, chung);
+    return when + ' · ' + mech + '. ' + what + ' ' + act;
+}
+
+function sajuxMilestoneThemeLine(data, cat, ageLo, ageHi, yr, mOpt) {
+    if (mOpt && mOpt.g && mOpt.j) return sajuxMilestoneConcreteLine(data, mOpt);
+    return '';
+}
+
 
 function sajuxScanLifeMilestones(data) {
     var birthY = data.coverSolarY != null ? Number(data.coverSolarY) : (data.birthYear != null ? Number(data.birthYear) : 1988);
@@ -6012,6 +6093,7 @@ function sajuxScanLifeMilestones(data) {
     for (var yr = birthY; yr <= endYear; yr++) {
         var age = yr - birthY;
         if (age < 0 || age > 100) continue;
+        if (age < 18) continue;
         var gI = ((yr - 4) % 10 + 10) % 10;
         var jI = ((yr - 4) % 12 + 12) % 12;
         var g = SAJUX_GAN_HJ_CYCLE[gI];
@@ -6024,7 +6106,8 @@ function sajuxScanLifeMilestones(data) {
             if (Math.abs(sSc - dSc) >= 2) ev += 2;
             if (sajuxBranchPairHit(_SAJUX_BRANCH_CHUNG, daeunCtx.j, j)) ev += 2;
         }
-        if (ev < 5) continue;
+        var evMin = age < 25 ? 7 : 6;
+        if (ev < evMin) continue;
         list.push({
             kind: 'seyun', age: age, ageEnd: age, year: yr,
             g: g, j: j, ev: ev, cat: sajuxMilestoneCategory(data, g, j, ev),
@@ -6044,7 +6127,7 @@ function sajuxScanLifeMilestones(data) {
         if (it.kind === 'daeun' && daeunN >= 5) continue;
         if (it.kind === 'seyun' && seyunN >= 7) continue;
         var tooClose = picked.some(function (p) {
-            return Math.abs(p.age - it.age) <= (it.kind === 'daeun' ? 8 : 3) && p.kind === it.kind;
+            return Math.abs(p.age - it.age) <= (it.kind === 'daeun' ? 8 : 5) && p.kind === it.kind;
         });
         if (tooClose) continue;
         picked.push(it);
@@ -6068,16 +6151,14 @@ function buildLifeMilestoneTimelineHtml(data) {
             ? (m.age + '세~' + m.ageEnd + '세 · 10년 대운')
             : (m.year + '년 · ' + m.age + '세');
         var kindLabel = m.kind === 'daeun' ? '큰 계절' : '그 해의 결';
-        var theme = sajuxMilestoneThemeLine(data, m.cat, m.age, m.ageEnd || m.age, m.year);
-        var detail = sajuxNarratePeriod(data, m.g, m.j, 'ms-' + idx + '-' + m.year);
+        var theme = sajuxMilestoneConcreteLine(data, m);
         return '<div style="margin-bottom:16px;padding:16px 18px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid ' + col + '28;border-left:3px solid ' + col + ';">'
             + '<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:8px;">'
             + '<div><span style="font-size:10px;letter-spacing:0.10em;color:rgba(199,167,106,0.75);font-weight:700;">' + st.label + '</span>'
             + '<span style="font-size:10px;letter-spacing:0.10em;color:' + col + ';font-weight:700;margin-left:8px;">' + kindLabel + '</span>'
             + '<div style="font-size:16px;font-weight:800;color:#fff;margin-top:4px;font-family:\'Noto Sans KR\',sans-serif;">' + m.gzKr + '<span style="font-size:12px;color:#888;margin-left:6px;">(' + m.g + m.j + ')</span></div></div>'
             + '<span style="font-size:11px;color:#aaa;">' + ageLabel + '</span></div>'
-            + '<p style="font-size:13px;color:#ccc;line-height:1.92;margin:0 0 8px;">' + theme + '</p>'
-            + '<p style="font-size:12.5px;color:#b8b8b8;line-height:1.88;margin:0;">' + detail + '</p></div>';
+            + '<p style="font-size:13px;color:#ccc;line-height:1.92;margin:0;">' + theme + '</p></div>';
     }
 
     var byStage = {};
