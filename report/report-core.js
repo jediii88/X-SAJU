@@ -455,8 +455,8 @@ function buildChapterBridge(topic, data) {
     var nm = nmNormalize((data && data.name) || '') || '고객';
     var bridges = {
         basic:    null, // 첫 챕터 — 풀 인사로 처리
-        wuxing:   '원국 글자를 다섯 오행 비율로 읽어 보겠습니다.',
-        sipseong: '같은 기질이라도 사람마다 쓰는 방식이 다릅니다. 십성의 무늬를 살펴보겠습니다.',
+        wuxing:   '오행 비율부터 짚어 보겠습니다.',
+        sipseong: '십성 무늬를 살펴보겠습니다.',
         wealth:   nmUi(nm) + ' 타고난 결을 보았으니, 이제 그 결이 돈의 흐름과 어떻게 맞물리는지 짚어보겠습니다.',
         career:   '직업은 단순히 직함이 아니라 ' + nmUi(nm) + ' 에너지가 가장 빛나는 자리입니다. 그 자리부터 살펴보겠습니다.',
         love:     '관계와 애정은 ' + nmUi(nm) + ' 가장 깊은 부분과 맞닿아 있습니다. 어떤 사람과 어떤 리듬으로 만나는지 살피겠습니다.',
@@ -467,7 +467,7 @@ function buildChapterBridge(topic, data) {
         remedy:   '여기까지 사주의 결과 흐름을 살펴봤습니다. 이제 ' + nmIGa(nm) + ' 일상에서 어떻게 운을 다듬어 갈 수 있을지 정리해 드리겠습니다.',
         hidden:   '겉으로 드러난 모습 너머에 숨어 있는 ' + nmUi(nm) + ' 또 다른 결, 지장간을 들여다보겠습니다.',
         relation: '사주의 글자들은 서로 끌어당기거나 부딪히며 살아 움직입니다. ' + nmUi(nm) + ' 원국 안에서 일어나는 이 움직임을 살펴보겠습니다.',
-        shinsal:  '신살은 두려워할 이름이 아니라, 삶의 결을 알려주는 신호입니다. ' + nmUi(nm) + ' 신살이 어떤 결을 만드는지 풀어보겠습니다.',
+        shinsal:  nmUi(nm) + ' 신살이 어떤 결을 만드는지 풀어보겠습니다.',
         strength: nmUi(nm) + ' 에너지가 강한 편인지 섬세한 편인지, 그 바탕부터 차분히 짚어보겠습니다.',
         current:  '지금 이 시기, ' + nmKke(nm) + ' 어떤 흐름이 겹쳐 있는지 함께 살펴보겠습니다.',
         master:   nmUi(nm) + ' 사주를 다섯 갈래로 나눠 풀어드리겠습니다. 서두르지 않으셔도 됩니다.',
@@ -1232,40 +1232,40 @@ function buildTopicOpenerInner(topic, data) {
             nmDnim(nm) + '에게 ' + mainSip + ' 축이 앞장서는 날이 많을수록, 그날의 선택이 한 줄기로 이어진다고 보시면 됩니다.'
         ],
         wealth: [
-            voiceMingliLine('재성의 흐름은 감이 아니라 리듬에 가깝습니다.') + ' 쌓는 해와 지키는 해가 갈립니다.',
+            '쌓는 해와 지키는 해가 갈립니다.',
             '돈은 한 번에 오기보다 반복된 습관에서 남는 경우가 많아요.'
         ],
         career: [
             '직함보다 **서면에 남는 권한**이 커리어의 핵심이에요.',
-            voiceMingliLine('관성 축이 강할수록 평판이 수입보다 먼저 움직입니다.')
+            '평판이 수입보다 먼저 움직이는 그림이에요.'
         ],
         love: [
             '애정은 만난 횟수보다, **약속이 지켜지는 속도와 결**이 더 중요해요.',
-            voiceMingliLine('일지 성향과 세운 자극이 겹칠 때 관계 사건이 빨라집니다.')
+            '관계 사건이 빨라지는 시기를 미리 짚어 드릴게요.'
         ],
         health: [
             '몸은 갑자기 무너지기보다 **작은 신호**로 먼저 말해요.',
-            voiceMingliLine('용신 오행과 맞는 생활 리듬이 회복 속도를 바꿉니다.')
+            '회복 리듬을 일상에 맞춰 정리해 드릴게요.'
         ],
         hidden: [
-            voiceMingliLine('지장간은 겉 지지 너머의 잠재 에너지입니다.') + ' 대운·세운에 같은 지지가 올 때 순서대로 깨어납니다.',
+            '겉으로 드러나지 않은 끌림도 함께 짚어 드릴게요.',
             '내면의 끌림은 종종 지장간에서 옵니다.'
         ],
         daeun: [
-            voiceMingliLine('대운은 10년짜리 기후입니다.') + ' 계절을 모르면 옷을 잘못 입게 됩니다.',
+            '다가오는 10년 흐름부터 짧게 짚어 드릴게요.',
             '지금 지나는 10년은 인생 계절표의 한 칸이에요.'
         ],
         seyun: [
-            voiceMingliLine('세운은 그해의 날씨입니다.') + ' 길·흉보다 무엇을 할지 고르는 편이 낫습니다.',
+            '한 해 한 해, 무엇을 밀고 무엇을 쉴지 골라 보시면 됩니다.',
             '연도마다 돈·서류·사람의 무게가 달라집니다.'
         ],
         monthly: [
-            voiceMingliLine('월운은 그달의 시간대입니다.') + ' 맞는 달에 밀고, 부딪히는 달엔 일정을 비우세요.',
+            '달마다 무게가 달라지니, 이번 달만 집중해 보셔도 충분합니다.',
             '한 해 안에서도 호흡은 달마다 달라집니다.'
         ],
         remedy: [
             '개운법은 장식이 아니라 **이번 주부터 지킬 루틴**이에요.',
-            voiceMingliLine('용신·희신은 몸에 맞는 기운, 기신은 부담이 큰 기운으로 읽습니다.')
+            '일상에 붙일 작은 루틴부터 정리해 드릴게요.'
         ],
         basic: [
             function () {
@@ -1281,11 +1281,10 @@ function buildTopicOpenerInner(topic, data) {
             nm + '님 원국을 성격·돈·일·사랑·몸 다섯 갈래로 나눠 읽을 거예요. 서두르지 않아도 됩니다.'
         ],
         relation: [
-            voiceMingliLine('합은 뭉치고 충은 방향을 바꿉니다.') + ' 둘이 같이 오면 우선순위를 먼저 정하세요.'
+            '사람·약속·돈이 겹치는 각도를 짚어 드릴게요.'
         ],
         shinsal: [
-            '신살은 공포가 아니라 **바람의 이름**에 가깝습니다.',
-            voiceMingliLine('같은 신살이라도 걸린 기둥에 따라 의미가 달라집니다.')
+            '신살은 이름만 보고 겁먹을 일이 아니라, 반복되는 각도의 이름에 가깝습니다.'
         ],
         strength: [
             function () {
@@ -1296,12 +1295,11 @@ function buildTopicOpenerInner(topic, data) {
             }
         ],
         relation: [
-            voiceMingliLine('합은 빨리 붙고 충은 각도가 정면입니다.') + ' 둘 다 흉복이 아니라 비용 구조에 가깝습니다.',
+            '합은 빨리 붙고 충은 각도가 정면 — 둘 다 비용 구조에 가깝습니다.',
             '사람·돈·약속이 같은 주에 겹치면 하루만 쪼개도 충돌 비용이 줄어듭니다.'
         ],
         shinsal: [
-            '신살은 공포가 아니라 바람의 이름에 가깝습니다. 길성은 무기, 신살은 훈련장이에요.',
-            voiceMingliLine('같은 신살도 걸린 기둥에 따라 체감이 달라집니다.') + ' 이름만 보고 겁먹지 마세요.'
+            '길성은 무기, 신살은 훈련장 — 걸린 자리에 따라 체감이 달라집니다.'
         ]
     };
     var pool = pools[topic];
@@ -1483,40 +1481,6 @@ function voicePolishParagraph(data, text) {
     s = s.replace(/금\s*\(\s*金\s*\)/g, '금(쇠)');
     s = s.replace(/수\s*\(\s*水\s*\)/g, '수(물)');
 
-    // ─── 전문 용어 쉬운 풀이 (일반 독자용) ───
-    // ※ (?<![가-힣]) — 앞이 한글 음절일 때는 단어 내부 우연 일치이므로 풀이하지 않습니다.
-    //   예) "달라지지만" 안의 "지지", "일주일" 안의 "일주", "신약품" 안의 "신약" 등을 보호.
-    s = s.replace(/(?<![가-힣])기신(?!\s*[\(（])/g, '기신(나를 지치게 하는 기운)');
-    s = s.replace(/(?<![가-힣])용신(?!\s*[\(（])/g, '용신(나를 돕는 핵심 기운)');
-    s = s.replace(/(?<![가-힣])십성(?!\s*[\(（])/g, '십성(사주 속 나의 역할과 관계 방식)');
-    s = s.replace(/(?<![가-힣])구신(?!\s*[\(（])/g, '구신(기신을 더 강하게 만드는 기운)');
-    s = s.replace(/(?<![가-힣])일주(?![일\s]*[가-힣\(（])/g, '일주(태어난 날의 두 글자)');
-    s = s.replace(/(?<![가-힣])대운(?!\s*[\(（수])/g, '대운(10년 단위로 바뀌는 운의 흐름)');
-    s = s.replace(/(?<![가-힣])세운(?!\s*[\(（])/g, '세운(그해 한 해의 운)');
-    s = s.replace(/(?<![가-힣])월운(?!\s*[\(（])/g, '월운(그달의 운)');
-    s = s.replace(/(?<![가-힣])원국(?!\s*[\(（])/g, '원국(태어날 때 정해진 나의 사주 구조)');
-    s = s.replace(/(?<![가-힣])일간(?!\s*[\(（])/g, '일간(사주에서 나를 나타내는 글자)');
-    s = s.replace(/(?<![가-힣])일지(?!\s*[\(（])/g, '일지(태어난 날의 아래 글자, 배우자궁)');
-    s = s.replace(/(?<![가-힣])신강(?!\s*[\(（])/g, '신강(타고난 에너지가 강한 편)');
-    s = s.replace(/(?<![가-힣])신약(?!\s*[\(（])/g, '신약(타고난 에너지가 섬세한 편)');
-    s = s.replace(/(?<![가-힣])격국(?!\s*[\(（])/g, '격국(사주의 큰 그림·구조)');
-    s = s.replace(/(?<![가-힣])통근(?!\s*[\(（])/g, '통근(천간이 지지에 뿌리내린 상태)');
-    s = s.replace(/(?<![가-힣])조후(?!\s*[\(（])/g, '조후(사주 속 온도와 습도 균형)');
-    s = s.replace(/(?<![가-힣])공망(?!\s*[\(（])/g, '공망(채워도 채워지지 않는 빈자리)');
-    s = s.replace(/(?<![가-힣])지장간(?!\s*[\(（])/g, '지장간(겉 글자 안에 숨은 또 다른 기운)');
-    s = s.replace(/(?<![가-힣])천간(?!\s*[\(（])/g, '천간(사주의 위 네 글자, 겉으로 드러난 역할)');
-    s = s.replace(/(?<![가-힣])지지(?![가-힣]|\s*[\(（])/g, '지지(사주의 아래 네 글자, 속에 자리 잡은 본성)');
-    s = s.replace(/(?<![가-힣])편관(?!\s*[\(（])/g, '편관(나를 강하게 단련시키는 기운)');
-    s = s.replace(/(?<![가-힣])정관(?!\s*[\(（])/g, '정관(원칙·책임을 부여하는 기운)');
-    s = s.replace(/(?<![가-힣])편재(?!\s*[\(（])/g, '편재(흐름이 큰 재물 기운)');
-    s = s.replace(/(?<![가-힣])정재(?!\s*[\(（])/g, '정재(꾸준히 쌓이는 재물 기운)');
-    s = s.replace(/(?<![가-힣])식신(?!\s*[\(（])/g, '식신(즐거움을 만들어내는 표현 기운)');
-    s = s.replace(/(?<![가-힣])상관(?!\s*[\(（])/g, '상관(말과 재능이 빛나는 기운)');
-    s = s.replace(/(?<![가-힣])편인(?!\s*[\(（])/g, '편인(직관·창의가 깊어지는 기운)');
-    s = s.replace(/(?<![가-힣])정인(?!\s*[\(（])/g, '정인(나를 든든히 받쳐주는 기운)');
-    s = s.replace(/(?<![가-힣])비견(?!\s*[\(（])/g, '비견(나와 같은 기운의 사람·동료)');
-    s = s.replace(/(?<![가-힣])겁재(?!\s*[\(（])/g, '겁재(경쟁을 부르는 같은 기운)');
-
     // ─── 어려운 표현 → 쉬운 말 ───
     s = s.replace(/레버리지/g, '빚을 써서 키우는 투자');
     s = s.replace(/포지션/g, '현재 위치·역할');
@@ -1528,8 +1492,7 @@ function voicePolishParagraph(data, text) {
 
     // ─── 10대 친화 어휘 정리: 한자식 추상어 → 일상어 ───
     // ※ '천간/지지/십성/지장간/일주/대운/세운/월운/원국/일간/일지/조후/공망/통근'
-    //   같은 명리학 기본 용어는 .cursorrules에 의해 보호되며 위쪽 풀이 단계에서
-    //   괄호로 풀어 줍니다. 이 블록은 오직 '주변 일상 어휘'만 손봅니다.
+    //   십성·천간·지지 등 명리 기본 용어는 그대로 두고, 주변 일상 어휘만 손봅니다.
 
     // 라벨로 굳어진 표현은 보호 (예: '압박·마감', '거래·기회: 편재' 같은 표 라벨)
     s = s.replace(/압박·마감/g, '\u0000PRESS_DEADLINE\u0000');
@@ -3758,8 +3721,7 @@ function injectSectionInterpretations(data) {
         <div class="ii-label">\u2756 나를 돕는 오행 vs 부담 오행</div>
         <div class="ii-title">생활에 붙일 에너지 축 — 전략의 핵심</div>
         <div class="ii-text">
-            <p style="font-size:13.5px;color:#bbb;line-height:1.85;margin-bottom:16px;">아래 오행은 “운이 좋다/나쁘다”가 아니라 <strong>같은 하루도 어디에 힘을 줄지</strong>를 가르는 기준입니다. 바깥 기운이 바뀔 때마다 <strong>확장과 수비 중 하나만</strong> 먼저 고르십시오.</p>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
                 <div style="background:rgba(199,167,106,0.08);border-radius:10px;padding:14px;border:1px solid var(--gold);">
                     <div style="font-size:11px;color:var(--gold);margin-bottom:6px;">✦ 수호 오행 — 메인으로 삼을 축</div>
                     <div style="font-size:18px;font-weight:800;color:var(--gold);">${yongKr}</div>
@@ -5629,7 +5591,7 @@ function buildCurrentPeriodCard(data) {
         + chip('현재 월운', toneColor(mTone), mGanKr + mJiKr, mGan + mJi)
         + '</div>';
     // ── 1) 인트로 ──
-    var intro = '지금 ' + nmEunNeun(name) + ' ' + (curDae ? curDae.age : 0) + '세부터 ' + endAge + '세까지의 큰 10년(대운) 한가운데에 들어와 계세요. 그 10년 안에 올해(' + curYear + '년)가 흐르고, 올해 안에 이번 달(' + monthNo + '월)이 와 있습니다. 사주에서 “지금의 운”이라는 건 사실 이 세 겹의 시간이 한 자리에 겹친 모습이에요. ' + nmKke(name) + ' 지금 어떤 공기가 둘러싸여 있고, 그 공기 안에서 일·돈·사람·몸이 어떻게 움직이실지를 — 카드로 끊지 않고 한 편의 흐름으로 풀어 드릴게요.';
+    var intro = '지금 ' + nmEunNeun(name) + ' ' + (curDae ? curDae.age : 0) + '세부터 ' + endAge + '세까지의 큰 10년 한가운데에, 올해(' + curYear + '년)와 이번 달(' + monthNo + '월)이 겹쳐 있는 시기예요. ' + nmKke(name) + ' 지금 어떤 공기가 둘러싸여 있고, 그 안에서 일·돈·사람·몸이 어떻게 움직이실지를 한 편의 흐름으로 풀어 드릴게요.';
 
     // ── 2) 현재 대운 (~400자) ──
     var daeunStory = '먼저 가장 큰 흐름인 대운부터 보시면, ' + nmEunNeun(name) + ' 지금 <strong>' + dGanKr + dJiKr + '(' + dGan + dJi + ')</strong> 대운 — 천간 ' + (dGanOh || '') + '에 지지 ' + (dJiOh || '') + '이 받치는 10년에 들어와 계세요. ';
@@ -5747,29 +5709,13 @@ function buildCurrentPeriodCard(data) {
  *  · 앞으로 올 대운/세운/월운 3개 챕터의 공통 도입 역할
  * ───────────────────────────────────────── */
 function buildUpcomingFortuneIntro(data) {
-    var name = (data && data.name) ? data.name : '고객';
-    function _vp(t) { return narrativeVp(data, t); }
-
-    function conceptBox(label, body, color) {
-        return '<div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:13px 16px;border-left:3px solid ' + color + ';">'
-            + '<div style="font-size:11px;font-weight:700;color:' + color + ';letter-spacing:0.08em;margin-bottom:6px;">' + label + '</div>'
-            + '<p style="font-size:12.5px;color:#bbb;line-height:1.92;margin:0;">' + _vp(body) + '</p></div>';
-    }
-    var conceptHtml = '<div style="display:grid;grid-template-columns:1fr;gap:10px;margin:14px 0 4px;">'
-        + conceptBox('대운 (大運) — 10년짜리 큰 계절', '인생 전체를 10년 단위로 끊었을 때, 그 시기에 ' + nmKke(name) + ' 어떤 공기가 둘러싸여 있는지를 보여 줘요. 큰 방향성·전반적인 분위기·이 시기에 살아 봐야 할 주제를 정해 주는 가장 큰 흐름입니다.', '#c7a76a')
-        + conceptBox('세운 (歲運) — 그해 한 해의 날씨', '대운이 “큰 계절”이라면, 세운은 “그 계절 안의 한 해 날씨”에 해당해요. 같은 봄이라도 비가 잦은 해와 햇살이 좋은 해가 다르듯, 한 해 안에서 어떤 일이 잦아질지를 보여 줍니다.', '#5ec183')
-        + conceptBox('월운 (月運) — 한 달 안의 시간대', '세운이 한 해의 날씨라면, 월운은 그 안의 “하루 중 시간대”에 가까워요. 한 달 단위로 컨디션·관계·돈의 흐름이 미세하게 바뀌니, 이번 달 안에서 어디에 힘을 실을지를 잡는 데 가장 좋습니다.', '#7fa5d6')
-        + '</div>';
-
     var chHead = (typeof buildChapterHeadMainSub === 'function')
         ? buildChapterHeadMainSub('앞으로의 운', '다가올 대운 · 세운 · 월운을 한 번에 정리')
         : '<h2 class="ch-title">앞으로의 운</h2>';
 
     return '<div class="report-chapter">'
         + chHead
-        + buildNarrativePara(data, '지금 시기를 한 흐름으로 살펴 드렸다면, 이제 “앞으로” 어떤 시간이 다가오는지 — 다가올 대운 두 개, 다음 해부터 10년의 세운, 다음 달부터 11개월의 월운을 차례대로 짚어 드릴게요. 시작 전에, 이 세 단어가 정확히 무엇을 가리키는지 다시 한 번 정리해 둘게요.')
-        + conceptHtml
-        + buildNarrativePara(data, '아래는 한 시기당 한 문단 정도로 짧게 짚어 드렸어요. 본인이 가장 신경 쓰이시는 시기 — 큰 결정을 잡고 싶으신 해, 또는 한 박자 늦추고 싶으신 달 — 한두 자리만 골라 마음에 두시면 충분합니다.', { fontSize: '13px', color: 'rgba(255,255,255,0.62)', lineHeight: '1.92', marginBottom: '0' })
+        + buildNarrativePara(data, '지금 시기를 한 흐름으로 살펴 드렸다면, 이제 다가올 대운 두 번·다음 10년의 세운·앞으로 11개월의 월운을 차례대로 짚어 드릴게요. 한 시기당 한 문단 정도라, 신경 쓰이는 해·달만 골라 마음에 두셔도 충분합니다.', { marginBottom: '0' })
         + '</div>';
 }
 
@@ -5854,7 +5800,7 @@ function buildUpcomingDaewunCards(data) {
 
     return '<div class="report-chapter">'
         + chHead
-        + buildNarrativePara(data, '지금 시기를 살핀 다음에는, ' + nmKke(name) + ' 곧 다가올 두 개의 큰 10년을 짧게 짚어 드릴게요. 한 시기당 한 문단 정도라 가볍게 읽으셔도 충분하고, 미리 알아 두시면 “다음 시기가 어떤 공기인지” 마음의 준비가 됩니다.', { lineHeight: '2', marginBottom: '14px' })
+        + buildNarrativePara(data, '지금 시기를 살핀 다음에는, ' + nmKke(name) + ' 곧 다가올 두 개의 큰 10년을 짧게 짚어 드릴게요.', { lineHeight: '2', marginBottom: '14px' })
         + cards
         + '</div>';
 }
@@ -5963,7 +5909,7 @@ function buildUpcomingSewunCards(data) {
 
     return '<div class="report-chapter">'
         + chHead
-        + buildNarrativePara(data, '대운이 “10년짜리 큰 계절”이라면 세운은 “그 안의 한 해 날씨”예요. 아래는 ' + nmKke(name) + ' 곧 찾아올 10년의 한 해 한 해를 짧게 짚어 드린 것이에요. 한 해당 한 문단 정도로 가볍게 읽으시면서, 본인이 큰 결정을 잡고 싶으신 해가 “어떤 결의 해”인지를 미리 알아 두십시오.', { lineHeight: '2', marginBottom: '14px' })
+        + buildNarrativePara(data, '아래는 ' + nmKke(name) + ' 곧 찾아올 10년을 한 해씩 짧게 짚어 드린 것이에요. 큰 결정을 잡고 싶으신 해만 골라 두셔도 충분합니다.', { lineHeight: '2', marginBottom: '14px' })
         + '<div style="display:flex;flex-direction:column;gap:0;">' + cards + '</div>'
         + '</div>';
 }
@@ -6056,7 +6002,7 @@ function buildUpcomingWolunCards(data) {
 
     return '<div class="report-chapter">'
         + chHead
-        + buildNarrativePara(data, '세운이 한 해의 날씨라면 월운은 그 안의 “시간대”예요. 아래는 다음 달부터 11개월의 한 달 한 달을 짧게 짚어 드린 거예요. 큰 안건을 잡으실 달과 한 박자 늦추실 달을 미리 표시해 두시면 한 해가 훨씬 가볍게 흘러갑니다.', { lineHeight: '2', marginBottom: '14px' })
+        + buildNarrativePara(data, '다음 달부터 11개월을 한 달씩 짧게 짚어 드렸어요. 밀고 싶은 달과 쉬고 싶은 달만 표시해 두셔도 한 해가 가벼워집니다.', { lineHeight: '2', marginBottom: '14px' })
         + '<div style="display:flex;flex-direction:column;gap:0;">' + cards + '</div>'
         + '</div>';
 }
@@ -6224,8 +6170,7 @@ function buildChapter2_Wuxing(data) {
         return '<strong>' + arr.map(k => OHKR2[k] + '(' + OHHJ2[k] + ')').join('·') + ' 기운</strong>';
     }
     const hasZeroLack = lackKeys.some(k => pct[k] === 0);
-    const introLine = '사주에는 다섯 가지 기운 — <strong>목·화·토·금·수</strong> — 이 있어요. 이 다섯이 어떻게 섞여 있느냐가 한 사람의 기질·방향·습관을 만듭니다. '
-        + nmUi(name) + ' 사주에는 ' + joinExc(excessKeys) + (excessKeys.length>=2 ? '이 함께 두껍게 자리잡고 있어요. ' : '이 가장 두껍게 자리잡고 있어요. ')
+    const introLine = nmUi(name) + ' 사주에는 ' + joinExc(excessKeys) + (excessKeys.length>=2 ? '이 함께 두껍게 자리잡고 있어요. ' : '이 가장 두껍게 자리잡고 있어요. ')
         + (lackKeys.length === 0
             ? '나머지는 비교적 고르게 흐르고 있어서, 균형 자체는 잘 맞춰진 사주예요. '
             : (hasZeroLack
@@ -6489,7 +6434,6 @@ function buildChapter3_Sipseong(data) {
             <div style="font-size:12px;font-weight:800;color:var(--gold);margin-bottom:12px;letter-spacing:0.06em;">십성 묶음 비중</div>
             ${sipRows || '<p style="color:#888;font-size:12px;margin:0;">분포 데이터를 불러오는 중입니다.</p>'}
         </div>
-        <p class="ch-text" style="font-size:12.5px;color:var(--text-dim);margin:0 0 18px;">막대는 같은 종류 십성을 합친 비율입니다. 이름보다 <strong>어느 묶음이 두꺼운지</strong>만 보셔도 됩니다. 가장 긴 줄은 <b style="color:var(--gold);">${topLabelPlain}</b>(약 ${topG.pct}%), 자주 튀는 축은 <b>${prominentLabels}</b>입니다.</p>
         <div class="sipseong-unified-body sajux-glass-heavy" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:22px 22px 10px;margin:0 0 8px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);">
             <div style="font-size:11px;color:var(--gold);font-weight:700;letter-spacing:0.14em;margin-bottom:14px;">십성 통합 풀이</div>
             ${essayHtml || '<p class="ch-text">십성 풀이를 불러오는 중입니다.</p>'}
@@ -6651,7 +6595,7 @@ function buildChapter4_Wealth(data) {
             route:'벌이는 2~3갈래만 두고, 한 달에 한 번 숫자만 맞추기',
             caution:'보증·말로 잡는 동업·감정으로 큰 돈 움직이기는 멈추기'
         })}
-        ${buildNarrativePara(data, '재물은 감이 아니라 리듬입니다. 같은 사람이라도 "돈이 잘 들어오는 해"와 "지키는 해"가 분명히 갈립니다. 사주에서 용신은 몸에 잘 맞는 기운(확장·공격에 유리한 때), 기신은 부담이 큰 기운(지출·실수가 커지기 쉬운 때)으로 읽으시면 좋습니다. 먼저 ' + nmUi(name) + ' 재물의 결부터 들여다보겠습니다.')}
+        ${buildNarrativePara(data, '재물은 감이 아니라 리듬입니다. 같은 사람이라도 돈이 잘 들어오는 해와 지키는 해가 분명히 갈려요. 먼저 ' + nmUi(name) + ' 재물의 결부터 들여다보겠습니다.')}
 
         <div class="wealth-structure sajux-print-surface" style="background:rgba(199,167,106,0.07);border-left:3px solid var(--gold);padding:18px 20px;border-radius:0 10px 10px 0;margin:18px 0;">
             <div style="font-size:11px;color:var(--text-dim);margin-bottom:10px;letter-spacing:0.10em;font-weight:600;">${nmUi(name)} 재물 구조</div>
@@ -7182,8 +7126,8 @@ function buildWolunLoop(data) {
     return `<div class="report-chapter">
         ${chHeadMo}
         ${chIntroMo}
-        ${buildNarrativePara(data, '세운이 한 해의 날씨라면, 월운은 그 안의 시간대입니다. 기운이 맞는 달에는 한 발 밀고, 부딪히는 달에는 일정의 약 30%를 비우는 식으로 호흡을 가져가시면 한 해가 훨씬 길게 견뎌집니다.')}
-        ${buildNarrativePara(data, '카드와 카드 사이에 한 줄 다리를 두어, 한 달이 다음 달로 어떻게 이어지는지 한눈에 보이도록 정리했습니다.', { fontSize: '13px', color: 'var(--text-dim)' })}
+        
+        
         <div style="display:flex;flex-direction:column;gap:10px;width:100%;">
             ${_rowsWithBridges}
         </div>
@@ -7983,61 +7927,11 @@ function buildYeonjukStructuralBlurb(data) {
  *   사주 8자 구조(시·일·월·년주), 천간/지지, 십성, 지장간, 12운성, 신살, 공망을
  *   각 한두 줄로 풀어 줍니다. "흥미 없으시면 건너뛰셔도 좋아요" 안내 포함.
  */
+/** 만세력 용어 안내 — 본문 풀이만 제공(용어 강의 블록 비표시) */
 function buildManseGuide(data) {
-    var name = (data && data.name) ? data.name : '고객';
-    function _vp(t) { return narrativeVp(data, t); }
-
-    function termBox(label, body) {
-        return '<div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:13px 16px;">'
-            + '<div style="font-size:12px;font-weight:700;color:var(--gold);letter-spacing:0.04em;margin-bottom:6px;">' + label + '</div>'
-            + '<p style="font-size:12.5px;color:#bbb;line-height:1.92;margin:0;">' + _vp(body) + '</p>'
-            + '</div>';
-    }
-
-    function ohBox(color, name, body) {
-        return '<div style="background:rgba(255,255,255,0.035);border-radius:10px;padding:12px 14px;border-left:3px solid ' + color + ';">'
-            + '<div style="font-size:12px;font-weight:700;color:' + color + ';margin-bottom:4px;">' + name + '</div>'
-            + '<p style="font-size:12px;color:#bbb;line-height:1.85;margin:0;">' + _vp(body) + '</p>'
-            + '</div>';
-    }
-
-    var ohGrid = '<div style="display:grid;grid-template-columns:1fr;gap:10px;margin:10px 0 4px;">'
-        + ohBox('#4fc3a1', '목(木) — 나무 기운', '시작·성장·뻗어 나가는 힘이에요. 새 일을 벌이고, 사람을 끌어모으고, 위로 자라는 결을 갖습니다. 부드럽지만 한 번 뿌리내리면 잘 흔들리지 않는 기운이에요.')
-        + ohBox('#ef6b56', '화(火) — 불 기운', '드러남·표현·열정의 힘이에요. 자신을 보여 주고, 사람을 끌어당기는 빛이에요. 화는 따뜻하지만 너무 세지면 본인이 먼저 타들어 가니, 다스리는 것이 핵심이에요.')
-        + ohBox('#e0b452', '토(土) — 흙 기운', '받쳐 주고 쌓이는 힘이에요. 사람·일·돈을 가만히 품어 두는 결로, 큰 변화보다 안정·축적·신뢰가 어울려요. 사주의 중심을 잡아 주는 기운이에요.')
-        + ohBox('#cfcfcf', '금(金) — 쇠 기운', '결단·정리·맺고 끊는 힘이에요. 안 맞는 것을 잘라 내고, 한 가지를 깊이 단단하게 만드는 결이에요. 금이 강한 분은 “끝맺음”에서 진가가 드러납니다.')
-        + ohBox('#7fa5d6', '수(水) — 물 기운', '흐름·통찰·정보의 힘이에요. 깊이 보고 길게 생각하는 결로, 정보·전략·인맥이 자본이 됩니다. 보이지 않는 곳에서 쌓이는 기운이에요.')
-        + '</div>';
-
-    var termGrid = '<div style="display:grid;grid-template-columns:1fr;gap:10px;margin:10px 0 4px;">'
-        + termBox('연주 · 월주 · 일주 · 시주 (四柱)', '<strong>연주(年柱)</strong> — 태어난 해의 기둥으로, 부모·가문·유년기 환경·뿌리 쪽 테마를 많이 담아요.<br><br><strong>월주(月柱)</strong> — 태어난 달의 기둥으로, 사회에 나아가는 첫 무대에 해당하는 직장·학교·형제무리·청춘기 주변 공기를 보여 줘요.<br><br><strong>일주(日柱)</strong> — 태어난 날의 기둥으로, 나 자신과 배우자 자리예요. <strong>위 글자가 일간(日干)</strong>으로 사주 전체에서 “나”의 기준이 되고, 아래 글자는 배우자·내적 바탕에 가깝게 읽어요.<br><br><strong>시주(時柱)</strong> — 태어난 시의 기둥으로, 황혼·자녀·내면의 결·하루가 깊어지는 시간대까지 이어지는 흐름을 짚어 줘요.<br><br>네 기둥이 각각 천간·지지 한 글자씩 짝을 이루어 모두 여덟 글자가 되므로 <strong>사주팔자(四柱八字)</strong>라고 부릅니다. 다른 일곱 글자는 이 일간과 맺는 십성 관계로 풀이돼요.')
-        + termBox('천간(天干) · 지지(地支)', '각 기둥의 <strong>위 글자</strong>가 “천간”이에요. 갑·을·병·정·무·기·경·신·임·계 — 모두 10개. 겉으로 드러난 모습·역할에 해당해요. <strong>아래 글자</strong>가 “지지”예요. 자·축·인·묘·진·사·오·미·신·유·술·해 — 모두 12개. 속에 자리 잡은 본성·환경이에요. 천간이 “내가 어떻게 보이느냐”라면, 지지는 “내가 진짜 어떤 결로 살아가느냐”입니다.')
-        + termBox('십성(十星) — 나와 다른 글자들의 관계', '“십성”은 일간(나)과 나머지 글자들이 맺는 <strong>10가지 관계 이름</strong>이에요. 비견·겁재(나와 같은 결), 식신·상관(나의 표현·재능), 정재·편재(현실의 돈·실무), 정관·편관(책임·자리·압박), 정인·편인(배움·받쳐 줌). 이 십성의 분포가 ' + nmUi(name) + ' 직업·연애·돈의 큰 패턴을 만들어 줍니다.')
-        + termBox('지장간(地藏干) — 지지 안에 숨은 천간', '지지 글자 하나하나 안에는 사실 <strong>또 다른 천간 1~3개</strong>가 숨어 있어요. 겉으로는 보이지 않지만 무의식·잠재력·숨겨진 동기로 작동합니다. 예) “인(寅)” 안에는 갑·병·무가 같이 살고 있어요. 그래서 같은 “인” 글자라도 안쪽에서 어떤 기운이 더 활성화되는지에 따라 결이 미세하게 달라집니다.')
-        + termBox('12운성(十二運星) — 글자의 인생 단계', '하나의 글자가 “지금 어느 생애 단계에 있는가”를 12가지로 표시해요. 장생(태어남)·욕(씻김)·관대(자리잡음)·록(전성기)·왕(절정)·쇠(기울기 시작)·병(잠시 힘 빠짐)·사(잠잠)·묘(쉼)·절(끊김)·태(다시 잉태)·양(자람). 같은 글자라도 단계가 다르면 힘의 크기가 달라져요.')
-        + termBox('신살(神煞) — 특정 글자 조합이 만드는 별', '글자 조합으로 만들어지는 “별”이에요. <strong>도화살</strong>은 매력·인기, <strong>역마살</strong>은 이동·변화, <strong>화개살</strong>은 예술·종교 감각, <strong>천을귀인</strong>은 도움을 주는 귀한 인연 같은 식이에요. 신살은 단독으로 “좋다·나쁘다”가 아니라, 어느 자리에 박혀 있느냐에 따라 결이 달라집니다.')
-        + termBox('공망(空亡) — 채워도 채워지지 않는 빈자리', '사주에서 일주를 기준으로 한 “비어 있는 글자”예요. 그 자리에 해당하는 영역(가족·돈·자리 등)은 평소엔 잘 보이지만, 결정적인 순간에 한 번씩 비어 보일 수 있어요. 결핍의 자리가 아니라 — <strong>이 자리에는 평생 다른 보완축을 두고 가셔야 한다</strong>는 신호로 읽으시면 됩니다.')
-        + '</div>';
-
-    return '<details class="manse-guide sajux-glass-panel" style="background:rgba(255,255,255,0.04);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid rgba(199,167,106,0.22);border-radius:14px;padding:16px 20px;margin:12px 0 18px;box-shadow:0 8px 32px rgba(0,0,0,0.15);">'
-        + '<summary style="cursor:pointer;list-style:none;padding:4px 0;">'
-        + '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">'
-        + '<div><div style="font-size:10px;letter-spacing:0.14em;color:rgba(199,167,106,0.52);font-weight:700;margin-bottom:6px;">만세력 안내</div>'
-        + '<div style="font-size:clamp(17px,4vw,22px);font-weight:800;color:#fff;line-height:1.25;">만세력 읽는 법</div></div>'
-        + '<span class="manse-guide-toggle" style="font-size:11px;color:#aaa;padding:5px 10px;border-radius:999px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.10);">건너뛰셔도 좋아요 · 펼쳐 보기</span>'
-        + '</div>'
-        + '<p style="font-size:12.5px;color:#aaa;line-height:1.85;margin:10px 0 0;">' + _vp('만세력은 태어난 시각을 사주 여덟 글자로 옮겨 적은 표예요. 아래 표에는 ' + nmUi(name) + ' 원국이 한 장에 모여 있습니다. 용어가 빽빽해 보여도 기본만 알면 본문 풀이가 어디서 나오는지 따라가실 수 있어요. <strong>원리가 궁금하지 않으시면 이 안내는 건너뛰셔도 됩니다.</strong> 표만 보시고 본문으로 넘어가셔도 좋아요.') + '</p>'
-        + '</summary>'
-        + '<div style="margin-top:18px;padding-top:16px;border-top:1px dashed rgba(199,167,106,0.18);">'
-        + '<div style="font-size:13.5px;color:#ddd;line-height:1.95;margin-bottom:14px;">' + _vp('<strong>만세력(萬歲曆)</strong>이란 — 태어난 시각의 천체 흐름을 사주 8글자로 환산해 둔 한 장의 표예요. 같은 날 태어난 사람이라도 시(時)에 따라 결이 다르고, 그 결을 다섯 가지 기운(오행)과 열 가지 관계(십성)로 풀어 보는 게 사주의 기본 원리입니다.') + '</div>'
-        + '<div style="font-size:11px;letter-spacing:0.10em;color:var(--gold);font-weight:700;margin:14px 0 8px;">① 오행 — 사주를 이루는 다섯 가지 기운</div>'
-        + ohGrid
-        + '<div style="font-size:11px;letter-spacing:0.10em;color:var(--gold);font-weight:700;margin:18px 0 8px;">② 표의 각 줄이 무엇을 가리키는지</div>'
-        + termGrid
-        + '<p style="font-size:12px;color:#888;line-height:1.85;margin:16px 0 0;">' + _vp('여기까지가 사주 표를 읽으실 때 알아 두시면 좋은 기본이에요. 외우지 않으셔도 됩니다. 아래 만세력 표를 한 번 훑어보시고, 그 다음 풀이 본문으로 넘어가시면 — 본문 안에서 이 용어들이 어떻게 쓰이는지 자연스럽게 보이실 거예요.') + '</p>'
-        + '</div>'
-        + '</details>';
+    return '';
 }
+
 
 // VIP 근거: 원국 8자 만세력 표 (프리미엄 요약 직후 배치)
 function buildVipEvidenceBlock(data) {
