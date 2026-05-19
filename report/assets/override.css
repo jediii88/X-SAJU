@@ -533,6 +533,17 @@ html[data-theme="light"] .ii-text p { color: #1a1510 !important; }
 html[data-theme="light"] .ch-text,
 html[data-theme="light"] .ch-text b { color: #1a1510 !important; }
 
+/* 한 줄기 서사 — 본문 단락 공통 리듬 */
+.sajux-narrative-para,
+.ch-voice-opener.sajux-narrative-para {
+  letter-spacing: 0.01em;
+  text-wrap: pretty;
+}
+html[data-theme="light"] .sajux-narrative-para,
+html[data-theme="light"] .ch-voice-opener.sajux-narrative-para {
+  color: #1a1510 !important;
+}
+
 /* 라이트: 다크모드 밝은색 → 먹색 치환 */
 html[data-theme="light"] [style*="color:#ddd"]              { color: #383028 !important; }
 html[data-theme="light"] [style*="color:#ccc"]              { color: #484038 !important; }
