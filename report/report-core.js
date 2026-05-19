@@ -508,6 +508,35 @@ function narrativeVp(data, text) {
     return boldStarsToStrong(voicePolishParagraph(data, text || ''));
 }
 
+/** 서사 본문 — 빈 줄·단일 줄바꿈 기준 단락 분리 */
+function splitNarrativeParagraphs(text) {
+    var s = String(text == null ? '' : text).replace(/\r\n/g, '\n').trim();
+    if (!s) return [];
+    var parts = s.split(/\n\s*\n+/).map(function (x) { return x.trim(); }).filter(Boolean);
+    if (parts.length <= 1 && /\n/.test(s)) {
+        parts = s.split(/\n+/).map(function (x) { return x.trim(); }).filter(Boolean);
+    }
+    return parts.length ? parts : [s];
+}
+
+/** 여러 단락을 각각 <p>로 렌더 */
+function buildNarrativeParasFromText(data, text, opts) {
+    opts = opts || {};
+    var blocks = splitNarrativeParagraphs(text);
+    if (!blocks.length) return '';
+    return blocks.map(function (chunk, idx) {
+        var o = {};
+        var k;
+        for (k in opts) {
+            if (Object.prototype.hasOwnProperty.call(opts, k)) o[k] = opts[k];
+        }
+        o.marginBottom = idx < blocks.length - 1
+            ? (opts.paraMarginBottom != null ? opts.paraMarginBottom : (opts.marginBottom != null ? opts.marginBottom : '20px'))
+            : (opts.lastMarginBottom != null ? opts.lastMarginBottom : '8px');
+        return buildNarrativePara(data, chunk, o);
+    }).join('');
+}
+
 /** 한 줄기 서사 톤 — 본문 단락 */
 function buildNarrativePara(data, text, opts) {
     opts = opts || {};
@@ -517,8 +546,9 @@ function buildNarrativePara(data, text, opts) {
     var lh = opts.lineHeight || '2.1';
     var col = opts.color || 'var(--text)';
     var extra = opts.extraClass ? ' ' + opts.extraClass : '';
+    var ws = opts.whiteSpace ? 'white-space:' + opts.whiteSpace + ';' : '';
     var inner = opts.skipVoicePolish ? boldStarsToStrong(text || '') : narrativeVp(data, text);
-    return '<p class="ch-text sajux-narrative-para' + extra + '" style="font-size:' + fs + ';color:' + col + ';line-height:' + lh + ';' + mt + 'margin:0 0 ' + mb + ';">'
+    return '<p class="ch-text sajux-narrative-para' + extra + '" style="font-size:' + fs + ';color:' + col + ';line-height:' + lh + ';' + ws + mt + 'margin:0 0 ' + mb + ';">'
         + inner + '</p>';
 }
 
@@ -1547,7 +1577,12 @@ function getSajuxSipseongModernPromptBlock() {
         '(1단락) 1순위 현대어 키워드 1개 + 상황·직장 예시 + 주의 한 줄',
         '(2단락) 2순위 시너지 + 일터에서 쓰는 법',
         '(3단락) 한 달 루틴(~하십시오) + 왜 통하는지 한 줄',
-        '키워드 나열 금지. 차트 십성명(비겁 등)은 본문에 넣지 말 것.'
+        '키워드 나열 금지. 차트 십성명(비겁 등)은 본문에 넣지 말 것.',
+        '',
+        '6) 조사·종결 — 기계 결합 금지',
+        '"(이)가", "(은)는", "(을)를" 같은 괄호 조사를 변수 뒤에 붙이지 마세요.',
+        '키워드를 문장에 넣을 때 받침에 맞게 "장인정신이", "수용력이", "안목으로"처럼 완성된 한국어로 쓰세요.',
+        '이미 "~습니다", "~집니다"로 끝난 문장 뒤에 "입니다"를 덧붙이지 마세요.'
     ];
     return lines.join('\n');
 }
@@ -1594,6 +1629,13 @@ var SAJUX_SIP_SYNERGY_LINE = {
     '관성|인성': '책임을 지고, 자료·자격으로 버티는 조합'
 };
 
+function sipPlainKeyword(label) {
+    return String(label == null ? '' : label).replace(/\*\*/g, '').trim();
+}
+function sipBoldKeyword(label) {
+    var plain = sipPlainKeyword(label);
+    return plain ? ('**' + plain + '**') : '';
+}
 function sipWeaponLabelForGroup(groupKey, primarySip) {
     if (primarySip && SAJUX_SIP_MODERN.individual[primarySip]) {
         var gk = sipToSipGroupKey(primarySip);
@@ -1724,10 +1766,11 @@ function buildChapter3SipseongThreeParagraphNarrative(data, topG, secondG, prima
         var exp2 = sipExpandBlock(secKey);
         var syn = sipSynergyPhrase(topKey, secKey);
         var secPct = (secondG && secondG.pct != null) ? secondG.pct : '';
-        p2 = '여기에 **' + w2Label + '**이(가) 든든히 받쳐 줍니다. '
-            + exp2.gift.split('.')[0] + '입니다. '
-            + '**' + w1Label + '**으로 방향을 잡고 **' + w2Label + '**으로 마무리할 때 가장 편한 편이에요. '
-            + syn + '이에요. '
+        p2 = '여기에 ' + sipBoldKeyword(w2Label) + getJosaFlex(w2Label, '이/가') + ' 든든히 받쳐 줍니다. '
+            + exp2.gift + ' '
+            + sipBoldKeyword(w1Label) + getJosaFlex(w1Label, '으로/로') + ' 방향을 잡고 '
+            + sipBoldKeyword(w2Label) + getJosaFlex(w2Label, '으로/로') + ' 마무리할 때 가장 편한 편이에요. '
+            + syn + '입니다. '
             + exp1.synWork + ' '
             + (secPct ? ('두 번째 축은 ' + secPct + '% 전후라, ') : '')
             + exp2.synWork;
@@ -1747,7 +1790,24 @@ function buildChapter3SipseongThreeParagraphNarrative(data, topG, secondG, prima
     var raw = [p1, p2, p3].join('\n\n');
     raw = stripSipseongMetaNarrative(raw);
     raw = voiceModernizeSipseong(raw);
+    raw = fixKoreanNarrativeGlitch(raw);
     return raw;
+}
+
+/** 십성·서사 본문 — 이중 종결·괄호 조사 잔여 제거 */
+function fixKoreanNarrativeGlitch(s) {
+    if (!s || typeof s !== 'string') return s;
+    var t = s;
+    t = t.replace(/\(이\)가/g, '').replace(/\(가\)/g, '').replace(/\(은\)는/g, '').replace(/\(는\)/g, '')
+        .replace(/\(을\)를/g, '').replace(/\(를\)/g, '').replace(/\(과\)와/g, '').replace(/\(와\)/g, '');
+    t = t.replace(/습니다\s*입니다/g, '습니다');
+    t = t.replace(/집니다\s*입니다/g, '집니다');
+    t = t.replace(/입니다\s*입니다/g, '입니다');
+    t = t.replace(/이에요\s*입니다/g, '이에요');
+    t = t.replace(/갑니다\s*입니다/g, '갑니다');
+    t = t.replace(/합니다\s*입니다/g, '합니다');
+    t = t.replace(/([가-힣])니다\.입니다/g, '$1니다.');
+    return t;
 }
 SAJUX_VOICE.sipseongModernPrompt = '';
 (function bindSipModernPrompt() {
@@ -1797,7 +1857,7 @@ function sipPlainOneLiner(sip) {
         '정인': '문서·자격·귀인이 열리는 자리'
     };
     if (!kw) return '**일과 관계에서 자주 쓰는 반응**이 앞서 나오고';
-    return '**' + (scene[sip] || '삶의 현장') + '**에서는 **' + kw + '**이(가) 먼저 움직이고';
+    return '**' + (scene[sip] || '삶의 현장') + '**에서는 ' + sipBoldKeyword(kw) + getJosaFlex(kw, '이/가') + ' 먼저 움직이고';
 }
 
 /** 고객-facing 본문 — 십성 한자명 제거 · 현대어 치환 · 컨설팅 톤 승화 */
@@ -1851,7 +1911,11 @@ function voiceModernizeSipseong(s) {
     for (i = 0; i < refr.length; i++) {
         t = t.replace(refr[i][0], refr[i][1]);
     }
-    t = t.replace(/\s{2,}/g, ' ').replace(/\s+([,.])/g, '$1');
+    t = t.replace(/[ \t]{2,}/g, ' ');
+    t = t.replace(/\n{3,}/g, '\n\n');
+    t = t.replace(/[ \t]+\n/g, '\n');
+    t = t.replace(/\n[ \t]+/g, '\n');
+    t = t.replace(/[ \t]+([,.])/g, '$1');
     return t;
 }
 
@@ -8061,16 +8125,13 @@ function buildChapter3_Sipseong(data) {
     const prominentLabels = primaryList.length ? primaryList.join('·') : mainSip;
     var secondG = groupRank.length > 1 ? groupRank[1] : null;
     var unifiedEssay = buildChapter3SipseongUnifiedNarrative(data, topG, secondG, primaryList);
-    var essayChunks = String(unifiedEssay || '').split(/\n\n+/).map(function (s) { return s.trim(); }).filter(Boolean);
-    if (!essayChunks.length && unifiedEssay) essayChunks = [String(unifiedEssay).trim()];
-    var essayHtml = essayChunks.map(function (chunk, idx) {
-        return buildNarrativePara(data, chunk, {
-            color: 'rgba(255,255,255,0.88)',
-            marginBottom: idx < essayChunks.length - 1 ? '20px' : '8px',
-            lineHeight: '2.05',
-            fontSize: '14px'
-        });
-    }).join('');
+    var essayHtml = buildNarrativeParasFromText(data, unifiedEssay, {
+        color: 'rgba(255,255,255,0.88)',
+        paraMarginBottom: '20px',
+        lastMarginBottom: '8px',
+        lineHeight: '2.05',
+        fontSize: '14px'
+    });
     const topLabelPlain = topG.shortLabel || String(topG.label || '').replace(/:\s*$/, '').replace(/\s*\([^)]*\)/g, '').trim();
 
     var chHead3 = buildChapterHeadTopicFirst('일·돈·관계에서 쓰는 다섯 반응', SAJUX_SECTION_LABELS.sipseong, buildTopicMetaphorTitle('sipseong', data));
