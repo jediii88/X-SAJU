@@ -417,7 +417,8 @@ function buildTopicMetaphorTitle(topic, data) {
         },
         sipseong: function() {
             var gk = sipToSipGroupKey(mainSip);
-            return (gk ? sipGroupBarLabel(gk) : '반응') + ' — 일할 때 가장 먼저 쓰는 힘';
+            var kw = gk ? sipWeaponLabelForGroup(gk, mainSip) : '반응';
+            return kw + '이 일·돈·관계에서 가장 먼저 켜지는 힘이에요.';
         },
         wealth:   function() { return '재물 전략'; },
         career:   function() { return '직업 · 소명'; },
@@ -444,7 +445,7 @@ function buildTopicMetaphorTitle(topic, data) {
 var SAJUX_SECTION_LABELS = {
     basic: '한 줄기 서사 — 일주에서 펼치는 한 사람의 흐름',
     wuxing: '오행의 강약과 균형',
-    sipseong: '십성 분포와 역할',
+    sipseong: '만세력 · 십성 다섯 축',
     wealth: '04. 재물 전략 — 돈의 흐름과 지키는 법',
     career: '05. 직업·소명 — 무대와 권한의 방향',
     love: '06. 애정·인연 — 마음이 머무는 자리',
@@ -483,7 +484,7 @@ function buildChapterBridge(topic, data) {
     var bridges = {
         basic:    null, // 첫 챕터 — 풀 인사로 처리
         wuxing:   '오행 비율부터 짚어 보겠습니다.',
-        sipseong: '일·돈·관계에서 쓰는 다섯 반응을 살펴보겠습니다.',
+        sipseong: '만세력에서 십성 다섯 축이 어떻게 깔렸는지 살펴보겠습니다.',
         wealth:   nmUi(nm) + ' 타고난 결을 보았으니, 이제 그 결이 돈의 흐름과 어떻게 맞물리는지 짚어보겠습니다.',
         career:   '직업은 단순히 직함이 아니라 ' + nmUi(nm) + ' 에너지가 가장 빛나는 자리입니다. 그 자리부터 살펴보겠습니다.',
         love:     '관계와 애정은 ' + nmUi(nm) + ' 가장 깊은 부분과 맞닿아 있습니다. 어떤 사람과 어떤 리듬으로 만나는지 살피겠습니다.',
@@ -1569,7 +1570,7 @@ function getSajuxSipseongModernPromptBlock() {
         '3) 문장 구조: 공감 1~2문장 → 구체적·현실적 행동 1개(~하십시오).',
         '천간·지지·용신·지장간 등 다른 명리 용어는 풀이 맥락에서 필요할 때만, 십성 개별명은 절대 노출하지 마세요.',
         '',
-        '4) [내게 맞는 반응 풀이] — 내부언어 vs 서비스언어',
+        '4) [돈·일·관계 — 십성 풀이] — 내부언어 vs 서비스언어',
         '차트·표: 비겁·식상·재성·관성·인성(내부언어). 고객 본문: 현대어 키워드만(서비스언어). 개별 십성명(비견·편인 등) 본문 노출 금지.',
         '5) 3단락 고정 · 메타 발언 영구 금지 · 총분량 약 1000자',
         '금지: "원국을 보면", "성격 검사가 아니라", "아래 막대는", "전문 용어를 외우", "돈·현실 앞에서는", "실생활에만 붙여", "다섯 갈래" 등 분석 원리·UI 설명.',
@@ -1734,7 +1735,7 @@ function sipExpandBlock(groupKey) {
     return SAJUX_SIP_WEAPON_EXPAND[groupKey] || SAJUX_SIP_WEAPON_EXPAND['재성'];
 }
 
-/** [내게 맞는 반응 풀이] — 3단락 고정 · 서비스언어만 · 약 1000자 */
+/** [돈·일·관계 — 십성 풀이] — 3단락 고정 · 서비스언어만 · 약 1000자 */
 function buildChapter3SipseongThreeParagraphNarrative(data, topG, secondG, primaryList) {
     var nmDn = nmDnim(data.name || '고객');
     var topKey = (topG && topG.key) ? topG.key : '재성';
@@ -8303,6 +8304,22 @@ function buildChapter3SipseongUnifiedNarrative(data, topG, secondG, primaryList)
     return buildChapter3SipseongThreeParagraphNarrative(data, topG, secondG, primaryList);
 }
 
+/** 십성 챕터 제목·카드 라벨 — 차트(내부언어) / 훅·본문(서비스언어) 분리 */
+function buildSipseongChapterHook(data, topG, primaryList) {
+    var topKey = (topG && topG.key) ? topG.key : '인성';
+    var topSip = (primaryList && primaryList[0]) ? primaryList[0] : '';
+    var kw = sipWeaponLabelForGroup(topKey, topSip);
+    var pct = (topG && topG.pct != null && topG.pct !== '') ? (' 약 ' + topG.pct + '%') : '';
+    return kw + '이 일·돈·관계에서 가장 먼저 켜지는 힘이에요' + pct + '.';
+}
+
+function buildSipseongChartCardTitleHtml() {
+    return '<div style="margin-bottom:12px;">'
+        + '<div style="font-size:12px;font-weight:800;color:var(--gold);letter-spacing:0.06em;margin:0;">십성 비중</div>'
+        + '<div style="font-size:10px;font-weight:600;color:rgba(255,255,255,0.42);letter-spacing:0.04em;margin-top:5px;">비겁 · 식상 · 재성 · 관성 · 인성</div>'
+        + '</div>';
+}
+
 function buildChapter3_Sipseong(data) {
     const sipseong = data.sipseong || {};
     const total = Math.max(Object.values(sipseong).reduce((a, b) => a + b, 0), 1);
@@ -8371,17 +8388,17 @@ function buildChapter3_Sipseong(data) {
     });
     const topLabelPlain = topG.shortLabel || String(topG.label || '').replace(/:\s*$/, '').replace(/\s*\([^)]*\)/g, '').trim();
 
-    var chHead3 = buildChapterHeadTopicFirst('일·돈·관계에서 쓰는 다섯 반응', SAJUX_SECTION_LABELS.sipseong, buildTopicMetaphorTitle('sipseong', data));
+    var chHead3 = buildChapterHeadTopicFirst('십성 — 돈·일·관계의 다섯 축', SAJUX_SECTION_LABELS.sipseong, buildSipseongChapterHook(data, topG, primaryList));
     var chIntro3 = '';
     return `<div class="report-chapter">
         ${chHead3}
         ${chIntro3}
         <div class="sipseong-bar-chart sajux-glass-heavy" style="background:rgba(255,255,255,0.06);border:1px solid rgba(199,167,106,0.22);border-radius:12px;padding:18px 20px;margin:0 0 14px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
-            <div style="font-size:12px;font-weight:800;color:var(--gold);margin-bottom:12px;letter-spacing:0.06em;">다섯 반응 비중</div>
+            ${buildSipseongChartCardTitleHtml()}
             ${sipRows || '<p style="color:#888;font-size:12px;margin:0;">분포 데이터를 불러오는 중입니다.</p>'}
         </div>
         <div class="sipseong-unified-body sajux-glass-heavy" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:22px 22px 10px;margin:0 0 8px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);">
-            <div style="font-size:11px;color:var(--gold);font-weight:700;letter-spacing:0.14em;margin-bottom:14px;">내게 맞는 반응 풀이</div>
+            <div style="font-size:11px;color:var(--gold);font-weight:700;letter-spacing:0.14em;margin-bottom:14px;">돈·일·관계 — 십성 풀이</div>
             ${essayHtml || '<p class="ch-text">반응 풀이를 불러오는 중입니다.</p>'}
         </div>
     </div>`;
