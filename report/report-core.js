@@ -6105,6 +6105,15 @@ function sajuxAgeFuzzySpanRange(ageLo, ageHi) {
     return Math.max(0, lo - 1) + '세부터 ' + (hi + 1) + '세 무렵';
 }
 
+/** 인생 서사 이정표 — 나이만(년도 생략) */
+function sajuxMilestoneWhenLabel(m) {
+    if (!m) return '';
+    if (m.kind === 'daeun') {
+        return sajuxAgeFuzzySpanRange(m.age, m.ageEnd != null ? m.ageEnd : m.age + 9);
+    }
+    return sajuxAgeFuzzySpan(m.age);
+}
+
 /** 인생 서사 본문 — 남아 있는 명리·한자 설명 문장 제거 */
 function stripLifeArcJargon(html) {
     if (!html || typeof html !== 'string') return html;
@@ -6150,9 +6159,7 @@ function sajuxMilestonePlainClause(data, m) {
 function sajuxMilestoneFlowWeave(data, m) {
     if (!m || !m.g || !m.j) return '';
     var a = sajuxAnalyzePeriod(data, m.g, m.j);
-    var when = m.kind === 'daeun'
-        ? sajuxAgeFuzzySpanRange(m.age, m.ageEnd != null ? m.ageEnd : m.age + 9)
-        : ((m.year ? m.year + '년 ' : '') + sajuxAgeFuzzySpan(m.age));
+    var when = sajuxMilestoneWhenLabel(m);
     var clause = sajuxMilestonePlainClause(data, m);
     if (!clause) return '';
     if (a.giHit || a.score <= -2) return ' 다만 ' + when + '에는 ' + clause + '.';
@@ -6160,10 +6167,7 @@ function sajuxMilestoneFlowWeave(data, m) {
 }
 
 function sajuxMilestoneExperienceAchievement(data, m, a, cat, chung) {
-    var when = m.kind === 'daeun'
-        ? sajuxAgeFuzzySpanRange(m.age, m.ageEnd != null ? m.ageEnd : m.age + 9)
-        : ((m.year ? m.year + '년 ' : '') + sajuxAgeFuzzySpan(m.age));
-    return when + ' — ' + sajuxMilestonePlainClause(data, m) + '.';
+    return sajuxMilestoneWhenLabel(m) + ' — ' + sajuxMilestonePlainClause(data, m) + '.';
 }
 
 
@@ -6190,11 +6194,11 @@ function sajuxMilestoneActionHint(data, cat, age, a, chung) {
     var st = sajuxLifeStageForAge(age);
     if (st.key === 'child') return '이때는 ' + nmDnim(data.name || '고객') + '이 스스로 결정하기보다, 보호자가 일정·병원·학교만 먼저 정리해 주시면 됩니다';
     if (st.key === 'teen') return '진로·연애·친구 중 하나만 골라 일주일 안에 정리해 보십시오';
-    if (chung.length) return '이사·계약·관계 통보는 가능하면 그해 상반기에 끝내고, 하반기는 지키는 쪽으로 두십시오';
+    if (chung.length) return '이사·계약·관계 통보는 가능하면 그 시기 상반기에 끝내고, 하반기는 지키는 쪽으로 두십시오';
     if (cat === 'trial' || a.giHit) return '새 투자·큰 약속은 미루고, 건강 검진·계약 갱신만 챙기셔도 충분합니다';
-    if (cat === 'wealth') return '그해 수입·지출 한 줄 + 큰 지출 상한액만 정해 두십시오';
-    if (cat === 'career') return '맡은 역할을 한 문장으로 적어 두고, 그 밖 요청은 “내년”으로 미루십시오';
-    return '위 결과와 맞는 일 한 가지만 골라, 그해 안에 끝까지 가 보십시오';
+    if (cat === 'wealth') return '그때 수입·지출 한 줄 + 큰 지출 상한액만 정해 두십시오';
+    if (cat === 'career') return '맡은 역할을 한 문장으로 적어 두고, 그 밖 요청은 잠시 미루십시오';
+    return '위 결과와 맞는 일 한 가지만 골라, 그 시기 안에 끝까지 가 보십시오';
 }
 
 function sajuxMilestoneConcreteLine(data, m) {
@@ -6202,9 +6206,7 @@ function sajuxMilestoneConcreteLine(data, m) {
     var age = m.age;
     var cat = sajuxMilestoneAgeCat(age, m.cat || 'flow', sajuxAnalyzePeriod(data, m.g, m.j));
     var chung = sajuxNatalChungHits(data, m.j);
-    var when = m.kind === 'daeun'
-        ? sajuxAgeFuzzySpanRange(m.age, m.ageEnd != null ? m.ageEnd : m.age + 9)
-        : ((m.year ? m.year + '년 ' : '') + sajuxAgeFuzzySpan(age));
+    var when = sajuxMilestoneWhenLabel(m);
     var body = sajuxMilestonePlainClause(data, m);
     var act = sajuxMilestoneActionHint(data, cat, age, sajuxAnalyzePeriod(data, m.g, m.j), chung);
     return when + ' — ' + body + '. ' + act;
