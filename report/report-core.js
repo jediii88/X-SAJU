@@ -415,7 +415,10 @@ function buildTopicMetaphorTitle(topic, data) {
             var minLabel = { wood:'나무', fire:'불', earth:'흙', metal:'금', water:'물' }[oh.minW] || (minK + '의 기운');
             return maxLabel + '의 기운은 두텁고, ' + minLabel + '의 기운은 얇은 분';
         },
-        sipseong: function() { return mainSip + ' — 일하실 때 가장 자주 꺼내 쓰시는 카드'; },
+        sipseong: function() {
+            var gk = sipToSipGroupKey(mainSip);
+            return (gk ? sipGroupBarLabel(gk) : '반응') + ' — 일할 때 가장 먼저 쓰는 힘';
+        },
         wealth:   function() { return '재물 전략'; },
         career:   function() { return '직업 · 소명'; },
         love:     function() { return '애정 · 인연'; },
@@ -480,7 +483,7 @@ function buildChapterBridge(topic, data) {
     var bridges = {
         basic:    null, // 첫 챕터 — 풀 인사로 처리
         wuxing:   '오행 비율부터 짚어 보겠습니다.',
-        sipseong: '십성 무늬를 살펴보겠습니다.',
+        sipseong: '일·돈·관계에서 쓰는 다섯 반응을 살펴보겠습니다.',
         wealth:   nmUi(nm) + ' 타고난 결을 보았으니, 이제 그 결이 돈의 흐름과 어떻게 맞물리는지 짚어보겠습니다.',
         career:   '직업은 단순히 직함이 아니라 ' + nmUi(nm) + ' 에너지가 가장 빛나는 자리입니다. 그 자리부터 살펴보겠습니다.',
         love:     '관계와 애정은 ' + nmUi(nm) + ' 가장 깊은 부분과 맞닿아 있습니다. 어떤 사람과 어떤 리듬으로 만나는지 살피겠습니다.',
@@ -1253,8 +1256,8 @@ function buildTopicOpenerInner(topic, data) {
             nmDnim(nm) + ' 안에서는 ' + (OH_KR[oh.maxW] || '') + ' 기운이 먼저 움직이고, 나머지는 그에 맞춰 조율되는 그림으로 읽으시면 됩니다.'
         ],
         sipseong: [
-            '일과 관계에서 ' + mainSip + ' 반응이 먼저 나오는, ' + nmDnim(nm) + '만의 무늬예요. 이름을 외우기보다 “내가 자주 쓰는 카드”만 기억하셔도 충분합니다.',
-            nmDnim(nm) + '에게 ' + mainSip + ' 축이 앞장서는 날이 많을수록, 그날의 선택이 한 줄기로 이어진다고 보시면 됩니다.'
+            '일과 관계에서 **' + sipGroupBarLabel(sipToSipGroupKey(mainSip)) + '** 쪽이 먼저 움직이는, ' + nmDnim(nm) + '만의 무늬예요. 인성·식상 같은 이름은 몰라도, “돈·말·책임·배움·동료 중 어디에 힘이 실리는지”만 보면 됩니다.',
+            nmDnim(nm) + '에게 **' + sipGroupBarLabel(sipToSipGroupKey(mainSip)) + '** 쪽이 앞장서는 날이 많을수록, 그날의 선택이 한 줄기로 이어진다고 보시면 됩니다.'
         ],
         wealth: [
             '쌓는 해와 지키는 해가 갈립니다.',
@@ -1474,7 +1477,7 @@ function voiceCustomerLexicon(s) {
     t = t.replace(/이\s*두껍다는/g, '이 진하고 강하다는');
     t = t.replace(/가\s*두껍다는/g, '가 진하고 강하다는');
     t = t.replace(/두꺼우시면/g, '강하시면');
-  t = t.replace(/결이\s*살짝/g, '리듬이 살짝');
+    t = t.replace(/결이\s*살짝/g, '리듬이 살짝');
     return t;
 }
 
@@ -1539,7 +1542,22 @@ function voicePolishParagraph(data, text) {
     s = s.replace(/관성\s*\(\s*官星[^\)]*\)/g, '관성(책임·권위 기운)');
     s = s.replace(/재성\s*\(\s*財星[^\)]*\)/g, '재성(재물·현실 감각)');
     s = s.replace(/인성\s*\(\s*印星[^\)]*\)/g, '인성(배움·수용의 기운)');
-    s = s.replace(/비겁\s*\(\s*比劫[^\)]*\)/g, '비겁(자아·동료 기운)');
+    s = s.replace(/비겁\s*\(\s*比劫[^\)]*\)/g, '동료·자아');
+    s = s.replace(/인성\s*축/g, '배움·자격 쪽');
+    s = s.replace(/식상\s*축/g, '표현·산출 쪽');
+    s = s.replace(/재성\s*축/g, '돈·현실 쪽');
+    s = s.replace(/관성\s*축/g, '책임·직장 쪽');
+    s = s.replace(/비겁\s*축/g, '동료·자아 쪽');
+    s = s.replace(/인성\s*줄기/g, '배움·지지 쪽');
+    s = s.replace(/식상\s*줄기/g, '만들고 표현 쪽');
+    s = s.replace(/재성\s*줄기/g, '돈·현실 쪽');
+    s = s.replace(/관성\s*줄기/g, '책임·직장 쪽');
+    s = s.replace(/비겁\s*줄기/g, '동료·자아 쪽');
+    s = s.replace(/인성\s*묶음/g, '배움·지지');
+    s = s.replace(/식상\s*묶음/g, '만들고 표현');
+    s = s.replace(/재성\s*묶음/g, '돈·현실');
+    s = s.replace(/관성\s*묶음/g, '책임·직장');
+    s = s.replace(/비겁\s*묶음/g, '동료·자아');
     s = s.replace(/칠살\s*\(\s*七殺\s*\)/g, '칠살(나를 단련시키는 강한 기운)');
     // 오행 한자 → 한글
     s = s.replace(/목\s*\(\s*木\s*\)/g, '목(나무)');
@@ -1911,6 +1929,68 @@ function pickLoveAdviceByScore(sc, seedKey) {
     ];
     var pool = sc >= 2 ? hi : sc >= 0 ? mid : low;
     return pool[Math.abs(hashSeed(String(seedKey || 'love'))) % pool.length];
+}
+/** 십성 묶음(비겁·식상 등) — 고객-facing 라벨·결과 문장 (용어 암시 금지) */
+var SIP_GROUP_CUSTOMER = {
+    비겁: {
+        bar: '동료·자아',
+        result: '혼자서도 버티려 하고, 동료·경쟁·지분 앞에서 반응이 먼저 나옵니다',
+        scene: '동업·실력 겨루기·내 방식 고집'
+    },
+    식상: {
+        bar: '만들고 표현',
+        result: '말·글·기획·작품처럼 손끝 산출물이 먼저 튀어나옵니다',
+        scene: '발표·기획·콘텐츠·말로 푸는 일'
+    },
+    재성: {
+        bar: '돈·현실',
+        result: '월급·거래·견적·생활비처럼 숫자와 현실 감각이 먼저 움직입니다',
+        scene: '입금·지출·계약·실무 성과'
+    },
+    관성: {
+        bar: '책임·직장',
+        result: '직함·평가·규칙·마감 앞에서 몸이 먼저 반응합니다',
+        scene: '승진·조직·약속·책임'
+    },
+    인성: {
+        bar: '배움·지지',
+        result: '자격·문서·귀인·공부로 버티는 쪽이 먼저 열립니다',
+        scene: '시험·자격·서류·멘토'
+    }
+};
+function sipGroupBarLabel(groupKey) {
+    var g = SIP_GROUP_CUSTOMER[groupKey];
+    return (g && g.bar) ? g.bar : String(groupKey || '');
+}
+function sipGroupResultBlurb(groupKey, pct) {
+    var g = SIP_GROUP_CUSTOMER[groupKey];
+    if (!g) return '';
+    var p = (pct != null && pct !== '') ? (' 대략 ' + pct + '% 전후로, ') : ' ';
+    return '지금 가장 강한 쪽은 **' + g.bar + '**이고,' + p + g.result + '.';
+}
+/** 개별 십성 — 한 줄 결과(이름만 던지지 않음) */
+function sipPlainOneLiner(sip) {
+    var m = {
+        '비견': '**동료와 나란히 서는 자리**에서 자존심과 주도권이 먼저 움직이고',
+        '겁재': '**돈·승부가 겹치는 자리**에서 속도가 빨라지며',
+        '식신': '**만든 결과물**이 곧 평가로 이어지는 편이고',
+        '상관': '**말과 기준**이 먼저 나가며',
+        '편재': '**거래·부업·외주** 줄이 여러 갈래로 열리고',
+        '정재': '**월급·정산·루틴**이 삶의 축이며',
+        '편관': '**마감·압박·현장**에서 각이 서고',
+        '정관': '**직함·평가·약속**을 무겁게 여기며',
+        '편인': '**공부·틈새·직관**으로 길을 찾고',
+        '정인': '**문서·자격·귀인**이 안전벨트인 편이에요'
+    };
+    return m[sip] || '**일과 관계에서 자주 쓰는 반응**이 앞서 나오고';
+}
+function sipToSipGroupKey(sip) {
+    if (sip === '비견' || sip === '겁재') return '비겁';
+    if (sip === '식신' || sip === '상관') return '식상';
+    if (sip === '편재' || sip === '정재') return '재성';
+    if (sip === '편관' || sip === '정관') return '관성';
+    if (sip === '편인' || sip === '정인') return '인성';
+    return '';
 }
 /** 십성 코드 → 고객 면 산업/일 방식(한글 명칭 비노출, **볼드** 유지) */
 function sipToIndustryWorkStyle(sip) {
@@ -5104,21 +5184,25 @@ function buildChapter3SipseongSynthesisParagraph(primaryList, data) {
     var hasBi = set['비견'] || set['겁재'];
 
     if (list.length >= 2 && hasIn && hasSik) {
-        return nm + ' 원국에는 배움과 귀인으로 버티는 인성 축과, 손끝 재능으로 세상과 맞는 식상 축이 동시에 자주 찍힙니다. 한쪽만 고집하면 준비만 길어지거나, 보여주기만 하고 바탕이 비는 양극단으로 읽히기 쉽습니다. **메모 한 장을 만드는 방식 그대로 결과물 하나를 완성하는 규칙**만 붙이면 두 축이 서로를 받칩니다.';
+        return nm + ' 원국에는 **배우고 버티는 힘**과 **만들어 내 보이는 힘**이 같이 큽니다. 한쪽만 고집하면 준비만 길어지거나, 보여주기만 하고 바탕이 비는 양극단이 나오기 쉽습니다. **메모 한 장을 만드는 방식 그대로 결과물 하나를 완성하는 규칙**만 붙이면 두 힘이 서로를 받칩니다.';
     }
     if (list.length >= 2 && hasIn && hasGwan) {
-        return nm + ' 원국에는 배움·자격 쪽 인성과 책임·평가 쪽 관성이 함께 끼어 있습니다. 머리로는 답을 알면서도 체면이나 서열 때문에 속도가 느려지는 패턴이 나오기 쉽습니다. **역할과 책임을 한 문장으로 나눠 적은 뒤** 한쪽만 먼저 맞추십시오.';
+        return nm + ' 원국에는 **자격·문서로 버티는 힘**과 **직함·평가 앞에서 움직이는 힘**이 함께 끼어 있습니다. 머리로는 답을 알면서도 체면이나 서열 때문에 속도가 느려지기 쉽습니다. **역할과 책임을 한 문장으로 나눠 적은 뒤** 한쪽만 먼저 맞추십시오.';
     }
     if (list.length >= 2 && hasSik && hasJae) {
-        return nm + ' 원국에는 표현·산출의 식상과 현실 거래의 재성이 같이 얽혀 있습니다. 만들면 팔리기도 하지만, 즉시 현금화가 안 되면 조급해지기 쉽습니다. **가격표를 먼저 정하고 만드십시오.** 그 순서가 바뀌면 번아웃만 남습니다.';
+        return nm + ' 원국에는 **표현·산출**과 **돈·거래**가 같이 얽혀 있습니다. 만들면 팔리기도 하지만, 즉시 현금화가 안 되면 조급해지기 쉽습니다. **가격표를 먼저 정하고 만드십시오.** 그 순서가 바뀌면 번아웃만 남습니다.';
     }
     if (list.length >= 2 && hasBi && hasIn) {
-        return nm + ' 원국에는 자아가 또렷한 비겁과 배움으로 버티는 인성이 함께 있습니다. 혼자 결정은 빠른데, 책임까지 혼자 지려는 순간이 많아질 수 있습니다. **조언은 한 사람에게만 받고 기록으로만 남기십시오.**';
+        return nm + ' 원국에는 **자기 방식이 또렷한 힘**과 **배움·귀인으로 버티는 힘**이 함께 있습니다. 혼자 결정은 빠른데, 책임까지 혼자 지려는 순간이 많아질 수 있습니다. **조언은 한 사람에게만 받고 기록으로만 남기십시오.**';
     }
     if (list.length === 1) {
-        return nm + ' 원국에서는 **' + list[0] + '** 한 축이 특히 두드러집니다. 다른 글자도 있지만, 일과 관계에서 먼저 튀는 반응은 이 이름으로 짚는 편이 맞습니다.';
+        return nm + ' 원국에서는 ' + sipPlainOneLiner(list[0]) + ' 다른 기운도 있지만, 일과 관계에서 가장 먼저 튀는 반응은 이쪽으로 읽는 편이 맞습니다.';
     }
-    return nm + ' 원국에서는 **' + list.join('·') + '** 축이 차례로 강하게 겹칩니다. 한 번에 다 고치려 하지 말고, **한 시즌에는 이름 하나만** 고정해 조정하십시오.';
+    var plainNames = list.map(function (s) {
+        var gk = sipToSipGroupKey(s);
+        return gk ? sipGroupBarLabel(gk) : s;
+    }).filter(function (x, i, a) { return a.indexOf(x) === i; });
+    return nm + ' 원국에서는 **' + plainNames.join('·') + '** 쪽이 차례로 강하게 겹칩니다. 한 번에 다 고치려 하지 말고, **한 시즌에는 한 가지 반응만** 고정해 조정하십시오.';
 }
 
 /**
@@ -7064,7 +7148,7 @@ function buildUpcomingDaewunCards(data) {
 
     return '<div class="report-chapter">'
         + chHead
-        + buildNarrativePara(data, '지금 시기를 살핀 다음에는, ' + nmKke(name) + ' 곧 다가올 두 개의 큰 10년을 짧게 짚어 드릴게요.', { lineHeight: '2', marginBottom: '14px' })
+        + buildNarrativePara(data, '아래 두 장은 <strong>앞으로 열릴 10년의 큰 기후</strong>만 담았어요. 해마다·달마다의 설명은 세운·월운에서 이어집니다.', { lineHeight: '2', marginBottom: '14px' })
         + cards
         + '</div>';
 }
@@ -7592,18 +7676,24 @@ function _buildChapter2_Wuxing_DEAD(_data) {
 /** 십성 챕터 — 개별 십성 카드 없이 묶음·축만 보고 약 1000자 전후로 통합 서술 */
 function buildChapter3SipseongUnifiedNarrative(data, topG, secondG, primaryList) {
     var nmDn = nmDnim(data.name || '고객');
-    var topLabelPlain = topG.shortLabel || String(topG.label || '').replace(/:\s*$/, '').replace(/\s*\([^)]*\)/g, '').trim();
-    var secPlain = (secondG && secondG.sum > 0) ? (secondG.shortLabel || String(secondG.label || '').replace(/:\s*$/, '').replace(/\s*\([^)]*\)/g, '').trim()) : '';
-    var prominent = (primaryList && primaryList.length) ? primaryList.join('·') : (primaryList && primaryList[0]) ? primaryList[0] : '';
-    var p1 = nmDn + ' 원국에서 십성은 성격 테스트가 아니라, 사람·돈·평가 앞에서 어디로 에너지가 먼저 새는지 보여 주는 이름표에 가깝습니다. 마치 평생 같은 역할만 맡게 된 배우가 무대에 서는 것처럼, ' + nmDn + '은 익숙한 반응부터 나옵니다. ';
-    p1 += '아래 다섯 줄은 비겁·식상·재성·관성·인성 묶음의 두께입니다. 지금 가장 두꺼운 줄기는 ‘' + topLabelPlain + '’로 읽히며, 비중은 대략 ' + topG.pct + '% 전후예요. ';
-    if (secPlain) {
-        p1 += '이어서 ‘' + secPlain + '’ 묶음도 붙어 있어, 한 가지 패턴으로만 단정하기 어렵습니다. ';
+    var topBar = sipGroupBarLabel(topG.key);
+    var secBar = (secondG && secondG.sum > 0) ? sipGroupBarLabel(secondG.key) : '';
+    var prominentPlain = (primaryList || []).map(function (s) {
+        var gk = sipToSipGroupKey(s);
+        return gk ? sipGroupBarLabel(gk) : s;
+    }).filter(function (x, i, a) { return x && a.indexOf(x) === i; }).join('·');
+    var p1 = nmDn + ' 원국을 보면, **돈·말·책임·배움·동료** 다섯 갈래 중 어디에 힘이 먼저 실리는지가 보입니다. 성격 검사가 아니라, 사람·돈·평가 앞에서 몸이 먼저 움직이는 쪽을 짚는 거예요. ';
+    p1 += sipGroupResultBlurb(topG.key, topG.pct) + ' ';
+    if (secBar) {
+        p1 += '이어서 **' + secBar + '** 쪽도 붙어 있어, 한 가지 타입으로만 단정하기 어렵습니다. ';
     }
-    p1 += '이름을 하나하나 외우실 필요는 없습니다. 일과 관계에서 자동으로 나오는 반응만 보면 충분합니다.';
+    p1 += '전문 용어를 외우실 필요는 없습니다. 아래 막대는 “언제 어떤 반응이 자동으로 나오는지”만 보여 줍니다.';
     var pMid = buildChapter3SipseongSynthesisParagraph(primaryList, data);
-    var p3 = '실생활에만 붙여 보셔도 됩니다. 현금과 거래 앞에서는 재성 줄기, 말과 산출물 앞에서는 식상 줄기, 책임과 서열 앞에서는 관성 줄기, 배움과 근거 앞에서는 인성 줄기가 앞서 나올 때가 많습니다. ';
-    p3 += nmDn + '에게 특히 자주 찍히는 축은 ‘' + prominent + '’입니다. **한 달에 몰입 주 하나와 숨 고르는 주 하나**만 달력에 정해 두면, 두꺼운 줄기를 도구로 쓰기 시작하신 거예요.';
+    var p3 = '실생활에만 붙여 보셔도 됩니다. **입금·지출·견적** 앞에서는 「돈·현실」 쪽이, **발표·기획·작품** 앞에서는 「만들고 표현」 쪽이, **직함·평가·마감** 앞에서는 「책임·직장」 쪽이, **시험·자격·서류** 앞에서는 「배움·지지」 쪽이, **동료·동업·실력 겨루기** 앞에서는 「동료·자아」 쪽이 먼저 움직이는 날이 많습니다. ';
+    if (prominentPlain) {
+        p3 += nmDn + '에게 특히 자주 찍히는 쪽은 **' + prominentPlain + '**입니다. ';
+    }
+    p3 += '**한 달에 몰입 주 하나와 숨 고르는 주 하나**만 달력에 정해 두면, 강한 반응을 도구로 쓰기 시작하신 거예요.';
     var raw = p1 + '\n\n' + pMid + '\n\n' + p3;
     return voicePolishParagraph(data, raw);
 }
@@ -7616,11 +7706,11 @@ function buildChapter3_Sipseong(data) {
     const mainSip = primaryList[0] || '정재';
 
     const SIP_BAR_GROUPS = [
-        { key: '비겁', shortLabel: '비겁', label: '비겁 (비견/겁재):', keys: ['비견', '겁재'] },
-        { key: '식상', shortLabel: '식상', label: '식상 (식신/상관):', keys: ['식신', '상관'] },
-        { key: '재성', shortLabel: '재성', label: '재성 (편재/정재):', keys: ['편재', '정재'] },
-        { key: '관성', shortLabel: '관성', label: '관성 (편관/정관):', keys: ['편관', '정관'] },
-        { key: '인성', shortLabel: '인성', label: '인성 (편인/정인):', keys: ['편인', '정인'] }
+        { key: '비겁', shortLabel: sipGroupBarLabel('비겁'), label: '동료·자아 (비견/겁재):', keys: ['비견', '겁재'] },
+        { key: '식상', shortLabel: sipGroupBarLabel('식상'), label: '만들고 표현 (식신/상관):', keys: ['식신', '상관'] },
+        { key: '재성', shortLabel: sipGroupBarLabel('재성'), label: '돈·현실 (편재/정재):', keys: ['편재', '정재'] },
+        { key: '관성', shortLabel: sipGroupBarLabel('관성'), label: '책임·직장 (편관/정관):', keys: ['편관', '정관'] },
+        { key: '인성', shortLabel: sipGroupBarLabel('인성'), label: '배움·지지 (편인/정인):', keys: ['편인', '정인'] }
     ];
     var groupSums = SIP_BAR_GROUPS.map(function (g) {
         return g.keys.reduce(function (s, k) { return s + (Number(sipseong[k]) || 0); }, 0);
@@ -7648,7 +7738,7 @@ function buildChapter3_Sipseong(data) {
             pct: normInts[idx]
         };
     }).sort(function (a, b) { return b.sum - a.sum; });
-    const topG = groupRank[0] || { key: '비겁', label: '비겁 (비견/겁재):', shortLabel: '비겁', pct: 0 };
+    const topG = groupRank[0] || { key: '비겁', label: '동료·자아 (비견/겁재):', shortLabel: sipGroupBarLabel('비겁'), pct: 0 };
     const mainGroupKey = topG.key;
 
     const sipRows = SIP_BAR_GROUPS.map(function (g, idx) {
@@ -7674,18 +7764,18 @@ function buildChapter3_Sipseong(data) {
     }).join('');
     const topLabelPlain = topG.shortLabel || String(topG.label || '').replace(/:\s*$/, '').replace(/\s*\([^)]*\)/g, '').trim();
 
-    var chHead3 = buildChapterHeadTopicFirst('십성 — 역할과 관계의 무늬', SAJUX_SECTION_LABELS.sipseong, buildTopicMetaphorTitle('sipseong', data));
+    var chHead3 = buildChapterHeadTopicFirst('일·돈·관계에서 쓰는 다섯 반응', SAJUX_SECTION_LABELS.sipseong, buildTopicMetaphorTitle('sipseong', data));
     var chIntro3 = buildChapterIntroHtml(data, 'sipseong');
     return `<div class="report-chapter">
         ${chHead3}
         ${chIntro3}
         <div class="sipseong-bar-chart sajux-glass-heavy" style="background:rgba(255,255,255,0.06);border:1px solid rgba(199,167,106,0.22);border-radius:12px;padding:18px 20px;margin:0 0 14px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
-            <div style="font-size:12px;font-weight:800;color:var(--gold);margin-bottom:12px;letter-spacing:0.06em;">십성 묶음 비중</div>
+            <div style="font-size:12px;font-weight:800;color:var(--gold);margin-bottom:12px;letter-spacing:0.06em;">다섯 반응 비중</div>
             ${sipRows || '<p style="color:#888;font-size:12px;margin:0;">분포 데이터를 불러오는 중입니다.</p>'}
         </div>
         <div class="sipseong-unified-body sajux-glass-heavy" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:22px 22px 10px;margin:0 0 8px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);">
-            <div style="font-size:11px;color:var(--gold);font-weight:700;letter-spacing:0.14em;margin-bottom:14px;">십성 통합 풀이</div>
-            ${essayHtml || '<p class="ch-text">십성 풀이를 불러오는 중입니다.</p>'}
+            <div style="font-size:11px;color:var(--gold);font-weight:700;letter-spacing:0.14em;margin-bottom:14px;">내게 맞는 반응 풀이</div>
+            ${essayHtml || '<p class="ch-text">반응 풀이를 불러오는 중입니다.</p>'}
         </div>
     </div>`;
 }
