@@ -104,14 +104,23 @@ body::before {
   padding: 36px 20px 24px;
   border-bottom: 1px solid rgba(199,167,106,0.1);
 }
-/* 개인 리포트 표지(view · hero-brush-title / cover-brush-sub)와 동급 스케일 */
-.page-header .brand {
-  font-size: 15px;
-  font-weight: 300;
-  letter-spacing: 0.35em;
-  color: rgba(255, 255, 255, 0.88);
-  margin-bottom: 14px;
+/* 개인 리포트 표지 — 로고(다크: screen 블렌드) */
+.page-header .sajux-logo-wrap {
+  position: relative;
+  width: clamp(132px, 28vw, 188px);
+  margin: 0 auto 18px;
+  isolation: isolate;
 }
+.page-header .sajux-logo {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.page-header .sajux-logo.dark {
+  mix-blend-mode: screen;
+  opacity: 0.96;
+}
+.page-header .sajux-logo.light { display: none; }
 .page-header h1 {
   font-family: 'Jeongseon Arirang Ppuri', 'Nanum Brush Script', cursive;
   font-size: clamp(28px, 6.5vw, 48px);
@@ -376,6 +385,8 @@ body::before {
   .report-container, .print-container, .layout-wrapper, .card-wrapper, body, main {
       display: block !important;
   }
+  .page-header .sajux-logo.dark { display: none !important; mix-blend-mode: normal !important; }
+  .page-header .sajux-logo.light { display: block !important; mix-blend-mode: normal !important; opacity: 1 !important; }
 </style>
 </head>
 <body>
@@ -435,7 +446,10 @@ body::before {
 
 <div id="main-content" style="display:none;">
   <div class="page-header">
-    <div class="brand">SAJU X</div>
+    <div class="sajux-logo-wrap" aria-label="SAJU X">
+      <img class="sajux-logo dark" src="../report/assets/sajux-logo-dark.png" alt="SAJU X" width="188" height="auto" decoding="async" />
+      <img class="sajux-logo light" src="../report/assets/sajux-logo-light.png" alt="" width="188" height="auto" decoding="async" aria-hidden="true" />
+    </div>
     <h1>두 사람의 인연 구조</h1>
     <p class="hero-sub">궁합 리포트 — 원국 표는 개인 만세력과 같은 규칙으로 계산합니다. 출생 시각은 한국 경도에 맞춰 약 32분 당겨 적용하며, 왼쪽부터 시주 · 일주 · 월주 · 년주 순입니다.</p>
     <div class="rel-badge" id="rel-badge">연인 궁합</div>
