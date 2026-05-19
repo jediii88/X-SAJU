@@ -514,8 +514,9 @@ function buildNarrativePara(data, text, opts) {
     var lh = opts.lineHeight || '2.1';
     var col = opts.color || 'var(--text)';
     var extra = opts.extraClass ? ' ' + opts.extraClass : '';
+    var inner = opts.skipVoicePolish ? boldStarsToStrong(text || '') : narrativeVp(data, text);
     return '<p class="ch-text sajux-narrative-para' + extra + '" style="font-size:' + fs + ';color:' + col + ';line-height:' + lh + ';' + mt + 'margin:0 0 ' + mb + ';">'
-        + narrativeVp(data, text) + '</p>';
+        + inner + '</p>';
 }
 
 /** 챕터 도입 — 「일주 ○○의 기운을 타고나」 매크로 없이 한 줄기 서사식 */
@@ -5387,13 +5388,13 @@ function lifeNarrativePlainWeave(data, g, j, opts) {
     var ang = sajuxSipLifeAngle(a.sipGan || a.sipJi);
     var soft = '';
     if (a.yongHit || a.score >= 2) {
-        soft = '겉으로 들어온 기운이 ' + nmEulReul(nm) + ' 받쳐 주기 쉬워, ' + ang + '이 숨통이 트이는 때입니다';
+        soft = '그때 환경이 ' + nmEulReul(nm) + ' 받쳐 주기 쉬워, ' + ang + '이 숨통이 트이는 때입니다';
     } else if (a.giHit || a.score <= -2) {
-        soft = '그때 들어온 기운이 부담이 되기 쉬워, ' + ang + '에서 무리한 확장은 줄이는 편이 낫습니다';
+        soft = '그때 환경이 부담이 되기 쉬워, ' + ang + '에서 무리한 확장은 줄이는 편이 낫습니다';
     } else if (a.heeHit) {
         soft = ang + '이 잔잔하게 붙어 가는 시기입니다';
     } else {
-        soft = '큰 사건 없이도 속에서 ' + ang + '의 습관이 조금씩 굳어지는 때입니다';
+        soft = '큰 사건 없이도 ' + ang + ' 쪽 습관이 조금씩 굳어지는 때입니다';
     }
     return soft !== skip ? soft : '';
 }
@@ -5518,13 +5519,13 @@ function lifeNarrativeStageBody(ctx, stage) {
 }
 
 var _LIFE_WEAVE_LEAD = {
-    child: ' 어린 시절 들어온 기운으로 보면, ',
-    teen: ' 그때 겹친 기운으로 보면, ',
-    youth: ' 이 무렵 들어온 기운으로 보면, ',
-    prime: ' 이 무렵 들어온 기운으로 보면, ',
-    middle: ' 이 무렵 들어온 기운으로 보면, ',
-    elder: ' 이 무렵 들어온 기운으로 보면, ',
-    final: ' 마지막 장면의 기운으로 보면, '
+    child: ' 어린 시절 집안·주변 흐름으로 보면, ',
+    teen: ' 그때 살아가던 환경으로 보면, ',
+    youth: ' 이 무렵 삶의 판으로 보면, ',
+    prime: ' 이 무렵 삶의 판으로 보면, ',
+    middle: ' 이 무렵 삶의 판으로 보면, ',
+    elder: ' 이 무렵 삶의 판으로 보면, ',
+    final: ' 마지막 장면으로 보면, '
 };
 
 /** ② 글쓰기층 — 시기 본문 + 대운×8자 한 문장 이어 붙임 */
@@ -5671,10 +5672,10 @@ function buildPersonalPortraitInnerHtml(data) {
         ? '“스스로 결정하고 끝까지 책임지는” 방식'
         : '“충분히 살피고 함께 만들어 가는” 방식';
 
-    var introText = nmDnim(name) + '의 인생을 <strong>한 호흡</strong>으로 이어 읽어 드릴게요. 태어날 때의 기질과, 각 무렵 겹쳐 들어오는 운의 결을 <strong>일상 말</strong>로만 풀었습니다. 나이는 딱 맞추기보다 <strong>흐름</strong>으로 읽어 주시면 됩니다.';
+    var introText = nmDnim(name) + '의 인생을 <strong>한 호흡</strong>으로 이어 읽어 드릴게요. 전문 용어 없이, 태어날 때부터 각 시기에 <strong>무슨 일이 생기기 쉬운지</strong>만 말씀드립니다. 나이는 딱 맞추기보다 <strong>흐름</strong>으로 읽어 주시면 됩니다.';
 
     function para(text) {
-        return buildNarrativePara(data, stripLifeArcJargon(text));
+        return buildNarrativePara(data, stripLifeArcPlainKo(text), { skipVoicePolish: true });
     }
 
     var connectedArc = buildConnectedLifeArcParagraphs(data, {
@@ -6336,7 +6337,7 @@ function sajuxMilestoneWhenLabel(m) {
     return sajuxAgeFuzzySpan(m.age);
 }
 
-/** 인생 서사 본문 — 남아 있는 명리·한자 설명 문장 제거 */
+/** 인생 서사 본문 — 명리·한자·전문용어 제거 후 일상어만 */
 function stripLifeArcJargon(html) {
     if (!html || typeof html !== 'string') return html;
     var s = html;
@@ -6353,6 +6354,38 @@ function stripLifeArcJargon(html) {
     s = s.replace(/\d+세\s*(부터|쯤|무렵)[^.]*에는\s*[^.]*\.\s*/g, '');
     s = s.replace(/이사·직장·관계·계약 중 하나가 갈라지고[^.]*\.\s*/g, '');
     s = s.replace(/\s{2,}/g, ' ').replace(/\s+([,.])/g, '$1').trim();
+    return s;
+}
+
+/** 인생 서사 전용 — 계산은 사주, 화면에는 일상어만(용신·기신·십성 등 금지) */
+function stripLifeArcPlainKo(html) {
+    var s = stripLifeArcJargon(html);
+    var pairs = [
+        ['편관\\s*\\([^)]*\\)', '책임과 압박'], ['정관\\s*\\([^)]*\\)', '직장과 규칙'],
+        ['식신\\s*\\([^)]*\\)', '창작과 표현'], ['상관\\s*\\([^)]*\\)', '말과 기준'],
+        ['편인\\s*\\([^)]*\\)', '배움과 직관'], ['정인\\s*\\([^)]*\\)', '문서와 지지'],
+        ['편재\\s*\\([^)]*\\)', '큰 거래와 부수입'], ['정재\\s*\\([^)]*\\)', '월급과 생활비'],
+        ['비견\\s*\\([^)]*\\)', '동료와 자존심'], ['겁재\\s*\\([^)]*\\)', '경쟁과 지출'],
+        ['편관', '책임·압박'], ['정관', '직장·규칙'], ['식신', '창작·표현'], ['상관', '말·기준'],
+        ['편인', '배움·직관'], ['정인', '문서·지지'], ['편재', '큰돈·부수입'], ['정재', '월급·생활비'],
+        ['비견', '동료·자존심'], ['겁재', '경쟁·지출'],
+        ['식상', '창작·표현'], ['관성', '책임·직장'], ['재성', '돈·현실'], ['인성', '배움·지지'], ['비겁', '동료·경쟁'],
+        ['칠살', '강한 압박'], ['용신', ''], ['희신', ''], ['기신', ''], ['구신', ''],
+        ['십성', ''], ['지장간', ''], ['천간', ''], ['지지', ''], ['통근', ''],
+        ['명리학', ''], ['명리', ''], ['원국', '태어날 때'], ['일주', '타고난 격'],
+        ['일간', ''], ['일지', ''], ['월주', ''], ['년주', ''], ['시주', ''],
+        ['대운', '10년 흐름'], ['세운', '그 해'], ['월운', '그 달'],
+        ['신강', ''], ['신약', ''], ['중화', '']
+    ];
+    for (var i = 0; i < pairs.length; i++) {
+        s = s.replace(new RegExp(pairs[i][0], 'g'), pairs[i][1]);
+    }
+    s = s.replace(/기신\(나를 지치게 하는 기운\)|기신\(忌\)|기신·구신/g, '부담');
+    s = s.replace(/나를 지치게 하는 기운|기신을 자극하는/g, '부담');
+    s = s.replace(/\(用\)|\(喜\)|\(忌\)|\(仇\)/g, '');
+    s = s.replace(/[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]/g, '');
+    s = s.replace(/\(\s*偏[財官印]|正[財官印]|食神|傷官|比肩|劫財|七殺\s*\)/g, '');
+    s = s.replace(/\s*·\s*·/g, '·').replace(/\s{2,}/g, ' ').replace(/\s+([,.])/g, '$1').trim();
     return s;
 }
 
