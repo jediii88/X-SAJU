@@ -5230,102 +5230,151 @@ function buildIljuProfileCard(data) {
  *  - 인물 초상의 7요소(첫인상·속내·강점·과제·결정·관계·일·본질)는
  *    해당 시기에 자연스럽게 녹여 배치합니다
  * ───────────────────────────────────────── */
-/** 한 줄기 서사 — 시기별 한 편으로 이어지는 본문(카드 분리 없음) */
-function buildConnectedLifeArcParagraphs(data, ctx) {
+/* ═══ 인생 서사 2단계 (모든 고객 공통) ═══
+ *  ① buildLifeNarrativePlan — 사주 계산 → 시기별 사실(JSON)만
+ *  ② writeLifeNarrativeParagraph — 사실만 받아 일상어 한 단락 (명리 용어·한자 금지)
+ *  제목(유년기·청년기…) = 고정 나이 구간 / 톤·이정표 = 그 구간 안 대운·세운 점수
+ */
+
+function lifeNarrativePickMilestone(milestones, lo, hi) {
+    var hits = (milestones || []).filter(function (m) {
+        if (m.age < lo || m.age > hi) return false;
+        if (m.kind === 'seyun' && m.age < 20) return false;
+        if (lo < 14 && m.kind === 'seyun') return false;
+        return true;
+    });
+    if (!hits.length) return null;
+    hits.sort(function (a, b) {
+        if (b.ev !== a.ev) return b.ev - a.ev;
+        if (a.kind !== b.kind) return a.kind === 'daeun' ? -1 : 1;
+        return a.age - b.age;
+    });
+    return hits[0];
+}
+
+function lifeNarrativeMilestoneFact(data, m) {
+    var a = sajuxAnalyzePeriod(data, m.g, m.j);
+    var chung = sajuxNatalChungHits(data, m.j);
+    var polarity = 'mixed';
+    if (chung.length) polarity = 'shift';
+    else if (a.giHit || a.score <= -2) polarity = 'hard';
+    else if (a.yongHit || a.score >= 2) polarity = 'good';
+    return {
+        when: sajuxMilestoneWhenLabel(m),
+        polarity: polarity,
+        result: sajuxMilestonePlainClause(data, m)
+    };
+}
+
+/** ① 계산층 — 누구 사주든 동일 스키마 */
+function buildLifeNarrativePlan(data, ctx) {
     var milestones = [];
     try {
         milestones = (typeof sajuxScanLifeMilestones === 'function') ? (sajuxScanLifeMilestones(data) || []) : [];
     } catch (e) { console.error('sajuxScanLifeMilestones:', e.message); }
 
-    function msInline(lo, hi) {
-        var hits = milestones.filter(function (m) {
-            if (m.age < lo || m.age > hi) return false;
-            if (m.kind === 'seyun' && m.age < 20) return false;
-            if (lo < 14 && m.kind === 'seyun') return false;
-            return true;
+    var stages = [];
+    SAJUX_LIFE_STAGES.forEach(function (st) {
+        var label = st.label;
+        if (st.key === 'final') label = voiceTwilightChapter((ctx.name || '고객') + 'fin');
+        var m = lifeNarrativePickMilestone(milestones, st.lo, st.hi);
+        stages.push({
+            key: st.key,
+            label: label,
+            ageLo: st.lo,
+            ageHi: st.hi,
+            flow: ctx.periodTone(st.lo, st.hi),
+            milestone: m ? lifeNarrativeMilestoneFact(data, m) : null
         });
-        if (!hits.length) return '';
-        hits.sort(function (a, b) {
-            if (b.ev !== a.ev) return b.ev - a.ev;
-            if (a.kind !== b.kind) return a.kind === 'daeun' ? -1 : 1;
-            return a.age - b.age;
-        });
-        return sajuxMilestoneFlowWeave(data, hits[0]);
-    }
+    });
+    return { stages: stages };
+}
 
-    function stagePara(lo, hi, seed, label, bodyHtml) {
-        var html = '<strong>' + label + '</strong>에는 ' + bodyHtml + msInline(lo, hi);
-        return ctx.para(html);
-    }
-
+function lifeNarrativeStageBody(ctx, stage) {
     var nm = ctx.name;
-    var tYou = ctx.periodTone(0, 13);
-    var tChu = ctx.periodTone(14, 19);
-    var tCh = ctx.periodTone(20, 34);
-    var tJ = ctx.periodTone(35, 49);
-    var tM = ctx.periodTone(50, 69);
-    var tN = ctx.periodTone(70, 89);
-    var tFin = ctx.periodTone(90, 120);
+    var t = stage.flow;
+    var tp = ctx.tonePhrase;
 
-    var pYou = ctx.tonePhrase(tYou,
-        '큰 사고보다 집안의 시선이 ' + nmEulReul(nm) + ' 든든히 받쳐 주는 흐름이었을 가능성이 큽니다. ',
-        '이사·집안 변화가 한두 번 있었을 수 있어, ' + nmDnim(nm) + '은 또래보다 일찍 어른의 표정을 읽는 법을 익히셨습니다. ',
-        '잔잔하지만 그 안에서 “나는 어떤 사람일까”라는 물음이 이미 마음에 깔렸습니다. ')
-        + nmDnim(nm) + '은 ' + ctx.birthScene + ' '
-        + (ctx.firstImpression ? '어른들의 눈에는 “' + ctx.firstImpression + '” 같은 인상이었을 가능성이 큽니다. ' : '')
-        + '또래 사이에서도 조용하지만 속이 깊은 아이로 기억되셨을 수 있고, 그 습관이 평생 ' + nmUi(nm) + ' 안목의 뿌리가 됩니다.';
+    if (stage.key === 'child') {
+        return tp(t,
+            '큰 사고보다 집안의 시선이 ' + nmEulReul(nm) + ' 든든히 받쳐 주는 흐름이었을 가능성이 큽니다. ',
+            '이사·집안 변화가 한두 번 있었을 수 있어, ' + nmDnim(nm) + '은 또래보다 일찍 어른의 표정을 읽는 법을 익히셨습니다. ',
+            '잔잔하지만 그 안에서 “나는 어떤 사람일까”라는 물음이 이미 마음에 깔렸습니다. ')
+            + nmDnim(nm) + '은 ' + ctx.birthScene + ' '
+            + (ctx.firstImpression ? '어른들의 눈에는 “' + ctx.firstImpression + '” 같은 인상이었을 가능성이 큽니다. ' : '')
+            + '또래 사이에서도 조용하지만 속이 깊은 아이로 기억되셨을 수 있고, 그 습관이 평생 ' + nmUi(nm) + ' 안목의 뿌리가 됩니다.';
+    }
+    if (stage.key === 'teen') {
+        return tp(t,
+            '알아봐 주는 어른·선배 한 명이 진로를 빠르게 열어 주는 시기일 수 있습니다. ',
+            '진로·관계에서 한 번 크게 흔들리며 ' + nmUi(nm) + ' 세상을 보는 눈이 깊어지는 시기일 수 있습니다. ',
+            '“나는 어떤 사람인가”를 일찍 묻기 시작하시고, 답을 서두르지 않아도 그 질문이 평생 ' + nmEulReul(nm) + ' 받칩니다. ')
+            + (ctx.inSelfNote || '') + ' 관심 있는 한 가지에는 폭발적으로 빠지고, 그 외는 흘려보내는 패턴이 이 무렵 또렷해집니다.';
+    }
+    if (stage.key === 'youth') {
+        return tp(t,
+            '첫 직장·자취·연애 같은 굵직한 결정이 ' + nmEulReul(nm) + ' 받쳐 주기 쉬운 흐름입니다. ',
+            '첫 사회 진입에서 한 번 흔들려도, 그 학습이 다음 안착의 자산이 됩니다. ',
+            '작은 결정들이 차곡차곡 쌓여 방향을 잡는 흐름입니다. ')
+            + nmUi(nm) + '의 강점 “' + ctx.strengthRaw + '”이 밖에서 처음 인정받기 쉬운 시기이고, ' + nmDnim(nm) + '은 ' + ctx.dominantSip + '. '
+            + ctx.decisionLine;
+    }
+    if (stage.key === 'prime') {
+        return tp(t,
+            '평생 일군 노력이 처음으로 눈에 보이기 쉬운 구간입니다. ' + (ctx.careerRaw ? ctx.careerRaw + ' 분야에서 특히 자리가 단단해집니다. ' : ''),
+            '결혼·직장이 한 번 학습을 거친 뒤 단단해지는 흐름일 수 있습니다. ',
+            '화려한 도약보다 한 걸음씩 자리를 다지는 흐름이고, 이 시기를 지나야 ' + nmDnim(nm) + '만의 색이 인정받기 시작합니다. ')
+            + ctx.relationLine + ' 동시에 “' + ctx.weaknessRaw + '”의 그늘이 또렷해질 수 있는데, 미리 알아채시면 절반은 약해집니다.'
+            + (ctx.emptyNote ? ' ' + ctx.emptyNote : '');
+    }
+    if (stage.key === 'middle') {
+        return tp(t,
+            '평생 쌓아 온 평판이 한꺼번에 돌아오기 쉬운 흐름이기도 합니다. ',
+            '건강·가족을 동시에 챙기셔야 하는 무거운 어깨의 시기입니다. ',
+            '50대에 시작한 일이 60대의 명함이 될 수 있는 후반전이 열립니다. ')
+            + '자녀·부모·본업·돈이 한꺼번에 몰려오는 시기라, 무리하게 새로 벌리기보다 지금 있는 걸 지키는 편이 낫습니다. '
+            + '후반에 가면 비로소 “진짜 ' + nmUi(nm) + ' 시간”이 돌아옵니다.';
+    }
+    if (stage.key === 'elder') {
+        return tp(t,
+            '후배·자녀 한 명에게 ' + nmDnim(nm) + '의 한 마디가 인생을 바꾸는 일이 일어날 수 있습니다. ',
+            '몸의 신호를 먼저 챙기시는 것이 가장 큰 자산입니다. ',
+            '큰 행사 없이 일상의 깊이가 ' + nmUi(nm) + ' 노년을 빛냅니다. ')
+            + nmDnim(nm) + '은 일을 ' + ctx.workLine + '으로 살아오신 분이라, “덜 무거운, 그러나 의미 있는 한 가지”에 손을 두시는 편이 맞습니다. '
+            + (ctx.coreLine ? '“' + ctx.coreLine + '” — 이 인상이 이때만큼 ' + nmEulReul(nm) + ' 닮습니다. ' : '');
+    }
+    if (stage.key === 'final') {
+        return tp(t,
+            '늦은 인정이 한 번 더 따라올 수 있습니다. ',
+            '몸이 마음만큼 따라 주지 않을 때지만, 마음 안쪽은 평화로워지기 쉽습니다. ',
+            '잔잔함이야말로 평생 쌓아 온 자리의 결정체입니다. ')
+            + '시간이 더 천천히 흐르고, 손에 잡히는 것들의 무게가 커집니다. '
+            + (ctx.coreLine ? '“' + ctx.coreLine + '” — ' : '')
+            + ctx.relationLine + ' '
+            + '큰 직책보다 ' + nmUi(nm) + ' 한 마디·한 습관이 누군가의 삶에 스민 자국이 진짜 무게입니다.';
+    }
+    return '';
+}
 
-    var pChu = ctx.tonePhrase(tChu,
-        '알아봐 주는 어른·선배 한 명이 진로를 빠르게 열어 주는 시기일 수 있습니다. ',
-        '진로·관계에서 한 번 크게 흔들리며 ' + nmUi(nm) + ' 세상을 보는 눈이 깊어지는 시기일 수 있습니다. ',
-        '“나는 어떤 사람인가”를 일찍 묻기 시작하시고, 답을 서두르지 않아도 그 질문이 평생 ' + nmEulReul(nm) + ' 받칩니다. ')
-        + (ctx.inSelfNote || '') + ' 관심 있는 한 가지에는 폭발적으로 빠지고, 그 외는 흘려보내는 패턴이 이 무렵 또렷해집니다.';
+/** ② 글쓰기층 — plan.milestone 만 반영 (용어 없음) */
+function writeLifeNarrativeParagraph(data, stage, ctx) {
+    var body = lifeNarrativeStageBody(ctx, stage);
+    var ms = '';
+    if (stage.milestone && stage.milestone.result) {
+        var lead = stage.milestone.polarity === 'hard' ? ' 다만 ' : ' 그중 ';
+        ms = lead + stage.milestone.when + '에는 ' + stage.milestone.result + '.';
+    }
+    return '<strong>' + stage.label + '</strong>에는 ' + body + ms;
+}
 
-    var pCh = ctx.tonePhrase(tCh,
-        '첫 직장·자취·연애 같은 굵직한 결정이 ' + nmEulReul(nm) + ' 받쳐 주기 쉬운 흐름입니다. ',
-        '첫 사회 진입에서 한 번 흔들려도, 그 학습이 다음 안착의 자산이 됩니다. ',
-        '작은 결정들이 차곡차곡 쌓여 방향을 잡는 흐름입니다. ')
-        + nmUi(nm) + '의 강점 “' + ctx.strengthRaw + '”이 밖에서 처음 인정받기 쉬운 시기이고, ' + nmDnim(nm) + '은 ' + ctx.dominantSip + '. '
-        + ctx.decisionLine;
-
-    var pJ = ctx.tonePhrase(tJ,
-        '평생 일군 노력이 처음으로 결실로 돌아오기 쉬운 구간입니다. ' + (ctx.careerRaw ? ctx.careerRaw + ' 분야에서 특히 자리가 단단해집니다. ' : ''),
-        '결혼·직장이 한 번 학습을 거친 뒤 단단해지는 흐름일 수 있습니다. ',
-        '화려한 도약보다 한 걸음씩 자리를 다지는 흐름이고, 이 시기를 지나야 ' + nmDnim(nm) + '만의 색이 인정받기 시작합니다. ')
-        + ctx.relationLine + ' 동시에 “' + ctx.weaknessRaw + '”의 그늘이 또렷해질 수 있는데, 미리 알아채시면 절반은 약해집니다.'
-        + (ctx.emptyNote ? ' ' + ctx.emptyNote : '');
-
-    var pM = ctx.tonePhrase(tM,
-        '평생 평판이 한꺼번에 결실로 돌아오는 흐름이기도 합니다. ',
-        '건강·가족을 동시에 챙기셔야 하는 무거운 어깨의 시기입니다. ',
-        '50대에 시작한 일이 60대의 명함이 될 수 있는 후반전이 열립니다. ')
-        + '자녀·부모·본업·돈이 한꺼번에 몰려오는 시기라, 무리하게 새로 벌리기보다 지금 있는 걸 지키는 편이 낫습니다. '
-        + '후반에 가면 비로소 “진짜 ' + nmUi(nm) + ' 시간”이 돌아옵니다.';
-
-    var pN = ctx.tonePhrase(tN,
-        '후배·자녀 한 명에게 ' + nmDnim(nm) + '의 한 마디가 인생을 바꾸는 일이 일어날 수 있습니다. ',
-        '몸의 신호를 먼저 챙기시는 것이 가장 큰 자산입니다. ',
-        '큰 행사 없이 일상의 깊이가 ' + nmUi(nm) + ' 노년을 빛냅니다. ')
-        + nmDnim(nm) + '은 일을 ' + ctx.workLine + '으로 살아오신 분이라, “덜 무거운, 그러나 의미 있는 한 가지”에 손을 두시는 편이 맞습니다. '
-        + (ctx.coreLine ? '“' + ctx.coreLine + '” — 이 인상이 이때만큼 ' + nmEulReul(nm) + ' 닮습니다. ' : '');
-
-    var finLabel = voiceTwilightChapter(nm + 'fin');
-    var pFin = ctx.tonePhrase(tFin,
-        '늦은 인정이 한 번 더 따라올 수 있습니다. ',
-        '몸이 마음만큼 따라 주지 않을 때지만, 마음 안쪽은 평화로워지기 쉽습니다. ',
-        '잔잔함이야말로 평생 쌓아 온 자리의 결정체입니다. ')
-        + '<strong>' + finLabel + '</strong>에 시간이 더 천천히 흐르고, 손에 잡히는 것들의 무게가 커집니다. '
-        + (ctx.coreLine ? '“' + ctx.coreLine + '” — ' : '')
-        + ctx.relationLine + ' '
-        + '큰 직책보다 ' + nmUi(nm) + ' 한 마디·한 습관이 누군가의 삶에 스민 자국이 진짜 무게입니다.';
-
-    return stagePara(0, 13, nm + 'you', '유년기', pYou)
-        + stagePara(14, 19, nm + 'chu', '청소년기', pChu)
-        + stagePara(20, 34, nm + 'ch', '청년기', pCh)
-        + stagePara(35, 49, nm + 'jang', '장년기', pJ)
-        + stagePara(50, 69, nm + 'jung', '중년기', pM)
-        + stagePara(70, 89, nm + 'no', '노년기', pN)
-        + stagePara(90, 120, nm + 'fin', finLabel, pFin);
+/** 한 줄기 서사 — plan → write 순서로만 조립 */
+function buildConnectedLifeArcParagraphs(data, ctx) {
+    var plan = buildLifeNarrativePlan(data, ctx);
+    var html = '';
+    for (var i = 0; i < plan.stages.length; i++) {
+        html += ctx.para(writeLifeNarrativeParagraph(data, plan.stages[i], ctx));
+    }
+    return html;
 }
 
 /** 한 줄기 서사 본문만 — 일주 카드와 같은 글래스 카드 안에 붙일 때 공용 */
@@ -6126,6 +6175,7 @@ function stripLifeArcJargon(html) {
     s = s.replace(/용신\([^)]*\)|희신\([^)]*\)|기신\([^)]*\)|구신\([^)]*\)/g, '');
     s = s.replace(/지지\s*충\(沖\)/g, '주변 환경');
     s = s.replace(/\(길\)|\(흉\)|\(평\)/g, '');
+    s = s.replace(/\d{4}년\s*/g, '');
     s = s.replace(/\s{2,}/g, ' ').replace(/\s+([,.])/g, '$1').trim();
     return s;
 }
@@ -6294,9 +6344,7 @@ function buildLifeMilestoneTimelineHtml(data) {
     function milestoneCard(m, idx) {
         var col = sajuxFortuneToneColor(sajuxGilHeungLabel(sajuxFortuneScore(data, m.g, m.j)).tone);
         var st = sajuxLifeStageForAge(m.age);
-        var ageLabel = m.kind === 'daeun'
-            ? (m.age + '세~' + m.ageEnd + '세 · 10년 대운')
-            : (m.year + '년 · ' + m.age + '세');
+        var ageLabel = sajuxMilestoneWhenLabel(m);
         var kindLabel = m.kind === 'daeun' ? '큰 계절' : '그 해의 결';
         var theme = sajuxMilestoneConcreteLine(data, m);
         return '<div style="margin-bottom:16px;padding:16px 18px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid ' + col + '28;border-left:3px solid ' + col + ';">'
