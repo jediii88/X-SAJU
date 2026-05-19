@@ -723,6 +723,23 @@ html[data-theme="light"] table td { color: #1a1510 !important; }
    PDF 인쇄 — 카드 단위 끊기
 ───────────────────────────────── */
 @media print {
+  html,
+  body,
+  html:not([data-theme="light"]) body,
+  html:not([data-theme="light"]) html,
+  html[data-theme="dark"] body {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #111111 !important;
+  }
+  .container,
+  #step-2,
+  #sec-report-full,
+  #report-container {
+    width: 100% !important;
+    max-width: none !important;
+    background: #ffffff !important;
+  }
   .report-chapter,
   .yearly-card, .monthly-card, .card, .inner-card,
   .vip-module-card, .glass-panel,
