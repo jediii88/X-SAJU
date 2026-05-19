@@ -5231,10 +5231,170 @@ function buildIljuProfileCard(data) {
  *    해당 시기에 자연스럽게 녹여 배치합니다
  * ───────────────────────────────────────── */
 /* ═══ 인생 서사 2단계 (모든 고객 공통) ═══
- *  ① buildLifeNarrativePlan — 사주 계산 → 시기별 사실(JSON)만
- *  ② writeLifeNarrativeParagraph — 사실만 받아 일상어 한 단락 (명리 용어·한자 금지)
- *  제목(유년기·청년기…) = 고정 나이 구간 / 톤·이정표 = 그 구간 안 대운·세운 점수
+ *  ① buildLifeNarrativePlan — 원국 8글자 × 그 시기 대운 간지 → 사실(JSON)
+ *  ② writeLifeNarrativeParagraph — 사실만 이어지는 평문 (카드·이정표 상용구 없음)
+ *  제목 = 고정 나이 구간 / 톤 = 구간과 겹치는 대운 / 서사 = 충·합·형·천간합 → 생활 영역
  */
+
+var _SAJUX_STEM_COMBINE = [['甲','己'],['乙','庚'],['丙','辛'],['丁','壬'],['戊','癸']];
+var _SAJUX_BRANCH_HYUNG = [['子','卯'],['寅','巳'],['巳','申'],['丑','戌'],['戌','未']];
+
+function sajuxStemCombineHit(a, b) {
+    if (!a || !b) return false;
+    for (var i = 0; i < _SAJUX_STEM_COMBINE.length; i++) {
+        var p = _SAJUX_STEM_COMBINE[i];
+        if ((a === p[0] && b === p[1]) || (a === p[1] && b === p[0])) return true;
+    }
+    return false;
+}
+
+function sajuxNatalEightSlots(data) {
+    var slots = [];
+    var pillars = data.pillars || [];
+    var labels = ['시', '일', '월', '년'];
+    for (var i = 0; i < pillars.length; i++) {
+        var h = pillars[i] && pillars[i].h;
+        if (!h) continue;
+        var lab = labels[i] || '궁';
+        if (h[0]) slots.push({ palace: lab, part: '천간', char: h[0] });
+        if (h[1]) slots.push({ palace: lab + '지', part: '지지', char: h[1], branch: true });
+    }
+    if (data.dayStem) slots.push({ palace: '일', part: '천간', char: data.dayStem, dup: true });
+    if (data.dayBranch) slots.push({ palace: '일지', part: '지지', char: data.dayBranch, branch: true, dup: true });
+    return slots;
+}
+
+function sajuxPalaceLifeDomain(palace) {
+    var p = palace || '';
+    if (p.indexOf('년') === 0) return '가문·고향·윗집안';
+    if (p.indexOf('월') === 0) return '부모·직장·월급·집';
+    if (p.indexOf('일') === 0) return '본인·건강·배우자';
+    if (p.indexOf('시') === 0) return '자녀·말년·내면·미래 그림';
+    return '주변 환경';
+}
+
+function sajuxSipLifeAngle(sip) {
+    if (!sip) return '일상';
+    if (sip === '편관' || sip === '정관') return '직장·책임·시험·규칙';
+    if (sip === '편재' || sip === '정재') return '돈·거래·생활비';
+    if (sip === '편인' || sip === '정인') return '마음·불안·배움·쉼';
+    if (sip === '식신' || sip === '상관') return '말·창작·표현·이직 충동';
+    if (sip === '비견' || sip === '겁재') return '동료·경쟁·자존심';
+    return '일상';
+}
+
+/** 시기 간지 × 원국 8글자 — 충·합·형·천간합 */
+function sajuxPeriodVsNatalHits(data, pg, pj) {
+    if (!pg || !pj) return [];
+    var ds = data.dayStem || '';
+    var slots = sajuxNatalEightSlots(data);
+    var hits = [];
+    var sipG = (typeof getSipseong === 'function') ? (getSipseong(ds, pg) || '') : '';
+    var sipJ = (typeof getSipseong === 'function') ? (getSipseong(ds, pj) || '') : '';
+
+    slots.forEach(function (sl) {
+        if (sl.dup && sl.branch) return;
+        var rel = '';
+        var weight = 0;
+        var polarity = 'mix';
+        if (sl.branch) {
+            if (sajuxBranchPairHit(_SAJUX_BRANCH_CHUNG, pj, sl.char)) {
+                rel = '충'; weight = (sl.palace.indexOf('일') === 0 ? 10 : sl.palace.indexOf('월') === 0 ? 9 : sl.palace.indexOf('년') === 0 ? 7 : 6);
+                polarity = 'hard';
+            } else if (sajuxBranchPairHit(_SAJUX_BRANCH_LIUHE, pj, sl.char)) {
+                rel = '합'; weight = (sl.palace.indexOf('일') === 0 ? 8 : 6); polarity = 'good';
+            } else if (sajuxBranchPairHit(_SAJUX_BRANCH_HYUNG, pj, sl.char)) {
+                rel = '형'; weight = 7; polarity = 'caution';
+            }
+        } else if (sajuxStemCombineHit(pg, sl.char)) {
+            rel = '천간합'; weight = 5; polarity = 'good';
+        }
+        if (!rel) return;
+        hits.push({
+            palace: sl.palace,
+            relation: rel,
+            domain: sajuxPalaceLifeDomain(sl.palace),
+            angle: sajuxSipLifeAngle(sl.branch ? sipJ : sipG),
+            weight: weight,
+            polarity: polarity
+        });
+    });
+    hits.sort(function (a, b) { return b.weight - a.weight; });
+    return hits;
+}
+
+function lifeNarrativeHitToPlain(hit, nm) {
+    var dom = hit.domain;
+    var ang = hit.angle;
+    if (hit.relation === '충') {
+        if (hit.palace.indexOf('월') === 0) {
+            return '부모·직장·집 쪽에서 갑작스런 변화가 몰리기 쉬워, ' + nmDnim(nm) + '도 한동안 마음이 예민해질 수 있습니다';
+        }
+        if (hit.palace.indexOf('일') === 0) {
+            return '건강·배우자·자기 결정이 한꺼번에 흔들리기 쉬워, 몸과 마음을 동시에 챙겨야 하는 시기입니다';
+        }
+        if (hit.palace.indexOf('년') === 0) {
+            return '고향·윗집안·큰 가족 행사 쪽에서 이사·분가·갈등 같은 변화가 붙을 수 있습니다';
+        }
+        return '자녀·미래 계획·속마음 쪽에서 ' + ang + '이 겹치며, 겉으로는 괜찮아도 안이 먼저 지치기 쉽습니다';
+    }
+    if (hit.relation === '합') {
+        if (hit.palace.indexOf('일') === 0) {
+            return '배우자·파트너·건강 루틴이 맞물려 관계나 컨디션이 한결 편해지기 쉬운 흐름입니다';
+        }
+        if (hit.palace.indexOf('월') === 0) {
+            return '부모·직장·집안 분위기가 한때 단단해지며, ' + ang + ' 쪽에서 실질 도움이 들어오기 쉽습니다';
+        }
+        return dom + ' 쪽 인연이 붙으며, ' + ang + '이 자연스럽게 풀리는 시기입니다';
+    }
+    if (hit.relation === '형') {
+        return dom + '·' + ang + '이 동시에 걸려, 작은 말다툼이 크게 번지지 않게 선을 미리 긋는 편이 낫습니다';
+    }
+    if (hit.relation === '천간합') {
+        return ang + '이 앞에서 열리며, 망설이던 한 가지를 밀어 붙이기 좋은 때입니다';
+    }
+    return '';
+}
+
+/** 구간과 겹치는 대운 한 덩어리 (시작 나이만 보지 않고 겹침 길이) */
+function lifeNarrativeDaeunOverlapping(data, lo, hi) {
+    var rows = data.daeunRows || data.daewunList || [];
+    var best = null;
+    var bestOv = -1;
+    for (var i = 0; i < rows.length; i++) {
+        var p = sajuxParseDaeunRow(rows[i]);
+        if (!p.g || !p.j) continue;
+        var a0 = p.age;
+        var a1 = p.age + 9;
+        var ov = Math.max(0, Math.min(hi, a1) - Math.max(lo, a0) + 1);
+        if (ov > bestOv) { bestOv = ov; best = p; }
+    }
+    return best;
+}
+
+/** 8자×대운 → 한두 문장 평문 (이어 읽기용) */
+function lifeNarrativePlainWeave(data, g, j) {
+    var nm = data.name || '고객';
+    var hits = sajuxPeriodVsNatalHits(data, g, j);
+    if (!hits.length) {
+        var a = sajuxAnalyzePeriod(data, g, j);
+        if (a.yongHit || a.score >= 2) {
+            return '그때 들어오는 기운이 ' + nmUi(nm) + '에게 맞는 쪽이라, ' + sajuxSipLifeAngle(a.sipGan || a.sipJi) + '이 비교적 잘 풀리기 쉽습니다';
+        }
+        if (a.giHit || a.score <= -2) {
+            return '그때 들어오는 기운이 ' + nmUi(nm) + '에게 부담이 되기 쉬워, ' + sajuxSipLifeAngle(a.sipGan || a.sipJi) + '에서 무리한 확장은 줄이는 편이 낫습니다';
+        }
+        return '';
+    }
+    var parts = [];
+    for (var k = 0; k < hits.length && parts.length < 2; k++) {
+        var line = lifeNarrativeHitToPlain(hits[k], nm);
+        if (line && parts.indexOf(line) < 0) parts.push(line);
+    }
+    if (!parts.length) return '';
+    if (parts.length === 1) return '그 시기엔 ' + parts[0] + '.';
+    return '그 시기엔 ' + parts[0] + ', 또 ' + parts[1] + '.';
+}
 
 function lifeNarrativePickMilestone(milestones, lo, hi) {
     var hits = (milestones || []).filter(function (m) {
@@ -5268,23 +5428,20 @@ function lifeNarrativeMilestoneFact(data, m) {
 
 /** ① 계산층 — 누구 사주든 동일 스키마 */
 function buildLifeNarrativePlan(data, ctx) {
-    var milestones = [];
-    try {
-        milestones = (typeof sajuxScanLifeMilestones === 'function') ? (sajuxScanLifeMilestones(data) || []) : [];
-    } catch (e) { console.error('sajuxScanLifeMilestones:', e.message); }
-
     var stages = [];
     SAJUX_LIFE_STAGES.forEach(function (st) {
         var label = st.label;
         if (st.key === 'final') label = voiceTwilightChapter((ctx.name || '고객') + 'fin');
-        var m = lifeNarrativePickMilestone(milestones, st.lo, st.hi);
+        var daeun = lifeNarrativeDaeunOverlapping(data, st.lo, st.hi);
+        var weave = '';
+        if (daeun) weave = lifeNarrativePlainWeave(data, daeun.g, daeun.j);
         stages.push({
             key: st.key,
             label: label,
             ageLo: st.lo,
             ageHi: st.hi,
             flow: ctx.periodTone(st.lo, st.hi),
-            milestone: m ? lifeNarrativeMilestoneFact(data, m) : null
+            weave: weave
         });
     });
     return { stages: stages };
@@ -5356,15 +5513,11 @@ function lifeNarrativeStageBody(ctx, stage) {
     return '';
 }
 
-/** ② 글쓰기층 — plan.milestone 만 반영 (용어 없음) */
+/** ② 글쓰기층 — 원국×대운 서술만 이어 붙임 (용어·카드 없음) */
 function writeLifeNarrativeParagraph(data, stage, ctx) {
     var body = lifeNarrativeStageBody(ctx, stage);
-    var ms = '';
-    if (stage.milestone && stage.milestone.result) {
-        var lead = stage.milestone.polarity === 'hard' ? ' 다만 ' : ' 그중 ';
-        ms = lead + stage.milestone.when + '에는 ' + stage.milestone.result + '.';
-    }
-    return '<strong>' + stage.label + '</strong>에는 ' + body + ms;
+    if (stage.weave) body += ' ' + stage.weave;
+    return '<strong>' + stage.label + '</strong>에는 ' + body;
 }
 
 /** 한 줄기 서사 — plan → write 순서로만 조립 */
@@ -5423,10 +5576,13 @@ function buildPersonalPortraitInnerHtml(data) {
     }
     function avgOf(arr) { if (!arr.length) return 0; return arr.reduce(function(s,x){return s+(x.sc||0);},0) / arr.length; }
     function periodTone(lo, hi) {
-        var a = avgOf(parsed.filter(function(x){ return x.age >= lo && x.age <= hi; }));
-        if (a >= 1) return 'tail';   // 등 뒤에서 받쳐 주는
-        if (a <= -1) return 'side';  // 자주 시험에 들게 하는
-        return 'mix';                 // 번갈아
+        var a = avgOf(parsed.filter(function (x) {
+            var end = x.age + 9;
+            return x.age <= hi && end >= lo;
+        }));
+        if (a >= 1) return 'tail';
+        if (a <= -1) return 'side';
+        return 'mix';
     }
     function tonePhrase(tone, t, s, m) {
         return tone === 'tail' ? t : (tone === 'side' ? s : m);
@@ -5498,7 +5654,7 @@ function buildPersonalPortraitInnerHtml(data) {
         ? '“스스로 결정하고 끝까지 책임지는” 방식'
         : '“충분히 살피고 함께 만들어 가는” 방식';
 
-    var introText = nmDnim(name) + '의 인생을 <strong>한 호흡</strong>으로 이어 읽어 드릴게요. 사주 용어는 쓰지 않고, <strong>그때 무슨 일이 생기기 쉬운지·그래서 뭐가 남는지</strong>만 말씀드립니다. 나이는 딱 맞추기보다 <strong>한두 해 넓게</strong> 잡았으니, 본인 시기와 가깝게만 읽어 주시면 됩니다.';
+    var introText = nmDnim(name) + '의 인생을 <strong>한 호흡</strong>으로 이어 읽어 드릴게요. 태어날 때의 여덟 글자와, 각 시기에 겹쳐 들어오는 기운이 <strong>어디(부모·일·돈·마음)를 건드리는지</strong>만 일상 말로 풀었습니다. 나이는 딱 맞추기보다 <strong>한두 해 넓게</strong> 잡았으니, 본인 시기와 가깝게만 읽어 주시면 됩니다.';
 
     function para(text) {
         return buildNarrativePara(data, stripLifeArcJargon(text));
