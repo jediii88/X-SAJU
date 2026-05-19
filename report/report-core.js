@@ -5435,7 +5435,7 @@ function buildLifeNarrativePlan(data, ctx) {
     var prevWeave = '';
     SAJUX_LIFE_STAGES.forEach(function (st) {
         var label = st.label;
-        if (st.key === 'final') label = voiceTwilightChapter((ctx.name || '고객') + 'fin');
+        if (st.key === 'final') label = '죽음을 앞둔 시점';
         var daeun = lifeNarrativeDaeunOverlapping(data, st.lo, st.hi);
         var weave = '';
         if (daeun) weave = lifeNarrativePlainWeave(data, daeun.g, daeun.j, { skipLine: prevWeave });
@@ -5450,6 +5450,27 @@ function buildLifeNarrativePlan(data, ctx) {
         });
     });
     return { stages: stages };
+}
+
+/** 마지막 시기 — 눈을 감는 순간까지(일주 물상은 여기서 한 번만) */
+function lifeNarrativeFinalPassage(ctx, nm, t, tp) {
+    var open = tp(t,
+        '늦은 인정이 한 번 더 따라올 수 있습니다. ',
+        '몸이 마음만큼 따라 주지 않을 때지만, 마음 안쪽은 잔잔해지기 쉽습니다. ',
+        '서두르지 않아도, 평생 쌓아 온 것들이 조용히 정리되는 때입니다. ');
+    var imageOnce = ctx.coreLine
+        ? '평생 품고 오신 “' + ctx.coreLine + '” 같은 인상은, 빛이 옅어져도 곁에 남는 사람들 마음속에는 그대로 남습니다. '
+        : '';
+    return open
+        + '90대를 넘기면 걸음은 느려지고 하루는 짧아져도, 누군가의 손을 잡는 일만큼은 여전히 큰 일이 됩니다. '
+        + imageOnce
+        + '병상이든 자택이든, 가족·오래된 친구 한두 명의 숨소리가 방 안을 채웁니다. '
+        + '의식이 흐려지는 날에도 귀에 남는 말은 “고생 많았다” “잘했다” 같은 짧은 문장이고, '
+        + nmDnim(nm) + '은 그 말들을 받아들이며 천천히 눈을 감기 쉽습니다. '
+        + '숨이 가빠지기 전 마지막으로 떠오르는 것은 직함이 아니라, 평생 붙들었던 사람·약속·습관의 얼굴입니다. '
+        + '눈꺼풀이 내려앉을 때 ' + nmDnim(nm) + ' 곁에는 후회보다 “그래도 제대로 살았다”는 여운이 남기 쉽고, '
+        + '그 여운이 자녀·제자·동료의 다음 하루를 조용히 밝혀 줍니다. '
+        + '큰 직책보다 ' + nmDnim(nm) + '의 한 마디·한 습관이 누군가의 삶에 스민 자국이, 말 그대로 ' + nmUi(nm) + ' 마지막 유산입니다.';
 }
 
 function lifeNarrativeStageBody(ctx, stage) {
@@ -5503,17 +5524,10 @@ function lifeNarrativeStageBody(ctx, stage) {
             '후배·자녀 한 명에게 ' + nmDnim(nm) + '의 한 마디가 인생을 바꾸는 일이 일어날 수 있습니다. ',
             '몸의 신호를 먼저 챙기시는 것이 가장 큰 자산입니다. ',
             '큰 행사 없이 일상의 깊이가 ' + nmUi(nm) + ' 노년을 빛냅니다. ')
-            + nmDnim(nm) + '은 일을 ' + ctx.workLine + '으로 살아오신 분이라, “덜 무거운, 그러나 의미 있는 한 가지”에 손을 두시는 편이 맞습니다. '
-            + (ctx.coreLine ? '“' + ctx.coreLine + '” — 이 인상이 이때만큼 ' + nmEulReul(nm) + ' 닮습니다. ' : '');
+            + nmDnim(nm) + '은 일을 ' + ctx.workLine + '으로 살아오신 분이라, “덜 무거운, 그러나 의미 있는 한 가지”에 손을 두시는 편이 맞습니다.';
     }
     if (stage.key === 'final') {
-        return tp(t,
-            '늦은 인정이 한 번 더 따라올 수 있습니다. ',
-            '몸이 마음만큼 따라 주지 않을 때지만, 마음 안쪽은 평화로워지기 쉽습니다. ',
-            '잔잔함이야말로 평생 쌓아 온 자리의 결정체입니다. ')
-            + '시간이 더 천천히 흐르고, 손에 잡히는 것들의 무게가 커집니다. '
-            + (ctx.coreLine ? '“' + ctx.coreLine + '” — ' : '')
-            + '큰 직책보다 ' + nmUi(nm) + ' 한 마디·한 습관이 누군가의 삶에 스민 자국이 진짜 무게입니다.';
+        return lifeNarrativeFinalPassage(ctx, nm, t, tp);
     }
     return '';
 }
