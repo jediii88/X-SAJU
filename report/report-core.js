@@ -1539,13 +1539,15 @@ function getSajuxSipseongModernPromptBlock() {
         '3) 문장 구조: 공감 1~2문장 → 구체적·현실적 행동 1개(~하십시오).',
         '천간·지지·용신·지장간 등 다른 명리 용어는 풀이 맥락에서 필요할 때만, 십성 개별명은 절대 노출하지 마세요.',
         '',
-        '4) [내게 맞는 반응 풀이] — 3단락 고정 · 메타 발언 영구 금지',
+        '4) [내게 맞는 반응 풀이] — 내부언어 vs 서비스언어',
+        '차트·표: 비겁·식상·재성·관성·인성(내부언어). 고객 본문: 현대어 키워드만(서비스언어). 개별 십성명(비견·편인 등) 본문 노출 금지.',
+        '5) 3단락 고정 · 메타 발언 영구 금지 · 총분량 약 1000자',
         '금지: "원국을 보면", "성격 검사가 아니라", "아래 막대는", "전문 용어를 외우", "돈·현실 앞에서는", "실생활에만 붙여", "다섯 갈래" 등 분석 원리·UI 설명.',
         '반드시 빈 줄로 나눈 정확히 3단락만 출력:',
-        '(1단락) 가장 강한 무기(1순위 현대어 키워드 1개) 칭찬 + 어떤 상황에서 빛나는지 + 직장 예시 1개',
-        '(2단락) 2순위 무기와의 시너지 — 키워드 1개씩만, 짧게',
-        '(3단락) 한 달 루틴 1개 — 구체적 행동(~하십시오)',
-        '키워드 나열 금지(통찰·수용·전문성·표현을 한 문장에 몰아넣지 말 것).'
+        '(1단락) 1순위 현대어 키워드 1개 + 상황·직장 예시 + 주의 한 줄',
+        '(2단락) 2순위 시너지 + 일터에서 쓰는 법',
+        '(3단락) 한 달 루틴(~하십시오) + 왜 통하는지 한 줄',
+        '키워드 나열 금지. 차트 십성명(비겁 등)은 본문에 넣지 말 것.'
     ];
     return lines.join('\n');
 }
@@ -1634,10 +1636,63 @@ function stripSipseongMetaNarrative(s) {
     for (var i = 0; i < patterns.length; i++) {
         t = t.replace(patterns[i], '');
     }
-    return t.replace(/\s{2,}/g, ' ').replace(/\n{3,}/g, '\n\n').trim();
+    var parts = s.split(/\n\n+/);
+    var out = [];
+    for (var pi = 0; pi < parts.length; pi++) {
+        var para = parts[pi];
+        for (var j = 0; j < patterns.length; j++) {
+            para = para.replace(patterns[j], '');
+        }
+        para = para.replace(/[ \t]{2,}/g, ' ').trim();
+        if (para) out.push(para);
+    }
+    return out.join('\n\n');
 }
 
-/** [내게 맞는 반응 풀이] — 3단락 고정 템플릿 (서론·메타 없음) */
+/** 3단락 풀이 — 그룹별 확장 문장(목표 총분량 약 1000자) */
+var SAJUX_SIP_WEAPON_EXPAND = {
+    비겁: {
+        gift: '혼자서도 방향을 잡고, 실력이나 지분이 걸린 자리에서 체감이 큽니다. 남의 눈치보다 내 기준이 먼저 서는 편이라, 맡은 일의 주도권을 쥐었을 때 에너지가 살아납니다.',
+        work: '동업 조건을 문장으로 정리하거나, 회의 전에 본인 역할을 한 줄로 박아 둘 때 주변에서도 “이 사람은 흔들리지 않는다”는 인상을 받기 쉽습니다.',
+        solo: '반대로 모든 결정을 혼자 짊어지면 피로가 빠르게 쌓일 수 있어, 역할 경계만 분명히 두는 것이 좋습니다.',
+        synWork: '기획은 내 손으로 잡고, 실행·정산은 다른 축에 맡길 때 일이 가장 매끄럽게 굴러갑니다.',
+        routineWhy: '한 달 동안 “내가 맡은 범위”만 적어 두면, 불필요한 책임 싸움을 줄이고 승부에 쓸 힘을 아낄 수 있습니다.'
+    },
+    식상: {
+        gift: '기획서·슬라이드·설계도처럼 손으로 만든 결과물이 곧 평가로 이어집니다. 아이디어보다 완성본이 먼저 말해 주는 타입이라, 보여 줄 수 있는 형태로 빨리 옮길수록 기회가 붙습니다.',
+        work: '발표 자료를 직접 다듬거나, 하루 만에 시안·프로토타입을 내놓을 때 이름이 오르기 쉽습니다. 말로 설득하기 전에 “한 장”을 보여 주는 방식이 잘 맞습니다.',
+        solo: '완성 전에 말이 앞서 나가면 오해가 생길 수 있으니, 초안을 먼저 만든 뒤 설명하는 순서가 안전합니다.',
+        synWork: '만든 것을 내놓고, 숫자나 계약으로 받는 흐름이 맞을 때 수입과 평가가 같이 따라옵니다.',
+        routineWhy: '완성본 한 장을 먼저 두면, 회의·면접·제안 자리에서 설명 부담이 줄고 설득력만 남습니다.'
+    },
+    재성: {
+        gift: '견적·정산·거래처 관리처럼 숫자와 현실 감각이 앞서 나갑니다. 감정보다 데이터가 먼저 움직이는 편이라, 돈·시간·조건이 걸린 선택에서 실수가 적은 편입니다.',
+        work: '견적서를 치밀하게 쓰거나, 월 지출·입금을 표 한 장으로 맞출 때 주변에서 신뢰를 얻기 쉽습니다. “감으로 하지 않는다”는 말을 듣는 경우가 많습니다.',
+        solo: '숫자만 보다 보면 관계가 차갑게 느껴질 수 있어, 중요한 대화 앞에는 한 줄 감정 메모를 붙이면 좋습니다.',
+        synWork: '만든 결과물에 가격과 조건을 바로 붙일 때, 노력이 현금 흐름으로 연결되기 쉽습니다.',
+        routineWhy: '입금·지출 표를 고정하면, 갑작스런 지출이나 미수 걱정을 줄이고 판단 속도가 빨라집니다.'
+    },
+    관성: {
+        gift: '마감·책임·조직 안에서 이름이 박히는 자리에서 힘이 납니다. 규칙과 약속을 지키는 쪽이 편하고, 맡은 일의 끝을 책임지려는 성향이 강합니다.',
+        work: '프로젝트 마감을 맡거나, 팀 규칙·약속을 문서로 남길 때 신뢰가 쌓입니다. 위기 상황에서도 “정리해 주는 사람”으로 기억되기 쉽습니다.',
+        solo: '책임을 혼자 다 끌어안으면 몸이 먼저 지칠 수 있으니, 위임 가능한 일은 목록에서 분리하십시오.',
+        synWork: '배움·자료로 바탕을 쌓고, 직함·평가로 인정받는 흐름이 오래 갑니다.',
+        routineWhy: '구두 합의를 글로 남기면, 나중에 책임 범위가 흐려지는 일을 막을 수 있습니다.'
+    },
+    인성: {
+        gift: '자료 정리·자격·멘토링처럼 배움으로 버티는 쪽에서 오래 갑니다. 겉으로는 조용해 보여도, 안에서는 끊임없이 흡수하고 정리하는 편이라 한 번 익힌 것은 오래 갑니다.',
+        work: '시험·자격 공부를 끊기지 않게 하거나, 선배 한 명에게만 조언을 구할 때 실력이 단단해집니다. 문서·메모가 쌓일수록 결정도 빨라집니다.',
+        solo: '준비만 길어지고 실행이 늦어질 때가 있으니, “충분히 알았다”는 신호가 오면 그날 바로 한 걸음만 내딛으면 좋습니다.',
+        synWork: '깊이 파고 만든 뒤, 손끝 결과물로 보여 줄 때 평가와 기회가 동시에 열립니다.',
+        routineWhy: '짧은 공부 블록을 달력에 박아 두면, 불안을 공부로 바꾸고 실행으로 넘어가기 쉽습니다.'
+    }
+};
+
+function sipExpandBlock(groupKey) {
+    return SAJUX_SIP_WEAPON_EXPAND[groupKey] || SAJUX_SIP_WEAPON_EXPAND['재성'];
+}
+
+/** [내게 맞는 반응 풀이] — 3단락 고정 · 서비스언어만 · 약 1000자 */
 function buildChapter3SipseongThreeParagraphNarrative(data, topG, secondG, primaryList) {
     var nmDn = nmDnim(data.name || '고객');
     var topKey = (topG && topG.key) ? topG.key : '재성';
@@ -1654,30 +1709,45 @@ function buildChapter3SipseongThreeParagraphNarrative(data, topG, secondG, prima
     }
     var w1Label = sipWeaponLabelForGroup(topKey, topSip);
     var scene1 = SAJUX_SIP_WEAPON_SCENE[topKey] || SAJUX_SIP_WEAPON_SCENE['재성'];
+    var exp1 = sipExpandBlock(topKey);
+    var topPct = (topG && topG.pct != null) ? topG.pct : '';
 
     var p1 = nmDn + '을 움직이는 가장 강한 엔진은 **' + w1Label + '**입니다. '
-        + scene1.shine + ' '
-        + scene1.example + '처럼 맡은 일에서 체감이 큽니다.';
+        + exp1.gift + ' '
+        + exp1.work + ' '
+        + (topPct ? ('지금 이 축이 대략 ' + topPct + '% 전후로 또렷하게 잡혀 있어, ') : '')
+        + exp1.solo;
 
     var p2;
     if (secKey) {
         var w2Label = sipWeaponLabelForGroup(secKey, secSip);
+        var exp2 = sipExpandBlock(secKey);
         var syn = sipSynergyPhrase(topKey, secKey);
+        var secPct = (secondG && secondG.pct != null) ? secondG.pct : '';
         p2 = '여기에 **' + w2Label + '**이(가) 든든히 받쳐 줍니다. '
-            + '**' + w1Label + '**으로 방향을 잡고 **' + w2Label + '**으로 끝을 맺을 때 가장 편한 편이에요. '
-            + syn + '입니다.';
+            + exp2.gift.split('.')[0] + '입니다. '
+            + '**' + w1Label + '**으로 방향을 잡고 **' + w2Label + '**으로 마무리할 때 가장 편한 편이에요. '
+            + syn + '이에요. '
+            + exp1.synWork + ' '
+            + (secPct ? ('두 번째 축은 ' + secPct + '% 전후라, ') : '')
+            + exp2.synWork;
     } else {
         p2 = '**' + w1Label + '** 한 축이 또렷해서, 일과 관계에서 같은 패턴이 반복되기 쉽습니다. '
-            + '다른 기운을 억지로 늘리기보다, 이 무기를 한 시즌만 깊게 쓰는 편이 낫습니다.';
+            + '다른 기운을 억지로 늘리기보다, 이 무기를 한 시즌만 깊게 쓰는 편이 낫습니다. '
+            + exp1.synWork + ' '
+            + '한 번에 여러 역할을 맡기보다, “내가 잘하는 한 가지”만 골라 보여 주는 쪽이 평가도 빠릅니다.';
     }
 
     var routine = scene1.routine;
-    var p3 = '따라서 현실에서는 이렇게 쓰시면 됩니다. ' + routine;
+    var p3 = '이 에너지를 현실에서 가장 잘 쓰려면, ' + routine.replace(/^\s*/, '') + ' '
+        + exp1.routineWhy + ' '
+        + '이번 주에 한 번만이라도 ' + scene1.example + ' 상황을 직접 만들어 보시면, '
+        + '다음 달에는 같은 방식으로 반복하기 쉬워집니다.';
 
     var raw = [p1, p2, p3].join('\n\n');
     raw = stripSipseongMetaNarrative(raw);
     raw = voiceModernizeSipseong(raw);
-    return voicePolishParagraph(data, raw);
+    return raw;
 }
 SAJUX_VOICE.sipseongModernPrompt = '';
 (function bindSipModernPrompt() {
@@ -1687,6 +1757,13 @@ SAJUX_VOICE.sipseongModernPrompt = '';
 function sipModernKeyword(sip) {
     return SAJUX_SIP_MODERN.individual[sip] || '';
 }
+/** 차트·만세력 배지 — 내부언어(비겁·식상·재성·관성·인성) */
+function sipGroupInternalLabel(groupKey) {
+    var k = String(groupKey || '').trim();
+    if (k === '비겁' || k === '식상' || k === '재성' || k === '관성' || k === '인성') return k;
+    return k || '';
+}
+/** 고객 본문·챕터 부제 — 서비스언어(주체성·실행 등) */
 function sipGroupBarLabel(groupKey) {
     var g = SAJUX_SIP_MODERN.group[groupKey];
     return (g && g.bar) ? g.bar : String(groupKey || '');
@@ -7933,11 +8010,11 @@ function buildChapter3_Sipseong(data) {
     const mainSip = primaryList[0] || '정재';
 
     const SIP_BAR_GROUPS = [
-        { key: '비겁', shortLabel: sipGroupBarLabel('비겁'), label: '동료·자아 (비견/겁재):', keys: ['비견', '겁재'] },
-        { key: '식상', shortLabel: sipGroupBarLabel('식상'), label: '만들고 표현 (식신/상관):', keys: ['식신', '상관'] },
-        { key: '재성', shortLabel: sipGroupBarLabel('재성'), label: '돈·현실 (편재/정재):', keys: ['편재', '정재'] },
-        { key: '관성', shortLabel: sipGroupBarLabel('관성'), label: '책임·직장 (편관/정관):', keys: ['편관', '정관'] },
-        { key: '인성', shortLabel: sipGroupBarLabel('인성'), label: '배움·지지 (편인/정인):', keys: ['편인', '정인'] }
+        { key: '비겁', shortLabel: sipGroupInternalLabel('비겁'), label: '동료·자아 (비견/겁재):', keys: ['비견', '겁재'] },
+        { key: '식상', shortLabel: sipGroupInternalLabel('식상'), label: '만들고 표현 (식신/상관):', keys: ['식신', '상관'] },
+        { key: '재성', shortLabel: sipGroupInternalLabel('재성'), label: '돈·현실 (편재/정재):', keys: ['편재', '정재'] },
+        { key: '관성', shortLabel: sipGroupInternalLabel('관성'), label: '책임·직장 (편관/정관):', keys: ['편관', '정관'] },
+        { key: '인성', shortLabel: sipGroupInternalLabel('인성'), label: '배움·지지 (편인/정인):', keys: ['편인', '정인'] }
     ];
     var groupSums = SIP_BAR_GROUPS.map(function (g) {
         return g.keys.reduce(function (s, k) { return s + (Number(sipseong[k]) || 0); }, 0);
@@ -7965,7 +8042,7 @@ function buildChapter3_Sipseong(data) {
             pct: normInts[idx]
         };
     }).sort(function (a, b) { return b.sum - a.sum; });
-    const topG = groupRank[0] || { key: '비겁', label: '동료·자아 (비견/겁재):', shortLabel: sipGroupBarLabel('비겁'), pct: 0 };
+    const topG = groupRank[0] || { key: '비겁', label: '동료·자아 (비견/겁재):', shortLabel: sipGroupInternalLabel('비겁'), pct: 0 };
     const mainGroupKey = topG.key;
 
     const sipRows = SIP_BAR_GROUPS.map(function (g, idx) {
@@ -13349,4 +13426,6 @@ if (typeof window !== 'undefined') {
     window.SAJUX_SIP_MODERN = SAJUX_SIP_MODERN;
     window.getSajuxSipseongModernPromptBlock = getSajuxSipseongModernPromptBlock;
     window.voiceModernizeSipseong = voiceModernizeSipseong;
+    window.sipGroupInternalLabel = sipGroupInternalLabel;
+    window.sipGroupBarLabel = sipGroupBarLabel;
 }
