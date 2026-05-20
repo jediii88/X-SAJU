@@ -418,11 +418,12 @@ function getSectionRegistryEntry(key, isCompat) {
     return SAJUX_SECTION_REGISTRY[key] || null;
 }
 
-function buildSectionNumHtml(part, section, reg) {
-    var numStr = formatPartSectionNum(part, section, reg);
-    if (!numStr) return '';
-    return '<p class="ch-section-num" style="font-size:11px;letter-spacing:0.14em;color:rgba(199,167,106,0.88);margin:0 0 8px;font-weight:700;">'
-        + escHtmlAttr(numStr) + '</p>';
+/** 부-절 번호를 제목 앞에 붙임 — 예: "1-3 오행 — 다섯 기운의 짜임" */
+function formatSectionTitleWithNum(numStr, title) {
+    var t = String(title == null ? '' : title).trim();
+    if (!numStr) return t;
+    if (numStr === '별첨') return '별첨 · ' + t;
+    return numStr + ' ' + t;
 }
 
 function buildSectionHeader(sectionKey, data, opts) {
@@ -437,7 +438,8 @@ function buildSectionHeader(sectionKey, data, opts) {
     var hook = opts.leadHook != null ? opts.leadHook : (opts.hook || '');
     if (opts.leadHook === false) hook = '';
     var mode = opts.headerMode || reg.headerMode || 'topicFirst';
-    var numHtml = buildSectionNumHtml(reg.part, reg.section, reg);
+    var numStr = formatPartSectionNum(reg.part, reg.section, reg);
+    var displayTitle = formatSectionTitleWithNum(numStr, title);
     var intro = '';
     if (!opts.skipIntro) {
         if (opts.compat && opts.compatCtx && reg.topic) {
@@ -448,9 +450,9 @@ function buildSectionHeader(sectionKey, data, opts) {
     }
     if (mode === 'mainSub') {
         var sub = opts.subTitle != null ? opts.subTitle : eyebrow;
-        return numHtml + buildChapterHeadMainSub(title, sub, opts) + intro;
+        return buildChapterHeadMainSub(displayTitle, sub, opts) + intro;
     }
-    return numHtml + buildChapterHeadTopicFirst(title, eyebrow, hook, opts) + intro;
+    return buildChapterHeadTopicFirst(displayTitle, eyebrow, hook, opts) + intro;
 }
 
 function getSectionEyebrowByTopic(topic) {
@@ -11497,7 +11499,8 @@ function buildTOC(data) {
         4: { head: '4부 · 오늘부터', sub: '다듬는 법' }
     };
     function tocRow(num, title, sub) {
-        return '<div class="toc-entry" style="' + row + '"><div style="font-size:10px;color:var(--gold);min-width:36px;font-weight:700;letter-spacing:0.06em;">' + escHtmlAttr(num) + '</div><div style="flex:1;"><div style="font-size:14px;font-weight:600;color:var(--text,rgba(255,255,255,0.88));margin-bottom:2px;">' + escHtmlAttr(title) + '</div><div style="font-size:11.5px;color:var(--text-dim,rgba(255,255,255,0.50));">' + escHtmlAttr(sub) + '</div></div></div>';
+        var main = (num && num !== '—') ? formatSectionTitleWithNum(num, title) : title;
+        return '<div class="toc-entry" style="' + row + '"><div style="flex:1;"><div style="font-size:14px;font-weight:600;color:var(--text,rgba(255,255,255,0.88));margin-bottom:2px;">' + escHtmlAttr(main) + '</div><div style="font-size:11.5px;color:var(--text-dim,rgba(255,255,255,0.50));">' + escHtmlAttr(sub) + '</div></div></div>';
     }
     var body = '';
     body += '<div style="' + gHead + '">앞부분<span style="' + gSub + '">표지 · 확인</span></div>';
