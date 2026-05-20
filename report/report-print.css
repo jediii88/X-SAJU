@@ -43,6 +43,8 @@ body,
   #theme-toggle,
   #sticky-part-nav,
   #sajux-pdf-fab,
+  #sajux-image-fab,
+  #sajux-capture-overlay,
   .pdf-btn,
   .nav-floating,
   .sajux-pdf-wide-btn,
@@ -515,7 +517,7 @@ body,
     vertical-align: top !important;
   }
 
-  #floating-toc, #theme-toggle, #sticky-part-nav, #sajux-pdf-fab,
+  #floating-toc, #theme-toggle, #sticky-part-nav, #sajux-pdf-fab, #sajux-image-fab,
   .pdf-btn, .nav-floating, .sajux-pdf-wide-btn {
     display: none !important;
   }
