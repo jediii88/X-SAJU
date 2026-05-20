@@ -1235,3 +1235,25 @@ html {
 }
 
 .ch-section-num { display: none !important; }
+
+/* 부-절 번호 — 제목보다 한 톤 낮은 회색 */
+.ch-sec-num,
+.ch-main-heading-xl .ch-sec-num,
+.ch-main-topic-title .ch-sec-num,
+.toc-main-line .ch-sec-num {
+  color: rgba(255, 255, 255, 0.42) !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.06em !important;
+}
+.ch-sec-num-sep { color: rgba(255, 255, 255, 0.32) !important; font-weight: 500 !important; }
+.ch-sec-title { font-weight: inherit; color: inherit; }
+html[data-theme="light"] .ch-sec-num,
+html[data-theme="light"] .toc-main-line .ch-sec-num {
+  color: rgba(20, 14, 6, 0.42) !important;
+}
+html[data-theme="light"] .ch-sec-num-sep { color: rgba(20, 14, 6, 0.28) !important; }
+@media print {
+  .ch-sec-num, .toc-main-line .ch-sec-num { color: #888 !important; font-weight: 600 !important; }
+  .ch-sec-num-sep { color: #aaa !important; }
+  .ch-sec-title { color: #111 !important; font-weight: 700 !important; }
+}
