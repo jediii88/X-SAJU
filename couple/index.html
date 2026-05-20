@@ -245,15 +245,9 @@ body::before {
   font-size: 12px; color: var(--text-soft); font-weight: 300;
   letter-spacing: 0.02em;
 }
-/* 부-절 번호 + 통합 헤더 (buildSectionHeader) */
+/* 부-절 번호는 제목에 "1-1 …" 로 붙음 */
 .compat-voice-wrap .ch-section-num,
-.rel-panel > .ch-section-num {
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  color: rgba(199, 167, 106, 0.88);
-  margin: 0 0 8px;
-  font-weight: 700;
-}
+.rel-panel > .ch-section-num { display: none !important; }
 .compat-voice-wrap .ch-head-main-sub { margin-bottom: 10px; }
 .compat-voice-wrap .ch-main-heading-xl,
 .rel-panel > .ch-head-main-sub .ch-main-heading-xl {
