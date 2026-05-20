@@ -428,14 +428,16 @@ function formatSectionTitleWithNum(numStr, title) {
     return numStr + ' ' + t;
 }
 
-/** 부-절 번호(회색) + 제목 — HTML */
+/** 부-절 번호(회색) + 제목 — HTML (인라인 색: override.css 캐시와 무관하게 적용) */
 function buildSectionTitleHtml(numStr, title) {
     var t = escHtmlAttr(String(title == null ? '' : title).trim());
+    var numSt = 'color:rgba(255,255,255,0.44);font-weight:600;letter-spacing:0.05em;';
+    var sepSt = 'color:rgba(255,255,255,0.30);font-weight:500;';
     if (!numStr) return t;
     if (numStr === '별첨') {
-        return '<span class="ch-sec-num">별첨</span><span class="ch-sec-num-sep"> · </span><span class="ch-sec-title">' + t + '</span>';
+        return '<span class="ch-sec-num" style="' + numSt + '">별첨</span><span class="ch-sec-num-sep" style="' + sepSt + '"> · </span><span class="ch-sec-title">' + t + '</span>';
     }
-    return '<span class="ch-sec-num">' + escHtmlAttr(numStr) + '</span> <span class="ch-sec-title">' + t + '</span>';
+    return '<span class="ch-sec-num" style="' + numSt + '">' + escHtmlAttr(numStr) + '</span> <span class="ch-sec-title">' + t + '</span>';
 }
 
 function buildSectionHeader(sectionKey, data, opts) {
