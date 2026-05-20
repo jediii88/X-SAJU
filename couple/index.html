@@ -99,16 +99,34 @@ body::before {
 @keyframes spin { to { transform: rotate(360deg); } }
 #loading-screen p { color: var(--gold); font-size: 14px; letter-spacing: 0.15em; }
 
-.page-header {
-  text-align: center;
-  padding: 36px 20px 24px;
-  border-bottom: 1px solid rgba(199,167,106,0.1);
+/* 개인 리포트와 동일: 500px 컬럼 + 표지 2단(브랜드 → 제목) */
+.compat-cover-column {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 0 18px;
+  box-sizing: border-box;
 }
-/* 개인 리포트 표지(buildCoverPage) — 로고 + 사주X란? 도입부 */
-.page-header .sajux-logo-wrap {
+.cover-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  border-bottom: 1px solid rgba(199,167,106,0.12);
+}
+/* buildCoverPage / #sec-cover 와 동일 */
+.compat-brand-cover {
+  min-height: 90vh;
+  padding: 72px 28px 56px;
+  margin-bottom: 56px;
+  box-sizing: border-box;
+}
+.compat-brand-cover .sajux-logo-wrap {
   position: relative;
   width: 100%;
   max-width: 90vw;
+  overflow: visible;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -116,29 +134,53 @@ body::before {
   align-items: center;
   isolation: isolate;
 }
-.page-header .sajux-logo-cover-row {
+.compat-brand-cover .sajux-logo-cover-row {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
 }
-.page-header .sajux-logo-cover-row img {
+.compat-brand-cover .sajux-logo-cover-row img {
   width: clamp(320px, 55vw, 600px);
   max-width: 100%;
   height: auto;
   margin: 0 auto;
+  display: block;
 }
+/* 화면: 인쇄용 로고는 display:none 금지(Chrome PDF 미렌더) — 화면 밖에 두어 로드만 유지 */
 @media screen {
-  .page-header .sajux-logo-cover-print { display: none !important; }
-  .page-header .sajux-logo-cover-screen {
+  .cover-page .sajux-logo-cover-print {
+    position: absolute !important;
+    left: -9999px !important;
+    top: 0 !important;
+    width: clamp(320px, 55vw, 600px) !important;
+    max-width: 100% !important;
+    height: auto !important;
+    opacity: 0.01 !important;
+    pointer-events: none !important;
+    display: block !important;
+    visibility: visible !important;
+  }
+  .cover-page .sajux-logo-cover-screen {
     display: block;
     mix-blend-mode: screen;
     opacity: 0.96;
   }
 }
-/* 사주X란? — 표지 로고 바로 아래 도입부 (view.html 동일) */
-.sajux-intro-block { width: 100%; max-width: 760px; margin: 28px auto 0; text-align: center; }
-.sajux-intro-heading { font-size: 13px; letter-spacing: 0.12em; color: rgba(199,167,106,0.9); margin-bottom: 16px; font-weight: 700; }
+/* 사주X란? — buildCoverPage / saju.html 동일 */
+.sajux-intro-block {
+  width: 100%;
+  max-width: 760px;
+  margin: 28px auto 0;
+  text-align: center;
+}
+.sajux-intro-heading {
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  color: rgba(199,167,106,0.9);
+  margin-bottom: 16px;
+  font-weight: 700;
+}
 .intro-text-container {
   word-break: keep-all;
   overflow-wrap: break-word;
@@ -146,36 +188,54 @@ body::before {
   line-height: 1.6;
   text-align: center;
   margin: 0 auto;
-  max-width: 90%;
+  max-width: min(90%, 368px);
   font-size: 15px;
   color: rgba(228, 232, 240, 0.92);
   font-weight: 300;
   letter-spacing: 0.01em;
 }
 .intro-text-container p { margin-top: 0; margin-bottom: 0; }
-.page-header .sajux-intro-block { margin: 24px auto 0; }
-.page-header-couple-title {
-  margin-top: 32px;
-}
-.page-header h1 {
-  font-family: 'Jeongseon Arirang Ppuri', 'Nanum Brush Script', cursive;
-  font-size: clamp(28px, 6.5vw, 48px);
-  font-weight: 400;
-  letter-spacing: -0.01em;
-  line-height: 1.22;
-  color: rgba(244, 246, 250, 0.97);
-  margin: 0 auto;
+.intro-text-container p + p { margin-top: 12px; }
+.compat-brand-cover .sajux-intro-block {
+  width: 100%;
   max-width: 760px;
+  margin: 24px auto 0;
+  text-align: center;
 }
-.page-header .hero-sub {
+/* 2페이지 — buildClientCoverPage 여백·붓글 제목 */
+.compat-title-cover {
+  min-height: 90vh;
+  padding: 78px 28px 72px;
+  margin-bottom: 56px;
+  box-sizing: border-box;
+}
+.cover-brush-block { max-width: 520px; margin: 0 auto; margin-top: 0; }
+.cover-brush-name {
+  font-family: 'Jeongseon Arirang Ppuri', 'Nanum Brush Script', cursive;
+  font-size: clamp(40px, 8vw, 54px);
+  font-weight: 400;
+  color: rgba(244, 246, 250, 0.94);
+  line-height: 1.15;
+  margin: 0;
+}
+.compat-title-cover .hero-sub {
   font-family: 'Noto Sans KR', sans-serif;
   font-size: 13px;
   font-weight: 300;
   color: rgba(210, 214, 223, 0.72);
-  max-width: 520px;
-  margin: 16px auto 0;
+  max-width: min(90%, 368px);
+  margin: 28px auto 0;
   line-height: 1.75;
   letter-spacing: 0.06em;
+  word-break: keep-all;
+  text-wrap: balance;
+}
+.compat-title-cover .rel-badge { margin-top: 20px; }
+.compat-title-cover #couple-issuer-hint {
+  margin-top: 38px;
+  font-size: 10px;
+  color: rgba(210, 214, 223, 0.34);
+  letter-spacing: 0.14em;
 }
 .compat-section-title {
   display: flex; justify-content: space-between; align-items: center;
@@ -185,10 +245,14 @@ body::before {
   font-size: 12px; color: var(--text-soft); font-weight: 300;
   letter-spacing: 0.02em;
 }
-/* report-core 궁합 voice가 섹션 제목·부제를 넣으면 HTML 중복 헤더 숨김 */
-.compat-section-title:has(+ .compat-voice-wrap .ch-head-main-sub),
-.compat-section-title:has(+ .rel-panel .ch-head-main-sub) {
-  display: none;
+/* 부-절 번호 + 통합 헤더 (buildSectionHeader) */
+.compat-voice-wrap .ch-section-num,
+.rel-panel > .ch-section-num {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: rgba(199, 167, 106, 0.88);
+  margin: 0 0 8px;
+  font-weight: 700;
 }
 .compat-voice-wrap .ch-head-main-sub { margin-bottom: 10px; }
 .compat-voice-wrap .ch-main-heading-xl,
@@ -239,7 +303,91 @@ body::before {
   letter-spacing: 0.1em;
 }
 
-.container { max-width: 500px; margin: 0 auto; padding: 0 18px 80px; }
+.container { max-width: 500px; margin: 0 auto; padding: 0 22px 96px; }
+
+/* 플로팅 목차 · PDF (개인 리포트와 동일 패턴) */
+#floating-toc {
+  display: none;
+  position: fixed;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 9999;
+  background: var(--panel);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 10px 6px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.45);
+  max-width: 44px;
+  overflow: hidden;
+  transition: max-width 0.3s, padding 0.3s;
+}
+#floating-toc #toc-links {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 168px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+#floating-toc:hover { max-width: 220px; padding: 10px 8px; }
+#floating-toc:hover #toc-links { opacity: 1; pointer-events: all; }
+.toc-link {
+  font-size: 12px;
+  color: var(--text-soft);
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  display: block;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+.toc-link:hover { background: rgba(199,167,106,0.15); color: var(--gold); }
+.toc-link-print { color: var(--gold) !important; font-weight: 700; }
+.sticky-part-nav {
+  display: none;
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 9998;
+  justify-content: space-between;
+  align-items: stretch;
+  gap: 6px;
+  padding: 10px 10px calc(10px + env(safe-area-inset-bottom, 0px));
+  background: rgba(8,8,16,0.94);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-top: 1px solid var(--line);
+}
+.spn-item {
+  flex: 1;
+  min-width: 0;
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--text);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 8px 2px;
+  cursor: pointer;
+  line-height: 1.25;
+  font-family: inherit;
+}
+.spn-sub { font-size: 9px; font-weight: 600; color: var(--text-dim); }
+@media (max-width: 900px) {
+  #floating-toc { display: none !important; }
+  .sticky-part-nav { display: flex !important; }
+  .container { padding-bottom: 110px !important; }
+}
+@media (min-width: 901px) {
+  .sticky-part-nav { display: none !important; }
+}
+@media print {
+  #floating-toc, .sticky-part-nav, #star-canvas { display: none !important; }
+}
 
 .duo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 24px 0; }
 .person-card {
@@ -421,8 +569,26 @@ body::before {
   .report-container, .print-container, .layout-wrapper, .card-wrapper, body, main {
       display: block !important;
   }
-  .page-header .sajux-logo-cover-screen { display: none !important; mix-blend-mode: normal !important; }
-  .page-header .sajux-logo-cover-print { display: block !important; mix-blend-mode: normal !important; opacity: 1 !important; }
+  .cover-page .sajux-logo-cover-screen,
+  .cover-page .sajux-logo.dark { display: none !important; visibility: hidden !important; }
+  .cover-page .sajux-logo-cover-print,
+  .cover-page .sajux-logo.light,
+  .compat-brand-cover .sajux-logo-cover-print {
+    display: block !important;
+    visibility: visible !important;
+    position: static !important;
+    left: auto !important;
+    opacity: 1 !important;
+    mix-blend-mode: normal !important;
+    filter: none !important;
+    width: clamp(280px, 72%, 420px) !important;
+    max-width: 100% !important;
+    height: auto !important;
+    margin: 0 auto 12px !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .cover-page .sajux-logo-cover-row { display: block !important; text-align: center !important; }
 </style>
 </head>
 <body>
@@ -480,25 +646,55 @@ body::before {
   <p>올바른 궁합 링크가 아닙니다.<br>관리자에게 문의하세요.</p>
 </div>
 
+<div id="floating-toc" class="nav-floating" onmouseenter="expandToc()" onmouseleave="collapseToc()">
+  <div style="font-size:10px;color:var(--gold);text-align:center;margin-bottom:8px;letter-spacing:1px;">☰</div>
+  <div id="toc-links">
+    <a class="toc-link" href="#section-positioning" onclick="return compatTocGo('section-positioning')">관계 포지셔닝</a>
+    <a class="toc-link" href="#section-personality" onclick="return compatTocGo('section-personality')">성격·기질</a>
+    <a class="toc-link" href="#section-lover" onclick="return compatTocGo('section-lover')">연인으로서</a>
+    <a class="toc-link" href="#section-married" onclick="return compatTocGo('section-married')">부부로서</a>
+    <a class="toc-link" href="#section-friend" onclick="return compatTocGo('section-friend')">친구로서</a>
+    <a class="toc-link" href="#section-business" onclick="return compatTocGo('section-business')">동업·파트너</a>
+    <a class="toc-link" href="#section-spouse" onclick="return compatTocGo('section-spouse')">배우자궁</a>
+    <a class="toc-link" href="#section-ideal-family" onclick="return compatTocGo('section-ideal-family')">인연 보강</a>
+    <a class="toc-link" href="#section-timeline" onclick="return compatTocGo('section-timeline')">대운 싱크</a>
+    <div style="border-top:1px solid var(--line);margin:6px 0 4px;"></div>
+    <a class="toc-link toc-link-print" href="#" onclick="window.print(); return false;">🖨 PDF 저장</a>
+  </div>
+</div>
+<nav id="sticky-part-nav" class="sticky-part-nav" aria-label="궁합 섹션 이동">
+  <button type="button" class="spn-item" onclick="compatTocGo('section-positioning')">포지션<br><span class="spn-sub">역할</span></button>
+  <button type="button" class="spn-item" onclick="compatTocGo('section-lover')">연인<br><span class="spn-sub">애정</span></button>
+  <button type="button" class="spn-item" onclick="compatTocGo('section-married')">부부<br><span class="spn-sub">생활</span></button>
+  <button type="button" class="spn-item" onclick="compatTocGo('section-timeline')">대운<br><span class="spn-sub">싱크</span></button>
+</nav>
+
 <div id="main-content" style="display:none;">
-  <div class="page-header">
-    <div class="sajux-logo-wrap">
-      <div class="sajux-logo-cover-row">
-        <img class="sajux-logo light sajux-logo-cover-print" src="../report/assets/sajux-logo-light.png" alt="SAJU X 로고" loading="eager" decoding="sync" />
-        <img class="sajux-logo dark sajux-logo-cover-screen" src="../report/assets/sajux-logo-dark.png" alt="SAJU X 로고" loading="eager" decoding="sync" />
-      </div>
-      <div id="sec-book-intro" class="sajux-intro-block">
-        <div class="sajux-intro-heading">사주X란?</div>
-        <div class="intro-text-container">
-          <p style="margin-bottom: 12px;">사주X는 X-파일처럼, 고객님의 깊은 내면과 흐름을 조용히 비춰보는 비밀문서입니다.</p>
-          <p>또한 사주X의 X는 사주를 이루는 네 개의 기둥이 서로 이어져 완성되는, 한 사람의 운명 구조를 상징합니다.</p>
+  <div class="compat-cover-column">
+    <div id="sec-cover" class="cover-page compat-brand-cover">
+      <div class="sajux-logo-wrap">
+        <div class="sajux-logo-cover-row">
+          <img class="sajux-logo light sajux-logo-cover-print" src="../report/assets/sajux-logo-light.png" alt="SAJU X 로고" loading="eager" decoding="sync" />
+          <img class="sajux-logo dark sajux-logo-cover-screen" src="../report/assets/sajux-logo-dark.png" alt="SAJU X 로고" loading="eager" decoding="sync" />
+        </div>
+        <div id="sec-book-intro" class="sajux-intro-block">
+          <div class="sajux-intro-heading">사주X란?</div>
+          <div class="intro-text-container">
+            <p>사주X는 X-파일처럼, 고객님의 깊은 내면과<br>흐름을 조용히 비춰보는 비밀문서입니다.</p>
+            <p>또한 사주X의 X는 사주를 이루는 네 개의 기둥이 서로<br>이어져 완성되는, 한 사람의 운명 구조를 상징합니다.</p>
+          </div>
         </div>
       </div>
     </div>
-    <h1 class="page-header-couple-title">두 사람의 인연 구조</h1>
-    <p class="hero-sub">궁합 리포트 — 원국 표는 개인 만세력과 같은 규칙으로 계산합니다. 출생 시각은 한국 경도에 맞춰 약 32분 당겨 적용하며, 왼쪽부터 시주 · 일주 · 월주 · 년주 순입니다.</p>
-    <div class="rel-badge" id="rel-badge">연인 궁합</div>
-    <div id="couple-issuer-hint" style="font-size:10px;color:var(--text-dim);margin-top:10px;letter-spacing:0.06em;"></div>
+    <div id="sec-compat-title" class="cover-page compat-title-cover">
+      <div class="cover-brush-block">
+        <p class="cover-brush-name">두 사람의 인연 구조</p>
+      </div>
+      <div style="width:96px;height:1px;background:rgba(199,167,106,0.36);margin:38px auto 28px;"></div>
+      <p class="hero-sub">궁합 리포트 — 원국 표는 개인 만세력과 같은 규칙으로 계산합니다.<br>출생 시각은 한국 경도에 맞춰 약 32분 당겨 적용하며,<br>왼쪽부터 시주 · 일주 · 월주 · 년주 순입니다.</p>
+      <div class="rel-badge" id="rel-badge">연인 궁합</div>
+      <div id="couple-issuer-hint"></div>
+    </div>
   </div>
 
   <div class="container">
@@ -542,44 +738,42 @@ body::before {
     <div id="compat-voice-overview" class="compat-voice-wrap" style="margin:20px 0 8px;"></div>
 
     <div id="section-positioning">
-      <div class="compat-section-title"><div class="title-left"><span>관계 포지셔닝</span></div><span>속도 · 역할 · 조율</span></div>
-      <div id="compat-voice-positioning" class="compat-voice-wrap" style="margin:0 0 8px;"></div>
+      <div id="compat-voice-positioning" class="compat-voice-wrap" style="margin:28px 0 8px;"></div>
       <div id="panel-positioning" class="rel-panel"></div>
     </div>
 
     <div id="section-personality">
-      <div class="compat-section-title"><div class="title-left"><span>타고난 성격과 기질</span></div><span>두 사람의 본색</span></div>
+      <div id="compat-voice-personality" class="compat-voice-wrap" style="margin:28px 0 8px;"></div>
       <div id="panel-personality" class="rel-panel"></div>
     </div>
     <div id="section-lover">
-      <div class="compat-section-title"><div class="title-left"><span>연인으로서</span></div><span>애정 · 밀당 · 미래 설계</span></div>
+      <div id="compat-voice-lover" class="compat-voice-wrap" style="margin:28px 0 8px;"></div>
       <div id="panel-lover" class="rel-panel"></div>
     </div>
     <div id="section-married">
-      <div class="compat-section-title"><div class="title-left"><span>부부로서</span></div><span>생활 · 돈 · 가족 · 말의 무게</span></div>
+      <div id="compat-voice-married" class="compat-voice-wrap" style="margin:28px 0 8px;"></div>
       <div id="panel-married" class="rel-panel"></div>
     </div>
     <div id="section-friend">
-      <div class="compat-section-title"><div class="title-left"><span>친구로서</span></div><span>신뢰 · 거리 · 오래 가는 결</span></div>
+      <div id="compat-voice-friend" class="compat-voice-wrap" style="margin:28px 0 8px;"></div>
       <div id="panel-friend" class="rel-panel"></div>
     </div>
     <div id="section-business">
-      <div class="compat-section-title"><div class="title-left"><span>동업 · 파트너</span></div><span>역할 분담 · 리스크 · 속도</span></div>
+      <div id="compat-voice-business" class="compat-voice-wrap" style="margin:28px 0 8px;"></div>
       <div id="panel-business" class="rel-panel"></div>
     </div>
     <div id="section-spouse">
-      <div class="compat-section-title"><div class="title-left"><span>배우자궁</span></div><span>끌림 · 거리감 · 관계의 무게</span></div>
+      <div id="compat-voice-spouse" class="compat-voice-wrap" style="margin:28px 0 8px;"></div>
       <div id="panel-spouse" class="rel-panel"></div>
     </div>
 
     <div id="section-ideal-family">
-      <div class="compat-section-title"><div class="title-left"><span>인연 보강</span></div><span>이상형 거리 · 자녀 인연 · 자미두수</span></div>
-      <div id="compat-voice-ideal-family" class="compat-voice-wrap" style="margin:0 0 8px;"></div>
+      <div id="compat-voice-ideal-family" class="compat-voice-wrap" style="margin:28px 0 8px;"></div>
       <div id="panel-ideal-appendix" class="rel-panel"></div>
     </div>
 
-    <div class="timeline-section">
-      <div class="compat-section-title"><div class="title-left"><span>대운 싱크</span></div><span>시기별 관계 리듬</span></div>
+    <div id="section-timeline" class="timeline-section">
+      <div id="compat-voice-timeline" class="compat-voice-wrap" style="margin:28px 0 8px;"></div>
       <div class="timeline-scroll" id="timeline-scroll"></div>
     </div>
   </div>
@@ -1238,6 +1432,12 @@ function buildRelPanels(params, a, b, result) {
   const compatCtx = buildCompatCtx(params, a, b, result);
   window.__compatCtx = compatCtx;
   const voice = function(topic) { return compatVoiceLead(topic, compatCtx); };
+  const compatVoiceId = { idealFamily: 'ideal-family' };
+  const setCompatVoice = function(topic) {
+    const id = compatVoiceId[topic] || topic;
+    const el = document.getElementById('compat-voice-' + id);
+    if (el) el.innerHTML = voice(topic);
+  };
   const overviewEl = document.getElementById('compat-voice-overview');
   if (overviewEl) overviewEl.innerHTML = voice('overview');
   const aName = params.a.name || (params.a.gender==='male'?'남성':'여성');
@@ -1302,7 +1502,8 @@ function buildRelPanels(params, a, b, result) {
   ];
   const aCharText = (STEM_CHAR[a.dayStem]||'') + ' ' + (BRANCH_CHAR[aDB]||'');
   const bCharText = (STEM_CHAR[b.dayStem]||'') + ' ' + (BRANCH_CHAR[bDB]||'');
-  document.getElementById('panel-personality').innerHTML = voice('personality') + (
+  setCompatVoice('personality');
+  document.getElementById('panel-personality').innerHTML = (
     typeof buildCompatPersonalityPanelHtml === 'function'
       ? buildCompatPersonalityPanelHtml(compatCtx, aCharText, bCharText)
       : charHtml.join('')
@@ -1310,8 +1511,8 @@ function buildRelPanels(params, a, b, result) {
 
   // ── 연인 ──
   const ohFlowCard = buildCompatOhFlow(aOh, bOh, aName, bName, a.strength, b.strength);
-  document.getElementById('panel-lover').innerHTML = voice('lover')
-    + (typeof buildCompatLoverPanelHtml === 'function' ? buildCompatLoverPanelHtml(compatCtx) : '')
+  setCompatVoice('lover');
+  document.getElementById('panel-lover').innerHTML = (typeof buildCompatLoverPanelHtml === 'function' ? buildCompatLoverPanelHtml(compatCtx) : '')
     + ohFlowCard;
 
   // ── 부부 ──
@@ -1366,15 +1567,18 @@ function buildRelPanels(params, a, b, result) {
   })();
   if (typeof buildCompatChildHtml === 'function') marriedInsights.push(buildCompatChildHtml(compatCtx, result.score));
   marriedInsights.push(buildCompatMarriageFriction(aName, bName, result.score, isHap, isChung));
-  document.getElementById('panel-married').innerHTML = voice('married') + marriedInsights.join('');
+  setCompatVoice('married');
+  document.getElementById('panel-married').innerHTML = marriedInsights.join('');
 
   // ── 친구 ──
-  document.getElementById('panel-friend').innerHTML = voice('friend') + (
+  setCompatVoice('friend');
+  document.getElementById('panel-friend').innerHTML = (
     typeof buildCompatFriendPanelHtml === 'function' ? buildCompatFriendPanelHtml(compatCtx) : ''
   );
 
   // ── 비즈니스 ──
-  document.getElementById('panel-business').innerHTML = voice('business') + (
+  setCompatVoice('business');
+  document.getElementById('panel-business').innerHTML = (
     typeof buildCompatBizPanelHtml === 'function' ? buildCompatBizPanelHtml(compatCtx) : ''
   );
 
@@ -1417,7 +1621,8 @@ function buildRelPanels(params, a, b, result) {
       `두 사람의 배우자궁이 직접적 합충은 없지만, 오행 보완을 통해 서로에게 필요한 에너지를 채워주는 관계입니다.`}
     </div>`
   ];
-  document.getElementById('panel-spouse').innerHTML = voice('spouse') + (
+  setCompatVoice('spouse');
+  document.getElementById('panel-spouse').innerHTML = (
     typeof buildCompatSpousePanelHtml === 'function'
       ? buildCompatSpousePanelHtml(compatCtx, aSpouse, bSpouse)
       : spouseHtml.join('')
@@ -1481,9 +1686,8 @@ function buildRelPanels(params, a, b, result) {
       </div>
     </div>`;
 
-  const idealVoiceEl = document.getElementById('compat-voice-ideal-family');
+  setCompatVoice('idealFamily');
   const idealPanelEl = document.getElementById('panel-ideal-appendix');
-  if (idealVoiceEl) idealVoiceEl.innerHTML = voice('idealFamily');
   if (idealPanelEl) {
     const idealHtml = (typeof buildCompatIdealFamilyAppendixHtml === 'function' ? buildCompatIdealFamilyAppendixHtml(compatCtx) : '') + childPanel;
     idealPanelEl.innerHTML = idealHtml;
@@ -1494,18 +1698,10 @@ function buildRelPanels(params, a, b, result) {
 // 대운 싱크 타임라인
 // ══════════════════════════════════════
 function buildTimeline(a, b, aInfo, bInfo, params) {
-  const tlSec = document.querySelector('.timeline-section');
-  if (tlSec && typeof buildCompatVoiceSection === 'function') {
-    let tlLead = tlSec.querySelector('.compat-timeline-voice');
-    if (!tlLead) {
-      tlLead = document.createElement('div');
-      tlLead.className = 'compat-voice-wrap compat-timeline-voice';
-      tlLead.style.marginBottom = '14px';
-      const ts = document.getElementById('timeline-scroll');
-      if (ts) tlSec.insertBefore(tlLead, ts);
-    }
+  const tlVoiceEl = document.getElementById('compat-voice-timeline');
+  if (tlVoiceEl && typeof buildCompatVoiceSection === 'function') {
     const ctx = window.__compatCtx || buildCompatCtx(params, a, b, { isHap: false, isChung: false, score: 0, shengAB: false, shengBA: false });
-    tlLead.innerHTML = buildCompatVoiceSection('timeline', ctx);
+    tlVoiceEl.innerHTML = buildCompatVoiceSection('timeline', ctx);
   }
   const aDaYun = a.allDaYun;
   const bDaYun = b.allDaYun;
@@ -1614,6 +1810,8 @@ function init() {
     if (typeof window.__compatClearSafetyTimeout === 'function') window.__compatClearSafetyTimeout();
     document.getElementById('loading-screen').style.display = 'none';
     document.getElementById('main-content').style.display  = 'block';
+    var ftoc = document.getElementById('floating-toc');
+    if (ftoc) ftoc.style.display = 'block';
   } catch(e) {
     if (typeof window.__compatClearSafetyTimeout === 'function') window.__compatClearSafetyTimeout();
     console.error(e);
@@ -1627,6 +1825,49 @@ function init() {
 }
 
 }
+})();
+</script>
+<script>
+function compatTocGo(id) {
+  var el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  return false;
+}
+function expandToc() {
+  var t = document.getElementById('floating-toc');
+  if (t) { t.style.maxWidth = '220px'; t.style.padding = '10px 8px'; }
+}
+function collapseToc() {
+  var t = document.getElementById('floating-toc');
+  if (t) { t.style.maxWidth = '44px'; t.style.padding = '10px 6px'; }
+}
+</script>
+<link rel="stylesheet" href="../report/report-print.css?v=1779201000">
+<script>
+(function () {
+  if (window.__sajuxCoverPrintBound) return;
+  window.__sajuxCoverPrintBound = true;
+  function applyCoverLogoForPdf() {
+    document.querySelectorAll('.sajux-logo-cover-screen, .cover-page .sajux-logo.dark').forEach(function (el) {
+      el.style.setProperty('display', 'none', 'important');
+      el.style.setProperty('visibility', 'hidden', 'important');
+    });
+    document.querySelectorAll('.sajux-logo-cover-print, .cover-page .sajux-logo.light').forEach(function (el) {
+      el.style.setProperty('display', 'block', 'important');
+      el.style.setProperty('visibility', 'visible', 'important');
+      el.style.setProperty('position', 'static', 'important');
+      el.style.setProperty('left', 'auto', 'important');
+      el.style.setProperty('opacity', '1', 'important');
+      el.style.setProperty('mix-blend-mode', 'normal', 'important');
+      el.style.setProperty('filter', 'none', 'important');
+    });
+  }
+  window.addEventListener('beforeprint', applyCoverLogoForPdf);
+  if (window.matchMedia) {
+    var mq = window.matchMedia('print');
+    if (mq.addEventListener) mq.addEventListener('change', function (e) { if (e.matches) applyCoverLogoForPdf(); });
+    else if (mq.addListener) mq.addListener(function (e) { if (e.matches) applyCoverLogoForPdf(); });
+  }
 })();
 </script>
 </body>
