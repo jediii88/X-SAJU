@@ -4127,7 +4127,7 @@ function ensureHtml2CanvasLoaded(done) {
     sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
     sc.crossOrigin = 'anonymous';
     sc.onload = function () { done(); };
-    sc.onerror = function () { alert('이미지 저장 도구를 불러오지 못했습니다. 네트워크 연결 후 다시 시도해 주세요.'); };
+    sc.onerror = function () { alert('사주 다운로드 도구를 불러오지 못했습니다. 네트워크 연결 후 다시 시도해 주세요.'); };
     document.head.appendChild(sc);
 }
 function ensureJsZipLoaded(done) {
@@ -4142,7 +4142,7 @@ function ensureJsZipLoaded(done) {
     sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
     sc.crossOrigin = 'anonymous';
     sc.onload = function () { done(); };
-    sc.onerror = function () { alert('ZIP 묶음 도구를 불러오지 못했습니다. 네트워크 연결 후 다시 시도해 주세요.'); };
+    sc.onerror = function () { alert('사주 다운로드 도구를 불러오지 못했습니다. 네트워크 연결 후 다시 시도해 주세요.'); };
     document.head.appendChild(sc);
 }
 function sajuxShowCaptureOverlay(message) {
@@ -4155,7 +4155,7 @@ function sajuxShowCaptureOverlay(message) {
         el.innerHTML = '<div style="max-width:320px;text-align:center;font-family:\'Noto Sans KR\',sans-serif;color:#f5f0e6;font-size:14px;line-height:1.75;white-space:pre-line;"></div>';
         document.body.appendChild(el);
     }
-    el.querySelector('div').textContent = message || '이미지로 저장하는 중…';
+    el.querySelector('div').textContent = message || '사주 다운로드 준비 중…';
     el.style.display = 'flex';
     return el;
 }
@@ -4391,7 +4391,7 @@ function sajuxRunReportImageCapture(root) {
     if (!slices.length) {
         alert('저장할 리포트 영역을 찾지 못했습니다.');
         sajuxRestoreAfterCapture(hidden);
-        if (fab) { fab.disabled = false; fab.textContent = '📦 ZIP'; }
+        if (fab) { fab.disabled = false; fab.textContent = '📥 사주 저장'; }
         return;
     }
     window.scrollTo(0, 0);
@@ -4410,18 +4410,18 @@ function sajuxRunReportImageCapture(root) {
         var zip = new JSZip();
         var folder = zip.folder(baseName) || zip;
         folder.file('00-읽는법.txt',
-            '사주X 리포트 이미지 묶음입니다.\n'
-            + '파일명 앞 숫자(01, 02…) 순서대로, 리포트 절(1-1, 1-2 …) 순서와 같습니다.\n'
+            '사주X 리포트 다운로드 파일입니다.\n'
+            + '압축을 푼 뒤, 파일명 앞 숫자(01, 02…) 순서대로 보시면 리포트 절(1-1, 1-2 …) 순서와 같습니다.\n'
             + '총 ' + captures.length + '장 · ' + baseName + '\n');
         captures.forEach(function (item) {
             folder.file(item.name + '.png', item.blob);
         });
-        sajuxShowCaptureOverlay('ZIP 파일 만드는 중…\n거의 다 됐어요.');
+        sajuxShowCaptureOverlay('사주 다운로드 파일 만드는 중…\n거의 다 됐어요.');
         return zip.generateAsync({ type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 6 } });
     }
     function finishErr(err) {
         console.error('sajuxCaptureReportAsImage', err);
-        alert('이미지 저장에 실패했습니다. Chrome·Safari 최신 버전에서 다시 시도해 주세요.\n(' + (err && err.message ? err.message : err) + ')');
+        alert('사주 다운로드에 실패했습니다. Chrome·Safari 최신 버전에서 다시 시도해 주세요.\n(' + (err && err.message ? err.message : err) + ')');
         sajuxHideCaptureOverlay();
     }
     function cleanup() {
@@ -4429,7 +4429,7 @@ function sajuxRunReportImageCapture(root) {
         if (pack.container && pack.container !== root) pack.container.style.overflow = '';
         if (captureHost) captureHost.innerHTML = '';
         sajuxRestoreAfterCapture(hidden);
-        if (fab) { fab.disabled = false; fab.textContent = '📦 ZIP'; }
+        if (fab) { fab.disabled = false; fab.textContent = '📥 사주 저장'; }
     }
     function captureNext() {
         if (idx >= total) {
@@ -4437,7 +4437,7 @@ function sajuxRunReportImageCapture(root) {
                 var url = URL.createObjectURL(zipBlob);
                 sajuxDownloadBlob(url, sajuxBuildZipFilename(window.globalSajuData || null));
                 setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
-                sajuxShowCaptureOverlay('저장 완료!\n' + captures.length + '개 절이 ZIP으로 저장됐어요.\n01-1-… 순서대로 보시면 됩니다.');
+                sajuxShowCaptureOverlay('다운로드 완료!\n' + captures.length + '개 절이 사주 다운로드 파일로 저장됐어요.\n압축을 푼 뒤 번호 순서대로 보시면 됩니다.');
                 setTimeout(sajuxHideCaptureOverlay, 2200);
                 cleanup();
             }).catch(function (err) {
@@ -4458,7 +4458,7 @@ function sajuxRunReportImageCapture(root) {
         if (liveAnchor) {
             try { liveAnchor.scrollIntoView({ block: 'start', behavior: 'instant' }); } catch (e1) { try { liveAnchor.scrollIntoView(true); } catch (e2) {} }
         }
-        sajuxShowCaptureOverlay('절별 캡처 중… (' + (idx + 1) + '/' + total + ')\n' + (slice.jul || '') + ' ' + (slice.title || ''));
+        sajuxShowCaptureOverlay('사주 다운로드 중… (' + (idx + 1) + '/' + total + ')\n' + (slice.jul || '') + ' ' + (slice.title || ''));
         html2canvas(captureHost && captureHost.firstChild ? captureHost : el, {
             backgroundColor: '#050508',
             scale: sliceScale,
@@ -4496,12 +4496,12 @@ function injectSajuxPdfUi() {
     imgFab.id = 'sajux-image-fab';
     imgFab.className = 'pdf-btn';
     imgFab.type = 'button';
-    imgFab.setAttribute('aria-label', '이미지 ZIP 저장');
-    imgFab.textContent = '📦 ZIP';
+    imgFab.setAttribute('aria-label', '사주 다운로드');
+    imgFab.textContent = '📥 사주 저장';
     imgFab.addEventListener('click', function () { sajuxCaptureReportAsImage(); });
     document.body.appendChild(imgFab);
     document.querySelectorAll('.toc-link-print').forEach(function (a) {
-        a.textContent = '📦 ZIP 저장';
+        a.textContent = '📥 사주 다운로드';
         a.onclick = function (e) { e.preventDefault(); sajuxCaptureReportAsImage(); return false; };
     });
     try { ensureSajuxReadablePanelStyles(); ensureSajuxPdfPrintForceStyles(); ensureCoverLogoForPrint(); } catch (e) {}
@@ -5150,15 +5150,15 @@ function formatReportAccessLine(data) {
     if (iso) {
         var d = new Date(iso);
         if (!isNaN(d.getTime())) {
-            return d.getFullYear() + '년 ' + (d.getMonth() + 1) + '월 ' + d.getDate() + '일까지 동일 링크에서 열람·PDF 저장이 가능합니다.';
+            return d.getFullYear() + '년 ' + (d.getMonth() + 1) + '월 ' + d.getDate() + '일까지 동일 링크에서 열람·사주 다운로드가 가능합니다.';
         }
     }
     var issued = data && data.reportIssuedAt ? new Date(data.reportIssuedAt) : null;
     if (issued && !isNaN(issued.getTime())) {
         issued.setDate(issued.getDate() + days);
-        return issued.getFullYear() + '년 ' + (issued.getMonth() + 1) + '월 ' + issued.getDate() + '일까지 (발행일 기준 ' + days + '일) 열람·PDF 저장이 가능합니다.';
+        return issued.getFullYear() + '년 ' + (issued.getMonth() + 1) + '월 ' + issued.getDate() + '일까지 (발행일 기준 ' + days + '일) 열람·사주 다운로드가 가능합니다.';
     }
-    return '본 링크는 발행 기준 ' + days + '일간 열람·PDF 저장이 가능합니다. (서버에서 발행일·만료일을 넘기면 이 문구가 자동으로 바뀝니다.)';
+    return '본 링크는 발행 기준 ' + days + '일간 열람·사주 다운로드가 가능합니다. (서버에서 발행일·만료일을 넘기면 이 문구가 자동으로 바뀝니다.)';
 }
 
 /** Date 보장 — ISO 문자열·타임스탬프·Date 객체 모두 허용 */
@@ -11846,16 +11846,17 @@ function buildReportFooterUtilities(data) {
 
         + '<div style="font-size:10px;letter-spacing:0.22em;color:rgba(199,167,106,0.72);margin-bottom:12px;font-weight:700;text-align:center;">[ 리포트 부록 · 이용 안내 ]</div>'
         + '<h2 style="font-family:\'Noto Sans KR\',serif;font-size:22px;font-weight:700;color:var(--text,rgba(255,255,255,0.95));margin:0 0 6px;text-align:center;line-height:1.5;">' + escHtmlAttr(nmDn) + ', 함께한 여정 — 여기까지 동행해 주시느라 수고 많으셨어요</h2>'
-        + '<p style="margin:0 0 22px;font-size:12.5px;line-height:1.85;color:var(--text-dim,rgba(255,255,255,0.6));text-align:center;">본문은 모두 마무리되었어요. 아래는 이미지 저장과 보관 정책, 그리고 짧은 안내 몇 가지를 한 자리에 정리해 둔 부록입니다.</p>'
+        + '<p style="margin:0 0 22px;font-size:12.5px;line-height:1.85;color:var(--text-dim,rgba(255,255,255,0.6));text-align:center;">본문은 모두 마무리되었어요. 아래는 사주 다운로드와 보관 정책, 그리고 짧은 안내 몇 가지를 한 자리에 정리해 둔 부록입니다.</p>'
 
-        // ── 1) 이미지 저장 안내 (30일 보관 → 필수 다운로드 강조)
+        // ── 1) 사주 다운로드 안내 (30일 보관 → 필수 다운로드 강조)
         + '<div class="sajux-access-note sajux-glass-heavy" style="text-align:left;margin:0 0 18px;padding:16px 18px;border-radius:12px;font-size:13px;line-height:1.9;">'
-        + '<div style="' + headStyle + '">열람 · 이미지 저장 안내</div>'
-        + '<p style="' + pStyle + '">이 리포트는 발행일(<strong>' + reportDateStr + '</strong>)로부터 <strong>30일</strong> 동안만 같은 링크에서 보실 수 있어요. 그 이후에는 다시 들어오기 어려울 수 있으니, 오늘 안에 <strong>ZIP으로 꼭 저장</strong>해 두시기를 권해 드립니다.</p>'
-        + '<p style="margin:6px 0 0;font-size:13px;line-height:1.9;color:#d6dae2;">아래 <strong>ZIP 저장</strong>을 누르시면 <strong>절(1-1, 1-2 …)마다</strong> 선명한 PNG가 묶여 내려받아집니다. 압축을 푼 뒤 파일명 순서대로 보시면 됩니다.</p>'
+        + '<div style="' + headStyle + '">열람 · 사주 다운로드 안내</div>'
+        + '<p style="' + pStyle + '">이 리포트는 발행일(<strong>' + reportDateStr + '</strong>)로부터 <strong>30일</strong> 동안만 같은 링크에서 보실 수 있어요. 그 이후에는 다시 들어오기 어려울 수 있으니, 오늘 안에 <strong>사주 다운로드를 꼭 받아</strong> 두시기를 권해 드립니다.</p>'
+        + '<p style="margin:6px 0 0;font-size:13px;line-height:1.9;color:#d6dae2;">아래 <strong>사주 다운로드</strong>를 누르시면 <strong>절(1-1, 1-2 …)마다</strong> 선명한 이미지가 한 파일로 내려받아집니다. 받은 파일을 연 뒤, 안에 있는 번호 순서대로 보시면 됩니다.</p>'
+        + '<p style="margin:8px 0 0;font-size:12px;line-height:1.75;color:rgba(255,255,255,0.45);">' + escHtmlAttr(accessLine) + '</p>'
         + '<div style="display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-top:14px;">'
-        + '<button type="button" class="sajux-image-wide-btn sajux-pdf-wide-btn pdf-btn" onclick="sajuxCaptureReportAsImage()" style="margin:0;max-width:320px;">ZIP으로 저장하기</button>'
-        + '<button type="button" class="sajux-pdf-wide-btn pdf-btn" onclick="window.print()" style="margin:0;max-width:240px;font-size:13px;padding:12px 18px;">PDF (선택)</button>'
+        + '<button type="button" class="sajux-image-wide-btn sajux-pdf-wide-btn pdf-btn" onclick="sajuxCaptureReportAsImage()" style="margin:0;max-width:320px;">사주 다운로드</button>'
+        + '<button type="button" class="sajux-pdf-wide-btn pdf-btn" onclick="window.print()" style="margin:0;max-width:240px;font-size:13px;padding:12px 18px;">인쇄 (선택)</button>'
         + '</div>'
         + '</div>'
 
