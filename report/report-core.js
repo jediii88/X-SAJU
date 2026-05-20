@@ -326,7 +326,9 @@ function buildChapterHeadMainSub(mainTitle, subTitle, opts) {
         sub = '<p class="ch-sub-under-main" style="font-size:' + subFs + ';letter-spacing:' + subLs + ';color:' + subCol + ';margin:0 0 14px;font-weight:' + subWt + ';line-height:' + subLh + ';">' + inner + '</p>';
     }
     var titleInner = opts.mainTitleIsHtml ? String(mainTitle) : escHtmlAttr(mainTitle);
-    return '<div class="ch-head-main-sub" style="margin-bottom:16px;' + extra + '">'
+    var julAttr = opts.sajuxJul ? ' data-sajux-jul="' + escHtmlAttr(String(opts.sajuxJul)) + '"' : '';
+    var julTitleAttr = opts.sajuxJulTitle ? ' data-sajux-jul-title="' + escHtmlAttr(String(opts.sajuxJulTitle)) + '"' : '';
+    return '<div class="ch-head-main-sub"' + julAttr + julTitleAttr + ' style="margin-bottom:16px;' + extra + '">'
         + '<h2 class="ch-main-heading-xl" style="' + h2style + '">' + titleInner + '</h2>'
         + sub
         + '</div>';
@@ -360,7 +362,9 @@ function buildChapterHeadTopicFirst(mainTitle, eyebrowLabel, leadHook, opts) {
         : '';
     var extra = opts.extraStyle || '';
     var titleInnerTf = opts.mainTitleIsHtml ? String(mainTitle) : escHtmlAttr(mainTitle);
-    return '<div class="ch-head-topic-first" style="margin-bottom:16px;' + extra + '">'
+    var julAttrTf = opts.sajuxJul ? ' data-sajux-jul="' + escHtmlAttr(String(opts.sajuxJul)) + '"' : '';
+    var julTitleAttrTf = opts.sajuxJulTitle ? ' data-sajux-jul-title="' + escHtmlAttr(String(opts.sajuxJulTitle)) + '"' : '';
+    return '<div class="ch-head-topic-first"' + julAttrTf + julTitleAttrTf + ' style="margin-bottom:16px;' + extra + '">'
         + '<h2 class="ch-main-topic-title" style="font-family:\'Noto Sans KR\',sans-serif;font-size:clamp(17px,3.9vw,21px);font-weight:800;line-height:1.25;margin:0 0 6px;color:var(--text,rgba(255,255,255,0.96));">' + titleInnerTf + '</h2>'
         + subHtml
         + hookHtml
@@ -454,7 +458,11 @@ function buildSectionHeader(sectionKey, data, opts) {
     var mode = opts.headerMode || reg.headerMode || 'topicFirst';
     var numStr = formatPartSectionNum(reg.part, reg.section, reg);
     var titleHtml = buildSectionTitleHtml(numStr, title);
-    var headOpts = Object.assign({}, opts, { mainTitleIsHtml: true });
+    var headOpts = Object.assign({}, opts, {
+        mainTitleIsHtml: true,
+        sajuxJul: numStr,
+        sajuxJulTitle: title
+    });
     var intro = '';
     if (!opts.skipIntro) {
         if (opts.compat && opts.compatCtx && reg.topic) {
@@ -4158,20 +4166,119 @@ function sajuxHideCaptureOverlay() {
 function sajuxGetCaptureRoot() {
     return document.getElementById('report-container') || document.getElementById('sec-report-full') || null;
 }
+function sajuxIsVisibleEl(el) {
+    if (!el || el.nodeType !== 1) return false;
+    var st = window.getComputedStyle(el);
+    if (st.display === 'none' || st.visibility === 'hidden') return false;
+    return (el.offsetHeight > 4 || el.scrollHeight > 4);
+}
+function sajuxEnsureCaptureHost() {
+    var host = document.getElementById('sajux-capture-host');
+    if (!host) {
+        host = document.createElement('div');
+        host.id = 'sajux-capture-host';
+        host.setAttribute('aria-hidden', 'true');
+        host.style.cssText = 'position:fixed;left:-20000px;top:0;width:min(100vw,720px);z-index:-1;pointer-events:none;overflow:visible;background:#050508;';
+        document.body.appendChild(host);
+    }
+    return host;
+}
+function sajuxWrapDomRange(container, startNode, endNode, meta) {
+    var wrap = document.createElement('div');
+    wrap.className = 'sajux-capture-jul-wrap';
+    wrap.style.cssText = 'background:#050508;box-sizing:border-box;width:100%;padding:0;margin:0;';
+    if (meta && meta.jul) wrap.setAttribute('data-sajux-jul', meta.jul);
+    if (meta && meta.title) wrap.setAttribute('data-sajux-jul-title', meta.title);
+    var range = document.createRange();
+    if (startNode) range.setStartBefore(startNode);
+    else if (container.firstChild) range.setStart(container, 0);
+    else return null;
+    if (endNode) range.setEndBefore(endNode);
+    else if (container.lastChild) range.setEndAfter(container.lastChild);
+    else return null;
+    if (range.collapsed) return null;
+    wrap.appendChild(range.cloneContents());
+    if (!wrap.childNodes.length) return null;
+    return wrap;
+}
+function sajuxCollectJulHeads(container) {
+    var heads = [];
+    container.querySelectorAll('.ch-head-main-sub[data-sajux-jul], .ch-head-topic-first[data-sajux-jul]').forEach(function (h) {
+        if (sajuxIsVisibleEl(h)) heads.push(h);
+    });
+    if (!heads.length) {
+        container.querySelectorAll('.ch-head-main-sub, .ch-head-topic-first').forEach(function (h) {
+            if (sajuxIsVisibleEl(h) && h.querySelector('.ch-sec-num')) heads.push(h);
+        });
+    }
+    return heads;
+}
 function sajuxCollectCaptureSlices(root) {
     var container = (root && root.id === 'report-container') ? root : (root && root.querySelector ? root.querySelector('#report-container') : null);
     if (!container) container = root;
     var slices = [];
-    if (!container) return { container: null, slices: [] };
-    Array.prototype.forEach.call(container.children, function (el) {
-        if (!el || el.nodeType !== 1) return;
-        var st = window.getComputedStyle(el);
-        if (st.display === 'none' || st.visibility === 'hidden') return;
-        if (el.offsetHeight < 4 && el.scrollHeight < 4) return;
-        slices.push(el);
+    if (!container) return { container: null, slices: [], host: null };
+
+    var introDefs = [
+        { sel: '#sec-cover', jul: '표지', title: '표지' },
+        { sel: '#sec-client-cover', jul: '고객표지', title: '고객 정보' },
+        { sel: '.toc-page', jul: '목차', title: '목차' }
+    ];
+    introDefs.forEach(function (def) {
+        var el = container.querySelector(def.sel);
+        if (!sajuxIsVisibleEl(el)) return;
+        var wrap = document.createElement('div');
+        wrap.className = 'sajux-capture-jul-wrap';
+        wrap.style.cssText = 'background:#050508;box-sizing:border-box;width:100%;';
+        wrap.setAttribute('data-sajux-jul', def.jul);
+        wrap.setAttribute('data-sajux-jul-title', def.title);
+        wrap.appendChild(el.cloneNode(true));
+        slices.push({ el: wrap, jul: def.jul, title: def.title });
     });
-    if (!slices.length) slices.push(container);
-    return { container: container, slices: slices };
+
+    var heads = sajuxCollectJulHeads(container);
+    for (var i = 0; i < heads.length; i++) {
+        var head = heads[i];
+        var nextHead = heads[i + 1] || null;
+        var jul = head.getAttribute('data-sajux-jul') || '';
+        var title = head.getAttribute('data-sajux-jul-title') || '';
+        if (!jul) {
+            var numEl = head.querySelector('.ch-sec-num');
+            if (numEl) jul = (numEl.textContent || '').trim();
+        }
+        if (!title) {
+            var titEl = head.querySelector('.ch-sec-title');
+            if (titEl) title = (titEl.textContent || '').trim();
+        }
+        var wrap = sajuxWrapDomRange(container, head, nextHead, { jul: jul, title: title });
+        if (wrap) slices.push({ el: wrap, jul: jul, title: title, headEl: head });
+    }
+
+    var tailDefs = [
+        { sel: '.ziwei-surprise-intro', jul: '별첨-0', title: '보너스 안내' },
+        { sel: '#sec-ziwei-appendix', jul: '별첨', title: '자미두수' },
+        { sel: '#sec-report-footer-utilities', jul: '안내', title: '이용안내' },
+        { sel: '#sec-review-callout', jul: '마무리', title: '리뷰' }
+    ];
+    var tailSeen = {};
+    tailDefs.forEach(function (def) {
+        if (tailSeen[def.sel]) return;
+        var el = container.querySelector(def.sel);
+        if (!sajuxIsVisibleEl(el) || tailSeen[el.id || def.sel]) return;
+        tailSeen[el.id || def.sel] = true;
+        var wrap = document.createElement('div');
+        wrap.className = 'sajux-capture-jul-wrap';
+        wrap.style.cssText = 'background:#050508;box-sizing:border-box;width:100%;';
+        wrap.setAttribute('data-sajux-jul', def.jul);
+        wrap.setAttribute('data-sajux-jul-title', def.title);
+        wrap.appendChild(el.cloneNode(true));
+        slices.push({ el: wrap, jul: def.jul, title: def.title });
+    });
+
+    if (!slices.length && sajuxIsVisibleEl(container)) {
+        slices.push({ el: container, jul: '전체', title: '리포트' });
+    }
+    return { container: container, slices: slices, host: sajuxEnsureCaptureHost() };
 }
 function sajuxCalcSliceCaptureScale(el) {
     var maxDim = 16384;
@@ -4190,18 +4297,13 @@ function sajuxSlugCaptureLabel(raw) {
     if (!s) return 'section';
     return s.length > 42 ? s.slice(0, 42) : s;
 }
-function sajuxSliceCaptureLabel(el, index) {
-    if (!el) return sajuxPadCaptureIndex(index) + '-section';
-    var titleEl = el.querySelector('.ch-main-heading-xl, .ch-title, .toc-page h2, .part-header-block h2, h2, h3');
-    var title = titleEl ? (titleEl.textContent || '').trim() : '';
-    if (!title && el.id) title = el.id.replace(/^sec-/, '').replace(/-/g, ' ');
-    if (!title && el.className) {
-        var cls = String(el.className).split(/\s+/).filter(function (c) {
-            return c && c.indexOf('report-') === 0 || c.indexOf('cover') >= 0 || c.indexOf('toc') >= 0;
-        });
-        if (cls.length) title = cls[0];
-    }
-    return sajuxPadCaptureIndex(index) + '-' + sajuxSlugCaptureLabel(title);
+function sajuxSliceCaptureLabel(slice, index) {
+    if (!slice) return sajuxPadCaptureIndex(index) + '-section';
+    var jul = slice.jul || (slice.el && slice.el.getAttribute('data-sajux-jul')) || '';
+    var title = slice.title || (slice.el && slice.el.getAttribute('data-sajux-jul-title')) || '';
+    var julSlug = sajuxSlugCaptureLabel(jul || 'section');
+    var titleSlug = title ? '-' + sajuxSlugCaptureLabel(title) : '';
+    return sajuxPadCaptureIndex(index) + '-' + julSlug + titleSlug;
 }
 function sajuxCanvasToBlob(canvas, type) {
     return new Promise(function (resolve, reject) {
@@ -4285,6 +4387,7 @@ function sajuxRunReportImageCapture(root) {
     if (fab) { fab.disabled = true; fab.textContent = '저장 중…'; }
     var pack = sajuxCollectCaptureSlices(root);
     var slices = pack.slices;
+    var captureHost = pack.host;
     if (!slices.length) {
         alert('저장할 리포트 영역을 찾지 못했습니다.');
         sajuxRestoreAfterCapture(hidden);
@@ -4297,6 +4400,7 @@ function sajuxRunReportImageCapture(root) {
     if (pack.container && pack.container !== root) {
         pack.container.style.overflow = 'visible';
     }
+    if (captureHost) captureHost.innerHTML = '';
     var captures = [];
     var idx = 0;
     var total = slices.length;
@@ -4307,7 +4411,7 @@ function sajuxRunReportImageCapture(root) {
         var folder = zip.folder(baseName) || zip;
         folder.file('00-읽는법.txt',
             '사주X 리포트 이미지 묶음입니다.\n'
-            + '파일명 앞 숫자(01, 02…) 순서대로 위에서 아래로 읽으시면 됩니다.\n'
+            + '파일명 앞 숫자(01, 02…) 순서대로, 리포트 절(1-1, 1-2 …) 순서와 같습니다.\n'
             + '총 ' + captures.length + '장 · ' + baseName + '\n');
         captures.forEach(function (item) {
             folder.file(item.name + '.png', item.blob);
@@ -4323,6 +4427,7 @@ function sajuxRunReportImageCapture(root) {
     function cleanup() {
         root.style.overflow = prevOverflow;
         if (pack.container && pack.container !== root) pack.container.style.overflow = '';
+        if (captureHost) captureHost.innerHTML = '';
         sajuxRestoreAfterCapture(hidden);
         if (fab) { fab.disabled = false; fab.textContent = '📦 ZIP'; }
     }
@@ -4332,7 +4437,7 @@ function sajuxRunReportImageCapture(root) {
                 var url = URL.createObjectURL(zipBlob);
                 sajuxDownloadBlob(url, sajuxBuildZipFilename(window.globalSajuData || null));
                 setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
-                sajuxShowCaptureOverlay('저장 완료!\n' + captures.length + '장 이미지가 ZIP으로 내려받아졌어요.\n압축을 풀고 01번부터 순서대로 보시면 됩니다.');
+                sajuxShowCaptureOverlay('저장 완료!\n' + captures.length + '개 절이 ZIP으로 저장됐어요.\n01-1-… 순서대로 보시면 됩니다.');
                 setTimeout(sajuxHideCaptureOverlay, 2200);
                 cleanup();
             }).catch(function (err) {
@@ -4341,12 +4446,22 @@ function sajuxRunReportImageCapture(root) {
             });
             return;
         }
-        var el = slices[idx];
+        var slice = slices[idx];
+        var el = slice.el;
         var sliceScale = sajuxCalcSliceCaptureScale(el);
-        var fileBase = sajuxSliceCaptureLabel(el, idx + 1);
-        try { el.scrollIntoView({ block: 'start', behavior: 'instant' }); } catch (e1) { try { el.scrollIntoView(true); } catch (e2) {} }
-        sajuxShowCaptureOverlay('이미지 캡처 중… (' + (idx + 1) + '/' + total + ')\n끝나면 ZIP 한 번에 저장됩니다.');
-        html2canvas(el, {
+        var fileBase = sajuxSliceCaptureLabel(slice, idx + 1);
+        if (captureHost) {
+            captureHost.innerHTML = '';
+            captureHost.appendChild(el);
+        }
+        var liveAnchor = pack.container && slice.jul
+            ? pack.container.querySelector('[data-sajux-jul="' + slice.jul.replace(/"/g, '\\"') + '"]')
+            : null;
+        if (liveAnchor) {
+            try { liveAnchor.scrollIntoView({ block: 'start', behavior: 'instant' }); } catch (e1) { try { liveAnchor.scrollIntoView(true); } catch (e2) {} }
+        }
+        sajuxShowCaptureOverlay('절별 캡처 중… (' + (idx + 1) + '/' + total + ')\n' + (slice.jul || '') + ' ' + (slice.title || ''));
+        html2canvas(captureHost && captureHost.firstChild ? captureHost : el, {
             backgroundColor: '#050508',
             scale: sliceScale,
             useCORS: true,
@@ -11738,10 +11853,10 @@ function buildReportFooterUtilities(data) {
         // ── 1) 이미지 저장 안내 (30일 보관 → 필수 다운로드 강조)
         + '<div class="sajux-access-note sajux-glass-heavy" style="text-align:left;margin:0 0 18px;padding:16px 18px;border-radius:12px;font-size:13px;line-height:1.9;">'
         + '<div style="' + headStyle + '">열람 · 이미지 저장 안내</div>'
-        + '<p style="' + pStyle + '">이 리포트는 발행일(<strong>' + reportDateStr + '</strong>)로부터 <strong>30일</strong> 동안만 같은 링크에서 보실 수 있어요. 그 이후에는 다시 들어오기 어려울 수 있으니, 오늘 안에 <strong>이미지 한 장으로 꼭 저장</strong>해 두시기를 권해 드립니다.</p>'
-        + '<p style="margin:6px 0 0;font-size:13px;line-height:1.9;color:#d6dae2;">아래 <strong>이미지로 저장</strong>을 누르시면 지금 화면 그대로 긴 PNG 한 장이 내려받아집니다. 링크 만료 이후에도 휴대폰·PC에서 다시 펼쳐 보실 수 있어요.</p>'
+        + '<p style="' + pStyle + '">이 리포트는 발행일(<strong>' + reportDateStr + '</strong>)로부터 <strong>30일</strong> 동안만 같은 링크에서 보실 수 있어요. 그 이후에는 다시 들어오기 어려울 수 있으니, 오늘 안에 <strong>ZIP으로 꼭 저장</strong>해 두시기를 권해 드립니다.</p>'
+        + '<p style="margin:6px 0 0;font-size:13px;line-height:1.9;color:#d6dae2;">아래 <strong>ZIP 저장</strong>을 누르시면 장마다 선명한 PNG 여러 장이 묶여 내려받아집니다. 압축을 푼 뒤 <strong>01번부터 순서대로</strong> 보시면 됩니다.</p>'
         + '<div style="display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-top:14px;">'
-        + '<button type="button" class="sajux-image-wide-btn sajux-pdf-wide-btn pdf-btn" onclick="sajuxCaptureReportAsImage()" style="margin:0;max-width:320px;">이미지로 저장하기</button>'
+        + '<button type="button" class="sajux-image-wide-btn sajux-pdf-wide-btn pdf-btn" onclick="sajuxCaptureReportAsImage()" style="margin:0;max-width:320px;">ZIP으로 저장하기</button>'
         + '<button type="button" class="sajux-pdf-wide-btn pdf-btn" onclick="window.print()" style="margin:0;max-width:240px;font-size:13px;padding:12px 18px;">PDF (선택)</button>'
         + '</div>'
         + '</div>'
