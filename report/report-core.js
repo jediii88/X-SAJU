@@ -365,6 +365,102 @@ function buildChapterHeadTopicFirst(mainTitle, eyebrowLabel, leadHook, opts) {
         + '</div>';
 }
 
+
+/** 부-절 번호 체계 — 개인 리포트 절 목록 (topic → buildChapterIntroHtml 키) */
+var SAJUX_SECTION_REGISTRY = {
+    ilju: { part: 1, section: 1, title: '일주 · 한 줄기 서사', eyebrow: '60일주 물상 · 삶의 중심축', topic: 'basic', inToc: true },
+    manse: { part: 1, section: 2, title: '만세력 · 원국 표', eyebrow: '원국 근거 · 격국·조후·공망', topic: null, inToc: true },
+    wuxing: { part: 1, section: 3, title: '오행 — 다섯 기운의 짜임', eyebrow: '오행의 강약과 균형', topic: 'wuxing', inToc: true },
+    sipseong: { part: 1, section: 4, title: '십성 — 돈·일·관계의 다섯 축', eyebrow: '만세력 · 십성 다섯 축', topic: 'sipseong', inToc: true },
+    current: { part: 2, section: 1, title: '현재의 운세', eyebrow: '대운 · 세운 · 월운', topic: 'current', inToc: true, headerMode: 'mainSub' },
+    timeline: { part: 2, section: 2, title: '인생 80년 지도', eyebrow: '열 해마다 계절', topic: 'daeun', inToc: true, headerMode: 'mainSub' },
+    upcomingIntro: { part: 2, section: 3, title: '앞으로의 운', eyebrow: '큰 10년 → 한 해 → 한 달', topic: null, inToc: true, headerMode: 'mainSub' },
+    upcomingDaeun: { part: 2, section: 4, title: '앞으로 올 대운', eyebrow: '다음 10년 · 그 다음 10년', topic: 'daeun', inToc: true, headerMode: 'mainSub' },
+    upcomingSewun: { part: 2, section: 5, title: '앞으로 올 세운', eyebrow: '다음 해부터 10년', topic: 'seyun', inToc: true, headerMode: 'mainSub' },
+    upcomingWolun: { part: 2, section: 6, title: '앞으로 올 월운', eyebrow: '다음 달부터 11개월', topic: 'monthly', inToc: true, headerMode: 'mainSub' },
+    love: { part: 3, section: 1, title: '애정 · 인연', eyebrow: '마음이 머무는 자리', topic: 'love', inToc: true },
+    wealth: { part: 3, section: 2, title: '재물 전략', eyebrow: '돈의 흐름과 지키는 법', topic: 'wealth', inToc: true },
+    hapgyeok: { part: 3, section: 3, title: '합격 · 문서운', eyebrow: '시험 · 취직 · 서류', topic: null, inToc: true },
+    career: { part: 3, section: 4, title: '직업 · 소명', eyebrow: '무대와 권한의 방향', topic: 'career', inToc: true },
+    health: { part: 3, section: 5, title: '건강 · 회복', eyebrow: '몸이 보내는 신호', topic: 'health', inToc: true },
+    remedy: { part: 4, section: 1, title: '개운법', eyebrow: '일상에 옮기기', topic: 'remedy', inToc: true },
+    hidden: { part: 1, section: 5, title: '지장간 · 내면', eyebrow: '보이지 않는 뿌리', topic: 'hidden', inToc: false },
+    daeunDeep: { part: 2, section: 7, title: '대운 — 10년 계절의 지도', eyebrow: '10년 단위 기후', topic: 'daeun', inToc: false },
+    sewunDeep: { part: 2, section: 8, title: '세운 — 앞으로 10년의 바람', eyebrow: '장기 한 해의 리듬', topic: 'seyun', inToc: false },
+    sewunNear: { part: 2, section: 9, title: '세운 — 다가오는 두 해', eyebrow: '가까운 해의 무게', topic: 'seyun', inToc: false },
+    wolunDeep: { part: 2, section: 10, title: '월운 — 12개월의 리듬', eyebrow: '한 달 단위의 무게', topic: 'monthly', inToc: false },
+    appendix: { part: 0, section: 0, title: '부록', eyebrow: '참고', topic: null, inToc: false, appendix: true },
+    ziwei: { part: 0, section: 0, title: '자미두수 청사진', eyebrow: '별첨 · 참고 렌즈', topic: 'ziwei', inToc: true, appendix: true }
+};
+
+var SAJUX_COMPAT_SECTION_REGISTRY = {
+    overview: { part: 1, section: 1, title: '궁합 총평', eyebrow: '두 격이 만나는 자리', topic: 'overview', inToc: true },
+    positioning: { part: 1, section: 2, title: '관계 포지셔닝', eyebrow: '속도 · 역할 · 조율', topic: 'positioning', inToc: true },
+    personality: { part: 1, section: 3, title: '성격 · 기질', eyebrow: '타고난 온도', topic: 'personality', inToc: true },
+    lover: { part: 1, section: 4, title: '연인', eyebrow: '마음의 리듬', topic: 'lover', inToc: true },
+    married: { part: 1, section: 5, title: '부부', eyebrow: '삶의 설계', topic: 'married', inToc: true },
+    friend: { part: 1, section: 6, title: '우정', eyebrow: '오래 가는 거리', topic: 'friend', inToc: true },
+    business: { part: 1, section: 7, title: '동업 · 파트너', eyebrow: '역할과 돈', topic: 'business', inToc: true },
+    spouse: { part: 1, section: 8, title: '배우자궁', eyebrow: '끌림의 방향', topic: 'spouse', inToc: true },
+    idealFamily: { part: 1, section: 9, title: '인연 보강', eyebrow: '이상형 · 자녀 · 자미두수', topic: 'idealFamily', inToc: true },
+    timeline: { part: 1, section: 10, title: '대운 싱크', eyebrow: '시기별 관계 리듬', topic: 'timeline', inToc: true }
+};
+
+function formatPartSectionNum(part, section, reg) {
+    reg = reg || {};
+    if (reg.appendix || part === 0) return '별첨';
+    if (part == null || section == null) return '';
+    return part + '-' + section;
+}
+
+function getSectionRegistryEntry(key, isCompat) {
+    if (isCompat) return SAJUX_COMPAT_SECTION_REGISTRY[key] || null;
+    return SAJUX_SECTION_REGISTRY[key] || null;
+}
+
+function buildSectionNumHtml(part, section, reg) {
+    var numStr = formatPartSectionNum(part, section, reg);
+    if (!numStr) return '';
+    return '<p class="ch-section-num" style="font-size:11px;letter-spacing:0.14em;color:rgba(199,167,106,0.88);margin:0 0 8px;font-weight:700;">'
+        + escHtmlAttr(numStr) + '</p>';
+}
+
+function buildSectionHeader(sectionKey, data, opts) {
+    opts = opts || {};
+    var reg = getSectionRegistryEntry(sectionKey, !!opts.compat);
+    if (!reg) {
+        if (opts.title) return buildChapterHeadMainSub(opts.title, opts.subTitle || '', opts);
+        return '';
+    }
+    var title = opts.title != null ? opts.title : reg.title;
+    var eyebrow = opts.eyebrow != null ? opts.eyebrow : (reg.eyebrow || '');
+    var hook = opts.leadHook != null ? opts.leadHook : (opts.hook || '');
+    if (opts.leadHook === false) hook = '';
+    var mode = opts.headerMode || reg.headerMode || 'topicFirst';
+    var numHtml = buildSectionNumHtml(reg.part, reg.section, reg);
+    var intro = '';
+    if (!opts.skipIntro) {
+        if (opts.compat && opts.compatCtx && reg.topic) {
+            intro = buildCompatChapterIntro(opts.compatCtx, reg.topic);
+        } else if (reg.topic && data) {
+            intro = buildChapterIntroHtml(data, reg.topic);
+        }
+    }
+    if (mode === 'mainSub') {
+        var sub = opts.subTitle != null ? opts.subTitle : eyebrow;
+        return numHtml + buildChapterHeadMainSub(title, sub, opts) + intro;
+    }
+    return numHtml + buildChapterHeadTopicFirst(title, eyebrow, hook, opts) + intro;
+}
+
+function getSectionEyebrowByTopic(topic) {
+    var k;
+    for (k in SAJUX_SECTION_REGISTRY) {
+        if (SAJUX_SECTION_REGISTRY[k].topic === topic) return SAJUX_SECTION_REGISTRY[k].eyebrow || '';
+    }
+    return '';
+}
+
 // SAJUX_SURFACE_LINES: 프리미엄 브리프·챕터 도입 등에서 사용되는 짧은 도입문.
 // 사용자 피드백 — 매크로 인사("겉으로는 듬직해 보이지만, 속으로는 누구보다 치열하게…")는 폐기.
 // 챕터 다리(buildChapterBridge) + 프리미엄 브리프 자체 도입문이 그 역할을 대신함.
@@ -443,24 +539,24 @@ function buildTopicMetaphorTitle(topic, data) {
 }
 
 var SAJUX_SECTION_LABELS = {
-    basic: '한 줄기 서사 — 일주에서 펼치는 한 사람의 흐름',
+    basic: '60일주 물상 · 삶의 중심축',
     wuxing: '오행의 강약과 균형',
-    sipseong: '만세력 · 십성 다섯 축',
-    wealth: '04. 재물 전략 — 돈의 흐름과 지키는 법',
-    career: '05. 직업·소명 — 무대와 권한의 방향',
-    love: '06. 애정·인연 — 마음이 머무는 자리',
-    health: '08. 건강·회복 — 몸이 보내는 신호',
-    hidden: '07. 지장간·내면 — 보이지 않는 뿌리',
-    daeun: '대운 — 10년 계절의 지도',
-    seyun: '10. 세운 — 앞으로 10년의 바람',
-    monthly: '13. 월운 — 12개월의 리듬',
-    remedy: '09. 개운법 — 일상에 옮기기',
-    current: '현재 대운·세운·월운 종합',
-    master: '원국 한눈에 — 성격·돈·일·사랑·몸',
+    sipseong: '만세력 · 십성 다섹 축',
+    wealth: '돈의 흐름과 지키는 법',
+    career: '무대와 권한의 방향',
+    love: '마음이 머무는 자리',
+    health: '몸이 보내는 신호',
+    hidden: '지장간 · 내면 — 보이지 않는 뿌리',
+    daeun: '10년 계절의 지도',
+    seyun: '앞으로 10년의 바람',
+    monthly: '12개월의 리듬',
+    remedy: '일상에 옮기기',
+    current: '대운 · 세운 · 월운 종합',
+    master: '성격 · 돈 · 일 · 사랑 · 몸',
     relation: '합·충·형·파 — 관계의 힘',
     shinsal: '신살 — 바람의 이름',
     strength: '신강·신약 — 체력의 바탕',
-    ziwei: '별첨 — 자미두수 청사진',
+    ziwei: '별첨 · 참고 렌즈',
     appendix: '부록 — 성향의 온도'
 };
 
@@ -850,11 +946,19 @@ function buildCompatChapterHeadOpts() {
 
 /** 궁합 섹션 상단 — 섹션 제목 + 은유 부제 + 사주아이형 도입 (ctx: a,b,aName,bName,isHap,isChung,score,…) */
 function buildCompatVoiceSection(topic, ctx) {
-    var label = SAJUX_COMPAT_SECTION_LABELS[topic] || '';
+    var reg = SAJUX_COMPAT_SECTION_REGISTRY[topic];
     var metaphor = buildCompatTopicMetaphor(topic, ctx);
     var subHtml = boldStarsToStrong(escHtmlAttr(metaphor));
-    var head = buildChapterHeadMainSub(label, subHtml, buildCompatChapterHeadOpts());
-    return head + buildCompatChapterIntro(ctx, topic);
+    var opts = buildCompatChapterHeadOpts();
+    opts.subIsHtml = true;
+    return buildSectionHeader(topic, null, {
+        compat: true,
+        compatCtx: ctx,
+        headerMode: 'mainSub',
+        title: reg ? reg.title : (SAJUX_COMPAT_SECTION_LABELS[topic] || ''),
+        subTitle: subHtml,
+        skipIntro: false
+    });
 }
 
 function buildVipModuleTitles(data, daeunLabel, curY, curM) {
@@ -3866,70 +3970,38 @@ function ensureSajuxPdfPrintForceStyles() {
     if (document.getElementById('sajux-pdf-print-force') || document.getElementById('sajux-pdf-print-force-dynamic')) return;
     var st = document.createElement('style');
     st.id = 'sajux-pdf-print-force-dynamic';
-    st.textContent = `/* =========================================
-   [사주X PDF 인쇄 — 배경만 화이트닝, 오행 글자색 유지]
-========================================= */
+    st.textContent = `/* PDF — report-print.css 미로드 시 최소 폴백 */
 @media print {
-  body, html {
-    background: #ffffff !important;
-    background-color: #ffffff !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    box-shadow: none !important;
-  }
-
-  /* PDF 문서형 — 카드 UI 제거 (report-print.css와 동일) */
-  .card, .glass-panel, .yearly-card, .monthly-card, .sajux-glass-heavy,
-  [class*="card"], #report-container div[style*="background:rgba"],
-  #report-container div[style*="border-left"] {
-    background: transparent !important;
-    border: none !important;
-    border-left: none !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
-    backdrop-filter: none !important;
-  }
-  .badge, .tag, .m-badge { background: transparent !important; border: none !important; }
-
-  .m-hanja, .vip-hanja, .report-pillar-hanja, .hanja-main {
-    font-family: 'Noto Sans KR', sans-serif !important;
-  }
-
-  /* 오행 한자·천간지지 색상 보존 */
-  .wood, .fire, .earth, .metal, .water,
-  .m-hanja, .m-hanja.wood, .m-hanja.fire, .m-hanja.earth, .m-hanja.metal, .m-hanja.water,
-  .rel-char span, [class*="han-"] {
+  html, body, #report-container, #report-container * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
   }
-
-  /* 단락 제목 고립 방지 */
-  .section-title, .part-title, .part-header-label, .part-header-block,
-  .report-chapter, .ch-title, h1, h2, h3, .title-card {
-    page-break-after: avoid !important;
-    break-after: avoid !important;
+  .card, .glass-panel, [class*="card"], .sajux-print-surface, .domain-summary-3box,
+  #report-container div[style*="background:rgba"] {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
-    margin-bottom: 10px !important;
   }
-
-  .report-container, #report-container, .print-container, .layout-wrapper,
-  .seyun-premium-vertical, .part-header-block, .cover-page {
-    display: block !important;
+  .part-header-block {
+    page-break-before: always !important;
+    break-before: page !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
-  .manse-table { display: flex !important; flex-direction: column !important; gap: 4px !important; }
-  .manse-row { display: grid !important; grid-template-columns: 60px repeat(4, 1fr) !important; gap: 4px !important; }
-  .manse-cell { display: flex !important; flex-direction: column !important; align-items: center !important; }
-  .part-header-block { page-break-before: auto !important; page-break-after: avoid !important; break-after: avoid !important; }
-  .part-follow-content > *:first-child { page-break-before: avoid !important; break-before: avoid !important; }
-  .yearly-indicators, .sajux-print-panel-inner, .daeun-decade-card, .seyun-year-card {
-    background: #f7f7f7 !important; border-color: #cccccc !important;
+  .ch-title, h1, h2, h3 {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
   }
-  .m-hangul, .yearly-ind-val, .vip-evidence-block td { color: #333333 !important; }
-
+  .toc-page, .toc-entry { width: 100% !important; word-break: keep-all !important; }
   table {
     border-collapse: collapse !important;
     width: 100% !important;
+    table-layout: fixed !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
   }
@@ -3996,8 +4068,11 @@ function ensureCoverLogoForPrint() {
         document.querySelectorAll('.sajux-logo-cover-print, .cover-page .sajux-logo.light').forEach(function (el) {
             el.style.setProperty('display', 'block', 'important');
             el.style.setProperty('visibility', 'visible', 'important');
+            el.style.setProperty('position', 'static', 'important');
+            el.style.setProperty('left', 'auto', 'important');
             el.style.setProperty('opacity', '1', 'important');
             el.style.setProperty('mix-blend-mode', 'normal', 'important');
+            el.style.setProperty('filter', 'none', 'important');
         });
     }
     window.addEventListener('beforeprint', applyCoverLogo);
@@ -4431,7 +4506,7 @@ function injectInlineSummaries(data) {
         strengthInline.style.display = 'block';
     }
 }
-function buildSectionHeader(title) {
+function buildLegacyGoldSectionHeader(title) {
     return `<div style="margin: 60px 0 30px 0; padding-bottom: 15px; border-bottom: 2px solid var(--gold);">
             <h2 style="color: var(--gold); font-size: 24px; font-family: 'Noto Sans KR', sans-serif; letter-spacing: 2px;">${title}</h2>
         </div>`;
@@ -4596,7 +4671,7 @@ function buildCurrentPeriodSummary(data) {
     const nowY = nowDate.getFullYear();
     const nowM = nowDate.getMonth()+1;
     const nowD = nowDate.getDate();
-    var chHeadCur = buildChapterHeadMainSub('현재의 운세', '대운 · 세운 · 월운 그리고 다섯 영역');
+    var chHeadCur = buildSectionHeader('current', data, { headerMode: 'mainSub', subTitle: '대운 · 세운 · 월운 그리고 다섹 영역', skipIntro: true });
     var chIntroCur = buildChapterIntroHtml(data, 'current');
     return `<div class="report-chapter" style="border:2px solid var(--gold);border-radius:14px;padding:20px;background:rgba(199,167,106,0.04);">
         <div style="font-size:11px;color:var(--gold);letter-spacing:2px;margin-bottom:6px;">★ 지금 이 순간 — ${nowY}년 ${nowM}월 ${nowD}일 기준</div>
@@ -5689,8 +5764,9 @@ function buildIljuProfileCard(data) {
         ? `<div id="sec-han-line-narrative" class="personal-portrait-inner ilju-narrative-portrait">${narrativeInner}</div>`
         : '';
 
+    var iljuHead = buildSectionHeader('ilju', data, { skipIntro: true });
     return `<div id="sec-ilju-narrative-unified" class="ilju-profile-card ilju-narrative-unified report-chapter chapter-start" style="display:flex;flex-direction:column;align-items:stretch;gap:0;margin-bottom:24px;padding:22px 24px;border-radius:16px;position:relative;overflow:hidden;border:1px solid rgba(255,255,255,0.08);background:transparent;box-sizing:border-box;">
-        ${iljuTopHtml}
+        ${iljuHead}${iljuTopHtml}
         ${divider}
         ${portraitBlock}
     </div>`;
@@ -6816,7 +6892,7 @@ function buildDaeunTimeline(data) {
         </div>`;
     }).join(`<div style="flex:0 0 auto;width:12px;border-top:1px dashed rgba(255,255,255,0.12);align-self:center;"></div>`);
 
-    return `<div class="daeun-timeline-wrap" style="margin-bottom:24px;">
+    return buildSectionHeader('timeline', data, { headerMode: 'mainSub', skipIntro: true }) + `<div class="daeun-timeline-wrap" style="margin-bottom:24px;">
         <div style="font-size:11px;color:rgba(255,255,255,0.45);letter-spacing:1px;margin-bottom:10px;">인생 80년 지도 — 10년마다 바뀌는 큰 계절 &nbsp;
             <span style="color:${SAJUX_OH_COLORS.wood};font-size:10px;">● 나에게 좋은 운</span>&ensp;
             <span style="color:${SAJUX_OH_COLORS.fire};font-size:10px;">● 부담되는 운</span>&ensp;
@@ -7850,10 +7926,7 @@ function buildCurrentPeriodCard(data) {
     var closing = '이렇게 ' + nmUi(name) + ' 지금 시기를 — 가장 큰 대운부터 한 달의 월운까지, 그리고 그 위에 비친 다섯 자리의 모양까지 — 한 흐름으로 풀어 드렸어요. 다음 챕터에서는 이 흐름이 “앞으로” 어떻게 이어지는지 — 다가올 대운 두 개와, 다음 해부터의 10년, 다음 11개월까지 차근차근 짚어 드릴게요.';
 
     // ── HTML 조립 — 제목은「현재의 운세」한 가지만 크게, 부제는 대운·세운·월운 안내 ──
-    var chHead = '<div class="ch-head-current-period" style="margin-bottom:12px;">'
-        + '<h2 class="ch-title-current-period" style="font-family:\'Noto Sans KR\',sans-serif;font-size:clamp(17px,3.9vw,21px);font-weight:800;line-height:1.25;margin:0 0 8px;color:var(--text,rgba(255,255,255,0.96));">현재의 운세</h2>'
-        + '<p style="font-size:10px;letter-spacing:0.10em;color:rgba(199,167,106,0.62);margin:0;font-weight:700;">대운 · 세운 · 월운 그리고 다섯 영역</p>'
-        + '</div>';
+    var chHead = buildSectionHeader('current', data, { headerMode: 'mainSub', subTitle: '대운 · 세운 · 월운 그리고 다섹 영역', skipIntro: true });
 
     return '<div class="report-chapter">'
         + chHead
@@ -7878,9 +7951,7 @@ function buildCurrentPeriodCard(data) {
  *  · 앞으로 올 대운/세운/월운 3개 챕터의 공통 도입 역할
  * ───────────────────────────────────────── */
 function buildUpcomingFortuneIntro(data) {
-    var chHead = (typeof buildChapterHeadMainSub === 'function')
-        ? buildChapterHeadMainSub('앞으로의 운', '큰 10년 → 한 해 → 한 달, 겹치지 않게')
-        : '<h2 class="ch-title">앞으로의 운</h2>';
+    var chHead = buildSectionHeader('upcomingIntro', data, { headerMode: 'mainSub', subTitle: '큰 10년 → 한 해 → 한 달, 겹치지 않게', skipIntro: true });
 
     return '<div class="report-chapter">'
         + chHead
@@ -7938,7 +8009,7 @@ function buildUpcomingDaewunCards(data) {
         var orderLabel = idx === 0 ? '다음 대운' : '그 다음 대운';
         var ageRange = nx.age + '세 ~ ' + (nx.age + 9) + '세';
         var ohTag = (OH_KR[gOh] || '') + ' · ' + (OH_KR[jOh] || '');
-        return '<div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:18px 20px;margin-bottom:14px;border:1px solid ' + col + '22;border-left:3px solid ' + col + ';">'
+        return '<div class="sajux-upcoming-daeun-card" style="background:rgba(255,255,255,0.03);border-radius:12px;padding:18px 20px;margin-bottom:14px;border:1px solid ' + col + '22;border-left:3px solid ' + col + ';">'
             + '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px;">'
             + '<div><div style="font-size:10px;letter-spacing:0.12em;color:' + col + ';font-weight:700;margin-bottom:4px;">' + orderLabel + '</div>'
             + '<div style="font-size:18px;font-weight:800;color:#fff;font-family:\'Noto Sans KR\',sans-serif;">' + (HK[g] || g) + (HK[j] || j) + '<span style="font-size:12px;color:#888;margin-left:6px;">(' + g + j + ')</span></div></div>'
@@ -7948,9 +8019,7 @@ function buildUpcomingDaewunCards(data) {
             + '</div>';
     }).join('');
 
-    var chHead = (typeof buildChapterHeadMainSub === 'function')
-        ? buildChapterHeadMainSub('앞으로 올 대운', '다음 10년 · 그 다음 10년 한눈에')
-        : '<h2 class="ch-title">앞으로 올 대운</h2>';
+    var chHead = buildSectionHeader('upcomingDaeun', data, { headerMode: 'mainSub', subTitle: '다음 10년 · 그 다음 10년 한눈에', skipIntro: true });
 
     return '<div class="report-chapter">'
         + chHead
@@ -8046,9 +8115,7 @@ function buildUpcomingSewunCards(data) {
               + '</div>';
     }
 
-    var chHead = (typeof buildChapterHeadMainSub === 'function')
-        ? buildChapterHeadMainSub('앞으로 올 세운', '다음 해부터 10년')
-        : '<h2 class="ch-title">앞으로 올 세운</h2>';
+    var chHead = buildSectionHeader('upcomingSewun', data, { headerMode: 'mainSub', subTitle: '다음 해부터 10년', skipIntro: true });
 
     return '<div class="report-chapter">'
         + chHead
@@ -8129,9 +8196,7 @@ function buildUpcomingWolunCards(data) {
         moPointer += 1;
     }
 
-    var chHead = (typeof buildChapterHeadMainSub === 'function')
-        ? buildChapterHeadMainSub('앞으로 올 월운', '다음 달부터 11개월')
-        : '<h2 class="ch-title">앞으로 올 월운</h2>';
+    var chHead = buildSectionHeader('upcomingWolun', data, { headerMode: 'mainSub', subTitle: '다음 달부터 11개월', skipIntro: true });
 
     return '<div class="report-chapter">'
         + chHead
@@ -8354,7 +8419,7 @@ function buildChapter2_Wuxing(data) {
         lackHtml += para('나머지 기운은 비교적 고르게 흐르고 있어서, 따로 보충해야 할 자리는 없어요. 이미 가지신 두꺼운 기운을 어디에 풀어내실지만 잘 고르시면 됩니다.');
     }
 
-    var chHead2 = buildChapterHeadTopicFirst('오행 — 다섯 기운의 짜임', SAJUX_SECTION_LABELS.wuxing, buildTopicMetaphorTitle('wuxing', data));
+    var chHead2 = buildSectionHeader('wuxing', data, { leadHook: buildTopicMetaphorTitle('wuxing', data) });
     var chIntro2 = buildChapterIntroHtml(data, 'wuxing');
     return `<div class="report-chapter">
         ${chHead2}
@@ -8562,7 +8627,7 @@ function buildChapter3_Sipseong(data) {
     });
     const topLabelPlain = topG.shortLabel || String(topG.label || '').replace(/:\s*$/, '').replace(/\s*\([^)]*\)/g, '').trim();
 
-    var chHead3 = buildChapterHeadTopicFirst('십성 — 돈·일·관계의 다섯 축', SAJUX_SECTION_LABELS.sipseong, buildSipseongChapterHook(data, topG, primaryList));
+    var chHead3 = buildSectionHeader('sipseong', data, { leadHook: buildSipseongChapterHook(data, topG, primaryList) });
     var chIntro3 = '';
     return `<div class="report-chapter">
         ${chHead3}
@@ -8720,7 +8785,7 @@ function buildChapter4_Wealth(data) {
         </div>`;
     }).join('');
 
-    var chHead4 = buildChapterHeadTopicFirst('재물 전략', SAJUX_SECTION_LABELS.wealth, '');
+    var chHead4 = buildSectionHeader('wealth', data, { leadHook: false });
     var chIntro4 = buildChapterIntroHtml(data, 'wealth');
     return `<div class="report-chapter">
         ${chHead4}
@@ -8808,7 +8873,7 @@ function buildDaewunLoop(data) {
     function badge(s) { return s>=3?'🌟 대길':s>=1?'✦ 길':s===0?'— 평':s>=-2?'⚠ 주의':'❌ 흉'; }
     function col(s) { return s>=3?'#c7a76a':s>=1?'#00C853':s===0?'#888':s>=-2?'#ff9800':'#e74c3c'; }
 
-    var chHeadD = buildChapterHeadTopicFirst('대운 — 10년 계절의 지도', '', '');
+    var chHeadD = buildSectionHeader('daeunDeep', data, { skipIntro: true });
     var chIntroD = buildChapterIntroHtml(data, 'daeun');
     let out = `<div class="report-chapter">${chHeadD}${chIntroD}
     ${getAgeBasisNoteHtml('block')}
@@ -9092,7 +9157,7 @@ function buildSewunLoop(data) {
         </div>`;
     }
 
-    var chHeadS = buildChapterHeadTopicFirst('세운 — 앞으로 10년의 바람', '10 · 장기 한 해의 리듬', '');
+    var chHeadS = buildSectionHeader('sewunDeep', data, { headerMode: 'topicFirst', leadHook: false, skipIntro: true });
     var chIntroS = buildChapterIntroHtml(data, 'seyun');
     return `<div class="report-chapter">
         ${chHeadS}
@@ -9258,7 +9323,7 @@ function buildWolunLoop(data) {
         return bridge + card;
     }).join('');
 
-    var chHeadMo = buildChapterHeadTopicFirst('월운 — 12개월의 리듬', '13 · 한 달 단위의 무게 이동', '');
+    var chHeadMo = buildSectionHeader('wolunDeep', data, { headerMode: 'topicFirst', leadHook: false, skipIntro: true });
     var chIntroMo = buildChapterIntroHtml(data, 'monthly');
     return `<div class="report-chapter">
         ${chHeadMo}
@@ -9360,7 +9425,7 @@ function buildChapter_HapGyeok(data) {
             + '</div>';
     }
 
-    var chHeadH = buildChapterHeadTopicFirst('합격 · 문서운', '시험 · 취직 · 서류 한 줄의 무게', '');
+    var chHeadH = buildSectionHeader('hapgyeok', data, { leadHook: false });
     return `<div class="report-chapter">
         ${chHeadH}
         ${buildNarrativePara(data, '합격은 사주에서 네 가지 기둥이 함께 만드는 결과예요. **인성(印, 공부·자격)**, **관성(官, 조직·취업)**, **식상(食傷, 표현·면접)**, **재성(財, 실무·현장)** — 이 네 가지의 두께를 보면 ' + nmIGa(name) + ' 어떤 “합격 자리”에서 가장 잘 풀리시는지가 거의 다 드러납니다.', { lineHeight: '2' })}
@@ -9400,7 +9465,7 @@ function buildChapter5_Career(data) {
         : jaeC===0
         ? '재물 기둥이 얇은 편입니다. 돈을 쫓지 말고 **가치표**를 올리십시오.'
         : '재물 축은 적정입니다. **월 현금흐름 표**만 고정해도 속도가 납니다.';
-    var chHead5 = buildChapterHeadTopicFirst('직업 · 소명', SAJUX_SECTION_LABELS.career, '');
+    var chHead5 = buildSectionHeader('career', data, { leadHook: false });
     var chIntro5 = buildChapterIntroHtml(data, 'career');
     return `<div class="report-chapter">
         ${chHead5}
@@ -9537,7 +9602,7 @@ function buildChapter6_Love(data) {
         ? '다툼이 시작되면 ' + nmEunNeun(name) + ' 본능적으로 **결론을 빨리 내려는** 쪽으로 기울입니다. 그 속도가 본인은 명료해 좋지만, 상대에게는 **자기 감정이 인정받지 못한 채 정리당했다**는 인상을 남길 수 있습니다. 결론보다 먼저 “지금 어떤 마음이세요?”라고 한 번만 물어 주십시오. 한 박자만 늦춰도 같은 결론이 훨씬 부드럽게 안착합니다.'
         : nmEunNeun(name) + ' 다툼 앞에서 **속으로 삼키고 정리하시는** 결에 가깝습니다. 그 자리에서는 평화로워 보이지만, 같은 패턴이 쌓이면 어느 날 갑자기 차갑게 거리를 두는 모습으로 드러납니다. 한 번에 두꺼운 말을 꺼내기 어렵다면, **메시지로 한 줄씩** 남겨두는 방법도 좋습니다. “지금 좀 힘들었어”라는 한 문장이 관계를 살립니다.';
 
-    var chHead6 = buildChapterHeadTopicFirst('애정 · 인연', SAJUX_SECTION_LABELS.love, '');
+    var chHead6 = buildSectionHeader('love', data, { leadHook: false });
     var chIntro6 = buildChapterIntroHtml(data, 'love');
     return `<div class="report-chapter">
         ${chHead6}
@@ -9660,7 +9725,7 @@ function buildChapter7_Hidden(data) {
             + `<p style="font-size:12.8px;color:#aaa;line-height:1.88;margin:0;">지장간이 깨는 해·월에는 “평소와 다른 나”가 뜹니다. 돈은 **서면·지분·정산 조항** 없이 손대지 마십시오. 관계는 **감정이 올라온 날 큰 결정을 하루** 미루십시오.</p>`
             + `</div>`;
     }).filter(Boolean).join("");
-    var chHead7 = buildChapterHeadTopicFirst('지장간 · 내면', SAJUX_SECTION_LABELS.hidden, '');
+    var chHead7 = buildSectionHeader('hidden', data, { leadHook: false, skipIntro: true });
     var chIntro7 = buildChapterIntroHtml(data, 'hidden');
     return `<div class="report-chapter chapter-start">`
         + chHead7
@@ -9765,7 +9830,7 @@ function buildChapter8_Health(data) {
         water:'**신장·호르몬·방광** 검사를 수면 루틴과 같이 묶으십시오.'
     }[maxWuxing] || '**종합 검진**을 연 1회 이상 고정하십시오.';
 
-    var chHead8 = buildChapterHeadTopicFirst('건강 · 회복', SAJUX_SECTION_LABELS.health, '');
+    var chHead8 = buildSectionHeader('health', data, { leadHook: false });
     var chIntro8 = buildChapterIntroHtml(data, 'health');
     return `<div class="report-chapter">
         ${chHead8}
@@ -9982,7 +10047,7 @@ function buildPartHeader(num, title, subtitle, anchorId, opts) {
     var preludeHtml = preludes[num]
         ? '<div class="part-prelude" style="margin-top:18px;padding-top:16px;border-top:1px dashed rgba(' + color + ',0.32);font-size:13px;line-height:1.95;color:var(--text-dim);font-style:italic;">' + preludes[num] + '</div>'
         : '';
-    return '<div' + idAttr + ' class="part-header-block report-chapter sajux-print-surface sajux-glass-panel" style="display:block;background:rgba(255,255,255,0.04);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:none;border-radius:16px;padding:24px 28px;margin:40px 0 4px;page-break-before:always;break-before:page;page-break-inside:avoid;break-inside:avoid;page-break-after:avoid;break-after:avoid;box-shadow:0 12px 44px rgba(0,0,0,0.28);border-top:3px solid ' + border + ';">'
+    return '<div' + idAttr + ' class="part-header-block report-chapter sajux-print-surface sajux-glass-panel" style="display:block;background:rgba(255,255,255,0.04);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:none;border-radius:16px;padding:24px 28px;margin:40px 0 4px;page-break-before:always;break-before:page;page-break-inside:avoid;break-inside:avoid;page-break-after:avoid;break-after:avoid;border-top:3px solid ' + border + ';">'
         + '<div class="part-header-label part-tier-title" style="display:block;font-size:clamp(16px,4vw,21px);font-weight:700;color:rgba(248,246,238,0.96);margin-bottom:8px;letter-spacing:-0.025em;line-height:1.35;"><span style="color:' + border + ';font-weight:700;margin-right:8px;">' + num + ' ·</span>' + title + icon + '</div>'
         + '<div class="part-header-sub" style="display:block;font-size:12.5px;color:rgba(255,255,255,0.52);letter-spacing:0.04em;line-height:1.55;">' + subtitle + '</div>'
         + preludeHtml
@@ -10086,7 +10151,7 @@ function buildVipEvidenceBlock(data) {
     function hanCol(h){ return ohColor(STEM_OH[h]||BRNCH_OH[h]||'earth'); }
     var ev = '';
     ev += '<div id="sec-vip-evidence" class="report-chapter chapter-start vip-evidence-block" style="padding-top:4px;margin-bottom:32px;">';
-    ev += '<div style="font-size:11px;color:rgba(199,167,106,0.75);letter-spacing:0.12em;margin-bottom:8px;font-weight:700;">[ 원국 근거·만세력 데이터 ]</div>';
+    ev += buildSectionHeader('manse', data, { skipIntro: true });
     // ── ① 만세력 원국 8자 표 ──
     ev += '<div class="vip-manse-keep-group" style="page-break-inside:avoid;break-inside:avoid;">';
     ev += '<div class="vip-manse-title" style="font-size:13px;color:var(--gold);font-weight:800;letter-spacing:1.2px;line-height:1.45;margin-bottom:12px;page-break-after:avoid;break-after:avoid;">① 타고난 8자 — 사주 원국</div>';
@@ -10514,7 +10579,7 @@ function buildChapter6_SeYun(data){
     var pack = computeSeYunScorePack(data, curY);
     var h3t = pack ? formatSeYunChapterH3(10, curY, pack.sc, pack.ev2.l) : ('[ 10. ' + curY + '년 세운 ] — 리듬·증빙·범위를 먼저 고정');
     var inner = buildSeYunYearCardHtml(data, curY, { isThisYear: true });
-    var chHeadSy = buildChapterHeadTopicFirst('세운 — 앞으로 10년의 바람', h3t, '');
+    var chHeadSy = buildSectionHeader('sewunDeep', data, { headerMode: 'mainSub', subTitle: h3t, skipIntro: true });
     var chIntroSy = buildChapterIntroHtml(data, 'seyun');
     return '<div class="report-chapter chapter-start">' + chHeadSy + chIntroSy
         + '<div style="width:100%;box-sizing:border-box;display:flex;flex-direction:column;gap:16px;">' + inner + '</div>'
@@ -10551,7 +10616,7 @@ function buildChapter7_NextYears(data){
     var bridge1 = _yearBridge(nowPack, p1n, curY+1);
     var bridge2 = _yearBridge(p1n, p2n, curY+2);
     var h3n = (p1n && p2n) ? formatNextYearsChapterH3(curY + 1, p1n, curY + 2, p2n) : ('[ 11. ' + (curY + 1) + '·' + (curY + 2) + '년 ] — 앞선 두 해는 계약·현금·관계를 한 주에 섞지 마십시오');
-    var chHeadNy = buildChapterHeadTopicFirst('세운 — 다가오는 두 해', h3n, '');
+    var chHeadNy = buildSectionHeader('sewunNear', data, { headerMode: 'mainSub', subTitle: h3n, skipIntro: true });
     var chIntroNy = buildChapterIntroHtml(data, 'seyun');
     return '<div class="report-chapter chapter-start">'
         + chHeadNy + chIntroNy
@@ -10600,7 +10665,7 @@ function buildChapter8_NextDaewun(data){
 function buildChapter9_Monthly(data){
     var name=data.name||'고객';
     if(typeof buildWolunLoop==='function') return buildWolunLoop(data);
-    var chHeadMo = buildChapterHeadTopicFirst('월운 — 12개월의 리듬', '13 · 한 달 단위의 무게 이동', '');
+    var chHeadMo = buildSectionHeader('wolunDeep', data, { headerMode: 'topicFirst', leadHook: false, skipIntro: true });
     var chIntroMo = buildChapterIntroHtml(data, 'monthly');
     return '<div class="report-chapter chapter-start">' + chHeadMo + chIntroMo + '<p style="color:#aaa;">월운 데이터를 불러오는 중입니다.</p></div>';
 }
@@ -10686,7 +10751,7 @@ function buildChapter9_Remedy(data) {
         water:{good:'검정·파랑·감색·보라·남색',bad:'노랑·황토·갈색',dir:'북쪽',num:'1, 6',gem:'흑요석·사파이어·아쿠아마린·청금석',food:'짠맛 음식 — 된장·미역·검은콩·블루베리·흑임자',time:'겨울(12~2월), 밤~새벽 시간대',guien:'금 기운 일간(경·신)을 가진 사람'}
     }[yong] || {good:'흰색',bad:'검정',dir:'서쪽',num:'4, 9',gem:'백수정',food:'매운맛',time:'가을',guien:'토 기운 일간'};
 
-    var chHeadR = buildChapterHeadTopicFirst('개운법', '09 · 일상에 옮기기', '');
+    var chHeadR = buildSectionHeader('remedy', data, { leadHook: false });
     var chIntroR = buildChapterIntroHtml(data, 'remedy');
     return `<div class="report-chapter" id="sec-remedy-final">
         ${chHeadR}
@@ -11236,8 +11301,8 @@ function buildCoverPage(data) {
             <div id="sec-book-intro" class="sajux-intro-block" style="width:100%;max-width:760px;margin:24px auto 0;text-align:center;">
                 <div class="sajux-intro-heading" style="font-size:13px;letter-spacing:0.12em;color:rgba(199,167,106,0.9);margin-bottom:16px;font-weight:700;">사주X란?</div>
                 <div class="intro-text-container">
-                    <p style="margin-bottom: 12px;">사주X는 X-파일처럼, 고객님의 깊은 내면과 흐름을 조용히 비춰보는 비밀문서입니다.</p>
-                    <p>또한 사주X의 X는 사주를 이루는 네 개의 기둥이 서로 이어져 완성되는, 한 사람의 운명 구조를 상징합니다.</p>
+                    <p>사주X는 X-파일처럼, 고객님의 깊은 내면과<br>흐름을 조용히 비춰보는 비밀문서입니다.</p>
+                    <p>또한 사주X의 X는 사주를 이루는 네 개의 기둥이 서로<br>이어져 완성되는, 한 사람의 운명 구조를 상징합니다.</p>
                 </div>
             </div>
         </div>
@@ -11424,49 +11489,48 @@ function buildTOC(data) {
     var gHead = 'font-size:11.5px;font-weight:800;color:rgba(212,175,55,0.98);letter-spacing:0.14em;margin:26px 0 10px;padding-bottom:8px;border-bottom:1px solid rgba(199,167,106,0.28);';
     var gSub = 'display:block;font-size:10.5px;color:var(--text-dim,rgba(255,255,255,0.55));font-weight:600;letter-spacing:0.04em;margin-top:5px;';
     var row = 'display:flex;align-items:baseline;gap:12px;padding:11px 0 11px 14px;border-bottom:1px solid rgba(128,128,128,0.12);';
-    var groups = [
-        { head: '앞부분', sub: '표지 · 확인', items: [
-            { t: '표지 · 인사', s: '브랜드 톤 · 제목', p: '—' },
-            { t: '고객 정보 확인', s: '생년월일시 · 양음력', p: '—' }
-        ]},
-        { head: '1부 · 나라는 사람', sub: '원국에서 비친 줄기', items: [
-            { t: '일주 카드', s: '60일주 물상 · 핵심 키워드', p: '—' },
-            { t: '한 줄기 서사', s: voiceTwilightSpan(((data && data.name) || '고객') + 'tocArc') + ' 흐름', p: '—' },
-            { t: '만세력 안내 · 원국 표 · 원국 보강', s: '격국·조후·공망·직업·관계(한 줄기 서사와 중복 없음)', p: '—' },
-            { t: '오행 · 십성', s: '참고 분석', p: '—' }
-        ]},
-        { head: '2부 · 지금 이 시절', sub: '큰 계절과 앞선 기운', items: [
-            { t: '지금 맞은 기운', s: '대운 · 세운 · 월운 · 다섯 영역 한 흐름', p: '—' },
-            { t: '인생 80년 지도', s: '열 해마다 계절', p: '—' },
-            { t: '다가올 해·달', s: '앞선 대운 · 세운 · 월운', p: '—' }
-        ]},
-        { head: '3부 · 삶의 영역', sub: '애정 · 재물 · 합격 · 직업 · 건강', items: [
-            { t: '다섯 방 살피기', s: '타고난 무게 분포', p: '—' },
-            { t: '재물', s: '용신 타이밍', p: '—' },
-            { t: '직업 · 애정 · 합격 · 건강', s: '일주·십성·배우자궁', p: '—' }
-        ]},
-        { head: '4부 · 오늘부터', sub: '다듬는 법 · 별첨', items: [
-            { t: '개운법 · 실천', s: '루틴 · 공간 · 나이대', p: '—' },
-            { t: '별첨 · 자미두수 청사진', s: '참고 렌즈(명리와 별개)', p: '—' }
-        ]}
-    ];
+    var partMeta = {
+        0: { head: '별첨', sub: '참고 렌즈' },
+        1: { head: '1부 · 나라는 사람', sub: '원국에서 비친 줄기' },
+        2: { head: '2부 · 지금 이 시절', sub: '큰 계절과 앞선 기운' },
+        3: { head: '3부 · 삶의 영역', sub: '애정 · 재물 · 합격 · 직업 · 건강' },
+        4: { head: '4부 · 오늘부터', sub: '다듬는 법' }
+    };
+    function tocRow(num, title, sub) {
+        return '<div class="toc-entry" style="' + row + '"><div style="font-size:10px;color:var(--gold);min-width:36px;font-weight:700;letter-spacing:0.06em;">' + escHtmlAttr(num) + '</div><div style="flex:1;"><div style="font-size:14px;font-weight:600;color:var(--text,rgba(255,255,255,0.88));margin-bottom:2px;">' + escHtmlAttr(title) + '</div><div style="font-size:11.5px;color:var(--text-dim,rgba(255,255,255,0.50));">' + escHtmlAttr(sub) + '</div></div></div>';
+    }
     var body = '';
-    groups.forEach(function (grp) {
-        body += '<div style="' + gHead + '">' + grp.head + '<span style="' + gSub + '">' + grp.sub + '</span></div>';
-        grp.items.forEach(function (it) {
-            body += '<div style="' + row + '"><div style="font-size:10px;color:var(--gold);min-width:20px;font-weight:700;">·</div><div style="flex:1;"><div style="font-size:14px;font-weight:600;color:var(--text,rgba(255,255,255,0.88));margin-bottom:2px;">' + it.t + '</div><div style="font-size:11.5px;color:var(--text-dim,rgba(255,255,255,0.50));">' + it.s + '</div></div><div style="font-size:11px;color:rgba(199,167,106,0.45);min-width:32px;text-align:right;">' + it.p + '</div></div>';
+    body += '<div style="' + gHead + '">앞부분<span style="' + gSub + '">표지 · 확인</span></div>';
+    body += tocRow('—', '표지 · 인사', '브랜드 톤 · 제목');
+    body += tocRow('—', '고객 정보 확인', '생년월일시 · 양음력');
+    [0, 1, 2, 3, 4].forEach(function (p) {
+        var keys = [];
+        Object.keys(SAJUX_SECTION_REGISTRY).forEach(function (k) {
+            var r = SAJUX_SECTION_REGISTRY[k];
+            if (!r.inToc || r.part !== p) return;
+            keys.push(k);
+        });
+        keys.sort(function (ka, kb) {
+            return (SAJUX_SECTION_REGISTRY[ka].section || 0) - (SAJUX_SECTION_REGISTRY[kb].section || 0);
+        });
+        if (!keys.length) return;
+        var pm = partMeta[p] || { head: p + '부', sub: '' };
+        body += '<div style="' + gHead + '">' + pm.head + '<span style="' + gSub + '">' + pm.sub + '</span></div>';
+        keys.forEach(function (k) {
+            var r = SAJUX_SECTION_REGISTRY[k];
+            body += tocRow(formatPartSectionNum(r.part, r.section, r), r.title, r.eyebrow || '');
         });
     });
-
+    body = body.replace(/<div/g, '<div').replace(/<\/motion>/g, '</div>');
     return '<div class="toc-page" style="padding:60px 40px 80px;border-bottom:1px solid rgba(199,167,106,0.1);margin-bottom:48px;">' +
         '<div style="font-size:10px;letter-spacing:0.22em;color:rgba(199,167,106,0.75);margin-bottom:14px;font-weight:700;">[ 리포트 핵심 목차 ]</div>' +
         '<div style="font-family:\'Noto Sans KR\',serif;font-size:30px;font-weight:700;color:var(--text,rgba(255,255,255,0.95));margin-bottom:6px;">목차</div>' +
-        '<div style="font-size:13px;color:var(--text-dim,rgba(255,255,255,0.55));margin-bottom:32px;">X-SAJU MASTER — 컨설팅 보고서형 4부 구조</div>' +
+        '<div style="font-size:13px;color:var(--text-dim,rgba(255,255,255,0.55));margin-bottom:32px;">X-SAJU MASTER — 부-절 번호 체계</div>' +
         '<div style="width:60px;height:2px;background:var(--gold);margin-bottom:28px;opacity:0.4;"></div>' +
         body +
         '</div>';
-    // ※ 명리학 설명·발행 정책 안내는 본문 흐름을 끊지 않도록 문서 최하단(buildReportFooterUtilities)으로 이동했습니다.
 }
+    // ※ 명리학 설명·발행 정책 안내는 본문 흐름을 끊지 않도록 문서 최하단(buildReportFooterUtilities)으로 이동했습니다.
 
 function buildChapterPersonality(data) {
     const name = data.name || '고객';
@@ -11509,7 +11573,7 @@ function buildChapterPersonality(data) {
     const badMatch = voicePolishParagraph(data, BAD_MATCH[stemEl] || '');
     const iljuTitle = dbEntry.title || (nmUi(name) + ' 일주');
 
-    var chHeadA = buildChapterHeadTopicFirst('부록', SAJUX_SECTION_LABELS.appendix, '');
+    var chHeadA = buildSectionHeader('appendix', data, { leadHook: false, skipIntro: true });
     var chIntroA = buildChapterIntroHtml(data, 'appendix');
     return `<div class="report-chapter" id="sec-personality">
         ${chHeadA}
