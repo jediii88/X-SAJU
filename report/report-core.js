@@ -380,8 +380,8 @@ var SAJUX_SECTION_REGISTRY = {
     sipseong: { part: 1, section: 4, title: '십성 — 돈·일·관계의 다섯 축', eyebrow: '만세력 · 십성 다섯 축', topic: 'sipseong', inToc: true },
     current: { part: 2, section: 1, title: '현재의 운세', eyebrow: '대운 · 세운 · 월운', topic: 'current', inToc: true, headerMode: 'mainSub' },
     timeline: { part: 2, section: 2, title: '인생 80년 지도', eyebrow: '열 해마다 계절', topic: 'daeun', inToc: true, headerMode: 'mainSub' },
-    upcomingIntro: { part: 2, section: 3, title: '앞으로의 운', eyebrow: '큰 10년 → 한 해 → 한 달', topic: null, inToc: false, headerMode: 'mainSub' },
-    upcomingDaeun: { part: 2, section: 3, title: '앞으로 올 대운', eyebrow: '다음 10년 · 그 다음 10년', topic: 'daeun', inToc: true, headerMode: 'mainSub' },
+    upcomingIntro: { part: 2, section: 99, title: '앞으로의 운', eyebrow: '큰 10년 → 한 해 → 한 달', topic: null, inToc: false, headerMode: 'mainSub' },
+    upcomingDaeun: { part: 2, section: 4, title: '앞으로 올 대운', eyebrow: '다음 10년 · 그 다음 10년', topic: 'daeun', inToc: true, headerMode: 'mainSub' },
     upcomingSewun: { part: 2, section: 4, title: '앞으로 올 세운', eyebrow: '다음 해부터 10년', topic: 'seyun', inToc: true, headerMode: 'mainSub' },
     upcomingWolun: { part: 2, section: 5, title: '앞으로 올 월운', eyebrow: '다음 달부터 11개월', topic: 'monthly', inToc: true, headerMode: 'mainSub' },
     love: { part: 3, section: 1, title: '애정 · 인연', eyebrow: '마음이 머무는 자리', topic: 'love', inToc: true },
@@ -412,10 +412,47 @@ var SAJUX_COMPAT_SECTION_REGISTRY = {
     timeline: { part: 1, section: 10, title: '대운 싱크', eyebrow: '시기별 관계 리듬', topic: 'timeline', inToc: true }
 };
 
-/** 부-절 번호 — 예: 2-3 (2부 3절) */
-function formatPartSectionNum(part, section, reg) {
+/** 목차(inToc) 절만 부 안에서 1,2,3… 연속 번호 — 빈 번호·중복 방지 */
+function buildSajuxDisplaySectionMap(isCompat) {
+    var regMap = isCompat ? SAJUX_COMPAT_SECTION_REGISTRY : SAJUX_SECTION_REGISTRY;
+    var map = {};
+    var parts = isCompat ? [1] : [1, 2, 3, 4];
+    parts.forEach(function (p) {
+        var keys = [];
+        Object.keys(regMap).forEach(function (k) {
+            var r = regMap[k];
+            if (!r.inToc || r.part !== p) return;
+            keys.push(k);
+        });
+        keys.sort(function (ka, kb) {
+            return (regMap[ka].section || 0) - (regMap[kb].section || 0);
+        });
+        keys.forEach(function (k, i) {
+            map[k] = String(i + 1);
+        });
+    });
+    Object.keys(regMap).forEach(function (k) {
+        var r = regMap[k];
+        if (r.inToc && (r.appendix || r.part === 0)) map[k] = '별첨';
+    });
+    return map;
+}
+var _sajuxDisplaySecCache = { main: null, compat: null };
+function getSajuxDisplaySectionNum(sectionKey, isCompat) {
+    var slot = isCompat ? 'compat' : 'main';
+    if (!_sajuxDisplaySecCache[slot]) _sajuxDisplaySecCache[slot] = buildSajuxDisplaySectionMap(isCompat);
+    return _sajuxDisplaySecCache[slot][sectionKey];
+}
+/** 부-절 번호 — 예: 2-3 (목차에 보이는 절만 연속 번호) */
+function formatPartSectionNum(part, section, reg, sectionKey, opts) {
     reg = reg || {};
+    opts = opts || {};
     if (reg.appendix || part === 0) return '별첨';
+    if (sectionKey && reg.inToc) {
+        var disp = getSajuxDisplaySectionNum(sectionKey, !!opts.compat);
+        if (disp) return part + '-' + disp;
+    }
+    if (!reg.inToc) return '';
     if (part == null || section == null) return '';
     return part + '-' + section;
 }
@@ -457,7 +494,7 @@ function buildSectionHeader(sectionKey, data, opts) {
     var hook = opts.leadHook != null ? opts.leadHook : (opts.hook || '');
     if (opts.leadHook === false) hook = '';
     var mode = opts.headerMode || reg.headerMode || 'topicFirst';
-    var numStr = formatPartSectionNum(reg.part, reg.section, reg);
+    var numStr = formatPartSectionNum(reg.part, reg.section, reg, sectionKey, opts);
     var titleHtml = buildSectionTitleHtml(numStr, title);
     var headOpts = Object.assign({}, opts, {
         mainTitleIsHtml: true,
@@ -11924,7 +11961,7 @@ function buildTOC(data) {
         body += '<div style="' + gHead + '">' + pm.head + '<span style="' + gSub + '">' + pm.sub + '</span></div>';
         keys.forEach(function (k) {
             var r = SAJUX_SECTION_REGISTRY[k];
-            body += tocRow(formatPartSectionNum(r.part, r.section, r), r.title, r.eyebrow || '');
+            body += tocRow(formatPartSectionNum(r.part, r.section, r, k), r.title, r.eyebrow || '');
         });
     });
     body = body.replace(/<div/g, '<div').replace(/<\/motion>/g, '</div>');
