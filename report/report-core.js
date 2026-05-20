@@ -412,46 +412,12 @@ var SAJUX_COMPAT_SECTION_REGISTRY = {
     timeline: { part: 1, section: 10, title: '대운 싱크', eyebrow: '시기별 관계 리듬', topic: 'timeline', inToc: true }
 };
 
-/** 목차(inToc) 절만 1, 2, 3… 통합 순번 (부-절 2-3 형식 대신) */
-function buildSajuxSectionSeqMap(isCompat) {
-    var regMap = isCompat ? SAJUX_COMPAT_SECTION_REGISTRY : SAJUX_SECTION_REGISTRY;
-    var map = {};
-    var seq = 0;
-    var parts = isCompat ? [1] : [1, 2, 3, 4, 0];
-    parts.forEach(function (p) {
-        var keys = [];
-        Object.keys(regMap).forEach(function (k) {
-            var r = regMap[k];
-            if (!r.inToc || r.part !== p) return;
-            keys.push(k);
-        });
-        keys.sort(function (ka, kb) {
-            return (regMap[ka].section || 0) - (regMap[kb].section || 0);
-        });
-        keys.forEach(function (k) {
-            var r = regMap[k];
-            if (r.appendix || p === 0) map[k] = '별첨';
-            else { seq += 1; map[k] = String(seq); }
-        });
-    });
-    return map;
-}
-var _sajuxSeqMapCache = { main: null, compat: null };
-function getSajuxSectionSeqMap(isCompat) {
-    var slot = isCompat ? 'compat' : 'main';
-    if (!_sajuxSeqMapCache[slot]) _sajuxSeqMapCache[slot] = buildSajuxSectionSeqMap(isCompat);
-    return _sajuxSeqMapCache[slot];
-}
-function formatPartSectionNum(part, section, reg, sectionKey, opts) {
+/** 절 번호 — 부-절(2-3) 대신 절만 표기: 2-3 → 3 (각 부 안에서 1, 2, 3…) */
+function formatPartSectionNum(part, section, reg) {
     reg = reg || {};
-    opts = opts || {};
     if (reg.appendix || part === 0) return '별첨';
-    if (sectionKey) {
-        var map = getSajuxSectionSeqMap(!!opts.compat);
-        if (map[sectionKey]) return map[sectionKey];
-    }
     if (!reg.inToc) return '';
-    if (part == null || section == null) return '';
+    if (section == null) return '';
     return String(section);
 }
 
@@ -492,7 +458,7 @@ function buildSectionHeader(sectionKey, data, opts) {
     var hook = opts.leadHook != null ? opts.leadHook : (opts.hook || '');
     if (opts.leadHook === false) hook = '';
     var mode = opts.headerMode || reg.headerMode || 'topicFirst';
-    var numStr = formatPartSectionNum(reg.part, reg.section, reg, sectionKey, opts);
+    var numStr = formatPartSectionNum(reg.part, reg.section, reg);
     var titleHtml = buildSectionTitleHtml(numStr, title);
     var headOpts = Object.assign({}, opts, {
         mainTitleIsHtml: true,
@@ -4447,7 +4413,7 @@ function sajuxRunReportImageCapture(root) {
         var folder = zip.folder(baseName) || zip;
         folder.file('00-읽는법.txt',
             '사주X 리포트 다운로드 파일입니다.\n'
-            + '압축을 푼 뒤, 파일명 앞 숫자(01, 02…) 순서대로 보시면 리포트 절(1, 2, 3 …) 순서와 같습니다.\n'
+            + '압축을 푼 뒤, 파일명 앞 숫자(01, 02…) 순서대로 보시면 목차 절 순서와 같습니다.\n'
             + '총 ' + captures.length + '장 · ' + baseName + '\n');
         captures.forEach(function (item) {
             folder.file(item.name + '.png', item.blob);
@@ -11888,7 +11854,7 @@ function buildReportFooterUtilities(data) {
         + '<div class="sajux-access-note sajux-glass-heavy" style="text-align:left;margin:0 0 18px;padding:16px 18px;border-radius:12px;font-size:13px;line-height:1.9;">'
         + '<div style="' + headStyle + '">열람 · 사주 다운로드 안내</div>'
         + '<p style="' + pStyle + '">이 리포트는 발행일(<strong>' + reportDateStr + '</strong>)로부터 <strong>30일</strong> 동안만 같은 링크에서 보실 수 있어요. 그 이후에는 다시 들어오기 어려울 수 있으니, 오늘 안에 <strong>사주 다운로드를 꼭 받아</strong> 두시기를 권해 드립니다.</p>'
-        + '<p style="margin:6px 0 0;font-size:13px;line-height:1.9;color:#d6dae2;">아래 <strong>사주 다운로드</strong>를 누르시면 <strong>절(1, 2, 3 …)마다</strong> 선명한 이미지가 한 파일로 내려받아집니다. 받은 파일을 연 뒤, 안에 있는 번호 순서대로 보시면 됩니다.</p>'
+        + '<p style="margin:6px 0 0;font-size:13px;line-height:1.9;color:#d6dae2;">아래 <strong>사주 다운로드</strong>를 누르시면 <strong>절마다</strong> 선명한 이미지가 한 파일로 내려받아집니다. 받은 파일을 연 뒤, 안에 있는 번호 순서대로 보시면 됩니다.</p>'
         + '<p style="margin:8px 0 0;font-size:12px;line-height:1.75;color:rgba(255,255,255,0.45);">' + escHtmlAttr(accessLine) + '</p>'
         + '<div style="display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-top:14px;">'
         + '<button type="button" class="sajux-image-wide-btn sajux-pdf-wide-btn pdf-btn" onclick="sajuxCaptureReportAsImage()" style="margin:0;max-width:320px;">사주 다운로드</button>'
@@ -11960,7 +11926,7 @@ function buildTOC(data) {
         body += '<div style="' + gHead + '">' + pm.head + '<span style="' + gSub + '">' + pm.sub + '</span></div>';
         keys.forEach(function (k) {
             var r = SAJUX_SECTION_REGISTRY[k];
-            body += tocRow(formatPartSectionNum(r.part, r.section, r, k), r.title, r.eyebrow || '');
+            body += tocRow(formatPartSectionNum(r.part, r.section, r), r.title, r.eyebrow || '');
         });
     });
     body = body.replace(/<div/g, '<div').replace(/<\/motion>/g, '</div>');
