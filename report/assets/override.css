@@ -1233,3 +1233,5 @@ html {
     print-color-adjust: exact !important;
   }
 }
+
+.ch-section-num { display: none !important; }
