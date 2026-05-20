@@ -13,7 +13,7 @@ body,
 @media print {
   @page {
     size: A4 portrait;
-    margin: 14mm 12mm 16mm;
+    margin: 10mm 8mm 12mm;
   }
 
   /* 다크 테마 body #000이 인쇄에 남으면 PDF 양옆이 검게 보임 */
@@ -80,16 +80,17 @@ body,
   .print-container,
   .layout-wrapper {
     width: 100% !important;
-    max-width: 500px !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-    padding-left: 18px !important;
-    padding-right: 18px !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
     padding-top: 0 !important;
     padding-bottom: 0 !important;
     background: #ffffff !important;
     background-color: #ffffff !important;
     box-shadow: none !important;
+    filter: none !important;
     overflow: visible !important;
     box-sizing: border-box !important;
   }
@@ -722,16 +723,16 @@ body,
   /* ── 궁합 리포트 (couple/index.html) ── */
   #main-content,
   #main-content .compat-cover-column {
-    max-width: 500px !important;
+    max-width: 100% !important;
     width: 100% !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
     box-sizing: border-box !important;
   }
   #main-content .container {
-    max-width: 500px !important;
+    max-width: 100% !important;
     width: 100% !important;
-    padding: 0 18px 16mm !important;
+    padding: 0 0 12mm !important;
     box-sizing: border-box !important;
   }
   .page-header.cover-page {
@@ -745,8 +746,80 @@ body,
   }
   .rel-panel, .person-card, .score-section, .compat-voice-wrap,
   .insight-card, .t-card {
-    padding-left: 14px !important;
-    padding-right: 14px !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
     box-sizing: border-box !important;
   }
+
+  /* 덩그러니 떠 있던 부-절 번호(구 마크업) 숨김 */
+  .ch-section-num { display: none !important; }
+
+  /* 글래스·외부 광선 완전 제거 */
+  .sajux-glass-panel, .sajux-glass-heavy, .sajux-print-surface,
+  .glass-panel, .glass-card, [class*="glass"] {
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+    filter: none !important;
+    outline: none !important;
+  }
+
+  /* 세운·월운 연도 블록 — PDF 문서형(카드 없음, 겹침 방지) */
+  .seyun-year-card, .yearly-card, .monthly-card, .f-card {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 0 10px !important;
+    padding: 10px 0 12px !important;
+    border: none !important;
+    border-bottom: 1px solid #e0e0e0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    filter: none !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+  .seyun-year-card > div[style*="display:flex"],
+  .seyun-year-card > div > div[style*="display:flex"] {
+    display: block !important;
+    width: 100% !important;
+  }
+  .seyun-year-card > div[style*="display:flex"] > div[style*="justify-content"] {
+    margin-bottom: 6px !important;
+  }
+  .seyun-year-card span[style*="border-radius:20px"] {
+    display: inline-block !important;
+    margin-top: 4px !important;
+    border-radius: 4px !important;
+    background: transparent !important;
+    padding: 0 !important;
+  }
+  .yearly-indicators, .yearly-indicators.sajux-panel-plain {
+    border: none !important;
+    border-top: 1px solid #ececec !important;
+    border-left: none !important;
+    padding: 8px 0 !important;
+    margin: 8px 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+  .yearly-indicators-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 6px 10px !important;
+    width: 100% !important;
+  }
+  .yearly-ind-cell {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    padding: 4px 0 !important;
+    box-shadow: none !important;
+  }
+  .yearly-ind-val { color: #222 !important; font-size: 12px !important; }
+  .bar-fill { box-shadow: none !important; }
 }
