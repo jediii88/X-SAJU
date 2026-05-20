@@ -4106,23 +4106,156 @@ function ensureCoverLogoForPrint() {
 }
 
 
+
+function ensureHtml2CanvasLoaded(done) {
+    if (typeof html2canvas === 'function') { done(); return; }
+    var existing = document.getElementById('sajux-html2canvas-script');
+    if (existing) {
+        existing.addEventListener('load', function () { done(); }, { once: true });
+        return;
+    }
+    var sc = document.createElement('script');
+    sc.id = 'sajux-html2canvas-script';
+    sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+    sc.crossOrigin = 'anonymous';
+    sc.onload = function () { done(); };
+    sc.onerror = function () { alert('이미지 저장 도구를 불러오지 못했습니다. 네트워크 연결 후 다시 시도해 주세요.'); };
+    document.head.appendChild(sc);
+}
+function sajuxShowCaptureOverlay(message) {
+    var id = 'sajux-capture-overlay';
+    var el = document.getElementById(id);
+    if (!el) {
+        el = document.createElement('div');
+        el.id = id;
+        el.style.cssText = 'position:fixed;inset:0;z-index:100050;background:rgba(0,0,0,0.72);display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;';
+        el.innerHTML = '<div style="max-width:320px;text-align:center;font-family:\'Noto Sans KR\',sans-serif;color:#f5f0e6;font-size:14px;line-height:1.75;white-space:pre-line;"></div>';
+        document.body.appendChild(el);
+    }
+    el.querySelector('div').textContent = message || '이미지로 저장하는 중…';
+    el.style.display = 'flex';
+    return el;
+}
+function sajuxHideCaptureOverlay() {
+    var el = document.getElementById('sajux-capture-overlay');
+    if (el) el.style.display = 'none';
+}
+function sajuxGetCaptureRoot() {
+    return document.getElementById('sec-report-full') || document.getElementById('report-container') || null;
+}
+function sajuxCalcImageCaptureScale(width, height) {
+    var maxDim = 16384;
+    var prefer = 1.5;
+    if (!width || !height) return 1;
+    return Math.max(0.12, Math.min(prefer, maxDim / width, maxDim / height));
+}
+function sajuxHideForCapture() {
+    var ids = ['sajux-pdf-fab', 'sajux-image-fab', 'floating-toc', 'sticky-part-nav', 'theme-toggle', 'star-canvas'];
+    var hidden = [];
+    ids.forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el && el.style.display !== 'none') {
+            hidden.push({ el: el, display: el.style.display });
+            el.style.display = 'none';
+        }
+    });
+    return hidden;
+}
+function sajuxRestoreAfterCapture(hidden) {
+    (hidden || []).forEach(function (x) { x.el.style.display = x.display; });
+}
+function sajuxDownloadPng(dataUrl, filename) {
+    var a = document.createElement('a');
+    a.href = dataUrl;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+function sajuxBuildImageFilename(data) {
+    var name = (data && data.name) ? String(data.name).trim() : '';
+    if (!name && window.globalSajuData && window.globalSajuData.name) name = String(window.globalSajuData.name).trim();
+    var safe = name.replace(/[\\/:*?"<>|]/g, '').replace(/\s+/g, '') || '리포트';
+    return '사주X-' + safe + '-' + new Date().toISOString().slice(0, 10) + '.png';
+}
+function sajuxCaptureReportAsImage() {
+    var root = sajuxGetCaptureRoot();
+    if (!root || root.offsetHeight < 20) {
+        alert('리포트가 아직 준비되지 않았습니다. 분석이 끝난 뒤 다시 시도해 주세요.');
+        return;
+    }
+    ensureHtml2CanvasLoaded(function () { sajuxRunReportImageCapture(root); });
+}
+function sajuxRunReportImageCapture(root) {
+    var hidden = sajuxHideForCapture();
+    var fab = document.getElementById('sajux-image-fab');
+    if (fab) { fab.disabled = true; fab.textContent = '저장 중…'; }
+    sajuxShowCaptureOverlay('화면 그대로 긴 이미지 한 장으로 저장하는 중이에요.\n리포트가 길면 20~40초 걸릴 수 있습니다.');
+    window.scrollTo(0, 0);
+    var prevOverflow = root.style.overflow;
+    root.style.overflow = 'visible';
+    var w = root.scrollWidth;
+    var h = root.scrollHeight;
+    var scale = sajuxCalcImageCaptureScale(w, h);
+    html2canvas(root, {
+        backgroundColor: '#000000',
+        scale: scale,
+        useCORS: true,
+        allowTaint: true,
+        logging: false,
+        width: w,
+        height: h,
+        windowWidth: w,
+        windowHeight: h,
+        scrollX: 0,
+        scrollY: 0,
+        onclone: function (doc) {
+            ['sajux-pdf-fab', 'sajux-image-fab', 'floating-toc', 'sticky-part-nav', 'theme-toggle', 'star-canvas'].forEach(function (id) {
+                var n = doc.getElementById(id);
+                if (n) n.style.display = 'none';
+            });
+            var cloneRoot = doc.getElementById('sec-report-full') || doc.getElementById('report-container');
+            if (cloneRoot) { cloneRoot.style.overflow = 'visible'; cloneRoot.style.maxHeight = 'none'; }
+        }
+    }).then(function (canvas) {
+        sajuxDownloadPng(canvas.toDataURL('image/png'), sajuxBuildImageFilename(window.globalSajuData || null));
+        sajuxShowCaptureOverlay('저장이 완료되었습니다.\n다운로드 폴더를 확인해 주세요.');
+        setTimeout(sajuxHideCaptureOverlay, 1600);
+    }).catch(function (err) {
+        console.error('sajuxCaptureReportAsImage', err);
+        alert('이미지 저장에 실패했습니다. Chrome·Safari 최신 버전에서 다시 시도해 주세요.\n(' + (err && err.message ? err.message : err) + ')');
+        sajuxHideCaptureOverlay();
+    }).finally(function () {
+        root.style.overflow = prevOverflow;
+        sajuxRestoreAfterCapture(hidden);
+        if (fab) { fab.disabled = false; fab.textContent = '🖼 이미지'; }
+    });
+}
+window.sajuxCaptureReportAsImage = sajuxCaptureReportAsImage;
+
 function injectSajuxPdfUi() {
     if (!document.getElementById('sajux-report-ui-styles')) {
         var st = document.createElement('style');
         st.id = 'sajux-report-ui-styles';
-        st.textContent = '.month-pillar-title{white-space:nowrap!important;display:inline-block!important;max-width:100%;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom;}.seyun-premium-vertical{display:flex!important;flex-direction:column!important;align-items:stretch!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important;}.seyun-premium-vertical .seyun-year-card,.seyun-premium-vertical>div{width:100%!important;max-width:100%!important;box-sizing:border-box!important;flex:0 0 auto!important;}.yearly-card-container,.monthly-card-container{display:grid!important;grid-template-columns:1fr!important;width:100%!important;max-width:100%!important;gap:20px!important;box-sizing:border-box!important;}.yearly-card-container .fortune-scroll,.monthly-card-container .fortune-scroll{display:flex!important;flex-direction:column!important;overflow-x:visible!important;overflow-y:visible!important;scroll-snap-type:none!important;align-items:stretch!important;width:100%!important;max-width:100%!important;}.yearly-card-container .f-card,.monthly-card-container .f-card{flex:0 0 auto!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important;}.vip-module-stack{display:flex;flex-direction:column;gap:0;}.vip-module-item{margin-bottom:16px;border-left:3px solid #d4af37;padding-left:14px;}.vip-module-title{color:#d4af37;font-weight:700;margin-bottom:6px;font-size:13.5px;font-family:Noto Sans KR,serif;}.vip-module-desc{color:#d8d3c9;line-height:1.88;font-size:13.5px;margin:0;}.yearly-ind-val{white-space:nowrap!important;text-overflow:ellipsis!important;overflow:hidden!important;max-width:100%!important;}.animal-symbol{font-size:15px;color:rgba(228,232,240,0.92);margin-top:10px;font-weight:500;line-height:1.55;}.cover-highlight{color:#d4af37;font-weight:700;}.birth-info{font-size:0.85em;color:#888;margin-top:8px;line-height:1.65;}.remedy-checklist-table{display:table!important;width:100%!important;border-collapse:collapse!important;table-layout:fixed!important;}.remedy-checklist-table thead{display:table-header-group!important;}.remedy-checklist-table tbody{display:table-row-group!important;}.remedy-checklist-table tr{display:table-row!important;}.remedy-checklist-table th,.remedy-checklist-table td{display:table-cell!important;vertical-align:top!important;}.badge,.tag,.jijanggan{background:rgba(128,128,128,0.08)!important;color:var(--text-primary)!important;border:none!important;backdrop-filter:blur(14px)!important;-webkit-backdrop-filter:blur(14px)!important;}.card,.yearly-card,.monthly-card,.module-item{background:rgba(var(--bg-rgb,128,128,128),0.06)!important;backdrop-filter:blur(22px)!important;-webkit-backdrop-filter:blur(22px)!important;border:none!important;}.sajux-pdf-wide-btn{cursor:pointer;box-sizing:border-box;border:none;font-family:inherit;font-weight:700;font-size:15px;padding:16px 22px;margin:16px 0 18px;border-radius:12px;background:linear-gradient(165deg,rgba(255,255,255,0.10),rgba(255,255,255,0.028))!important;color:rgba(245,240,232,0.94)!important;letter-spacing:0.02em;box-shadow:0 14px 44px rgba(0,0,0,0.38)!important;backdrop-filter:blur(26px) saturate(165%)!important;-webkit-backdrop-filter:blur(26px) saturate(165%)!important;width:100%;max-width:100%;transition:background .15s ease,color .15s ease;}.sajux-pdf-wide-btn:hover{background:linear-gradient(165deg,rgba(255,255,255,0.14),rgba(255,255,255,0.045))!important;}.sajux-pdf-wide-btn:active{transform:translateY(1px);}#sajux-pdf-fab{cursor:pointer;position:fixed;bottom:22px;right:18px;z-index:10001;font-family:inherit;font-weight:700;font-size:14px;padding:14px 20px;border-radius:999px;border:none;background:linear-gradient(165deg,rgba(255,255,255,0.11),rgba(255,255,255,0.028))!important;color:rgba(245,240,232,0.94)!important;box-shadow:0 14px 46px rgba(0,0,0,0.44)!important;backdrop-filter:blur(28px) saturate(168%)!important;-webkit-backdrop-filter:blur(28px) saturate(168%)!important;transition:background .15s ease;}#sajux-pdf-fab:hover{background:linear-gradient(165deg,rgba(255,255,255,0.15),rgba(255,255,255,0.045))!important;}@media(max-width:900px){#sajux-pdf-fab{bottom:calc(74px + env(safe-area-inset-bottom,0px));right:12px;padding:11px 16px;font-size:12px;z-index:10002}}';
+        st.textContent = '.month-pillar-title{white-space:nowrap!important;display:inline-block!important;max-width:100%;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom;}.seyun-premium-vertical{display:flex!important;flex-direction:column!important;align-items:stretch!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important;}.seyun-premium-vertical .seyun-year-card,.seyun-premium-vertical>div{width:100%!important;max-width:100%!important;box-sizing:border-box!important;flex:0 0 auto!important;}.yearly-card-container,.monthly-card-container{display:grid!important;grid-template-columns:1fr!important;width:100%!important;max-width:100%!important;gap:20px!important;box-sizing:border-box!important;}.yearly-card-container .fortune-scroll,.monthly-card-container .fortune-scroll{display:flex!important;flex-direction:column!important;overflow-x:visible!important;overflow-y:visible!important;scroll-snap-type:none!important;align-items:stretch!important;width:100%!important;max-width:100%!important;}.yearly-card-container .f-card,.monthly-card-container .f-card{flex:0 0 auto!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important;}.vip-module-stack{display:flex;flex-direction:column;gap:0;}.vip-module-item{margin-bottom:16px;border-left:3px solid #d4af37;padding-left:14px;}.vip-module-title{color:#d4af37;font-weight:700;margin-bottom:6px;font-size:13.5px;font-family:Noto Sans KR,serif;}.vip-module-desc{color:#d8d3c9;line-height:1.88;font-size:13.5px;margin:0;}.yearly-ind-val{white-space:nowrap!important;text-overflow:ellipsis!important;overflow:hidden!important;max-width:100%!important;}.animal-symbol{font-size:15px;color:rgba(228,232,240,0.92);margin-top:10px;font-weight:500;line-height:1.55;}.cover-highlight{color:#d4af37;font-weight:700;}.birth-info{font-size:0.85em;color:#888;margin-top:8px;line-height:1.65;}.remedy-checklist-table{display:table!important;width:100%!important;border-collapse:collapse!important;table-layout:fixed!important;}.remedy-checklist-table thead{display:table-header-group!important;}.remedy-checklist-table tbody{display:table-row-group!important;}.remedy-checklist-table tr{display:table-row!important;}.remedy-checklist-table th,.remedy-checklist-table td{display:table-cell!important;vertical-align:top!important;}.badge,.tag,.jijanggan{background:rgba(128,128,128,0.08)!important;color:var(--text-primary)!important;border:none!important;backdrop-filter:blur(14px)!important;-webkit-backdrop-filter:blur(14px)!important;}.card,.yearly-card,.monthly-card,.module-item{background:rgba(var(--bg-rgb,128,128,128),0.06)!important;backdrop-filter:blur(22px)!important;-webkit-backdrop-filter:blur(22px)!important;border:none!important;}.sajux-pdf-wide-btn,.sajux-image-wide-btn{cursor:pointer;box-sizing:border-box;border:none;font-family:inherit;font-weight:700;font-size:15px;padding:16px 22px;margin:16px 0 18px;border-radius:12px;background:linear-gradient(165deg,rgba(255,255,255,0.10),rgba(255,255,255,0.028))!important;color:rgba(245,240,232,0.94)!important;letter-spacing:0.02em;box-shadow:0 14px 44px rgba(0,0,0,0.38)!important;backdrop-filter:blur(26px) saturate(165%)!important;-webkit-backdrop-filter:blur(26px) saturate(165%)!important;width:100%;max-width:100%;transition:background .15s ease,color .15s ease;}.sajux-pdf-wide-btn:hover,.sajux-image-wide-btn:hover{background:linear-gradient(165deg,rgba(255,255,255,0.14),rgba(255,255,255,0.045))!important;}.sajux-pdf-wide-btn:active,.sajux-image-wide-btn:active{transform:translateY(1px);}#sajux-pdf-fab,#sajux-image-fab{cursor:pointer;position:fixed;bottom:22px;right:18px;z-index:10001;font-family:inherit;font-weight:700;font-size:14px;padding:14px 20px;border-radius:999px;border:none;background:linear-gradient(165deg,rgba(255,255,255,0.11),rgba(255,255,255,0.028))!important;color:rgba(245,240,232,0.94)!important;box-shadow:0 14px 46px rgba(0,0,0,0.44)!important;backdrop-filter:blur(28px) saturate(168%)!important;-webkit-backdrop-filter:blur(28px) saturate(168%)!important;transition:background .15s ease;}#sajux-pdf-fab:hover,#sajux-image-fab:hover{background:linear-gradient(165deg,rgba(255,255,255,0.15),rgba(255,255,255,0.045))!important;}@media(max-width:900px){#sajux-pdf-fab,#sajux-image-fab{bottom:calc(74px + env(safe-area-inset-bottom,0px));right:12px;padding:11px 16px;font-size:12px;z-index:10002}}';
         document.head.appendChild(st);
     }
-    var oldFab = document.getElementById('sajux-pdf-fab');
-    if (oldFab) oldFab.remove();
-    var fab = document.createElement('button');
-    fab.id = 'sajux-pdf-fab';
-    fab.className = 'pdf-btn';
-    fab.type = 'button';
-    fab.setAttribute('aria-label', 'PDF로 저장');
-    fab.textContent = '🖨 PDF';
-    fab.addEventListener('click', function () { window.print(); });
-    document.body.appendChild(fab);
+    var oldImg = document.getElementById('sajux-image-fab');
+    if (oldImg) oldImg.remove();
+    var oldPdf = document.getElementById('sajux-pdf-fab');
+    if (oldPdf) oldPdf.remove();
+    var imgFab = document.createElement('button');
+    imgFab.id = 'sajux-image-fab';
+    imgFab.className = 'pdf-btn';
+    imgFab.type = 'button';
+    imgFab.setAttribute('aria-label', '이미지로 저장');
+    imgFab.textContent = '🖼 이미지';
+    imgFab.addEventListener('click', function () { sajuxCaptureReportAsImage(); });
+    document.body.appendChild(imgFab);
+    document.querySelectorAll('.toc-link-print').forEach(function (a) {
+        a.textContent = '🖼 이미지 저장';
+        a.onclick = function (e) { e.preventDefault(); sajuxCaptureReportAsImage(); return false; };
+    });
     try { ensureSajuxReadablePanelStyles(); ensureSajuxPdfPrintForceStyles(); ensureCoverLogoForPrint(); } catch (e) {}
 }
 
@@ -11465,15 +11598,16 @@ function buildReportFooterUtilities(data) {
 
         + '<div style="font-size:10px;letter-spacing:0.22em;color:rgba(199,167,106,0.72);margin-bottom:12px;font-weight:700;text-align:center;">[ 리포트 부록 · 이용 안내 ]</div>'
         + '<h2 style="font-family:\'Noto Sans KR\',serif;font-size:22px;font-weight:700;color:var(--text,rgba(255,255,255,0.95));margin:0 0 6px;text-align:center;line-height:1.5;">' + escHtmlAttr(nmDn) + ', 함께한 여정 — 여기까지 동행해 주시느라 수고 많으셨어요</h2>'
-        + '<p style="margin:0 0 22px;font-size:12.5px;line-height:1.85;color:var(--text-dim,rgba(255,255,255,0.6));text-align:center;">본문은 모두 마무리되었어요. 아래는 PDF 저장과 보관 정책, 그리고 짧은 안내 몇 가지를 한 자리에 정리해 둔 부록입니다.</p>'
+        + '<p style="margin:0 0 22px;font-size:12.5px;line-height:1.85;color:var(--text-dim,rgba(255,255,255,0.6));text-align:center;">본문은 모두 마무리되었어요. 아래는 이미지 저장과 보관 정책, 그리고 짧은 안내 몇 가지를 한 자리에 정리해 둔 부록입니다.</p>'
 
-        // ── 1) PDF 저장 안내 + 인쇄 버튼 (30일 보관 → 필수 다운로드 강조)
+        // ── 1) 이미지 저장 안내 (30일 보관 → 필수 다운로드 강조)
         + '<div class="sajux-access-note sajux-glass-heavy" style="text-align:left;margin:0 0 18px;padding:16px 18px;border-radius:12px;font-size:13px;line-height:1.9;">'
-        + '<div style="' + headStyle + '">열람 · PDF 저장 안내</div>'
-        + '<p style="' + pStyle + '">이 리포트는 발행일(<strong>' + reportDateStr + '</strong>)로부터 <strong>30일</strong> 동안만 같은 링크에서 보실 수 있어요. 그 이후에는 다시 들어오기 어려울 수 있으니, 오늘 안에 <strong>PDF로 한 번 꼭 저장</strong>해 두시기를 권해 드립니다.</p>'
-        + '<p style="margin:6px 0 0;font-size:13px;line-height:1.9;color:#d6dae2;">브라우저에서 <strong>인쇄 → PDF로 저장</strong>을 한 번만 실행해 두시면, 링크 만료 이후에도 같은 문서를 두고두고 다시 펼쳐 보실 수 있어요.</p>'
-        + '<div style="display:flex;justify-content:center;margin-top:14px;">'
-        + '<button type="button" class="sajux-pdf-wide-btn pdf-btn" onclick="window.print()" style="margin:0;max-width:320px;">PDF로 저장하기</button>'
+        + '<div style="' + headStyle + '">열람 · 이미지 저장 안내</div>'
+        + '<p style="' + pStyle + '">이 리포트는 발행일(<strong>' + reportDateStr + '</strong>)로부터 <strong>30일</strong> 동안만 같은 링크에서 보실 수 있어요. 그 이후에는 다시 들어오기 어려울 수 있으니, 오늘 안에 <strong>이미지 한 장으로 꼭 저장</strong>해 두시기를 권해 드립니다.</p>'
+        + '<p style="margin:6px 0 0;font-size:13px;line-height:1.9;color:#d6dae2;">아래 <strong>이미지로 저장</strong>을 누르시면 지금 화면 그대로 긴 PNG 한 장이 내려받아집니다. 링크 만료 이후에도 휴대폰·PC에서 다시 펼쳐 보실 수 있어요.</p>'
+        + '<div style="display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-top:14px;">'
+        + '<button type="button" class="sajux-image-wide-btn sajux-pdf-wide-btn pdf-btn" onclick="sajuxCaptureReportAsImage()" style="margin:0;max-width:320px;">이미지로 저장하기</button>'
+        + '<button type="button" class="sajux-pdf-wide-btn pdf-btn" onclick="window.print()" style="margin:0;max-width:240px;font-size:13px;padding:12px 18px;">PDF (선택)</button>'
         + '</div>'
         + '</div>'
 
