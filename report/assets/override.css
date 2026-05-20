@@ -725,6 +725,13 @@ html[data-theme="light"] table td { color: #1a1510 !important; }
 @media print {
   html,
   body,
+  #report-container,
+  #report-container * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  html,
+  body,
   html:not([data-theme="light"]) body,
   html:not([data-theme="light"]) html,
   html[data-theme="dark"] body {
@@ -732,20 +739,47 @@ html[data-theme="light"] table td { color: #1a1510 !important; }
     background-color: #ffffff !important;
     color: #111111 !important;
   }
-  .container,
   #step-2,
-  #sec-report-full,
-  #report-container {
+  #sec-report-full {
     width: 100% !important;
     max-width: none !important;
     background: #ffffff !important;
   }
+  .container,
+  #report-container {
+    width: 100% !important;
+    max-width: 500px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+    background: #ffffff !important;
+    box-sizing: border-box !important;
+  }
   .report-chapter,
   .yearly-card, .monthly-card, .card, .inner-card,
-  .vip-module-card, .glass-panel,
+  .vip-module-card, .glass-panel, .sajux-print-surface,
+  .domain-summary-3box, .health-fatigue-block, .health-time-block,
+  .health-mind-block, .toc-page, .toc-entry,
   .sajux-access-note, .inline-interp {
     page-break-inside: avoid !important;
     break-inside: avoid !important;
+  }
+  table, .remedy-checklist-table, .vip-evidence-block table {
+    width: 100% !important;
+    table-layout: fixed !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    word-break: keep-all !important;
+  }
+  th, td {
+    word-break: keep-all !important;
+    overflow-wrap: break-word !important;
+  }
+  .toc-page, .toc-entry, .domain-summary-3box {
+    width: 100% !important;
+    max-width: 100% !important;
+    word-break: keep-all !important;
   }
   .part-header-block {
     page-break-before: always !important;
@@ -1182,4 +1216,20 @@ html {
   width: 0 !important;
   height: 0 !important;
   overflow: hidden !important;
+}
+
+/* 부-절 번호 (목차·챕터 헤더 공통) */
+.ch-section-num {
+  font-size: 11px !important;
+  letter-spacing: 0.14em !important;
+  color: rgba(199, 167, 106, 0.88) !important;
+  margin: 0 0 8px !important;
+  font-weight: 700 !important;
+}
+@media print {
+  .ch-section-num {
+    color: #8a6f3a !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
 }
