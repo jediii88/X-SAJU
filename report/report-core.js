@@ -4454,9 +4454,7 @@ function sajuxRunReportImageCapture(root) {
             captureHost.innerHTML = '';
             captureHost.appendChild(el);
         }
-        var liveAnchor = pack.container && slice.jul
-            ? pack.container.querySelector('[data-sajux-jul="' + slice.jul.replace(/"/g, '\\"') + '"]')
-            : null;
+        var liveAnchor = slice.headEl || null;
         if (liveAnchor) {
             try { liveAnchor.scrollIntoView({ block: 'start', behavior: 'instant' }); } catch (e1) { try { liveAnchor.scrollIntoView(true); } catch (e2) {} }
         }
@@ -11854,7 +11852,7 @@ function buildReportFooterUtilities(data) {
         + '<div class="sajux-access-note sajux-glass-heavy" style="text-align:left;margin:0 0 18px;padding:16px 18px;border-radius:12px;font-size:13px;line-height:1.9;">'
         + '<div style="' + headStyle + '">열람 · 이미지 저장 안내</div>'
         + '<p style="' + pStyle + '">이 리포트는 발행일(<strong>' + reportDateStr + '</strong>)로부터 <strong>30일</strong> 동안만 같은 링크에서 보실 수 있어요. 그 이후에는 다시 들어오기 어려울 수 있으니, 오늘 안에 <strong>ZIP으로 꼭 저장</strong>해 두시기를 권해 드립니다.</p>'
-        + '<p style="margin:6px 0 0;font-size:13px;line-height:1.9;color:#d6dae2;">아래 <strong>ZIP 저장</strong>을 누르시면 장마다 선명한 PNG 여러 장이 묶여 내려받아집니다. 압축을 푼 뒤 <strong>01번부터 순서대로</strong> 보시면 됩니다.</p>'
+        + '<p style="margin:6px 0 0;font-size:13px;line-height:1.9;color:#d6dae2;">아래 <strong>ZIP 저장</strong>을 누르시면 <strong>절(1-1, 1-2 …)마다</strong> 선명한 PNG가 묶여 내려받아집니다. 압축을 푼 뒤 파일명 순서대로 보시면 됩니다.</p>'
         + '<div style="display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-top:14px;">'
         + '<button type="button" class="sajux-image-wide-btn sajux-pdf-wide-btn pdf-btn" onclick="sajuxCaptureReportAsImage()" style="margin:0;max-width:320px;">ZIP으로 저장하기</button>'
         + '<button type="button" class="sajux-pdf-wide-btn pdf-btn" onclick="window.print()" style="margin:0;max-width:240px;font-size:13px;padding:12px 18px;">PDF (선택)</button>'
