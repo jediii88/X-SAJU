@@ -236,28 +236,72 @@ body,
     padding-right: 0 !important;
   }
 
-  /* report-core 인라인 카드 스타일 일괄 해제 */
-  #report-container div[style*="background:rgba"],
-  #report-container div[style*="backdrop-filter"],
-  #report-container div[style*="border-radius"],
-  #report-container div[style*="border-left"],
-  #report-container div[style*="border:1px"],
-  #report-container div[style*="border: 1px"] {
-    background: transparent !important;
-    background-color: transparent !important;
-    border: none !important;
-    border-left: none !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
+  /* 챕터·카드 외부 광선 제거 (override/saju 화면용 box-shadow가 PDF에 남는 문제) */
+  html:not([data-theme="light"]) .report-chapter:not(.part-header-block),
+  html[data-theme="dark"] .report-chapter,
+  .report-chapter,
+  .vip-evidence-block,
+  .vip-manse-keep-group,
+  .ziwei-palace-card,
+  .ziwei-appendix-block,
+  .sajux-print-surface,
+  .sajux-glass-panel,
+  .sajux-glass-heavy {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+    filter: none !important;
+    border: none !important;
+    border-radius: 0 !important;
   }
 
-  /* 만세력·표·진행 막대는 구조 유지 */
-  .vip-evidence-block,
-  .vip-evidence-block table,
-  .vip-manse-keep-group {
+  /* 만세력 VIP 표 — 화면 디자인·테이블 구조 유지 */
+  .vip-evidence-block {
+    padding: 0 0 12px !important;
+    margin-bottom: 8mm !important;
+    border-bottom: 1px solid #e5e5e5 !important;
+  }
+  .vip-evidence-block table {
+    display: table !important;
+    width: 100% !important;
+    border-collapse: collapse !important;
+    table-layout: fixed !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+  .vip-evidence-block tr {
+    display: table-row !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+  .vip-evidence-block td,
+  .vip-evidence-block th {
+    display: table-cell !important;
+    vertical-align: middle !important;
+    padding: 6px 8px !important;
     background: #ffffff !important;
+    border-bottom: 1px solid #e8e8e8 !important;
+    word-break: keep-all !important;
+  }
+  .vip-evidence-block td div[style*="display:flex"] {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 3px !important;
+    width: 100% !important;
+  }
+  .vip-evidence-block .vip-hanja,
+  .vip-evidence-block .vip-sip-cell,
+  .vip-evidence-block .jijanggan-tag .wood,
+  .vip-evidence-block .jijanggan-tag .fire,
+  .vip-evidence-block .jijanggan-tag .earth,
+  .vip-evidence-block .jijanggan-tag .metal,
+  .vip-evidence-block .jijanggan-tag .water {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
   .manse-table, .manse-row, .manse-cell {
     background: transparent !important;
@@ -765,13 +809,19 @@ body,
     outline: none !important;
   }
 
-  /* 세운·월운 연도 블록 — PDF 문서형(카드 없음, 겹침 방지) */
+  /* 세운·월운 — flex 레이아웃 유지, 카드 광선만 제거 */
+  .seyun-premium-vertical {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 0 !important;
+  }
   .seyun-year-card, .yearly-card, .monthly-card, .f-card {
     display: block !important;
     width: 100% !important;
     max-width: 100% !important;
     margin: 0 0 10px !important;
-    padding: 10px 0 12px !important;
+    padding: 12px 0 !important;
     border: none !important;
     border-bottom: 1px solid #e0e0e0 !important;
     border-radius: 0 !important;
@@ -781,20 +831,49 @@ body,
     page-break-inside: avoid !important;
     break-inside: avoid !important;
   }
-  .seyun-year-card > div[style*="display:flex"],
-  .seyun-year-card > div > div[style*="display:flex"] {
-    display: block !important;
+  .seyun-year-card > div[style*="display:flex"]:first-of-type {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
     width: 100% !important;
+    gap: 8px !important;
   }
   .seyun-year-card > div[style*="display:flex"] > div[style*="justify-content"] {
-    margin-bottom: 6px !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: space-between !important;
+    align-items: flex-start !important;
+    width: 100% !important;
+    gap: 8px !important;
+  }
+  .seyun-year-card > div[style*="display:flex"] > div[style*="justify-content"] > div:first-child {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+  }
+  .seyun-year-card > div[style*="display:flex"] > div[style*="justify-content"] > span {
+    flex: 0 0 auto !important;
+    white-space: nowrap !important;
+    border-radius: 4px !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 2px 0 !important;
   }
   .seyun-year-card span[style*="border-radius:20px"] {
     display: inline-block !important;
-    margin-top: 4px !important;
     border-radius: 4px !important;
     background: transparent !important;
-    padding: 0 !important;
+    box-shadow: none !important;
+  }
+  /* 자미 궁 카드 — 그림자 제거, 본문만 */
+  .ziwei-palace-card {
+    margin: 0 0 10px !important;
+    padding: 12px 0 !important;
+    border: none !important;
+    border-bottom: 1px solid #e8e8e8 !important;
+    border-left: none !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
   }
   .yearly-indicators, .yearly-indicators.sajux-panel-plain {
     border: none !important;
