@@ -1,10 +1,19 @@
 /* =========================================
    [사주X PDF 인쇄 — A4 레이아웃 · 외곽 검정 제거 · 오행 색 유지]
 ========================================= */
+/* 인쇄 시 배경색·차트 색상 유지 (전역) */
+html,
+body,
+#report-container,
+#report-container * {
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
 @media print {
   @page {
     size: A4 portrait;
-    margin: 12mm 10mm 14mm;
+    margin: 14mm 12mm 16mm;
   }
 
   /* 다크 테마 body #000이 인쇄에 남으면 PDF 양옆이 검게 보임 */
@@ -45,17 +54,12 @@
     visibility: hidden !important;
   }
 
-  /* 모바일 500px 컬럼 → A4 전폭 */
-  .container,
+  /* 바깥 래퍼만 전폭(흰 배경), 본문은 화면과 동일 500px 컬럼 유지 */
   .page,
   #step-2,
   #step-2.page,
   #sec-report-full,
-  .step-content,
-  #report-container,
-  .report-container,
-  .print-container,
-  .layout-wrapper {
+  .step-content {
     width: 100% !important;
     max-width: none !important;
     margin: 0 auto !important;
@@ -70,8 +74,38 @@
     padding-bottom: 0 !important;
   }
 
+  .container,
+  #report-container,
+  .report-container,
+  .print-container,
+  .layout-wrapper {
+    width: 100% !important;
+    max-width: 500px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+    box-sizing: border-box !important;
+  }
+
   #report-container {
-    padding: 0 1mm !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  .report-chapter,
+  .ch-text, .ii-text, .p, p,
+  .report-chapter > div[style*="padding"],
+  .sajux-upcoming-daeun-card,
+  .daeun-decade-card {
+    padding-left: 2mm !important;
+    padding-right: 2mm !important;
     box-sizing: border-box !important;
   }
 
@@ -316,14 +350,18 @@
     print-color-adjust: exact !important;
   }
 
-  /* 단락 제목 고립 방지 */
-  .section-title, .part-title, .part-header-label, .part-header-block,
-  .report-chapter, .ch-title, h1, h2, h3, .title-card {
+  /* 제목만 다음 본문과 붙임 (챕터 전체는 분할 허용 — 아래 [PDF 페이지 흐름] 참고) */
+  .section-title, .part-title, .part-header-label,
+  .ch-title, h1, h2, h3, .title-card {
     page-break-after: avoid !important;
     break-after: avoid !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
     margin-bottom: 10px !important;
+  }
+  .part-header-block {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
 
   .report-container, #report-container, .print-container, .layout-wrapper,
@@ -349,14 +387,24 @@
     justify-content: center !important;
   }
 
-  /* 제N부 헤더 — 위 내용과 분리(새 페이지), 아래 본문과는 붙임 */
-  .part-header-block {
+  /* 대분류(제N부) — 항상 새 페이지 최상단에서 시작 */
+  .part-header-block,
+  .part-header-keep-group > .part-header-block,
+  #sec-part1-wonguk.part-header-block,
+  [id^="sec-part"].part-header-block {
     page-break-before: always !important;
     break-before: page !important;
     page-break-after: avoid !important;
     break-after: avoid !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
     margin-top: 0 !important;
     margin-bottom: 4px !important;
+  }
+  #sec-cover.cover-page,
+  #sec-client-cover.cover-page {
+    page-break-before: auto !important;
+    break-before: auto !important;
   }
   .part-follow-content > *:first-child,
   .part-follow-content > .report-chapter:first-child {
@@ -364,18 +412,31 @@
     break-before: avoid !important;
   }
 
-  table {
+  table,
+  .vip-evidence-block table,
+  .remedy-checklist-table {
     border-collapse: collapse !important;
     width: 100% !important;
+    max-width: 100% !important;
+    table-layout: fixed !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
+    word-break: keep-all !important;
+    overflow-wrap: break-word !important;
   }
   th, td {
     border: 1px solid #dee2e6 !important;
-    padding: 10px !important;
+    padding: 8px 6px !important;
     background-color: #ffffff !important;
+    vertical-align: top !important;
+    word-break: keep-all !important;
+    overflow-wrap: break-word !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
+  }
+  .remedy-checklist-table tr {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
 
   /* VIP 만세력표 — PDF에서 과대 확대 방지 */
@@ -418,14 +479,17 @@
   .sajux-logo.dark { display: none !important; visibility: hidden !important; mix-blend-mode: normal !important; }
   .cover-page .sajux-logo-cover-print,
   .sajux-logo.light,
-  .sajux-logo-cover-print {
+  .sajux-logo-cover-print,
+  #main-content .compat-brand-cover .sajux-logo-cover-print {
     display: block !important;
     visibility: visible !important;
+    position: static !important;
+    left: auto !important;
     mix-blend-mode: normal !important;
     opacity: 1 !important;
     filter: none !important;
-    max-width: 520px !important;
-    width: 72% !important;
+    max-width: 420px !important;
+    width: clamp(280px, 72%, 420px) !important;
     height: auto !important;
     margin: 0 auto 12px !important;
   }
@@ -491,5 +555,198 @@
     max-width: 420px !important;
     width: 72% !important;
     margin: 0 auto !important;
+  }
+
+  /* ── PDF 그림자 완전 제거 (인라인 box-shadow 포함) ── */
+  #report-container,
+  #report-container *,
+  #report-container *::before,
+  #report-container *::after {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+  #report-container [style*="box-shadow"],
+  #report-container [style*="text-shadow"] {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  /* ── 1. 페이지 경계 반토막 방지: 카드·표·단락 블록 단위로 넘김 ── */
+  .card, .glass-panel, .f-card, .seyun-year-card, .seyun-year-body,
+  .yearly-card, .monthly-card, .module-item, .inner-card, .detail-box,
+  .content-box, .interp-box, .pillar-card, .insight-card, .lifecycle-card,
+  .daeun-decade-card, .ilju-profile-card, .health-fatigue-block,
+  .health-time-block, .health-mind-block, .sajux-print-surface,
+  .deep-hook-panel, .premium-executive-summary, .domain-summary-3box,
+  .four-domain-radar, .yearly-indicators, .vip-manse-keep-group,
+  .vip-evidence-block, .manse-table, .bar-group,
+  #report-container .report-chapter > div[style*="margin-bottom"],
+  #report-container .report-chapter > div[style*="padding"],
+  #report-container .report-chapter > div[style*="border-radius"] {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .cover-page,
+  .toc-page {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    box-shadow: none !important;
+  }
+
+  /* ── 2. 목차·건강 그리드 레이아웃 고정 ── */
+  .toc-page,
+  .toc-page .toc-entry,
+  .toc-page div[style*="display:flex"] {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: baseline !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    gap: 10px !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    word-break: keep-all !important;
+    overflow-wrap: break-word !important;
+  }
+  .toc-page div[style*="flex:1"] {
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+
+  .domain-summary-3box,
+  .domain-summary-3box > div[style*="display:grid"],
+  .health-habit-grid,
+  #report-container div[style*="display:grid"] {
+    display: grid !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    word-break: keep-all !important;
+  }
+  .domain-summary-3box > div[style*="display:grid"],
+  .domain-summary-3box [style*="grid-template-columns:1fr 1fr 1fr"] {
+    grid-template-columns: 1fr 1fr 1fr !important;
+    gap: 8px !important;
+  }
+  .domain-summary-3box [style*="grid"] > div {
+    min-width: 0 !important;
+    word-break: keep-all !important;
+    overflow-wrap: break-word !important;
+  }
+  .health-habit-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+  #report-container div[style*="grid-template-columns:1fr 1fr"] {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 12px !important;
+  }
+
+  /* 만세력 flex/grid 유지 */
+  .manse-row {
+    display: grid !important;
+    grid-template-columns: 60px repeat(4, 1fr) !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* 오행 막대·차트 색상 */
+  .bar-fill,
+  .sipseong-bar-row div[style*="background"],
+  .yearly-ind-cell,
+  [class*="bar-"] {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  p, .ch-text, .ii-text, li, .cat-text, .cat-advice p {
+    orphans: 3 !important;
+    widows: 3 !important;
+    word-break: keep-all !important;
+  }
+
+  /* 앞으로의 운 · 대운 카드 — 500px 컬럼 안에서 flex 헤더 유지 */
+  .sajux-upcoming-daeun-card,
+  .daeun-decade-card {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 14px 16px !important;
+    margin-bottom: 12px !important;
+    box-sizing: border-box !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+  .sajux-upcoming-daeun-card > div[style*="display:flex"],
+  .daeun-decade-card > div[style*="display:flex"] {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+  .sajux-upcoming-daeun-card > div[style*="display:flex"] > div,
+  .daeun-decade-card > div[style*="display:flex"] > div {
+    width: auto !important;
+    max-width: 100% !important;
+    flex: 1 1 auto !important;
+    text-align: left !important;
+  }
+  .daeun-four-stack,
+  .daeun-four-stack[style*="display:grid"] {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    width: 100% !important;
+    gap: 8px !important;
+  }
+  .ch-head-current-period + div[style*="display:flex"],
+  .report-chapter > div[style*="display:flex"][style*="flex-wrap"] {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+    width: 100% !important;
+  }
+  .four-domain-radar {
+    display: block !important;
+    width: 100% !important;
+    padding: 14px 16px !important;
+  }
+
+  /* ── 궁합 리포트 (couple/index.html) ── */
+  #main-content,
+  #main-content .compat-cover-column {
+    max-width: 500px !important;
+    width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    box-sizing: border-box !important;
+  }
+  #main-content .container {
+    max-width: 500px !important;
+    width: 100% !important;
+    padding: 0 18px 16mm !important;
+    box-sizing: border-box !important;
+  }
+  .page-header.cover-page {
+    padding: 18mm 12mm 14mm !important;
+    min-height: auto !important;
+  }
+  .page-header .sajux-logo-cover-row img {
+    width: 72% !important;
+    max-width: 520px !important;
+    margin: 0 auto !important;
+  }
+  .rel-panel, .person-card, .score-section, .compat-voice-wrap,
+  .insight-card, .t-card {
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+    box-sizing: border-box !important;
   }
 }
