@@ -3995,14 +3995,19 @@ function ensureSajuxPdfPrintForceStyles() {
     box-shadow: none !important;
     text-shadow: none !important;
   }
-  .card, .glass-panel, [class*="card"], .sajux-print-surface, .domain-summary-3box,
-  #report-container div[style*="background:rgba"] {
+  .card, .glass-panel, [class*="card"], .domain-summary-3box {
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
     backdrop-filter: none !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
+  }
+  html:not([data-theme="light"]) .report-chapter,
+  .report-chapter, .vip-evidence-block, .ziwei-palace-card, .sajux-print-surface {
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    background: #fff !important;
   }
   .part-header-block {
     page-break-before: always !important;
