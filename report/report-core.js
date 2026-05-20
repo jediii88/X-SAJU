@@ -4141,13 +4141,78 @@ function sajuxHideCaptureOverlay() {
     if (el) el.style.display = 'none';
 }
 function sajuxGetCaptureRoot() {
-    return document.getElementById('sec-report-full') || document.getElementById('report-container') || null;
+    return document.getElementById('report-container') || document.getElementById('sec-report-full') || null;
+}
+function sajuxCollectCaptureSlices(root) {
+    var container = (root && root.id === 'report-container') ? root : (root && root.querySelector ? root.querySelector('#report-container') : null);
+    if (!container) container = root;
+    var slices = [];
+    if (!container) return { container: null, slices: [] };
+    Array.prototype.forEach.call(container.children, function (el) {
+        if (!el || el.nodeType !== 1) return;
+        var st = window.getComputedStyle(el);
+        if (st.display === 'none' || st.visibility === 'hidden') return;
+        if (el.offsetHeight < 4 && el.scrollHeight < 4) return;
+        slices.push(el);
+    });
+    if (!slices.length) slices.push(container);
+    return { container: container, slices: slices };
+}
+function sajuxEstimateCaptureHeight(slices) {
+    var h = 0;
+    (slices || []).forEach(function (el) {
+        h += Math.max(el.offsetHeight || 0, el.scrollHeight || 0, 1);
+    });
+    return h || 1;
 }
 function sajuxCalcImageCaptureScale(width, height) {
     var maxDim = 16384;
-    var prefer = 1.5;
+    var prefer = 1.25;
     if (!width || !height) return 1;
-    return Math.max(0.12, Math.min(prefer, maxDim / width, maxDim / height));
+    return Math.max(0.35, Math.min(prefer, maxDim / width, maxDim / height));
+}
+function sajuxOnCaptureClone(doc) {
+    var hideIds = ['sajux-pdf-fab', 'sajux-image-fab', 'floating-toc', 'sticky-part-nav', 'theme-toggle', 'star-canvas', 'sajux-capture-overlay'];
+    hideIds.forEach(function (id) {
+        var n = doc.getElementById(id);
+        if (n) n.style.display = 'none';
+    });
+    if (!doc.getElementById('sajux-capture-clone-style')) {
+        var st = doc.createElement('style');
+        st.id = 'sajux-capture-clone-style';
+        st.textContent = '#report-container,#sec-report-full{overflow:visible!important;max-height:none!important;height:auto!important;}'
+            + '.cover-page,#sec-cover,#sec-client-cover{min-height:auto!important;height:auto!important;}'
+            + '.sajux-glass-heavy,.report-chapter,.card,.glass-panel,.badge,.tag,.jijanggan,.module-item,.yearly-card,.monthly-card{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}'
+            + 'body::before{display:none!important;}';
+        doc.head.appendChild(st);
+    }
+    var cloneRoot = doc.getElementById('report-container') || doc.getElementById('sec-report-full');
+    if (cloneRoot) {
+        cloneRoot.style.overflow = 'visible';
+        cloneRoot.style.maxHeight = 'none';
+        cloneRoot.style.height = 'auto';
+    }
+}
+function sajuxMergeCaptureCanvases(canvases, bgColor) {
+    var w = 0;
+    var h = 0;
+    (canvases || []).forEach(function (c) {
+        w = Math.max(w, c.width);
+        h += c.height;
+    });
+    var out = document.createElement('canvas');
+    out.width = Math.max(1, w);
+    out.height = Math.max(1, h);
+    var ctx = out.getContext('2d');
+    ctx.fillStyle = bgColor || '#050508';
+    ctx.fillRect(0, 0, out.width, out.height);
+    var y = 0;
+    (canvases || []).forEach(function (c) {
+        var x = Math.max(0, Math.floor((out.width - c.width) / 2));
+        ctx.drawImage(c, x, y);
+        y += c.height;
+    });
+    return out;
 }
 function sajuxHideForCapture() {
     var ids = ['sajux-pdf-fab', 'sajux-image-fab', 'floating-toc', 'sticky-part-nav', 'theme-toggle', 'star-canvas'];
@@ -4190,46 +4255,74 @@ function sajuxRunReportImageCapture(root) {
     var hidden = sajuxHideForCapture();
     var fab = document.getElementById('sajux-image-fab');
     if (fab) { fab.disabled = true; fab.textContent = '저장 중…'; }
-    sajuxShowCaptureOverlay('화면 그대로 긴 이미지 한 장으로 저장하는 중이에요.\n리포트가 길면 20~40초 걸릴 수 있습니다.');
+    var pack = sajuxCollectCaptureSlices(root);
+    var slices = pack.slices;
+    if (!slices.length) {
+        alert('저장할 리포트 영역을 찾지 못했습니다.');
+        sajuxRestoreAfterCapture(hidden);
+        if (fab) { fab.disabled = false; fab.textContent = '🖼 이미지'; }
+        return;
+    }
     window.scrollTo(0, 0);
     var prevOverflow = root.style.overflow;
     root.style.overflow = 'visible';
-    var w = root.scrollWidth;
-    var h = root.scrollHeight;
-    var scale = sajuxCalcImageCaptureScale(w, h);
-    html2canvas(root, {
-        backgroundColor: '#000000',
-        scale: scale,
-        useCORS: true,
-        allowTaint: true,
-        logging: false,
-        width: w,
-        height: h,
-        windowWidth: w,
-        windowHeight: h,
-        scrollX: 0,
-        scrollY: 0,
-        onclone: function (doc) {
-            ['sajux-pdf-fab', 'sajux-image-fab', 'floating-toc', 'sticky-part-nav', 'theme-toggle', 'star-canvas'].forEach(function (id) {
-                var n = doc.getElementById(id);
-                if (n) n.style.display = 'none';
-            });
-            var cloneRoot = doc.getElementById('sec-report-full') || doc.getElementById('report-container');
-            if (cloneRoot) { cloneRoot.style.overflow = 'visible'; cloneRoot.style.maxHeight = 'none'; }
-        }
-    }).then(function (canvas) {
-        sajuxDownloadPng(canvas.toDataURL('image/png'), sajuxBuildImageFilename(window.globalSajuData || null));
+    if (pack.container && pack.container !== root) {
+        pack.container.style.overflow = 'visible';
+    }
+    var estW = Math.max(root.scrollWidth || 0, pack.container ? pack.container.scrollWidth : 0, 320);
+    var estH = sajuxEstimateCaptureHeight(slices);
+    var scale = sajuxCalcImageCaptureScale(estW * scale, estH);
+    var scale = sajuxCalcImageCaptureScale(estW, estH);
+    var canvases = [];
+    var idx = 0;
+    var total = slices.length;
+
+    function finishOk(merged) {
+        sajuxDownloadPng(merged.toDataURL('image/png'), sajuxBuildImageFilename(window.globalSajuData || null));
         sajuxShowCaptureOverlay('저장이 완료되었습니다.\n다운로드 폴더를 확인해 주세요.');
         setTimeout(sajuxHideCaptureOverlay, 1600);
-    }).catch(function (err) {
+    }
+    function finishErr(err) {
         console.error('sajuxCaptureReportAsImage', err);
         alert('이미지 저장에 실패했습니다. Chrome·Safari 최신 버전에서 다시 시도해 주세요.\n(' + (err && err.message ? err.message : err) + ')');
         sajuxHideCaptureOverlay();
-    }).finally(function () {
+    }
+    function cleanup() {
         root.style.overflow = prevOverflow;
+        if (pack.container && pack.container !== root) pack.container.style.overflow = '';
         sajuxRestoreAfterCapture(hidden);
         if (fab) { fab.disabled = false; fab.textContent = '🖼 이미지'; }
-    });
+    }
+    function captureNext() {
+        if (idx >= total) {
+            try {
+                finishOk(sajuxMergeCaptureCanvases(canvases, '#050508'));
+            } catch (e) {
+                finishErr(e);
+            }
+            cleanup();
+            return;
+        }
+        var el = slices[idx];
+        try { el.scrollIntoView({ block: 'start', behavior: 'instant' }); } catch (e1) { try { el.scrollIntoView(true); } catch (e2) {} }
+        sajuxShowCaptureOverlay('이미지 저장 중… (' + (idx + 1) + '/' + total + ')\n잠시만 기다려 주세요.');
+        html2canvas(el, {
+            backgroundColor: '#050508',
+            scale: scale,
+            useCORS: true,
+            allowTaint: true,
+            logging: false,
+            onclone: sajuxOnCaptureClone
+        }).then(function (canvas) {
+            canvases.push(canvas);
+            idx += 1;
+            captureNext();
+        }).catch(function (err) {
+            finishErr(err);
+            cleanup();
+        });
+    }
+    captureNext();
 }
 window.sajuxCaptureReportAsImage = sajuxCaptureReportAsImage;
 
