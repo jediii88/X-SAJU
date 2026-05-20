@@ -748,13 +748,28 @@ html[data-theme="light"] table td { color: #1a1510 !important; }
   .container,
   #report-container {
     width: 100% !important;
-    max-width: 500px !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-    padding-left: 18px !important;
-    padding-right: 18px !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
     background: #ffffff !important;
     box-sizing: border-box !important;
+  }
+  html:not([data-theme="light"]) .report-chapter:not(.part-header-block),
+  html[data-theme="dark"] .report-chapter,
+  .report-chapter,
+  .vip-evidence-block,
+  .ziwei-palace-card,
+  .sajux-print-surface,
+  .sajux-glass-panel {
+    background: #ffffff !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+    filter: none !important;
+    border: none !important;
+    border-radius: 0 !important;
   }
   .report-chapter,
   .yearly-card, .monthly-card, .card, .inner-card,
@@ -802,13 +817,7 @@ html[data-theme="light"] table td { color: #1a1510 !important; }
     box-shadow: none !important;
     color: #111 !important;
   }
-  #report-container div[style*="background:rgba"],
-  #report-container div[style*="border-left"] {
-    background: transparent !important;
-    border: none !important;
-    border-left: none !important;
-    border-radius: 0 !important;
-  }
+  /* 만세력·세운·자미는 report-print.css에서 개별 처리 — 여기서 일괄 제거하지 않음 */
   .sajux-access-note {
     background: transparent !important;
     color: #2a2218 !important;
