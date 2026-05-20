@@ -380,10 +380,10 @@ var SAJUX_SECTION_REGISTRY = {
     sipseong: { part: 1, section: 4, title: '십성 — 돈·일·관계의 다섯 축', eyebrow: '만세력 · 십성 다섯 축', topic: 'sipseong', inToc: true },
     current: { part: 2, section: 1, title: '현재의 운세', eyebrow: '대운 · 세운 · 월운', topic: 'current', inToc: true, headerMode: 'mainSub' },
     timeline: { part: 2, section: 2, title: '인생 80년 지도', eyebrow: '열 해마다 계절', topic: 'daeun', inToc: true, headerMode: 'mainSub' },
-    upcomingIntro: { part: 2, section: 3, title: '앞으로의 운', eyebrow: '큰 10년 → 한 해 → 한 달', topic: null, inToc: true, headerMode: 'mainSub' },
-    upcomingDaeun: { part: 2, section: 4, title: '앞으로 올 대운', eyebrow: '다음 10년 · 그 다음 10년', topic: 'daeun', inToc: true, headerMode: 'mainSub' },
-    upcomingSewun: { part: 2, section: 5, title: '앞으로 올 세운', eyebrow: '다음 해부터 10년', topic: 'seyun', inToc: true, headerMode: 'mainSub' },
-    upcomingWolun: { part: 2, section: 6, title: '앞으로 올 월운', eyebrow: '다음 달부터 11개월', topic: 'monthly', inToc: true, headerMode: 'mainSub' },
+    upcomingIntro: { part: 2, section: 3, title: '앞으로의 운', eyebrow: '큰 10년 → 한 해 → 한 달', topic: null, inToc: false, headerMode: 'mainSub' },
+    upcomingDaeun: { part: 2, section: 3, title: '앞으로 올 대운', eyebrow: '다음 10년 · 그 다음 10년', topic: 'daeun', inToc: true, headerMode: 'mainSub' },
+    upcomingSewun: { part: 2, section: 4, title: '앞으로 올 세운', eyebrow: '다음 해부터 10년', topic: 'seyun', inToc: true, headerMode: 'mainSub' },
+    upcomingWolun: { part: 2, section: 5, title: '앞으로 올 월운', eyebrow: '다음 달부터 11개월', topic: 'monthly', inToc: true, headerMode: 'mainSub' },
     love: { part: 3, section: 1, title: '애정 · 인연', eyebrow: '마음이 머무는 자리', topic: 'love', inToc: true },
     wealth: { part: 3, section: 2, title: '재물 전략', eyebrow: '돈의 흐름과 지키는 법', topic: 'wealth', inToc: true },
     hapgyeok: { part: 3, section: 3, title: '합격 · 문서운', eyebrow: '시험 · 취직 · 서류', topic: null, inToc: true },
@@ -412,13 +412,12 @@ var SAJUX_COMPAT_SECTION_REGISTRY = {
     timeline: { part: 1, section: 10, title: '대운 싱크', eyebrow: '시기별 관계 리듬', topic: 'timeline', inToc: true }
 };
 
-/** 절 번호 — 부-절(2-3) 대신 절만 표기: 2-3 → 3 (각 부 안에서 1, 2, 3…) */
+/** 부-절 번호 — 예: 2-3 (2부 3절) */
 function formatPartSectionNum(part, section, reg) {
     reg = reg || {};
     if (reg.appendix || part === 0) return '별첨';
-    if (!reg.inToc) return '';
-    if (section == null) return '';
-    return String(section);
+    if (part == null || section == null) return '';
+    return part + '-' + section;
 }
 
 function getSectionRegistryEntry(key, isCompat) {
@@ -426,7 +425,7 @@ function getSectionRegistryEntry(key, isCompat) {
     return SAJUX_SECTION_REGISTRY[key] || null;
 }
 
-/** 절 번호를 제목 앞에 붙임 — 예: "3 오행 — 다섯 기운의 짜임" (플레인 텍스트) */
+/** 부-절 번호를 제목 앞에 붙임 — 예: "1-3 오행 — 다섯 기운의 짜임" (플레인 텍스트) */
 function formatSectionTitleWithNum(numStr, title) {
     var t = String(title == null ? '' : title).trim();
     if (!numStr) return t;
@@ -434,7 +433,7 @@ function formatSectionTitleWithNum(numStr, title) {
     return numStr + ' ' + t;
 }
 
-/** 절 번호(회색) + 제목 — HTML (인라인 색: override.css 캐시와 무관하게 적용) */
+/** 부-절 번호(회색) + 제목 — HTML (인라인 색: override.css 캐시와 무관하게 적용) */
 function buildSectionTitleHtml(numStr, title) {
     var t = escHtmlAttr(String(title == null ? '' : title).trim());
     var numSt = 'color:rgba(255,255,255,0.44);font-weight:600;letter-spacing:0.05em;';
@@ -4594,8 +4593,7 @@ function generateDeepReport(data) {
     var part2Body = '';
     part2Body += safeCall(()=>buildCurrentPeriodCard(data)||'', 'current-period-card');
     part2Body += safeCall(()=>buildDaeunTimeline(data)||'', 'daeun-timeline');
-    // 앞으로의 운 도입(개념 설명) → 다가올 대운/세운/월운 카드
-    part2Body += safeCall(()=>buildUpcomingFortuneIntro(data)||'', 'upcoming-intro');
+    // 앞으로의 운 — 도입 문단은 2-3 대운 절 안으로 합침 (짧은 단독 절 제거)
     part2Body += safeCall(()=>buildUpcomingDaewunCards(data)||'', 'upcoming-daewun');
     part2Body += safeCall(()=>buildUpcomingSewunCards(data)||'', 'upcoming-sewun-10y');
     part2Body += safeCall(()=>buildUpcomingWolunCards(data)||'', 'upcoming-wolun-11m');
@@ -8355,13 +8353,12 @@ function buildCurrentPeriodCard(data) {
  *  · 대운·세운·월운 개념 설명을 이 자리에서 한 번 정리
  *  · 앞으로 올 대운/세운/월운 3개 챕터의 공통 도입 역할
  * ───────────────────────────────────────── */
+/** 앞으로의 운 도입 — 단독 절 없이 대운 절 상단 브리지로만 사용 */
+function buildUpcomingFortuneIntroBridge(data) {
+    return buildNarrativePara(data, '「현재의 운세」에서 대운·세운·월운을 한 번에 풀어 드렸다면, 아래는 같은 말을 반복하지 않고 <strong>층만 나눠</strong> 짚습니다. 다가올 <strong>대운 두 번</strong>은 10년의 큰 기후만, <strong>세운 10장</strong>은 그해의 분위기와 지금 10년과의 차이만, <strong>월운 11장</strong>은 그달의 리듬과 한 가지 행동만 담았어요. 신경 쓰이는 해·달만 골라 두셔도 충분합니다.', { lineHeight: '2', marginBottom: '18px' });
+}
 function buildUpcomingFortuneIntro(data) {
-    var chHead = buildSectionHeader('upcomingIntro', data, { headerMode: 'mainSub', subTitle: '큰 10년 → 한 해 → 한 달, 겹치지 않게', skipIntro: true });
-
-    return '<div class="report-chapter">'
-        + chHead
-        + buildNarrativePara(data, '「현재의 운세」에서 대운·세운·월운을 한 번에 풀어 드렸다면, 아래는 같은 말을 반복하지 않고 <strong>층만 나눠</strong> 짚습니다. 다가올 <strong>대운 두 번</strong>은 10년의 큰 기후만, <strong>세운 10장</strong>은 그해의 분위기와 지금 10년과의 차이만, <strong>월운 11장</strong>은 그달의 리듬과 한 가지 행동만 담았어요. 신경 쓰이는 해·달만 골라 두셔도 충분합니다.', { marginBottom: '0' })
-        + '</div>';
+    return '';
 }
 
 
@@ -8428,6 +8425,7 @@ function buildUpcomingDaewunCards(data) {
 
     return '<div class="report-chapter">'
         + chHead
+        + buildUpcomingFortuneIntroBridge(data)
         + buildNarrativePara(data, '아래 두 장은 <strong>앞으로 열릴 10년의 큰 기후</strong>만 담았어요. 해마다·달마다의 설명은 세운·월운에서 이어집니다.', { lineHeight: '2', marginBottom: '14px' })
         + cards
         + '</div>';
@@ -11933,7 +11931,7 @@ function buildTOC(data) {
     return '<div class="toc-page" style="padding:60px 40px 80px;border-bottom:1px solid rgba(199,167,106,0.1);margin-bottom:48px;">' +
         '<div style="font-size:10px;letter-spacing:0.22em;color:rgba(199,167,106,0.75);margin-bottom:14px;font-weight:700;">[ 리포트 핵심 목차 ]</div>' +
         '<div style="font-family:\'Noto Sans KR\',serif;font-size:30px;font-weight:700;color:var(--text,rgba(255,255,255,0.95));margin-bottom:6px;">목차</div>' +
-        '<div style="font-size:13px;color:var(--text-dim,rgba(255,255,255,0.55));margin-bottom:32px;">X-SAJU MASTER — 절 번호(1, 2, 3…) 순서</div>' +
+        '<div style="font-size:13px;color:var(--text-dim,rgba(255,255,255,0.55));margin-bottom:32px;">X-SAJU MASTER — 부-절 번호 체계</div>' +
         '<div style="width:60px;height:2px;background:var(--gold);margin-bottom:28px;opacity:0.4;"></div>' +
         body +
         '</div>';
