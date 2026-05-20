@@ -325,8 +325,9 @@ function buildChapterHeadMainSub(mainTitle, subTitle, opts) {
         var inner = opts.subIsHtml ? String(subTitle) : escHtmlAttr(subTitle);
         sub = '<p class="ch-sub-under-main" style="font-size:' + subFs + ';letter-spacing:' + subLs + ';color:' + subCol + ';margin:0 0 14px;font-weight:' + subWt + ';line-height:' + subLh + ';">' + inner + '</p>';
     }
+    var titleInner = opts.mainTitleIsHtml ? String(mainTitle) : escHtmlAttr(mainTitle);
     return '<div class="ch-head-main-sub" style="margin-bottom:16px;' + extra + '">'
-        + '<h2 class="ch-main-heading-xl" style="' + h2style + '">' + escHtmlAttr(mainTitle) + '</h2>'
+        + '<h2 class="ch-main-heading-xl" style="' + h2style + '">' + titleInner + '</h2>'
         + sub
         + '</div>';
 }
@@ -358,8 +359,9 @@ function buildChapterHeadTopicFirst(mainTitle, eyebrowLabel, leadHook, opts) {
         ? '<p class="ch-section-label ch-topic-sub-under-main" style="font-size:10px;letter-spacing:0.08em;color:rgba(199,167,106,0.45);margin:0 0 12px;font-weight:600;line-height:1.5;">' + escHtmlAttr(eyebrowLabel) + '</p>'
         : '';
     var extra = opts.extraStyle || '';
+    var titleInnerTf = opts.mainTitleIsHtml ? String(mainTitle) : escHtmlAttr(mainTitle);
     return '<div class="ch-head-topic-first" style="margin-bottom:16px;' + extra + '">'
-        + '<h2 class="ch-main-topic-title" style="font-family:\'Noto Sans KR\',sans-serif;font-size:clamp(17px,3.9vw,21px);font-weight:800;line-height:1.25;margin:0 0 6px;color:var(--text,rgba(255,255,255,0.96));">' + escHtmlAttr(mainTitle) + '</h2>'
+        + '<h2 class="ch-main-topic-title" style="font-family:\'Noto Sans KR\',sans-serif;font-size:clamp(17px,3.9vw,21px);font-weight:800;line-height:1.25;margin:0 0 6px;color:var(--text,rgba(255,255,255,0.96));">' + titleInnerTf + '</h2>'
         + subHtml
         + hookHtml
         + '</div>';
@@ -418,12 +420,22 @@ function getSectionRegistryEntry(key, isCompat) {
     return SAJUX_SECTION_REGISTRY[key] || null;
 }
 
-/** 부-절 번호를 제목 앞에 붙임 — 예: "1-3 오행 — 다섯 기운의 짜임" */
+/** 부-절 번호를 제목 앞에 붙임 — 예: "1-3 오행 — 다섯 기운의 짜임" (플레인 텍스트) */
 function formatSectionTitleWithNum(numStr, title) {
     var t = String(title == null ? '' : title).trim();
     if (!numStr) return t;
     if (numStr === '별첨') return '별첨 · ' + t;
     return numStr + ' ' + t;
+}
+
+/** 부-절 번호(회색) + 제목 — HTML */
+function buildSectionTitleHtml(numStr, title) {
+    var t = escHtmlAttr(String(title == null ? '' : title).trim());
+    if (!numStr) return t;
+    if (numStr === '별첨') {
+        return '<span class="ch-sec-num">별첨</span><span class="ch-sec-num-sep"> · </span><span class="ch-sec-title">' + t + '</span>';
+    }
+    return '<span class="ch-sec-num">' + escHtmlAttr(numStr) + '</span> <span class="ch-sec-title">' + t + '</span>';
 }
 
 function buildSectionHeader(sectionKey, data, opts) {
@@ -439,7 +451,8 @@ function buildSectionHeader(sectionKey, data, opts) {
     if (opts.leadHook === false) hook = '';
     var mode = opts.headerMode || reg.headerMode || 'topicFirst';
     var numStr = formatPartSectionNum(reg.part, reg.section, reg);
-    var displayTitle = formatSectionTitleWithNum(numStr, title);
+    var titleHtml = buildSectionTitleHtml(numStr, title);
+    var headOpts = Object.assign({}, opts, { mainTitleIsHtml: true });
     var intro = '';
     if (!opts.skipIntro) {
         if (opts.compat && opts.compatCtx && reg.topic) {
@@ -450,9 +463,9 @@ function buildSectionHeader(sectionKey, data, opts) {
     }
     if (mode === 'mainSub') {
         var sub = opts.subTitle != null ? opts.subTitle : eyebrow;
-        return buildChapterHeadMainSub(displayTitle, sub, opts) + intro;
+        return buildChapterHeadMainSub(titleHtml, sub, headOpts) + intro;
     }
-    return buildChapterHeadTopicFirst(displayTitle, eyebrow, hook, opts) + intro;
+    return buildChapterHeadTopicFirst(titleHtml, eyebrow, hook, headOpts) + intro;
 }
 
 function getSectionEyebrowByTopic(topic) {
@@ -11499,8 +11512,8 @@ function buildTOC(data) {
         4: { head: '4부 · 오늘부터', sub: '다듬는 법' }
     };
     function tocRow(num, title, sub) {
-        var main = (num && num !== '—') ? formatSectionTitleWithNum(num, title) : title;
-        return '<div class="toc-entry" style="' + row + '"><div style="flex:1;"><div style="font-size:14px;font-weight:600;color:var(--text,rgba(255,255,255,0.88));margin-bottom:2px;">' + escHtmlAttr(main) + '</div><div style="font-size:11.5px;color:var(--text-dim,rgba(255,255,255,0.50));">' + escHtmlAttr(sub) + '</div></div></div>';
+        var mainHtml = (num && num !== '—') ? buildSectionTitleHtml(num, title) : escHtmlAttr(title);
+        return '<div class="toc-entry" style="' + row + '"><div style="flex:1;"><div class="toc-main-line" style="font-size:14px;font-weight:600;color:var(--text,rgba(255,255,255,0.88));margin-bottom:2px;">' + mainHtml + '</div><div style="font-size:11.5px;color:var(--text-dim,rgba(255,255,255,0.50));">' + escHtmlAttr(sub) + '</div></div></div>';
     }
     var body = '';
     body += '<div style="' + gHead + '">앞부분<span style="' + gSub + '">표지 · 확인</span></div>';
