@@ -412,11 +412,47 @@ var SAJUX_COMPAT_SECTION_REGISTRY = {
     timeline: { part: 1, section: 10, title: '대운 싱크', eyebrow: '시기별 관계 리듬', topic: 'timeline', inToc: true }
 };
 
-function formatPartSectionNum(part, section, reg) {
+/** 목차(inToc) 절만 1, 2, 3… 통합 순번 (부-절 2-3 형식 대신) */
+function buildSajuxSectionSeqMap(isCompat) {
+    var regMap = isCompat ? SAJUX_COMPAT_SECTION_REGISTRY : SAJUX_SECTION_REGISTRY;
+    var map = {};
+    var seq = 0;
+    var parts = isCompat ? [1] : [1, 2, 3, 4, 0];
+    parts.forEach(function (p) {
+        var keys = [];
+        Object.keys(regMap).forEach(function (k) {
+            var r = regMap[k];
+            if (!r.inToc || r.part !== p) return;
+            keys.push(k);
+        });
+        keys.sort(function (ka, kb) {
+            return (regMap[ka].section || 0) - (regMap[kb].section || 0);
+        });
+        keys.forEach(function (k) {
+            var r = regMap[k];
+            if (r.appendix || p === 0) map[k] = '별첨';
+            else { seq += 1; map[k] = String(seq); }
+        });
+    });
+    return map;
+}
+var _sajuxSeqMapCache = { main: null, compat: null };
+function getSajuxSectionSeqMap(isCompat) {
+    var slot = isCompat ? 'compat' : 'main';
+    if (!_sajuxSeqMapCache[slot]) _sajuxSeqMapCache[slot] = buildSajuxSectionSeqMap(isCompat);
+    return _sajuxSeqMapCache[slot];
+}
+function formatPartSectionNum(part, section, reg, sectionKey, opts) {
     reg = reg || {};
+    opts = opts || {};
     if (reg.appendix || part === 0) return '별첨';
+    if (sectionKey) {
+        var map = getSajuxSectionSeqMap(!!opts.compat);
+        if (map[sectionKey]) return map[sectionKey];
+    }
+    if (!reg.inToc) return '';
     if (part == null || section == null) return '';
-    return part + '-' + section;
+    return String(section);
 }
 
 function getSectionRegistryEntry(key, isCompat) {
@@ -424,7 +460,7 @@ function getSectionRegistryEntry(key, isCompat) {
     return SAJUX_SECTION_REGISTRY[key] || null;
 }
 
-/** 부-절 번호를 제목 앞에 붙임 — 예: "1-3 오행 — 다섯 기운의 짜임" (플레인 텍스트) */
+/** 절 번호를 제목 앞에 붙임 — 예: "3 오행 — 다섯 기운의 짜임" (플레인 텍스트) */
 function formatSectionTitleWithNum(numStr, title) {
     var t = String(title == null ? '' : title).trim();
     if (!numStr) return t;
@@ -432,7 +468,7 @@ function formatSectionTitleWithNum(numStr, title) {
     return numStr + ' ' + t;
 }
 
-/** 부-절 번호(회색) + 제목 — HTML (인라인 색: override.css 캐시와 무관하게 적용) */
+/** 절 번호(회색) + 제목 — HTML (인라인 색: override.css 캐시와 무관하게 적용) */
 function buildSectionTitleHtml(numStr, title) {
     var t = escHtmlAttr(String(title == null ? '' : title).trim());
     var numSt = 'color:rgba(255,255,255,0.44);font-weight:600;letter-spacing:0.05em;';
@@ -456,7 +492,7 @@ function buildSectionHeader(sectionKey, data, opts) {
     var hook = opts.leadHook != null ? opts.leadHook : (opts.hook || '');
     if (opts.leadHook === false) hook = '';
     var mode = opts.headerMode || reg.headerMode || 'topicFirst';
-    var numStr = formatPartSectionNum(reg.part, reg.section, reg);
+    var numStr = formatPartSectionNum(reg.part, reg.section, reg, sectionKey, opts);
     var titleHtml = buildSectionTitleHtml(numStr, title);
     var headOpts = Object.assign({}, opts, {
         mainTitleIsHtml: true,
@@ -4411,7 +4447,7 @@ function sajuxRunReportImageCapture(root) {
         var folder = zip.folder(baseName) || zip;
         folder.file('00-읽는법.txt',
             '사주X 리포트 다운로드 파일입니다.\n'
-            + '압축을 푼 뒤, 파일명 앞 숫자(01, 02…) 순서대로 보시면 리포트 절(1-1, 1-2 …) 순서와 같습니다.\n'
+            + '압축을 푼 뒤, 파일명 앞 숫자(01, 02…) 순서대로 보시면 리포트 절(1, 2, 3 …) 순서와 같습니다.\n'
             + '총 ' + captures.length + '장 · ' + baseName + '\n');
         captures.forEach(function (item) {
             folder.file(item.name + '.png', item.blob);
@@ -11788,7 +11824,7 @@ function buildForewordPage(data) {
 
 // ===================================================================
 // buildReportFooterUtilities: 리포트 본문이 끝난 뒤 문서 최하단에 묶어
-//   1) PDF 저장 안내 + 인쇄 버튼
+//   1) 사주 다운로드 안내 + 인쇄 버튼(선택)
 //   2) 이용 안내(법적 안내·만 나이 표기·권장 사용법·보관 정책)
 //   3) 짧은 면책 고지
 //   를 하나의 블록으로 보여 줍니다. UX를 흩뜨리지 않도록 메인 콘텐츠
@@ -11852,7 +11888,7 @@ function buildReportFooterUtilities(data) {
         + '<div class="sajux-access-note sajux-glass-heavy" style="text-align:left;margin:0 0 18px;padding:16px 18px;border-radius:12px;font-size:13px;line-height:1.9;">'
         + '<div style="' + headStyle + '">열람 · 사주 다운로드 안내</div>'
         + '<p style="' + pStyle + '">이 리포트는 발행일(<strong>' + reportDateStr + '</strong>)로부터 <strong>30일</strong> 동안만 같은 링크에서 보실 수 있어요. 그 이후에는 다시 들어오기 어려울 수 있으니, 오늘 안에 <strong>사주 다운로드를 꼭 받아</strong> 두시기를 권해 드립니다.</p>'
-        + '<p style="margin:6px 0 0;font-size:13px;line-height:1.9;color:#d6dae2;">아래 <strong>사주 다운로드</strong>를 누르시면 <strong>절(1-1, 1-2 …)마다</strong> 선명한 이미지가 한 파일로 내려받아집니다. 받은 파일을 연 뒤, 안에 있는 번호 순서대로 보시면 됩니다.</p>'
+        + '<p style="margin:6px 0 0;font-size:13px;line-height:1.9;color:#d6dae2;">아래 <strong>사주 다운로드</strong>를 누르시면 <strong>절(1, 2, 3 …)마다</strong> 선명한 이미지가 한 파일로 내려받아집니다. 받은 파일을 연 뒤, 안에 있는 번호 순서대로 보시면 됩니다.</p>'
         + '<p style="margin:8px 0 0;font-size:12px;line-height:1.75;color:rgba(255,255,255,0.45);">' + escHtmlAttr(accessLine) + '</p>'
         + '<div style="display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-top:14px;">'
         + '<button type="button" class="sajux-image-wide-btn sajux-pdf-wide-btn pdf-btn" onclick="sajuxCaptureReportAsImage()" style="margin:0;max-width:320px;">사주 다운로드</button>'
@@ -11924,14 +11960,14 @@ function buildTOC(data) {
         body += '<div style="' + gHead + '">' + pm.head + '<span style="' + gSub + '">' + pm.sub + '</span></div>';
         keys.forEach(function (k) {
             var r = SAJUX_SECTION_REGISTRY[k];
-            body += tocRow(formatPartSectionNum(r.part, r.section, r), r.title, r.eyebrow || '');
+            body += tocRow(formatPartSectionNum(r.part, r.section, r, k), r.title, r.eyebrow || '');
         });
     });
     body = body.replace(/<div/g, '<div').replace(/<\/motion>/g, '</div>');
     return '<div class="toc-page" style="padding:60px 40px 80px;border-bottom:1px solid rgba(199,167,106,0.1);margin-bottom:48px;">' +
         '<div style="font-size:10px;letter-spacing:0.22em;color:rgba(199,167,106,0.75);margin-bottom:14px;font-weight:700;">[ 리포트 핵심 목차 ]</div>' +
         '<div style="font-family:\'Noto Sans KR\',serif;font-size:30px;font-weight:700;color:var(--text,rgba(255,255,255,0.95));margin-bottom:6px;">목차</div>' +
-        '<div style="font-size:13px;color:var(--text-dim,rgba(255,255,255,0.55));margin-bottom:32px;">X-SAJU MASTER — 부-절 번호 체계</div>' +
+        '<div style="font-size:13px;color:var(--text-dim,rgba(255,255,255,0.55));margin-bottom:32px;">X-SAJU MASTER — 절 번호(1, 2, 3…) 순서</div>' +
         '<div style="width:60px;height:2px;background:var(--gold);margin-bottom:28px;opacity:0.4;"></div>' +
         body +
         '</div>';
