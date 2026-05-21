@@ -391,10 +391,6 @@ var SAJUX_SECTION_REGISTRY = {
     career: { part: 3, section: 4, title: '직업 · 소명', eyebrow: '무대와 권한의 방향', topic: 'career', inToc: true },
     health: { part: 3, section: 5, title: '건강 · 회복', eyebrow: '몸이 보내는 신호', topic: 'health', inToc: true },
     remedy: { part: 4, section: 1, title: '개운법', eyebrow: '마음가짐·실천 루틴', topic: 'remedy', inToc: true },
-    ziweiSurprise: { part: 0, section: 1, title: '끝난 줄 알았죠?', eyebrow: '보너스 챕터', topic: null, inToc: false },
-    ziweiPalacesA: { part: 0, section: 3, title: '자미두수 12궁 · 전반', eyebrow: '명궁~자녀', topic: 'ziwei', inToc: false },
-    ziweiPalacesBC: { part: 0, section: 4, title: '자미두수 12궁 · 중·후반', eyebrow: '재백~부모', topic: 'ziwei', inToc: false },
-    reviewCallout: { part: 5, section: 4, title: '리뷰 안내', eyebrow: '한 줄 응원', topic: null, inToc: false },
     hidden: { part: 1, section: 5, title: '지장간 · 내면', eyebrow: '보이지 않는 뿌리', topic: 'hidden', inToc: false },
     daeunDeep: { part: 2, section: 7, title: '대운 — 10년 계절의 지도', eyebrow: '10년 단위 기후', topic: 'daeun', inToc: false },
     sewunDeep: { part: 2, section: 8, title: '세운 — 앞으로 10년의 바람', eyebrow: '장기 한 해의 리듬', topic: 'seyun', inToc: false },
@@ -452,7 +448,7 @@ function getSajuxDisplaySectionNum(sectionKey, isCompat) {
 function formatPartSectionNum(part, section, reg, sectionKey, opts) {
     reg = reg || {};
     opts = opts || {};
-    if (reg.appendix || part === 0) return '별첨';
+    if (reg.appendix) return '별첨';
     if (sectionKey && reg.inToc) {
         var disp = getSajuxDisplaySectionNum(sectionKey, !!opts.compat);
         if (disp) return part + '-' + disp;
@@ -4316,7 +4312,7 @@ function sajuxMergeCaptureSlices(slices) {
 function sajuxCollectJulHeads(container) {
     var heads = [];
     var seen = {};
-    container.querySelectorAll('.ch-head-main-sub[data-sajux-jul], .ch-head-topic-first[data-sajux-jul], .report-chapter.sajux-capture-chapter > .ch-head-main-sub[data-sajux-jul]').forEach(function (h) {
+    container.querySelectorAll('.ch-head-main-sub[data-sajux-jul], .ch-head-topic-first[data-sajux-jul], .ziwei-surprise-intro[data-sajux-jul], .report-chapter.sajux-capture-chapter > .ch-head-main-sub[data-sajux-jul]').forEach(function (h) {
         var k = h.getAttribute('data-sajux-jul') + '|' + (h.getAttribute('data-sajux-jul-title') || '');
         if (seen[k]) return;
         if (!sajuxIsVisibleEl(h)) return;
@@ -4775,15 +4771,14 @@ function generateDeepReport(data) {
         part4Body
     ), 'part4section');
 
-    // ── 별첨: 끝난 줄 알았죠? → 자미두수 (사주 저장은 서프라이즈부터 분할)
-    html += safeCall(()=>buildZiweiSurpriseIntro(data)||'', 'ziwei-surprise');
+    // ── 별첨: 끝난 줄 알았죠? → 자미두수 (사주 저장은 서프라이즈 카드부터 분할)
     var ziweiBlock = safeCall(()=>buildZiWeiDestinyBlueprintSection(data)||'', 'ziwei');
     if (ziweiBlock) {
-        html += ziweiBlock;
+        html += safeCall(()=>buildZiweiSurpriseIntro(data)||'', 'ziwei-surprise-intro');
+        html += '<div class="ziwei-appendix-block" style="margin-top:24px;padding-top:24px;border-top:1px dashed rgba(199,167,106,0.20);">'
+            + ziweiBlock
+            + '</div>';
     }
-
-    // ── 마무리 리뷰 안내 — 문서 맨 끝(별첨 이후), 버튼 없음 ──
-    html += safeCall(()=>buildReviewCallout(data)||'', 'review-callout');
 
     document.getElementById('report-container').innerHTML = html;
 
@@ -11124,28 +11119,23 @@ function buildZiWeiDestinyBlueprintSection(data) {
             + '<p style="font-size:13px;color:#d6e3ed;line-height:1.95;margin:0;">' + boldStarsToStrong(bodyHtml) + '</p>'
             + '</div>';
     }
-    var palaceChunks = ['', '', ''];
-    palaces.forEach(function (p, idx) {
-        palaceChunks[Math.floor(idx / 4)] += buildPalaceCard(p);
-    });
+    var palaceCards = palaces.map(function (p) {
+        return buildPalaceCard(p);
+    }).join('');
 
     var ybKr = HK[yb] || yb;
+    var zwLead = buildMetaphorHookTitle(data);
     var openText = nmEunNeun(nm) + ' 혼자서도 많이 견뎌 오신 분일 가능성이 큽니다. 사주가 “계절”을 알려 준다면, 자미두수는 그 계절을 살아가는 “스타일”과 “인간관계의 무대”를 비춰 주는 또 다른 거울이에요. 같은 인생을 다른 렌즈로 한 번 더 점검해 드릴게요.';
     var closeText = '12궁을 한 번에 다 외우실 필요는 없어요. ' + nmUi(nm) + ' 인생에서 지금 가장 흔들리시는 영역이 어디인지 살펴보시고, 그 자리의 풀이 한두 줄을 한 주 동안 마음에 두시는 것만으로도 충분합니다. 자미두수는 답을 주는 도구가 아니라, 같은 질문을 더 또렷이 듣게 해 주는 도구예요.';
-    var ziweiIntroBlock = '<p style="font-size:13px;color:#b8d4e8;margin:0 0 14px;line-height:1.85;">자미두수는 <strong>대만·중국 등지에서 발전한 별자리 기반 점성술</strong>로, 한 사람의 인생을 <strong>12개의 무대(궁)</strong>로 나누고 각 무대에 14개의 주요 별을 배치해서 — 자아·가족·연애·직업·돈·건강·외부 활동 등 인생의 모든 영역을 한 장의 청사진으로 보여 줍니다. 사주를 대체하지 않고, 같은 인생을 더 넓은 화면으로 한 번 더 비추는 <strong>별첨</strong>입니다.</p>'
-        + '<p style="font-size:12px;color:#8ab4c7;margin:0 0 18px;line-height:1.75;">아래는 태어나신 해의 동물(<strong>' + ybKr + '(' + yb + ')</strong>)을 명궁 자리에 둔 <strong>근사 해석</strong>이에요. 전통 자미두수의 월·시 배치와는 차이가 있을 수 있지만, <strong>12개의 인생 무대 위에서 ' + nmIGa(nm) + ' 어떻게 움직이시는지</strong>를 큰 그림으로 잡는 용도로 읽어 보십시오.</p>'
-        + '<div style="background:rgba(122,184,212,0.07);border:1px solid rgba(122,184,212,0.22);border-radius:12px;padding:18px 20px;">'
-        + '<p style="margin:0 0 16px;font-size:13.5px;color:#d6e3ed;line-height:1.95;">' + boldStarsToStrong(_vp(openText)) + '</p>';
-
-    var palaceMidLate = palaceChunks[1] + palaceChunks[2];
 
     return '<div id="sec-ziwei-appendix" class="report-chapter chapter-start appendix-ziwei" style="padding-top:8px;margin-bottom:8px;">'
-        + buildSectionHeader('ziwei', data, { headerMode: 'mainSub', subTitle: '', skipIntro: true })
-        + ziweiIntroBlock
-        + buildSectionHeader('ziweiPalacesA', data, { headerMode: 'mainSub', skipIntro: true })
-        + '<div style="background:rgba(122,184,212,0.07);border:1px solid rgba(122,184,212,0.22);border-radius:12px;padding:18px 20px;margin-bottom:14px;">' + palaceChunks[0] + '</div>'
-        + buildSectionHeader('ziweiPalacesBC', data, { headerMode: 'mainSub', skipIntro: true })
-        + '<div style="background:rgba(122,184,212,0.07);border:1px solid rgba(122,184,212,0.22);border-radius:12px;padding:18px 20px;">' + palaceMidLate
+        + '<h3 class="ch-title" style="font-family:\'Noto Sans KR\',serif;font-size:20px;font-weight:800;line-height:1.45;margin:0 0 6px;">' + escHtmlAttr(zwLead) + '</h3>'
+        + '<p style="font-size:11px;letter-spacing:0.1em;color:rgba(157,211,255,0.75);margin:0 0 14px;font-weight:700;">자미두수 12궁으로 보는 운명 설계도</p>'
+        + '<p style="font-size:13px;color:#b8d4e8;margin:0 0 14px;line-height:1.85;">자미두수는 <strong>대만·중국 등지에서 발전한 별자리 기반 점성술</strong>로, 한 사람의 인생을 <strong>12개의 무대(궁)</strong>로 나누고 각 무대에 14개의 주요 별을 배치해서 — 자아·가족·연애·직업·돈·건강·외부 활동 등 인생의 모든 영역을 한 장의 청사진으로 보여 줍니다. 사주를 대체하지 않고, 같은 인생을 더 넓은 화면으로 한 번 더 비추는 <strong>별첨</strong>입니다.</p>'
+        + '<p style="font-size:12px;color:#8ab4c7;margin:0 0 18px;line-height:1.75;">아래는 태어나신 해의 동물(<strong>' + ybKr + '(' + yb + ')</strong>)을 명궁 자리에 둔 <strong>근사 해석</strong>이에요. 전통 자미두수의 월·시 배치와는 차이가 있을 수 있지만, <strong>12개의 인생 무대 위에서 ' + nmIGa(nm) + ' 어떻게 움직이시는지</strong>를 큰 그림으로 잡는 용도로 읽어 보십시오.</p>'
+        + '<div style="background:rgba(122,184,212,0.07);border:1px solid rgba(122,184,212,0.22);border-radius:12px;padding:18px 20px;">'
+        + '<p style="margin:0 0 16px;font-size:13.5px;color:#d6e3ed;line-height:1.95;">' + boldStarsToStrong(_vp(openText)) + '</p>'
+        + palaceCards
         + '<p style="margin:14px 0 0;font-size:13px;color:#a8c4d4;line-height:1.9;">' + boldStarsToStrong(_vp(closeText)) + '</p>'
         + '</div></div>';
 }
@@ -11927,10 +11917,10 @@ function buildForewordPage(data) {
 //   사이가 아니라 가장 마지막에서만 등장합니다.
 // ===================================================================
 
-/** 「끝난 줄 알았죠?」 — 사주 저장 ZIP의 자미두수 구간 시작점(별도 1장). */
-function buildZiweiSurpriseIntroBody(data) {
+/** 「끝난 줄 알았죠?」 — 사주 저장 ZIP 자미두수 구간 시작(카드만, 상단 절 헤더 없음). */
+function buildZiweiSurpriseIntro(data) {
     var name = (data && data.name) ? data.name : '고객';
-    return '<div class="ziwei-surprise-intro" style="margin:12px 0 18px;padding:26px 24px;border-radius:16px;'
+    return '<div class="ziwei-surprise-intro" data-sajux-jul="보너스" data-sajux-jul-title="끝난 줄 알았죠?" style="margin:36px 0 0;padding:26px 24px;border-radius:16px;'
         + 'background:linear-gradient(135deg, rgba(122,184,212,0.10), rgba(199,167,106,0.06));'
         + 'border:1px solid rgba(122,184,212,0.30);text-align:center;">'
         + '<div style="font-size:10px;letter-spacing:0.22em;color:rgba(157,211,255,0.80);font-weight:700;margin-bottom:10px;">SURPRISE · 보너스 챕터</div>'
@@ -11945,29 +11935,10 @@ function buildZiweiSurpriseIntroBody(data) {
         + '</p>'
         + '</div>';
 }
-function buildZiweiSurpriseIntro(data) {
-    return '<div class="report-chapter chapter-start ziwei-surprise-chapter">'
-        + buildSectionHeader('ziweiSurprise', data, { leadHook: false, skipIntro: true })
-        + buildZiweiSurpriseIntroBody(data)
-        + '</div>';
-}
 
-/** 보고서 말미 리뷰 안내 카드 — 문구만 (외부 링크·버튼 없음). */
+/** 리뷰 안내 — 본문·ZIP에서 제외 */
 function buildReviewCallout(data) {
-    var name = (data && data.name) ? data.name : '고객';
-
-    return '<div class="sajux-no-capture" data-sajux-capture-skip="1">'
-        + buildSectionHeader('reviewCallout', data, { leadHook: false, skipIntro: true })
-        + '<div id="sec-review-callout" class="report-review-callout sajux-glass-heavy" style="margin:16px auto 32px;padding:32px 26px;border-radius:22px;text-align:center;max-width:640px;">'
-        + '<div style="font-size:10px;letter-spacing:0.22em;color:var(--gold);font-weight:700;margin-bottom:14px;opacity:0.9;">REVIEW · 잠깐만요</div>'
-        + '<p style="font-size:14px;color:rgba(232,228,218,0.88);line-height:1.95;margin:0 auto 8px;max-width:560px;">'
-        + voicePolishParagraph(data, '저희 시스템이 마음에 드셨거나, 또는 아쉬운 점이 있으셨다면 <strong>리뷰로 남겨 주세요.</strong> 별 다섯 개도 좋고, “이 부분은 좀 더 자세했으면 좋겠어요” 같은 한 줄도 좋아요. ' + nmUi(name) + ' 한마디가 다음 분의 보고서를 한 단계 더 따뜻하게 만들어 줍니다.')
-        + '</p>'
-        + '<p style="font-size:12.5px;color:rgba(255,255,255,0.48);line-height:1.85;margin:10px auto 0;max-width:480px;">'
-        + voicePolishParagraph(data, '여기까지 함께해 주셔서 고마워요. 한 줄의 리뷰가 사주X의 가장 큰 응원입니다.')
-        + '</p>'
-        + '</div>'
-        + '</div>';
+    return '';
 }
 
 /** 본문 하단 부록 안내 — 화면·ZIP 본문에서 제외(우하단 FAB·목차 링크로 다운로드) */
