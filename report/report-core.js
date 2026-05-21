@@ -4780,6 +4780,8 @@ function generateDeepReport(data) {
             + '</div>';
     }
 
+    html += safeCall(()=>buildReviewCallout(data)||'', 'review-callout');
+
     document.getElementById('report-container').innerHTML = html;
 
     try { injectSajuxPdfUi(); ensureCoverLogoForPrint(); } catch (e) { console.error('injectSajuxPdfUi', e.message); }
@@ -11124,12 +11126,10 @@ function buildZiWeiDestinyBlueprintSection(data) {
     }).join('');
 
     var ybKr = HK[yb] || yb;
-    var zwLead = buildMetaphorHookTitle(data);
     var openText = nmEunNeun(nm) + ' 혼자서도 많이 견뎌 오신 분일 가능성이 큽니다. 사주가 “계절”을 알려 준다면, 자미두수는 그 계절을 살아가는 “스타일”과 “인간관계의 무대”를 비춰 주는 또 다른 거울이에요. 같은 인생을 다른 렌즈로 한 번 더 점검해 드릴게요.';
     var closeText = '12궁을 한 번에 다 외우실 필요는 없어요. ' + nmUi(nm) + ' 인생에서 지금 가장 흔들리시는 영역이 어디인지 살펴보시고, 그 자리의 풀이 한두 줄을 한 주 동안 마음에 두시는 것만으로도 충분합니다. 자미두수는 답을 주는 도구가 아니라, 같은 질문을 더 또렷이 듣게 해 주는 도구예요.';
 
     return '<div id="sec-ziwei-appendix" class="report-chapter chapter-start appendix-ziwei" style="padding-top:8px;margin-bottom:8px;">'
-        + '<h3 class="ch-title" style="font-family:\'Noto Sans KR\',serif;font-size:20px;font-weight:800;line-height:1.45;margin:0 0 6px;">' + escHtmlAttr(zwLead) + '</h3>'
         + '<p style="font-size:11px;letter-spacing:0.1em;color:rgba(157,211,255,0.75);margin:0 0 14px;font-weight:700;">자미두수 12궁으로 보는 운명 설계도</p>'
         + '<p style="font-size:13px;color:#b8d4e8;margin:0 0 14px;line-height:1.85;">자미두수는 <strong>대만·중국 등지에서 발전한 별자리 기반 점성술</strong>로, 한 사람의 인생을 <strong>12개의 무대(궁)</strong>로 나누고 각 무대에 14개의 주요 별을 배치해서 — 자아·가족·연애·직업·돈·건강·외부 활동 등 인생의 모든 영역을 한 장의 청사진으로 보여 줍니다. 사주를 대체하지 않고, 같은 인생을 더 넓은 화면으로 한 번 더 비추는 <strong>별첨</strong>입니다.</p>'
         + '<p style="font-size:12px;color:#8ab4c7;margin:0 0 18px;line-height:1.75;">아래는 태어나신 해의 동물(<strong>' + ybKr + '(' + yb + ')</strong>)을 명궁 자리에 둔 <strong>근사 해석</strong>이에요. 전통 자미두수의 월·시 배치와는 차이가 있을 수 있지만, <strong>12개의 인생 무대 위에서 ' + nmIGa(nm) + ' 어떻게 움직이시는지</strong>를 큰 그림으로 잡는 용도로 읽어 보십시오.</p>'
@@ -11936,9 +11936,26 @@ function buildZiweiSurpriseIntro(data) {
         + '</div>';
 }
 
-/** 리뷰 안내 — 본문·ZIP에서 제외 */
+/** 보고서 맨 마지막 리뷰 카드 — 「리뷰 안내」절 헤더 없이 카드만 */
 function buildReviewCallout(data) {
-    return '';
+    var name = (data && data.name) ? data.name : '고객';
+    var REVIEW_URL = (typeof window !== 'undefined' && window.SAJUX_REVIEW_URL) ? window.SAJUX_REVIEW_URL : '';
+    var btn = REVIEW_URL
+        ? '<a href="' + REVIEW_URL + '" target="_blank" rel="noopener" style="display:inline-block;margin-top:18px;padding:12px 28px;border-radius:999px;background:linear-gradient(135deg, #c7a76a, #8a6f3c);color:#fff;font-size:13.5px;font-weight:700;letter-spacing:0.05em;text-decoration:none;box-shadow:0 4px 12px rgba(199,167,106,0.30);">리뷰 남기러 가기 →</a>'
+        : '<div style="display:inline-block;margin-top:18px;padding:10px 22px;border-radius:999px;background:rgba(199,167,106,0.12);color:#c7a76a;font-size:12.5px;letter-spacing:0.04em;border:1px solid rgba(199,167,106,0.25);">리뷰 채널은 곧 안내드려요</div>';
+
+    return '<div id="sec-review-callout" class="report-review-callout sajux-glass-heavy" style="margin:36px 0 24px;padding:28px 26px;border-radius:18px;'
+        + 'background:linear-gradient(135deg, rgba(199,167,106,0.10), rgba(255,255,255,0.02));'
+        + 'border:1px solid rgba(199,167,106,0.28);text-align:center;">'
+        + '<div style="font-size:10px;letter-spacing:0.22em;color:var(--gold);font-weight:700;margin-bottom:12px;">REVIEW · 잠깐만요</div>'
+        + '<p style="font-size:14px;color:#ddd;line-height:1.95;margin:0 auto 6px;max-width:560px;">'
+        + voicePolishParagraph(data, '저희 시스템이 마음에 드셨거나, 또는 아쉬운 점이 있으셨다면 <strong>리뷰로 남겨 주세요.</strong> 별 다섯 개도 좋고, “이 부분은 좀 더 자세했으면 좋겠어요” 같은 한 줄도 좋아요. ' + nmUi(name) + ' 한마디가 다음 분의 보고서를 한 단계 더 따뜻하게 만들어 줍니다.')
+        + '</p>'
+        + '<p style="font-size:12px;color:#999;line-height:1.85;margin:6px auto 0;max-width:480px;">'
+        + voicePolishParagraph(data, '여기까지 함께해 주셔서 고마워요. 한 줄의 리뷰가 사주X의 가장 큰 응원입니다.')
+        + '</p>'
+        + btn
+        + '</div>';
 }
 
 /** 본문 하단 부록 안내 — 화면·ZIP 본문에서 제외(우하단 FAB·목차 링크로 다운로드) */
