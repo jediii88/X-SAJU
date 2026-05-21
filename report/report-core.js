@@ -387,7 +387,7 @@ var SAJUX_SECTION_REGISTRY = {
     upcomingWolunB: { part: 2, section: 7, title: '앞으로 올 월운 · 후반', eyebrow: '이어지는 6개월', topic: 'monthly', inToc: true, headerMode: 'mainSub' },
     love: { part: 3, section: 1, title: '애정 · 인연', eyebrow: '마음이 머무는 자리', topic: 'love', inToc: true },
     wealth: { part: 3, section: 2, title: '재물 전략', eyebrow: '돈의 흐름과 지키는 법', topic: 'wealth', inToc: true },
-    hapgyeok: { part: 3, section: 3, title: '합격 · 문서운', eyebrow: '시험 · 취직 · 서류', topic: null, inToc: true },
+    hapgyeok: { part: 3, section: 3, title: '합격 · 문서운', eyebrow: '증명 · 취직 · 서류', topic: null, inToc: true },
     career: { part: 3, section: 4, title: '직업 · 소명', eyebrow: '무대와 권한의 방향', topic: 'career', inToc: true },
     health: { part: 3, section: 5, title: '건강 · 회복', eyebrow: '몸이 보내는 신호', topic: 'health', inToc: true },
     remedy: { part: 4, section: 1, title: '개운법', eyebrow: '마음가짐·시작', topic: 'remedy', inToc: true },
@@ -9933,23 +9933,23 @@ function buildChapter_HapGyeok(data) {
     const jaePct  = Math.round(jaeC/total*100);
 
     function band(p) {
-        if (p >= 30) return { col:'var(--gold)', tone:'strong', label:'풍요' };
+        if (p >= 30) return { col:'var(--gold)', tone:'strong', label:'강함' };
         if (p >= 15) return { col:'#4a9e6a',     tone:'mid',    label:'적정'   };
         if (p >= 5)  return { col:'#999',        tone:'thin',   label:'약함'   };
         return { col:'#888', tone:'lack', label:'거의 없음' };
     }
-    const testBand = band(inPct);
+    const proofBand = band(inPct);
     const hireBand = band(gwanPct);
     const interviewBand = band(sikPct);
     const fieldBand = band(jaePct);
 
-    // 영역별 한 단락
-    const examLine = {
-        strong: nmEunNeun(name) + ' 인성(印) 기운이 풍부하게 자리잡은 분이라, **공부·자격·시험에서 가장 빛나는 결**을 갖고 계세요. 한 번 마음먹으신 시험은 평균 이상의 결과로 마무리되시고, 자격증 한 장이 인생의 큰 무기가 되는 사주예요. 다만 욕심내어 여러 시험을 동시에 잡으시면 깊이가 흐려지니, **같은 시기에 큰 시험은 한 가지만** 잡으십시오.',
-        mid: nmEunNeun(name) + ' 인성(印)이 적정 수준으로 자리잡으셔서, 시험·자격 자체에 막힘은 없으세요. 다만 폭발적인 단번 합격보다는 **꾸준한 누적이 결실로 돌아오는 결**이라, 1년 단위로 차근차근 쌓아 가시는 게 좋습니다.',
-        thin: nmEunNeun(name) + ' 인성(印)이 약한 편이라, 시험·자격을 잡으실 때 흐름이 한 번에 안 풀릴 수 있어요. 단번에 끝내려 하지 마시고 **인성 운이 실리는 대운·세운**(임·계·인·묘·해·자 글자가 들어오는 시기)에 큰 시험을 맞춰 잡으십시오.',
-        lack: '인성(印)이 사주에 거의 자리 잡고 있지 않으세요. 시험·자격에서 자주 헛도시는 패턴이 반복되실 수 있어요. 큰 시험은 인성 기운이 들어오는 시기를 꼭 기다리시고, 평소엔 **요약 정리 노트 한 권**을 평생 무기로 가지고 가시는 게 좋습니다.'
-    }[testBand.tone];
+    // 영역별 한 단락 — 인성(印): 시험만이 아니라 증명·자격·서류로 읽음
+    const proofLine = {
+        strong: nmEunNeun(name) + ' 인성(印) 기운이 강하게 자리잡은 분이라, **증명·자격·서류로 실력을 밝히는 자리**에서 가장 빛나는 결을 갖고 계세요. 입시 시험뿐 아니라 자격증·면허·필기·심사·이력서·계약서처럼 “종이와 기록으로 인정받는 순간”에 힘이 실립니다. 다만 같은 시기에 큰 증명을 여러 개 동시에 잡으시면 깊이가 흐려지니, **한 번에 하나의 자격·하나의 서류 결정**만 크게 잡으십시오.',
+        mid: nmEunNeun(name) + ' 인성(印)이 적정 수준으로 자리잡으셔서, 증명·자격·서류 쪽에 막힘이 크지 않으세요. 단번에 화려하게 끝내기보다 **꾸준히 쌓인 기록이 결실로 돌아오는 결**이라, 1년 단위로 차근차근 자격·서류를 정리해 가시는 편이 좋습니다.',
+        thin: nmEunNeun(name) + ' 인성(印)이 약한 편이라, 자격·증명·서류를 잡으실 때 흐름이 한 번에 안 풀릴 수 있어요. 단번에 끝내려 하지 마시고 **인성 운이 실리는 대운·세운**(임·계·인·묘·해·자 글자가 들어오는 시기)에 큰 자격·큰 계약을 맞춰 잡으십시오.',
+        lack: '인성(印)이 사주에 거의 자리 잡고 있지 않으세요. 증명·자격·서류에서 자주 헛도시는 패턴이 반복되실 수 있어요. 큰 자격·큰 계약은 인성 기운이 들어오는 시기를 꼭 기다리시고, 평소엔 **요약 정리 노트 한 권**과 서류 폴더 하나를 평생 무기로 가지고 가시는 게 좋습니다.'
+    }[proofBand.tone];
 
     const hireLine = {
         strong: '관성(官)이 풍부하게 자리잡으셔서, **조직에 들어가 자리 잡는 운**이 굵직하게 깔린 사주예요. 공무·공기업·대기업·공공 영역에서 ' + nmUi(name) + ' 결이 가장 잘 살아납니다. 다만 책임이 무거워지면 어깨가 빠르게 짓눌릴 수 있으니, **승진 직후 6개월은 일정의 20%를 의도적으로 비워** 두십시오.',
@@ -9962,11 +9962,11 @@ function buildChapter_HapGyeok(data) {
         strong: '식상(食傷)이 풍부하셔서 **면접·발표·말로 푸는 자리에서 가장 큰 무기**가 빛납니다. 분위기를 만들고, 핵심을 짚어 내는 힘이 또래 평균보다 한 단계 위세요. 다만 너무 자신 있으시면 “준비 부족”의 인상을 줄 수 있으니, **첫 1분 자기소개는 미리 외워** 두십시오.',
         mid: '식상이 적정 수준이라, 면접·발표에서 평균 이상은 하시는 결이에요. 다만 결정적인 자리에서 한 번 더 빛나시려면 **모범 답안 10개 + 본인만의 키워드 3개**를 미리 정리해 두십시오.',
         thin: '식상이 약하셔서 면접·발표에서 “표현이 부족하다”는 평을 들으실 수 있어요. 실력이 부족한 게 아니라, 말로 풀어내는 통로가 좁은 것뿐입니다. **모의 면접을 5회 이상** 반복하시는 게 어떤 책 한 권보다 효과가 큽니다.',
-        lack: '식상이 거의 없으세요. 말로 풀어 보이는 자리는 늘 부담되시지만, **서류·실기·필기 위주의 시험**에서는 오히려 강하십니다. 자기소개서·포트폴리오 같은 “글로 적는 자리”에 평소 힘을 쌓아 두십시오.'
+        lack: '식상이 거의 없으세요. 말로 풀어 보이는 자리는 늘 부담되시지만, **서류·실기·필기로 증명하는 자리**에서는 오히려 강하십니다. 자기소개서·포트폴리오 같은 “글로 적는 자리”에 평소 힘을 쌓아 두십시오.'
     }[interviewBand.tone];
 
     const fieldLine = {
-        strong: '재성(財)이 풍부하셔서 **실무·현장·영업에서 실력이 가장 빨리 드러나는 결**이에요. 시험·자격보다 “일을 직접 해 보면서 배우는 자리”에서 ' + nmUi(name) + ' 진가가 발휘됩니다. 신입 시절부터 작은 성과 하나를 손에 쥐고 시작하시는 게 좋아요.',
+        strong: '재성(財)이 풍부하셔서 **실무·현장·영업에서 실력이 가장 빨리 드러나는 결**이에요. 증명·자격보다 “일을 직접 해 보면서 배우는 자리”에서 ' + nmUi(name) + ' 진가가 발휘됩니다. 신입 시절부터 작은 성과 하나를 손에 쥐고 시작하시는 게 좋아요.',
         mid: '재성이 적정 수준이라, 실무에서도 평균 이상의 적응력을 보이시는 결입니다. 한 분야에서 3년만 버티시면, 그때부터 ' + nmIGa(name) + ' 진짜 ' + nmUi(name) + ' 색이 드러나기 시작합니다.',
         thin: '재성이 약하셔서, 실무에서 한 번에 큰 성과를 내시기보다는 — **신중하고 꼼꼼한 처리**가 강점인 결이에요. “돈을 빨리 벌어야 한다”는 부담을 내려놓으시면, 오히려 본인의 진가가 자연스럽게 드러납니다.',
         lack: '재성이 거의 비어 있어, 실무·영업에서 “숫자에 약한 사람”으로 보일 수 있어요. 약점이 아니라, **돈을 직접 다루는 자리보다 가치를 만드는 자리**가 ' + nmKke(name) + ' 더 잘 맞다는 신호입니다. 평생 회계·재무 관련은 전문가 한 명을 옆에 두시는 게 좋습니다.'
@@ -9976,19 +9976,19 @@ function buildChapter_HapGyeok(data) {
     const docLine = (inPct >= 25)
         ? '문서운이 풍부해서 자격증·계약서·공증·졸업장 같은 “종이”가 ' + nmUi(name) + ' 가장 큰 무기로 작동합니다. **평생 한 권의 자격증·학위**가 든든한 방패가 되는 사주예요. 다만 한 번에 큰 계약은 영업일 이틀만 비워 두신 뒤 도장을 찍으시는 습관을 들이십시오.'
         : (inPct >= 10)
-            ? '문서운이 적정 수준이라 자격증·계약을 잡으실 때 흐름이 막히지는 않아요. 다만 큰 시험·큰 계약은 **인성(印) 기운이 들어오는 해**(임·계·인·묘·해·자 글자가 실리는 시기)에 맞춰 잡으시면 결실이 훨씬 단단해집니다.'
-            : '문서운이 약하거나 거의 비어 있는 편이라, 자격증·시험·계약서에서 자주 헛도실 수 있어요. **큰 결정은 인성(印) 기운이 실리는 대운·세운에 맞춰** 잡으시고, 평소엔 본인 이름으로 들어오는 모든 문서를 한 폴더에 모아 두십시오.';
+            ? '문서운이 적정 수준이라 자격증·계약을 잡으실 때 흐름이 막히지는 않아요. 다만 큰 자격·큰 계약은 **인성(印) 기운이 들어오는 해**(임·계·인·묘·해·자 글자가 실리는 시기)에 맞춰 잡으시면 결실이 훨씬 단단해집니다.'
+            : '문서운이 약하거나 거의 비어 있는 편이라, 자격증·증명·계약서에서 자주 헛도실 수 있어요. **큰 결정은 인성(印) 기운이 실리는 대운·세운에 맞춰** 잡으시고, 평소엔 본인 이름으로 들어오는 모든 문서를 한 폴더에 모아 두십시오.';
 
     // 큰 추천 한 줄
     let mainAdvice;
     if (inPct >= gwanPct && inPct >= sikPct && inPct >= jaePct) {
-        mainAdvice = '<strong>' + nmEunNeun(name) + ' 사주의 무게중심이 “공부·자격”에 가장 가까이 가 있는 분</strong>이세요. 평생 한 권의 자격증·학위를 손에 쥐고 사시면 그게 가장 큰 무기가 됩니다.';
+        mainAdvice = '<strong>' + nmEunNeun(name) + ' 사주의 무게중심이 “증명·자격·서류”에 가장 가까이 가 있는 분</strong>이세요. 평생 한 권의 자격증·학위·면허를 손에 쥐고 사시면 그게 가장 큰 무기가 됩니다.';
     } else if (gwanPct >= sikPct && gwanPct >= jaePct) {
         mainAdvice = '<strong>' + nmEunNeun(name) + ' 사주의 무게중심이 “조직과 자리”에 가장 가까이 가 있는 분</strong>이세요. 큰 조직 안에서 책임을 맡으시면서 자리 잡는 결이 가장 자연스럽습니다.';
     } else if (sikPct >= jaePct) {
-        mainAdvice = '<strong>' + nmEunNeun(name) + ' 사주의 무게중심이 “표현과 결과물”에 가장 가까이 가 있는 분</strong>이세요. 시험·취업 모두 “보여주는 자리”에서 빛이 납니다.';
+        mainAdvice = '<strong>' + nmEunNeun(name) + ' 사주의 무게중심이 “표현과 결과물”에 가장 가까이 가 있는 분</strong>이세요. 증명·취업 모두 “보여주는 자리”에서 빛이 납니다.';
     } else {
-        mainAdvice = '<strong>' + nmEunNeun(name) + ' 사주의 무게중심이 “실무와 현장”에 가장 가까이 가 있는 분</strong>이세요. 시험·이론보다 일을 직접 해 보면서 익히시는 길이 가장 빠릅니다.';
+        mainAdvice = '<strong>' + nmEunNeun(name) + ' 사주의 무게중심이 “실무와 현장”에 가장 가까이 가 있는 분</strong>이세요. 증명·이론보다 일을 직접 해 보면서 익히시는 길이 가장 빠릅니다.';
     }
 
     function _vp(t){ return narrativeVp(data, t); }
@@ -10007,10 +10007,10 @@ function buildChapter_HapGyeok(data) {
     var chHeadH = buildSectionHeader('hapgyeok', data, { leadHook: false });
     return `<div class="report-chapter">
         ${chHeadH}
-        ${buildNarrativePara(data, '합격은 사주에서 네 가지 기둥이 함께 만드는 결과예요. **인성(印, 공부·자격)**, **관성(官, 조직·취업)**, **식상(食傷, 표현·면접)**, **재성(財, 실무·현장)** — 이 네 가지의 비중을 보면 ' + nmIGa(name) + ' 어떤 “합격 자리”에서 가장 잘 풀리시는지가 거의 다 드러납니다.', { lineHeight: '2' })}
+        ${buildNarrativePara(data, '합격은 사주에서 네 가지 기둥이 함께 만드는 결과예요. **인성(印, 증명·자격·서류)**, **관성(官, 조직·취업)**, **식상(食傷, 표현·면접)**, **재성(財, 실무·현장)** — 이 네 가지의 비중을 보면 ' + nmIGa(name) + ' 어떤 “인정받는 자리”에서 가장 잘 풀리시는지가 거의 다 드러납니다. 인성은 학생 시험만이 아니라, 자격·면허·심사·계약처럼 **실력을 증명하는 모든 순간**에 해당합니다.', { lineHeight: '2' })}
         ${buildNarrativePara(data, mainAdvice, { lineHeight: '2' })}
         <div class="hapgyeok-axis-stack" style="display:flex;flex-direction:column;gap:14px;margin:14px 0 18px;width:100%;">
-            ${box('시험 · 자격 (인성)', inPct, testBand, examLine)}
+            ${box('증명 · 자격 (인성)', inPct, proofBand, proofLine)}
             ${box('취직 · 조직 (관성)', gwanPct, hireBand, hireLine)}
             ${box('면접 · 표현 (식상)', sikPct, interviewBand, interviewLine)}
             ${box('실무 · 현장 (재성)', jaePct, fieldBand, fieldLine)}
@@ -10019,7 +10019,7 @@ function buildChapter_HapGyeok(data) {
             <div style="font-size:11px;letter-spacing:0.10em;color:var(--gold);margin-bottom:10px;font-weight:700;">문서운 — 계약 · 자격 · 공증</div>
             <p style="font-size:13.5px;color:#ddd;line-height:1.95;margin:0;">${boldStarsToStrong(_vp(docLine))}</p>
         </div>
-        <p class="ch-text" style="font-size:14px;color:var(--text);line-height:2;margin:0 0 18px;">${_vp('마지막으로 — 합격에는 “타이밍”도 중요합니다. ' + nmKke(name) + ' 인성(印) 기운이 들어오는 시기(임수·계수·인목·묘목·해수·자수 글자가 실리는 해)에는 시험·자격·문서가 평소보다 두 배쯤 잘 풀려요. 큰 시험·큰 계약은 그 시기에 맞춰 잡으시는 것만으로도 결과가 달라집니다.')}</p>
+        <p class="ch-text" style="font-size:14px;color:var(--text);line-height:2;margin:0 0 18px;">${_vp('마지막으로 — 합격에는 “타이밍”도 중요합니다. ' + nmKke(name) + ' 인성(印) 기운이 들어오는 시기(임수·계수·인목·묘목·해수·자수 글자가 실리는 해)에는 증명·자격·문서가 평소보다 두 배쯤 잘 풀려요. 큰 자격·큰 계약은 그 시기에 맞춰 잡으시는 것만으로도 결과가 달라집니다.')}</p>
     </div>`;
 }
 
