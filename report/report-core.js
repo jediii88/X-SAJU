@@ -4936,7 +4936,8 @@ function injectSectionInterpretations(data) {
         </div>
     </div>`);
     // 8. 인생 시기별 아래 → 재물+직업+애정
-    setEl('lifecycle-inline-summary', () => buildChapter4_Wealth(data) + buildChapter5_Career(data) + buildChapter6_Love(data) + buildChapter8_Health(data));
+    // 3부 본문(part3)에 재물·직업·애정·건강이 이미 포함됨 — 여기에 전체 챕터를 또 넣으면 도입부가 2번 보입니다.
+    setEl('lifecycle-inline-summary', () => '');
 }
 
 function injectBelow(id, html_content) {
@@ -10244,11 +10245,9 @@ function buildChapter6_Love(data) {
         ? '다툼이 시작되면 ' + nmEunNeun(name) + ' 본능적으로 **결론을 빨리 내려는** 쪽으로 기울입니다. 그 속도가 본인은 명료해 좋지만, 상대에게는 **자기 감정이 인정받지 못한 채 정리당했다**는 인상을 남길 수 있습니다. 결론보다 먼저 “지금 어떤 마음이세요?”라고 한 번만 물어 주십시오. 한 박자만 늦춰도 같은 결론이 훨씬 부드럽게 안착합니다.'
         : nmEunNeun(name) + ' 다툼 앞에서 **속으로 삼키고 정리하시는** 결에 가깝습니다. 그 자리에서는 평화로워 보이지만, 같은 패턴이 쌓이면 어느 날 갑자기 차갑게 거리를 두는 모습으로 드러납니다. 한 번에 두꺼운 말을 꺼내기 어렵다면, **메시지로 한 줄씩** 남겨두는 방법도 좋습니다. “지금 좀 힘들었어”라는 한 문장이 관계를 살립니다.';
 
-    var chHead6 = buildSectionHeader('love', data, { leadHook: false, skipIntro: true });
-    var chIntro6 = buildChapterIntroHtml(data, 'love');
+    var chHead6 = buildSectionHeader('love', data, { leadHook: false });
     return `<div class="report-chapter">
         ${chHead6}
-        ${chIntro6}
         ${buildDomainSummaryTable({
             data,
             boxTitle: nmEulReul(name) + ' 위한 애정 전략',
@@ -10472,11 +10471,9 @@ function buildChapter8_Health(data) {
         water:'**신장·호르몬·방광** 검사를 수면 루틴과 같이 묶으십시오.'
     }[maxWuxing] || '**종합 검진**을 연 1회 이상 고정하십시오.';
 
-    var chHead8 = buildSectionHeader('health', data, { leadHook: false, skipIntro: true });
-    var chIntro8 = buildChapterIntroHtml(data, 'health');
+    var chHead8 = buildSectionHeader('health', data, { leadHook: false });
     return `<div class="report-chapter">
         ${chHead8}
-        ${chIntro8}
         ${buildDomainSummaryTable({
             data,
             boxTitle: nmEulReul(name) + ' 위한 건강 전략',
