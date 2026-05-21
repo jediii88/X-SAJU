@@ -806,7 +806,7 @@ function buildCompatMetaphorTitle(ctx) {
     if (ctx.isHap) return nA + '님과 ' + nB + '님, 배우자궁이 맞물리는 인연이시군요';
     if (ctx.isChung) return nA + '님과 ' + nB + '님, 각도는 세지만 끌림도 강한 만남이네요';
     var sc = ctx.score;
-    if (sc >= 75) return nA + '님과 ' + nB + '님, 서로의 빈칸을 채우는 보완형 궁합이네요';
+    if (sc >= 75) return nA + '님과 ' + nB + '님, **온습도가 맞물리는** 궁합이네요';
     if (sc >= 55) return nA + '님과 ' + nB + '님, 노력하면 깊어지는 균형형 인연이시군요';
     return nA + '님과 ' + nB + '님, 다름을 인정할 때 빛나는 조율형 궁합이에요';
 }
@@ -846,7 +846,7 @@ function buildCompatTopicMetaphor(topic, ctx) {
             return voiceMingliLine('일지는 배우자궁, 무의식적으로 끌리는 형상입니다.') + ' 두 사람의 일지 관계가 끌림의 온도를 정합니다.';
         },
         wuxing: function () {
-            return nA + '님과 ' + nB + '님, 오행 막대가 말해 주는 **보완과 과잉**을 먼저 보시면 됩니다.';
+            return nA + '님과 ' + nB + '님, **차가움·건조함과 따뜻함·윤기**가 맞는지가 궁합의 핵심이에요.';
         },
         strategy: function () {
             return '소통·돈·친밀 — 세 전장에서 승부가 갈리는 시기가 분명한 궁합이네요';
@@ -890,8 +890,8 @@ function buildCompatOpenerInner(topic, ctx) {
     var nB = nmNormalize(ctx.bName) || '한 분';
     var pools = {
         overview: [
-            nA + '님과 ' + nB + '님, 두 분은 **서로의 부족함을 채워 주는 조화**가 이미 자리 잡혀 있어요. 아래 점수와 카드는 그 조화를 실생활 언어로 풀어 드립니다.',
-            '궁합 숫자는 판정이 아니라 **함께 잘 쓰는 설명서**예요. 잘 맞는 이유부터 짚고 갈게요.'
+            nA + '님과 ' + nB + '님, 두 분은 **온도·습도가 맞물리고 서로를 생(生)해 주는 조화**가 핵심이에요. 아래 점수·카드는 그걸 생활 언어로 풀어 드립니다.',
+            '궁합 숫자는 판정이 아니라 **함께 잘 쓰는 설명서**예요. 한기·燥氣를 누가 따뜻하게·윤하게 맞춰 주는지부터 짚을게요.'
         ],
         personality: [
             '성격은 맞추라는 뜻이 아니라, **서로의 강점 이름을 붙이는 일**이에요. 두 분이 만났을 때만 나오는 시너지 엔진을 먼저 보여 드릴게요.',
@@ -918,8 +918,8 @@ function buildCompatOpenerInner(topic, ctx) {
             voiceMingliLine('일지 합은 편안함, 충은 자극입니다.') + ' 둘 다 흉이 아니라 비용 구조에 가깝습니다.'
         ],
         wuxing: [
-            '좌우 막대는 겉 비교용이에요. 한쪽이 과하면 그 오행 **생활 루틴**부터 맞추십시오.',
-            nA + '님과 ' + nB + '님, 부족한 오행을 **같이 채우는 습관**이 궁합 점수를 올립니다.'
+            '8자 막대는 **온습도(溫濕)**를 읽는 지도예요. 차가운 쪽엔 따뜻한 기운, 마른 쪽엔 수·목의 **윤기**가 스며드는지 보십시오.',
+            nA + '님과 ' + nB + '님, **생(生)해 주는 기운**이 맞을 때 관계가 편해지고, 빈 오행 보완은 그다음입니다.'
         ],
         strategy: [
             '소통은 감정 맞추기보다 **일정·돈 숫자**부터 맞출 때 비용이 줄어요.',
@@ -1001,7 +1001,7 @@ function buildCompatBridge(topic, ctx) {
         crisis:      '관계에는 흐름이 있습니다. 어떤 시기가 같이 있기 좋은 시절이고, 어떤 시기에 한 발 거리를 두는 것이 좋은지 짚겠습니다.',
         timeline:    '대운(10년 흐름)이 두 분에게서 어떻게 겹치는지, 함께 갈 길의 색지도를 살펴봅니다.',
         caution:     '관계를 오래 지키려면 지뢰를 미리 알아두는 것이 좋습니다. 두 분이 특히 조심해야 할 자리를 정리해 드립니다.',
-        wuxing:      '두 분의 에너지가 서로를 어떻게 채우는지, 오행의 균형을 함께 살펴봅니다.',
+        wuxing:      '8자의 **온도·습도**가 맞는지, 한쪽이 다른 쪽을 **따뜻하고 윤하게** 만드는지 함께 살펴봅니다.',
         strategy:    '관계의 결과 흐름을 보았으니, 일상에서 어떻게 호흡을 맞춰 갈지 정리해 드립니다.',
         brief:       '두 분의 관계를 한 장으로 요약합니다. 뒤에 이어지는 풀이의 길잡이로 봐주세요.'
     };
@@ -1170,6 +1170,51 @@ function compatMeetPairPhrase(ctx) {
     return compatIljuMeetPhrase(a) + '이 ' + compatIljuMeetPhrase(b) + '을(를) 만날 때';
 }
 
+/** 8자 오행 → 온도(寒暖)·습도(燥潤) — couple/index analyzeCoupling과 동일 기준 */
+function chartOhClimate(counts) {
+    counts = counts || {};
+    var w = counts.wood || 0, f = counts.fire || 0, e = counts.earth || 0;
+    var m = counts.metal || 0, wa = counts.water || 0;
+    var warm = w + f + e * 0.35;
+    var cool = m + wa + e * 0.2;
+    var moist = wa + w * 0.9;
+    var dry = f + m + e * 0.55;
+    return { warm: warm, cool: cool, moist: moist, dry: dry, temp: warm - cool, humid: moist - dry };
+}
+
+/** 궁합 카피용 — 온습도 한 줄 요약 */
+function compatOhClimateOneLiner(ctx) {
+    ctx = ctx || {};
+    var a = ctx.a || {};
+    var b = ctx.b || {};
+    var ca = chartOhClimate(a.counts);
+    var cb = chartOhClimate(b.counts);
+    var aName = compatNm(ctx, 'a');
+    var bName = compatNm(ctx, 'b');
+    if (ca.temp <= -2 && cb.temp >= 2) {
+        return aName + '님 쪽은 **한기(寒)**가 강하고, ' + bName + '님의 **목·화** 기운이 따뜻하게 스며들어 **온도가 맞춰지는** 조합입니다.';
+    }
+    if (cb.temp <= -2 && ca.temp >= 2) {
+        return bName + '님 쪽은 **한기(寒)**가 강하고, ' + aName + '님의 따뜻한 기운이 **한기를 녹여 주는** 조합입니다.';
+    }
+    if (ca.humid <= -2 && cb.humid >= 2) {
+        return aName + '님 쪽은 **燥(乾)**한 편이고, ' + bName + '님의 **수·목** 기운이 **윤기(潤)**를 채워 줍니다.';
+    }
+    if (cb.humid <= -2 && ca.humid >= 2) {
+        return bName + '님 쪽은 **燥(乾)**한 편이고, ' + aName + '님이 **마음의 습도**를 맞춰 주는 역할을 합니다.';
+    }
+    if (Math.abs(ca.temp) <= 1.5 && Math.abs(cb.temp) <= 1.5) {
+        return '두 분의 **온습도(溫濕)** 성향이 비슷해, 생활 리듬이 무난하게 맞기 쉽습니다.';
+    }
+    if (ca.temp <= -3 && cb.temp <= -3) {
+        return '둘 다 **한기**가 강한 편이라, 함께 **따뜻한 루틴**(식사·수면·대화)을 의식하면 좋습니다.';
+    }
+    if (ca.temp >= 3.5 && cb.temp >= 3.5) {
+        return '둘 다 **열기**가 강한 편이라, **휴식·수분**으로 온도를 낮추는 조율이 관건입니다.';
+    }
+    return '8자 전체의 **온도·습도**와 **생(生)해 주는 기운**이 맞물리면, 빈 오행만 채우는 것보다 관계가 편해집니다.';
+}
+
 /** 궁합 리포트 — 한자(한글독음:핵심의미) 병기 */
 var SAJUX_STEM_GLOSS = {
     '甲': { r: '갑', m: '시작/개척' }, '乙': { r: '을', m: '유연/조율' }, '丙': { r: '병', m: '열정/표현' }, '丁': { r: '정', m: '섬세/공감' },
@@ -1198,6 +1243,13 @@ var SAJUX_PHRASE_GLOSS = [
 function compatHanjaGlossChar(ch, kind) {
     var g = (kind === 'branch' ? SAJUX_BRANCH_GLOSS : SAJUX_STEM_GLOSS)[ch];
     if (!g) return ch;
+    return ch + '(' + g.r + ')';
+}
+
+/** 본문용 — 한자(한글음:핵심의미) */
+function compatHanjaGlossCharFull(ch, kind) {
+    var g = (kind === 'branch' ? SAJUX_BRANCH_GLOSS : SAJUX_STEM_GLOSS)[ch];
+    if (!g) return ch;
     return ch + '(' + g.r + ': ' + g.m + ')';
 }
 
@@ -1217,7 +1269,7 @@ function annotateHanjaGloss(s) {
     for (i = 0; i < SAJUX_PHRASE_GLOSS.length; i++) {
         var ph = SAJUX_PHRASE_GLOSS[i];
         var re = new RegExp(ph[0] + '(?!\\([^)]*' + ph[1] + ':)', 'g');
-        t = t.replace(re, ph[0] + '(' + ph[1] + ': ' + ph[2] + ')');
+        t = t.replace(re, ph[0] + '(' + ph[1] + (ph[2] ? ': ' + ph[2] : '') + ')');
     }
     t = t.replace(/([木火土金水])(?!\([^)]*[목화토금수]:)/g, function (m) {
         var g = SAJUX_OH_HANJA_GLOSS[m];
@@ -1231,14 +1283,14 @@ function annotateHanjaGloss(s) {
         var g = SAJUX_STEM_GLOSS[c];
         if (!g) continue;
         var reS = new RegExp(c + '(?!\\(' + g.r + ':)', 'g');
-        t = t.replace(reS, c + '(' + g.r + ': ' + g.m + ')');
+        t = t.replace(reS, compatHanjaGlossCharFull(c, 'stem'));
     }
     for (si = 0; si < branches.length; si++) {
         var cb = branches.charAt(si);
         var gb = SAJUX_BRANCH_GLOSS[cb];
         if (!gb) continue;
         var reB = new RegExp(cb + '(?!\\(' + gb.r + ':)', 'g');
-        t = t.replace(reB, cb + '(' + gb.r + ': ' + gb.m + ')');
+        t = t.replace(reB, compatHanjaGlossCharFull(cb, 'branch'));
     }
     t = t.replace(/\x00P(\d+)\x01/g, function (_, idx) { return protects[+idx]; });
     return t;
@@ -1272,6 +1324,15 @@ function compatPolishTone(s) {
 
 function compatFmt(s) {
     return boldStarsToStrong(compatPolishTone(annotateHanjaGloss(String(s == null ? '' : s))));
+}
+
+function buildCompatChemScoreExplainHtml(ctx) {
+    var sc = ctx && ctx.score != null ? Number(ctx.score) : 58;
+    return '<p class="compat-chem-explain" style="font-size:11.5px;color:#999;line-height:1.75;margin:10px 0 0;text-align:left;">'
+        + '<strong style="color:rgba(199,167,106,0.85);">산출 기준</strong> — 케미스트리는 두 분 <strong>8자(시·일·월·년)</strong>를 모두 다시 채점하지 않습니다. '
+        + '위 <strong>궁합 총점(' + sc + '점)</strong>에 일지 합(合)·충(冲), 일간 상생, **오행·온습도**, 삼합, 신강/신약 상보를 반영한 뒤, '
+        + '그 점수를 바탕으로 “함께 있을 때의 온도”를 12~98점으로 환산한 <strong>파생 지표</strong>입니다. '
+        + '총점 산정 시에는 각 기둥 천간·지지 8글자의 오행 분포와 일주(일간·일지) 관계를 모두 봅니다.</p>';
 }
 
 function buildCompatChemGuideText(chem) {
@@ -1309,6 +1370,7 @@ function buildCompatChemScoreBanner(ctx, caption) {
         + '<p style="font-size:12px;color:rgba(199,167,106,0.92);line-height:1.75;margin:0 0 10px;font-weight:600;">' + escHtmlAttr(guide) + '</p>'
         + '<p style="font-size:13px;color:rgba(255,255,255,0.72);line-height:1.85;margin:0 0 6px;">' + escHtmlAttr(cap) + '</p>'
         + '<p style="font-size:13.5px;color:#ddd;line-height:1.9;margin:0;">' + compatFmt('**' + tone + ' 조합**으로 읽힙니다. 아래 챕터는 이 점수를 전제로, 두 분이 조율하는 장면과 회복 대화까지 풀어 드립니다.') + '</p>'
+        + (typeof buildCompatChemScoreExplainHtml === 'function' ? buildCompatChemScoreExplainHtml(ctx) : '')
         + '</div>';
 }
 
@@ -1344,10 +1406,10 @@ function buildCompatSynergyHookText(ctx) {
     var aName = compatNm(ctx, 'a');
     var bName = compatNm(ctx, 'b');
     var tone = ctx.isHap
-        ? '**서로의 부족함을 채워 주는 완벽한 조화**'
+        ? '**온습도가 맞고 마음이 편안한 조화**'
         : (ctx.shengAB || ctx.shengBA)
-        ? '**맞물리면 에너지가 배가 되는 상생 조화**'
-        : '**다름을 보완해 주는 조화**';
+        ? '**서로를 생(生)해 주며 에너지가 배가 되는 조화**'
+        : '**차가운 쪽에 따뜻함, 마른 쪽에 윤기가 스며드는 조화**';
     return aName + '님과 ' + bName + '님, 두 분은 ' + tone + '를 이루는 인연으로 읽힙니다.';
 }
 
@@ -1418,11 +1480,11 @@ function buildCompatThreeHarmonyReasons(ctx, topic) {
         personality: [
             aName + '님 **' + a.lead + '** + ' + bName + '님 **' + b.care + '** → **재물**: 판단 속도 ↑ · **심리**: 오해 ↓ · **대외**: 팀 존재감 ↑',
             '**강점에 이름 붙일 때** — “너는 빠르고 나는 섬세해” 한 마디로 **심리적 안정**이 커집니다.',
-            ctx.shengAB || ctx.shengBA ? '**상생 결** — 함께할 때 **성장·수익·대외 성취**가 동시에 오르는 구조입니다.' : '**보완 결** — 없는 쪽을 채워 **생활·마음·대외 평판**이 균형을 찾습니다.'
+            ctx.shengAB || ctx.shengBA ? '**일간·오행 상생** — 함께할 때 **성장·수익·대외 성취**가 동시에 오르는 구조입니다.' : '**온습 조율** — 기후가 맞물리면 **생활·마음·대외 평판**이 균형을 찾습니다.'
         ],
         lover: [
             '**약속 리듬** — **재물**: 데이트·동거비 절약 · **심리**: 불안 ↓ · **대외**: 단단한 연인 이미지',
-            ctx.isHap ? '**일지 합(合) 끌림** — 작은 약속이 **신뢰·심리적 안식**으로 커집니다.' : '**보완 끌림** — 다름이 **대외 매력·생활 보완**으로 작동합니다.',
+            ctx.isHap ? '**일지 합(合) 끌림** — 작은 약속이 **신뢰·심리적 안식**으로 커집니다.' : '**온도·습도 끌림** — 다름이 **따뜻함·윤기**로 마음을 채웁니다.',
             '**회복 대화** — 말이 엇긴 날 “내일 20분”만으로 **관계가 더 깊어지는 과정**이 됩니다.'
         ],
         married: [
@@ -1673,7 +1735,7 @@ function buildCompatSpousePanelHtml(ctx, aSpouse, bSpouse) {
         ? voiceMingliLine('배우자궁 합은 이상형에 가깝게 끌리는 신호입니다.') + ' “이 사람이다”는 느낌이 강할 수 있어요.'
         : ctx.isChung
         ? '다름이 강한 자극으로 끌리는 구조예요. **다툰 날 규칙**을 미리 정해 두십시오.'
-        : '직접 합충은 없어도 오행 보완으로 서로의 빈칸을 채우는 인연이에요.';
+        : '직접 합충은 없어도 **온습도·상생**으로 서로의 기후를 맞춰 주는 인연이에요.';
     var meet = compatMeetPairPhrase(ctx);
     var pullStr = '**합(合)의 강점** — 무의식의 끌림이 맞물리면 **편안함과 자극**이 동시에 와서, 오래 가는 인연의 온도가 됩니다.';
     return buildCompatPanelPrefix(ctx, 'spouse')
@@ -2146,7 +2208,7 @@ function colorizeHanjaInline(html) {
     var STEM_OH = { '甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water' };
     var BRANCH_OH = { '子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water' };
     var COLOR = { wood:'var(--wood, #6FBF73)', fire:'var(--fire, #E76F51)', earth:'var(--earth, #C8A45C)', metal:'var(--metal, #C9CDD2)', water:'var(--water, #181828)' };
-    var HAN_RE = /[甲乙丙丁戊己庚辛壬癸子丑寅卯辰巳午未申酉戌亥]/g;
+    var HAN_RE = /[甲乙丙丁戊己庚辛壬癸子丑寅卯辰巳午未申酉戌亥](?!\()/g;
 
     // 보호할 영역(이미 색/스타일이 들어간 곳)을 placeholder로 치환했다가 마지막에 복원
     var protects = [];
