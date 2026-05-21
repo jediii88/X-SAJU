@@ -302,7 +302,7 @@ body::before {
 
 .container { max-width: 500px; margin: 0 auto; padding: 0 22px 96px; }
 
-/* 플로팅 목차 · PDF (개인 리포트와 동일 패턴) */
+/* 플로팅 목차 · 사주 저장 (개인 리포트와 동일 패턴) */
 #floating-toc {
   display: none;
   position: fixed;
@@ -656,7 +656,7 @@ body::before {
     <a class="toc-link" href="#section-ideal-family" onclick="return compatTocGo('section-ideal-family')">인연 보강</a>
     <a class="toc-link" href="#section-timeline" onclick="return compatTocGo('section-timeline')">대운 싱크</a>
     <div style="border-top:1px solid var(--line);margin:6px 0 4px;"></div>
-    <a class="toc-link toc-link-print" href="#" onclick="window.print(); return false;">🖨 PDF 저장</a>
+    <a class="toc-link toc-link-print" href="#" onclick="if(typeof sajuxCaptureReportAsImage==='function'){sajuxCaptureReportAsImage();}return false;">📥 사주 저장</a>
   </div>
 </div>
 <nav id="sticky-part-nav" class="sticky-part-nav" aria-label="궁합 섹션 이동">
@@ -1809,6 +1809,22 @@ function init() {
     document.getElementById('main-content').style.display  = 'block';
     var ftoc = document.getElementById('floating-toc');
     if (ftoc) ftoc.style.display = 'block';
+    try {
+      if (typeof injectSajuxPdfUi === 'function') injectSajuxPdfUi();
+      else if (typeof sajuxCaptureReportAsImage === 'function') {
+        if (!document.getElementById('sajux-image-fab')) {
+          var fab = document.createElement('button');
+          fab.id = 'sajux-image-fab';
+          fab.type = 'button';
+          fab.className = 'pdf-btn';
+          fab.textContent = '📥 사주 저장';
+          fab.style.cssText = 'position:fixed;bottom:22px;right:18px;z-index:10001;font-family:inherit;font-weight:700;font-size:14px;padding:14px 20px;border-radius:999px;border:none;background:linear-gradient(165deg,rgba(255,255,255,0.11),rgba(255,255,255,0.028));color:rgba(245,240,232,0.94);box-shadow:0 14px 46px rgba(0,0,0,0.44);backdrop-filter:blur(28px);cursor:pointer;';
+          fab.addEventListener('click', function () { sajuxCaptureReportAsImage(); });
+          document.body.appendChild(fab);
+        }
+      }
+      if (typeof sajuxShowReportNav === 'function') sajuxShowReportNav();
+    } catch (uiErr) { console.warn('compat save ui', uiErr); }
   } catch(e) {
     if (typeof window.__compatClearSafetyTimeout === 'function') window.__compatClearSafetyTimeout();
     console.error(e);
