@@ -4223,7 +4223,7 @@ function sajuxEnsureCaptureHost() {
         host = document.createElement('div');
         host.id = 'sajux-capture-host';
         host.setAttribute('aria-hidden', 'true');
-        host.style.cssText = 'position:fixed;left:-12000px;top:0;width:720px;max-width:720px;z-index:1;pointer-events:none;overflow:visible;background:#050508;';
+        host.style.cssText = 'position:fixed;left:-20000px;top:0;width:min(100vw,720px);max-width:720px;z-index:-1;pointer-events:none;overflow:visible;background:#050508;';
         document.body.appendChild(host);
     }
     return host;
@@ -4458,104 +4458,24 @@ function sajuxCanvasToBlob(canvas, type) {
         }
     });
 }
-function sajuxSliceHasCaptureSize(el, hostEl) {
-    if (!el || el.nodeType !== 1) return false;
-    var hostW = hostEl ? Math.max(hostEl.offsetWidth || 0, hostEl.clientWidth || 0, 720) : 720;
-    var w = Math.max(el.offsetWidth || 0, el.scrollWidth || 0, el.getBoundingClientRect().width || 0, hostW);
-    var h = Math.max(el.offsetHeight || 0, el.scrollHeight || 0, el.getBoundingClientRect().height || 0);
-    return w > 12 && h > 12;
-}
-function sajuxMountSliceForCapture(host, el) {
-    if (!host || !el) return el;
-    host.innerHTML = '';
-    host.appendChild(el);
-    var target = host.firstChild || el;
-    target.style.width = '100%';
-    target.style.maxWidth = '720px';
-    target.style.boxSizing = 'border-box';
-    void host.offsetHeight;
-    void target.offsetHeight;
-    return target;
-}
-function sajuxHtml2canvasIgnoreEl(node) {
-    if (!node || node.nodeType !== 1) return false;
-    var tag = (node.tagName || '').toUpperCase();
-    if (tag === 'CANVAS') return true;
-    if (node.id === 'star-canvas' || node.id === 'sajux-capture-overlay' || node.id === 'sajux-capture-host') return true;
-    if (node.closest && node.closest('#star-canvas, #sajux-capture-overlay')) return true;
-    return false;
-}
-var _sajuxCreatePatternPatched = false;
-function sajuxPatchCreatePatternForCapture() {
-    if (_sajuxCreatePatternPatched || !window.CanvasRenderingContext2D) return function () {};
-    var proto = CanvasRenderingContext2D.prototype;
-    var orig = proto.createPattern;
-    if (!orig) return function () {};
-    proto.createPattern = function (image, repetition) {
-        try {
-            if (image && (image.width === 0 || image.height === 0)) return null;
-            return orig.call(this, image, repetition);
-        } catch (e) {
-            return null;
-        }
-    };
-    _sajuxCreatePatternPatched = true;
-    return function () {
-        proto.createPattern = orig;
-        _sajuxCreatePatternPatched = false;
-    };
-}
-function sajuxDetachStarCanvas() {
-    var c = document.getElementById('star-canvas');
-    if (!c || !c.parentNode) return null;
-    var parent = c.parentNode;
-    parent.removeChild(c);
-    return { el: c, parent: parent };
-}
-function sajuxRestoreStarCanvas(stash) {
-    if (!stash || !stash.el || !stash.parent) return;
-    try { stash.parent.appendChild(stash.el); } catch (e) {}
-}
-function sajuxStripUnsafeCaptureStyles(root) {
-    var touched = [];
-    if (!root || !root.querySelectorAll) return function () {};
-    var nodes = [root].concat(Array.prototype.slice.call(root.querySelectorAll('*')));
-    nodes.forEach(function (el) {
-        if (!el || !el.style) return;
-        var cs = window.getComputedStyle(el);
-        var need = (cs && (cs.backdropFilter && cs.backdropFilter !== 'none'))
-            || (cs && cs.webkitBackdropFilter && cs.webkitBackdropFilter !== 'none');
-        if (!need && !el.style.backdropFilter && !el.style.webkitBackdropFilter) return;
-        touched.push({
-            el: el,
-            bf: el.style.backdropFilter,
-            wbf: el.style.webkitBackdropFilter
-        });
-        el.style.setProperty('backdrop-filter', 'none', 'important');
-        el.style.setProperty('-webkit-backdrop-filter', 'none', 'important');
-    });
-    return function () {
-        touched.forEach(function (x) {
-            x.el.style.backdropFilter = x.bf;
-            x.el.style.webkitBackdropFilter = x.wbf;
-        });
-    };
-}
 function sajuxOnCaptureClone(doc) {
-    var hideIds = ['sajux-pdf-fab', 'sajux-image-fab', 'floating-toc', 'sticky-part-nav', 'theme-toggle', 'star-canvas', 'sajux-capture-overlay', 'sajux-capture-host'];
+    var hideIds = ['sajux-pdf-fab', 'sajux-image-fab', 'floating-toc', 'sticky-part-nav', 'theme-toggle', 'star-canvas', 'sajux-capture-overlay'];
     hideIds.forEach(function (id) {
         var n = doc.getElementById(id);
-        if (n) n.remove();
+        if (n) n.style.display = 'none';
     });
-    doc.querySelectorAll('canvas').forEach(function (c) { c.remove(); });
+    doc.querySelectorAll('canvas').forEach(function (c) {
+        c.style.display = 'none';
+        c.width = 0;
+        c.height = 0;
+    });
     if (!doc.getElementById('sajux-capture-clone-style')) {
         var st = doc.createElement('style');
         st.id = 'sajux-capture-clone-style';
-        st.textContent = 'canvas{display:none!important;}'
-            + '#report-container,#sec-report-full{overflow:visible!important;max-height:none!important;height:auto!important;}'
+        st.textContent = '#report-container,#sec-report-full{overflow:visible!important;max-height:none!important;height:auto!important;}'
             + '.cover-page,#sec-cover,#sec-client-cover{min-height:auto!important;height:auto!important;}'
-            + '*,*::before,*::after{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}'
-            + 'body::before,body::after{display:none!important;content:none!important;}';
+            + '.sajux-glass-heavy,.report-chapter,.card,.glass-panel,.badge,.tag,.jijanggan,.module-item,.yearly-card,.monthly-card{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}'
+            + 'body::before{display:none!important;}';
         doc.head.appendChild(st);
     }
     var cloneRoot = doc.getElementById('report-container') || doc.getElementById('sec-report-full');
@@ -4564,30 +4484,6 @@ function sajuxOnCaptureClone(doc) {
         cloneRoot.style.maxHeight = 'none';
         cloneRoot.style.height = 'auto';
     }
-}
-function sajuxHtml2canvasSlice(target, opts) {
-    opts = opts || {};
-    var restorePattern = sajuxPatchCreatePatternForCapture();
-    var restoreStyles = sajuxStripUnsafeCaptureStyles(target);
-    var options = {
-        backgroundColor: '#050508',
-        scale: opts.scale || 1.5,
-        useCORS: true,
-        allowTaint: true,
-        logging: false,
-        foreignObjectRendering: false,
-        ignoreElements: sajuxHtml2canvasIgnoreEl,
-        onclone: sajuxOnCaptureClone
-    };
-    return html2canvas(target, options).then(function (result) {
-        restoreStyles();
-        restorePattern();
-        return result;
-    }, function (err) {
-        restoreStyles();
-        restorePattern();
-        throw err;
-    });
 }
 function sajuxHideForCapture() {
     var ids = ['sajux-pdf-fab', 'sajux-image-fab', 'floating-toc', 'sticky-part-nav', 'theme-toggle', 'star-canvas'];
@@ -4632,7 +4528,6 @@ function sajuxCaptureReportAsImage() {
     });
 }
 function sajuxRunReportImageCapture(root) {
-    var starStash = sajuxDetachStarCanvas();
     var hidden = sajuxHideForCapture();
     var fab = document.getElementById('sajux-image-fab');
     if (fab) { fab.disabled = true; fab.textContent = '저장 중…'; }
@@ -4680,7 +4575,6 @@ function sajuxRunReportImageCapture(root) {
         if (pack.container && pack.container !== root) pack.container.style.overflow = '';
         if (captureHost) captureHost.innerHTML = '';
         sajuxRestoreAfterCapture(hidden);
-        sajuxRestoreStarCanvas(starStash);
         if (fab) { fab.disabled = false; fab.textContent = '📥 사주 저장'; }
     }
     function captureNext() {
@@ -4705,25 +4599,26 @@ function sajuxRunReportImageCapture(root) {
         }
         var slice = slices[idx];
         var el = slice.el;
-        var captureTarget = captureHost ? sajuxMountSliceForCapture(captureHost, el) : el;
-        if (!sajuxSliceHasCaptureSize(captureTarget, captureHost)) {
-            idx += 1;
-            captureNext();
-            return;
-        }
-        var sliceScale = sajuxCalcSliceCaptureScale(captureTarget);
+        var sliceScale = sajuxCalcSliceCaptureScale(el);
         var fileBase = sajuxSliceCaptureLabel(slice, idx + 1);
+        if (captureHost) {
+            captureHost.innerHTML = '';
+            captureHost.appendChild(el);
+        }
+        var captureTarget = (captureHost && captureHost.firstChild) ? captureHost.firstChild : el;
         var liveAnchor = slice.headEl || null;
         if (liveAnchor) {
             try { liveAnchor.scrollIntoView({ block: 'start', behavior: 'instant' }); } catch (e1) { try { liveAnchor.scrollIntoView(true); } catch (e2) {} }
         }
         sajuxShowCaptureOverlay('사주 다운로드 중… (' + (idx + 1) + '/' + total + ')\n' + (slice.jul || '') + ' ' + (slice.title || ''));
-        sajuxHtml2canvasSlice(captureTarget, { scale: sliceScale }).then(function (canvas) {
-            if (!canvas || canvas.width < 1 || canvas.height < 1) {
-                idx += 1;
-                captureNext();
-                return;
-            }
+        html2canvas(captureTarget, {
+            backgroundColor: '#050508',
+            scale: sliceScale,
+            useCORS: true,
+            allowTaint: true,
+            logging: false,
+            onclone: sajuxOnCaptureClone
+        }).then(function (canvas) {
             return sajuxCanvasToBlob(canvas, 'image/png').then(function (blob) {
                 captures.push({ name: fileBase, blob: blob });
                 idx += 1;
