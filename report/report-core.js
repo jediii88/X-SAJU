@@ -4801,12 +4801,16 @@ function injectSajuxPdfUi() {
         a.textContent = '📥 사주 다운로드';
         a.onclick = function (e) { e.preventDefault(); sajuxCaptureReportAsImage(); return false; };
     });
-    document.querySelectorAll('button[onclick*="print"], .sajux-pdf-wide-btn, #sec-report-footer-utilities button').forEach(function (el) {
+    document.querySelectorAll('button[onclick*="print"], .sajux-pdf-wide-btn').forEach(function (el) {
+        if (el.closest('#sec-report-footer-utilities')) return;
         var label = (el.textContent || '').trim();
         if (/인쇄|PDF로 저장|PDF 저장/.test(label)) el.remove();
     });
-    var footerUtil = document.getElementById('sec-report-footer-utilities');
-    if (footerUtil) footerUtil.remove();
+    var footerZip = document.querySelector('#sec-report-footer-utilities .sajux-footer-zip-btn');
+    if (footerZip && !footerZip._sajuxBound) {
+        footerZip._sajuxBound = true;
+        footerZip.addEventListener('click', function () { sajuxCaptureReportAsImage(); });
+    }
     try { ensureSajuxReadablePanelStyles(); ensureSajuxPdfPrintForceStyles(); ensureCoverLogoForPrint(); } catch (e) {}
 }
 
@@ -4934,6 +4938,7 @@ function generateDeepReport(data) {
     }
 
     html += safeCall(()=>buildReviewCallout(data)||'', 'review-callout');
+    html += safeCall(()=>buildReportFooterUtilities(data), 'footerUtilities');
 
     document.getElementById('report-container').innerHTML = html;
 
@@ -12090,9 +12095,58 @@ function buildReviewCallout(data) {
         + '</div>';
 }
 
-/** 본문 하단 부록 안내 — 화면·ZIP 본문에서 제외(우하단 FAB·목차 링크로 다운로드) */
+/** 본문 하단 부록 안내 — 화면에 표시(ZIP 캡처 절 분할에서는 제외) */
 function buildReportFooterUtilities(data) {
-    return '';
+    var name = (data && data.name) ? data.name : '고객';
+    var nmDn = nmDnim(name);
+    var reportDate = getReportBaseDate(data);
+    var reportDateStr = reportDate.getFullYear() + '년 ' + (reportDate.getMonth() + 1) + '월 ' + reportDate.getDate() + '일';
+
+    var cardStyle = 'text-align:left;padding:16px 18px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(199,167,106,0.14);margin-bottom:14px;';
+    var headStyle = 'font-size:12px;color:var(--gold);letter-spacing:0.08em;margin-bottom:8px;font-weight:700;';
+    var pStyle = 'margin:0;font-size:13px;line-height:1.9;color:#d6dae2;';
+    var btnRow = 'display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:14px;';
+    var btnZip = 'flex:1 1 200px;max-width:320px;';
+    var btnPdf = 'flex:0 1 auto;min-width:120px;padding:14px 18px;font-size:13px;opacity:0.88;';
+
+    return ''
+        + '<section id="sec-report-footer-utilities" class="report-footer-utilities sajux-glass-heavy" '
+        + 'style="margin:48px auto 0;padding:36px 24px 56px;max-width:720px;border-top:1px dashed rgba(199,167,106,0.28);">'
+
+        + '<div style="font-size:10px;letter-spacing:0.22em;color:rgba(199,167,106,0.72);margin-bottom:12px;font-weight:700;text-align:center;">[ 리포트 부록 · 이용 안내 ]</div>'
+        + '<h2 style="font-family:\'Noto Sans KR\',serif;font-size:22px;font-weight:700;color:var(--text,rgba(255,255,255,0.95));margin:0 0 6px;text-align:center;line-height:1.5;">' + escHtmlAttr(nmDn) + ', 함께한 여정 — 여기까지 동행해 주시느라 수고 많으셨어요</h2>'
+        + '<p style="margin:0 0 22px;font-size:12.5px;line-height:1.85;color:var(--text-dim,rgba(255,255,255,0.6));text-align:center;">본문은 모두 마무리되었어요. 아래는 이미지 저장과 보관 정책, 그리고 짧은 안내 몇 가지를 한 자리에 정리해 둔 부록입니다.</p>'
+
+        + '<div class="sajux-access-note" style="text-align:left;margin:0 0 18px;padding:16px 18px;border-radius:12px;border:1px solid rgba(199,167,106,0.28);background:rgba(199,167,106,0.05);font-size:13px;line-height:1.9;">'
+        + '<div style="' + headStyle + '">열람 · 이미지 저장 안내</div>'
+        + '<p style="' + pStyle + '">이 리포트는 발행일(<strong>' + reportDateStr + '</strong>)로부터 <strong>30일</strong> 동안만 같은 링크에서 보실 수 있어요. 그 이후에는 다시 들어오기 어려울 수 있으니, 오늘 안에 <strong>ZIP으로 한 번 꼭 저장</strong>해 두시기를 권해 드립니다.</p>'
+        + '<p style="margin:6px 0 0;font-size:13px;line-height:1.9;color:#d6dae2;">우하단 <strong>사주 저장</strong> 또는 아래 버튼으로 절마다 PNG를 받으시면, 링크 만료 이후에도 같은 문서를 두고두고 다시 펼쳐 보실 수 있어요.</p>'
+        + '<div style="' + btnRow + '">'
+        + '<button type="button" class="sajux-image-wide-btn sajux-footer-zip-btn" style="' + btnZip + '">ZIP으로 저장하기</button>'
+        + '<button type="button" class="sajux-pdf-wide-btn pdf-btn" onclick="window.print()" style="' + btnPdf + '">PDF (선택)</button>'
+        + '</div>'
+        + '</div>'
+
+        + '<div style="' + cardStyle + '">'
+        + '<div style="' + headStyle + '">이 리포트를 어떻게 받아 주시면 좋을지</div>'
+        + '<p style="' + pStyle + '">이 리포트는 명리학(사주팔자)을 토대로 정리한 운명 해석 자료예요. 각 장의 풀이는 동양철학의 오행·십성·대운 흐름을 근거로 하고, 실제 결과는 ' + escHtmlAttr(nmDn) + '의 선택과 노력에 따라 얼마든지 달라질 수 있습니다. 인생의 방향을 잡으실 때 곁에 두고 참고하실 수 있는 지도라고 여겨 주세요.</p>'
+        + '</div>'
+
+        + '<div style="' + cardStyle + '">'
+        + '<div style="' + headStyle + '">법적 안내</div>'
+        + '<p style="' + pStyle + '">투자·의료·법률·세무 등 전문 자문을 대체하는 자료는 아니에요. 최종 판단과 그 책임은 이용자 본인에게 있다는 점만 가볍게 기억해 주시면 충분합니다.</p>'
+        + '</div>'
+
+        + '<div style="' + cardStyle + 'margin-bottom:0;">'
+        + '<div style="' + headStyle + '">연령 표기 (만 나이 기준)</div>'
+        + '<p style="' + pStyle + '">대운·세운·연령대 조언에 등장하는 ○○세는 모두 <b>만 나이</b>(양력 생일 기준)예요. 한국식 세는 나이(생일을 기점으로 ±1)와는 숫자가 다를 수 있으니, 본문 숫자를 비교하실 때 살짝 참고만 해 주세요.</p>'
+        + '</div>'
+
+        + '<p class="premium-disclaimer" style="text-align:left;margin:22px 0 0;font-size:11.5px;line-height:1.9;color:var(--text-dim, #777);">'
+        + '※ ' + getAgeBasisNoteHtml('disclaimer')
+        + '</p>'
+
+        + '</section>';
 }
 
 
