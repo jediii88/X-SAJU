@@ -517,6 +517,16 @@ function buildSectionHeader(sectionKey, data, opts) {
     return buildChapterHeadTopicFirst(titleHtml, eyebrow, hook, headOpts) + intro;
 }
 
+/** 챕터 헤더 + 도입부 1회만 — skipIntro·buildChapterIntroHtml 이중 호출 방지 */
+function buildChapterWithSingleIntro(sectionKey, data, bodyHtml, headOpts) {
+    headOpts = Object.assign({}, headOpts || {}, { skipIntro: true });
+    var reg = getSectionRegistryEntry(sectionKey, !!headOpts.compat);
+    var head = buildSectionHeader(sectionKey, data, headOpts);
+    var intro = (reg && reg.topic && data) ? buildChapterIntroHtml(data, reg.topic) : '';
+    var wrapId = headOpts.chapterId ? ' id="' + escHtmlAttr(String(headOpts.chapterId)) + '"' : '';
+    return '<div class="report-chapter"' + wrapId + '>' + head + intro + (bodyHtml || '') + '</div>';
+}
+
 function getSectionEyebrowByTopic(topic) {
     var k;
     for (k in SAJUX_SECTION_REGISTRY) {
@@ -4757,9 +4767,6 @@ function generateDeepReport(data) {
         }
     }
 
-    // ── 각 만세력 섹션 아래에 직접 주입 ──
-    try { injectSectionInterpretations(data); } catch(e) { console.error('inject error:', e.message); }
-
     // ── 4부 구조 ──
     var html = '';
 
@@ -4882,10 +4889,9 @@ function injectSectionInterpretations(data) {
     setEl('relation-inline-summary', () => buildRelationSummary(data));
     // 3. 신살 아래
     setEl('shinsal-inline-summary', () => buildShinsalSummary(data));
-    // 4. 오행 아래
-    setEl('wuxing-inline-summary', () => buildChapter2_Wuxing(data));
-    // 5. 십성 아래
-    setEl('sipseong-inline-summary', () => buildChapter3_Sipseong(data));
+    // 4. 오행 · 5. 십성 — 1부 본문에 이미 전체 챕터가 있음 (여기에 또 넣으면 도입부 2회)
+    setEl('wuxing-inline-summary', () => '');
+    setEl('sipseong-inline-summary', () => '');
     // 6. 신강신약 아래
     setEl('strength-inline-summary', () => buildStrengthSummary(data));
     // 7. 용신/희신 아래 — 동적 풀이
@@ -9060,19 +9066,14 @@ function buildChapter2_Wuxing(data) {
         lackHtml += para('나머지 기운은 비교적 고르게 흐르고 있어서, 따로 보충해야 할 자리는 없어요. 이미 가지신 두꺼운 기운을 어디에 풀어내실지만 잘 고르시면 됩니다.');
     }
 
-    var chHead2 = buildSectionHeader('wuxing', data, { leadHook: buildTopicMetaphorTitle('wuxing', data), skipIntro: true });
-    var chIntro2 = buildChapterIntroHtml(data, 'wuxing');
-    return `<div class="report-chapter">
-        ${chHead2}
-        ${chIntro2}
+    return buildChapterWithSingleIntro('wuxing', data, `
         ${para(introLine)}
         <div class="wuxing-bar-chart" style="background:var(--panel,rgba(0,0,0,0.22));border:1px solid rgba(199,167,106,0.2);border-radius:12px;padding:18px 20px;margin:0 0 22px;">
             <div style="font-size:12px;font-weight:800;color:var(--gold);margin-bottom:14px;letter-spacing:0.5px;">오행 비율</div>
             ${balanceRows}
         </div>
         ${excessHtml}
-        ${lackHtml}
-    </div>`;
+        ${lackHtml}`, { leadHook: buildTopicMetaphorTitle('wuxing', data) });
 }
 
 // ── 오행 챕터에서 분리한 옛 건강·개운법 블록은 buildChapter8_Health / buildChapter9_Remedy로 일원화. ──
@@ -9426,11 +9427,7 @@ function buildChapter4_Wealth(data) {
         </div>`;
     }).join('');
 
-    var chHead4 = buildSectionHeader('wealth', data, { leadHook: false, skipIntro: true });
-    var chIntro4 = buildChapterIntroHtml(data, 'wealth');
-    return `<div class="report-chapter">
-        ${chHead4}
-        ${chIntro4}
+    return buildChapterWithSingleIntro('wealth', data, `
         ${buildDomainSummaryTable({
             data,
             boxTitle: nmEulReul(name) + ' 위한 재물 전략',
@@ -9438,8 +9435,6 @@ function buildChapter4_Wealth(data) {
             route:'벌이는 2~3갈래만 두고, 한 달에 한 번 숫자만 맞추기',
             caution:'보증·말로 잡는 동업·감정으로 큰 돈 움직이기는 멈추기'
         })}
-        ${buildNarrativePara(data, '재물은 감이 아니라 리듬입니다. 같은 사람이라도 돈이 잘 들어오는 해와 지키는 해가 분명히 갈려요. 먼저 ' + nmUi(name) + ' 재물의 결부터 들여다보겠습니다.')}
-
         <div class="wealth-structure sajux-print-surface" style="background:rgba(199,167,106,0.07);border-left:3px solid var(--gold);padding:18px 20px;border-radius:0 10px 10px 0;margin:18px 0;">
             <div style="font-size:11px;color:var(--text-dim);margin-bottom:10px;letter-spacing:0.10em;font-weight:600;">${nmUi(name)} 재물 구조</div>
             <p style="font-size:14.5px;color:#ddd;line-height:1.95;margin:0 0 12px;">${boldStarsToStrong(wealthDesc)}</p>
@@ -9462,7 +9457,7 @@ function buildChapter4_Wealth(data) {
             </div>
         </div>
         ${buildNarrativePara(data, '돈은 빠르게 번 것보다 오래 남는 쪽이 이깁니다. ' + nmUi(name) + ' 리듬은 ' + (isStrong ? '나눠 넣고 쉬는 날을 달력에 고정해 두시는 것' : '신뢰할 수 있는 파트너와 주간 점검을 한 번씩 갖는 것') + ' — 이 한 가지를 평생 지켜 가시면 됩니다.', { marginTop: '14px' })}
-    </div>`;
+    `, { leadHook: false });
 }
 
 function buildDaewunLoop(data) {
@@ -10108,11 +10103,7 @@ function buildChapter5_Career(data) {
         : jaeC===0
         ? '재물 기둥이 얇은 편입니다. 돈을 쫓지 말고 **가치표**를 올리십시오.'
         : '재물 축은 적정입니다. **월 현금흐름 표**만 고정해도 속도가 납니다.';
-    var chHead5 = buildSectionHeader('career', data, { leadHook: false, skipIntro: true });
-    var chIntro5 = buildChapterIntroHtml(data, 'career');
-    return `<div class="report-chapter">
-        ${chHead5}
-        ${chIntro5}
+    return buildChapterWithSingleIntro('career', data, `
         ${buildDomainSummaryTable({
             data,
             boxTitle: nmEulReul(name) + ' 위한 직업 전략',
@@ -10120,7 +10111,6 @@ function buildChapter5_Career(data) {
             route:'핵심 역할 문서화 + 분기 목표 수치화',
             caution:'권한 없는 과잉 책임과 무계획 이직을 절대 삼가십시오'
         })}
-        ${buildNarrativePara(data, '직업은 직함이 아니라 권한의 문제입니다. 권한이 흐리면 실력이 소음이 되고, 권한이 분명하면 같은 일이라도 결과가 또렷하게 쌓입니다. ' + nmUi(name) + ' 사주는 어떤 권한 위에서 가장 빛나는지 — 먼저 그 결을 살펴보겠습니다.')}
         <div class="career-type-block sajux-print-surface" style="background:rgba(199,167,106,0.07);border-radius:12px;padding:22px;margin:18px 0;border:1px solid rgba(199,167,106,0.18);">
             <div style="font-size:11px;color:var(--text-dim);margin-bottom:10px;letter-spacing:0.10em;">직업 성향 분석 결과</div>
             <div style="font-size:16px;font-weight:700;color:var(--gold);margin-bottom:12px;">${cd.label}</div>
@@ -10189,7 +10179,7 @@ function buildChapter5_Career(data) {
         })()}
 
         <p class="ch-text" style="margin-top:16px;">일은 오래 버틸 **한 문장 직무 정의**가 있을 때 남습니다. 그 문장을 이번 분기 안에 쓰십시오.</p>
-    </div>`;
+    `, { leadHook: false });
 }
 
 function buildChapter6_Love(data) {
@@ -10245,9 +10235,7 @@ function buildChapter6_Love(data) {
         ? '다툼이 시작되면 ' + nmEunNeun(name) + ' 본능적으로 **결론을 빨리 내려는** 쪽으로 기울입니다. 그 속도가 본인은 명료해 좋지만, 상대에게는 **자기 감정이 인정받지 못한 채 정리당했다**는 인상을 남길 수 있습니다. 결론보다 먼저 “지금 어떤 마음이세요?”라고 한 번만 물어 주십시오. 한 박자만 늦춰도 같은 결론이 훨씬 부드럽게 안착합니다.'
         : nmEunNeun(name) + ' 다툼 앞에서 **속으로 삼키고 정리하시는** 결에 가깝습니다. 그 자리에서는 평화로워 보이지만, 같은 패턴이 쌓이면 어느 날 갑자기 차갑게 거리를 두는 모습으로 드러납니다. 한 번에 두꺼운 말을 꺼내기 어렵다면, **메시지로 한 줄씩** 남겨두는 방법도 좋습니다. “지금 좀 힘들었어”라는 한 문장이 관계를 살립니다.';
 
-    var chHead6 = buildSectionHeader('love', data, { leadHook: false });
-    return `<div class="report-chapter">
-        ${chHead6}
+    return buildChapterWithSingleIntro('love', data, `
         ${buildDomainSummaryTable({
             data,
             boxTitle: nmEulReul(name) + ' 위한 애정 전략',
@@ -10255,8 +10243,6 @@ function buildChapter6_Love(data) {
             route:'취미·직무가 맞는 모임을 고르고, 첫 만남은 가벼운 대화로 확인한 뒤 대면으로 넘기십시오',
             caution:'감정 최고점·투자·지분 이야기가 겹친 날의 관계 결정은 유예하십시오'
         })}
-
-        ${buildNarrativePara(data, '먼저 ' + nmUi(name) + ' 사랑이 어떤 결로 흐르는지 큰 그림부터 살펴보겠습니다. 그 다음 일지(배우자궁), 사랑의 언어, 다툼이 일어났을 때의 호흡 순서로 차근차근 풀어 드릴게요.')}
 
         <p class="ch-text">${voicePolishReportHtml(data, '애정은 횟수가 아니라 **리듬**입니다. 만난 지 얼마 안 됐거나 다툰 직후처럼 **감정이 가장 높은 날**에는, 동거·결혼 준비 서류·**큰 돈이 오가는 차용 증서**·부동산·맞벌·지분처럼 **나중에 되돌리기 어려운 약속**은 날짜를 미루십시오. 여기서 말하는 것은 **법적으로·돈으로 묶이는 서명**이며, 단순 앱 결제나 일상적인 이름 적기와는 다릅니다.')}</p>
         <p class="ch-text">이성운의 핵은 “누구를 만나느냐”가 아니라 **나는 어떤 패턴으로 만남과 이별을 반복하느냐**입니다. 패턴을 알면 같은 상처를 반값에 삽니다.</p>
@@ -10325,7 +10311,7 @@ function buildChapter6_Love(data) {
             </div>
         </div>
         <p class="ch-text" style="margin-top:16px;">사랑에는 정답이 없어요. <strong>누가 더 옳은가</strong>를 따지기보다, <strong>약속을 어느 만큼 잘 지키는가, 대화가 어느 속도로 오가는가</strong>를 먼저 맞춰 보십시오. 그게 ${nmUi(name)} 관계가 단단해지는 가장 빠른 길입니다.</p>
-    </div>`;
+    `, { leadHook: false });
 }
 
 function buildChapter7_Hidden(data) {
@@ -10471,9 +10457,7 @@ function buildChapter8_Health(data) {
         water:'**신장·호르몬·방광** 검사를 수면 루틴과 같이 묶으십시오.'
     }[maxWuxing] || '**종합 검진**을 연 1회 이상 고정하십시오.';
 
-    var chHead8 = buildSectionHeader('health', data, { leadHook: false });
-    return `<div class="report-chapter">
-        ${chHead8}
+    return buildChapterWithSingleIntro('health', data, `
         ${buildDomainSummaryTable({
             data,
             boxTitle: nmEulReul(name) + ' 위한 건강 전략',
@@ -10481,7 +10465,6 @@ function buildChapter8_Health(data) {
             route:'주간 운동 3회 + 분기 검진 선예약을 고정하십시오',
             caution:'과로·야간 음주·통증 방치를 절대 지속하지 마십시오'
         })}
-        ${buildNarrativePara(data, '건강은 몸만이 아니라 ' + nmUi(name) + ' 감정과 연결된 자리입니다. 먼저 ' + nmIGa(name) + ' 어떤 식으로 피로 신호를 받는지 — 이른바 "피로의 모양"부터 짚어 보겠습니다.')}
 
         <div class="health-fatigue-block sajux-print-surface" style="margin:14px 0 18px;padding:18px 20px;border-radius:12px;background:rgba(255,170,170,0.05);border:1px solid rgba(255,170,170,0.18);">
             <div style="font-size:11px;color:#ff9f9f;letter-spacing:0.10em;margin-bottom:10px;font-weight:700;">${nmUi(name)} 피로의 모양</div>
@@ -10655,7 +10638,7 @@ function buildChapter8_Health(data) {
         </div>
 
         <p class="ch-text" style="margin-top:16px;">건강은 버티는 힘이 아니라 회복 리듬입니다. 몸의 신호를 설명으로 덮지 마십시오. **피곤한 날은 일정을 비우는 것**이 곧 전략입니다.</p>
-    </div>`;
+    `, { leadHook: false });
 }
 
 // ═══════════════════════════════════════════════════════
@@ -10677,7 +10660,7 @@ function buildPartHeader(num, title, subtitle, anchorId, opts) {
         1: '먼저 ' + (opts.name ? nmUi(opts.name) : '이') + ' 타고난 결, 즉 사주의 본바탕을 살펴보겠습니다. 이 결이 모든 흐름의 출발점입니다.',
         2: '타고난 결은 그대로지만, 그 결이 시간 위에서 어떻게 흘러가는지는 또 다른 이야기입니다. 지금 시기의 흐름을 함께 살펴보겠습니다.',
         3: '흐름을 봤으니, 애정·돈·합격·일·건강 다섯 방에서 어떻게 드러나는지 따라가 봅니다.',
-        4: '여기까지 ' + (opts.name ? nmUi(opts.name) : '이') + ' 사주를 차근차근 살폈습니다. 마지막으로, 일상에서 운을 다듬어 가는 실천 지침을 정리해 드립니다.'
+        4: '마지막 장에서는 거창한 의식보다, 일주일만 지켜 볼 작은 루틴부터 짚습니다.'
     };
     var idAttr = anchorId ? (' id="' + String(anchorId).replace(/[^a-zA-Z0-9_-]/g, '') + '"') : '';
     var color = c[num] != null ? c[num] : '199,167,106';
@@ -11398,12 +11381,8 @@ function buildChapter9_Remedy(data) {
         water: '북쪽 침대 헤드 근처에 전자기기 충전을 두지 마십시오. 남색·검정은 겉옷 한 벌만 고정하고, 실내는 조도 낮게 유지하십시오. 짠맛은 아침 미역 한 그릇으로 끝—밤엔 짠 국물을 피하십시오. 긴 통화·긴 회의는 오후 5시 이전에 끊으십시오.'
     })[yong] || '표의 행운 색·방향·시간대 중 두 가지만 골라 일주일 동안 같은 패턴으로 반복하십시오. 덜 피곤한 조합이 나오면 그대로 고정하십시오.';
 
-    var chHeadR = buildSectionHeader('remedy', data, { leadHook: false, skipIntro: true });
-    return '<div class="report-chapter" id="sec-remedy-final">'
-        + chHeadR
-        + buildChapterIntroHtml(data, 'remedy')
-        + buildNarrativePara(data, '여기까지 ' + nmUi(name) + ' 사주를 차근차근 살폈습니다. 이 마지막 장은 사주를 바꾸는 자리가 아니라, 타고난 결을 일상의 결로 바꿔 드리는 자리입니다. 색·방향·시간·작은 행동 — 거창하지 않은 것을 일주일만 지켜 보십시오. 덜 지친 조합이 ' + nmKke(name) + ' 가장 큰 보약입니다.')
-        + '<div class="remedy-mindset sajux-print-surface" style="margin:14px 0 18px;padding:18px 20px;border-radius:12px;background:rgba(199,167,106,0.06);border-left:3px solid var(--gold);">'
+    return buildChapterWithSingleIntro('remedy', data,
+        '<div class="remedy-mindset sajux-print-surface" style="margin:14px 0 18px;padding:18px 20px;border-radius:12px;background:rgba(199,167,106,0.06);border-left:3px solid var(--gold);">'
         + '<div style="font-size:11px;color:var(--gold);letter-spacing:0.10em;margin-bottom:10px;font-weight:700;">' + nmUi(name) + ' 개운(開運)의 흐름</div>'
         + '<p style="font-size:13.5px;color:#e8e0d2;line-height:1.95;margin:0;">' + boldStarsToStrong(MINDSET_RX) + '</p>'
         + '</div>'
@@ -11450,8 +11429,8 @@ function buildChapter9_Remedy(data) {
         + '<div style="background:rgba(255,150,0,0.06);border-radius:8px;padding:14px;border:1px solid rgba(255,150,0,0.15);"><div style="font-size:12px;font-weight:700;color:#ff9800;margin-bottom:8px;">⚠ 그달엔 하지 말 것</div><p style="font-size:13px;color:#bbb;line-height:1.88;margin:0;">연대보증·지분 계약·신규 대출·야간 송금·카톡으로 받은 구두 합의를 그대로 믿는 일. 충동 이직·충동 창업·도박성 투자. 술자리에서 나온 동업·공동 투자 제안에 바로 답장하는 일.</p></div>'
         + '<div style="background:rgba(0,200,83,0.06);border-radius:8px;padding:14px;border:1px solid rgba(0,200,83,0.15);"><div style="font-size:12px;font-weight:700;color:#00C853;margin-bottom:8px;">✦ 그달엔 대신 할 것</div><p style="font-size:13px;color:#bbb;line-height:1.88;margin:0;">자격·문서·장부만 정리하고 **수면을 먼저** 채우십시오. 표의 색·방향·시간대를 **일주일만** 지키면 집중이 돌아옵니다. 현금은 **나가는 구멍부터** 막고, 들어오는 돈은 **문자·메일 증빙**으로만 확인하십시오.</p></div>'
         + '</div></div>'
-        + '<div data-sajux-capture-boundary="part4" aria-hidden="true" style="height:0;margin:0;padding:0;border:0;overflow:hidden;"></div>'
-        + '</div>';
+        + '<div data-sajux-capture-boundary="part4" aria-hidden="true" style="height:0;margin:0;padding:0;border:0;overflow:hidden;"></div>',
+        { leadHook: false, chapterId: 'sec-remedy-final' });
 }
 
 /** 인생 일대기 — 장면 서사 + 끝에 실행 한 줄(합쇼체). 대운 점수는 내부 계산만 사용합니다. */
