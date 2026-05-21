@@ -1044,6 +1044,17 @@ function calcSaju(info) {
   };
 }
 
+/** 8자 오행 분포 → 온도(寒暖)·습도(燥潤) 성향 (시·일·월·년 합산) */
+function chartOhClimate(counts) {
+  const w = counts.wood || 0, f = counts.fire || 0, e = counts.earth || 0;
+  const m = counts.metal || 0, wa = counts.water || 0;
+  const warm = w + f + e * 0.35;
+  const cool = m + wa + e * 0.2;
+  const moist = wa + w * 0.9;
+  const dry = f + m + e * 0.55;
+  return { warm, cool, moist, dry, temp: warm - cool, humid: moist - dry };
+}
+
 // ══════════════════════════════════════
 // 궁합 분석 (100점)
 // ══════════════════════════════════════
@@ -1087,24 +1098,105 @@ function analyzeCoupling(a, b) {
       desc:`${aOh}·${bOh} — 비화 또는 중립 관계.` });
   }
 
-  // 3. 오행 균형 보완 +20
+  // 3. 오행·온습도 — 기후(寒暖燥潤) 조화 + 생(生) + 보완 보조 (최대 +20)
   const ohKeys = ['wood','fire','earth','metal','water'];
+  const OH_KR_SHORT = {wood:'목',fire:'화',earth:'토',metal:'금',water:'수'};
+  const ca = chartOhClimate(a.counts);
+  const cb = chartOhClimate(b.counts);
   let synergy = 0;
+  const climateBits = [];
+  let ohShengFeed = 0;
+  let ohComplement = 0;
+  let ohExcess = 0;
+
+  // 온도(寒暖): 차가운 쪽 ↔ 따뜻한 쪽
+  if (ca.temp <= -2 && cb.temp >= 2) {
+    synergy += 7;
+    climateBits.push('차가운 기운이 강한 쪽에 상대의 목·화 기운이 스며들어 **온도가 맞춰집니다**');
+  }
+  if (cb.temp <= -2 && ca.temp >= 2) {
+    synergy += 7;
+    climateBits.push('차가운 기운이 강한 쪽에 상대의 따뜻한 기운이 **한기를 녹여 줍니다**');
+  }
+  if (Math.abs(ca.temp) <= 1.5 && Math.abs(cb.temp) <= 1.5) {
+    synergy += 2;
+    climateBits.push('둘 다 온도 성향이 중간이라 **생활 리듬이 무난하게 맞습니다**');
+  }
+  if (ca.temp <= -3 && cb.temp <= -3) {
+    synergy -= 5;
+    climateBits.push('둘 다 한기(寒)가 강해, 의식적으로 **따뜻한 루틴**이 필요합니다');
+  }
+  if (ca.temp >= 3.5 && cb.temp >= 3.5) {
+    synergy -= 4;
+    climateBits.push('둘 다 열기(熱)가 강해, 휴식·수분으로 **온도를 낮추는 조율**이 필요합니다');
+  }
+
+  // 습도(燥潤): 마른 쪽 ↔ 윤 있는 쪽
+  if (ca.humid <= -2 && cb.humid >= 2) {
+    synergy += 6;
+    climateBits.push('건조한 쪽에 상대의 수·목 기운이 **윤기(潤)를 채워 줍니다**');
+  }
+  if (cb.humid <= -2 && ca.humid >= 2) {
+    synergy += 6;
+    climateBits.push('마른 기운 쪽에 상대가 **습도를 맞춰 주는 역할**을 합니다');
+  }
+  if (ca.humid <= -3 && cb.humid <= -3) {
+    synergy -= 4;
+    climateBits.push('둘 다燥(乾)한 편이라, 대화·휴식으로 **마음의 습도**를 챙겨야 합니다');
+  }
+
+  // 상생(生): 강한 기운이 상대 약한 오행을 키움
+  ohKeys.forEach(src => {
+    const tgt = SHENG[src];
+    const aSrc = a.counts[src] || 0;
+    const bTgt = b.counts[tgt] || 0;
+    const bSrc = b.counts[src] || 0;
+    const aTgt = a.counts[tgt] || 0;
+    if (aSrc >= 2 && bTgt <= 1) { synergy += 3; ohShengFeed++; }
+    if (bSrc >= 2 && aTgt <= 1) { synergy += 3; ohShengFeed++; }
+  });
+  const topOh = (counts) => ohKeys.reduce((best, oh) => ((counts[oh] || 0) > (counts[best] || 0)) ? oh : best, 'wood');
+  const aTop = topOh(a.counts);
+  const bTop = topOh(b.counts);
+  if (SHENG[aTop] === bTop && (a.counts[aTop] || 0) >= 2 && (b.counts[bTop] || 0) >= 2) {
+    synergy += 3;
+    ohShengFeed++;
+  } else if (SHENG[bTop] === aTop && (b.counts[bTop] || 0) >= 2 && (a.counts[aTop] || 0) >= 2) {
+    synergy += 3;
+    ohShengFeed++;
+  }
+
+  // 보완(缺補): 보조 가점 — 빈 오행 채움 (가중 낮춤)
   ohKeys.forEach(oh => {
     const aVal = a.counts[oh] || 0;
     const bVal = b.counts[oh] || 0;
-    if (aVal === 0 && bVal >= 2) synergy += 4; // A 부족 B 보완
-    if (bVal === 0 && aVal >= 2) synergy += 4; // B 부족 A 보완
-    if (aVal >= 3 && bVal >= 3) synergy -= 3; // 동일 과잉
+    if (aVal === 0 && bVal >= 2) { synergy += 2; ohComplement++; }
+    if (bVal === 0 && aVal >= 2) { synergy += 2; ohComplement++; }
+    if (aVal >= 3 && bVal >= 3) { synergy -= 3; ohExcess++; }
   });
+
   const ohScore = Math.max(-10, Math.min(20, synergy));
   score += ohScore;
+  const uniqClimate = climateBits.filter((v, i, arr) => arr.indexOf(v) === i);
+  let ohClimateSummary = '';
+  if (ca.temp <= -2 && cb.temp >= 2) ohClimateSummary = '8자 기준, 한쪽의 한기(寒)에 다른 쪽의 따뜻한 기운(목·화)이 스며 **온도가 맞춰집니다**.';
+  else if (cb.temp <= -2 && ca.temp >= 2) ohClimateSummary = '8자 기준, 차가운 쪽에 상대의 따뜻한 기운이 **한기를 녹여 줍니다**.';
+  else if (ca.humid <= -2 && cb.humid >= 2) ohClimateSummary = '8자 기준, 건조한 쪽에 상대의 수·목 기운이 **윤기(潤)를 채웁니다**.';
+  else if (cb.humid <= -2 && ca.humid >= 2) ohClimateSummary = '8자 기준, 마른 쪽에 상대가 **습도·마음의 윤기**를 맞춰 줍니다.';
+  else if (uniqClimate.length) ohClimateSummary = uniqClimate[0].replace(/\*\*/g, '');
+  else ohClimateSummary = '8자의 온도·습도와 생(生)해 주는 기운이 맞물리면 관계가 편해집니다.';
   if (ohScore > 0) {
-    breakdown.push({ label:'오행 시너지', value:`+${ohScore}`, cls:'plus',
-      desc:'부족한 오행을 서로 보완하는 시너지 관계입니다.' });
+    const bits = uniqClimate.slice(0, 2);
+    if (ohShengFeed) bits.push('한쪽이 **생(生)해 주는 기운**으로 상대를 키워 줌');
+    if (ohComplement) bits.push('부족한 오행 **빈칸 보완**도 함께 작동');
+    breakdown.push({ label:'오행·온습도', value:`+${ohScore}`, cls:'plus',
+      desc: (bits.length ? bits.join(' · ') : '8자 기후가 서로 맞물립니다.') + ' (시·일·월·년 8글자)' });
   } else if (ohScore < 0) {
-    breakdown.push({ label:'오행 충돌', value:`${ohScore}`, cls:'minus',
-      desc:'같은 오행이 과잉되어 에너지 충돌이 일어납니다.' });
+    breakdown.push({ label:'오행·온습도', value:`${ohScore}`, cls:'minus',
+      desc: (uniqClimate[0] || '한기·燥氣가 겹쳐 조율이 필요합니다.') + ' (8자 기준)' });
+  } else if (uniqClimate.length || ohShengFeed || ohComplement) {
+    breakdown.push({ label:'오행·온습도', value:'+0', cls:'neutral',
+      desc:'온습·생·보완 요소가 있으나 상쇄되어 중립입니다. (8자 기준)' });
   }
   // 4. 삼합 +15
   let samhapScore = 0;
@@ -1152,7 +1244,7 @@ function analyzeCoupling(a, b) {
   else                  { grade='어려운 인연 🔥'; sub='강한 에너지 충돌. 상호 이해와 배려가 핵심입니다.'; }
 
   const ringColor = score >= 75 ? '#c7a76a' : score >= 55 ? '#9a9082' : score >= 40 ? '#c9a24c' : '#d45a52';
-  return { score, grade, sub, breakdown, ringColor, isHap, isChung, samhapScore, ssScore, aOh, bOh, shengAB, shengBA };
+  return { score, grade, sub, breakdown, ringColor, isHap, isChung, samhapScore, ssScore, aOh, bOh, shengAB, shengBA, ohClimateSummary };
 }
 
 // ══════════════════════════════════════
@@ -1172,7 +1264,9 @@ function renderPersonCard(prefix, info, saju) {
     var dbWater = (db==='子'||db==='亥');
     var dsStroke = dsWater ? '-webkit-text-stroke:0.5px rgba(255,255,255,0.7);paint-order:stroke fill;' : '';
     var dbStroke = dbWater ? '-webkit-text-stroke:0.5px rgba(255,255,255,0.7);paint-order:stroke fill;' : '';
-    iljuEl.innerHTML = `<span class="${HAN_COLOR[ds]}" style="font-family:'Noto Sans KR',sans-serif;font-weight:300;${dsStroke}">${ds}</span><span class="${HAN_COLOR[db]}" style="font-family:'Noto Sans KR',sans-serif;font-weight:300;${dbStroke}">${db}</span> <span style="font-size:13px;color:var(--text-dim);">${HAN_KOR[ds]}${HAN_KOR[db]}</span>`;
+    const dsLbl = (typeof compatHanjaGlossChar === 'function') ? compatHanjaGlossChar(ds, 'stem') : ds + '(' + (HAN_KOR[ds]||'') + ')';
+    const dbLbl = (typeof compatHanjaGlossChar === 'function') ? compatHanjaGlossChar(db, 'branch') : db + '(' + (HAN_KOR[db]||'') + ')';
+    iljuEl.innerHTML = `<span class="${HAN_COLOR[ds]}" style="font-family:'Noto Sans KR',sans-serif;font-weight:300;font-size:15px;${dsStroke}">${dsLbl}</span> <span class="${HAN_COLOR[db]}" style="font-family:'Noto Sans KR',sans-serif;font-weight:300;font-size:15px;${dbStroke}">${dbLbl}</span>`;
   })();
   metaEl.innerHTML = `${saju.solarYear}년생 · ${info.gender==='male'?'남':'여'} · ${saju.strength}`
     + (function(){
@@ -1267,6 +1361,8 @@ function renderPersonCard(prefix, info, saju) {
   }).join('');
 }
 
+function escHtmlAttr(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+
 function renderScore(result) {
   document.getElementById('score-num').textContent   = result.score;
   document.getElementById('score-grade').textContent = result.grade;
@@ -1284,7 +1380,8 @@ function renderScore(result) {
   }
   if (chemGuideEl && typeof compatComputeChemistryScore === 'function' && typeof buildCompatChemGuideText === 'function' && window.__compatCtx) {
     const chem = compatComputeChemistryScore(window.__compatCtx);
-    chemGuideEl.textContent = '케미스트리 ' + buildCompatChemGuideText(chem);
+    chemGuideEl.innerHTML = '<span style="display:block;font-weight:600;">케미스트리 ' + escHtmlAttr(buildCompatChemGuideText(chem)) + '</span>'
+      + (typeof buildCompatChemScoreExplainHtml === 'function' ? buildCompatChemScoreExplainHtml(window.__compatCtx) : '');
   }
 
   const ring = document.getElementById('score-ring');
@@ -1294,6 +1391,20 @@ function renderScore(result) {
   }, 100);
 
   const gloss = (t) => (typeof annotateHanjaGloss === 'function' ? annotateHanjaGloss(t) : t);
+  let ohSumEl = document.getElementById('oh-climate-summary');
+  if (!ohSumEl) {
+    const grid = document.getElementById('breakdown-grid');
+    if (grid && grid.parentNode) {
+      ohSumEl = document.createElement('p');
+      ohSumEl.id = 'oh-climate-summary';
+      ohSumEl.style.cssText = 'font-size:12.5px;color:var(--text-soft);line-height:1.85;margin:0 0 14px;text-align:left;max-width:520px;margin-left:auto;margin-right:auto;';
+      grid.parentNode.insertBefore(ohSumEl, grid);
+    }
+  }
+  if (ohSumEl && result.ohClimateSummary) {
+    ohSumEl.innerHTML = '<strong style="color:var(--gold);font-weight:600;">🌡 오행·온습도</strong> — ' + gloss(result.ohClimateSummary);
+  }
+
   document.getElementById('breakdown-grid').innerHTML = result.breakdown.map(b =>
     `<div class="bk-item">
       <div class="bk-label">${gloss(b.label)}</div>
@@ -1441,7 +1552,7 @@ function buildCompatMarriageFriction(aName, bName, score, isHap, isChung) {
     }
   }[tone];
   const headerNote = tone === 'good' ? '두 분의 호흡이 잘 맞는 결이라, 큰 마찰은 적은 편입니다. 다만 작은 가시도 쌓이면 두꺼워지니, 미리 알고 다듬어 두시면 좋습니다.'
-    : tone === 'mid' ? '두 분 사이에 결의 차이가 있긴 하지만, 그 차이가 곧 보완입니다. 아래 네 자리만 의식하시면 평생 잔고장이 크게 줄어듭니다.'
+    : tone === 'mid' ? '두 분 사이에 결·온도 차이가 있긴 하지만, 그 차이가 **온습도 조율**이 됩니다. 아래 네 자리만 의식하시면 평생 잔고장이 크게 줄어듭니다.'
     : '두 분 사이에 결의 거리가 조금 있는 편입니다. 그렇다고 안 맞는 관계가 아닙니다. 거리를 인정한 위에서 작은 약속을 지키는 것 — 이것이 이 관계가 가장 빛나는 방법입니다.';
 
   return '<div class="insight-card sajux-print-surface" style="margin-top:14px;padding:20px 22px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(199,167,106,0.20);">'
@@ -1469,7 +1580,9 @@ function buildRelPanels(params, a, b, result) {
   };
   const overviewEl = document.getElementById('compat-voice-overview');
   if (overviewEl) {
+    const climateLine = (typeof compatOhClimateOneLiner === 'function') ? compatOhClimateOneLiner(compatCtx) : '';
     overviewEl.innerHTML = voice('overview')
+      + (climateLine ? '<div class="insight-card" style="margin:12px 0 0;padding:14px 16px;border-radius:12px;background:rgba(199,167,106,0.06);border:1px solid rgba(199,167,106,0.2);"><p style="font-size:13.5px;color:#ddd;line-height:1.9;margin:0;">' + (typeof compatFmt === 'function' ? compatFmt(climateLine) : climateLine) + '</p></div>' : '')
       + (typeof buildCompatMissionCard === 'function' ? buildCompatMissionCard(compatCtx, 'overview') : '');
   }
   const aName = params.a.name || (params.a.gender==='male'?'남성':'여성');
@@ -1543,9 +1656,15 @@ function buildRelPanels(params, a, b, result) {
 
   // ── 연인 ──
   const ohFlowCard = buildCompatOhFlow(aOh, bOh, aName, bName, a.strength, b.strength);
+  let ohClimateCard = '';
+  if (typeof compatOhClimateOneLiner === 'function') {
+    const cl = compatOhClimateOneLiner(compatCtx);
+    ohClimateCard = '<div class="insight-card" style="margin-top:12px;border-left:3px solid rgba(122,184,212,0.55);"><div class="tag" style="color:#7ab8d4;">🌡 8자 온습도(溫濕)</div><br><p style="font-size:13.5px;color:#ccc;line-height:1.95;margin:0;">'
+      + (typeof compatFmt === 'function' ? compatFmt(cl) : cl) + '</p></div>';
+  }
   setCompatVoice('lover');
   document.getElementById('panel-lover').innerHTML = (typeof buildCompatLoverPanelHtml === 'function' ? buildCompatLoverPanelHtml(compatCtx) : '')
-    + ohFlowCard;
+    + ohClimateCard + ohFlowCard;
 
   // ── 부부 ──
   const marriedExtra = [];
@@ -1659,7 +1778,7 @@ function buildRelPanels(params, a, b, result) {
       <div class="tag">🔄 두 사람이 서로에게 끌리는 이유</div><br>
       ${isHap ? `<strong>${aName}(${aDB})·${bName}(${bDB})</strong> — 배우자궁이 합(合)을 이룹니다. 두 사람은 서로가 원하는 이상형에 가까운 특징을 갖고 있습니다. 처음 만날 때부터 '이 사람이다'는 느낌이 강하게 올 수 있습니다.` :
       isChung ? `<strong>${aName}(${aDB})·${bName}(${bDB})</strong> — 배우자궁이 충(冲)을 이룹니다. 서로 다른 에너지가 강하게 충돌하여 강렬한 끌림이 생깁니다. '다르기 때문에 끌리는' 관계입니다.` :
-      `두 사람의 배우자궁이 직접적 합충은 없지만, 오행 보완을 통해 서로에게 필요한 에너지를 채워주는 관계입니다.`}
+      `두 사람의 배우자궁이 직접적 합충은 없지만, 8자의 온습도·상생으로 서로의 기후를 맞춰 주는 관계입니다.`}
     </div>`
   ];
   setCompatVoice('spouse');
@@ -1742,7 +1861,9 @@ function buildRelPanels(params, a, b, result) {
 
   const chemGuideEl = document.getElementById('score-chem-guide');
   if (chemGuideEl && typeof compatComputeChemistryScore === 'function' && typeof buildCompatChemGuideText === 'function') {
-    chemGuideEl.textContent = '케미스트리 ' + buildCompatChemGuideText(compatComputeChemistryScore(compatCtx));
+    const chem = compatComputeChemistryScore(compatCtx);
+    chemGuideEl.innerHTML = '<span style="display:block;font-weight:600;">케미스트리 ' + escHtmlAttr(buildCompatChemGuideText(chem)) + '</span>'
+      + (typeof buildCompatChemScoreExplainHtml === 'function' ? buildCompatChemScoreExplainHtml(compatCtx) : '');
   }
 }
 
@@ -1807,11 +1928,17 @@ function buildTimeline(a, b, aInfo, bInfo, params) {
   if (tlPanel && typeof buildCompatTimelineSynergyHtml === 'function' && window.__compatCtx) {
     tlPanel.innerHTML = buildCompatTimelineSynergyHtml(window.__compatCtx);
   }
+  const tlGzPair = (gz) => {
+    if (!gz || gz.length < 2) return gz || '';
+    const g0 = (typeof compatHanjaGlossChar === 'function') ? compatHanjaGlossChar(gz[0], 'stem') : gz[0];
+    const g1 = (typeof compatHanjaGlossChar === 'function') ? compatHanjaGlossChar(gz[1], 'branch') : gz[1];
+    return g0 + g1;
+  };
   const tlCards = slots.map(s =>
     `<div class="t-card ${s.cls}" ${s.isCurrent?'style="box-shadow:0 0 0 2px var(--gold);"':''}>
       <div class="t-age">${params.a.name||'A'}님 ${s.ageA}세 / ${params.b.name||'B'}님 ${s.ageB}세</div>
       <div class="t-icon">${s.icon}</div>
-      <div class="t-gz"><span class="${HAN_COLOR[s.aGZ[0]]}">${s.aGZ[0]}${s.aGZ[1]}</span> · <span class="${HAN_COLOR[s.bGZ[0]]}">${s.bGZ[0]}${s.bGZ[1]}</span></div>
+      <div class="t-gz" style="font-size:10px;line-height:1.5;"><span class="${HAN_COLOR[s.aGZ[0]]}">${tlGzPair(s.aGZ)}</span> · <span class="${HAN_COLOR[s.bGZ[0]]}">${tlGzPair(s.bGZ)}</span></div>
       <div class="t-label">${s.label}</div>
       <div style="font-size:11px;color:#aaa;margin-top:6px;line-height:1.6;">${typeof compatTimelineLine === 'function' ? compatTimelineLine(s.cls, String(s.ageA) + s.ageB + s.cls) : tlRand(TL_DESC[s.cls])}</div>
     </div>`
