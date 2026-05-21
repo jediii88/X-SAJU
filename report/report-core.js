@@ -4479,12 +4479,70 @@ function sajuxMountSliceForCapture(host, el) {
 }
 function sajuxHtml2canvasIgnoreEl(node) {
     if (!node || node.nodeType !== 1) return false;
-    if (node.tagName === 'CANVAS') return true;
-    if (node.id === 'star-canvas' || node.id === 'sajux-capture-overlay') return true;
+    var tag = (node.tagName || '').toUpperCase();
+    if (tag === 'CANVAS') return true;
+    if (node.id === 'star-canvas' || node.id === 'sajux-capture-overlay' || node.id === 'sajux-capture-host') return true;
+    if (node.closest && node.closest('#star-canvas, #sajux-capture-overlay')) return true;
     return false;
 }
+var _sajuxCreatePatternPatched = false;
+function sajuxPatchCreatePatternForCapture() {
+    if (_sajuxCreatePatternPatched || !window.CanvasRenderingContext2D) return function () {};
+    var proto = CanvasRenderingContext2D.prototype;
+    var orig = proto.createPattern;
+    if (!orig) return function () {};
+    proto.createPattern = function (image, repetition) {
+        try {
+            if (image && (image.width === 0 || image.height === 0)) return null;
+            return orig.call(this, image, repetition);
+        } catch (e) {
+            return null;
+        }
+    };
+    _sajuxCreatePatternPatched = true;
+    return function () {
+        proto.createPattern = orig;
+        _sajuxCreatePatternPatched = false;
+    };
+}
+function sajuxDetachStarCanvas() {
+    var c = document.getElementById('star-canvas');
+    if (!c || !c.parentNode) return null;
+    var parent = c.parentNode;
+    parent.removeChild(c);
+    return { el: c, parent: parent };
+}
+function sajuxRestoreStarCanvas(stash) {
+    if (!stash || !stash.el || !stash.parent) return;
+    try { stash.parent.appendChild(stash.el); } catch (e) {}
+}
+function sajuxStripUnsafeCaptureStyles(root) {
+    var touched = [];
+    if (!root || !root.querySelectorAll) return function () {};
+    var nodes = [root].concat(Array.prototype.slice.call(root.querySelectorAll('*')));
+    nodes.forEach(function (el) {
+        if (!el || !el.style) return;
+        var cs = window.getComputedStyle(el);
+        var need = (cs && (cs.backdropFilter && cs.backdropFilter !== 'none'))
+            || (cs && cs.webkitBackdropFilter && cs.webkitBackdropFilter !== 'none');
+        if (!need && !el.style.backdropFilter && !el.style.webkitBackdropFilter) return;
+        touched.push({
+            el: el,
+            bf: el.style.backdropFilter,
+            wbf: el.style.webkitBackdropFilter
+        });
+        el.style.setProperty('backdrop-filter', 'none', 'important');
+        el.style.setProperty('-webkit-backdrop-filter', 'none', 'important');
+    });
+    return function () {
+        touched.forEach(function (x) {
+            x.el.style.backdropFilter = x.bf;
+            x.el.style.webkitBackdropFilter = x.wbf;
+        });
+    };
+}
 function sajuxOnCaptureClone(doc) {
-    var hideIds = ['sajux-pdf-fab', 'sajux-image-fab', 'floating-toc', 'sticky-part-nav', 'theme-toggle', 'star-canvas', 'sajux-capture-overlay'];
+    var hideIds = ['sajux-pdf-fab', 'sajux-image-fab', 'floating-toc', 'sticky-part-nav', 'theme-toggle', 'star-canvas', 'sajux-capture-overlay', 'sajux-capture-host'];
     hideIds.forEach(function (id) {
         var n = doc.getElementById(id);
         if (n) n.remove();
@@ -4493,10 +4551,11 @@ function sajuxOnCaptureClone(doc) {
     if (!doc.getElementById('sajux-capture-clone-style')) {
         var st = doc.createElement('style');
         st.id = 'sajux-capture-clone-style';
-        st.textContent = '#report-container,#sec-report-full{overflow:visible!important;max-height:none!important;height:auto!important;}'
+        st.textContent = 'canvas{display:none!important;}'
+            + '#report-container,#sec-report-full{overflow:visible!important;max-height:none!important;height:auto!important;}'
             + '.cover-page,#sec-cover,#sec-client-cover{min-height:auto!important;height:auto!important;}'
-            + '.sajux-glass-heavy,.report-chapter,.card,.glass-panel,.badge,.tag,.jijanggan,.module-item,.yearly-card,.monthly-card{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}'
-            + 'body::before{display:none!important;}';
+            + '*,*::before,*::after{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}'
+            + 'body::before,body::after{display:none!important;content:none!important;}';
         doc.head.appendChild(st);
     }
     var cloneRoot = doc.getElementById('report-container') || doc.getElementById('sec-report-full');
@@ -4505,6 +4564,30 @@ function sajuxOnCaptureClone(doc) {
         cloneRoot.style.maxHeight = 'none';
         cloneRoot.style.height = 'auto';
     }
+}
+function sajuxHtml2canvasSlice(target, opts) {
+    opts = opts || {};
+    var restorePattern = sajuxPatchCreatePatternForCapture();
+    var restoreStyles = sajuxStripUnsafeCaptureStyles(target);
+    var options = {
+        backgroundColor: '#050508',
+        scale: opts.scale || 1.5,
+        useCORS: true,
+        allowTaint: true,
+        logging: false,
+        foreignObjectRendering: false,
+        ignoreElements: sajuxHtml2canvasIgnoreEl,
+        onclone: sajuxOnCaptureClone
+    };
+    return html2canvas(target, options).then(function (result) {
+        restoreStyles();
+        restorePattern();
+        return result;
+    }, function (err) {
+        restoreStyles();
+        restorePattern();
+        throw err;
+    });
 }
 function sajuxHideForCapture() {
     var ids = ['sajux-pdf-fab', 'sajux-image-fab', 'floating-toc', 'sticky-part-nav', 'theme-toggle', 'star-canvas'];
@@ -4549,6 +4632,7 @@ function sajuxCaptureReportAsImage() {
     });
 }
 function sajuxRunReportImageCapture(root) {
+    var starStash = sajuxDetachStarCanvas();
     var hidden = sajuxHideForCapture();
     var fab = document.getElementById('sajux-image-fab');
     if (fab) { fab.disabled = true; fab.textContent = '저장 중…'; }
@@ -4596,6 +4680,7 @@ function sajuxRunReportImageCapture(root) {
         if (pack.container && pack.container !== root) pack.container.style.overflow = '';
         if (captureHost) captureHost.innerHTML = '';
         sajuxRestoreAfterCapture(hidden);
+        sajuxRestoreStarCanvas(starStash);
         if (fab) { fab.disabled = false; fab.textContent = '📥 사주 저장'; }
     }
     function captureNext() {
@@ -4633,15 +4718,7 @@ function sajuxRunReportImageCapture(root) {
             try { liveAnchor.scrollIntoView({ block: 'start', behavior: 'instant' }); } catch (e1) { try { liveAnchor.scrollIntoView(true); } catch (e2) {} }
         }
         sajuxShowCaptureOverlay('사주 다운로드 중… (' + (idx + 1) + '/' + total + ')\n' + (slice.jul || '') + ' ' + (slice.title || ''));
-        html2canvas(captureTarget, {
-            backgroundColor: '#050508',
-            scale: sliceScale,
-            useCORS: true,
-            allowTaint: true,
-            logging: false,
-            ignoreElements: sajuxHtml2canvasIgnoreEl,
-            onclone: sajuxOnCaptureClone
-        }).then(function (canvas) {
+        sajuxHtml2canvasSlice(captureTarget, { scale: sliceScale }).then(function (canvas) {
             if (!canvas || canvas.width < 1 || canvas.height < 1) {
                 idx += 1;
                 captureNext();
