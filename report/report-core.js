@@ -2157,6 +2157,8 @@ function voicePolishParagraph(data, text) {
     s = s.replace(/플랫폼/g, '무대');
     s = s.replace(/유년기부터\s*만년까지/g, '유년기부터 말년까지');
     s = s.replace(/풍요롭은/g, '풍요로운');
+    s = s.replace(/운제/g, '운세');
+    s = s.replace(/알·창작/g, '일·창작');
     s = s.replace(/풍요로운의/g, '풍요로움의');
     s = s.replace(/([가-힣]+)롭은(?=\s|분|것|형|인|자|때|데|며|고|\.|,|$)/g, '$1로운');
     // Remove a known repeated/macro sentence if present (defensive).
@@ -6443,7 +6445,7 @@ function sajuxSipLifeAngle(sip) {
     if (sip === '편관' || sip === '정관') return '직장·책임·시험·규칙';
     if (sip === '편재' || sip === '정재') return '돈·거래·생활비';
     if (sip === '편인' || sip === '정인') return '마음·불안·배움·쉼';
-    if (sip === '식신' || sip === '상관') return '말·창작·표현·이직 충동';
+    if (sip === '식신' || sip === '상관') return '일·창작·표현·이직 충동';
     if (sip === '비견' || sip === '겁재') return '동료·경쟁·자존심';
     return '일상';
 }
@@ -7039,6 +7041,14 @@ function upcomingSeyunBodyBrief(data, yr, g, j, t, ledger) {
     });
 }
 
+/** 양력 월(1~12) → 월건 지지 인덱스. 입춘(≈2/4) 기준: 양력 1월=丑, 2월=寅 … 12월=子 */
+function sajuxSolarMonthWolunJiIndex(solarMonth) {
+    var m = parseInt(solarMonth, 10);
+    if (isNaN(m) || m < 1) m = 1;
+    if (m > 12) m = ((m - 1) % 12) + 1;
+    return (m + 10) % 12;
+}
+
 var _WOLUN_OPENERS = [
     function (mo, yr, kw) { return yr + '년 ' + mo + '월, **' + kw + '**' + getJosaFlex(kw, '이/가') + ' 일의 중심에 옵니다. '; },
     function (mo, yr, kw) { return mo + '월은 **' + kw + '** 쪽으로 무게가 실립니다. '; },
@@ -7205,7 +7215,7 @@ function lifeNarrativeStageBody(ctx, stage) {
     }
     if (stage.key === 'teen') {
         return tp(t,
-            '알아봐 주는 어른·선배 한 명이 진로를 빠르게 열어 주는 시기일 수 있습니다. ',
+            '인정해 주는 어른·선배 한 명이 진로를 빠르게 열어 주는 시기일 수 있습니다. ',
             '진로·관계에서 한 번 크게 흔들리며 ' + nmUi(nm) + ' 세상을 보는 눈이 깊어지는 시기일 수 있습니다. ',
             '“나는 어떤 사람인가”를 일찍 묻기 시작하시고, 답을 서두르지 않아도 그 질문이 평생 ' + nmEulReul(nm) + ' 받칩니다. ')
             + (ctx.inSelfNote || '') + ' 관심 있는 한 가지에는 폭발적으로 빠지고, 그 외는 흘려보내는 패턴이 이 무렵 또렷해집니다.';
@@ -8392,11 +8402,13 @@ function buildCurrentPeriodCard(data) {
 
     // ── 현재 월운 (이번 달) ──
     var curMonthIdx = baseNow.getMonth(); // 0~11
+    var monthNo = curMonthIdx + 1;
     var MONTH_JI_KR = ['인','묘','진','사','오','미','신','유','술','해','자','축'];
     var MONTH_GAN_START_TBL = [2, 4, 6, 8, 0];
     var mGanStartIdx = MONTH_GAN_START_TBL[yGanI % 5];
-    var mJiKr = MONTH_JI_KR[curMonthIdx];
-    var mGanIdx = (mGanStartIdx + curMonthIdx) % 10;
+    var wolunJiIdx = sajuxSolarMonthWolunJiIndex(monthNo);
+    var mJiKr = MONTH_JI_KR[wolunJiIdx];
+    var mGanIdx = (mGanStartIdx + wolunJiIdx) % 10;
     var GAN_KR_ARR = ['갑','을','병','정','무','기','경','신','임','계'];
     var mGanKr = GAN_KR_ARR[mGanIdx];
     var GAN_HJ_FROM_KR = {'갑':'甲','을':'乙','병':'丙','정':'丁','무':'戊','기':'己','경':'庚','신':'辛','임':'壬','계':'癸'};
@@ -8405,8 +8417,6 @@ function buildCurrentPeriodCard(data) {
     var mJi  = JI_HJ_FROM_KR[mJiKr] || '寅';
     var mScore = score(mGan, mJi);
     var mTone = tone(mScore);
-    var monthNo = curMonthIdx + 1;
-
     // ── 종합 점수 (대운+세운+월운) ──
     var totalScore = dScore + yScore + mScore;
     var totalTone = tone(totalScore / 2);
@@ -8779,7 +8789,7 @@ function buildUpcomingWolunMonthCardsHtml(data, opts) {
         }
         var yGanI = ((yrPointer - 4) % 10 + 10) % 10;
         var mGanStart = MONTH_GAN_START_TBL[yGanI % 5];
-        var monthIdx = moPointer - 1;
+        var monthIdx = sajuxSolarMonthWolunJiIndex(moPointer);
         var mJiKr = MONTH_JI_KR[monthIdx];
         var mGanIdx = (mGanStart + monthIdx) % 10;
         var mGanKr = GAN_KR_ARR[mGanIdx];
@@ -9049,7 +9059,7 @@ function buildChapter2_Wuxing(data) {
         lackHtml += para('나머지 기운은 비교적 고르게 흐르고 있어서, 따로 보충해야 할 자리는 없어요. 이미 가지신 두꺼운 기운을 어디에 풀어내실지만 잘 고르시면 됩니다.');
     }
 
-    var chHead2 = buildSectionHeader('wuxing', data, { leadHook: buildTopicMetaphorTitle('wuxing', data) });
+    var chHead2 = buildSectionHeader('wuxing', data, { leadHook: buildTopicMetaphorTitle('wuxing', data), skipIntro: true });
     var chIntro2 = buildChapterIntroHtml(data, 'wuxing');
     return `<div class="report-chapter">
         ${chHead2}
@@ -9415,7 +9425,7 @@ function buildChapter4_Wealth(data) {
         </div>`;
     }).join('');
 
-    var chHead4 = buildSectionHeader('wealth', data, { leadHook: false });
+    var chHead4 = buildSectionHeader('wealth', data, { leadHook: false, skipIntro: true });
     var chIntro4 = buildChapterIntroHtml(data, 'wealth');
     return `<div class="report-chapter">
         ${chHead4}
@@ -9836,7 +9846,7 @@ function buildWolunLoop(data) {
     const JI_HJ = {'자':'子','축':'丑','인':'寅','묘':'卯','진':'辰','사':'巳','오':'午','미':'未','신':'申','유':'酉','술':'戌','해':'亥'};
     const JI_KR = {'子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해'};
     const MONTH_NAME = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
-    // 월건 지지: 인월(1월)부터
+    // 월건 지지: 양력 2월=寅(입춘) … 1월=丑
     const MONTH_JI_BASE = ['인','묘','진','사','오','미','신','유','술','해','자','축'];
     // 월건 천간: 연간에 따라 결정
     const YR_GAN_IDX = ((yr - 4) % 10 + 10) % 10;
@@ -9875,8 +9885,9 @@ function buildWolunLoop(data) {
         return '<div class="month-bridge" style="margin:6px 4px 6px;padding:8px 14px;font-size:12px;color:var(--text-dim);line-height:1.85;font-style:italic;letter-spacing:0.01em;">↓ ' + line + '</div>';
     }
     const _monthScores = Array.from({length:12}).map(function(_,i){
-        var mJiKr = MONTH_JI_BASE[i];
-        var mGanIdx = (MONTH_GAN_START + i) % 10;
+        var jiIdx = sajuxSolarMonthWolunJiIndex(i + 1);
+        var mJiKr = MONTH_JI_BASE[jiIdx];
+        var mGanIdx = (MONTH_GAN_START + jiIdx) % 10;
         var mGanKr = GAN[mGanIdx];
         var mGanHj = GAN_HJ[mGanKr] || '';
         var mJiHj = JI_HJ[mJiKr] || '';
@@ -9884,8 +9895,9 @@ function buildWolunLoop(data) {
     });
 
     const rows = Array.from({length:12}).map((_,i)=>{
-        const mJiKr = MONTH_JI_BASE[i];
-        const mGanIdx = (MONTH_GAN_START + i) % 10;
+        const jiIdx = sajuxSolarMonthWolunJiIndex(i + 1);
+        const mJiKr = MONTH_JI_BASE[jiIdx];
+        const mGanIdx = (MONTH_GAN_START + jiIdx) % 10;
         const mGanKr = GAN[mGanIdx];
         const mGanHj = GAN_HJ[mGanKr] || '';
         const mJiHj = JI_HJ[mJiKr] || '';
@@ -10095,7 +10107,7 @@ function buildChapter5_Career(data) {
         : jaeC===0
         ? '재물 기둥이 얇은 편입니다. 돈을 쫓지 말고 **가치표**를 올리십시오.'
         : '재물 축은 적정입니다. **월 현금흐름 표**만 고정해도 속도가 납니다.';
-    var chHead5 = buildSectionHeader('career', data, { leadHook: false });
+    var chHead5 = buildSectionHeader('career', data, { leadHook: false, skipIntro: true });
     var chIntro5 = buildChapterIntroHtml(data, 'career');
     return `<div class="report-chapter">
         ${chHead5}
@@ -10232,7 +10244,7 @@ function buildChapter6_Love(data) {
         ? '다툼이 시작되면 ' + nmEunNeun(name) + ' 본능적으로 **결론을 빨리 내려는** 쪽으로 기울입니다. 그 속도가 본인은 명료해 좋지만, 상대에게는 **자기 감정이 인정받지 못한 채 정리당했다**는 인상을 남길 수 있습니다. 결론보다 먼저 “지금 어떤 마음이세요?”라고 한 번만 물어 주십시오. 한 박자만 늦춰도 같은 결론이 훨씬 부드럽게 안착합니다.'
         : nmEunNeun(name) + ' 다툼 앞에서 **속으로 삼키고 정리하시는** 결에 가깝습니다. 그 자리에서는 평화로워 보이지만, 같은 패턴이 쌓이면 어느 날 갑자기 차갑게 거리를 두는 모습으로 드러납니다. 한 번에 두꺼운 말을 꺼내기 어렵다면, **메시지로 한 줄씩** 남겨두는 방법도 좋습니다. “지금 좀 힘들었어”라는 한 문장이 관계를 살립니다.';
 
-    var chHead6 = buildSectionHeader('love', data, { leadHook: false });
+    var chHead6 = buildSectionHeader('love', data, { leadHook: false, skipIntro: true });
     var chIntro6 = buildChapterIntroHtml(data, 'love');
     return `<div class="report-chapter">
         ${chHead6}
@@ -10460,7 +10472,7 @@ function buildChapter8_Health(data) {
         water:'**신장·호르몬·방광** 검사를 수면 루틴과 같이 묶으십시오.'
     }[maxWuxing] || '**종합 검진**을 연 1회 이상 고정하십시오.';
 
-    var chHead8 = buildSectionHeader('health', data, { leadHook: false });
+    var chHead8 = buildSectionHeader('health', data, { leadHook: false, skipIntro: true });
     var chIntro8 = buildChapterIntroHtml(data, 'health');
     return `<div class="report-chapter">
         ${chHead8}
@@ -11389,7 +11401,7 @@ function buildChapter9_Remedy(data) {
         water: '북쪽 침대 헤드 근처에 전자기기 충전을 두지 마십시오. 남색·검정은 겉옷 한 벌만 고정하고, 실내는 조도 낮게 유지하십시오. 짠맛은 아침 미역 한 그릇으로 끝—밤엔 짠 국물을 피하십시오. 긴 통화·긴 회의는 오후 5시 이전에 끊으십시오.'
     })[yong] || '표의 행운 색·방향·시간대 중 두 가지만 골라 일주일 동안 같은 패턴으로 반복하십시오. 덜 피곤한 조합이 나오면 그대로 고정하십시오.';
 
-    var chHeadR = buildSectionHeader('remedy', data, { leadHook: false });
+    var chHeadR = buildSectionHeader('remedy', data, { leadHook: false, skipIntro: true });
     return '<div class="report-chapter" id="sec-remedy-final">'
         + chHeadR
         + buildChapterIntroHtml(data, 'remedy')
