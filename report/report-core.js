@@ -4802,9 +4802,8 @@ function injectSajuxPdfUi() {
         a.onclick = function (e) { e.preventDefault(); sajuxCaptureReportAsImage(); return false; };
     });
     document.querySelectorAll('button[onclick*="print"], .sajux-pdf-wide-btn').forEach(function (el) {
-        if (el.closest('#sec-report-footer-utilities')) return;
         var label = (el.textContent || '').trim();
-        if (/인쇄|PDF로 저장|PDF 저장/.test(label)) el.remove();
+        if (/인쇄|PDF로 저장|PDF 저장|PDF\s*\(선택\)/.test(label)) el.remove();
     });
     var footerZip = document.querySelector('#sec-report-footer-utilities .sajux-footer-zip-btn');
     if (footerZip && !footerZip._sajuxBound) {
@@ -4928,6 +4927,9 @@ function generateDeepReport(data) {
         part4Body
     ), 'part4section');
 
+    // ── 부록(이용 안내) → 「끝난 줄 알았죠?」 보너스 자미두수 앞
+    html += safeCall(()=>buildReportFooterUtilities(data), 'footerUtilities');
+
     // ── 별첨: 끝난 줄 알았죠? → 자미두수 (사주 저장은 서프라이즈 카드부터 분할)
     var ziweiBlock = safeCall(()=>buildZiWeiDestinyBlueprintSection(data)||'', 'ziwei');
     if (ziweiBlock) {
@@ -4938,7 +4940,6 @@ function generateDeepReport(data) {
     }
 
     html += safeCall(()=>buildReviewCallout(data)||'', 'review-callout');
-    html += safeCall(()=>buildReportFooterUtilities(data), 'footerUtilities');
 
     document.getElementById('report-container').innerHTML = html;
 
@@ -12105,9 +12106,8 @@ function buildReportFooterUtilities(data) {
     var cardStyle = 'text-align:left;padding:16px 18px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(199,167,106,0.14);margin-bottom:14px;';
     var headStyle = 'font-size:12px;color:var(--gold);letter-spacing:0.08em;margin-bottom:8px;font-weight:700;';
     var pStyle = 'margin:0;font-size:13px;line-height:1.9;color:#d6dae2;';
-    var btnRow = 'display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:14px;';
-    var btnZip = 'flex:1 1 200px;max-width:320px;';
-    var btnPdf = 'flex:0 1 auto;min-width:120px;padding:14px 18px;font-size:13px;opacity:0.88;';
+    var btnRow = 'display:flex;justify-content:center;margin-top:14px;';
+    var btnZip = 'width:100%;max-width:320px;';
 
     return ''
         + '<section id="sec-report-footer-utilities" class="report-footer-utilities sajux-glass-heavy" '
@@ -12123,7 +12123,6 @@ function buildReportFooterUtilities(data) {
         + '<p style="margin:6px 0 0;font-size:13px;line-height:1.9;color:#d6dae2;">우하단 <strong>사주 저장</strong> 또는 아래 버튼으로 절마다 PNG를 받으시면, 링크 만료 이후에도 같은 문서를 두고두고 다시 펼쳐 보실 수 있어요.</p>'
         + '<div style="' + btnRow + '">'
         + '<button type="button" class="sajux-image-wide-btn sajux-footer-zip-btn" style="' + btnZip + '">ZIP으로 저장하기</button>'
-        + '<button type="button" class="sajux-pdf-wide-btn pdf-btn" onclick="window.print()" style="' + btnPdf + '">PDF (선택)</button>'
         + '</div>'
         + '</div>'
 
