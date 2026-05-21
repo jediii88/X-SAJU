@@ -4215,7 +4215,13 @@ function sajuxHideCaptureOverlay() {
     if (el) el.style.display = 'none';
 }
 function sajuxGetCaptureRoot() {
-    return document.getElementById('report-container') || document.getElementById('sec-report-full') || null;
+    return document.getElementById('report-container')
+        || document.getElementById('sec-report-full')
+        || document.getElementById('main-content')
+        || null;
+}
+function sajuxIsCompatCapturePage(root) {
+    return !!(root && root.id === 'main-content');
 }
 function sajuxIsVisibleEl(el) {
     if (!el || el.nodeType !== 1) return false;
@@ -4380,7 +4386,78 @@ function sajuxPushCaptureSlice(slices, container, startNode, endNode, headEl) {
         if (subWrap) slices.push({ el: subWrap, jul: j2, title: t2, headEl: h0 });
     }
 }
+function sajuxCompatPushCloneSlice(slices, el, jul, title) {
+    if (!el || !sajuxIsVisibleEl(el)) return;
+    var wrap = document.createElement('div');
+    wrap.className = 'sajux-capture-jul-wrap';
+    wrap.style.cssText = 'background:#050508;box-sizing:border-box;width:100%;padding:0;margin:0;';
+    wrap.setAttribute('data-sajux-jul', jul || '궁합');
+    wrap.setAttribute('data-sajux-jul-title', title || '궁합');
+    wrap.appendChild(el.cloneNode(true));
+    slices.push({ el: wrap, jul: jul || '궁합', title: title || '궁합' });
+}
+function sajuxCompatSummarySlice(container) {
+    var duo = container.querySelector('.duo-grid');
+    var overview = container.querySelector('#compat-voice-overview');
+    if (!duo || !overview) return null;
+    var wrap = document.createElement('div');
+    wrap.className = 'sajux-capture-jul-wrap';
+    wrap.style.cssText = 'background:#050508;box-sizing:border-box;width:100%;padding:0;margin:0;';
+    wrap.setAttribute('data-sajux-jul', '요약');
+    wrap.setAttribute('data-sajux-jul-title', '두 사람 요약');
+    try {
+        var range = document.createRange();
+        range.setStartBefore(duo);
+        range.setEndAfter(overview);
+        if (!range.collapsed) wrap.appendChild(range.cloneContents());
+    } catch (e) {
+        return null;
+    }
+    if (!wrap.childNodes.length) return null;
+    return wrap;
+}
+function sajuxCollectCompatCaptureSlices(root) {
+    var container = root;
+    var slices = [];
+    if (!container) return { container: null, slices: [], host: null };
+
+    sajuxCompatPushCloneSlice(slices, container.querySelector('#sec-cover'), '표지', '브랜드');
+    sajuxCompatPushCloneSlice(slices, container.querySelector('#sec-compat-title'), '표지', '궁합 표지');
+
+    var summaryWrap = sajuxCompatSummarySlice(container);
+    if (summaryWrap) slices.push({ el: summaryWrap, jul: '요약', title: '두 사람 요약' });
+
+    var sectionIds = [
+        'section-positioning', 'section-personality', 'section-lover', 'section-married',
+        'section-friend', 'section-business', 'section-spouse', 'section-ideal-family', 'section-timeline'
+    ];
+    var regMap = (typeof SAJUX_COMPAT_SECTION_REGISTRY !== 'undefined') ? SAJUX_COMPAT_SECTION_REGISTRY : {};
+    var dispMap = (typeof buildSajuxDisplaySectionMap === 'function') ? buildSajuxDisplaySectionMap(true) : {};
+    sectionIds.forEach(function (sid) {
+        var sec = container.querySelector('#' + sid);
+        if (!sec || !sajuxIsVisibleEl(sec)) return;
+        var topicKey = sid.replace(/^section-/, '');
+        if (topicKey === 'ideal-family') topicKey = 'idealFamily';
+        var reg = regMap[topicKey];
+        var jul = (reg && dispMap[topicKey]) ? ('1-' + dispMap[topicKey]) : '궁합';
+        var title = (reg && reg.title) ? reg.title : sid;
+        var head = sec.querySelector('.ch-head-main-sub[data-sajux-jul], .ch-head-main-sub');
+        if (head) {
+            jul = head.getAttribute('data-sajux-jul') || jul;
+            title = head.getAttribute('data-sajux-jul-title') || title;
+        }
+        sajuxCompatPushCloneSlice(slices, sec, jul, title);
+    });
+
+    if (!slices.length && sajuxIsVisibleEl(container)) {
+        slices.push({ el: container.cloneNode(true), jul: '전체', title: '궁합 리포트' });
+    }
+    return { container: container, slices: slices, host: sajuxEnsureCaptureHost() };
+}
 function sajuxCollectCaptureSlices(root) {
+    if (sajuxIsCompatCapturePage(root)) {
+        return sajuxCollectCompatCaptureSlices(root);
+    }
     var container = (root && root.id === 'report-container') ? root : (root && root.querySelector ? root.querySelector('#report-container') : null);
     if (!container) container = root;
     var slices = [];
@@ -4552,6 +4629,12 @@ function sajuxDownloadBlob(url, filename) {
     document.body.removeChild(a);
 }
 function sajuxBuildCaptureBaseName(data) {
+    var ctx = window.__compatCtx;
+    if (ctx && typeof compatNm === 'function') {
+        var a = compatNm(ctx, 'a').replace(/[\\/:*?"<>|]/g, '').replace(/\s+/g, '');
+        var b = compatNm(ctx, 'b').replace(/[\\/:*?"<>|]/g, '').replace(/\s+/g, '');
+        return '사주X-궁합-' + (a || 'A') + '-' + (b || 'B') + '-' + new Date().toISOString().slice(0, 10);
+    }
     var name = (data && data.name) ? String(data.name).trim() : '';
     if (!name && window.globalSajuData && window.globalSajuData.name) name = String(window.globalSajuData.name).trim();
     var safe = name.replace(/[\\/:*?"<>|]/g, '').replace(/\s+/g, '') || '리포트';
@@ -4600,10 +4683,12 @@ function sajuxRunReportImageCapture(root) {
     function finishOk() {
         var zip = new JSZip();
         var folder = zip.folder(baseName) || zip;
-        folder.file('00-읽는법.txt',
-            '사주X 리포트 다운로드 파일입니다.\n'
-            + '압축을 푼 뒤, 파일명 앞 숫자(01, 02…) 순서대로 보시면 목차 절 순서와 같습니다.\n'
-            + '총 ' + captures.length + '장 · ' + baseName + '\n');
+        var readMe = window.__compatCtx
+            ? '사주X 궁합 리포트 다운로드 파일입니다.\n'
+                + '압축을 푼 뒤, 파일명 앞 숫자(01, 02…) 순서대로 보시면 화면 흐름과 같습니다.\n'
+            : '사주X 리포트 다운로드 파일입니다.\n'
+                + '압축을 푼 뒤, 파일명 앞 숫자(01, 02…) 순서대로 보시면 목차 절 순서와 같습니다.\n';
+        folder.file('00-읽는법.txt', readMe + '총 ' + captures.length + '장 · ' + baseName + '\n');
         captures.forEach(function (item) {
             folder.file(item.name + '.png', item.blob);
         });
