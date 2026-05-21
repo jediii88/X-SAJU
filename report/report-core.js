@@ -390,16 +390,10 @@ var SAJUX_SECTION_REGISTRY = {
     hapgyeok: { part: 3, section: 3, title: '합격 · 문서운', eyebrow: '증명 · 취직 · 서류', topic: null, inToc: true },
     career: { part: 3, section: 4, title: '직업 · 소명', eyebrow: '무대와 권한의 방향', topic: 'career', inToc: true },
     health: { part: 3, section: 5, title: '건강 · 회복', eyebrow: '몸이 보내는 신호', topic: 'health', inToc: true },
-    remedy: { part: 4, section: 1, title: '개운법', eyebrow: '마음가짐·시작', topic: 'remedy', inToc: true },
-    remedyYonghee: { part: 4, section: 2, title: '보완 오행 실천', eyebrow: '핵심·보조 축', topic: 'remedy', inToc: true },
-    remedyRoutine: { part: 4, section: 3, title: '오행별 맞춤 루틴', eyebrow: '색·방향·시간', topic: 'remedy', inToc: true },
-    remedyDaily: { part: 4, section: 4, title: '하루 루틴', eyebrow: '아침·낮·저녁·밤', topic: 'remedy', inToc: true },
-    remedySpace: { part: 4, section: 5, title: '향·식물·소품', eyebrow: '공간에 들이기', topic: 'remedy', inToc: true },
-    remedySocial: { part: 4, section: 6, title: '덜 지치는 유형', eyebrow: '만남의 결', topic: 'remedy', inToc: true },
-    remedyAge: { part: 4, section: 7, title: '나이대별 손볼 것', eyebrow: '만 나이 기준', topic: 'remedy', inToc: true },
-    remedyCrisis: { part: 4, section: 8, title: '일이 꼬일 때', eyebrow: '하지 말 것·대신 할 것', topic: 'remedy', inToc: true },
-    ziweiPalacesA: { part: 0, section: 2, title: '자미두수 12궁 · 전반', eyebrow: '명궁~자녀', topic: 'ziwei', inToc: false },
-    ziweiPalacesBC: { part: 0, section: 3, title: '자미두수 12궁 · 중·후반', eyebrow: '재백~부모', topic: 'ziwei', inToc: false },
+    remedy: { part: 4, section: 1, title: '개운법', eyebrow: '마음가짐·실천 루틴', topic: 'remedy', inToc: true },
+    ziweiSurprise: { part: 0, section: 1, title: '끝난 줄 알았죠?', eyebrow: '보너스 챕터', topic: null, inToc: false },
+    ziweiPalacesA: { part: 0, section: 3, title: '자미두수 12궁 · 전반', eyebrow: '명궁~자녀', topic: 'ziwei', inToc: false },
+    ziweiPalacesBC: { part: 0, section: 4, title: '자미두수 12궁 · 중·후반', eyebrow: '재백~부모', topic: 'ziwei', inToc: false },
     reviewCallout: { part: 5, section: 4, title: '리뷰 안내', eyebrow: '한 줄 응원', topic: null, inToc: false },
     hidden: { part: 1, section: 5, title: '지장간 · 내면', eyebrow: '보이지 않는 뿌리', topic: 'hidden', inToc: false },
     daeunDeep: { part: 2, section: 7, title: '대운 — 10년 계절의 지도', eyebrow: '10년 단위 기후', topic: 'daeun', inToc: false },
@@ -4263,7 +4257,7 @@ function sajuxHeadIsCaptureSkipped(headEl) {
     var jul = headEl.getAttribute('data-sajux-jul') || '';
     var title = headEl.getAttribute('data-sajux-jul-title') || '';
     if (/^5-/.test(jul)) return true;
-    if (/리뷰 안내|열람·|이용 안내|법적·|보너스 · 자미/.test(title)) return true;
+    if (/리뷰 안내|열람·|이용 안내|법적·/.test(title)) return true;
     return false;
 }
 function sajuxFilterCaptureHeads(container, heads) {
@@ -4773,7 +4767,7 @@ function generateDeepReport(data) {
         part3Body
     ), 'part3section');
 
-    // ── 4부: 개운법 — 절별 헤더(사주 저장 8장+) ──
+    // ── 4부: 개운법 (사주 저장 1장) ──
     var part4Body = '';
     part4Body += safeCall(()=>buildChapter9_Remedy(data)||'', 'ch9-remedy');
     html += safeCall(()=>wrapPartSection(
@@ -4781,7 +4775,8 @@ function generateDeepReport(data) {
         part4Body
     ), 'part4section');
 
-    // ── 별첨: 자미두수 (서프라이즈 인트로·부록 이용안내 블록은 본문·ZIP에서 제외)
+    // ── 별첨: 끝난 줄 알았죠? → 자미두수 (사주 저장은 서프라이즈부터 분할)
+    html += safeCall(()=>buildZiweiSurpriseIntro(data)||'', 'ziwei-surprise');
     var ziweiBlock = safeCall(()=>buildZiWeiDestinyBlueprintSection(data)||'', 'ziwei');
     if (ziweiBlock) {
         html += ziweiBlock;
@@ -11135,7 +11130,6 @@ function buildZiWeiDestinyBlueprintSection(data) {
     });
 
     var ybKr = HK[yb] || yb;
-    var zwLead = buildMetaphorHookTitle(data);
     var openText = nmEunNeun(nm) + ' 혼자서도 많이 견뎌 오신 분일 가능성이 큽니다. 사주가 “계절”을 알려 준다면, 자미두수는 그 계절을 살아가는 “스타일”과 “인간관계의 무대”를 비춰 주는 또 다른 거울이에요. 같은 인생을 다른 렌즈로 한 번 더 점검해 드릴게요.';
     var closeText = '12궁을 한 번에 다 외우실 필요는 없어요. ' + nmUi(nm) + ' 인생에서 지금 가장 흔들리시는 영역이 어디인지 살펴보시고, 그 자리의 풀이 한두 줄을 한 주 동안 마음에 두시는 것만으로도 충분합니다. 자미두수는 답을 주는 도구가 아니라, 같은 질문을 더 또렷이 듣게 해 주는 도구예요.';
     var ziweiIntroBlock = '<p style="font-size:13px;color:#b8d4e8;margin:0 0 14px;line-height:1.85;">자미두수는 <strong>대만·중국 등지에서 발전한 별자리 기반 점성술</strong>로, 한 사람의 인생을 <strong>12개의 무대(궁)</strong>로 나누고 각 무대에 14개의 주요 별을 배치해서 — 자아·가족·연애·직업·돈·건강·외부 활동 등 인생의 모든 영역을 한 장의 청사진으로 보여 줍니다. 사주를 대체하지 않고, 같은 인생을 더 넓은 화면으로 한 번 더 비추는 <strong>별첨</strong>입니다.</p>'
@@ -11146,8 +11140,7 @@ function buildZiWeiDestinyBlueprintSection(data) {
     var palaceMidLate = palaceChunks[1] + palaceChunks[2];
 
     return '<div id="sec-ziwei-appendix" class="report-chapter chapter-start appendix-ziwei" style="padding-top:8px;margin-bottom:8px;">'
-        + buildSectionHeader('ziwei', data, { headerMode: 'mainSub', subTitle: zwLead, skipIntro: true })
-        + buildZiweiSurpriseIntroBody(data)
+        + buildSectionHeader('ziwei', data, { headerMode: 'mainSub', subTitle: '', skipIntro: true })
         + ziweiIntroBlock
         + buildSectionHeader('ziweiPalacesA', data, { headerMode: 'mainSub', skipIntro: true })
         + '<div style="background:rgba(122,184,212,0.07);border:1px solid rgba(122,184,212,0.22);border-radius:12px;padding:18px 20px;margin-bottom:14px;">' + palaceChunks[0] + '</div>'
@@ -11347,36 +11340,25 @@ function buildChapter9_Remedy(data) {
         water: '북쪽 침대 헤드 근처에 전자기기 충전을 두지 마십시오. 남색·검정은 겉옷 한 벌만 고정하고, 실내는 조도 낮게 유지하십시오. 짠맛은 아침 미역 한 그릇으로 끝—밤엔 짠 국물을 피하십시오. 긴 통화·긴 회의는 오후 5시 이전에 끊으십시오.'
     })[yong] || '표의 행운 색·방향·시간대 중 두 가지만 골라 일주일 동안 같은 패턴으로 반복하십시오. 덜 피곤한 조합이 나오면 그대로 고정하십시오.';
 
-    function remedyChapter(sectionKey, bodyHtml, hdrOpts) {
-        hdrOpts = hdrOpts || {};
-        return '<div class="report-chapter sajux-capture-chapter">'
-            + buildSectionHeader(sectionKey, data, Object.assign({ leadHook: false, skipIntro: true }, hdrOpts))
-            + (bodyHtml || '')
-            + '</div>';
-    }
-
-    return remedyChapter('remedy',
-        buildChapterIntroHtml(data, 'remedy')
+    var chHeadR = buildSectionHeader('remedy', data, { leadHook: false });
+    return '<div class="report-chapter" id="sec-remedy-final">'
+        + chHeadR
+        + buildChapterIntroHtml(data, 'remedy')
         + buildNarrativePara(data, '여기까지 ' + nmUi(name) + ' 사주를 차근차근 살폈습니다. 이 마지막 장은 사주를 바꾸는 자리가 아니라, 타고난 결을 일상의 결로 바꿔 드리는 자리입니다. 색·방향·시간·작은 행동 — 거창하지 않은 것을 일주일만 지켜 보십시오. 덜 지친 조합이 ' + nmKke(name) + ' 가장 큰 보약입니다.')
         + '<div class="remedy-mindset sajux-print-surface" style="margin:14px 0 18px;padding:18px 20px;border-radius:12px;background:rgba(199,167,106,0.06);border-left:3px solid var(--gold);">'
         + '<div style="font-size:11px;color:var(--gold);letter-spacing:0.10em;margin-bottom:10px;font-weight:700;">' + nmUi(name) + ' 개운(開運)의 흐름</div>'
         + '<p style="font-size:13.5px;color:#e8e0d2;line-height:1.95;margin:0;">' + boldStarsToStrong(MINDSET_RX) + '</p>'
         + '</div>'
-        + buildNarrativePara(data, '먼저 색·방향·시간 같은 큰 결을 짚고, 이어서 ' + nmUi(name) + ' 일간(' + ds + ')에 맞춘 하루 루틴과 부적·향·식물 같은 손에 잡히는 작은 도구들을 풀어 드립니다.'))
-
-        + remedyChapter('remedyYonghee', (typeof buildRemedyYongHeeMindsetHTML === 'function' ? buildRemedyYongHeeMindsetHTML(data) : ''))
-
-        + remedyChapter('remedyRoutine',
+        + buildNarrativePara(data, '먼저 색·방향·시간 같은 큰 결을 짚고, 이어서 ' + nmUi(name) + ' 일간(' + ds + ')에 맞춘 하루 루틴과 부적·향·식물 같은 손에 잡히는 작은 도구들을 풀어 드립니다.')
+        + (typeof buildRemedyYongHeeMindsetHTML === 'function' ? buildRemedyYongHeeMindsetHTML(data) : '')
         + '<div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:22px;margin:24px 0;">'
         + '<div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:16px;letter-spacing:1px;">&#9670; 오행별 맞춤 루틴 — 매일 고정할 것</div>'
         + '<div style="display:flex;flex-direction:column;gap:12px;">'
         + '<div style="background:' + yongBg + ';border-radius:8px;padding:16px;border-left:3px solid var(--gold);">'
         + '<div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:10px;">' + yongKr + ' 쪽으로 몸과 방을 맞추기</div>'
         + '<p style="font-size:13px;color:#ccc;line-height:1.88;margin:0 0 10px;">' + yongRoutineText + '</p>'
-        + '</div></div></div>')
-
-        + remedyChapter('remedyDaily',
-        buildNarrativePara(data, '큰 결을 보았으니, 이제 ' + nmUi(name) + ' 일간(' + ds + ')에 맞춘 하루 루틴을 시간 단위로 풀어 드립니다. 한 번에 다 하실 필요 없이, 이 중 두 가지만 골라 일주일 동안 같은 시간에 반복해 보십시오. 사주가 풀어지는 방식은 늘 작은 반복에서 시작합니다.')
+        + '</div></div></div>'
+        + buildNarrativePara(data, '큰 결을 보았으니, 이제 ' + nmUi(name) + ' 일간(' + ds + ')에 맞춘 하루 루틴을 시간 단위로 풀어 드립니다. 한 번에 다 하실 필요 없이, 이 중 두 가지만 골라 일주일 동안 같은 시간에 반복해 보십시오. 사주가 풀어지는 방식은 늘 작은 반복에서 시작합니다.')
         + '<div class="daily-rx-block sajux-print-surface" style="background:rgba(255,255,255,0.03);border-radius:12px;padding:22px;margin:18px 0;border:1px solid rgba(199,167,106,0.18);">'
         + '<div style="font-size:12px;color:var(--gold);font-weight:700;letter-spacing:0.10em;margin-bottom:14px;">' + nmUi(name) + ' 하루 루틴 — 일간 ' + ds + ' 기준</div>'
         + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">'
@@ -11384,10 +11366,8 @@ function buildChapter9_Remedy(data) {
         + '<div style="padding:14px 16px;border-radius:10px;background:rgba(255,235,180,0.05);border-left:2px solid rgba(255,235,180,0.45);"><div style="font-size:11px;color:#ffe9b8;font-weight:700;letter-spacing:0.05em;margin-bottom:6px;">☀️ 낮 (12~15시)</div><p style="font-size:13px;color:#e8e0d2;line-height:1.85;margin:0;">' + dailyRx.noon + '</p></div>'
         + '<div style="padding:14px 16px;border-radius:10px;background:rgba(220,180,255,0.05);border-left:2px solid rgba(220,180,255,0.45);"><div style="font-size:11px;color:#d8b8ff;font-weight:700;letter-spacing:0.05em;margin-bottom:6px;">🌆 저녁 (18~21시)</div><p style="font-size:13px;color:#e0d8ec;line-height:1.85;margin:0;">' + dailyRx.eve + '</p></div>'
         + '<div style="padding:14px 16px;border-radius:10px;background:rgba(170,200,255,0.05);border-left:2px solid rgba(170,200,255,0.45);"><div style="font-size:11px;color:#a8c8ff;font-weight:700;letter-spacing:0.05em;margin-bottom:6px;">🌙 밤 (22~24시)</div><p style="font-size:13px;color:#dee2eb;line-height:1.85;margin:0;">' + dailyRx.night + '</p></div>'
-        + '</div></div>')
-
-        + remedyChapter('remedySpace',
-        buildNarrativePara(data, '시간의 결이 잡혔다면, 이번엔 공간의 결입니다. 향·식물·작은 소품 — 사주의 ' + yongKr + ' 기운을 일상의 공기에 들여놓는 가장 부드러운 방법입니다.')
+        + '</div></div>'
+        + buildNarrativePara(data, '시간의 결이 잡혔다면, 이번엔 공간의 결입니다. 향·식물·작은 소품 — 사주의 ' + yongKr + ' 기운을 일상의 공기에 들여놓는 가장 부드러운 방법입니다.')
         + '<div class="talisman-rx-block sajux-print-surface" style="background:rgba(199,167,106,0.05);border-radius:12px;padding:22px;margin:18px 0;border:1px solid rgba(199,167,106,0.22);">'
         + '<div style="font-size:12px;color:var(--gold);font-weight:700;letter-spacing:0.10em;margin-bottom:14px;">' + yongKr + '을 일상에 들이는 4가지 방법</div>'
         + '<div style="display:flex;flex-direction:column;gap:10px;">'
@@ -11395,30 +11375,25 @@ function buildChapter9_Remedy(data) {
         + '<div style="display:flex;gap:14px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(199,167,106,0.15);"><div style="font-size:22px;flex-shrink:0;">🪴</div><div style="flex:1;"><div style="font-size:12px;color:var(--gold);font-weight:700;margin-bottom:4px;">식물 (공간의 분위기)</div><p style="font-size:13px;color:#e8e0d2;line-height:1.85;margin:0;">' + talisman.plant + ' 중 손이 덜 가는 한 종류를 책상 또는 침실 옆에 두십시오. 시들면 바로 새로 들이는 것이 약입니다.</p></div></div>'
         + '<div style="display:flex;gap:14px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(199,167,106,0.15);"><div style="font-size:22px;flex-shrink:0;">🕯️</div><div style="flex:1;"><div style="font-size:12px;color:var(--gold);font-weight:700;margin-bottom:4px;">소품 (방향)</div><p style="font-size:13px;color:#e8e0d2;line-height:1.85;margin:0;">' + talisman.charm + '.</p></div></div>'
         + '<div style="display:flex;gap:14px;align-items:flex-start;padding:10px 0;"><div style="font-size:22px;flex-shrink:0;">🚫</div><div style="flex:1;"><div style="font-size:12px;color:#ff9f9f;font-weight:700;margin-bottom:4px;">피해야 할 것</div><p style="font-size:13px;color:#e8d8d2;line-height:1.85;margin:0;">' + talisman.taboo + '.</p></div></div>'
-        + '</div></div>')
-
-        + remedyChapter('remedySocial',
-        '<div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:22px;margin:24px 0;">'
+        + '</div></div>'
+        + '<div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:22px;margin:24px 0;">'
         + '<div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:16px;letter-spacing:1px;">&#9670; 같이 있으면 덜 지치는 사람 유형</div>'
         + '<p style="font-size:13.5px;color:#ccc;line-height:1.9;margin:0 0 14px;">귀인 유형과는 <b>업무·돈 말은 빼고</b> 산책·식사·짧은 통화만 하십시오. 주의 색을 즐겨 쓰는 사람과는 **밤 술자리만** 끊어도 체력이 살아납니다. 만남은 표의 방위로 **월 1~2회**만 옮겨 보십시오.</p>'
-        + '</div>')
-
-        + remedyChapter('remedyAge',
-        '<div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:22px;margin:24px 0;">'
+        + '</div>'
+        + '<div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:22px;margin:24px 0;">'
         + '<div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:16px;letter-spacing:1px;">&#9670; 나이대별로 손대야 할 것만</div>'
         + getAgeBasisNoteHtml('block')
         + '<div style="display:flex;flex-direction:column;gap:8px;">' + buildRemedyAgeDecadeBandsHTML(data) + '</div>'
-        + '</div>')
-
-        + remedyChapter('remedyCrisis',
-        '<div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:22px;margin:24px 0;">'
+        + '</div>'
+        + '<div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:22px;margin:24px 0;">'
         + '<div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:16px;letter-spacing:1px;">&#9670; 한꺼번에 일이 꼬일 때</div>'
         + '<p style="font-size:13.5px;color:#ccc;line-height:1.9;margin:0 0 14px;">일이 터지는 달에는 **새로 시작 금지**입니다. 끊고·돌려받고·정리만 하십시오. 한 달만 버티면 숨통이 트이는 경우가 많습니다.</p>'
         + '<div style="display:flex;flex-direction:column;gap:10px;">'
         + '<div style="background:rgba(255,150,0,0.06);border-radius:8px;padding:14px;border:1px solid rgba(255,150,0,0.15);"><div style="font-size:12px;font-weight:700;color:#ff9800;margin-bottom:8px;">⚠ 그달엔 하지 말 것</div><p style="font-size:13px;color:#bbb;line-height:1.88;margin:0;">연대보증·지분 계약·신규 대출·야간 송금·카톡으로 받은 구두 합의를 그대로 믿는 일. 충동 이직·충동 창업·도박성 투자. 술자리에서 나온 동업·공동 투자 제안에 바로 답장하는 일.</p></div>'
         + '<div style="background:rgba(0,200,83,0.06);border-radius:8px;padding:14px;border:1px solid rgba(0,200,83,0.15);"><div style="font-size:12px;font-weight:700;color:#00C853;margin-bottom:8px;">✦ 그달엔 대신 할 것</div><p style="font-size:13px;color:#bbb;line-height:1.88;margin:0;">자격·문서·장부만 정리하고 **수면을 먼저** 채우십시오. 표의 색·방향·시간대를 **일주일만** 지키면 집중이 돌아옵니다. 현금은 **나가는 구멍부터** 막고, 들어오는 돈은 **문자·메일 증빙**으로만 확인하십시오.</p></div>'
-        + '</div></div>')
-        + '<div data-sajux-capture-boundary="part4" aria-hidden="true" style="height:0;margin:0;padding:0;border:0;overflow:hidden;"></div>';
+        + '</div></div>'
+        + '<div data-sajux-capture-boundary="part4" aria-hidden="true" style="height:0;margin:0;padding:0;border:0;overflow:hidden;"></div>'
+        + '</div>';
 }
 
 /** 인생 일대기 — 장면 서사 + 끝에 실행 한 줄(합쇼체). 대운 점수는 내부 계산만 사용합니다. */
@@ -11952,7 +11927,7 @@ function buildForewordPage(data) {
 //   사이가 아니라 가장 마지막에서만 등장합니다.
 // ===================================================================
 
-/** 자미두수 본문 상단에 붙는 「끝난 줄 알았죠?」 카드(별도 절·ZIP 분리 없음). */
+/** 「끝난 줄 알았죠?」 — 사주 저장 ZIP의 자미두수 구간 시작점(별도 1장). */
 function buildZiweiSurpriseIntroBody(data) {
     var name = (data && data.name) ? data.name : '고객';
     return '<div class="ziwei-surprise-intro" style="margin:12px 0 18px;padding:26px 24px;border-radius:16px;'
@@ -11971,7 +11946,10 @@ function buildZiweiSurpriseIntroBody(data) {
         + '</div>';
 }
 function buildZiweiSurpriseIntro(data) {
-    return buildZiweiSurpriseIntroBody(data);
+    return '<div class="report-chapter chapter-start ziwei-surprise-chapter">'
+        + buildSectionHeader('ziweiSurprise', data, { leadHook: false, skipIntro: true })
+        + buildZiweiSurpriseIntroBody(data)
+        + '</div>';
 }
 
 /** 보고서 말미 리뷰 안내 카드 — 문구만 (외부 링크·버튼 없음). */
@@ -12040,7 +12018,7 @@ function buildTOC(data) {
             var r = SAJUX_SECTION_REGISTRY[k];
             var num = formatPartSectionNum(r.part, r.section, r, k);
             var sub = r.eyebrow || '';
-            if (k === 'upcomingWolunA' || k === 'upcomingWolunB' || (k.indexOf('remedy') === 0 && k !== 'remedy')) {
+            if (k === 'upcomingWolunA' || k === 'upcomingWolunB') {
                 sub = sub + (sub ? ' · ' : '') + '사주 저장 절별 이미지';
             }
             body += tocRow(num, r.title, sub);
