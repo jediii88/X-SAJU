@@ -4223,7 +4223,7 @@ function sajuxEnsureCaptureHost() {
         host = document.createElement('div');
         host.id = 'sajux-capture-host';
         host.setAttribute('aria-hidden', 'true');
-        host.style.cssText = 'position:fixed;left:-20000px;top:0;width:min(100vw,720px);z-index:-1;pointer-events:none;overflow:visible;background:#050508;';
+        host.style.cssText = 'position:fixed;left:0;top:0;width:min(100vw,720px);max-width:720px;z-index:-1;pointer-events:none;overflow:visible;background:#050508;visibility:hidden;opacity:0;';
         document.body.appendChild(host);
     }
     return host;
@@ -4458,12 +4458,25 @@ function sajuxCanvasToBlob(canvas, type) {
         }
     });
 }
+function sajuxSliceHasCaptureSize(el) {
+    if (!el || el.nodeType !== 1) return false;
+    var w = Math.max(el.offsetWidth || 0, el.scrollWidth || 0, el.getBoundingClientRect().width || 0);
+    var h = Math.max(el.offsetHeight || 0, el.scrollHeight || 0, el.getBoundingClientRect().height || 0);
+    return w > 12 && h > 12;
+}
+function sajuxHtml2canvasIgnoreEl(node) {
+    if (!node || node.nodeType !== 1) return false;
+    if (node.tagName === 'CANVAS') return true;
+    if (node.id === 'star-canvas' || node.id === 'sajux-capture-overlay') return true;
+    return false;
+}
 function sajuxOnCaptureClone(doc) {
     var hideIds = ['sajux-pdf-fab', 'sajux-image-fab', 'floating-toc', 'sticky-part-nav', 'theme-toggle', 'star-canvas', 'sajux-capture-overlay'];
     hideIds.forEach(function (id) {
         var n = doc.getElementById(id);
-        if (n) n.style.display = 'none';
+        if (n) n.remove();
     });
+    doc.querySelectorAll('canvas').forEach(function (c) { c.remove(); });
     if (!doc.getElementById('sajux-capture-clone-style')) {
         var st = doc.createElement('style');
         st.id = 'sajux-capture-clone-style';
@@ -4589,25 +4602,41 @@ function sajuxRunReportImageCapture(root) {
         }
         var slice = slices[idx];
         var el = slice.el;
+        if (!sajuxSliceHasCaptureSize(el)) {
+            idx += 1;
+            captureNext();
+            return;
+        }
         var sliceScale = sajuxCalcSliceCaptureScale(el);
         var fileBase = sajuxSliceCaptureLabel(slice, idx + 1);
+        var captureTarget = el;
         if (captureHost) {
             captureHost.innerHTML = '';
             captureHost.appendChild(el);
+            captureTarget = captureHost.firstChild || el;
+            captureHost.style.visibility = 'hidden';
+            captureHost.style.opacity = '0';
         }
+        void captureTarget.offsetHeight;
         var liveAnchor = slice.headEl || null;
         if (liveAnchor) {
             try { liveAnchor.scrollIntoView({ block: 'start', behavior: 'instant' }); } catch (e1) { try { liveAnchor.scrollIntoView(true); } catch (e2) {} }
         }
         sajuxShowCaptureOverlay('사주 다운로드 중… (' + (idx + 1) + '/' + total + ')\n' + (slice.jul || '') + ' ' + (slice.title || ''));
-        html2canvas(captureHost && captureHost.firstChild ? captureHost : el, {
+        html2canvas(captureTarget, {
             backgroundColor: '#050508',
             scale: sliceScale,
             useCORS: true,
             allowTaint: true,
             logging: false,
+            ignoreElements: sajuxHtml2canvasIgnoreEl,
             onclone: sajuxOnCaptureClone
         }).then(function (canvas) {
+            if (!canvas || canvas.width < 1 || canvas.height < 1) {
+                idx += 1;
+                captureNext();
+                return;
+            }
             return sajuxCanvasToBlob(canvas, 'image/png').then(function (blob) {
                 captures.push({ name: fileBase, blob: blob });
                 idx += 1;
@@ -11942,7 +11971,7 @@ function buildReviewCallout(data) {
     var REVIEW_URL = (typeof window !== 'undefined' && window.SAJUX_REVIEW_URL) ? window.SAJUX_REVIEW_URL : '';
     var btn = REVIEW_URL
         ? '<a href="' + REVIEW_URL + '" target="_blank" rel="noopener" style="display:inline-block;margin-top:18px;padding:12px 28px;border-radius:999px;background:linear-gradient(135deg, #c7a76a, #8a6f3c);color:#fff;font-size:13.5px;font-weight:700;letter-spacing:0.05em;text-decoration:none;box-shadow:0 4px 12px rgba(199,167,106,0.30);">리뷰 남기러 가기 →</a>'
-        : '<div style="display:inline-block;margin-top:18px;padding:10px 22px;border-radius:999px;background:rgba(199,167,106,0.12);color:#c7a76a;font-size:12.5px;letter-spacing:0.04em;border:1px solid rgba(199,167,106,0.25);">리뷰 채널은 곧 안내드려요</div>';
+        : '';
 
     return '<div id="sec-review-callout" class="report-review-callout sajux-glass-heavy" style="margin:36px 0 24px;padding:28px 26px;border-radius:18px;'
         + 'background:linear-gradient(135deg, rgba(199,167,106,0.10), rgba(255,255,255,0.02));'
