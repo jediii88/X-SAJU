@@ -650,7 +650,7 @@ body::before {
     <a class="toc-link" href="#section-personality" onclick="return compatTocGo('section-personality')">성격·기질</a>
     <a class="toc-link" href="#section-lover" onclick="return compatTocGo('section-lover')">연인으로서</a>
     <a class="toc-link" href="#section-married" onclick="return compatTocGo('section-married')">부부로서</a>
-    <a class="toc-link" href="#section-conflict" onclick="return compatTocGo('section-conflict')">갈등 처방전</a>
+    <a class="toc-link" href="#section-conflict" onclick="return compatTocGo('section-conflict')">조율 처방전</a>
     <a class="toc-link" href="#section-friend" onclick="return compatTocGo('section-friend')">친구로서</a>
     <a class="toc-link" href="#section-business" onclick="return compatTocGo('section-business')">동업·파트너</a>
     <a class="toc-link" href="#section-spouse" onclick="return compatTocGo('section-spouse')">배우자궁</a>
@@ -782,6 +782,7 @@ body::before {
 
     <div id="section-timeline" class="timeline-section">
       <div id="compat-voice-timeline" class="compat-voice-wrap" style="margin:28px 0 8px;"></div>
+      <div id="panel-timeline" class="rel-panel"></div>
       <div class="timeline-scroll" id="timeline-scroll"></div>
     </div>
   </div>
@@ -1211,6 +1212,10 @@ function renderPersonCard(prefix, info, saju) {
     var stroke = isWater ? '-webkit-text-stroke:0.5px rgba(255,255,255,0.7);paint-order:stroke fill;' : '';
     return "font-family:'Noto Sans KR',sans-serif;font-weight:300;font-size:19px;" + stroke;
   }
+  function _pillarGloss(ch, kind) {
+    if (typeof compatHanjaGlossChar === 'function') return compatHanjaGlossChar(ch, kind);
+    return ch + '(' + (KOR_MAP[ch] || '') + ')';
+  }
   pillarsEl.innerHTML = `
     <p style="margin:10px 0 6px;font-size:9.5px;color:var(--text-dim);line-height:1.5;letter-spacing:0.02em;text-align:left;">왼쪽부터 <strong style="color:var(--text-soft);font-weight:600;">시주</strong> · 일주(나) · 월주 · <strong style="color:var(--text-soft);font-weight:600;">년주(연도)</strong>입니다. 첫 칸이 태어난 시이고, 가장 오른쪽이 연도 기둥입니다.</p>
     <table style="width:100%;border-collapse:collapse;margin-top:2px;table-layout:fixed;">
@@ -1235,7 +1240,7 @@ function renderPersonCard(prefix, info, saju) {
           const gz = gzString(p && p.h);
           if (!gz || gz.length < 2) return '<td></td>';
           const col = HAN_COLOR[gz[0]]||'';
-          return `<td style="text-align:center;padding:6px 2px;"><span class="${col}" style="${_hanjaStyle(gz[0])}">${gz[0]}</span><br><span style="font-size:9px;color:var(--text-dim);font-weight:500;">${KOR_MAP[gz[0]]||''}</span></td>`;
+          return `<td style="text-align:center;padding:6px 2px;"><span class="${col}" style="${_hanjaStyle(gz[0])}font-size:14px;line-height:1.35;">${_pillarGloss(gz[0],'stem')}</span></td>`;
         }).join('')}
       </tr>
       <tr>
@@ -1245,7 +1250,7 @@ function renderPersonCard(prefix, info, saju) {
           const gz = gzString(p && p.h);
           if (!gz || gz.length < 2) return '<td></td>';
           const col = HAN_COLOR[gz[1]]||'';
-          return `<td style="text-align:center;padding:6px 2px;"><span class="${col}" style="${_hanjaStyle(gz[1])}">${gz[1]}</span><br><span style="font-size:9px;color:var(--text-dim);font-weight:500;">${KOR_MAP[gz[1]]||''}</span></td>`;
+          return `<td style="text-align:center;padding:6px 2px;"><span class="${col}" style="${_hanjaStyle(gz[1])}font-size:14px;line-height:1.35;">${_pillarGloss(gz[1],'branch')}</span></td>`;
         }).join('')}
       </tr>
     </table>`;
@@ -1267,17 +1272,33 @@ function renderScore(result) {
   document.getElementById('score-grade').textContent = result.grade;
   document.getElementById('score-sub').textContent   = result.sub;
 
+  let chemGuideEl = document.getElementById('score-chem-guide');
+  if (!chemGuideEl) {
+    const subEl = document.getElementById('score-sub');
+    if (subEl && subEl.parentNode) {
+      chemGuideEl = document.createElement('p');
+      chemGuideEl.id = 'score-chem-guide';
+      chemGuideEl.style.cssText = 'font-size:12px;color:rgba(199,167,106,0.9);line-height:1.7;margin:8px 0 0;font-weight:600;text-align:center;';
+      subEl.parentNode.insertBefore(chemGuideEl, subEl.nextSibling);
+    }
+  }
+  if (chemGuideEl && typeof compatComputeChemistryScore === 'function' && typeof buildCompatChemGuideText === 'function' && window.__compatCtx) {
+    const chem = compatComputeChemistryScore(window.__compatCtx);
+    chemGuideEl.textContent = '케미스트리 ' + buildCompatChemGuideText(chem);
+  }
+
   const ring = document.getElementById('score-ring');
   ring.style.stroke = result.ringColor;
   setTimeout(() => {
     ring.style.strokeDashoffset = 408 - (408 * result.score / 100);
   }, 100);
 
+  const gloss = (t) => (typeof annotateHanjaGloss === 'function' ? annotateHanjaGloss(t) : t);
   document.getElementById('breakdown-grid').innerHTML = result.breakdown.map(b =>
     `<div class="bk-item">
-      <div class="bk-label">${b.label}</div>
+      <div class="bk-label">${gloss(b.label)}</div>
       <div class="bk-value ${b.cls}">${b.value}</div>
-      <div class="bk-desc">${b.desc}</div>
+      <div class="bk-desc">${gloss(b.desc)}</div>
     </div>`
   ).join('');
 }
@@ -1447,7 +1468,10 @@ function buildRelPanels(params, a, b, result) {
     if (el) el.innerHTML = voice(topic);
   };
   const overviewEl = document.getElementById('compat-voice-overview');
-  if (overviewEl) overviewEl.innerHTML = voice('overview');
+  if (overviewEl) {
+    overviewEl.innerHTML = voice('overview')
+      + (typeof buildCompatMissionCard === 'function' ? buildCompatMissionCard(compatCtx, 'overview') : '');
+  }
   const aName = params.a.name || (params.a.gender==='male'?'남성':'여성');
   const bName = params.b.name || (params.b.gender==='male'?'남성':'여성');
   const isHap = result.isHap, isChung = result.isChung;
@@ -1560,7 +1584,7 @@ function buildRelPanels(params, a, b, result) {
           ${isGood
             ? '<p style="font-size:13.5px;color:var(--text-soft);line-height:1.85;margin:0;"><strong>✦ 관계 황금기</strong><br>' + (typeof compatCrisisNarrative === 'function' ? compatCrisisNarrative(oh, true, false, age) : ev.b) + '<br><br>이 시기에 함께 내린 결정이 이후 10년을 만듭니다.</p>'
             : isBad
-            ? '<p style="font-size:13.5px;color:var(--text-soft);line-height:1.85;margin:0;"><strong>⚠ 조율기</strong><br>' + (typeof compatCrisisNarrative === 'function' ? compatCrisisNarrative(oh, false, true, age) : ev.c) + '<br><br>갈등 날엔 <strong>하루 쿨다운</strong> 후 대화하십시오.</p>'
+            ? '<p style="font-size:13.5px;color:var(--text-soft);line-height:1.85;margin:0;"><strong>⚠ 조율기</strong><br>' + (typeof compatCrisisNarrative === 'function' ? compatCrisisNarrative(oh, false, true, age) : ev.c) + '<br><br>말이 엇갈리는 날엔 <strong>하루 쿨다운</strong> 후 대화하십시오.</p>'
             : '<p style="font-size:13.5px;color:var(--text-soft);line-height:1.85;margin:0;">' + (typeof compatCrisisNarrative === 'function' ? compatCrisisNarrative(oh, false, false, age) : '안정기 — 관계 점검에 좋습니다.') + '</p>'
           }
         </div>`
@@ -1715,6 +1739,11 @@ function buildRelPanels(params, a, b, result) {
   if (mixEl && typeof buildCompatFortuneMixPanelHtml === 'function') {
     mixEl.innerHTML = buildCompatFortuneMixPanelHtml(compatCtx);
   }
+
+  const chemGuideEl = document.getElementById('score-chem-guide');
+  if (chemGuideEl && typeof compatComputeChemistryScore === 'function' && typeof buildCompatChemGuideText === 'function') {
+    chemGuideEl.textContent = '케미스트리 ' + buildCompatChemGuideText(compatComputeChemistryScore(compatCtx));
+  }
 }
 
 // ══════════════════════════════════════
@@ -1774,7 +1803,11 @@ function buildTimeline(a, b, aInfo, bInfo, params) {
            '이 시기를 활용해 공통 취미나 목표를 만들면 관계가 더 깊어집니다.']
   };
   const tlRand = (arr) => arr[Math.floor(Math.random()*arr.length)];
-  document.getElementById('timeline-scroll').innerHTML = slots.map(s =>
+  const tlPanel = document.getElementById('panel-timeline');
+  if (tlPanel && typeof buildCompatTimelineSynergyHtml === 'function' && window.__compatCtx) {
+    tlPanel.innerHTML = buildCompatTimelineSynergyHtml(window.__compatCtx);
+  }
+  const tlCards = slots.map(s =>
     `<div class="t-card ${s.cls}" ${s.isCurrent?'style="box-shadow:0 0 0 2px var(--gold);"':''}>
       <div class="t-age">${params.a.name||'A'}님 ${s.ageA}세 / ${params.b.name||'B'}님 ${s.ageB}세</div>
       <div class="t-icon">${s.icon}</div>
@@ -1783,6 +1816,8 @@ function buildTimeline(a, b, aInfo, bInfo, params) {
       <div style="font-size:11px;color:#aaa;margin-top:6px;line-height:1.6;">${typeof compatTimelineLine === 'function' ? compatTimelineLine(s.cls, String(s.ageA) + s.ageB + s.cls) : tlRand(TL_DESC[s.cls])}</div>
     </div>`
   ).join('');
+  const tlEl = document.getElementById('timeline-scroll');
+  if (tlEl) tlEl.innerHTML = tlCards;
 }
 
 // ══════════════════════════════════════
@@ -1821,8 +1856,8 @@ function init() {
 
     renderPersonCard('a', params.a, sajuA);
     renderPersonCard('b', params.b, sajuB);
-    renderScore(result);
     buildRelPanels(params, sajuA, sajuB, result);
+    renderScore(result);
     buildTimeline(sajuA, sajuB, params.a, params.b, params);
 
     // CSS 오행 배경색 클래스
