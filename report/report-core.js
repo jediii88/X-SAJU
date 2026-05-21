@@ -4223,7 +4223,7 @@ function sajuxEnsureCaptureHost() {
         host = document.createElement('div');
         host.id = 'sajux-capture-host';
         host.setAttribute('aria-hidden', 'true');
-        host.style.cssText = 'position:fixed;left:0;top:0;width:min(100vw,720px);max-width:720px;z-index:-1;pointer-events:none;overflow:visible;background:#050508;visibility:hidden;opacity:0;';
+        host.style.cssText = 'position:fixed;left:-12000px;top:0;width:720px;max-width:720px;z-index:1;pointer-events:none;overflow:visible;background:#050508;';
         document.body.appendChild(host);
     }
     return host;
@@ -4458,11 +4458,24 @@ function sajuxCanvasToBlob(canvas, type) {
         }
     });
 }
-function sajuxSliceHasCaptureSize(el) {
+function sajuxSliceHasCaptureSize(el, hostEl) {
     if (!el || el.nodeType !== 1) return false;
-    var w = Math.max(el.offsetWidth || 0, el.scrollWidth || 0, el.getBoundingClientRect().width || 0);
+    var hostW = hostEl ? Math.max(hostEl.offsetWidth || 0, hostEl.clientWidth || 0, 720) : 720;
+    var w = Math.max(el.offsetWidth || 0, el.scrollWidth || 0, el.getBoundingClientRect().width || 0, hostW);
     var h = Math.max(el.offsetHeight || 0, el.scrollHeight || 0, el.getBoundingClientRect().height || 0);
     return w > 12 && h > 12;
+}
+function sajuxMountSliceForCapture(host, el) {
+    if (!host || !el) return el;
+    host.innerHTML = '';
+    host.appendChild(el);
+    var target = host.firstChild || el;
+    target.style.width = '100%';
+    target.style.maxWidth = '720px';
+    target.style.boxSizing = 'border-box';
+    void host.offsetHeight;
+    void target.offsetHeight;
+    return target;
 }
 function sajuxHtml2canvasIgnoreEl(node) {
     if (!node || node.nodeType !== 1) return false;
@@ -4587,6 +4600,11 @@ function sajuxRunReportImageCapture(root) {
     }
     function captureNext() {
         if (idx >= total) {
+            if (!captures.length) {
+                finishErr(new Error('캡처된 이미지가 없습니다. 페이지를 새로고침한 뒤 다시 시도해 주세요.'));
+                cleanup();
+                return;
+            }
             finishOk().then(function (zipBlob) {
                 var url = URL.createObjectURL(zipBlob);
                 sajuxDownloadBlob(url, sajuxBuildZipFilename(window.globalSajuData || null));
@@ -4602,22 +4620,14 @@ function sajuxRunReportImageCapture(root) {
         }
         var slice = slices[idx];
         var el = slice.el;
-        if (!sajuxSliceHasCaptureSize(el)) {
+        var captureTarget = captureHost ? sajuxMountSliceForCapture(captureHost, el) : el;
+        if (!sajuxSliceHasCaptureSize(captureTarget, captureHost)) {
             idx += 1;
             captureNext();
             return;
         }
-        var sliceScale = sajuxCalcSliceCaptureScale(el);
+        var sliceScale = sajuxCalcSliceCaptureScale(captureTarget);
         var fileBase = sajuxSliceCaptureLabel(slice, idx + 1);
-        var captureTarget = el;
-        if (captureHost) {
-            captureHost.innerHTML = '';
-            captureHost.appendChild(el);
-            captureTarget = captureHost.firstChild || el;
-            captureHost.style.visibility = 'hidden';
-            captureHost.style.opacity = '0';
-        }
-        void captureTarget.offsetHeight;
         var liveAnchor = slice.headEl || null;
         if (liveAnchor) {
             try { liveAnchor.scrollIntoView({ block: 'start', behavior: 'instant' }); } catch (e1) { try { liveAnchor.scrollIntoView(true); } catch (e2) {} }
