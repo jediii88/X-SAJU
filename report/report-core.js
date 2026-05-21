@@ -412,7 +412,7 @@ var SAJUX_COMPAT_SECTION_REGISTRY = {
     idealFamily: { part: 1, section: 10, title: '인연 보강', eyebrow: '이상형 · 자녀 · 자미두수', topic: 'idealFamily', inToc: true },
     fortuneMix: { part: 1, section: 11, title: '운의 흐름 (Mix)', eyebrow: '지금·앞으로 겹치는 계절', topic: 'fortuneMix', inToc: true },
     timeline: { part: 1, section: 12, title: '대운 싱크', eyebrow: '시기별 관계 리듬', topic: 'timeline', inToc: true },
-    conflict: { part: 1, section: 6, title: '갈등 처방전', eyebrow: '말 한 줄이 관계를 살립니다', topic: 'conflict', inToc: true }
+    conflict: { part: 1, section: 6, title: '조율 처방전', eyebrow: '성장통을 지키는 대화', topic: 'conflict', inToc: true }
 };
 
 /** 목차(inToc) 절만 부 안에서 1,2,3… 연속 번호 — 빈 번호·중복 방지 */
@@ -779,7 +779,7 @@ var SAJUX_COMPAT_SECTION_LABELS = {
     married: '부부 — 삶의 설계',
     friend: '우정 — 오래 가는 거리',
     business: '동업 — 역할과 돈',
-    conflict: '갈등 처방전 — 말 한 줄이 관계를 살립니다',
+    conflict: '조율 처방전 — 성장통을 지키는 대화',
     fortuneMix: '운의 흐름 (Mix) — 지금·앞으로 겹치는 계절',
     spouse: '배우자궁 — 끌림의 방향',
     idealFamily: '이상형 거리 · 자녀 인연 · 자미두수 보강',
@@ -890,28 +890,28 @@ function buildCompatOpenerInner(topic, ctx) {
     var nB = nmNormalize(ctx.bName) || '한 분';
     var pools = {
         overview: [
-            voiceMingliLine('일간·일지·오행이 동시에 말할 때 궁합 점수가 의미를 갖습니다.') + ' 숫자만 보지 말고 아래 패널 순서대로 읽어 보세요.',
-            '두 분 다 바쁜데 마음이 엇갈릴 때가 있다면, 그건 성격 탓이 아니라 **기운 각도** 때문일 수 있어요.'
+            nA + '님과 ' + nB + '님, 두 분은 **서로의 부족함을 채워 주는 조화**가 이미 자리 잡혀 있어요. 아래 점수와 카드는 그 조화를 실생활 언어로 풀어 드립니다.',
+            '궁합 숫자는 판정이 아니라 **함께 잘 쓰는 설명서**예요. 잘 맞는 이유부터 짚고 갈게요.'
         ],
         personality: [
-            '성격 카드는 비난이 아니라 **서로의 기본 온도**예요. 맞추려 하기보다 먼저 이름 붙이면 편해집니다.',
-            voiceMingliLine('신강·신약은 혼자 버티는 힘의 양이 아니라, 관계에서 주도권이 어디로 가는지도 말합니다.')
+            '성격은 맞추라는 뜻이 아니라, **서로의 강점 이름을 붙이는 일**이에요. 두 분이 만났을 때만 나오는 시너지 엔진을 먼저 보여 드릴게요.',
+            nA + '님과 ' + nB + '님, 겉온도는 달라도 **안에서 맞물리는 조각**이 분명해요.'
         ],
         lover: [
-            voiceMingliLine('일간 상생·상극은 애정 표현 방식의 차이로 나타납니다.') + ' 사랑의 언어가 다르면 오해가 커져요.',
-            '도화살·합·충은 연애 사건의 **속도**를 바꿉니다. 빠르다고 나쁜 건 아니에요.'
+            nA + '님과 ' + nB + '님, 연애에서는 **약속 리듬이 사랑의 언어**가 되는 조합이에요. 합(合)의 강점을 먼저 짚을게요.',
+            '설렘은 유지되지만, **지켜진 시간**이 둘을 붙이는 인연이에요.'
         ],
         married: [
-            '결혼 후엔 로맨스보다 **생활 숫자**가 먼저예요. 돈·집·육아 일정을 달력에 같이 적어 두십시오.',
-            voiceMingliLine('대운이 겹치는 해는 관계의 계절이 바뀝니다.') + ' 그해에 큰 결정을 몰아넣지 마세요.'
+            '부부로 가면 로맨스보다 **생활 숫자를 같이 맞추는 힘**이 관계를 지켜요. 두 분의 합(合)은 집안 리듬에서 빛납니다.',
+            nA + '님과 ' + nB + '님, **집·돈·휴식**을 한 장으로 맞추면 10년이 편해져요.'
         ],
         friend: [
-            '우정은 자주 만날수록만 깊어지는 게 아니에요. **공통 관심사 한 가지**가 오래 가게 합니다.',
-            '충(冲)이 있어도 우정은 깨지지 않아요. 다만 말버릇을 조심할 시기가 따로 있을 뿐이에요.'
+            nA + '님과 ' + nB + '님, 우정은 **같이 하는 일 한 가지**가 오래 가게 하는 조화예요.',
+            '자주 만나지 않아도, **연락 리듬만 맞으면** 우정은 깊어져요.'
         ],
         business: [
-            voiceMingliLine('재성·관성 균형은 돈과 책임의 분담을 말합니다.') + ' 계약은 친함 다음에 적으십시오.',
-            '역할을 나눌 때 직함 말고 **결정권 범위**를 문장으로 쓰면 마찰이 줄어요.'
+            nA + '님과 ' + nB + '님, 동업은 친함 다음에 **역할 문장**이 먼저인 조합이에요. 합(合)의 강점은 수익 구조에 있습니다.',
+            '함께 일할 때 **한 분은 방향, 한 분은 실행**으로 나뉘면 시너지가 납니다.'
         ],
         spouse: [
             '배우자궁은 이상형이 아니라 **무의식적으로 끌리는 온도**예요. 상대가 그림과 다르면 당황할 수 있어요.',
@@ -938,16 +938,20 @@ function buildCompatOpenerInner(topic, ctx) {
             nA + '님과 ' + nB + '님, 공동 목표를 문장으로 고정하면 시너지가 커져요.'
         ],
         positioning: [
-            voiceMingliLine('관계에는 이끔과 맞춤이 같이 있습니다.') + ' 에너지 숫자는 “힘 자랑”이 아니라 **호흡 각도**의 힌트예요.',
-            '좋은 결과는 감정만이 아니라 **역할 한 줄과 일정 규칙**이 같이 갈 때 오래 가요.'
+            nA + '님과 ' + nB + '님, **서로의 빈칸을 채워 주는 포지션 조화**가 있습니다. 케미 점수와 함께 호흡을 짚을게요.',
+            '좋은 관계는 감정만이 아니라 **역할 한 줄**이 맞을 때 오래 가요.'
         ],
         conflict: [
-            '다툼이 반복될 때는 누가 옳은지보다 **언제 말할지**가 먼저예요. 아래 대화 스크립트는 그대로 가져다 쓰셔도 됩니다.',
-            nA + '님과 ' + nB + '님 사이에서 작은 오해가 커지는 패턴을 짚고, 바로 써 먹을 말을 적어 두었어요.'
+            nA + '님과 ' + nB + '님, 말이 엇갈려도 **타이밍만 맞추면** 다시 붙는 조화가 있어요. 아래 스크립트는 그대로 쓰셔도 됩니다.',
+            '성장통은 끝이 아니라, **더 깊어지기 위한 과정**이 될 수 있어요.'
         ],
         fortuneMix: [
-            '궁합 점수는 “지금 이 순간”의 날씨와 “앞으로 겹치는 계절”을 같이 봐야 의미가 있어요.',
-            voiceMingliLine('대운·세운이 겹치면 관계의 색이 바뀝니다.') + ' 아래는 두 분이 **같이 움직이기 좋은 시기**와 **한 발 물러서기 좋은 시기**를 한 장에 모은 흐름입니다.'
+            nA + '님과 ' + nB + '님, **같은 계절에 숨 쉬는 해**가 곧 시너지 타이밍이에요.',
+            '지금 날씨와 앞으로 겹치는 계절을 한 장에 모았어요. **함께 움직일 때**를 먼저 골라 보세요.'
+        ],
+        timeline: [
+            nA + '님과 ' + nB + '님, 10년 단위로 보면 **함께 좋은 계절**이 분명해요.',
+            '카드 색이 **언제 손을 잡고 언제 쉴지** 알려 주는 지도예요.'
         ],
         idealFamily: [
             '배우자궁에 그려진 무의식의 그림과, 지금 상대의 표정이 다르게 느껴질 수 있어요. 그 간극을 줄이려면 한 가지 규칙부터 맞추면 충분해요.',
@@ -1007,13 +1011,17 @@ function buildCompatBridge(topic, ctx) {
 function buildCompatChapterIntro(ctx, topic) {
     var idx = _sajuxCompatChapterCount();
     var bridge = buildCompatBridge(topic, ctx);
+    var hook = (topic !== 'overview' && typeof buildCompatSynergyHookText === 'function')
+        ? buildCompatSynergyHookText(ctx) + ' '
+        : '';
     var text;
     if (idx <= 1 || topic === 'overview' || bridge === null) {
-        text = buildCompatSajuKidOpener(ctx, buildCompatOpenerInner(topic, ctx));
+        text = hook + buildCompatSajuKidOpener(ctx, buildCompatOpenerInner(topic, ctx));
     } else {
         var inner = buildCompatOpenerInner(topic, ctx);
-        text = bridge + (inner ? ' ' + inner : '');
+        text = hook + bridge + (inner ? ' ' + inner : '');
     }
+    text = annotateHanjaGloss(compatPolishTone(text));
     var fakeData = { name: ctx && ctx.aName };
     return buildNarrativePara(fakeData, text, {
         extraClass: 'ch-voice-opener compat-voice-opener',
@@ -1162,6 +1170,119 @@ function compatMeetPairPhrase(ctx) {
     return compatIljuMeetPhrase(a) + '이 ' + compatIljuMeetPhrase(b) + '을(를) 만날 때';
 }
 
+/** 궁합 리포트 — 한자(한글독음:핵심의미) 병기 */
+var SAJUX_STEM_GLOSS = {
+    '甲': { r: '갑', m: '시작/개척' }, '乙': { r: '을', m: '유연/조율' }, '丙': { r: '병', m: '열정/표현' }, '丁': { r: '정', m: '섬세/공감' },
+    '戊': { r: '무', m: '중심/신뢰' }, '己': { r: '기', m: '실용/축적' }, '庚': { r: '경', m: '결단/정리' }, '辛': { r: '신', m: '기준/완성' },
+    '壬': { r: '임', m: '확장/직관' }, '癸': { r: '계', m: '깊이/감성' }
+};
+var SAJUX_BRANCH_GLOSS = {
+    '子': { r: '자', m: '지혜/내면' }, '丑': { r: '축', m: '인내/축적' }, '寅': { r: '인', m: '도전/시작' }, '卯': { r: '묘', m: '성장/유대' },
+    '辰': { r: '진', m: '변화/전환' }, '巳': { r: '사', m: '집중/열정' }, '午': { r: '오', m: '활력/표현' }, '未': { r: '미', m: '돌봄/완성' },
+    '申': { r: '신', m: '기동/교류' }, '酉': { r: '유', m: '결실/정리' }, '戌': { r: '술', m: '책임/지키기' }, '亥': { r: '해', m: '직관/회복' }
+};
+var SAJUX_OH_HANJA_GLOSS = {
+    '木': { r: '목', m: '성장/시작' }, '火': { r: '화', m: '열정/표현' }, '土': { r: '토', m: '안정/신뢰' },
+    '金': { r: '금', m: '결실/원칙' }, '水': { r: '수', m: '유연/직관' }
+};
+var SAJUX_PHRASE_GLOSS = [
+    ['食神', '식신', '창의성/표현'], ['傷官', '상관', '혁신/기획'], ['偏財', '편재', '기회/확장'], ['正財', '정재', '안정 수입'],
+    ['偏官', '편관', '도전/추진'], ['正官', '정관', '명예/책임'], ['偏印', '편인', '직관/통찰'], ['正印', '정인', '배움/보호'],
+    ['比肩', '비견', '주체성/자아'], ['劫財', '겁재', '실행/경쟁'], ['三合', '삼합', '방향 맞춤'], ['六合', '육합', '인연 조화'],
+    ['비견', '비견', '주체성/자아'], ['겁재', '겁재', '실행/독립'], ['식신', '식신', '창의성/표현'], ['상관', '상관', '혁신/기획'],
+    ['편재', '편재', '기회/확장'], ['정재', '정재', '안정 수입'], ['편관', '편관', '도전/추진'], ['정관', '정관', '명예/책임'],
+    ['편인', '편인', '직관/통찰'], ['정인', '정인', '배움/보호'], ['合', '합', '조화/인연'], ['冲', '충', '성장 자극/조율'],
+    ['害', '해', '섬세한 조율'], ['刑', '형', '규칙/성숙'], ['破', '파', '전환/갱신']
+];
+
+function compatHanjaGlossChar(ch, kind) {
+    var g = (kind === 'branch' ? SAJUX_BRANCH_GLOSS : SAJUX_STEM_GLOSS)[ch];
+    if (!g) return ch;
+    return ch + '(' + g.r + ': ' + g.m + ')';
+}
+
+function compatPillarLabel(stem, branch) {
+    var s = stem ? compatHanjaGlossChar(stem, 'stem') : '';
+    var b = branch ? compatHanjaGlossChar(branch, 'branch') : '';
+    return s + b;
+}
+
+function annotateHanjaGloss(s) {
+    var t = String(s == null ? '' : s);
+    if (!t) return t;
+    var protects = [];
+    function prot(m) { protects.push(m); return '\x00P' + (protects.length - 1) + '\x01'; }
+    t = t.replace(/<[^>]+>/g, prot);
+    var i;
+    for (i = 0; i < SAJUX_PHRASE_GLOSS.length; i++) {
+        var ph = SAJUX_PHRASE_GLOSS[i];
+        var re = new RegExp(ph[0] + '(?!\\([^)]*' + ph[1] + ':)', 'g');
+        t = t.replace(re, ph[0] + '(' + ph[1] + ': ' + ph[2] + ')');
+    }
+    t = t.replace(/([木火土金水])(?!\([^)]*[목화토금수]:)/g, function (m) {
+        var g = SAJUX_OH_HANJA_GLOSS[m];
+        return g ? m + '(' + g.r + ': ' + g.m + ')' : m;
+    });
+    var stems = '甲乙丙丁戊己庚辛壬癸';
+    var branches = '子丑寅卯辰巳午未申酉戌亥';
+    var si;
+    for (si = 0; si < stems.length; si++) {
+        var c = stems.charAt(si);
+        var g = SAJUX_STEM_GLOSS[c];
+        if (!g) continue;
+        var reS = new RegExp(c + '(?!\\(' + g.r + ':)', 'g');
+        t = t.replace(reS, c + '(' + g.r + ': ' + g.m + ')');
+    }
+    for (si = 0; si < branches.length; si++) {
+        var cb = branches.charAt(si);
+        var gb = SAJUX_BRANCH_GLOSS[cb];
+        if (!gb) continue;
+        var reB = new RegExp(cb + '(?!\\(' + gb.r + ':)', 'g');
+        t = t.replace(reB, cb + '(' + gb.r + ': ' + gb.m + ')');
+    }
+    t = t.replace(/\x00P(\d+)\x01/g, function (_, idx) { return protects[+idx]; });
+    return t;
+}
+
+function compatPolishTone(s) {
+    var t = String(s == null ? '' : s);
+    t = t.replace(/충돌\s*트리거\s*②/g, '성장통 포인트 ②');
+    t = t.replace(/충돌\s*트리거\s*①/g, '성장통 포인트 ①');
+    t = t.replace(/충돌\s*트리거/g, '성장통 포인트');
+    t = t.replace(/갈등\s*처방전/g, '조율 처방전');
+    t = t.replace(/갈등을\s*만드는/g, '조율이 필요해지는');
+    t = t.replace(/갈등이\s*커지/g, '성장통이 커지');
+    t = t.replace(/갈등이\s*올/g, '성장통이 올');
+    t = t.replace(/갈등이/g, '성장통이');
+    t = t.replace(/갈등을/g, '성장통을');
+    t = t.replace(/갈등의/g, '성장통의');
+    t = t.replace(/갈등/g, '성장통');
+    t = t.replace(/충돌이/g, '조율이 필요한 순간이');
+    t = t.replace(/충돌을/g, '조율 포인트를');
+    t = t.replace(/충돌/g, '조율이 필요한 순간');
+    t = t.replace(/다툼이/g, '말이 엇갈리는 순간이');
+    t = t.replace(/다툼도/g, '말이 엇갈려도');
+    t = t.replace(/다툼/g, '말 엇갈림');
+    t = t.replace(/싸움/g, '말이 부딪히는 순간');
+    t = t.replace(/싸우/g, '말이 엇갈리');
+    t = t.replace(/부딪히는/g, '조율이 필요한');
+    t = t.replace(/일지\s*충/g, '일지 충(충: 성장 자극)');
+    return t;
+}
+
+function compatFmt(s) {
+    return boldStarsToStrong(compatPolishTone(annotateHanjaGloss(String(s == null ? '' : s))));
+}
+
+function buildCompatChemGuideText(chem) {
+    var c = Number(chem) || 55;
+    if (c >= 85) return c + '점: 서로의 차이를 인정하며 함께 성장하는 관계';
+    if (c >= 75) return c + '점: 역할만 맞추면 재물·마음·대외 모두 시너지가 나는 관계';
+    if (c >= 65) return c + '점: 작은 약속을 지킬 때 깊어지는, 조율형 시너지 관계';
+    if (c >= 50) return c + '점: 호흡 규칙을 정하면 안정과 성취가 함께 오는 관계';
+    return c + '점: 의식적 대화·휴식 리듬이 쌓이면 시너지가 열리는 관계';
+}
+
 function compatComputeChemistryScore(ctx) {
     ctx = ctx || {};
     var base = ctx.score != null ? Number(ctx.score) : 58;
@@ -1181,11 +1302,13 @@ function buildCompatChemScoreBanner(ctx, caption) {
     var bName = compatNm(ctx, 'b');
     var cap = caption || (aName + '님과 ' + bName + '님의 기질이 맞닿을 때의 온도');
     var tone = chem >= 78 ? '따뜻하게 맞물리는' : chem >= 58 ? '조율하면 깊어지는' : '의식적 호흡이 필요한';
+    var guide = buildCompatChemGuideText(chem);
     return '<div class="insight-card sajux-chem-score" style="margin:18px 0 22px;padding:22px 20px;border-radius:14px;background:linear-gradient(135deg,rgba(199,167,106,0.14),rgba(255,255,255,0.03));border:1px solid rgba(199,167,106,0.32);text-align:center;">'
         + '<div style="font-size:10px;letter-spacing:0.2em;color:rgba(199,167,106,0.85);font-weight:700;margin-bottom:8px;">CHEMISTRY · 케미스트리</div>'
         + '<div style="font-size:42px;font-weight:800;color:var(--gold);line-height:1;margin-bottom:4px;">' + String(chem) + '<span style="font-size:16px;font-weight:600;color:rgba(255,255,255,0.45);"> / 100</span></div>'
+        + '<p style="font-size:12px;color:rgba(199,167,106,0.92);line-height:1.75;margin:0 0 10px;font-weight:600;">' + escHtmlAttr(guide) + '</p>'
         + '<p style="font-size:13px;color:rgba(255,255,255,0.72);line-height:1.85;margin:0 0 6px;">' + escHtmlAttr(cap) + '</p>'
-        + '<p style="font-size:13.5px;color:#ddd;line-height:1.9;margin:0;">' + boldStarsToStrong('**' + tone + ' 조합**으로 읽힙니다. 아래 챕터는 이 점수를 전제로, 두 분이 실제로 부딪히는 장면과 회복 대화까지 풀어 드립니다.') + '</p>'
+        + '<p style="font-size:13.5px;color:#ddd;line-height:1.9;margin:0;">' + compatFmt('**' + tone + ' 조합**으로 읽힙니다. 아래 챕터는 이 점수를 전제로, 두 분이 조율하는 장면과 회복 대화까지 풀어 드립니다.') + '</p>'
         + '</div>';
 }
 
@@ -1196,16 +1319,206 @@ function buildCompatStoryCard(tag, situation, conflict, resolution, scripts) {
             + '<div style="font-size:11px;color:var(--gold);font-weight:700;letter-spacing:0.06em;margin-bottom:8px;">💬 바로 써 보실 대화</div>';
         scripts.forEach(function (line) {
             scriptHtml += '<p style="font-size:13px;color:#e8e4dc;line-height:1.9;margin:0 0 10px;padding-left:14px;border-left:2px solid rgba(199,167,106,0.35);">'
-                + boldStarsToStrong(escHtmlAttr(line)) + '</p>';
+                + compatFmt(line) + '</p>';
         });
         scriptHtml += '</div>';
     }
     return '<div class="insight-card" style="margin-bottom:12px;">'
-        + '<div class="tag">' + escHtmlAttr(tag) + '</div>'
-        + '<p style="font-size:13.5px;color:#ccc;line-height:1.95;margin:12px 0 0;">' + boldStarsToStrong(situation) + '</p>'
-        + '<p style="font-size:13.5px;color:#bbb;line-height:1.95;margin:12px 0 0;">' + boldStarsToStrong(conflict) + '</p>'
-        + '<p style="font-size:13.5px;color:#ddd;line-height:1.95;margin:12px 0 0;">' + boldStarsToStrong(resolution) + '</p>'
+        + '<div class="tag">' + escHtmlAttr(compatPolishTone(tag)) + '</div>'
+        + '<p style="font-size:13.5px;color:#ccc;line-height:1.95;margin:12px 0 0;">' + compatFmt(situation) + '</p>'
+        + '<p style="font-size:13.5px;color:#bbb;line-height:1.95;margin:12px 0 0;"><span style="font-size:10px;color:rgba(199,167,106,0.7);letter-spacing:0.06em;">🌱 조율·성장 포인트</span><br>' + compatFmt(conflict) + '</p>'
+        + '<p style="font-size:13.5px;color:#ddd;line-height:1.95;margin:12px 0 0;">' + compatFmt(resolution) + '</p>'
         + scriptHtml + '</div>';
+}
+
+function compatAssetForPerson(ctx, who) {
+    var saju = (who === 'b' ? ctx.b : ctx.a) || {};
+    var nm = compatNm(ctx, who);
+    if (saju.strength === '신강') {
+        return { nm: nm, lead: '앞에서 방향을 여는 추진력', care: '막힌 구간을 뚫어 주는 실행력', soft: '속도가 빠를 때' };
+    }
+    return { nm: nm, lead: '분위기를 살리는 공감력', care: '상대 마음을 읽어 조율하는 섬세함', soft: '결정을 미룰 때' };
+}
+
+function buildCompatSynergyHookText(ctx) {
+    var aName = compatNm(ctx, 'a');
+    var bName = compatNm(ctx, 'b');
+    var tone = ctx.isHap
+        ? '**서로의 부족함을 채워 주는 완벽한 조화**'
+        : (ctx.shengAB || ctx.shengBA)
+        ? '**맞물리면 에너지가 배가 되는 상생 조화**'
+        : '**다름을 보완해 주는 조화**';
+    return aName + '님과 ' + bName + '님, 두 분은 ' + tone + '를 이루는 인연으로 읽힙니다.';
+}
+
+function buildCompatSynergyHookHtml(ctx) {
+    return '<div class="compat-synergy-hook" style="margin:0 0 16px;padding:14px 16px;border-radius:12px;background:rgba(199,167,106,0.09);border:1px solid rgba(199,167,106,0.26);">'
+        + '<p style="font-size:14px;color:#e8dfc8;line-height:2;margin:0;">' + compatFmt(buildCompatSynergyHookText(ctx)) + '</p></div>';
+}
+
+function compatSynergyOutcomes(ctx, topic) {
+    var aName = compatNm(ctx, 'a');
+    var bName = compatNm(ctx, 'b');
+    var sets = {
+        positioning: { money: '고정지출·저축 리듬이 맞아 **돈 싸움 대신 숫자 합의**가 됩니다', psych: '“내가 따른다” 한 마디로 **서로 존중받는 안정감**이 돌아옵니다', outer: '주변에서 **잘 맞는 팀**으로 보이며 대외 협업·이사 결정이 수월해집니다' },
+        personality: { money: '한 분이 벌고 한 분이 다듬는 구조로 **지출·투자 판단이 빨라집니다**', psych: '강점에 이름이 붙어 **오해가 줄고 마음이 가벼워집니다**', outer: '함께 나설 때 **프로젝트·모임에서 존재감**이 동시에 커집니다' },
+        lover: { money: '약속·일정이 맞아 **데이트·동거 비용이 낭비되지 않습니다**', psych: '지켜진 시간이 **애정의 안전벨트**가 되어 불안이 줄어요', outer: '주변에 **단단한 연인**으로 보이며 관계 발표·동거가 자연스럽습니다' },
+        married: { money: '통장·지출 카테고리 합의로 **10년 생활비 성장통이 줄어듭니다**', psych: '집안 회의 20분이 **로맨스를 지키는 심리적 울타리**가 됩니다', outer: '가족·이웃 앞에서 **한 팀 부부** 이미지가 선명해집니다' },
+        friend: { money: '공동 취미·프로젝트로 **작은 수익·할인 혜택**도 같이 누립니다', psych: '짧은 연락만으로도 **외로움이 줄고 유대가 유지**됩니다', outer: '모임에서 **든든한 우정**으로 소개받기 쉬워집니다' },
+        business: { money: '역할 분담 후 **매출·정산이 선명**해져 수익이 남습니다', psych: '48시간 유예로 **신뢰가 지켜지고 마음이 편해집니다**', outer: '시장·거래처에 **빈틈없는 파트너십**으로 보입니다' },
+        conflict: { money: '큰 지출·계약을 **쿨다운 후** 맞춰 **돈 손실을 막습니다**', psych: '회복 대화가 **더 깊어지기 위한 과정**으로 쌓입니다', outer: '바깥에서는 **성숙한 커플/팀**으로 평가받기 쉽습니다' },
+        fortuneMix: { money: '✨ 구간에 **이사·창업·투자 타이밍**을 맞추면 성과가 납니다', psych: '같은 계절에 움직여 **외로움·불안이 동시에 줄어듭니다**', outer: '외부 기회를 **둘이 같이 잡는 시기**가 분명해집니다' },
+        spouse: { money: '끌림이 맞으면 **생활·소비 취향**도 자연스럽게 맞춰집니다', psych: '편안함+자극이 **심리적 안식**과 성장을 동시에 줍니다', outer: '주변에서 **잘 어울리는 인연**으로 보입니다' },
+        timeline: { money: '함께 좋음 해에 **자산·이직·창업**을 맞추면 힘이 배가됩니다', psych: '10년 계절이 겹치면 **“우리 편”** 감각이 강해집니다', outer: '사회적 이벤트(결혼·동업) **타이밍이 또렷**해집니다' },
+        idealFamily: { money: '가정 회의로 **양가·자녀 지출**이 정리됩니다', psych: '이상형과 실제의 차이를 **대화로 줄여** 마음이 편해집니다', outer: '가족·친척 앞 **단단한 가정 이미지**가 만들어집니다' },
+        overview: { money: '궁합이 맞을수록 **돈·일정 결정이 한 번에** 정리됩니다', psych: '서로의 빈칸을 채우며 **심리적 안정**이 커집니다', outer: '대외적으로 **성공하는 커플/팀** 에너지가 납니다' }
+    };
+    return sets[topic] || sets.overview;
+}
+
+function buildCompatSynergyEngine(ctx, topic) {
+    var a = compatAssetForPerson(ctx, 'a');
+    var b = compatAssetForPerson(ctx, 'b');
+    var meet = compatMeetPairPhrase(ctx);
+    var o = compatSynergyOutcomes(ctx, topic);
+    var engines = {
+        positioning: a.nm + '님의 **' + a.lead + '**과 ' + b.nm + '님의 **' + b.care + '**가 만나면, **“한 분은 줄기, 한 분은 다듬기” 시너지 엔진**이 돌아갑니다.',
+        personality: meet + ', ' + a.nm + '님의 **' + a.lead + '**과 ' + b.nm + '님의 **' + b.lead + '**가 맞물릴 때 **기질 시너지 엔진**이 켜집니다.',
+        lover: a.nm + '님이 **행동**으로, ' + b.nm + '님이 **말과 분위기**로 받아 주면 **“지켜진 약속 리듬” 시너지 엔진**이 돌아갑니다.',
+        married: meet + ' **생활 숫자**를 같이 맞출 때 **“집안 설계” 시너지 엔진**이 작동합니다.',
+        friend: a.nm + '님과 ' + b.nm + '님은 **같은 취미·같은 시간**만 고정해도 **우정 시너지 엔진**이 오래 갑니다.',
+        business: a.nm + '님의 **' + a.lead + '**과 ' + b.nm + '님의 **' + b.care + '**가 역할로 나뉘면 **“방향+실행” 수익 시너지 엔진**이 돌아갑니다.',
+        conflict: '말이 엇갈려도 ' + meet + ' **회복 대화 규칙**만 있으면 **“합(合)을 지키는 연습” 시너지 엔진**으로 바뀝니다.',
+        fortuneMix: meet + ' **같은 계절에 움직이는 해**가 오면 **“타이밍 시너지 엔진”**이 켜집니다.',
+        spouse: meet + ' 무의식의 끌림이 맞물리면 **“편안함+자극” 끌림 시너지 엔진**이 작동합니다.',
+        timeline: a.nm + '님과 ' + b.nm + '님의 10년 계절이 **같은 방향으로 겹칠 때** **“함께 가기 좋은 시기” 시너지 엔진**이 분명해집니다.',
+        idealFamily: meet + ' 생활 리듬이 맞으면 **“집안 설계” 시너지 엔진**이 돌아갑니다.'
+    };
+    var line = engines[topic] || (a.nm + '님과 ' + b.nm + '님의 강점이 맞물릴 때만 나오는 **관계 시너지 엔진**이 있습니다.');
+    var outcome = '<p style="font-size:13px;color:#e8dfc8;line-height:1.9;margin:10px 0 0;">'
+        + compatFmt('**✦ 성공 방정식 — 결과값** · **재물**: ' + o.money + ' · **심리적 안정**: ' + o.psych + ' · **대외적 성취**: ' + o.outer) + '</p>';
+    return '<div class="compat-synergy-engine" style="margin:0 0 14px;padding:14px 16px;border-radius:12px;background:rgba(255,255,255,0.03);border-left:3px solid var(--gold);">'
+        + '<div style="font-size:11px;color:var(--gold);font-weight:700;letter-spacing:0.08em;margin-bottom:8px;">⚙ 이 챕터의 시너지 엔진</div>'
+        + '<p style="font-size:13.5px;color:#ddd;line-height:1.95;margin:0;">' + compatFmt(line) + '</p>'
+        + outcome + '</div>';
+}
+
+function buildCompatThreeHarmonyReasons(ctx, topic) {
+    var aName = compatNm(ctx, 'a');
+    var bName = compatNm(ctx, 'b');
+    var a = compatAssetForPerson(ctx, 'a');
+    var b = compatAssetForPerson(ctx, 'b');
+    var meet = compatMeetPairPhrase(ctx);
+    var sets = {
+        positioning: [
+            '**역할이 겹치지 않을 때** — 재물: 지출 합의가 빨라지고, 심리: 존중감 회복, 대외: 팀 이미지가 선명해집니다.',
+            '**속도 차이를 규칙으로 바꿀 때** — “이번 주는 내가 따른다” 한 마디로 **심리적 안정**이 돌아옵니다.',
+            ctx.isHap ? '**일지 합(合)의 조화** — 편안한 호흡으로 **대외적 결정(이사·동거)**이 덜 흔들립니다.' : '**오행 보완** — 한 분이 세우면 다른 한 분이 받쳐 **재물·일정 시너지**가 납니다.'
+        ],
+        personality: [
+            aName + '님 **' + a.lead + '** + ' + bName + '님 **' + b.care + '** → **재물**: 판단 속도 ↑ · **심리**: 오해 ↓ · **대외**: 팀 존재감 ↑',
+            '**강점에 이름 붙일 때** — “너는 빠르고 나는 섬세해” 한 마디로 **심리적 안정**이 커집니다.',
+            ctx.shengAB || ctx.shengBA ? '**상생 결** — 함께할 때 **성장·수익·대외 성취**가 동시에 오르는 구조입니다.' : '**보완 결** — 없는 쪽을 채워 **생활·마음·대외 평판**이 균형을 찾습니다.'
+        ],
+        lover: [
+            '**약속 리듬** — **재물**: 데이트·동거비 절약 · **심리**: 불안 ↓ · **대외**: 단단한 연인 이미지',
+            ctx.isHap ? '**일지 합(合) 끌림** — 작은 약속이 **신뢰·심리적 안식**으로 커집니다.' : '**보완 끌림** — 다름이 **대외 매력·생활 보완**으로 작동합니다.',
+            '**회복 대화** — 말이 엇긴 날 “내일 20분”만으로 **관계가 더 깊어지는 과정**이 됩니다.'
+        ],
+        married: [
+            '**생활 숫자 합의** — **재물**: 10년 지출 성장통 ↓ · **심리**: 안심 · **대외**: 한 팀 부부',
+            '**집안 회의 20분** — 로맨스가 숨 쉬고 **심리적 안정**이 회복됩니다.',
+            ctx.isHap ? '**가정 리듬 합** — 집안 일·**대외 가족 행사**가 한 팀처럼 굴러갑니다.' : '**역할 분담 합** — 안·밖이 나뉘어 **재물·에너지**가 새지 않습니다.'
+        ],
+        friend: [
+            '**공통 취미** — **재물**: 함께 쓰는 취미비 절약 · **심리**: 외로움 ↓ · **대외**: 든든한 우정',
+            '**번갈아 연락** — 부담 없이 **심리적 유대**가 오래 갑니다.',
+            '**짧은 음성** — 오해 ↓, **대외 모임**에서도 편한 팀워크가 됩니다.'
+        ],
+        business: [
+            '**역할 문장** — **재물**: 정산·수익 선명 · **심리**: 신뢰 · **대외**: 빈틈없는 파트너',
+            ctx.shengAB ? '**' + aName + ' 방향 + ' + bName + ' 실행** — **매출·브랜드** 시너지' : ctx.shengBA ? '**' + bName + ' 전략 + ' + aName + ' 추진** — **시장 성취** 시너지' : '**48시간 유예** — **돈·계약 손실**을 막습니다.',
+            '**분기 정산** — 친함 + **재물 합**이 동시에 지켜집니다.'
+        ],
+        conflict: [
+            '**하루 쿨다운** — **심리**: 더 깊어지기 위한 과정 · **재물**: 충동 지출 방지',
+            '**20분 카드** — “나는 무엇이 불안했는지”만 말해 **심리적 안정** 회복',
+            meet + ' **말버릇 조율** → **대외적으로 성숙한 관계**로 보입니다.'
+        ],
+        fortuneMix: [
+            '**케미 점수 + 총점** — 지금 온도와 앞 계절을 같이 보면 타이밍이 보입니다.',
+            '**✨ 함께 좋음 카드** — 큰 결정(이사·결혼·동업)을 맞추기 좋은 해입니다.',
+            '**한 달 목표 한 줄** — 돈·휴식·만남 중 하나만 맞춰도 흐름이 부드러워집니다.'
+        ],
+        timeline: [
+            '**10년 계절 겹침** — 두 분 대운이 같은 방향일 때 힘이 배가 납니다.',
+            '**현재 구간(금테두리)** — 지금이 관계 점검·작은 성공을 쌓기 좋은 시기일 수 있어요.',
+            '**조율기(⚡) 구간** — 큰 말 대신 휴식·일정 조정이 **합을 지키는 선택**입니다.'
+        ],
+        idealFamily: [
+            '**이상형과 실제의 합** — 그림이 달라도 생활 온도가 맞으면 오래 갑니다.',
+            '**무의식 일지 보완** — 한 분이 편안함, 한 분이 자극을 채워 줄 수 있어요.',
+            '**가정 회의 20분** — 돈·일정·휴식만 맞춰도 가족 **성장통**이 줄어요.'
+        ]
+    };
+    var reasons = sets[topic] || sets.positioning;
+    var lis = reasons.map(function (r, i) {
+        return '<li style="margin-bottom:10px;"><strong style="color:var(--gold);">' + (i + 1) + '.</strong> ' + compatFmt(r) + '</li>';
+    }).join('');
+    return '<div class="compat-three-reasons" style="margin:0 0 16px;padding:14px 16px;border-radius:12px;background:rgba(255,255,255,0.025);border:1px solid rgba(199,167,106,0.18);">'
+        + '<div style="font-size:11px;color:var(--gold);font-weight:700;letter-spacing:0.08em;margin-bottom:10px;">💞 잘 맞는 합(合) — 핵심 이유 3가지</div>'
+        + '<ol style="margin:0;padding-left:20px;font-size:13.5px;color:#ccc;line-height:1.95;list-style:decimal;">' + lis + '</ol></div>';
+}
+
+var _COMPAT_COACH_Q = {
+    overview: '오늘 우리 **고마웠던 순간 한 가지**를 서로에게 말해 볼까?',
+    positioning: '오늘 우리 **역할 분담**(누가 줄기·누가 다듬기)에 대해 15분만 이야기해 볼까?',
+    personality: '오늘 우리 **서로의 강점 이름**을 하나씩 말해 볼까? “네가 잘하는 것”부터요.',
+    lover: '오늘 우리 **다음 약속 리듬**(요일·시간)에 대해 대화해 볼까?',
+    married: '오늘 우리 **이번 달 생활 숫자**(돈·휴식)에 대해 20분만 맞춰 볼까?',
+    friend: '오늘 우리 **한 달에 한 번 같이 할 일**에 대해 이야기해 볼까?',
+    business: '오늘 우리 **역할 한 줄**(누가 무엇을 맡는지)에 대해 대화해 볼까?',
+    conflict: '오늘 우리 **말이 엇갈릴 때 지킬 규칙**(쿨다운·20분 카드)에 대해 맞춰 볼까?',
+    fortuneMix: '오늘 우리 **이번 달 함께 할 목표 한 줄**에 대해 이야기해 볼까?',
+    timeline: '오늘 우리 **앞으로 2~3년 함께 맞출 일**에 대해 가볍게 이야기해 볼까?',
+    spouse: '오늘 우리 **서로에게 편안함을 주는 순간**이 언제였는지 이야기해 볼까?',
+    idealFamily: '오늘 우리 **집안에서 편안했던 순간**에 대해 이야기해 볼까?'
+};
+
+var _COMPAT_MISSION = {
+    overview: '**미션** — 오늘 저녁, 궁합 총점 옆에 **이번 달 함께 지킬 한 줄**을 적어 냉장고에 붙이기',
+    positioning: '**미션** — “이번 주는 내가 따른다”를 번갈아 말할 **요일 하나** 정하기',
+    personality: '**미션** — 각자 **강점 한 가지**를 적어 서로에게 읽어 주기',
+    lover: '**미션** — 다음 만남 **요일·시간**을 달력에 고정하기',
+    married: '**미션** — **집안 회의 20분** 요일을 정하고 돈·휴식만 다루기',
+    friend: '**미션** — **한 달에 한 번** 같이 할 취미·만남을 달력에 박기',
+    business: '**미션** — **역할 한 줄**(계약·실행·회계)을 메모에 적고 사진으로 공유하기',
+    conflict: '**미션** — **쿨다운 24시간 + 20분 카드** 규칙을 두 줄로 적어 두기',
+    fortuneMix: '**미션** — 이번 달 **돈·휴식·만남** 중 목표 한 줄만 맞추기',
+    timeline: '**미션** — 타임라인에서 **✨ 함께 좋음** 구간 하나 골라 일정 메모하기',
+    spouse: '**미션** — 서로에게 **편안함을 준 순간**을 각각 한 가지 적어 나누기',
+    idealFamily: '**미션** — **가정 회의 20분** 안건(돈·일정·휴식)을 한 줄로 적기'
+};
+
+function buildCompatMissionCard(ctx, topic) {
+    var aName = compatNm(ctx, 'a');
+    var bName = compatNm(ctx, 'b');
+    var mission = _COMPAT_MISSION[topic] || '**미션** — 오늘 **고마웠던 것 한 가지**를 서로에게 말하기';
+    var q = _COMPAT_COACH_Q[topic] || '오늘 우리 **관계에서 고마웠던 것 한 가지**에 대해 이야기해 볼까?';
+    return '<div class="compat-mission-card" style="margin:18px 0 8px;padding:16px 18px;border-radius:12px;background:rgba(199,167,106,0.06);border:1px dashed rgba(199,167,106,0.35);">'
+        + '<p style="font-size:13px;color:#ddd;line-height:1.9;margin:0 0 12px;">' + compatFmt(mission) + '</p>'
+        + '<p style="font-size:12.5px;color:rgba(199,167,106,0.92);line-height:1.85;margin:0;font-style:italic;">'
+        + '💬 ' + escHtmlAttr(aName) + '님 · ' + escHtmlAttr(bName) + '님께: “' + escHtmlAttr(q.replace(/\*\*/g, '')) + '”</p></div>';
+}
+
+function buildCompatCoachQuestion(ctx, topic) {
+    return buildCompatMissionCard(ctx, topic);
+}
+
+function buildCompatPanelPrefix(ctx, topic) {
+    return buildCompatSynergyHookHtml(ctx)
+        + buildCompatSynergyEngine(ctx, topic)
+        + buildCompatThreeHarmonyReasons(ctx, topic);
 }
 
 function buildCompatPersonalityPanelHtml(ctx, aChar, bChar) {
@@ -1216,46 +1529,38 @@ function buildCompatPersonalityPanelHtml(ctx, aChar, bChar) {
     var aDB = a.dayBranch || '';
     var bDB = b.dayBranch || '';
     var meet = compatMeetPairPhrase(ctx);
-    var leadStr = a.strength === '신강' ? aName : bName;
-    var tailStr = a.strength === '신약' ? aName : bName;
-    if (a.strength === b.strength) {
-        leadStr = aName;
-        tailStr = bName;
-    }
-    var comboSit = meet + ', 처음엔 “나랑 비슷한 사람”이라 편안하지만, 같은 결끼리 모이면 **서로의 약한 날을 받아 줄 힘이 부족**해질 수 있어요. 특히 피곤한 저녁, 작은 말투 차이가 크게 들릴 때가 있습니다.';
+    var aa = compatAssetForPerson(ctx, 'a');
+    var bb = compatAssetForPerson(ctx, 'b');
+    var comboSit = meet + ', 처음엔 “나랑 비슷한 사람”이라 편안합니다. ' + aa.nm + '님의 **' + aa.lead + '**과 ' + bb.nm + '님의 **' + bb.care + '**이 맞물리면, 둘이 있을 때만 커지는 **기질 시너지**가 분명해요.';
+    var comboStr = '**강점이 동시에 빛날 때** — 한 분이 앞서가고 한 분이 분위기를 살려 주면, 주변에서도 “잘 맞는 팀”으로 보입니다.';
     var comboConf = a.strength === b.strength && a.strength === '신강'
-        ? '둘 다 “내 방식이 맞다”는 순간에 목소리가 커지고, 사과보다 **이유 설명**이 길어지기 쉬워요. 상대는 들었는데 “내가 존중받지 못했다”고 느낄 수 있습니다.'
+        ? '**충돌 트리거 ①** 둘 다 “내 방식이 맞다”는 순간, 목소리만 커지고 **감정은 뒤로** 밀립니다. **충돌 트리거 ②** 피곔한 날 서로의 약한 날을 받아 주기 어렵습니다.'
         : a.strength === b.strength && a.strength === '신약'
-        ? '둘 다 배려하느라 말을 삼키다, 중요한 결정만 **끝없이 미루는** 패턴이 생기기 쉬워요. “괜찮아”가 쌓이면 나중에 한꺼번에 터집니다.'
-        : meet + ' ' + escHtmlAttr(leadStr) + '님이 속도를 내고 ' + escHtmlAttr(tailStr) + '님이 분위기를 다듬는 그림이 자연스럽습니다. 다만 빠른 쪽이 “왜 이렇게 느려?”라고 느끼고, 조율하는 쪽이 “왜 이렇게 밀어붙여?”라고 느끼는 **속도 오해**가 반복될 수 있어요.';
-    var comboRes = '**한 사람이 “오늘은 내가 따를게”라고 먼저 말하는 날**을 달력에 박아 두세요. 비난 대신 “나는 지금 ○○ 때문에 불안해”로 시작하면, 성격 차이가 줄어듭니다.';
-    var aSit = compatIljuMeetPhrase(a) + '은 ' + escHtmlAttr(aName) + '님에게 **' + (a.strength === '신강' ? '앞으로 나가는 추진력' : '맞는 환경에서 피어나는 공감력') + '**을 선물합니다. 혼자 있을 때는 단단해 보여도, 사랑하는 사람 앞에서는 말이 짧아지거나 길어지는 날이 있습니다.';
+        ? '**충돌 트리거 ①** 둘 다 말을 삼키다 **중요한 결정만 미루는** 패턴. **충돌 트리거 ②** “괜찮아”가 쌓여 나중에 한꺼번에 터집니다.'
+        : '**충돌 트리거 ①** 빠른 쪽이 “왜 느려?” 느끼고, 조율하는 쪽이 “왜 밀어붙여?” 느낍니다. **충돌 트리거 ②** 해결책 vs 감정 듣기 순서가 엇갈립니다.';
+    var comboRes = '**해결 ①** “오늘은 내가 따를게”를 번갈아 말하는 날을 정하세요. **해결 ②** “나는 지금 ○○ 때문에 불안해”로 시작하고, 상대는 **조언 전에 들어 주기**만 해도 합(合)이 회복됩니다.';
+    var aSit = compatIljuMeetPhrase(a) + '은 ' + escHtmlAttr(aName) + '님에게 **' + aa.lead + '**을 줍니다. 사랑하는 사람 앞에서 말이 짧아지거나 길어지는 날이 있어요 — 그건 약함이 아니라 **마음이 열려 있기 때문**입니다.';
     var aConf = a.strength === '신강'
-        ? '바쁜 날 일정이 밀리면, ' + escHtmlAttr(aName) + '님은 **해결책**을 먼저 내놓고 상대 감정을 나중에 듣는 습관이 생기기 쉽습니다. 상대는 “내 마음을 못 읽는다”고 느낄 수 있어요.'
-        : '결정 앞에서 망설이면, ' + escHtmlAttr(aName) + '님은 **상대 눈치**를 지나치게 보며 스스로를 작게 만드는 날이 있습니다. 상대는 “나에게 기대하지 않는다”고 오해할 수 있어요.';
-    var aRes = escHtmlAttr(aName) + '님은 이번 주에 **감정 한 줄 일기**를 남기고, 상대에게 “오늘은 이것 때문에 예민했어”라고 먼저 공유해 보십시오. ' + escHtmlAttr(bName) + '님은 그 말을 조언이 아니라 **신호**로 받아 주시면 됩니다.';
-    var bSit = compatIljuMeetPhrase(b) + '은 ' + escHtmlAttr(bName) + '님 곁에서 **' + (b.strength === '신강' ? '방향을 또렷하게' : '분위기를 부드럽게') + '** 만드는 역할을 합니다. 친구들 앞에서는 달라 보여도, 연인 앞에서는 예민해지는 날이 있습니다.';
+        ? '**충돌 트리거** 바쁜 날 ' + escHtmlAttr(aName) + '님이 **해결책**을 먼저 내놓으면, ' + escHtmlAttr(bName) + '님은 “내 마음을 못 읽는다”고 느낄 수 있어요.'
+        : '**충돌 트리거** 결정 앞에서 ' + escHtmlAttr(aName) + '님이 **상대 눈치**만 보면, ' + escHtmlAttr(bName) + '님은 “나에게 기대하지 않는다”고 오해할 수 있어요.';
+    var aRes = '**해결** **감정 한 줄 일기** 후 “오늘은 이것 때문에 예민했어”라고 먼저 말하세요. ' + escHtmlAttr(bName) + '님은 **“들었어, 고마워”** 한 마디만으로도 조화가 회복됩니다.';
+    var bSit = compatIljuMeetPhrase(b) + '은 ' + escHtmlAttr(bName) + '님 곁에서 **' + bb.lead + '**을 살립니다. 연인 앞이 더 예민한 건 **관계를 진심으로 여기기 때문**입니다.';
     var bConf = b.strength === '신강'
-        ? escHtmlAttr(bName) + '님은 “내가 맞다”는 확신이 강할 때 말이 짧아지고, 상대는 **차갑게 느끼기** 쉽습니다.'
-        : escHtmlAttr(bName) + '님은 상처를 오래 품어, 사소한 말이 **며칠 뒤에야** 올라오는 패턴이 생기기 쉽습니다.';
-    var bRes = escHtmlAttr(bName) + '님은 화가 날 때 **20분 산책 후** 대화를 시작하는 규칙을 두 분이 같이 지키십시오. 돌아와 “방금은 ○○ 때문에 속상했어”로 시작하면 회복이 빠릅니다.';
-    return buildCompatChemScoreBanner(ctx)
-        + buildCompatStoryCard('💛 ' + aName + '님 — 타고난 성격과 기질',
-            aSit, aConf, aRes, [])
+        ? '**충돌 트리거** ' + escHtmlAttr(bName) + '님이 확신이 강할 때 말이 짧아지면, ' + escHtmlAttr(aName) + '님은 차갑게 느끼기 쉽습니다.'
+        : '**충돌 트리거** ' + escHtmlAttr(bName) + '님이 상처를 오래 품으면, 사소한 말이 **며칠 뒤** 큰 싸움으로 번지기 쉽습니다.';
+    var bRes = '**해결** 화가 날 때 **20분 산책 후** “방금은 ○○ 때문에 속상했어”로 시작하는 규칙을 두 분이 같이 지키세요.';
+    return buildCompatPanelPrefix(ctx, 'personality')
+        + buildCompatChemScoreBanner(ctx)
+        + buildCompatStoryCard('🔀 두 사람이 만났을 때 — 성격 조합', comboSit + ' ' + comboStr, comboConf, comboRes, [])
+        + buildCompatStoryCard('💛 ' + aName + '님 — 타고난 온도', aSit, aConf, aRes, [])
         + '<div class="insight-card" style="border-left:3px solid var(--gold);margin-bottom:12px;">'
-        + '<span style="font-size:12px;color:#888;">일주: ' + escHtmlAttr((a.dayStem || '') + aDB) + ' · ' + escHtmlAttr(a.strength || '') + '</span><br><br>'
-        + aChar + '<br><br><span style="font-size:12.5px;color:#bbb;line-height:1.85;">'
-        + escHtmlAttr(compatStrengthVoice(a.strength, aName, aName + 'a')) + '<br>'
-        + escHtmlAttr(compatStrengthCaution(a.strength, aName, aName + 'ac')) + '</span></div>'
-        + buildCompatStoryCard('✦ ' + bName + '님 — 타고난 성격과 기질',
-            bSit, bConf, bRes, [])
+        + '<span style="font-size:12px;color:#888;">일주: ' + escHtmlAttr(compatPillarLabel(a.dayStem || '', aDB)) + ' · ' + escHtmlAttr(a.strength || '') + '</span><br><br>'
+        + aChar + '</div>'
+        + buildCompatStoryCard('✦ ' + bName + '님 — 타고난 온도', bSit, bConf, bRes, [])
         + '<div class="insight-card" style="border-left:3px solid var(--gold-soft);margin-bottom:12px;">'
-        + '<span style="font-size:12px;color:#888;">일주: ' + escHtmlAttr((b.dayStem || '') + bDB) + ' · ' + escHtmlAttr(b.strength || '') + '</span><br><br>'
-        + bChar + '<br><br><span style="font-size:12.5px;color:#bbb;line-height:1.85;">'
-        + escHtmlAttr(compatStrengthVoice(b.strength, bName, bName + 'b')) + '<br>'
-        + escHtmlAttr(compatStrengthCaution(b.strength, bName, bName + 'bc')) + '</span></div>'
-        + buildCompatStoryCard('🔀 두 사람의 성격 조합',
-            comboSit, comboConf, comboRes, []);
+        + '<span style="font-size:12px;color:#888;">일주: ' + escHtmlAttr(compatPillarLabel(b.dayStem || '', bDB)) + ' · ' + escHtmlAttr(b.strength || '') + '</span><br><br>'
+        + bChar + '</div>'
+        + buildCompatCoachQuestion(ctx, 'personality');
 }
 
 function buildCompatLoverPanelHtml(ctx) {
@@ -1288,9 +1593,15 @@ function buildCompatLoverPanelHtml(ctx) {
         bName + '님: “방금 말이 짧았지? 차갑게 들렸다면 미안해. 다시 말할게 — 나는 네 편이야.”',
         '둘 중 먼저 진정한 사람: “오늘은 결론 내지 말자. 내일 아침 커피 마시면서 이야기하자.”'
     ];
-    return '<div class="special-badges">' + badges.join('') + '</div>'
-        + buildCompatStoryCard('💕 연인으로서 — 애정 리듬', loveSit, loveConf, loveRes, scripts.slice(0, 2))
-        + buildCompatStoryCard('💍 연인 → 부부·동거 전환', marrySit, marryConf, marryRes, [scripts[2]]);
+    var aa = compatAssetForPerson(ctx, 'a');
+    var bb = compatAssetForPerson(ctx, 'b');
+    var loveStr = '**합(合)의 강점** — ' + aa.nm + '님이 **행동·약속**으로, ' + bb.nm + '님이 **말·분위기**로 받아 주면, 연애에서 신뢰가 쌓입니다.';
+    var marryStr = '**소통법** — 큰 결정 전 “이번 주말에 ○○ 이야기할게” 한 줄만 보내고, 대화는 정한 시간에만 하세요.';
+    return buildCompatPanelPrefix(ctx, 'lover')
+        + '<div class="special-badges">' + badges.join('') + '</div>'
+        + buildCompatStoryCard('💕 연인으로서 — 애정 리듬', loveSit + ' ' + loveStr, loveConf, loveRes, scripts.slice(0, 2))
+        + buildCompatStoryCard('💍 연인 → 부부·동거 전환', marrySit + ' ' + marryStr, marryConf, marryRes, [scripts[2]])
+        + buildCompatCoachQuestion(ctx, 'lover');
 }
 
 function buildCompatFriendPanelHtml(ctx) {
@@ -1311,8 +1622,12 @@ function buildCompatFriendPanelHtml(ctx) {
         : '에너지 차이가 있어 **연락 리듬**을 문장으로 정하지 않으면 멀어지기 쉽습니다.';
     var conf2 = '한쪽만 먼저 연락하는 패턴이 길어지면, 다른 쪽이 **부담**을 느낄 수 있습니다.';
     var res2 = '연락은 “번갈아 먼저 보내기” 규칙을 두세요. **짧은 음성 메시지**가 긴 카톡보다 오해를 줄입니다.';
-    return buildCompatStoryCard('🤝 친구로서 — 에너지와 거리', sit, conf, res, [])
-        + buildCompatStoryCard('📅 우정을 오래 가게 하는 리듬', sit2, conf2, res2, []);
+    var commStr = '**소통법** — 긴 카톡 대신 **짧은 음성 메시지**가 오해를 줄입니다. 싸운 날은 “내일 점심 15분”만 약속해도 우정의 합(合)이 회복됩니다.';
+    var commStr2 = '**합(合)의 강점** — ' + escHtmlAttr(aName) + '님과 ' + escHtmlAttr(bName) + '님은 **같은 취미·같은 시간**만 고정해도 거리가 멀어지지 않습니다.';
+    return buildCompatPanelPrefix(ctx, 'friend')
+        + buildCompatStoryCard('🤝 친구로서 — 에너지와 거리', sit + ' ' + commStr, conf, res, [])
+        + buildCompatStoryCard('📅 우정을 오래 가게 하는 리듬', sit2 + ' ' + commStr2, conf2, res2, [])
+        + buildCompatCoachQuestion(ctx, 'friend');
 }
 
 function buildCompatBizPanelHtml(ctx) {
@@ -1339,8 +1654,12 @@ function buildCompatBizPanelHtml(ctx) {
         bName + '님: “수익 배분은 이렇게 하고, 분기마다 숫자만 같이 보자. 친구니까 더 명확히 하자.”',
         '둘 다: “오늘은 결론 내지 말고, 내일 오전에 각자 한 장 메모 가져오자.”'
     ];
-    return buildCompatStoryCard('💼 동업·파트너 — 돈과 역할', sit, conf, res, scripts)
-        + buildCompatStoryCard('🧠 의사결정 스타일이 부딪힐 때', sit2, conf2, res2, []);
+    var bizStr = '**합(合)의 강점** — ' + escHtmlAttr(aName) + '님의 **' + compatAssetForPerson(ctx, 'a').lead + '**과 ' + escHtmlAttr(bName) + '님의 **' + compatAssetForPerson(ctx, 'b').care + '**가 역할로 나뉘면 수익 시너지가 납니다.';
+    var bizComm = '**소통법** — 회의는 “누가 옳은지” 금지, “이번 분기 목표 한 줄”만 맞추는 20분으로 시작하세요.';
+    return buildCompatPanelPrefix(ctx, 'business')
+        + buildCompatStoryCard('💼 동업·파트너 — 돈과 역할', sit + ' ' + bizStr, conf, res, scripts)
+        + buildCompatStoryCard('🧠 의사결정 스타일이 부딪힐 때', sit2 + ' ' + bizComm, conf2, res2, [])
+        + buildCompatCoachQuestion(ctx, 'business');
 }
 
 function buildCompatSpousePanelHtml(ctx, aSpouse, bSpouse) {
@@ -1355,7 +1674,11 @@ function buildCompatSpousePanelHtml(ctx, aSpouse, bSpouse) {
         : ctx.isChung
         ? '다름이 강한 자극으로 끌리는 구조예요. **다툰 날 규칙**을 미리 정해 두십시오.'
         : '직접 합충은 없어도 오행 보완으로 서로의 빈칸을 채우는 인연이에요.';
-    return [
+    var meet = compatMeetPairPhrase(ctx);
+    var pullStr = '**합(合)의 강점** — 무의식의 끌림이 맞물리면 **편안함과 자극**이 동시에 와서, 오래 가는 인연의 온도가 됩니다.';
+    return buildCompatPanelPrefix(ctx, 'spouse')
+        + buildCompatStoryCard('💫 두 분이 서로에게 끌리는 이유', meet + ', 연인 관계에서도 **“편한데 설렌다”**는 느낌이 오면 끌림의 합이 살아 있는 신호예요. ' + pullStr, why, '서로에게 **존중받았다고 느낀 포인트 한 가지**만 말해 보세요.', [])
+        + [
         '<div class="insight-card" style="border-left:3px solid var(--gold);">',
         '<div class="tag">💛 ' + escHtmlAttr(aName) + '님이 끌리는 이성</div><br>',
         '<strong>일지: ' + escHtmlAttr(aDB) + '</strong><br><br>',
@@ -1366,8 +1689,9 @@ function buildCompatSpousePanelHtml(ctx, aSpouse, bSpouse) {
         '<strong>일지: ' + escHtmlAttr(bDB) + '</strong><br><br>',
         '<p style="font-size:13.5px;color:#bbb;line-height:1.85;margin:0;">' + polishCompatLine(ctx, 'b', bSpouse) + '</p></div>',
         '<div class="insight-card"><div class="tag">🔄 두 사람이 끌리는 이유</div><br>',
-        '<p style="font-size:13.5px;color:#bbb;line-height:1.85;margin:0;">' + boldStarsToStrong(why) + '</p></div>'
-    ].join('');
+        '<p style="font-size:13.5px;color:#bbb;line-height:1.85;margin:0;">' + compatFmt(why) + '</p></div>'
+    ].join('')
+        + buildCompatCoachQuestion(ctx, 'spouse');
 }
 
 function buildCompatMarriedWealthHtml(ctx) {
@@ -1384,7 +1708,7 @@ function buildCompatMarriedWealthHtml(ctx) {
         : !(ac.metal > 1 || ac.earth > 1) && (bc.metal > 1 || bc.earth > 1)
         ? escHtmlAttr(bName) + '님은 쌓는 쪽, ' + escHtmlAttr(aName) + '님은 유대를 먼저 챙기는 쪽이라 **저축 vs 선물·외식**에서 마찰이 올 수 있습니다.'
         : '둘 다 쌓는 기운이 있으면 **안정**은 좋지만, 누구도 “쉬자”고 말하지 않아 권태가 올 수 있어요. 둘 다 관계 우선이면 **미래 숫자**를 미루다 어느 날 불안이 터질 수 있어요.';
-    var res = '**통장·지출 카테고리·비상금 비율**을 한 장으로 적으십시오. 매달 30분만 같이 보면, 10년 갈등의 절반은 여기서 줄어듭니다.';
+    var res = '**통장·지출 카테고리·비상금 비율**을 한 장으로 적으십시오. 매달 30분만 같이 보면, 10년 **생활 성장통**의 절반은 여기서 줄어듭니다.';
     return buildCompatStoryCard('💍 부부로서 — 돈과 집의 리듬', sit, conf, res, [
         aName + '님: “이번 달 고정지출부터 같이 보자. 비난 말고 숫자만 맞추자.”',
         bName + '님: “큰 지출은 48시간 뒤에 다시 말하자. 오늘은 감정만 정리하자.”'
@@ -1405,11 +1729,19 @@ function buildCompatMarriedPanelHtml(ctx, extraHtml) {
         ? '에너지 거리가 있어 **해석 차이**가 큽니다. 같은 말도 한쪽은 사랑, 한쪽은 통제로 들릴 수 있어요.'
         : '큰 충돌은 적지만, **피로가 쌓인 주**에 말버릇이 서로를 긁기 쉽습니다.';
     var res = '**주 1회 “집안 회의 20분”**(돈·일정·휴식만)을 고정하십시오. 자녀·양가 이야기는 그 시간 밖에서 길게 하지 않는 것만으로도 비용이 줄어요.';
-    return (typeof buildCompatMarriedWealthHtml === 'function' ? buildCompatMarriedWealthHtml(ctx) : '')
-        + buildCompatStoryCard('🏠 부부 생활 — 일상이 갈등을 만드는 순간', sit, conf, res, [
+    var marriedStr = '**합(合)의 강점** — ' + meet + ' **집안 회의 20분**(돈·일정·휴식만)이 있으면, 로맨스가 숨 쉬는 부부 리듬이 됩니다.';
+    var marriedComm = '**소통법** — 자녀·양가 이야기는 회의 시간 밖에서 길게 하지 않는 것만으로도 **조율 비용**이 줄어요.';
+    return buildCompatPanelPrefix(ctx, 'married')
+        + (typeof buildCompatMarriedWealthHtml === 'function' ? buildCompatMarriedWealthHtml(ctx) : '')
+        + buildCompatStoryCard('🏠 부부 생활 — 조율이 필요해지는 순간', sit + ' ' + marriedStr, conf, res, [
             aName + '님: “지금 화난 건 네가 싫어서가 아니라, 나도 지쳐서야. 20분만 쉬었다 말하자.”',
             bName + '님: “내가 놓친 게 있으면 말해줘. 고치려는 마음은 있어.”'
         ])
+        + buildCompatStoryCard('🏠 부부 — 말버릇과 회복',
+            '**상황** 피곔한 주에 작은 말투가 서로를 긁을 때가 많아요. ' + marriedComm,
+            '**트리거** “사랑이 식었다”가 아니라 **체력이 비었다**는 신호를 놓치기 쉽습니다.',
+            '**해결** 회복 시간을 달력에 겹쳐 박으세요.', [])
+        + buildCompatCoachQuestion(ctx, 'married')
         + (extraHtml || '');
 }
 
@@ -1432,9 +1764,12 @@ function buildCompatConflictPanelHtml(ctx) {
     var sit2 = '돈·이사·양가·자녀처럼 **무거운 주제**는 피곔한 날 피하십시오. ' + meet + ' 큰 결정은 감정이 가라앉은 **주중 낮**에만 꺼내는 것이 안전합니다.';
     var conf2 = '제3자(친구·가족)에게 상대 험담을 맡기면, 둘 사이 **신뢰 비용**이 커집니다.';
     var res2 = '무거운 주제는 **사전 안내 한 줄**(“이번 주말에 ○○ 이야기할게”)만 보내고, 대화는 정한 시간에만 하십시오.';
-    return buildCompatChemScoreBanner(ctx, '다툼을 줄일 때의 케미스트리 회복 온도')
-        + buildCompatStoryCard('💊 갈등 처방전 — 일상 다툼', sit, conf, res, scripts)
-        + buildCompatStoryCard('💊 갈등 처방전 — 큰 주제 다루기', sit2, conf2, res2, []);
+    var healStr = '**시너지 결론** — 다툼도 ' + meet + ' **회복 규칙**만 있으면, 관계를 깨는 게 아니라 **합(合)을 지키는 연습**이 됩니다.';
+    return buildCompatPanelPrefix(ctx, 'conflict')
+        + buildCompatChemScoreBanner(ctx, '다툼을 줄일 때의 케미스트리 회복 온도')
+        + buildCompatStoryCard('💊 조율 처방전 — 일상 말 엇갈림', sit + ' ' + healStr, conf, res, scripts.slice(0, 3))
+        + buildCompatStoryCard('💊 조율 처방전 — 큰 주제 다루기', sit2 + ' **합(合)을 지키는 선택** — 무거운 주제는 감정이 가라앉은 주중 낮에만 꺼내세요.', conf2, res2, scripts.slice(3))
+        + buildCompatCoachQuestion(ctx, 'conflict');
 }
 
 function buildCompatFortuneMixPanelHtml(ctx) {
@@ -1453,11 +1788,13 @@ function buildCompatFortuneMixPanelHtml(ctx) {
     var mixDetail = '두 분이 **같은 계절에 숨 쉬는 해**에는 외부 기회(이직·창업·이사)를 같이 잡아도 힘이 배가됩니다. '
         + '한쪽만 바쁜 해에는 지지가 관계를 지키는 역할을 하니, 빠른 쪽이 “왜 네가 나를 안 챙겨?”라고 느끼지 않게 **회복 시간**을 먼저 약속하십시오. '
         + '지금 당장은 **한 달 목표 한 줄**(돈·휴식·만남 중 하나)만 맞춰도 Mix 흐름이 부드러워집니다.';
-    return '<div class="insight-card" style="margin-bottom:12px;"><div class="tag">🌊 운의 흐름 (Mix)</div>'
-        + '<p style="font-size:13.5px;color:#bbb;line-height:1.95;margin:12px 0 0;">' + boldStarsToStrong(sit) + '</p>'
-        + '<p style="font-size:13.5px;color:#bbb;line-height:1.95;margin:12px 0 0;">' + boldStarsToStrong(conf) + '</p>'
-        + '<p style="font-size:13.5px;color:#ddd;line-height:1.95;margin:12px 0 0;">' + boldStarsToStrong(res) + '</p>'
-        + '<p style="font-size:13.5px;color:#ccc;line-height:1.95;margin:14px 0 0;">' + boldStarsToStrong(mixDetail) + '</p></div>';
+    var syncStr = '**대운·월운 싱크** — 아래 타임라인에서 **✨ 함께 좋음** 구간이 겹치면 큰 결정 타이밍이고, **⚡ 조율 필요** 구간엔 휴식·일정 조정이 **합을 지키는 선택**입니다.';
+    return buildCompatPanelPrefix(ctx, 'fortuneMix')
+        + buildCompatChemScoreBanner(ctx)
+        + buildCompatStoryCard('🌊 운의 흐름 (Mix)', sit + ' ' + syncStr, conf, res, [])
+        + '<div class="insight-card" style="margin-bottom:12px;"><div class="tag">📅 시너지 타이밍 — 한 달·한 해</div>'
+        + '<p style="font-size:13.5px;color:#ccc;line-height:1.95;margin:12px 0 0;">' + compatFmt(mixDetail) + '</p></div>'
+        + buildCompatCoachQuestion(ctx, 'fortuneMix');
 }
 
 function buildCompatChildHtml(ctx, score) {
@@ -1478,7 +1815,7 @@ function buildCompatChildHtml(ctx, score) {
         score >= 65 ? '인연은 비교적 순탄한 편이에요. 다만 양육 방식은 미리 한 줄로 맞추십시오.' : '인연은 노력형이에요. **같은 메시지**를 아이 앞에서 유지하십시오.'
     ], aName + bName + 'ch');
     return '<div class="insight-card"><div class="tag">👶 자녀운</div><br><p style="font-size:13.5px;color:#bbb;line-height:1.85;margin:0;">'
-        + boldStarsToStrong(open + tail) + '</p></div>';
+        + compatFmt(open + tail) + '</p></div>';
 }
 
 /** 궁합 — 포지셔닝: 에너지 게이지·이끔/맞춤·같이 조율할 축 */
@@ -1530,14 +1867,20 @@ function buildCompatPositioningPanelHtml(ctx) {
     var coordGoal = sc >= 60
         ? '**결론: 공동 목표 한 줄 + 칭찬 한 마디 규칙**이 오래 가게 합니다.'
         : '**결론: 작은 성공부터 맞추면 신뢰가 쌓입니다.**';
-    return buildCompatStoryCard('📍 관계 포지셔닝 — 속도와 역할', sit, conf, res, [])
+    var chem = compatComputeChemistryScore(ctx);
+    var posStr = '**케미스트리 ' + chem + '점 / 100** — 숫자는 힘 자랑이 아니라 **호흡 조율용 눈대중**입니다. 잘 맞는 합(合)은 속도 차이를 **규칙 한 줄**로 바꿀 때 가장 또렷해져요.';
+    var posComm = '**소통법** — 큰 줄기는 번갈아, 세부는 한 사람에게만 묶고 **같은 날 같은 주제를 두 번** 논의하지 않으세요.';
+    return buildCompatPanelPrefix(ctx, 'positioning')
+        + buildCompatChemScoreBanner(ctx)
+        + buildCompatStoryCard('📍 관계 포지셔닝 — 속도와 역할', sit + ' ' + posStr, conf, res, [])
         + '<div class="insight-card" style="border-left:3px solid rgba(122,184,212,0.55);margin-bottom:10px;"><div class="tag" style="color:#7ab8d4;font-weight:700;">⚖ 관계 속도 게이지(참고)</div>'
         + barRow(aName + '님', eA) + barRow(bName + '님', eB) + '</div>'
-        + buildCompatStoryCard('📍 이끎·조율·번갈아 맡기', leadSit, leadConf, leadRes, [])
+        + buildCompatStoryCard('📍 이끎·조율·번갈아 맡기', leadSit + ' ' + posComm, leadConf, leadRes, [])
         + '<div class="insight-card"><div class="tag">🤝 같이 조율할 축 — 한 줄 결론</div>'
         + '<ul style="margin:12px 0 0;padding-left:18px;font-size:13.5px;color:#bbb;line-height:1.9;">'
-        + '<li>' + boldStarsToStrong(coordMoney) + '</li><li>' + boldStarsToStrong(coordTalk) + '</li>'
-        + '<li>' + boldStarsToStrong(coordRest) + '</li><li>' + boldStarsToStrong(coordGoal) + '</li></ul></div>';
+        + '<li>' + compatFmt(coordMoney) + '</li><li>' + compatFmt(coordTalk) + '</li>'
+        + '<li>' + compatFmt(coordRest) + '</li><li>' + compatFmt(coordGoal) + '</li></ul></div>'
+        + buildCompatCoachQuestion(ctx, 'positioning');
 }
 
 /** 이상형 거리 요약 · 자미두수로 보강할 수 있는 레이어(별배열은 별첨에서 디테일) */
@@ -1561,15 +1904,20 @@ function buildCompatIdealFamilyAppendixHtml(ctx) {
     var ziweiNote = ''
         + '자미두수로는 **부부궁·자녀궁(子息)** 과 **명궁** 등을 함께 놓아 보면, 같은 시기 가정 무게중심이 어디로 쏠리는지·자식 기운을 어떤 톤으로 맞추면 덜 들지가 한 화면에 정리되기 좋습니다. '
         + '별의 이름까지 붙여 “이럴 아이다”처럼 단정하는 글은 **생년 정보가 정확히 맞물린 별첨**에서 하는 편이 안전하고, 현재 카드에서는 **사주 원국에서 본 빈 칸**(식상·관성·인성 균형)과 자녀궁 톤의 설명만 참고 레이어로 두시면 좋습니다.';
-    return '<div class="insight-card" style="border-left:3px solid rgba(199,167,106,0.45);margin-bottom:10px;"><div class="tag">💫 이상형과의 거리(일지 무의식 기준)</div>'
-        + '<p style="font-size:13.5px;color:#d4c4a8;line-height:1.9;margin:12px 0 0;font-weight:500;">' + boldStarsToStrong(fit) + '</p>'
-        + '<p style="font-size:13.5px;color:#bbb;line-height:1.9;margin:12px 0 0;">' + boldStarsToStrong(mirror + ' ' + ideal) + '</p>'
+    var meet = compatMeetPairPhrase(ctx);
+    var famSit = meet + ', 가정을 그릴 때 **이상형 그림**과 **실제 상대**가 다르게 느껴져도, 생활 리듬이 맞으면 오래 가는 경우가 많아요.';
+    var famStr = '**합(合)의 강점** — 무의식 일지가 맞물리면 **편안함**이 먼저 오고, 다름은 **성장 자극**으로 쓸 수 있습니다.';
+    return buildCompatPanelPrefix(ctx, 'idealFamily')
+        + buildCompatStoryCard('🏡 가정·이상형 — 두 분의 거리', famSit + ' ' + famStr, fit, ideal, [])
+        + '<div class="insight-card" style="border-left:3px solid rgba(199,167,106,0.45);margin-bottom:10px;"><div class="tag">💫 이상형과의 거리(일지 무의식 기준)</div>'
+        + '<p style="font-size:13.5px;color:#bbb;line-height:1.9;margin:12px 0 0;">' + compatFmt(mirror) + '</p>'
         + '<p style="font-size:11.5px;color:#777;line-height:1.75;margin:12px 0 0;font-style:italic;">'
         + escHtmlAttr(aName) + '님 무의식 일지: ' + escHtmlAttr(aDb) + ' · ' + escHtmlAttr(bName) + '님 무의식 일지: ' + escHtmlAttr(bDb) + '</p></div>'
         + '<div class="insight-card"><div class="tag" style="letter-spacing:0.08em;">✨ 자미두수로 보강할 수 있는 지점</div>'
         + '<p style="font-size:13.5px;color:#bbb;line-height:1.9;margin:12px 0 0;">' + ziweiNote + '</p>'
         + '<p style="font-size:12px;color:#888;line-height:1.8;margin:12px 0 0;">'
-        + '※ 자녀에 관한 선택은 명리 한 장만으로 세우지 마시고, 의학·양육·정책은 전문 분야 정보와 함께 보셔야 합니다.</p></div>';
+        + '※ 자녀에 관한 선택은 명리 한 장만으로 세우지 마시고, 의학·양육·정책은 전문 분야 정보와 함께 보셔야 합니다.</p></div>'
+        + buildCompatCoachQuestion(ctx, 'idealFamily');
 }
 
 function compatCrisisNarrative(oh, isGood, isBad, seed) {
@@ -1591,6 +1939,28 @@ function compatCrisisNarrative(oh, isGood, isBad, seed) {
     if (isGood) return good[oh] || good.earth;
     if (isBad) return caution[oh] || caution.earth;
     return neutral;
+}
+
+function buildCompatTimelineSynergyHtml(ctx) {
+    ctx = ctx || {};
+    var aName = compatNm(ctx, 'a');
+    var bName = compatNm(ctx, 'b');
+    var meet = compatMeetPairPhrase(ctx);
+    var chem = typeof compatComputeChemistryScore === 'function' ? compatComputeChemistryScore(ctx) : 55;
+    var sit = meet + ', 10년 단위로 두 분의 **대운 계절**을 겹쳐 보면, **같은 방향으로 숨 쉬는 해**에는 외부 기회를 같이 잡아도 힘이 배가됩니다. 지금 케미스트리 **' + chem + '점**과 함께 보면, “언제 크게 움직이고 언제 쉴지”가 또렷해져요.';
+    var conf = '**⚡ 조율 필요** 구간에는 큰 결정(이사·동업·결혼)을 미루고, **관계 점검·휴식·일정 조정**만 하세요. 한쪽만 바쁜 해에는 “왜 나를 안 챙겨?”가 아니라 **회복 시간 약속**이 먼저입니다.';
+    var res = '**✨ 함께 좋음** 카드가 겹치는 해·구간에만 큰 결정을 맞추십시오. **🌙 무난** 구간엔 공통 취미·작은 성공을 쌓아 **대운 싱크**를 키우면, 다음 좋은 시기에 더 잘 맞습니다.';
+    return buildCompatPanelPrefix(ctx, 'timeline')
+        + buildCompatStoryCard('📅 10년 대운 싱크 — 시너지 타이밍', sit + ' **월운·대운 데이터**는 아래 카드의 색·아이콘으로 읽으시면 됩니다.', conf, res, [])
+        + buildCompatCoachQuestion(ctx, 'timeline');
+}
+
+if (typeof window !== 'undefined') {
+    window.annotateHanjaGloss = annotateHanjaGloss;
+    window.compatHanjaGlossChar = compatHanjaGlossChar;
+    window.compatPillarLabel = compatPillarLabel;
+    window.compatFmt = compatFmt;
+    window.buildCompatChemGuideText = buildCompatChemGuideText;
 }
 
 function compatTimelineLine(cls, seed) {
