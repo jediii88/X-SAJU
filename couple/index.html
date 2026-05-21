@@ -650,10 +650,12 @@ body::before {
     <a class="toc-link" href="#section-personality" onclick="return compatTocGo('section-personality')">성격·기질</a>
     <a class="toc-link" href="#section-lover" onclick="return compatTocGo('section-lover')">연인으로서</a>
     <a class="toc-link" href="#section-married" onclick="return compatTocGo('section-married')">부부로서</a>
+    <a class="toc-link" href="#section-conflict" onclick="return compatTocGo('section-conflict')">갈등 처방전</a>
     <a class="toc-link" href="#section-friend" onclick="return compatTocGo('section-friend')">친구로서</a>
     <a class="toc-link" href="#section-business" onclick="return compatTocGo('section-business')">동업·파트너</a>
     <a class="toc-link" href="#section-spouse" onclick="return compatTocGo('section-spouse')">배우자궁</a>
     <a class="toc-link" href="#section-ideal-family" onclick="return compatTocGo('section-ideal-family')">인연 보강</a>
+    <a class="toc-link" href="#section-fortune-mix" onclick="return compatTocGo('section-fortune-mix')">운의 흐름</a>
     <a class="toc-link" href="#section-timeline" onclick="return compatTocGo('section-timeline')">대운 싱크</a>
     <div style="border-top:1px solid var(--line);margin:6px 0 4px;"></div>
     <a class="toc-link toc-link-print" href="#" onclick="if(typeof sajuxCaptureReportAsImage==='function'){sajuxCaptureReportAsImage();}return false;">📥 사주 저장</a>
@@ -751,6 +753,10 @@ body::before {
       <div id="compat-voice-married" class="compat-voice-wrap" style="margin:28px 0 8px;"></div>
       <div id="panel-married" class="rel-panel"></div>
     </div>
+    <div id="section-conflict">
+      <div id="compat-voice-conflict" class="compat-voice-wrap" style="margin:28px 0 8px;"></div>
+      <div id="panel-conflict" class="rel-panel"></div>
+    </div>
     <div id="section-friend">
       <div id="compat-voice-friend" class="compat-voice-wrap" style="margin:28px 0 8px;"></div>
       <div id="panel-friend" class="rel-panel"></div>
@@ -767,6 +773,11 @@ body::before {
     <div id="section-ideal-family">
       <div id="compat-voice-ideal-family" class="compat-voice-wrap" style="margin:28px 0 8px;"></div>
       <div id="panel-ideal-appendix" class="rel-panel"></div>
+    </div>
+
+    <div id="section-fortune-mix">
+      <div id="compat-voice-fortune-mix" class="compat-voice-wrap" style="margin:28px 0 8px;"></div>
+      <div id="panel-fortune-mix" class="rel-panel"></div>
     </div>
 
     <div id="section-timeline" class="timeline-section">
@@ -1429,7 +1440,7 @@ function buildRelPanels(params, a, b, result) {
   const compatCtx = buildCompatCtx(params, a, b, result);
   window.__compatCtx = compatCtx;
   const voice = function(topic) { return compatVoiceLead(topic, compatCtx); };
-  const compatVoiceId = { idealFamily: 'ideal-family' };
+  const compatVoiceId = { idealFamily: 'ideal-family', fortuneMix: 'fortune-mix', conflict: 'conflict' };
   const setCompatVoice = function(topic) {
     const id = compatVoiceId[topic] || topic;
     const el = document.getElementById('compat-voice-' + id);
@@ -1513,8 +1524,7 @@ function buildRelPanels(params, a, b, result) {
     + ohFlowCard;
 
   // ── 부부 ──
-  const marriedInsights = [];
-  if (typeof buildCompatMarriedWealthHtml === 'function') marriedInsights.push(buildCompatMarriedWealthHtml(compatCtx));
+  const marriedExtra = [];
   // ── 나이 기반 위기/전환점 분석 ──
   (function(){
     const OH_KR = {wood:'목(나무)',fire:'화(불)',earth:'토(흙)',metal:'금(쇠)',water:'수(물)'};
@@ -1556,16 +1566,26 @@ function buildRelPanels(params, a, b, result) {
         </div>`
       );
     }
-    marriedInsights.push(`<div class="insight-card">
+    marriedExtra.push(`<div class="insight-card">
       <div class="tag red">⚠ 나이대별 관계 흐름 예측</div><br>
       <p style="font-size:12px;color:#aaa;margin:0 0 12px;">대운 기준 — 각 시기의 오행 에너지가 두 사람 관계에 미치는 영향</p>
       ${crisisCards.join('')}
     </div>`);
   })();
-  if (typeof buildCompatChildHtml === 'function') marriedInsights.push(buildCompatChildHtml(compatCtx, result.score));
-  marriedInsights.push(buildCompatMarriageFriction(aName, bName, result.score, isHap, isChung));
+  if (typeof buildCompatChildHtml === 'function') marriedExtra.push(buildCompatChildHtml(compatCtx, result.score));
+  marriedExtra.push(buildCompatMarriageFriction(aName, bName, result.score, isHap, isChung));
   setCompatVoice('married');
-  document.getElementById('panel-married').innerHTML = marriedInsights.join('');
+  document.getElementById('panel-married').innerHTML = (
+    typeof buildCompatMarriedPanelHtml === 'function'
+      ? buildCompatMarriedPanelHtml(compatCtx, marriedExtra.join(''))
+      : marriedExtra.join('')
+  );
+
+  setCompatVoice('conflict');
+  const conflictEl = document.getElementById('panel-conflict');
+  if (conflictEl && typeof buildCompatConflictPanelHtml === 'function') {
+    conflictEl.innerHTML = buildCompatConflictPanelHtml(compatCtx);
+  }
 
   // ── 친구 ──
   setCompatVoice('friend');
@@ -1688,6 +1708,12 @@ function buildRelPanels(params, a, b, result) {
   if (idealPanelEl) {
     const idealHtml = (typeof buildCompatIdealFamilyAppendixHtml === 'function' ? buildCompatIdealFamilyAppendixHtml(compatCtx) : '') + childPanel;
     idealPanelEl.innerHTML = idealHtml;
+  }
+
+  setCompatVoice('fortuneMix');
+  const mixEl = document.getElementById('panel-fortune-mix');
+  if (mixEl && typeof buildCompatFortuneMixPanelHtml === 'function') {
+    mixEl.innerHTML = buildCompatFortuneMixPanelHtml(compatCtx);
   }
 }
 
