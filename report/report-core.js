@@ -397,7 +397,7 @@ var SAJUX_SECTION_REGISTRY = {
     sewunNear: { part: 2, section: 9, title: '세운 — 다가오는 두 해', eyebrow: '가까운 해의 무게', topic: 'seyun', inToc: false },
     wolunDeep: { part: 2, section: 10, title: '월운 — 12개월의 리듬', eyebrow: '한 달 단위의 무게', topic: 'monthly', inToc: false },
     appendix: { part: 0, section: 0, title: '부록', eyebrow: '참고', topic: null, inToc: false, appendix: true },
-    ziwei: { part: 0, section: 0, title: '자미두수 청사진', eyebrow: '별첨 · 참고 렌즈', topic: 'ziwei', inToc: true, appendix: true }
+    ziwei: { part: 0, section: 0, title: '자미두수 청사진', eyebrow: '별첨 · 참고 렌즈', topic: 'ziwei', inToc: false, appendix: true }
 };
 
 var SAJUX_COMPAT_SECTION_REGISTRY = {
@@ -4669,6 +4669,18 @@ function sajuxRunReportImageCapture(root) {
 }
 window.sajuxCaptureReportAsImage = sajuxCaptureReportAsImage;
 
+function sajuxShowReportNav() {
+    var toc = document.getElementById('floating-toc');
+    if (!toc) return;
+    function apply() {
+        toc.style.display = (window.innerWidth > 900) ? 'block' : 'none';
+    }
+    apply();
+    if (!window._sajuxNavResizeBound) {
+        window._sajuxNavResizeBound = true;
+        window.addEventListener('resize', apply);
+    }
+}
 function injectSajuxPdfUi() {
     if (!document.getElementById('sajux-report-ui-styles')) {
         var st = document.createElement('style');
@@ -4831,7 +4843,7 @@ function generateDeepReport(data) {
 
     document.getElementById('report-container').innerHTML = html;
 
-    try { injectSajuxPdfUi(); ensureCoverLogoForPrint(); } catch (e) { console.error('injectSajuxPdfUi', e.message); }
+    try { injectSajuxPdfUi(); ensureCoverLogoForPrint(); sajuxShowReportNav(); } catch (e) { console.error('injectSajuxPdfUi', e.message); }
 
     // 기존 정적 만세력 섹션들 숨김 (report-container가 모든 내용을 포함하므로)
     var staticSecs = ['sec-manse','sec-relation','sec-shinsal','sec-wuxing',
@@ -11967,7 +11979,7 @@ function buildForewordPage(data) {
 /** 「끝난 줄 알았죠?」 — 사주 저장 ZIP 자미두수 구간 시작(카드만, 상단 절 헤더 없음). */
 function buildZiweiSurpriseIntro(data) {
     var name = (data && data.name) ? data.name : '고객';
-    return '<div class="ziwei-surprise-intro" data-sajux-jul="보너스" data-sajux-jul-title="끝난 줄 알았죠?" style="margin:36px 0 0;padding:26px 24px;border-radius:16px;'
+    return '<div id="sec-ziwei-bonus" class="ziwei-surprise-intro" data-sajux-jul="보너스" data-sajux-jul-title="끝난 줄 알았죠?" style="margin:36px 0 0;padding:26px 24px;border-radius:16px;'
         + 'background:linear-gradient(135deg, rgba(122,184,212,0.10), rgba(199,167,106,0.06));'
         + 'border:1px solid rgba(122,184,212,0.30);text-align:center;">'
         + '<div style="font-size:10px;letter-spacing:0.22em;color:rgba(157,211,255,0.80);font-weight:700;margin-bottom:10px;">SURPRISE · 보너스 챕터</div>'
