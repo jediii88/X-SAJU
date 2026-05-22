@@ -1268,7 +1268,7 @@ function annotateHanjaGloss(s) {
     var i;
     for (i = 0; i < SAJUX_PHRASE_GLOSS.length; i++) {
         var ph = SAJUX_PHRASE_GLOSS[i];
-        var re = new RegExp(ph[0] + '(?!\\([^)]*' + ph[1] + ':)', 'g');
+        var re = new RegExp(ph[0] + '(?!\\(' + ph[1] + '\\))', 'g');
         t = t.replace(re, ph[0] + '(' + ph[1] + ')');
     }
     t = t.replace(/([木火土金水])(?!\([^)]*[목화토금수]\))/g, function (m) {
