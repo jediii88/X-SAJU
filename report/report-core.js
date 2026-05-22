@@ -1640,7 +1640,16 @@ function buildCompatShareCtaHtml(ctx) {
 }
 
 function sajuxCompatShareReport() {
-    var url = typeof location !== 'undefined' ? location.href : '';
+    var url = '';
+    if (typeof SajuxLinkApi !== 'undefined' && SajuxLinkApi.getCoupleShareUrl) {
+        url = SajuxLinkApi.getCoupleShareUrl();
+    }
+    if (!url && typeof location !== 'undefined') {
+        try {
+            var sp = new URLSearchParams(location.search);
+            if (sp.get('code') && !sp.get('a_y')) url = location.href;
+        } catch (e0) {}
+    }
     var title = '사주X 궁합 리포트';
     var text = '우리 궁합 리포트를 함께 읽어볼래요?';
     var toast = typeof document !== 'undefined' ? document.getElementById('compat-share-cta-toast') : null;
@@ -1649,6 +1658,10 @@ function sajuxCompatShareReport() {
         toast.textContent = msg;
         toast.style.display = 'block';
         setTimeout(function () { toast.style.display = 'none'; }, 4200);
+    }
+    if (!url) {
+        showToast('공유는 담당자가 보낸 ?code= 링크로 열었을 때만 가능합니다.');
+        return;
     }
     if (typeof navigator !== 'undefined' && navigator.share) {
         navigator.share({ title: title, text: text, url: url }).catch(function () {});
@@ -13571,15 +13584,19 @@ function showLoading(msg, callback) {
     const loadEl = document.getElementById('loading');
     const msgEl = document.getElementById('loading-msg');
     if(loadEl) loadEl.style.display = 'flex';
-    if(msgEl) msgEl.innerText = '사주를 분석하는 중입니다...';
+    if(msgEl) msgEl.innerText = msg || '사주를 분석하는 중입니다...';
     setTimeout(() => {
         try { callback(); } catch(e) {
             console.error('분석 오류:', e);
             if(loadEl) loadEl.style.display = 'none';
+            try { document.documentElement.classList.remove('sajux-autoload-pending'); } catch (e0) {}
             var _bv = (typeof window !== 'undefined' && window.__SAJUX_CORE_V__) ? window.__SAJUX_CORE_V__ : '';
             alert('분석 중 오류가 발생했습니다:\n' + e.message + '\n\n' + (e.stack||'').split('\n').slice(0,3).join('\n') + (_bv ? '\n\n[빌드 ' + _bv + '] 캐시일 수 있습니다. Cmd+Shift+R(맥) 또는 Ctrl+F5로 새로고침 후 다시 시도하세요.' : '\n\nCmd+Shift+R(맥) 또는 Ctrl+F5로 강력 새로고침 후 다시 시도하세요.'));
         }
         if(loadEl) loadEl.style.display = 'none';
+        try { document.documentElement.classList.remove('sajux-autoload-pending'); } catch (e1) {}
+        var _mainUi = document.getElementById('main-ui');
+        if (_mainUi) _mainUi.style.display = '';
     }, 100);
 }
 

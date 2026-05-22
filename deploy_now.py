@@ -52,6 +52,30 @@ def bump_build_version():
             print(f'  [version] {os.path.relpath(path, ROOT)} -> {build_v}')
 
 
+def inject_link_api_url():
+    """api/.deploy-url 한 줄이 있으면 sajux-link-api.js 에 Worker 주소 주입."""
+    url_file = os.path.join(ROOT, 'api', '.deploy-url')
+    if not os.path.isfile(url_file):
+        return
+    with open(url_file, 'r', encoding='utf-8') as f:
+        api_url = f.read().strip()
+    if not api_url:
+        return
+    js_path = os.path.join(ROOT, 'report', 'assets', 'sajux-link-api.js')
+    with open(js_path, 'r', encoding='utf-8') as f:
+        src = f.read()
+    out = re.sub(
+        r"var SAJUX_LINK_API_BASE = '[^']*';",
+        "var SAJUX_LINK_API_BASE = '" + api_url.replace("'", "\\'") + "';",
+        src,
+        count=1,
+    )
+    if out != src:
+        with open(js_path, 'w', encoding='utf-8') as f:
+            f.write(out)
+        print(f'  [link-api] SAJUX_LINK_API_BASE -> {api_url}')
+
+
 def sync_deploy_pages():
     """정본 couple·admin → sajux_deploy (Pages 업로드 직전 복사)."""
     for name in ('couple/index.html', 'admin/index.html'):
@@ -176,6 +200,7 @@ def cache_token(token):
 
 def main():
     bump_build_version()
+    inject_link_api_url()
     sync_deploy_pages()
     sync_report_bundle()
     refresh_root_master_html()
@@ -231,8 +256,32 @@ def main():
             if os.path.isfile(local):
                 files.append((local, f'report/assets/{fn}'))
 
-    print('배포 시작...')
+    # Vercel(루트 sajux_deploy): 고객 생일 저장 API
+    pkg = os.path.join(deploy_dir, 'package.json')
+    if os.path.isfile(pkg):
+        files.append((pkg, 'sajux_deploy/package.json'))
+    api_root = os.path.join(deploy_dir, 'api')
+    if os.path.isdir(api_root):
+        for dirpath, _, filenames in os.walk(api_root):
+            for fn in filenames:
+                if fn.startswith('.'):
+                    continue
+                local = os.path.join(dirpath, fn)
+                rel = os.path.relpath(local, deploy_dir).replace(os.sep, '/')
+                files.append((local, 'sajux_deploy/' + rel))
+
+    # GitHub Pages(루트) + Vercel(루트 디렉터리 sajux_deploy) 동시 반영
+    expanded = []
+    seen = set()
     for local, gh in files:
+        for target in (gh, ('sajux_deploy/' + gh) if not gh.startswith('sajux_deploy/') else None):
+            if not target or target in seen:
+                continue
+            seen.add(target)
+            expanded.append((local, target))
+
+    print('배포 시작...')
+    for local, gh in expanded:
         if os.path.exists(local):
             upload(local, gh, token)
         else:

@@ -174,7 +174,7 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--go
       <div class="chip-wrap" id="link-customer-list"><span style="color:#555;font-size:13px;">저장된 고객이 없습니다</span></div>
     </div>
     <div class="card">
-      <div class="card-title">1인 사주 링크 생성 <span style="font-size:11px;color:#666;font-weight:400;">(코드 a · 성별 m/w)</span></div>
+      <div class="card-title">1인 사주 링크 생성 <span style="font-size:11px;color:#666;font-weight:400;">(고객 주소에 생일 안 보임 · 30일)</span></div>
       <div id="link-selected-info" style="font-size:13px;color:#888;margin-bottom:16px;">고객을 선택하거나 아래에 직접 입력하세요</div>
       <div class="form-row col2">
         <div><label>이름</label><input type="text" id="lnk-name" placeholder="홍길동"></div>
@@ -200,8 +200,8 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--go
       </div>
       <hr class="divider">
       <div style="display:flex;gap:10px;flex-wrap:wrap;">
-        <button class="btn" onclick="previewReport()" style="flex:1;">👁 미리보기 (검토)</button>
-        <button class="btn sec" onclick="generateReportLink()" style="flex:1;">🔗 링크 생성</button>
+        <button class="btn" onclick="previewReport()" style="flex:1;">👁 미리보기 (관리자·만료 없음)</button>
+        <button class="btn sec" onclick="generateReportLink()" style="flex:1;">🔗 고객용 링크 생성 (30일)</button>
       </div>
       <div id="link-result" style="display:none;margin-top:16px;">
         <div style="font-size:11px;color:#888;margin-bottom:4px;">발급 코드 (내부 순번)</div>
@@ -213,16 +213,9 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--go
           <div class="link-box" id="link-url-text" style="margin-top:8px;word-break:break-all;font-size:11px;"></div>
         </details>
         <div style="display:flex;gap:8px;margin-top:10px;">
-          <button class="btn sec" id="copy-link-btn" onclick="copyLink('link-url-text')" style="flex:1;">📋 링크 복사</button>
+          <button class="btn sec" id="copy-link-btn" onclick="copyCustomerLink('link-url-text')" style="flex:1;">📋 고객용 링크 복사</button>
         </div>
-        <div class="link-code-hint">고객 이름은 URL에 가운데 *만 표시됩니다 (예: 심*영). 코드: <strong>a</strong>=1인, <strong>b</strong>=커플, <strong>m</strong>=남, <strong>w</strong>=여</div>
-      </div>
-      <div id="preview-wrap" style="display:none;margin-top:16px;">
-        <button onclick="window.open(document.getElementById('preview-wrap').dataset.url,'_blank')" 
-          style="width:100%;padding:14px;background:rgba(199,167,106,0.12);border:1px solid var(--gold);border-radius:10px;color:var(--gold);font-size:14px;font-weight:600;cursor:pointer;">
-          👁 새 탭에서 리포트 미리보기
-        </button>
-        <div style="font-size:11px;color:#666;margin-top:8px;text-align:center;">미리보기 확인 후 위 📋 링크 복사 버튼으로 고객에게 전달하세요</div>
+        <div class="link-code-hint"><strong style="color:var(--gold);">고객 전달은 위 URL만</strong> (<code>?code=a…</code> · 생일·시간 주소에 없음)</div>
       </div>
     </div>
   </div>
@@ -240,16 +233,17 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--go
       <div id="couple-b-info" style="font-size:13px;color:#888;margin-top:10px;">선택 안 됨</div>
     </div>
     <div class="card">
-      <div class="card-title">커플 사주 링크 <span style="font-size:11px;color:#666;font-weight:400;">(코드 b · 30일 만료)</span></div>
+      <div class="card-title">커플 사주 링크 <span style="font-size:11px;color:#666;font-weight:400;">(고객 URL: ?code=b… · 30일)</span></div>
       <div class="form-row" style="max-width:340px;">
         <div><label>유효기간</label>
           <div style="font-size:13px;color:#888;padding-top:6px;">링크 생성 시점부터 <strong style="color:var(--gold);">30일</strong> (고정)</div>
         </div>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;">
-        <button type="button" class="btn sec" onclick="previewCoupleReport()" style="flex:1;">👁 새 탭에서 궁합 미리보기</button>
-        <button type="button" class="btn purple" onclick="generateCoupleLink()" style="flex:1;">💞 커플 링크 생성</button>
+        <button type="button" class="btn sec" onclick="previewCoupleReport()" style="flex:1;">👁 미리보기 (관리자·만료 없음)</button>
+        <button type="button" class="btn purple" onclick="generateCoupleLink()" style="flex:1;">💞 고객용 링크 생성 (30일)</button>
       </div>
+      <div style="font-size:11px;color:#666;margin-top:8px;line-height:1.55;">미리보기·고객용 모두 <code>?code=</code> 만 사용합니다. 고객 전달은 <strong style="color:#aaa;">「고객용 링크 생성」(30일)</strong> 후 📋 복사한 URL만 보내세요.</div>
       <div id="couple-result" style="display:none;">
         <div style="font-size:11px;color:#888;margin-bottom:4px;">발급 코드 (내부 순번)</div>
         <div class="link-code-display" id="couple-code-display">—</div>
@@ -259,14 +253,7 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--go
           <summary style="cursor:pointer;color:#888;">전체 URL 보기</summary>
           <div class="link-box" id="couple-url-text" style="margin-top:8px;word-break:break-all;font-size:11px;"></div>
         </details>
-        <div id="couple-preview-wrap" style="display:none;margin-top:14px;">
-          <button type="button" onclick="window.open(document.getElementById('couple-preview-wrap').dataset.url,'_blank','noopener,noreferrer')"
-            style="width:100%;padding:14px;background:rgba(124,141,255,0.12);border:1px solid var(--purple);border-radius:10px;color:#b0b8ff;font-size:14px;font-weight:600;cursor:pointer;">
-            👁 새 탭에서 궁합 미리보기 (만료 없음)
-          </button>
-          <div style="font-size:11px;color:#666;margin-top:8px;text-align:center;">확인 후 아래 링크를 고객에게 보내세요</div>
-        </div>
-        <button class="btn sec" style="margin-top:10px;" onclick="copyLink('couple-url-text')">📋 링크 복사</button>
+        <button class="btn sec" style="margin-top:10px;" onclick="copyCustomerLink('couple-url-text')">📋 고객용 링크 복사</button>
       </div>
     </div>
   </div>
@@ -280,6 +267,7 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--go
   </div>
 </div>
 
+<script src="../report/assets/sajux-link-api.js"></script>
 <script>
 const PASS = '1357642';
 let selectedCoupleA = null;
@@ -316,8 +304,44 @@ function linkDisplayLine(link){
 }
 function registerLinkRecord(base){
   const seq=nextLinkSeq();
-  const code=buildLinkCode(base.type,seq);
-  return Object.assign({},base,{seq,code,kind:kindCode(base.type)});
+  const internalCode=buildLinkCode(base.type,seq);
+  const code=base.serverCode||internalCode;
+  return Object.assign({},base,{seq,code,internalCode,kind:kindCode(base.type)});
+}
+async function ensureLinkServer(){
+  if(typeof SajuxLinkApi==='undefined'){alert('링크 모듈을 불러오지 못했습니다. 새로고침해 주세요.');return false;}
+  try{if(!sessionStorage.getItem('sajux_admin_sess')){alert('관리자 로그인이 필요합니다.');return false;}}catch(e){return false;}
+  var base='';
+  try{base=(SajuxLinkApi.getApiBase()||'').replace(/\/$/,'');}catch(e2){}
+  if(!base){alert('링크 저장 서버 주소를 찾지 못했습니다. Vercel 사이트에서 관리자를 열어 주세요.');return false;}
+  try{
+    var r=await fetch(base+'/api/v1/health',{headers:{Accept:'application/json'}});
+    if(!r.ok)throw new Error('health');
+  }catch(err){
+    alert('고객 생일 저장 서버가 아직 준비되지 않았습니다.\n\nVercel 대시보드에서:\n1) Storage → Upstash → Create → x-saju 연결\n2) Settings → Environment Variables → ADMIN_PASS (관리자 비밀번호)\n3) Redeploy\n\n자세한 안내: VERCEL-SERVER-SETUP.md');
+    return false;
+  }
+  return true;
+}
+function custToPayloadSide(c){
+  return{
+    name:c.name,
+    gender:c.gender,
+    cal:c.cal,
+    y:c.y,mo:c.mo,d:c.d,
+    h:c.unknown?12:(c.h!=null?c.h:12),
+    mi:c.unknown?0:(c.mi!=null?c.mi:0),
+    unknown:!!c.unknown
+  };
+}
+function buildCouplePayload(a,b){
+  return{a:custToPayloadSide(a),b:custToPayloadSide(b),rel:'lover',by:getIssuerMasked()};
+}
+function buildSinglePayload(cust,unknown){
+  const p=custToPayloadSide(cust);
+  p.yundal=!!cust.yundal;
+  p.unknown=!!unknown;
+  return p;
 }
 function showLinkIssued(kind,linkObj,url){
   const codeEl=document.getElementById(kind==='couple'?'couple-code-display':'link-code-display');
@@ -335,6 +359,7 @@ function showLinkIssued(kind,linkObj,url){
 function doLogin(){
   const v=document.getElementById('pw-input').value;
   if(v===PASS){
+    try{sessionStorage.setItem('sajux_admin_sess',PASS);}catch(e){}
     document.getElementById('lock-screen').style.display='none';
     document.getElementById('app').style.display='block';
     renderAll();
@@ -344,6 +369,7 @@ function doLogin(){
   }
 }
 function doLogout(){
+  try{sessionStorage.removeItem('sajux_admin_sess');}catch(e){}
   document.getElementById('app').style.display='none';
   document.getElementById('lock-screen').style.display='flex';
   document.getElementById('pw-input').value='';
@@ -446,8 +472,23 @@ function appendCoupleSide(prefix,cust,p){
     p.set(prefix+'_mi',cust.mi!=null?cust.mi:0);
   }
 }
+const CUSTOMER_SITE='https://sajux.com';
+/** API가 vercel.app 주소를 돌려줘도 고객용은 항상 sajux.com */
+function toCustomerSiteUrl(url){
+  try{
+    const u=new URL(String(url||''));
+    const code=u.searchParams.get('code');
+    if(!code)return url;
+    if(u.hostname==='sajux.com'||u.hostname==='www.sajux.com')return u.toString();
+    if(/vercel\.app$/i.test(u.hostname)||/x-saju/i.test(u.hostname)){
+      if((u.pathname||'').indexOf('couple')>=0)return CUSTOMER_SITE+'/couple/?code='+encodeURIComponent(code);
+      return CUSTOMER_SITE+'/report/saju.html?code='+encodeURIComponent(code);
+    }
+  }catch(e){}
+  return url;
+}
 function buildReportUrl(cust,expAt,unknown){
-  const base='https://sajux.com/report/saju.html';
+  const base=CUSTOMER_SITE+'/report/saju.html';
   const p=new URLSearchParams();
   p.set('t','a');
   p.set('n',maskNameForLink(cust.name));
@@ -463,7 +504,7 @@ function buildReportUrl(cust,expAt,unknown){
   return base+'?'+p.toString();
 }
 function buildCoupleUrl(a,b,expAt){
-  const base='https://sajux.com/couple/';
+  const base=CUSTOMER_SITE+'/couple/';
   const p=new URLSearchParams();
   p.set('t','b');
   appendCoupleSide('a',a,p);
@@ -558,44 +599,47 @@ function getLinkParams() {
     y:parsed.y,mo:parsed.mo,d:parsed.d,h:t.h,mi:t.mi};
   return {cust, expAt, unknown};
 }
-function previewReport() {
+async function previewReport() {
   const p=getLinkParams();if(!p)return;
-  // 만료 없이 미리보기 (무제한)
-  const url=buildReportUrl(p.cust,0,p.unknown);
-  window.open(url,'_blank');
+  if(await ensureLinkServer()){
+    try{
+      const issued=await SajuxLinkApi.issueLink('single',buildSinglePayload(p.cust,p.unknown),0);
+      window.open(toCustomerSiteUrl(issued.url),'_blank');
+      return;
+    }catch(e){console.warn('preview issue',e);}
+  }
+  alert('미리보기 서버에 연결되지 않았습니다. 잠시 후 다시 시도하거나 「고객용 링크 생성」을 이용해 주세요.');
 }
-function generateReportLink(){
+async function generateReportLink(){
   const p=getLinkParams();if(!p)return;
-  // 미리보기용 URL (만료 없음)
-  const previewUrl=buildReportUrl(p.cust,0,p.unknown);
-  // 고객 전송용 URL (만료 있음)
-  const url=buildReportUrl(p.cust,p.expAt,p.unknown);
-
-  // 버튼 다시 비활성화 (새 생성 시작)
+  if(!(await ensureLinkServer()))return;
   const copyBtn = document.getElementById('copy-link-btn');
   const statusDot = document.getElementById('status-dot');
   const statusTxt = document.getElementById('status-text');
-  if(copyBtn){ copyBtn.style.opacity='1'; copyBtn.style.pointerEvents='auto'; copyBtn.textContent='📋 링크 복사'; }
+  if(copyBtn){ copyBtn.style.opacity='0.5'; copyBtn.style.pointerEvents='none'; copyBtn.textContent='발급 중…'; }
   if(statusDot){ statusDot.style.background='#555'; statusDot.style.animation='pulse 1.2s infinite'; }
-  if(statusTxt){ statusTxt.textContent='생성 중...'; statusTxt.style.color='#666'; }
-
-  // iframe 미리보기 표시
-  const iframeWrap = document.getElementById('preview-wrap');
-  if (iframeWrap) {
-    iframeWrap.style.display = 'block';
-    iframeWrap.dataset.url = previewUrl;
+  if(statusTxt){ statusTxt.textContent='서버에 링크 등록 중…'; statusTxt.style.color='#666'; }
+  let issued;
+  try{
+    issued=await SajuxLinkApi.issueLink('single',buildSinglePayload(p.cust,p.unknown),p.expAt);
+  }catch(e){
+    alert('링크 발급 실패: '+(e.message||e));
+    if(copyBtn){copyBtn.style.opacity='1';copyBtn.style.pointerEvents='auto';copyBtn.textContent='📋 링크 복사';}
+    if(statusTxt){statusTxt.textContent='발급 실패';statusTxt.style.color='#ff6b6b';}
+    return;
   }
-
-  // 링크 결과 표시
+  const url=toCustomerSiteUrl(issued.url);
   const linkObj=registerLinkRecord({
-    id:Date.now(),customerId:selectedLinkCust?selectedLinkCust.id:0,type:'single',url,expAt:p.expAt,createdAt:today(),bCustomerId:null,
+    id:Date.now(),customerId:selectedLinkCust?selectedLinkCust.id:0,type:'single',url,serverCode:issued.code,expAt:p.expAt,createdAt:today(),bCustomerId:null,
     maskName:maskNameForLink(p.cust.name),gen:p.cust.gender
   });
   showLinkIssued('single',linkObj,url);
   document.getElementById('link-expiry').textContent=fmtExpAt(p.expAt);
   document.getElementById('link-result').style.display='block';
-
   const links=getLinks();links.push(linkObj);saveLinks(links);
+  if(copyBtn){copyBtn.style.opacity='1';copyBtn.style.pointerEvents='auto';copyBtn.textContent='📋 링크 복사';}
+  if(statusDot){statusDot.style.background='#00C853';statusDot.style.animation='none';}
+  if(statusTxt){statusTxt.textContent='✅ 발급 완료 — code 링크를 복사해 전송하세요';statusTxt.style.color='#00C853';}
 }
 
 // ── 탭2: 궁합 링크
@@ -618,30 +662,41 @@ function selectCoupleB(id){
   document.getElementById('couple-b-info').textContent=selectedCoupleB?'선택됨: '+selectedCoupleB.name+' ('+fmtDate(selectedCoupleB)+', '+fmtTime(selectedCoupleB)+')':'선택 안 됨';
   renderCoupleList();
 }
-function previewCoupleReport(){
+async function previewCoupleReport(){
   if(!selectedCoupleA)return alert('A 사람을 선택하세요');
   if(!selectedCoupleB)return alert('B 사람을 선택하세요');
   if(selectedCoupleA.id===selectedCoupleB.id)return alert('서로 다른 고객을 선택하세요');
-  const url=buildCoupleUrl(selectedCoupleA,selectedCoupleB,0);
-  window.open(url,'_blank','noopener,noreferrer');
+  if(await ensureLinkServer()){
+    try{
+      const issued=await SajuxLinkApi.issueLink('couple',buildCouplePayload(selectedCoupleA,selectedCoupleB),0);
+      window.open(toCustomerSiteUrl(issued.url),'_blank','noopener,noreferrer');
+      return;
+    }catch(e){console.warn('preview issue',e);}
+  }
+  alert('미리보기 서버에 연결되지 않았습니다. 잠시 후 다시 시도하거나 「고객용 링크 생성」을 이용해 주세요.');
 }
-function generateCoupleLink(){
+async function generateCoupleLink(){
   if(!selectedCoupleA)return alert('A 사람을 선택하세요');
   if(!selectedCoupleB)return alert('B 사람을 선택하세요');
   if(selectedCoupleA.id===selectedCoupleB.id)return alert('서로 다른 고객을 선택하세요');
+  if(!(await ensureLinkServer()))return;
   const expAt=calcExpAt(CUSTOMER_LINK_EXPIRE_DAYS);
-  const previewUrl=buildCoupleUrl(selectedCoupleA,selectedCoupleB,0);
-  const url=buildCoupleUrl(selectedCoupleA,selectedCoupleB,expAt);
+  let issued;
+  try{
+    issued=await SajuxLinkApi.issueLink('couple',buildCouplePayload(selectedCoupleA,selectedCoupleB),expAt);
+  }catch(e){
+    alert('커플 링크 발급 실패: '+(e.message||e));
+    return;
+  }
+  const url=toCustomerSiteUrl(issued.url);
   const linkObj=registerLinkRecord({
-    id:Date.now(),customerId:selectedCoupleA.id,type:'couple',url,expAt,createdAt:today(),bCustomerId:selectedCoupleB.id,
+    id:Date.now(),customerId:selectedCoupleA.id,type:'couple',url,serverCode:issued.code,expAt,createdAt:today(),bCustomerId:selectedCoupleB.id,
     maskA:maskNameForLink(selectedCoupleA.name),maskB:maskNameForLink(selectedCoupleB.name),
     genA:selectedCoupleA.gender,genB:selectedCoupleB.gender
   });
   showLinkIssued('couple',linkObj,url);
   document.getElementById('couple-expiry').textContent=fmtExpAt(expAt);
   document.getElementById('couple-result').style.display='block';
-  const cw=document.getElementById('couple-preview-wrap');
-  if(cw){cw.style.display='block';cw.dataset.url=previewUrl;}
   const links=getLinks();links.push(linkObj);saveLinks(links);
 }
 
@@ -679,10 +734,15 @@ function renderManageList(){
     </div>`;
   }).join('');
 }
-function expireLink(id){
+async function expireLink(id){
   if(!confirm('이 링크를 즉시 만료 처리하시겠습니까?'))return;
-  const links=getLinks().map(l=>{if(l.id===id)l.expAt=Date.now()-1000;return l;});
-  saveLinks(links);renderAll();
+  const links=getLinks();
+  const target=links.find(l=>l.id===id);
+  if(target&&target.serverCode&&typeof SajuxLinkApi!=='undefined'&&SajuxLinkApi.getApiBase()){
+    try{await SajuxLinkApi.revokeLink(target.serverCode);}catch(e){console.warn('revoke',e);}
+  }
+  saveLinks(links.map(l=>{if(l.id===id)l.expAt=Date.now()-1000;return l;}));
+  renderAll();
 }
 function deleteLink(id){
   if(!confirm('이 링크 기록을 삭제하시겠습니까?'))return;
@@ -701,8 +761,23 @@ function copyLink(elId){
   const t=(el&&el.dataset.url)||(el&&el.textContent)||'';
   navigator.clipboard.writeText(t).then(()=>alert('링크가 복사되었습니다!')).catch(()=>prompt('링크를 복사하세요:',t));
 }
+function copyCustomerLink(elId){
+  const el=document.getElementById(elId);
+  const t=((el&&el.dataset.url)||(el&&el.textContent)||'').trim();
+  if(!t){alert('먼저 「고객용 링크 생성」을 눌러 주세요.');return;}
+  if(typeof SajuxLinkApi!=='undefined'&&SajuxLinkApi.isCodeOnlyUrl&&!SajuxLinkApi.isCodeOnlyUrl(t)){
+    alert('이 주소는 미리보기용(생일이 URL에 보임)입니다.\n\n「고객용 링크 생성」 후 나온 ?code=… 주소만 복사해 주세요.');
+    return;
+  }
+  copyLink(elId);
+}
 function copyLinkDirect(url){
-  navigator.clipboard.writeText(url).then(()=>alert('복사되었습니다!')).catch(()=>prompt('복사:',url));
+  const t=String(url||'').trim();
+  if(t&&typeof SajuxLinkApi!=='undefined'&&SajuxLinkApi.isCodeOnlyUrl&&!SajuxLinkApi.isCodeOnlyUrl(t)){
+    alert('이 주소는 예전 형식(생일이 URL에 보임)입니다.\n\n「고객용 링크 생성」으로 새 ?code= 링크를 만든 뒤 복사해 주세요.');
+    return;
+  }
+  navigator.clipboard.writeText(t).then(()=>alert('복사되었습니다!')).catch(()=>prompt('복사:',t));
 }
 
 // ── 전체 렌더

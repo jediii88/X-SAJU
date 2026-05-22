@@ -1,0 +1,10 @@
+CREATE TABLE IF NOT EXISTS links (
+  code TEXT PRIMARY KEY NOT NULL,
+  type TEXT NOT NULL,
+  payload TEXT NOT NULL,
+  exp_at INTEGER NOT NULL DEFAULT 0,
+  created_at INTEGER NOT NULL,
+  revoked INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE INDEX IF NOT EXISTS idx_links_exp ON links(exp_at);

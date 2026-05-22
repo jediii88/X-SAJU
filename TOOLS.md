@@ -43,4 +43,11 @@ Skills are shared. Your setup is yours. Keeping them apart means you can update 
 - **대상:** `report/*` → GitHub Pages (`jediii88/X-SAJU`)
 - **규칙:** 리포트·`report-core.js` 등 고객 노출 파일 수정 후 **자동 실행** (별도 요청 없이). 커밋은 사용자 요청 시만.
 
+## 사주X 고객 링크 (생일 URL 숨김)
+
+- **목적:** 고객 주소에 생년월일이 안 보이게 (`?code=…` 만)
+- **서버:** `api/` Worker + D1 — 절차 `api/README.md` (최초 1회)
+- **주소 한 줄:** `report/assets/sajux-link-api.js` → `SAJUX_LINK_API_BASE`
+- **담당자:** 관리자 로그인 후 링크 생성만 (별도 키 설정 없음)
+
 Add whatever helps you do your job. This is your cheat sheet.

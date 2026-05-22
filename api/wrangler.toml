@@ -1,0 +1,14 @@
+name = "sajux-link-api"
+main = "src/index.js"
+compatibility_date = "2024-06-01"
+
+[[d1_databases]]
+binding = "LINKS_DB"
+database_name = "sajux-links"
+database_id = "REPLACE_WITH_D1_DATABASE_ID"
+
+[vars]
+# CORS: comma-separated origins (no spaces)
+ALLOWED_ORIGINS = "https://sajux.com,https://jediii88.github.io,http://127.0.0.1:8080,http://localhost:8080"
+
+# Set via: wrangler secret put ADMIN_PASS  (관리자 로그인 비밀번호와 동일)

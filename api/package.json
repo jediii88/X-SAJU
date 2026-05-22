@@ -1,0 +1,9 @@
+{
+  "name": "sajux-link-api",
+  "private": true,
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "db:remote": "wrangler d1 execute sajux-links --remote --file=./schema.sql",
+    "db:local": "wrangler d1 execute sajux-links --local --file=./schema.sql"
+  }
+}
