@@ -16,13 +16,20 @@
   }
 
   function getApiBase() {
-    return metaApiBase() || SAJUX_LINK_API_BASE || '';
+    if (metaApiBase()) return metaApiBase();
+    if (SAJUX_LINK_API_BASE) return SAJUX_LINK_API_BASE;
+    try {
+      if (typeof location !== 'undefined' && location.origin) return location.origin;
+    } catch (e0) {}
+    return '';
   }
 
   function apiUrl(path) {
+    var p = path.indexOf('/') === 0 ? path : '/' + path;
+    if (p.indexOf('/api/') !== 0) p = '/api' + p;
     var base = getApiBase().replace(/\/+$/, '');
     if (!base) throw new Error('API_NOT_CONFIGURED');
-    return base + path;
+    return base + p;
   }
 
   function linkErrorMessage(status, body) {
