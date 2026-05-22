@@ -11,6 +11,7 @@
     window.JK = JK;
     (function(){
       var p = new URLSearchParams(location.search);
+      if (p.get('code')) { window.__SAJUX_LINK_CODE__ = p.get('code'); return; }
       if (!p.get('n') && !p.get('y')) return;
 
       var exp = p.get('exp');
@@ -63,7 +64,7 @@
       // 자동실행은 window.load IIFE에서 처리 (하단 스크립트 참조)
     })();
     </script>
-    <meta name="version" content="1779419869">
+    <meta name="version" content="1779420698">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -2112,6 +2113,7 @@
     globalSajuData = null;
     (function(){
       var p = new URLSearchParams(location.search);
+      if (p.get('code')) { window.__SAJUX_LINK_CODE__ = p.get('code'); return; }
       if (!p.get('n') && !p.get('y')) return;
 
       var exp = p.get('exp');
@@ -2163,8 +2165,8 @@
     </script>
 
 <!-- SAJUX_CACHE_BUSTER_START -->
-<meta name="sajux-build" content="1779419869">
-<script>(function(){var v='1779419869';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
+<meta name="sajux-build" content="1779420698">
+<script>(function(){var v='1779420698';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
 <!-- SAJUX_CACHE_BUSTER_END -->
 <link rel="stylesheet" href="assets/css/core.css">
 <link rel="stylesheet" href="assets/override.css?v=1779247233">
@@ -3037,11 +3039,10 @@ function startReport() {
 
 
 
+    <script src="assets/sajux-link-api.js"></script>
     <script>
     // === SAJUX: 자동 실행 (window.load 이후 — 외부 스크립트 완전 로드 보장) ===
     (function(){
-      if (!window.__SAJUX_PARAMS__) return;
-
       function showErr(msg) {
         var d = document.createElement('div');
         d.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#1a0505;border:1px solid #e74c3c;color:#fff;padding:24px 32px;border-radius:12px;z-index:99999;font-size:13px;text-align:center;max-width:85%;line-height:1.6;';
@@ -3074,11 +3075,34 @@ function startReport() {
         }
       }
 
+      async function resolveThenRun() {
+        try {
+          if (window.__SAJUX_LINK_CODE__ && !window.__SAJUX_PARAMS__) {
+            if (typeof SajuxLinkApi === 'undefined') throw new Error('LINK_API_SCRIPT');
+            var res = await SajuxLinkApi.fetchByCode(window.__SAJUX_LINK_CODE__);
+            if (res.type !== 'single') throw new Error('LINK_TYPE_MISMATCH');
+            window.__SAJUX_PARAMS__ = SajuxLinkApi.singlePayloadToSajuxParams(res.payload);
+          }
+        } catch (linkErr) {
+          var msg = (typeof SajuxLinkApi !== 'undefined' && SajuxLinkApi.linkErrorToKorean)
+            ? SajuxLinkApi.linkErrorToKorean(linkErr)
+            : '리포트를 불러오지 못했습니다.';
+          document.body.innerHTML =
+            '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#000;color:#888;text-align:center;padding:40px;font-family:sans-serif;">' +
+            '<div><div style="font-size:48px;margin-bottom:16px;">⏰</div>' +
+            '<div style="font-size:16px;color:#c7a76a;font-weight:700;margin-bottom:8px;">' + msg + '</div>' +
+            '<div style="font-size:13px;">담당자에게 문의해 주세요.</div></div></div>';
+          return;
+        }
+        if (!window.__SAJUX_PARAMS__) return;
+        doRun();
+      }
+
       // window.load 시점에 실행 (외부 스크립트 lunar.js/klc.min.js 완전 로드 후)
       if (document.readyState === 'complete') {
-        doRun();
+        resolveThenRun();
       } else {
-        window.addEventListener('load', doRun);
+        window.addEventListener('load', resolveThenRun);
       }
     })();
     </script>
@@ -3173,7 +3197,7 @@ body.light-mode #sajux-image-fab {
 <style id="sajux-pdf-print-force">
 /* PDF 인쇄 — report-print.css 단일 소스 (그림자·페이지 분할·플랫 문서형) */
 </style>
-<link rel="stylesheet" href="report-print.css?v=1779419869">
+<link rel="stylesheet" href="report-print.css?v=1779420698">
 
 </body>
 </html>
