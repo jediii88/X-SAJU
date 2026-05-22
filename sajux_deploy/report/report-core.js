@@ -13584,15 +13584,17 @@ function showLoading(msg, callback) {
     const loadEl = document.getElementById('loading');
     const msgEl = document.getElementById('loading-msg');
     if(loadEl) loadEl.style.display = 'flex';
-    if(msgEl) msgEl.innerText = '사주를 분석하는 중입니다...';
+    if(msgEl) msgEl.innerText = msg || '사주를 분석하는 중입니다...';
     setTimeout(() => {
         try { callback(); } catch(e) {
             console.error('분석 오류:', e);
             if(loadEl) loadEl.style.display = 'none';
+            try { document.documentElement.classList.remove('sajux-autoload-pending'); } catch (e0) {}
             var _bv = (typeof window !== 'undefined' && window.__SAJUX_CORE_V__) ? window.__SAJUX_CORE_V__ : '';
             alert('분석 중 오류가 발생했습니다:\n' + e.message + '\n\n' + (e.stack||'').split('\n').slice(0,3).join('\n') + (_bv ? '\n\n[빌드 ' + _bv + '] 캐시일 수 있습니다. Cmd+Shift+R(맥) 또는 Ctrl+F5로 새로고침 후 다시 시도하세요.' : '\n\nCmd+Shift+R(맥) 또는 Ctrl+F5로 강력 새로고침 후 다시 시도하세요.'));
         }
         if(loadEl) loadEl.style.display = 'none';
+        try { document.documentElement.classList.remove('sajux-autoload-pending'); } catch (e1) {}
     }, 100);
 }
 
