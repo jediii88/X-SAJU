@@ -9,6 +9,7 @@
 (function () {
   try {
     var p = new URLSearchParams(location.search);
+    if (p.get('code')) return;
     var exp = p.get('exp');
     var expMs = 0;
     if (exp && /^\d+$/.test(String(exp))) {
@@ -28,7 +29,7 @@
 })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="sajux-build" content="1779419869">
+<meta name="sajux-build" content="1779420698">
 <title>사주X — 두 사람의 인연 구조</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;700;900&display=swap" rel="stylesheet">
@@ -911,6 +912,7 @@ body::before {
   </div>
 </div>
 
+<script src="../report/assets/sajux-link-api.js"></script>
 <script src="../report/lunar.js" onerror="window.__compatScriptFail=1"></script>
 <script src="../report/klc.min.js" onerror="window.__compatScriptFail=1"></script>
 <script>
@@ -1064,6 +1066,18 @@ function parseGenderFromUrl(raw) {
   if (s === 'm' || s === 'male' || s === '남') return 'male';
   if (s === 'w' || s === 'female' || s === 'f' || s === '여') return 'female';
   return 'male';
+}
+
+async function resolveCompatParams() {
+  const sp = new URLSearchParams(location.search);
+  const code = sp.get('code');
+  if (!code) return parseParams();
+  if (typeof SajuxLinkApi === 'undefined' || !SajuxLinkApi.fetchByCode) {
+    throw new Error('LINK_API_SCRIPT');
+  }
+  const res = await SajuxLinkApi.fetchByCode(code);
+  if (res.type !== 'couple') throw new Error('LINK_TYPE_MISMATCH');
+  return SajuxLinkApi.couplePayloadToParams(res.payload);
 }
 
 function parseParams() {
@@ -2134,13 +2148,13 @@ function buildTimeline(a, b, aInfo, bInfo, params) {
   else kick();
 })();
 
-function init() {
+async function init() {
   if (window.__compatInitBlocked) return;
   try {
     if (typeof Solar === 'undefined' || typeof Solar.fromYmdHms !== 'function') {
       throw new Error('SOLAR_LOAD');
     }
-    const params = parseParams();
+    const params = await resolveCompatParams();
     const sajuA = calcSaju(params.a);
     const sajuB = calcSaju(params.b);
     const result = analyzeCoupling(sajuA, sajuB);
@@ -2196,7 +2210,9 @@ function init() {
     document.getElementById('error-screen').style.display   = 'block';
     var ep = document.querySelector('#error-screen p');
     if (ep && e) {
-      if (e.message === 'SOLAR_LOAD' || String(e.message || '').indexOf('Solar') >= 0) {
+      if (typeof SajuxLinkApi !== 'undefined' && SajuxLinkApi.linkErrorToKorean && String(e.message || '').indexOf('LINK_') === 0) {
+        ep.innerHTML = SajuxLinkApi.linkErrorToKorean(e) + '<br><span style="font-size:12px;color:#888;">계속되면 담당자에게 문의해 주세요.</span>';
+      } else if (e.message === 'SOLAR_LOAD' || String(e.message || '').indexOf('Solar') >= 0) {
         ep.innerHTML = '사주 계산 모듈을 불러오지 못했습니다.<br>페이지를 새로고침하거나, 다른 브라우저·네트워크에서 다시 열어 주세요.';
       } else {
         ep.innerHTML = '리포트를 여는 중 오류가 났습니다.<br><span style="font-size:12px;color:#888;">' + escHtmlAttr(String(e.message || e)) + '</span><br>새로고침 후 다시 시도해 주세요.';
