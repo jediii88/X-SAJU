@@ -213,9 +213,9 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--go
           <div class="link-box" id="link-url-text" style="margin-top:8px;word-break:break-all;font-size:11px;"></div>
         </details>
         <div style="display:flex;gap:8px;margin-top:10px;">
-          <button class="btn sec" id="copy-link-btn" onclick="copyLink('link-url-text')" style="flex:1;">📋 링크 복사</button>
+          <button class="btn sec" id="copy-link-btn" onclick="copyCustomerLink('link-url-text')" style="flex:1;">📋 고객용 링크 복사</button>
         </div>
-        <div class="link-code-hint">고객 이름은 URL에 가운데 *만 표시됩니다 (예: 심*영). 코드: <strong>a</strong>=1인, <strong>b</strong>=커플, <strong>m</strong>=남, <strong>w</strong>=여</div>
+        <div class="link-code-hint"><strong style="color:var(--gold);">고객 전달은 위 URL만</strong> (<code>?code=a…</code> · 생일 없음). 미리보기 주소는 확인용이라 생년월일이 주소에 보입니다.</div>
       </div>
       <div id="preview-wrap" style="display:none;margin-top:16px;">
         <button onclick="window.open(document.getElementById('preview-wrap').dataset.url,'_blank')" 
