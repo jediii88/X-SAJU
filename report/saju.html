@@ -14,7 +14,12 @@
       if (!p.get('n') && !p.get('y')) return;
 
       var exp = p.get('exp');
-      if (exp && Date.now() > parseInt(exp)) {
+      var expMs = 0;
+      if (exp && /^\d+$/.test(String(exp))) {
+        expMs = parseInt(String(exp), 10);
+        if (String(exp).length === 10) expMs *= 1000;
+      }
+      if (expMs && Date.now() > expMs) {
         document.addEventListener('DOMContentLoaded', function(){
           document.body.innerHTML =
             '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#000;color:#888;text-align:center;padding:40px;">' +
@@ -26,7 +31,8 @@
       }
 
       var name  = p.get('n')||'고객';
-      var gRaw  = (p.get('g')||'male').toLowerCase();
+      var gParam = (p.get('g')||'m').toLowerCase();
+      var gRaw  = (gParam==='w'||gParam==='female'||gParam==='f')?'female':'male';
       var cRaw  = (p.get('c')||'solar').toLowerCase();
       var year  = p.get('y')||'1988';
       var month = (p.get('mo')||'1').padStart(2,'0');
@@ -57,7 +63,7 @@
       // 자동실행은 window.load IIFE에서 처리 (하단 스크립트 참조)
     })();
     </script>
-    <meta name="version" content="1779418570">
+    <meta name="version" content="1779419393">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -2109,7 +2115,12 @@
       if (!p.get('n') && !p.get('y')) return;
 
       var exp = p.get('exp');
-      if (exp && Date.now() > parseInt(exp)) {
+      var expMs = 0;
+      if (exp && /^\d+$/.test(String(exp))) {
+        expMs = parseInt(String(exp), 10);
+        if (String(exp).length === 10) expMs *= 1000;
+      }
+      if (expMs && Date.now() > expMs) {
         window.addEventListener('load', function(){
           document.body.innerHTML =
             '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#000;color:#888;text-align:center;padding:40px;">' +
@@ -2152,8 +2163,8 @@
     </script>
 
 <!-- SAJUX_CACHE_BUSTER_START -->
-<meta name="sajux-build" content="1779418570">
-<script>(function(){var v='1779418570';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
+<meta name="sajux-build" content="1779419393">
+<script>(function(){var v='1779419393';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
 <!-- SAJUX_CACHE_BUSTER_END -->
 <link rel="stylesheet" href="assets/css/core.css">
 <link rel="stylesheet" href="assets/override.css?v=1779247233">
@@ -2604,6 +2615,9 @@ function mapGenderToCouple(v) {
     if (s === 'M' || s === 'MALE' || s === '남' || s === '남성') return 'male';
     return 'female';
 }
+function genderToUrlCode(g) {
+    return (g === 'male' || g === 'm') ? 'm' : 'w';
+}
 function mapCalToCouple(v) {
     return String(v) === 'L' ? 'lunar' : 'solar';
 }
@@ -2636,7 +2650,8 @@ function parseTimeForCouple(slot) {
 }
 function appendPersonCoupleParams(px, prefix, rec) {
     px.set(prefix + '_n', maskNameForLink(rec.name || (prefix === 'a' ? 'A' : 'B')));
-    px.set(prefix + '_g', rec.gender);
+    px.set(prefix + '_g', genderToUrlCode(rec.gender));
+    px.set('t', 'b');
     px.set(prefix + '_c', rec.cal);
     px.set(prefix + '_y', String(rec.y));
     px.set(prefix + '_mo', String(rec.mo));
@@ -3158,7 +3173,7 @@ body.light-mode #sajux-image-fab {
 <style id="sajux-pdf-print-force">
 /* PDF 인쇄 — report-print.css 단일 소스 (그림자·페이지 분할·플랫 문서형) */
 </style>
-<link rel="stylesheet" href="report-print.css?v=1779418570">
+<link rel="stylesheet" href="report-print.css?v=1779419393">
 
 </body>
 </html>
