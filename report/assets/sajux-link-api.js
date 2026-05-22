@@ -4,8 +4,8 @@
 (function (global) {
   'use strict';
 
-  /** Worker 배포 후 한 줄만 수정 (고객·관리자 화면 공통) */
-  var SAJUX_LINK_API_BASE = '';
+  /** 생일 저장 서버 (Vercel). sajux.com 화면에서도 이 주소로 조회 */
+  var SAJUX_LINK_API_BASE = 'https://x-saju-black.vercel.app';
 
   function metaApiBase() {
     try {
@@ -22,6 +22,16 @@
       if (typeof location !== 'undefined' && location.origin) return location.origin;
     } catch (e0) {}
     return '';
+  }
+
+  /** 고객용 code 링크인지 (생일이 URL에 없음) */
+  function isCodeOnlyUrl(url) {
+    try {
+      var u = new URL(String(url || ''), location.origin);
+      return !!(u.searchParams.get('code') && !u.searchParams.get('y'));
+    } catch (e) {
+      return false;
+    }
   }
 
   function apiUrl(path) {
