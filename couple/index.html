@@ -23,7 +23,7 @@
 })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="sajux-build" content="1779417203">
+<meta name="sajux-build" content="1779417722">
 <title>사주X — 두 사람의 인연 구조</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;700;900&display=swap" rel="stylesheet">
@@ -681,7 +681,7 @@ body::before {
 
 <div id="error-screen">
   <h2>🔮 정보 오류</h2>
-  <p>올바른 궁합 링크가 아닙니다.<br>관리자에게 문의하세요.</p>
+  <p>리포트를 불러오지 못했습니다.<br>새로고침 후 다시 열어 주세요. 계속되면 담당자에게 문의해 주세요.</p>
 </div>
 
 <div id="floating-toc" class="nav-floating" onmouseenter="expandToc()" onmouseleave="collapseToc()">
@@ -1367,9 +1367,9 @@ function renderPersonCard(prefix, info, saju) {
   function _hanjaStyle(ch){
     return "font-family:'Noto Sans KR',sans-serif;font-weight:300;font-size:19px;";
   }
-  function _pillarGloss(ch, kind) {
-    if (typeof compatHanjaGlossChar === 'function') return compatHanjaGlossChar(ch, kind);
-    return ch + '(' + (KOR_MAP[ch] || '') + ')';
+  /** 만세력 표 전용 — 괄호 없이 丁정 형식 */
+  function _manseCellLabel(ch) {
+    return ch + (KOR_MAP[ch] || '');
   }
   pillarsEl.innerHTML = `
     <table style="width:100%;border-collapse:collapse;margin-top:2px;table-layout:fixed;">
@@ -2104,8 +2104,12 @@ function init() {
     document.getElementById('loading-screen').style.display = 'none';
     document.getElementById('error-screen').style.display   = 'block';
     var ep = document.querySelector('#error-screen p');
-    if (ep && e && (e.message === 'SOLAR_LOAD' || String(e.message || '').indexOf('Solar') >= 0)) {
-      ep.innerHTML = '사주 계산 모듈을 불러오지 못했습니다.<br>페이지를 새로고침하거나, 다른 브라우저·네트워크에서 다시 열어 주세요.';
+    if (ep && e) {
+      if (e.message === 'SOLAR_LOAD' || String(e.message || '').indexOf('Solar') >= 0) {
+        ep.innerHTML = '사주 계산 모듈을 불러오지 못했습니다.<br>페이지를 새로고침하거나, 다른 브라우저·네트워크에서 다시 열어 주세요.';
+      } else {
+        ep.innerHTML = '리포트를 여는 중 오류가 났습니다.<br><span style="font-size:12px;color:#888;">' + escHtmlAttr(String(e.message || e)) + '</span><br>새로고침 후 다시 시도해 주세요.';
+      }
     }
   }
 }
