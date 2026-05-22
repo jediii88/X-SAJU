@@ -13595,6 +13595,8 @@ function showLoading(msg, callback) {
         }
         if(loadEl) loadEl.style.display = 'none';
         try { document.documentElement.classList.remove('sajux-autoload-pending'); } catch (e1) {}
+        var _mainUi = document.getElementById('main-ui');
+        if (_mainUi) _mainUi.style.display = '';
     }, 100);
 }
 
