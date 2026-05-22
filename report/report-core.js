@@ -1243,14 +1243,14 @@ var SAJUX_PHRASE_GLOSS = [
 ];
 
 function compatHanjaGlossChar(ch, kind) {
-    return compatHanjaGlossCharFull(ch, kind);
-}
-
-/** 본문용 — 한자(한글음:핵심의미) */
-function compatHanjaGlossCharFull(ch, kind) {
     var g = (kind === 'branch' ? SAJUX_BRANCH_GLOSS : SAJUX_STEM_GLOSS)[ch];
     if (!g) return ch;
-    return ch + '(' + g.r + ': ' + g.m + ')';
+    return ch + '(' + g.r + ')';
+}
+
+/** 만세력·본문 공통 — 한자(한글독음) */
+function compatHanjaGlossCharFull(ch, kind) {
+    return compatHanjaGlossChar(ch, kind);
 }
 
 function compatPillarLabel(stem, branch) {
@@ -1269,11 +1269,11 @@ function annotateHanjaGloss(s) {
     for (i = 0; i < SAJUX_PHRASE_GLOSS.length; i++) {
         var ph = SAJUX_PHRASE_GLOSS[i];
         var re = new RegExp(ph[0] + '(?!\\([^)]*' + ph[1] + ':)', 'g');
-        t = t.replace(re, ph[0] + '(' + ph[1] + (ph[2] ? ': ' + ph[2] : '') + ')');
+        t = t.replace(re, ph[0] + '(' + ph[1] + ')');
     }
-    t = t.replace(/([木火土金水])(?!\([^)]*[목화토금수]:)/g, function (m) {
+    t = t.replace(/([木火土金水])(?!\([^)]*[목화토금수]\))/g, function (m) {
         var g = SAJUX_OH_HANJA_GLOSS[m];
-        return g ? m + '(' + g.r + ': ' + g.m + ')' : m;
+        return g ? m + '(' + g.r + ')' : m;
     });
     var stems = '甲乙丙丁戊己庚辛壬癸';
     var branches = '子丑寅卯辰巳午未申酉戌亥';
@@ -1282,14 +1282,14 @@ function annotateHanjaGloss(s) {
         var c = stems.charAt(si);
         var g = SAJUX_STEM_GLOSS[c];
         if (!g) continue;
-        var reS = new RegExp(c + '(?!\\(' + g.r + ':)', 'g');
+        var reS = new RegExp(c + '(?!\\(' + g.r + '\\))', 'g');
         t = t.replace(reS, compatHanjaGlossCharFull(c, 'stem'));
     }
     for (si = 0; si < branches.length; si++) {
         var cb = branches.charAt(si);
         var gb = SAJUX_BRANCH_GLOSS[cb];
         if (!gb) continue;
-        var reB = new RegExp(cb + '(?!\\(' + gb.r + ':)', 'g');
+        var reB = new RegExp(cb + '(?!\\(' + gb.r + '\\))', 'g');
         t = t.replace(reB, compatHanjaGlossCharFull(cb, 'branch'));
     }
     t = t.replace(/\x00P(\d+)\x01/g, function (_, idx) { return protects[+idx]; });
@@ -1787,7 +1787,7 @@ function buildCompatSpousePanelHtml(ctx, aSpouse, bSpouse) {
         : '직접 합충은 없어도 **온습도·상생**으로 서로의 기후를 맞춰 주는 인연이에요.';
     var meet = compatMeetPairPhrase(ctx);
     var pullStr = '**합(合)의 강점** — 무의식의 끌림이 맞물리면 **편안함과 자극**이 동시에 와서, 오래 가는 인연의 온도가 됩니다.';
-    var iljiLbl = '日支(일지: 배우자궁)';
+    var iljiLbl = '日支(일지)';
     return buildCompatPanelPrefix(ctx, 'spouse')
         + buildCompatStoryCard('💫 두 분이 서로에게 끌리는 이유', meet + ', 연인 관계에서도 **“편한데 설렌다”**는 느낌이 오면 끌림의 합(合)이 살아 있는 신호예요.<br><br>' + pullStr, why, '서로에게 **존중받았다고 느낀 포인트 한 가지**만 말해 보세요.', [])
         + buildCompatPanelSynergyEmphasis(ctx, 'spouse')
