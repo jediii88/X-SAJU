@@ -1326,15 +1326,6 @@ function compatFmt(s) {
     return boldStarsToStrong(compatPolishTone(annotateHanjaGloss(String(s == null ? '' : s))));
 }
 
-function buildCompatChemScoreExplainHtml(ctx) {
-    var sc = ctx && ctx.score != null ? Number(ctx.score) : 58;
-    return '<p class="compat-chem-explain" style="font-size:11.5px;color:#999;line-height:1.75;margin:10px 0 0;text-align:left;">'
-        + '<strong style="color:rgba(199,167,106,0.85);">산출 기준</strong> — 케미스트리는 두 분 <strong>8자(시·일·월·년)</strong>를 모두 다시 채점하지 않습니다. '
-        + '위 <strong>궁합 총점(' + sc + '점)</strong>에 일지 합(合)·충(冲), 일간 상생, **오행·온습도**, 삼합, 신강/신약 상보를 반영한 뒤, '
-        + '그 점수를 바탕으로 “함께 있을 때의 온도”를 12~98점으로 환산한 <strong>파생 지표</strong>입니다. '
-        + '총점 산정 시에는 각 기둥 천간·지지 8글자의 오행 분포와 일주(일간·일지) 관계를 모두 봅니다.</p>';
-}
-
 function buildCompatChemGuideText(chem) {
     var c = Number(chem) || 55;
     if (c >= 85) return c + '점: 서로의 차이를 인정하며 함께 성장하는 관계';
@@ -1370,7 +1361,6 @@ function buildCompatChemScoreBanner(ctx, caption) {
         + '<p style="font-size:12px;color:rgba(199,167,106,0.92);line-height:1.75;margin:0 0 10px;font-weight:600;">' + escHtmlAttr(guide) + '</p>'
         + '<p style="font-size:13px;color:rgba(255,255,255,0.72);line-height:1.85;margin:0 0 6px;">' + escHtmlAttr(cap) + '</p>'
         + '<p style="font-size:13.5px;color:#ddd;line-height:1.9;margin:0;">' + compatFmt('**' + tone + ' 조합**으로 읽힙니다. 아래 챕터는 이 점수를 전제로, 두 분이 조율하는 장면과 회복 대화까지 풀어 드립니다.') + '</p>'
-        + (typeof buildCompatChemScoreExplainHtml === 'function' ? buildCompatChemScoreExplainHtml(ctx) : '')
         + '</div>';
 }
 
