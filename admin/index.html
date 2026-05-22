@@ -162,6 +162,22 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--go
       <button class="btn" onclick="saveCustomer()">💾 고객 저장</button>
     </div>
     <div class="card">
+      <div class="card-title">링크 API <span style="font-size:11px;color:#666;font-weight:400;">(고객 전달 — 코드만 URL)</span></div>
+      <div class="form-row col2">
+        <div><label>API 주소</label>
+          <input type="text" id="api-base" placeholder="https://sajux-link-api.xxx.workers.dev" onblur="saveApiConfig()">
+        </div>
+        <div><label>관리자 키</label>
+          <input type="password" id="api-key" placeholder="ADMIN_API_KEY" onblur="saveApiConfig()" autocomplete="off">
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
+        <button type="button" class="btn sec sm" onclick="testApiConnection()">연결 테스트</button>
+        <span id="api-status" class="hint" style="margin:0;padding-top:8px;"></span>
+      </div>
+      <div class="hint" style="margin-top:10px;line-height:1.6;">고객 링크는 <code>?code=b…</code> 만 전달됩니다. 생년월일은 서버(D1)에만 저장·조회되며, 주소만 바꿔서 다른 사주를 보는 것은 불가합니다. <strong>미리보기</strong>는 API 없이 기존 방식(관리자 전용)입니다.</div>
+    </div>
+    <div class="card">
       <div class="card-title">저장된 고객 목록</div>
       <div class="chip-wrap" id="reg-customer-list"><span style="color:#555;font-size:13px;">저장된 고객이 없습니다</span></div>
     </div>
@@ -174,7 +190,7 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--go
       <div class="chip-wrap" id="link-customer-list"><span style="color:#555;font-size:13px;">저장된 고객이 없습니다</span></div>
     </div>
     <div class="card">
-      <div class="card-title">1인 사주 링크 생성 <span style="font-size:11px;color:#666;font-weight:400;">(코드 a · 성별 m/w)</span></div>
+      <div class="card-title">1인 사주 링크 생성 <span style="font-size:11px;color:#666;font-weight:400;">(고객 URL: ?code=a… · 30일)</span></div>
       <div id="link-selected-info" style="font-size:13px;color:#888;margin-bottom:16px;">고객을 선택하거나 아래에 직접 입력하세요</div>
       <div class="form-row col2">
         <div><label>이름</label><input type="text" id="lnk-name" placeholder="홍길동"></div>
@@ -222,7 +238,7 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--go
           style="width:100%;padding:14px;background:rgba(199,167,106,0.12);border:1px solid var(--gold);border-radius:10px;color:var(--gold);font-size:14px;font-weight:600;cursor:pointer;">
           👁 새 탭에서 리포트 미리보기
         </button>
-        <div style="font-size:11px;color:#666;margin-top:8px;text-align:center;">미리보기 확인 후 위 📋 링크 복사 버튼으로 고객에게 전달하세요</div>
+        <div style="font-size:11px;color:#666;margin-top:8px;text-align:center;">미리보기는 확인용입니다. 고객 전달은 <strong style="color:var(--gold);">「링크 생성」</strong> 후 📋 복사한 URL만 사용하세요 (30일 만료)</div>
       </div>
     </div>
   </div>
@@ -240,7 +256,7 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--go
       <div id="couple-b-info" style="font-size:13px;color:#888;margin-top:10px;">선택 안 됨</div>
     </div>
     <div class="card">
-      <div class="card-title">커플 사주 링크 <span style="font-size:11px;color:#666;font-weight:400;">(코드 b · 30일 만료)</span></div>
+      <div class="card-title">커플 사주 링크 <span style="font-size:11px;color:#666;font-weight:400;">(고객 URL: ?code=b… · 30일)</span></div>
       <div class="form-row" style="max-width:340px;">
         <div><label>유효기간</label>
           <div style="font-size:13px;color:#888;padding-top:6px;">링크 생성 시점부터 <strong style="color:var(--gold);">30일</strong> (고정)</div>
@@ -281,6 +297,7 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--go
   </div>
 </div>
 
+<script src="../report/assets/sajux-link-api.js"></script>
 <script>
 const PASS = '1357642';
 let selectedCoupleA = null;
@@ -317,8 +334,66 @@ function linkDisplayLine(link){
 }
 function registerLinkRecord(base){
   const seq=nextLinkSeq();
-  const code=buildLinkCode(base.type,seq);
-  return Object.assign({},base,{seq,code,kind:kindCode(base.type)});
+  const internalCode=buildLinkCode(base.type,seq);
+  const code=base.serverCode||internalCode;
+  return Object.assign({},base,{seq,code,internalCode,kind:kindCode(base.type)});
+}
+function saveApiConfig(){
+  try{
+    const b=document.getElementById('api-base');
+    const k=document.getElementById('api-key');
+    if(b)localStorage.setItem('sajux_api_base',(b.value||'').trim());
+    if(k&&k.value)localStorage.setItem('sajux_api_key',k.value.trim());
+  }catch(e){}
+}
+function loadApiConfig(){
+  try{
+    const b=document.getElementById('api-base');
+    const k=document.getElementById('api-key');
+    if(b)b.value=localStorage.getItem('sajux_api_base')||'';
+    if(k)k.value=localStorage.getItem('sajux_api_key')||'';
+  }catch(e2){}
+}
+async function testApiConnection(){
+  const st=document.getElementById('api-status');
+  saveApiConfig();
+  if(typeof SajuxLinkApi==='undefined'){if(st)st.textContent='sajux-link-api.js 로드 실패';return;}
+  if(!SajuxLinkApi.getApiBase()){if(st){st.textContent='API 주소를 입력하세요';st.style.color='#ff6b6b';}return;}
+  if(st){st.textContent='확인 중…';st.style.color='#888';}
+  try{
+    const r=await fetch(SajuxLinkApi.getApiBase().replace(/\/$/,'')+'/v1/health',{headers:{Accept:'application/json'}});
+    if(!r.ok)throw new Error(String(r.status));
+    if(st){st.textContent='연결됨';st.style.color='#6ddc78';}
+  }catch(e){
+    if(st){st.textContent='연결 실패 — 주소·배포 확인';st.style.color='#ff6b6b';}
+  }
+}
+function ensureApiReady(){
+  saveApiConfig();
+  if(typeof SajuxLinkApi==='undefined'){alert('링크 API 스크립트를 불러오지 못했습니다.');return false;}
+  if(!SajuxLinkApi.getApiBase()){alert('고객 링크 API 주소를 먼저 설정하세요 (고객 등록 탭 → 링크 API).');return false;}
+  try{if(!localStorage.getItem('sajux_api_key')){alert('관리자 키를 입력하세요.');return false;}}catch(e){return false;}
+  return true;
+}
+function custToPayloadSide(c){
+  return{
+    name:c.name,
+    gender:c.gender,
+    cal:c.cal,
+    y:c.y,mo:c.mo,d:c.d,
+    h:c.unknown?12:(c.h!=null?c.h:12),
+    mi:c.unknown?0:(c.mi!=null?c.mi:0),
+    unknown:!!c.unknown
+  };
+}
+function buildCouplePayload(a,b){
+  return{a:custToPayloadSide(a),b:custToPayloadSide(b),rel:'lover',by:getIssuerMasked()};
+}
+function buildSinglePayload(cust,unknown){
+  const p=custToPayloadSide(cust);
+  p.yundal=!!cust.yundal;
+  p.unknown=!!unknown;
+  return p;
 }
 function showLinkIssued(kind,linkObj,url){
   const codeEl=document.getElementById(kind==='couple'?'couple-code-display':'link-code-display');
@@ -565,38 +640,39 @@ function previewReport() {
   const url=buildReportUrl(p.cust,0,p.unknown);
   window.open(url,'_blank');
 }
-function generateReportLink(){
+async function generateReportLink(){
   const p=getLinkParams();if(!p)return;
-  // 미리보기용 URL (만료 없음)
+  if(!ensureApiReady())return;
   const previewUrl=buildReportUrl(p.cust,0,p.unknown);
-  // 고객 전송용 URL (만료 있음)
-  const url=buildReportUrl(p.cust,p.expAt,p.unknown);
-
-  // 버튼 다시 비활성화 (새 생성 시작)
   const copyBtn = document.getElementById('copy-link-btn');
   const statusDot = document.getElementById('status-dot');
   const statusTxt = document.getElementById('status-text');
-  if(copyBtn){ copyBtn.style.opacity='1'; copyBtn.style.pointerEvents='auto'; copyBtn.textContent='📋 링크 복사'; }
+  if(copyBtn){ copyBtn.style.opacity='0.5'; copyBtn.style.pointerEvents='none'; copyBtn.textContent='발급 중…'; }
   if(statusDot){ statusDot.style.background='#555'; statusDot.style.animation='pulse 1.2s infinite'; }
-  if(statusTxt){ statusTxt.textContent='생성 중...'; statusTxt.style.color='#666'; }
-
-  // iframe 미리보기 표시
+  if(statusTxt){ statusTxt.textContent='서버에 링크 등록 중…'; statusTxt.style.color='#666'; }
   const iframeWrap = document.getElementById('preview-wrap');
-  if (iframeWrap) {
-    iframeWrap.style.display = 'block';
-    iframeWrap.dataset.url = previewUrl;
+  if(iframeWrap){iframeWrap.style.display='block';iframeWrap.dataset.url=previewUrl;}
+  let issued;
+  try{
+    issued=await SajuxLinkApi.issueLink('single',buildSinglePayload(p.cust,p.unknown),p.expAt);
+  }catch(e){
+    alert('링크 발급 실패: '+(e.message||e));
+    if(copyBtn){copyBtn.style.opacity='1';copyBtn.style.pointerEvents='auto';copyBtn.textContent='📋 링크 복사';}
+    if(statusTxt){statusTxt.textContent='발급 실패';statusTxt.style.color='#ff6b6b';}
+    return;
   }
-
-  // 링크 결과 표시
+  const url=issued.url;
   const linkObj=registerLinkRecord({
-    id:Date.now(),customerId:selectedLinkCust?selectedLinkCust.id:0,type:'single',url,expAt:p.expAt,createdAt:today(),bCustomerId:null,
+    id:Date.now(),customerId:selectedLinkCust?selectedLinkCust.id:0,type:'single',url,serverCode:issued.code,expAt:p.expAt,createdAt:today(),bCustomerId:null,
     maskName:maskNameForLink(p.cust.name),gen:p.cust.gender
   });
   showLinkIssued('single',linkObj,url);
   document.getElementById('link-expiry').textContent=fmtExpAt(p.expAt);
   document.getElementById('link-result').style.display='block';
-
   const links=getLinks();links.push(linkObj);saveLinks(links);
+  if(copyBtn){copyBtn.style.opacity='1';copyBtn.style.pointerEvents='auto';copyBtn.textContent='📋 링크 복사';}
+  if(statusDot){statusDot.style.background='#00C853';statusDot.style.animation='none';}
+  if(statusTxt){statusTxt.textContent='✅ 발급 완료 — code 링크를 복사해 전송하세요';statusTxt.style.color='#00C853';}
 }
 
 // ── 탭2: 궁합 링크
@@ -626,15 +702,23 @@ function previewCoupleReport(){
   const url=buildCoupleUrl(selectedCoupleA,selectedCoupleB,0);
   window.open(url,'_blank','noopener,noreferrer');
 }
-function generateCoupleLink(){
+async function generateCoupleLink(){
   if(!selectedCoupleA)return alert('A 사람을 선택하세요');
   if(!selectedCoupleB)return alert('B 사람을 선택하세요');
   if(selectedCoupleA.id===selectedCoupleB.id)return alert('서로 다른 고객을 선택하세요');
+  if(!ensureApiReady())return;
   const expAt=calcExpAt(CUSTOMER_LINK_EXPIRE_DAYS);
   const previewUrl=buildCoupleUrl(selectedCoupleA,selectedCoupleB,0);
-  const url=buildCoupleUrl(selectedCoupleA,selectedCoupleB,expAt);
+  let issued;
+  try{
+    issued=await SajuxLinkApi.issueLink('couple',buildCouplePayload(selectedCoupleA,selectedCoupleB),expAt);
+  }catch(e){
+    alert('커플 링크 발급 실패: '+(e.message||e));
+    return;
+  }
+  const url=issued.url;
   const linkObj=registerLinkRecord({
-    id:Date.now(),customerId:selectedCoupleA.id,type:'couple',url,expAt,createdAt:today(),bCustomerId:selectedCoupleB.id,
+    id:Date.now(),customerId:selectedCoupleA.id,type:'couple',url,serverCode:issued.code,expAt,createdAt:today(),bCustomerId:selectedCoupleB.id,
     maskA:maskNameForLink(selectedCoupleA.name),maskB:maskNameForLink(selectedCoupleB.name),
     genA:selectedCoupleA.gender,genB:selectedCoupleB.gender
   });
@@ -680,10 +764,15 @@ function renderManageList(){
     </div>`;
   }).join('');
 }
-function expireLink(id){
+async function expireLink(id){
   if(!confirm('이 링크를 즉시 만료 처리하시겠습니까?'))return;
-  const links=getLinks().map(l=>{if(l.id===id)l.expAt=Date.now()-1000;return l;});
-  saveLinks(links);renderAll();
+  const links=getLinks();
+  const target=links.find(l=>l.id===id);
+  if(target&&target.serverCode&&typeof SajuxLinkApi!=='undefined'&&SajuxLinkApi.getApiBase()){
+    try{await SajuxLinkApi.revokeLink(target.serverCode);}catch(e){console.warn('revoke',e);}
+  }
+  saveLinks(links.map(l=>{if(l.id===id)l.expAt=Date.now()-1000;return l;}));
+  renderAll();
 }
 function deleteLink(id){
   if(!confirm('이 링크 기록을 삭제하시겠습니까?'))return;
@@ -715,6 +804,7 @@ function renderAll(){
       ie.dataset.hydrated='1';
     }
   }catch(e){}
+  loadApiConfig();
   renderRegCustomerList();
   renderLinkCustomerList();
   renderCoupleList();
