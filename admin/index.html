@@ -267,7 +267,7 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--go
           </button>
           <div style="font-size:11px;color:#666;margin-top:8px;text-align:center;">고객 전달은 <strong style="color:var(--gold);">위 만료일이 있는 링크</strong>만 복사해 보내세요 (30일)</div>
         </div>
-        <button class="btn sec" style="margin-top:10px;" onclick="copyLink('couple-url-text')">📋 링크 복사</button>
+        <button class="btn sec" style="margin-top:10px;" onclick="copyCustomerLink('couple-url-text')">📋 고객용 링크 복사</button>
       </div>
     </div>
   </div>
@@ -754,6 +754,16 @@ function copyLink(elId){
   const el=document.getElementById(elId);
   const t=(el&&el.dataset.url)||(el&&el.textContent)||'';
   navigator.clipboard.writeText(t).then(()=>alert('링크가 복사되었습니다!')).catch(()=>prompt('링크를 복사하세요:',t));
+}
+function copyCustomerLink(elId){
+  const el=document.getElementById(elId);
+  const t=((el&&el.dataset.url)||(el&&el.textContent)||'').trim();
+  if(!t){alert('먼저 「고객용 링크 생성」을 눌러 주세요.');return;}
+  if(typeof SajuxLinkApi!=='undefined'&&SajuxLinkApi.isCodeOnlyUrl&&!SajuxLinkApi.isCodeOnlyUrl(t)){
+    alert('이 주소는 미리보기용(생일이 URL에 보임)입니다.\n\n「고객용 링크 생성」 후 나온 ?code=… 주소만 복사해 주세요.');
+    return;
+  }
+  copyLink(elId);
 }
 function copyLinkDirect(url){
   navigator.clipboard.writeText(url).then(()=>alert('복사되었습니다!')).catch(()=>prompt('복사:',url));
