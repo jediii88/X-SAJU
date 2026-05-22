@@ -64,7 +64,7 @@
       // 자동실행은 window.load IIFE에서 처리 (하단 스크립트 참조)
     })();
     </script>
-    <meta name="version" content="1779431703">
+    <meta name="version" content="1779431885">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -2165,8 +2165,8 @@
     </script>
 
 <!-- SAJUX_CACHE_BUSTER_START -->
-<meta name="sajux-build" content="1779431703">
-<script>(function(){var v='1779431703';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
+<meta name="sajux-build" content="1779431885">
+<script>(function(){var v='1779431885';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
 <!-- SAJUX_CACHE_BUSTER_END -->
 <link rel="stylesheet" href="assets/css/core.css">
 <link rel="stylesheet" href="assets/override.css?v=1779247233">
@@ -2681,18 +2681,29 @@ function buildCouplePayloadFromReportForms() {
         b: { name: name2, gender: mapGenderToCouple((document.getElementById('gender-2') || {}).value), cal: mapCalToCouple((document.getElementById('cal-type-2') || {}).value), y: db.y, mo: db.mo, d: db.d, h: tb.h, mi: tb.mi, unknown: tb.unknown }
     };
 }
-function openCouplePreviewFromReport() {
+async function openCouplePreviewFromReport() {
     var rec = buildCouplePayloadFromReportForms();
     if (!rec) return;
-    var p = new URLSearchParams();
-    appendPersonCoupleParams(p, 'a', rec.a);
-    appendPersonCoupleParams(p, 'b', rec.b);
-    p.set('rel', 'lover');
-    var m = issuerMaskedForLink();
-    if (m) p.set('by', m);
-    p.set('v', String(Date.now()));
-    var url = getCouplePageBase() + '?' + p.toString();
-    window.open(url, '_blank', 'noopener,noreferrer');
+    var payload = {
+        a: { name: rec.a.name, gender: rec.a.gender, cal: rec.a.cal, y: rec.a.y, mo: rec.a.mo, d: rec.a.d, h: rec.a.h, mi: rec.a.mi, unknown: !!rec.a.unknown },
+        b: { name: rec.b.name, gender: rec.b.gender, cal: rec.b.cal, y: rec.b.y, mo: rec.b.mo, d: rec.b.d, h: rec.b.h, mi: rec.b.mi, unknown: !!rec.b.unknown },
+        rel: 'lover',
+        by: issuerMaskedForLink() || ''
+    };
+    if (typeof SajuxLinkApi === 'undefined' || !SajuxLinkApi.openCoupleCodeLink) {
+        alert('링크 모듈을 불러오지 못했습니다. 페이지를 새로고침해 주세요.');
+        return;
+    }
+    try {
+        await SajuxLinkApi.openCoupleCodeLink(payload, 0);
+    } catch (e) {
+        var msg = (e && e.message) || String(e);
+        if (msg === 'ADMIN_NOT_LOGGED_IN') {
+            alert('궁합은 주소에 생일이 안 보이는 링크로만 열립니다.\n\n① https://sajux.com/admin/ 로그인\n② 「💞 고객용 링크 생성」 또는 궁합 미리보기\n\n이 만세력 화면에서 바로 보려면 admin 로그인 후 같은 브라우저에서 다시 시도해 주세요.');
+            return;
+        }
+        alert('궁합 링크 발급 실패: ' + msg);
+    }
 }
 function runAnalysisEntry() {
     if (userCount === 2) {
@@ -3197,7 +3208,7 @@ body.light-mode #sajux-image-fab {
 <style id="sajux-pdf-print-force">
 /* PDF 인쇄 — report-print.css 단일 소스 (그림자·페이지 분할·플랫 문서형) */
 </style>
-<link rel="stylesheet" href="report-print.css?v=1779431703">
+<link rel="stylesheet" href="report-print.css?v=1779431885">
 
 </body>
 </html>
