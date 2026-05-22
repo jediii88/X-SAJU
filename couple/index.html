@@ -23,7 +23,7 @@
 })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="sajux-build" content="1779415496">
+<meta name="sajux-build" content="1779415664">
 <title>사주X — 두 사람의 인연 구조</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;700;900&display=swap" rel="stylesheet">
@@ -738,6 +738,7 @@ body::before {
   </div>
 
   <div class="container">
+    <div class="compat-duo-manse-wrap">
     <div class="duo-grid">
       <div class="person-card a">
         <div class="compat-person-tag">첫 번째 사주</div>
@@ -759,6 +760,7 @@ body::before {
       </div>
     </div>
     <div id="compat-manse-notes" class="compat-manse-notes" aria-label="만세력 표 안내"></div>
+    </div>
 
     <div class="score-section">
       <div class="score-ring-wrap">
@@ -1366,6 +1368,7 @@ function renderPersonCard(prefix, info, saju) {
     return "font-family:'Noto Sans KR',sans-serif;font-weight:300;font-size:19px;";
   }
   function _pillarGloss(ch, kind) {
+    if (typeof compatHanjaGlossCharFull === 'function') return compatHanjaGlossCharFull(ch, kind);
     if (typeof compatHanjaGlossChar === 'function') return compatHanjaGlossChar(ch, kind);
     return ch + '(' + (KOR_MAP[ch] || '') + ')';
   }
