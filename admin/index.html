@@ -486,8 +486,23 @@ function appendCoupleSide(prefix,cust,p){
     p.set(prefix+'_mi',cust.mi!=null?cust.mi:0);
   }
 }
+const CUSTOMER_SITE='https://sajux.com';
+/** API가 vercel.app 주소를 돌려줘도 고객용은 항상 sajux.com */
+function toCustomerSiteUrl(url){
+  try{
+    const u=new URL(String(url||''));
+    const code=u.searchParams.get('code');
+    if(!code)return url;
+    if(u.hostname==='sajux.com'||u.hostname==='www.sajux.com')return u.toString();
+    if(/vercel\.app$/i.test(u.hostname)||/x-saju/i.test(u.hostname)){
+      if((u.pathname||'').indexOf('couple')>=0)return CUSTOMER_SITE+'/couple/?code='+encodeURIComponent(code);
+      return CUSTOMER_SITE+'/report/saju.html?code='+encodeURIComponent(code);
+    }
+  }catch(e){}
+  return url;
+}
 function buildReportUrl(cust,expAt,unknown){
-  const base='https://sajux.com/report/saju.html';
+  const base=CUSTOMER_SITE+'/report/saju.html';
   const p=new URLSearchParams();
   p.set('t','a');
   p.set('n',maskNameForLink(cust.name));
