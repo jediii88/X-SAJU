@@ -20,7 +20,7 @@
 })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="sajux-build" content="1779410360">
+<meta name="sajux-build" content="1779410873">
 <title>사주X — 두 사람의 인연 구조</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;700;900&display=swap" rel="stylesheet">
@@ -425,6 +425,18 @@ body::before {
 }
 .pillar-mini table {
   border-collapse: collapse;
+}
+.pillar-mini .pillar-ss-badge {
+  display: inline-block;
+  font-size: 10px;
+  background: rgba(199,167,106,0.12);
+  color: var(--gold-soft);
+  padding: 1px 6px;
+  border-radius: 6px;
+  font-weight: 600;
+  white-space: nowrap;
+  line-height: 1.35;
+  letter-spacing: 0;
 }
 .pillar-chip { flex: 1; background: rgba(255,255,255,0.05); border-radius: 6px; padding: 5px 2px; text-align: center; }
 .pillar-chip .pn { font-size: 9px; color: var(--text-dim); margin-bottom: 2px; }
@@ -1326,13 +1338,13 @@ function renderPersonCard(prefix, info, saju) {
         ${order.map((i,li)=>`<td style="text-align:center;padding:5px 4px;color:var(--gold);font-size:10.5px;font-weight:600;letter-spacing:0.04em;">${labels[li]}</td>`).join('')}
       </tr>
       <tr style="border-bottom:1px solid rgba(128,128,128,0.10);">
-        <td style="color:var(--text-dim);font-size:10px;padding:5px 2px;font-weight:600;line-height:1.35;">십성<br><span style="font-size:8px;font-weight:500;opacity:0.75;">천간</span></td>
+        <td style="color:var(--text-dim);font-size:10px;padding:5px 2px;font-weight:600;white-space:nowrap;">십성(천)</td>
         ${order.map((i,li)=>{
           const p = saju.pillars[i];
           const gz = gzString(p && p.h);
           if (!gz || gz.length < 2) return '<td></td>';
           const ss = li === 1 ? '일원' : getSS(ds, gz[0]);
-          return `<td style="text-align:center;padding:3px 3px;"><span class="pillar-ss-badge pillar-ss-stem" style="font-size:10px;background:rgba(199,167,106,0.12);color:var(--gold-soft);padding:1px 6px;border-radius:6px;font-weight:600;">${ss}</span></td>`;
+          return `<td style="text-align:center;padding:3px 3px;"><span class="pillar-ss-badge">${ss}</span></td>`;
         }).join('')}
       </tr>
       <tr style="border-bottom:1px solid rgba(128,128,128,0.10);">
@@ -1346,29 +1358,23 @@ function renderPersonCard(prefix, info, saju) {
         }).join('')}
       </tr>
       <tr style="border-bottom:1px solid rgba(128,128,128,0.10);">
-        <td style="color:var(--text-dim);font-size:10px;padding:5px 2px;font-weight:600;line-height:1.35;">지지<br><span style="font-size:8px;font-weight:500;opacity:0.75;">십성</span></td>
+        <td style="color:var(--text-dim);font-size:10px;padding:5px 2px;font-weight:600;">지지</td>
         ${order.map((i,li)=>{
           const p = saju.pillars[i];
           const gz = gzString(p && p.h);
           if (!gz || gz.length < 2) return '<td></td>';
           const col = HAN_COLOR[gz[1]]||'';
-          const ssJi = getSSBranch(ds, gz[1]) || '—';
-          return `<td style="text-align:center;padding:5px 2px;vertical-align:middle;">
-            <div style="display:flex;flex-direction:column;align-items:center;gap:5px;line-height:1.2;">
-              <span class="${col}" style="${_hanjaStyle(gz[1])}font-size:14px;line-height:1.35;">${_pillarGloss(gz[1],'branch')}</span>
-              <span class="pillar-ss-badge pillar-ss-branch" style="font-size:10px;background:rgba(199,167,106,0.14);color:var(--gold-soft);padding:1px 7px;border-radius:6px;font-weight:600;white-space:nowrap;">${ssJi}</span>
-            </div>
-          </td>`;
+          return `<td style="text-align:center;padding:6px 2px;"><span class="${col}" style="${_hanjaStyle(gz[1])}font-size:14px;line-height:1.35;">${_pillarGloss(gz[1],'branch')}</span></td>`;
         }).join('')}
       </tr>
       <tr>
-        <td style="color:var(--text-dim);font-size:10px;padding:5px 2px;font-weight:600;line-height:1.35;">십성<br><span style="font-size:8px;font-weight:500;opacity:0.75;">지지</span></td>
+        <td style="color:var(--text-dim);font-size:10px;padding:5px 2px;font-weight:600;white-space:nowrap;">십성(지)</td>
         ${order.map((i,li)=>{
           const p = saju.pillars[i];
           const gz = gzString(p && p.h);
           if (!gz || gz.length < 2) return '<td></td>';
           const ss = getSSBranch(ds, gz[1]) || '—';
-          return `<td style="text-align:center;padding:3px 3px;"><span class="pillar-ss-badge pillar-ss-branch" style="font-size:10px;background:rgba(199,167,106,0.14);color:var(--gold-soft);padding:1px 7px;border-radius:6px;font-weight:600;">${ss}</span></td>`;
+          return `<td style="text-align:center;padding:3px 3px;"><span class="pillar-ss-badge">${ss}</span></td>`;
         }).join('')}
       </tr>
     </table>`;
