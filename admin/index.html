@@ -772,7 +772,12 @@ function copyCustomerLink(elId){
   copyLink(elId);
 }
 function copyLinkDirect(url){
-  navigator.clipboard.writeText(url).then(()=>alert('복사되었습니다!')).catch(()=>prompt('복사:',url));
+  const t=String(url||'').trim();
+  if(t&&typeof SajuxLinkApi!=='undefined'&&SajuxLinkApi.isCodeOnlyUrl&&!SajuxLinkApi.isCodeOnlyUrl(t)){
+    alert('이 주소는 예전 형식(생일이 URL에 보임)입니다.\n\n「고객용 링크 생성」으로 새 ?code= 링크를 만든 뒤 복사해 주세요.');
+    return;
+  }
+  navigator.clipboard.writeText(t).then(()=>alert('복사되었습니다!')).catch(()=>prompt('복사:',t));
 }
 
 // ── 전체 렌더
