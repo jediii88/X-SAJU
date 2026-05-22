@@ -322,10 +322,19 @@ function registerLinkRecord(base){
   const code=base.serverCode||internalCode;
   return Object.assign({},base,{seq,code,internalCode,kind:kindCode(base.type)});
 }
-function ensureLinkServer(){
+async function ensureLinkServer(){
   if(typeof SajuxLinkApi==='undefined'){alert('링크 모듈을 불러오지 못했습니다. 새로고침해 주세요.');return false;}
   try{if(!sessionStorage.getItem('sajux_admin_sess')){alert('관리자 로그인이 필요합니다.');return false;}}catch(e){return false;}
-  if(!SajuxLinkApi.getApiBase()){alert('고객 링크 저장 서버가 아직 연결되지 않았습니다.\n(개발 쪽에서 Worker 배포 후 주소 한 줄만 넣으면 됩니다.)');return false;}
+  var base='';
+  try{base=(SajuxLinkApi.getApiBase()||'').replace(/\/$/,'');}catch(e2){}
+  if(!base){alert('링크 저장 서버 주소를 찾지 못했습니다. Vercel 사이트에서 관리자를 열어 주세요.');return false;}
+  try{
+    var r=await fetch(base+'/api/v1/health',{headers:{Accept:'application/json'}});
+    if(!r.ok)throw new Error('health');
+  }catch(err){
+    alert('고객 생일 저장 서버가 아직 준비되지 않았습니다.\n\nVercel 대시보드에서:\n1) Storage → KV 만들고 프로젝트에 연결\n2) Settings → Environment Variables → ADMIN_PASS (관리자 비밀번호)\n3) Redeploy\n\n자세한 안내: VERCEL-SERVER-SETUP.md');
+    return false;
+  }
   return true;
 }
 function custToPayloadSide(c){
@@ -597,7 +606,7 @@ function previewReport() {
 }
 async function generateReportLink(){
   const p=getLinkParams();if(!p)return;
-  if(!ensureLinkServer())return;
+  if(!(await ensureLinkServer()))return;
   const previewUrl=buildReportUrl(p.cust,0,p.unknown);
   const copyBtn = document.getElementById('copy-link-btn');
   const statusDot = document.getElementById('status-dot');
@@ -661,7 +670,7 @@ async function generateCoupleLink(){
   if(!selectedCoupleA)return alert('A 사람을 선택하세요');
   if(!selectedCoupleB)return alert('B 사람을 선택하세요');
   if(selectedCoupleA.id===selectedCoupleB.id)return alert('서로 다른 고객을 선택하세요');
-  if(!ensureLinkServer())return;
+  if(!(await ensureLinkServer()))return;
   const expAt=calcExpAt(CUSTOMER_LINK_EXPIRE_DAYS);
   const previewUrl=buildCoupleUrl(selectedCoupleA,selectedCoupleB,0);
   let issued;
