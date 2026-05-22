@@ -162,22 +162,6 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--go
       <button class="btn" onclick="saveCustomer()">💾 고객 저장</button>
     </div>
     <div class="card">
-      <div class="card-title">링크 API <span style="font-size:11px;color:#666;font-weight:400;">(고객 전달 — 코드만 URL)</span></div>
-      <div class="form-row col2">
-        <div><label>API 주소</label>
-          <input type="text" id="api-base" placeholder="https://sajux-link-api.xxx.workers.dev" onblur="saveApiConfig()">
-        </div>
-        <div><label>관리자 키</label>
-          <input type="password" id="api-key" placeholder="ADMIN_API_KEY" onblur="saveApiConfig()" autocomplete="off">
-        </div>
-      </div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
-        <button type="button" class="btn sec sm" onclick="testApiConnection()">연결 테스트</button>
-        <span id="api-status" class="hint" style="margin:0;padding-top:8px;"></span>
-      </div>
-      <div class="hint" style="margin-top:10px;line-height:1.6;">고객 링크는 <code>?code=b…</code> 만 전달됩니다. 생년월일은 서버(D1)에만 저장·조회되며, 주소만 바꿔서 다른 사주를 보는 것은 불가합니다. <strong>미리보기</strong>는 API 없이 기존 방식(관리자 전용)입니다.</div>
-    </div>
-    <div class="card">
       <div class="card-title">저장된 고객 목록</div>
       <div class="chip-wrap" id="reg-customer-list"><span style="color:#555;font-size:13px;">저장된 고객이 없습니다</span></div>
     </div>
@@ -190,7 +174,7 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--go
       <div class="chip-wrap" id="link-customer-list"><span style="color:#555;font-size:13px;">저장된 고객이 없습니다</span></div>
     </div>
     <div class="card">
-      <div class="card-title">1인 사주 링크 생성 <span style="font-size:11px;color:#666;font-weight:400;">(고객 URL: ?code=a… · 30일)</span></div>
+      <div class="card-title">1인 사주 링크 생성 <span style="font-size:11px;color:#666;font-weight:400;">(고객 주소에 생일 안 보임 · 30일)</span></div>
       <div id="link-selected-info" style="font-size:13px;color:#888;margin-bottom:16px;">고객을 선택하거나 아래에 직접 입력하세요</div>
       <div class="form-row col2">
         <div><label>이름</label><input type="text" id="lnk-name" placeholder="홍길동"></div>
@@ -338,41 +322,10 @@ function registerLinkRecord(base){
   const code=base.serverCode||internalCode;
   return Object.assign({},base,{seq,code,internalCode,kind:kindCode(base.type)});
 }
-function saveApiConfig(){
-  try{
-    const b=document.getElementById('api-base');
-    const k=document.getElementById('api-key');
-    if(b)localStorage.setItem('sajux_api_base',(b.value||'').trim());
-    if(k&&k.value)localStorage.setItem('sajux_api_key',k.value.trim());
-  }catch(e){}
-}
-function loadApiConfig(){
-  try{
-    const b=document.getElementById('api-base');
-    const k=document.getElementById('api-key');
-    if(b)b.value=localStorage.getItem('sajux_api_base')||'';
-    if(k)k.value=localStorage.getItem('sajux_api_key')||'';
-  }catch(e2){}
-}
-async function testApiConnection(){
-  const st=document.getElementById('api-status');
-  saveApiConfig();
-  if(typeof SajuxLinkApi==='undefined'){if(st)st.textContent='sajux-link-api.js 로드 실패';return;}
-  if(!SajuxLinkApi.getApiBase()){if(st){st.textContent='API 주소를 입력하세요';st.style.color='#ff6b6b';}return;}
-  if(st){st.textContent='확인 중…';st.style.color='#888';}
-  try{
-    const r=await fetch(SajuxLinkApi.getApiBase().replace(/\/$/,'')+'/v1/health',{headers:{Accept:'application/json'}});
-    if(!r.ok)throw new Error(String(r.status));
-    if(st){st.textContent='연결됨';st.style.color='#6ddc78';}
-  }catch(e){
-    if(st){st.textContent='연결 실패 — 주소·배포 확인';st.style.color='#ff6b6b';}
-  }
-}
-function ensureApiReady(){
-  saveApiConfig();
-  if(typeof SajuxLinkApi==='undefined'){alert('링크 API 스크립트를 불러오지 못했습니다.');return false;}
-  if(!SajuxLinkApi.getApiBase()){alert('고객 링크 API 주소를 먼저 설정하세요 (고객 등록 탭 → 링크 API).');return false;}
-  try{if(!localStorage.getItem('sajux_api_key')){alert('관리자 키를 입력하세요.');return false;}}catch(e){return false;}
+function ensureLinkServer(){
+  if(typeof SajuxLinkApi==='undefined'){alert('링크 모듈을 불러오지 못했습니다. 새로고침해 주세요.');return false;}
+  try{if(!sessionStorage.getItem('sajux_admin_sess')){alert('관리자 로그인이 필요합니다.');return false;}}catch(e){return false;}
+  if(!SajuxLinkApi.getApiBase()){alert('고객 링크 저장 서버가 아직 연결되지 않았습니다.\n(개발 쪽에서 Worker 배포 후 주소 한 줄만 넣으면 됩니다.)');return false;}
   return true;
 }
 function custToPayloadSide(c){
@@ -411,6 +364,7 @@ function showLinkIssued(kind,linkObj,url){
 function doLogin(){
   const v=document.getElementById('pw-input').value;
   if(v===PASS){
+    try{sessionStorage.setItem('sajux_admin_sess',PASS);}catch(e){}
     document.getElementById('lock-screen').style.display='none';
     document.getElementById('app').style.display='block';
     renderAll();
@@ -420,6 +374,7 @@ function doLogin(){
   }
 }
 function doLogout(){
+  try{sessionStorage.removeItem('sajux_admin_sess');}catch(e){}
   document.getElementById('app').style.display='none';
   document.getElementById('lock-screen').style.display='flex';
   document.getElementById('pw-input').value='';
@@ -642,7 +597,7 @@ function previewReport() {
 }
 async function generateReportLink(){
   const p=getLinkParams();if(!p)return;
-  if(!ensureApiReady())return;
+  if(!ensureLinkServer())return;
   const previewUrl=buildReportUrl(p.cust,0,p.unknown);
   const copyBtn = document.getElementById('copy-link-btn');
   const statusDot = document.getElementById('status-dot');
@@ -706,7 +661,7 @@ async function generateCoupleLink(){
   if(!selectedCoupleA)return alert('A 사람을 선택하세요');
   if(!selectedCoupleB)return alert('B 사람을 선택하세요');
   if(selectedCoupleA.id===selectedCoupleB.id)return alert('서로 다른 고객을 선택하세요');
-  if(!ensureApiReady())return;
+  if(!ensureLinkServer())return;
   const expAt=calcExpAt(CUSTOMER_LINK_EXPIRE_DAYS);
   const previewUrl=buildCoupleUrl(selectedCoupleA,selectedCoupleB,0);
   let issued;
@@ -804,7 +759,6 @@ function renderAll(){
       ie.dataset.hydrated='1';
     }
   }catch(e){}
-  loadApiConfig();
   renderRegCustomerList();
   renderLinkCustomerList();
   renderCoupleList();
