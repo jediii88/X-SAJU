@@ -20,7 +20,7 @@
 })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="sajux-build" content="1779410873">
+<meta name="sajux-build" content="1779411046">
 <title>사주X — 두 사람의 인연 구조</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;700;900&display=swap" rel="stylesheet">
@@ -46,9 +46,9 @@
   --fire: #d45a52;
   --earth: #c9a24c;
   --metal: #9ea4aa;
-  /* 수(水): 개인 리포트(view)와 동일 — 현색 검정 + 가독 윤곽은 글자별 스타일로 */
-  --water: #181828;
-  --water-edge: rgba(255, 255, 255, 0.16);
+  /* 수(水): 남색 — 오행 막대·한자 공통 */
+  --water: #3d5f9a;
+  --water-edge: rgba(100, 140, 210, 0.35);
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body {
@@ -552,8 +552,6 @@ body::before {
 .earth { color: var(--earth); } .metal { color: var(--metal); }
 .water {
   color: var(--water);
-  -webkit-text-stroke: 0.45px rgba(255, 255, 255, 0.72);
-  paint-order: stroke fill;
 }
 .bg-water {
   background: var(--water) !important;
@@ -1273,10 +1271,8 @@ function renderPersonCard(prefix, info, saju) {
   nameEl.textContent = info.name;
   const ds = saju.dayStem, db = saju.dayBranch;
   (function(){
-    var dsWater = (ds==='壬'||ds==='癸');
-    var dbWater = (db==='子'||db==='亥');
-    var dsStroke = dsWater ? '-webkit-text-stroke:0.5px rgba(255,255,255,0.7);paint-order:stroke fill;' : '';
-    var dbStroke = dbWater ? '-webkit-text-stroke:0.5px rgba(255,255,255,0.7);paint-order:stroke fill;' : '';
+    var dsStroke = '';
+    var dbStroke = '';
     const dsLbl = (typeof compatHanjaGlossChar === 'function') ? compatHanjaGlossChar(ds, 'stem') : ds + '(' + (HAN_KOR[ds]||'') + ')';
     const dbLbl = (typeof compatHanjaGlossChar === 'function') ? compatHanjaGlossChar(db, 'branch') : db + '(' + (HAN_KOR[db]||'') + ')';
     iljuEl.innerHTML = `<span class="${HAN_COLOR[ds]}" style="font-family:'Noto Sans KR',sans-serif;font-weight:300;font-size:15px;${dsStroke}">${dsLbl}</span> <span class="${HAN_COLOR[db]}" style="font-family:'Noto Sans KR',sans-serif;font-weight:300;font-size:15px;${dbStroke}">${dbLbl}</span>`;
