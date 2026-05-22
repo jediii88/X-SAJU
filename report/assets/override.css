@@ -39,23 +39,22 @@ html[data-theme="light"] {
   font-weight: 300 !important;
 }
 
-/* 수(水) 오행 한자 — 검정 + 흰 윤곽 (다크모드) */
+/* 수(水) 오행 한자 — 파란색 (윤곽 없음, 작은 글자도 흰색으로 안 보이게) */
 html:not([data-theme="light"]) .vip-hanja[style*="color:var(--water)"],
 html:not([data-theme="light"]) .water,
 html:not([data-theme="light"]) .manse-cell .water,
 html:not([data-theme="light"]) [class~="water"] .top,
 html:not([data-theme="light"]) [class~="water"] .bottom {
-  color: var(--water) !important;
-  -webkit-text-stroke: 0.6px rgba(255,255,255,0.72) !important;
-  paint-order: stroke fill !important;
+  color: var(--water, #5d8ab9) !important;
+  -webkit-text-stroke: 0 !important;
+  paint-order: initial !important;
 }
 
-/* 라이트모드: 수 = 검정 (그대로) */
 html[data-theme="light"] .vip-hanja[style*="color:var(--water)"],
 html[data-theme="light"] .water,
 html[data-theme="light"] [class~="water"] .top,
 html[data-theme="light"] [class~="water"] .bottom {
-  color: #0d0d0d !important;
+  color: var(--water, #2563b8) !important;
   -webkit-text-stroke: 0 !important;
 }
 
@@ -686,7 +685,7 @@ html[data-theme="light"] .vip-hanja.wood  { color: var(--wood) !important; -webk
 html[data-theme="light"] .vip-hanja.fire  { color: var(--fire) !important; -webkit-text-stroke: 0 !important; }
 html[data-theme="light"] .vip-hanja.earth { color: var(--earth) !important; -webkit-text-stroke: 0 !important; }
 html[data-theme="light"] .vip-hanja.metal { color: var(--metal) !important; -webkit-text-stroke: 0 !important; }
-html[data-theme="light"] .vip-hanja.water { color: #0d0d0d !important; -webkit-text-stroke: 0 !important; }
+html[data-theme="light"] .vip-hanja.water { color: var(--water, #2563b8) !important; -webkit-text-stroke: 0 !important; }
 
 /* 표 셀 라이트모드 */
 html[data-theme="light"] .vip-sip-cell { color: #3a3028 !important; }
