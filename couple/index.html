@@ -23,7 +23,7 @@
 })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="sajux-build" content="1779417071">
+<meta name="sajux-build" content="1779417203">
 <title>사주X — 두 사람의 인연 구조</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;700;900&display=swap" rel="stylesheet">
@@ -1394,7 +1394,7 @@ function renderPersonCard(prefix, info, saju) {
           const gz = gzString(p && p.h);
           if (!gz || gz.length < 2) return '<td></td>';
           const col = HAN_COLOR[gz[0]]||'';
-          return `<td style="text-align:center;padding:6px 2px;"><span class="${col}" style="${_hanjaStyle(gz[0])}font-size:14px;line-height:1.35;">${_pillarGloss(gz[0],'stem')}</span></td>`;
+          return `<td style="text-align:center;padding:6px 2px;"><span class="${col}" style="${_hanjaStyle(gz[0])}font-size:14px;line-height:1.35;">${_manseCellLabel(gz[0])}</span></td>`;
         }).join('')}
       </tr>
       <tr style="border-bottom:1px solid rgba(128,128,128,0.10);">
@@ -1404,7 +1404,7 @@ function renderPersonCard(prefix, info, saju) {
           const gz = gzString(p && p.h);
           if (!gz || gz.length < 2) return '<td></td>';
           const col = HAN_COLOR[gz[1]]||'';
-          return `<td style="text-align:center;padding:6px 2px;"><span class="${col}" style="${_hanjaStyle(gz[1])}font-size:14px;line-height:1.35;">${_pillarGloss(gz[1],'branch')}</span></td>`;
+          return `<td style="text-align:center;padding:6px 2px;"><span class="${col}" style="${_hanjaStyle(gz[1])}font-size:14px;line-height:1.35;">${_manseCellLabel(gz[1])}</span></td>`;
         }).join('')}
       </tr>
       <tr>
@@ -1450,8 +1450,7 @@ function renderScore(result) {
   }
   if (chemGuideEl && typeof compatComputeChemistryScore === 'function' && typeof buildCompatChemGuideText === 'function' && window.__compatCtx) {
     const chem = compatComputeChemistryScore(window.__compatCtx);
-    chemGuideEl.innerHTML = '<span style="display:block;font-weight:600;">케미스트리 ' + escHtmlAttr(buildCompatChemGuideText(chem)) + '</span>'
-      + (typeof buildCompatChemScoreExplainHtml === 'function' ? buildCompatChemScoreExplainHtml(window.__compatCtx) : '');
+    chemGuideEl.innerHTML = '<span style="display:block;font-weight:600;">케미스트리 ' + escHtmlAttr(buildCompatChemGuideText(chem)) + '</span>';
   }
 
   const ring = document.getElementById('score-ring');
@@ -1928,8 +1927,7 @@ function buildRelPanels(params, a, b, result) {
   const chemGuideEl = document.getElementById('score-chem-guide');
   if (chemGuideEl && typeof compatComputeChemistryScore === 'function' && typeof buildCompatChemGuideText === 'function') {
     const chem = compatComputeChemistryScore(compatCtx);
-    chemGuideEl.innerHTML = '<span style="display:block;font-weight:600;">케미스트리 ' + escHtmlAttr(buildCompatChemGuideText(chem)) + '</span>'
-      + (typeof buildCompatChemScoreExplainHtml === 'function' ? buildCompatChemScoreExplainHtml(compatCtx) : '');
+    chemGuideEl.innerHTML = '<span style="display:block;font-weight:600;">케미스트리 ' + escHtmlAttr(buildCompatChemGuideText(chem)) + '</span>';
   }
 }
 
