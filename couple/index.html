@@ -1283,6 +1283,13 @@ function renderPersonCard(prefix, info, saju) {
     const map = {'비견':'비견','겁재':'겁재','식신':'식신','상관':'상관','편재':'편재','정재':'정재','편관':'편관','정관':'정관','편인':'편인','정인':'정인'};
     return map;
   })();
+  const BRANCH_MAIN_STEM = {'子':'癸','丑':'己','寅':'甲','卯':'乙','辰':'戊','巳':'丙','午':'丁','未':'己','申':'庚','酉':'辛','戌':'戊','亥':'壬'};
+  function getSSBranch(dayStem, branch) {
+    if (!branch) return '';
+    if (typeof getSipseong === 'function') return getSipseong(dayStem, branch) || '';
+    const main = BRANCH_MAIN_STEM[branch] || branch;
+    return getSS(dayStem, main);
+  }
   function getSS(dayStem, targetStem) {
     if(targetStem === dayStem) return '비견';
     const SS_TABLE = {
@@ -1318,7 +1325,7 @@ function renderPersonCard(prefix, info, saju) {
         ${order.map((i,li)=>`<td style="text-align:center;padding:5px 4px;color:var(--gold);font-size:10.5px;font-weight:600;letter-spacing:0.04em;">${labels[li]}</td>`).join('')}
       </tr>
       <tr style="border-bottom:1px solid rgba(128,128,128,0.10);">
-        <td style="color:var(--text-dim);font-size:10px;padding:5px 2px;font-weight:600;">십성</td>
+        <td style="color:var(--text-dim);font-size:10px;padding:5px 2px;font-weight:600;">십성(천)</td>
         ${order.map((i,li)=>{
           const p = saju.pillars[i];
           const gz = gzString(p && p.h);
@@ -1337,7 +1344,7 @@ function renderPersonCard(prefix, info, saju) {
           return `<td style="text-align:center;padding:6px 2px;"><span class="${col}" style="${_hanjaStyle(gz[0])}font-size:14px;line-height:1.35;">${_pillarGloss(gz[0],'stem')}</span></td>`;
         }).join('')}
       </tr>
-      <tr>
+      <tr style="border-bottom:1px solid rgba(128,128,128,0.10);">
         <td style="color:var(--text-dim);font-size:10px;padding:5px 2px;font-weight:600;">지지</td>
         ${order.map((i,li)=>{
           const p = saju.pillars[i];
@@ -1345,6 +1352,16 @@ function renderPersonCard(prefix, info, saju) {
           if (!gz || gz.length < 2) return '<td></td>';
           const col = HAN_COLOR[gz[1]]||'';
           return `<td style="text-align:center;padding:6px 2px;"><span class="${col}" style="${_hanjaStyle(gz[1])}font-size:14px;line-height:1.35;">${_pillarGloss(gz[1],'branch')}</span></td>`;
+        }).join('')}
+      </tr>
+      <tr>
+        <td style="color:var(--text-dim);font-size:10px;padding:5px 2px;font-weight:600;">십성(지)</td>
+        ${order.map((i,li)=>{
+          const p = saju.pillars[i];
+          const gz = gzString(p && p.h);
+          if (!gz || gz.length < 2) return '<td></td>';
+          const ss = getSSBranch(ds, gz[1]);
+          return `<td style="text-align:center;padding:3px 3px;"><span style="font-size:10px;background:rgba(128,128,128,0.12);color:var(--text-soft);padding:1px 6px;border-radius:6px;">${ss}</span></td>`;
         }).join('')}
       </tr>
     </table>`;
