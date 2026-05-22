@@ -23,7 +23,7 @@
 })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="sajux-build" content="1779414160">
+<meta name="sajux-build" content="1779414474">
 <title>사주X — 두 사람의 인연 구조</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;700;900&display=swap" rel="stylesheet">
@@ -392,10 +392,19 @@ body::before {
 
 .compat-manse-notes {
   margin: 20px 0 10px;
-  padding: 0 2px;
+  padding: 0 8px;
+  text-align: center;
 }
-.compat-manse-notes p { margin: 0 0 6px; }
-.compat-manse-notes p:last-child { margin-bottom: 0; }
+.compat-manse-notes .compat-manse-note-line {
+  margin: 0;
+  font-size: 9.5px;
+  color: var(--text-dim);
+  line-height: 1.65;
+  letter-spacing: 0.01em;
+}
+.compat-manse-notes .compat-manse-note-gap {
+  height: 10px;
+}
 .duo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0 24px; }
 .person-card {
   border-radius: 14px;
@@ -1274,11 +1283,15 @@ function analyzeCoupling(a, b) {
 function renderCompatManseSharedNotes() {
   const el = document.getElementById('compat-manse-notes');
   if (!el) return;
-  const orderNote = '<p style="font-size:9.5px;color:var(--text-dim);line-height:1.55;letter-spacing:0.01em;text-align:left;">'
-    + '아래 두 만세력 표는 모두 왼쪽부터 <strong style="color:var(--text-soft);font-weight:600;">시주</strong> · 일주(나) · 월주 · <strong style="color:var(--text-soft);font-weight:600;">년주(연도)</strong> 순입니다. '
-    + '첫 칸이 태어난 시이고, 가장 오른쪽이 연도 기둥입니다.</p>';
-  const waterNote = (typeof buildManseWaterColorNoteHtml === 'function') ? buildManseWaterColorNoteHtml() : '';
-  el.innerHTML = orderNote + waterNote;
+  const ln = (t) => '<p class="compat-manse-note-line">' + t + '</p>';
+  el.innerHTML = [
+    ln('아래 두 만세력 표는 모두 왼쪽부터 <strong style="color:var(--text-soft);font-weight:600;">시주</strong> · 일주(나) · 월주 · <strong style="color:var(--text-soft);font-weight:600;">년주(연도)</strong> 순입니다.'),
+    ln('첫 칸이 태어난 시이고, 가장 오른쪽이 연도 기둥입니다.'),
+    '<div class="compat-manse-note-gap" aria-hidden="true"></div>',
+    ln('※ 명리 전통에서는 <strong style="color:var(--text-soft);font-weight:600;">수(水)</strong>를 흑색(玄色)으로 씁니다.'),
+    ln('어두운 화면에서 임·계·子·亥가 잘 보이도록,'),
+    ln('본 표의 <strong style="color:var(--water,#1a6fd4);font-weight:600;">수 오행 한자·오행 막대</strong>만 파란색으로 표기했습니다.')
+  ].join('');
 }
 
 function renderPersonCard(prefix, info, saju) {
