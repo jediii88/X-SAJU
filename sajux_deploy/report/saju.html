@@ -11,7 +11,20 @@
     window.JK = JK;
     (function(){
       function markAutoloadPending() {
-        try { document.documentElement.classList.add('sajux-autoload-pending'); } catch (e) {}
+        try {
+          document.documentElement.classList.add('sajux-autoload-pending');
+          window.__SAJUX_AUTOLOAD__ = true;
+          if (!document.getElementById('sajux-boot-css')) {
+            var st = document.createElement('style');
+            st.id = 'sajux-boot-css';
+            st.textContent =
+              'html.sajux-autoload-pending #main-ui,html.sajux-autoload-pending #step-1,html.sajux-autoload-pending #step-2{display:none!important;visibility:hidden!important}' +
+              'html.sajux-autoload-pending #star-canvas,html.sajux-autoload-pending #floating-toc,html.sajux-autoload-pending #sticky-part-nav{display:none!important}' +
+              'html.sajux-autoload-pending #loading{display:flex!important;visibility:visible!important;opacity:1!important}' +
+              'html.sajux-autoload-pending body{background:#000!important;overflow:hidden!important}';
+            (document.head || document.documentElement).appendChild(st);
+          }
+        } catch (e) {}
       }
       var p = new URLSearchParams(location.search);
       if (p.get('code')) { window.__SAJUX_LINK_CODE__ = p.get('code'); markAutoloadPending(); return; }
@@ -67,7 +80,7 @@
       // 자동실행은 window.load IIFE에서 처리 (하단 스크립트 참조)
     })();
     </script>
-    <meta name="version" content="1779432391">
+    <meta name="version" content="1779432680">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -2119,7 +2132,20 @@
     globalSajuData = null;
     (function(){
       function markAutoloadPending() {
-        try { document.documentElement.classList.add('sajux-autoload-pending'); } catch (e) {}
+        try {
+          document.documentElement.classList.add('sajux-autoload-pending');
+          window.__SAJUX_AUTOLOAD__ = true;
+          if (!document.getElementById('sajux-boot-css')) {
+            var st = document.createElement('style');
+            st.id = 'sajux-boot-css';
+            st.textContent =
+              'html.sajux-autoload-pending #main-ui,html.sajux-autoload-pending #step-1,html.sajux-autoload-pending #step-2{display:none!important;visibility:hidden!important}' +
+              'html.sajux-autoload-pending #star-canvas,html.sajux-autoload-pending #floating-toc,html.sajux-autoload-pending #sticky-part-nav{display:none!important}' +
+              'html.sajux-autoload-pending #loading{display:flex!important;visibility:visible!important;opacity:1!important}' +
+              'html.sajux-autoload-pending body{background:#000!important;overflow:hidden!important}';
+            (document.head || document.documentElement).appendChild(st);
+          }
+        } catch (e) {}
       }
       var p = new URLSearchParams(location.search);
       if (p.get('code')) { window.__SAJUX_LINK_CODE__ = p.get('code'); markAutoloadPending(); return; }
@@ -2175,8 +2201,8 @@
     </script>
 
 <!-- SAJUX_CACHE_BUSTER_START -->
-<meta name="sajux-build" content="1779432391">
-<script>(function(){var v='1779432391';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
+<meta name="sajux-build" content="1779432680">
+<script>(function(){try{if(window.__SAJUX_LINK_CODE__||window.__SAJUX_PARAMS__||window.__SAJUX_AUTOLOAD__)return;}catch(e0){}var v='1779432680';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
 <!-- SAJUX_CACHE_BUSTER_END -->
 <link rel="stylesheet" href="assets/css/core.css">
 <link rel="stylesheet" href="assets/override.css?v=1779247233">
@@ -2280,6 +2306,31 @@ html:not([data-theme="light"]) .brand {
 </style>
 </head>
 <body>
+
+<div class="loading" id="loading" style="position:fixed;inset:0;z-index:99999;background:#000;">
+    <div style="text-align:center;">
+        <div class="spinner"></div>
+        <div style="font-size:11px;letter-spacing:3px;color:rgba(199,167,106,0.6);margin-bottom:16px;font-family:Noto Sans KR, sans-serif;">X · S A J U</div>
+        <div class="loading-text" id="loading-msg">리포트를 불러오는 중…</div>
+        <div style="margin-top:20px;display:flex;justify-content:center;gap:6px;">
+            <span style="width:6px;height:6px;background:var(--gold);border-radius:50%;animation:dotPulse 1.4s ease-in-out 0s infinite;display:inline-block;"></span>
+            <span style="width:6px;height:6px;background:var(--gold);border-radius:50%;animation:dotPulse 1.4s ease-in-out 0.2s infinite;display:inline-block;"></span>
+            <span style="width:6px;height:6px;background:var(--gold);border-radius:50%;animation:dotPulse 1.4s ease-in-out 0.4s infinite;display:inline-block;"></span>
+        </div>
+    </div>
+</div>
+<script>
+(function () {
+  if (!document.documentElement.classList.contains('sajux-autoload-pending') && !window.__SAJUX_LINK_CODE__ && !window.__SAJUX_PARAMS__) {
+    var ld = document.getElementById('loading');
+    if (ld) ld.style.display = 'none';
+  } else {
+    document.documentElement.classList.add('sajux-autoload-pending');
+    var ld = document.getElementById('loading');
+    if (ld) ld.style.display = 'flex';
+  }
+})();
+</script>
 
 <!-- 플로팅 목차 — 4부 구조 (웹 전용, PDF 숨김) -->
 <div id="floating-toc" class="nav-floating" style="display:none; position:fixed; right:12px; top:50%; transform:translateY(-50%); z-index:9999; background:var(--panel); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid var(--line); border-radius:14px; padding:10px 6px; box-shadow:0 8px 32px rgba(0,0,0,0.45); max-width:44px; overflow:hidden; transition:max-width 0.3s, padding 0.3s;" onmouseenter="expandToc()" onmouseleave="collapseToc()">
@@ -2475,19 +2526,6 @@ function collapseToc() {
     draw();
 })();
 </script>
-
-<div class="loading" id="loading">
-    <div style="text-align:center;">
-        <div class="spinner"></div>
-        <div style="font-size:11px;letter-spacing:3px;color:rgba(199,167,106,0.6);margin-bottom:16px;font-family:Noto Sans KR, sans-serif;">X · S A J U</div>
-        <div class="loading-text" id="loading-msg">사주 원국을 계산하는 중...</div>
-        <div style="margin-top:20px;display:flex;justify-content:center;gap:6px;">
-            <span style="width:6px;height:6px;background:var(--gold);border-radius:50%;animation:dotPulse 1.4s ease-in-out 0s infinite;display:inline-block;"></span>
-            <span style="width:6px;height:6px;background:var(--gold);border-radius:50%;animation:dotPulse 1.4s ease-in-out 0.2s infinite;display:inline-block;"></span>
-            <span style="width:6px;height:6px;background:var(--gold);border-radius:50%;animation:dotPulse 1.4s ease-in-out 0.4s infinite;display:inline-block;"></span>
-        </div>
-    </div>
-</div>
 
 <div class="container" id="main-ui">
     
@@ -3085,6 +3123,8 @@ function startReport() {
 
       function doRun() {
         setBootLoadingMsg('사주 원국을 계산하는 중…');
+        var main = document.getElementById('main-ui');
+        if (main) main.style.display = 'none';
         var s1 = document.getElementById('step-1');
         if (s1) s1.style.display = 'none';
 
@@ -3236,7 +3276,7 @@ body.light-mode #sajux-image-fab {
 <style id="sajux-pdf-print-force">
 /* PDF 인쇄 — report-print.css 단일 소스 (그림자·페이지 분할·플랫 문서형) */
 </style>
-<link rel="stylesheet" href="report-print.css?v=1779432391">
+<link rel="stylesheet" href="report-print.css?v=1779432680">
 
 </body>
 </html>
