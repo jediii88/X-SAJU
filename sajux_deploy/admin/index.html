@@ -215,14 +215,7 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--go
         <div style="display:flex;gap:8px;margin-top:10px;">
           <button class="btn sec" id="copy-link-btn" onclick="copyCustomerLink('link-url-text')" style="flex:1;">📋 고객용 링크 복사</button>
         </div>
-        <div class="link-code-hint"><strong style="color:var(--gold);">고객 전달은 위 URL만</strong> (<code>?code=a…</code> · 생일 없음). 미리보기 주소는 확인용이라 생년월일이 주소에 보입니다.</div>
-      </div>
-      <div id="preview-wrap" style="display:none;margin-top:16px;">
-        <button onclick="window.open(document.getElementById('preview-wrap').dataset.url,'_blank')" 
-          style="width:100%;padding:14px;background:rgba(199,167,106,0.12);border:1px solid var(--gold);border-radius:10px;color:var(--gold);font-size:14px;font-weight:600;cursor:pointer;">
-          👁 새 탭에서 리포트 미리보기
-        </button>
-        <div style="font-size:11px;color:#666;margin-top:8px;text-align:center;">미리보기는 확인용입니다. 고객 전달은 <strong style="color:var(--gold);">「링크 생성」</strong> 후 📋 복사한 URL만 사용하세요 (30일 만료)</div>
+        <div class="link-code-hint"><strong style="color:var(--gold);">고객 전달은 위 URL만</strong> (<code>?code=a…</code> · 생일·시간 주소에 없음)</div>
       </div>
     </div>
   </div>
@@ -250,7 +243,7 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--go
         <button type="button" class="btn sec" onclick="previewCoupleReport()" style="flex:1;">👁 미리보기 (관리자·만료 없음)</button>
         <button type="button" class="btn purple" onclick="generateCoupleLink()" style="flex:1;">💞 고객용 링크 생성 (30일)</button>
       </div>
-      <div style="font-size:11px;color:#666;margin-top:8px;line-height:1.55;">미리보기는 확인만 하고, <strong style="color:#aaa;">고객에게 보낼 때는 반드시 「고객용 링크 생성」</strong>으로 만든 URL을 복사하세요. (생성 링크만 30일 만료)</div>
+      <div style="font-size:11px;color:#666;margin-top:8px;line-height:1.55;">미리보기·고객용 모두 <code>?code=</code> 만 사용합니다. 고객 전달은 <strong style="color:#aaa;">「고객용 링크 생성」(30일)</strong> 후 📋 복사한 URL만 보내세요.</div>
       <div id="couple-result" style="display:none;">
         <div style="font-size:11px;color:#888;margin-bottom:4px;">발급 코드 (내부 순번)</div>
         <div class="link-code-display" id="couple-code-display">—</div>
@@ -260,13 +253,6 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--go
           <summary style="cursor:pointer;color:#888;">전체 URL 보기</summary>
           <div class="link-box" id="couple-url-text" style="margin-top:8px;word-break:break-all;font-size:11px;"></div>
         </details>
-        <div id="couple-preview-wrap" style="display:none;margin-top:14px;">
-          <button type="button" onclick="window.open(document.getElementById('couple-preview-wrap').dataset.url,'_blank','noopener,noreferrer')"
-            style="width:100%;padding:14px;background:rgba(124,141,255,0.12);border:1px solid var(--purple);border-radius:10px;color:#b0b8ff;font-size:14px;font-weight:600;cursor:pointer;">
-            👁 다시 미리보기 (관리자 전용·만료 없음)
-          </button>
-          <div style="font-size:11px;color:#666;margin-top:8px;text-align:center;">고객 전달은 <strong style="color:var(--gold);">위 만료일이 있는 링크</strong>만 복사해 보내세요 (30일)</div>
-        </div>
         <button class="btn sec" style="margin-top:10px;" onclick="copyCustomerLink('couple-url-text')">📋 고객용 링크 복사</button>
       </div>
     </div>
@@ -518,7 +504,7 @@ function buildReportUrl(cust,expAt,unknown){
   return base+'?'+p.toString();
 }
 function buildCoupleUrl(a,b,expAt){
-  const base='https://sajux.com/couple/';
+  const base=CUSTOMER_SITE+'/couple/';
   const p=new URLSearchParams();
   p.set('t','b');
   appendCoupleSide('a',a,p);
@@ -613,24 +599,26 @@ function getLinkParams() {
     y:parsed.y,mo:parsed.mo,d:parsed.d,h:t.h,mi:t.mi};
   return {cust, expAt, unknown};
 }
-function previewReport() {
+async function previewReport() {
   const p=getLinkParams();if(!p)return;
-  // 만료 없이 미리보기 (무제한)
-  const url=buildReportUrl(p.cust,0,p.unknown);
-  window.open(url,'_blank');
+  if(await ensureLinkServer()){
+    try{
+      const issued=await SajuxLinkApi.issueLink('single',buildSinglePayload(p.cust,p.unknown),0);
+      window.open(toCustomerSiteUrl(issued.url),'_blank');
+      return;
+    }catch(e){console.warn('preview issue',e);}
+  }
+  alert('미리보기 서버에 연결되지 않았습니다. 잠시 후 다시 시도하거나 「고객용 링크 생성」을 이용해 주세요.');
 }
 async function generateReportLink(){
   const p=getLinkParams();if(!p)return;
   if(!(await ensureLinkServer()))return;
-  const previewUrl=buildReportUrl(p.cust,0,p.unknown);
   const copyBtn = document.getElementById('copy-link-btn');
   const statusDot = document.getElementById('status-dot');
   const statusTxt = document.getElementById('status-text');
   if(copyBtn){ copyBtn.style.opacity='0.5'; copyBtn.style.pointerEvents='none'; copyBtn.textContent='발급 중…'; }
   if(statusDot){ statusDot.style.background='#555'; statusDot.style.animation='pulse 1.2s infinite'; }
   if(statusTxt){ statusTxt.textContent='서버에 링크 등록 중…'; statusTxt.style.color='#666'; }
-  const iframeWrap = document.getElementById('preview-wrap');
-  if(iframeWrap){iframeWrap.style.display='block';iframeWrap.dataset.url=previewUrl;}
   let issued;
   try{
     issued=await SajuxLinkApi.issueLink('single',buildSinglePayload(p.cust,p.unknown),p.expAt);
@@ -640,7 +628,7 @@ async function generateReportLink(){
     if(statusTxt){statusTxt.textContent='발급 실패';statusTxt.style.color='#ff6b6b';}
     return;
   }
-  const url=issued.url;
+  const url=toCustomerSiteUrl(issued.url);
   const linkObj=registerLinkRecord({
     id:Date.now(),customerId:selectedLinkCust?selectedLinkCust.id:0,type:'single',url,serverCode:issued.code,expAt:p.expAt,createdAt:today(),bCustomerId:null,
     maskName:maskNameForLink(p.cust.name),gen:p.cust.gender
@@ -674,12 +662,18 @@ function selectCoupleB(id){
   document.getElementById('couple-b-info').textContent=selectedCoupleB?'선택됨: '+selectedCoupleB.name+' ('+fmtDate(selectedCoupleB)+', '+fmtTime(selectedCoupleB)+')':'선택 안 됨';
   renderCoupleList();
 }
-function previewCoupleReport(){
+async function previewCoupleReport(){
   if(!selectedCoupleA)return alert('A 사람을 선택하세요');
   if(!selectedCoupleB)return alert('B 사람을 선택하세요');
   if(selectedCoupleA.id===selectedCoupleB.id)return alert('서로 다른 고객을 선택하세요');
-  const url=buildCoupleUrl(selectedCoupleA,selectedCoupleB,0);
-  window.open(url,'_blank','noopener,noreferrer');
+  if(await ensureLinkServer()){
+    try{
+      const issued=await SajuxLinkApi.issueLink('couple',buildCouplePayload(selectedCoupleA,selectedCoupleB),0);
+      window.open(toCustomerSiteUrl(issued.url),'_blank','noopener,noreferrer');
+      return;
+    }catch(e){console.warn('preview issue',e);}
+  }
+  alert('미리보기 서버에 연결되지 않았습니다. 잠시 후 다시 시도하거나 「고객용 링크 생성」을 이용해 주세요.');
 }
 async function generateCoupleLink(){
   if(!selectedCoupleA)return alert('A 사람을 선택하세요');
@@ -687,7 +681,6 @@ async function generateCoupleLink(){
   if(selectedCoupleA.id===selectedCoupleB.id)return alert('서로 다른 고객을 선택하세요');
   if(!(await ensureLinkServer()))return;
   const expAt=calcExpAt(CUSTOMER_LINK_EXPIRE_DAYS);
-  const previewUrl=buildCoupleUrl(selectedCoupleA,selectedCoupleB,0);
   let issued;
   try{
     issued=await SajuxLinkApi.issueLink('couple',buildCouplePayload(selectedCoupleA,selectedCoupleB),expAt);
@@ -695,7 +688,7 @@ async function generateCoupleLink(){
     alert('커플 링크 발급 실패: '+(e.message||e));
     return;
   }
-  const url=issued.url;
+  const url=toCustomerSiteUrl(issued.url);
   const linkObj=registerLinkRecord({
     id:Date.now(),customerId:selectedCoupleA.id,type:'couple',url,serverCode:issued.code,expAt,createdAt:today(),bCustomerId:selectedCoupleB.id,
     maskA:maskNameForLink(selectedCoupleA.name),maskB:maskNameForLink(selectedCoupleB.name),
@@ -704,8 +697,6 @@ async function generateCoupleLink(){
   showLinkIssued('couple',linkObj,url);
   document.getElementById('couple-expiry').textContent=fmtExpAt(expAt);
   document.getElementById('couple-result').style.display='block';
-  const cw=document.getElementById('couple-preview-wrap');
-  if(cw){cw.style.display='block';cw.dataset.url=previewUrl;}
   const links=getLinks();links.push(linkObj);saveLinks(links);
 }
 
