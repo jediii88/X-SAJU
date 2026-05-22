@@ -685,7 +685,7 @@ html[data-theme="light"] .vip-hanja.wood  { color: var(--wood) !important; -webk
 html[data-theme="light"] .vip-hanja.fire  { color: var(--fire) !important; -webkit-text-stroke: 0 !important; }
 html[data-theme="light"] .vip-hanja.earth { color: var(--earth) !important; -webkit-text-stroke: 0 !important; }
 html[data-theme="light"] .vip-hanja.metal { color: var(--metal) !important; -webkit-text-stroke: 0 !important; }
-html[data-theme="light"] .vip-hanja.water { color: var(--water, #2563b8) !important; -webkit-text-stroke: 0 !important; }
+html[data-theme="light"] .vip-hanja.water { color: var(--water, #1478e8) !important; -webkit-text-stroke: 0 !important; }
 
 /* 표 셀 라이트모드 */
 html[data-theme="light"] .vip-sip-cell { color: #3a3028 !important; }
