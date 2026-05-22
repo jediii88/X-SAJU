@@ -23,7 +23,7 @@
 })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="sajux-build" content="1779416362">
+<meta name="sajux-build" content="1779417071">
 <title>사주X — 두 사람의 인연 구조</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;700;900&display=swap" rel="stylesheet">
@@ -1320,9 +1320,8 @@ function renderPersonCard(prefix, info, saju) {
   (function(){
     var dsStroke = '';
     var dbStroke = '';
-    const glossFn = (typeof compatHanjaGlossChar === 'function') ? compatHanjaGlossChar : null;
-    const dsLbl = glossFn ? glossFn(ds, 'stem') : ds + '(' + (HAN_KOR[ds]||'') + ')';
-    const dbLbl = glossFn ? glossFn(db, 'branch') : db + '(' + (HAN_KOR[db]||'') + ')';
+    const dsLbl = ds + (HAN_KOR[ds] || '');
+    const dbLbl = db + (HAN_KOR[db] || '');
     iljuEl.innerHTML = `<span class="${HAN_COLOR[ds]}" style="font-family:'Noto Sans KR',sans-serif;font-weight:300;font-size:15px;${dsStroke}">${dsLbl}</span> <span class="${HAN_COLOR[db]}" style="font-family:'Noto Sans KR',sans-serif;font-weight:300;font-size:15px;${dbStroke}">${dbLbl}</span>`;
   })();
   metaEl.innerHTML = `${saju.solarYear}년생 · ${info.gender==='male'?'남':'여'} · ${saju.strength}`
