@@ -23,7 +23,7 @@
 })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="sajux-build" content="1779415664">
+<meta name="sajux-build" content="1779415749">
 <title>사주X — 두 사람의 인연 구조</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;700;900&display=swap" rel="stylesheet">
@@ -1320,8 +1320,10 @@ function renderPersonCard(prefix, info, saju) {
   (function(){
     var dsStroke = '';
     var dbStroke = '';
-    const dsLbl = (typeof compatHanjaGlossChar === 'function') ? compatHanjaGlossChar(ds, 'stem') : ds + '(' + (HAN_KOR[ds]||'') + ')';
-    const dbLbl = (typeof compatHanjaGlossChar === 'function') ? compatHanjaGlossChar(db, 'branch') : db + '(' + (HAN_KOR[db]||'') + ')';
+    const glossFn = (typeof compatHanjaGlossCharFull === 'function') ? compatHanjaGlossCharFull
+      : (typeof compatHanjaGlossChar === 'function') ? compatHanjaGlossChar : null;
+    const dsLbl = glossFn ? glossFn(ds, 'stem') : ds + '(' + (HAN_KOR[ds]||'') + ')';
+    const dbLbl = glossFn ? glossFn(db, 'branch') : db + '(' + (HAN_KOR[db]||'') + ')';
     iljuEl.innerHTML = `<span class="${HAN_COLOR[ds]}" style="font-family:'Noto Sans KR',sans-serif;font-weight:300;font-size:15px;${dsStroke}">${dsLbl}</span> <span class="${HAN_COLOR[db]}" style="font-family:'Noto Sans KR',sans-serif;font-weight:300;font-size:15px;${dbStroke}">${dbLbl}</span>`;
   })();
   metaEl.innerHTML = `${saju.solarYear}년생 · ${info.gender==='male'?'남':'여'} · ${saju.strength}`
@@ -1924,11 +1926,7 @@ function buildRelPanels(params, a, b, result) {
     idealPanelEl.innerHTML = idealHtml;
   }
 
-  setCompatVoice('fortuneMix');
-  const mixEl = document.getElementById('panel-fortune-mix');
-  if (mixEl && typeof buildCompatFortuneMixPanelHtml === 'function') {
-    mixEl.innerHTML = buildCompatFortuneMixPanelHtml(compatCtx);
-  }
+  /* 운의 흐름(Mix) — peakSyncLabel 확정 후 buildTimeline()에서 렌더 */
 
   const chemGuideEl = document.getElementById('score-chem-guide');
   if (chemGuideEl && typeof compatComputeChemistryScore === 'function' && typeof buildCompatChemGuideText === 'function') {
@@ -1980,7 +1978,15 @@ function buildTimeline(a, b, aInfo, bInfo, params) {
     const icon  = sheng?'✨':ke?'⚡':'🌙';
     const label = sheng?'함께 좋음':ke?'조율 필요':'무난';
     const isCurrent = calYear>=currYear-5 && calYear<=currYear+5;
-    slots.push({ageA,ageB,aGZ,bGZ,cls,icon,label,isCurrent});
+    slots.push({ageA, ageB, aGZ, bGZ, cls, icon, label, isCurrent, calYear});
+  }
+
+  if (window.__compatCtx) {
+    const goodSlots = slots.filter(s => s.cls === 'good');
+    const peakSlot = goodSlots.find(s => s.isCurrent) || goodSlots[0];
+    if (peakSlot) {
+      window.__compatCtx.peakSyncLabel = peakSlot.calYear + '년 전후(' + (params.a.name || 'A') + '님 ' + peakSlot.ageA + '세 · ' + (params.b.name || 'B') + '님 ' + peakSlot.ageB + '세)';
+    }
   }
 
   const TL_DESC = {
@@ -1995,14 +2001,24 @@ function buildTimeline(a, b, aInfo, bInfo, params) {
            '이 시기를 활용해 공통 취미나 목표를 만들면 관계가 더 깊어집니다.']
   };
   const tlRand = (arr) => arr[Math.floor(Math.random()*arr.length)];
-  const tlPanel = document.getElementById('panel-timeline');
-  if (tlPanel && typeof buildCompatTimelineSynergyHtml === 'function' && window.__compatCtx) {
-    tlPanel.innerHTML = buildCompatTimelineSynergyHtml(window.__compatCtx);
+  const ctx = window.__compatCtx;
+  if (ctx) {
+    setCompatVoice('fortuneMix');
+    const mixEl = document.getElementById('panel-fortune-mix');
+    if (mixEl && typeof buildCompatFortuneMixPanelHtml === 'function') {
+      mixEl.innerHTML = buildCompatFortuneMixPanelHtml(ctx);
+    }
+    const tlPanel = document.getElementById('panel-timeline');
+    if (tlPanel && typeof buildCompatTimelineSynergyHtml === 'function') {
+      tlPanel.innerHTML = buildCompatTimelineSynergyHtml(ctx);
+    }
   }
+  const tlGloss = (typeof compatHanjaGlossCharFull === 'function') ? compatHanjaGlossCharFull
+    : (typeof compatHanjaGlossChar === 'function') ? compatHanjaGlossChar : null;
   const tlGzPair = (gz) => {
     if (!gz || gz.length < 2) return gz || '';
-    const g0 = (typeof compatHanjaGlossChar === 'function') ? compatHanjaGlossChar(gz[0], 'stem') : gz[0];
-    const g1 = (typeof compatHanjaGlossChar === 'function') ? compatHanjaGlossChar(gz[1], 'branch') : gz[1];
+    const g0 = tlGloss ? tlGloss(gz[0], 'stem') : gz[0];
+    const g1 = tlGloss ? tlGloss(gz[1], 'branch') : gz[1];
     return g0 + g1;
   };
   const tlCards = slots.map(s =>
