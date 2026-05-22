@@ -52,6 +52,11 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--go
 .badge.ok{background:rgba(100,220,120,0.15);color:#6ddc78;}
 .badge.warn{background:rgba(255,200,50,0.15);color:#ffc83a;}
 .badge.exp{background:rgba(255,80,80,0.15);color:#ff6b6b;}
+.link-code-display{font-size:26px;font-weight:800;letter-spacing:0.12em;color:var(--gold);margin:8px 0 4px;}
+.link-code-meta{font-size:14px;color:#ccc;margin-bottom:12px;line-height:1.6;}
+.link-code-hint{font-size:11px;color:#666;margin-top:6px;}
+.link-item-code{font-size:13px;font-weight:700;color:var(--gold);letter-spacing:0.06em;min-width:88px;}
+.link-item-meta{font-size:12px;color:#888;flex:1;min-width:0;}
 .cust-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:14px;}
 .cust-name{font-size:16px;font-weight:700;color:#fff;margin-bottom:4px;}
 .cust-meta{font-size:12px;color:#666;margin-bottom:12px;}
@@ -60,6 +65,26 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--go
 .divider{border:none;border-top:1px solid var(--border);margin:20px 0;}
 .hint{font-size:12px;color:#555;margin-top:6px;}
 #lon-wrap{display:none;margin-top:12px;padding:14px;background:rgba(255,255,255,0.03);border-radius:10px;border:1px solid var(--border);}
+</style>
+<style type="text/css" media="print">
+  .card, .yearly-card, .monthly-card, .inner-card, .detail-box, 
+  .jijanggan, .jijanggan span, .badge, .tag, div[class*="box"], div[class*="card"] {
+      background: #ffffff !important;
+      background-color: #ffffff !important;
+      border: 1px solid #cccccc !important;
+      box-shadow: none !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+  }
+  h1, h2, h3, h4, h5, .section-title, .part-title, .title-card {
+      page-break-after: avoid !important;
+      break-after: avoid !important;
+      page-break-inside: avoid !important;
+      margin-bottom: 20px !important;
+  }
+  .report-container, .print-container, .layout-wrapper, .card-wrapper, body, main {
+      display: block !important;
+  }
 </style>
 </head>
 <body>
@@ -79,8 +104,8 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--go
   </div>
   <div class="tabs">
     <div class="tab active" onclick="showTab(0)">👤 고객 등록</div>
-    <div class="tab" onclick="showTab(1)">🔗 리포트 링크</div>
-    <div class="tab" onclick="showTab(2)">💞 궁합 링크</div>
+    <div class="tab" onclick="showTab(1)">📜 1인 사주</div>
+    <div class="tab" onclick="showTab(2)">💞 커플 사주</div>
     <div class="tab" onclick="showTab(3)">📋 고객 관리</div>
   </div>
 
@@ -126,6 +151,14 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--go
         <div class="hint">경도 보정은 정밀 시각 계산에 사용됩니다</div>
       </div>
       <hr class="divider">
+      <div class="form-row">
+        <div>
+          <label>담당자 표기 (by= 파라미터)</label>
+          <input type="text" id="issuer-name" placeholder="장경현" maxlength="40" onblur="saveIssuerName()">
+          <div class="hint">고객·담당자 이름 모두 URL에는 가운데만 * 처리됩니다 (예: <code>n=심*영</code>, <code>by=장*현</code>). 이 브라우저에 저장되는 값은 담당자 표기용입니다.</div>
+        </div>
+      </div>
+      <hr class="divider">
       <button class="btn" onclick="saveCustomer()">💾 고객 저장</button>
     </div>
     <div class="card">
@@ -134,14 +167,14 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--go
     </div>
   </div>
 
-  <!-- 탭1 리포트 링크 -->
+  <!-- 탭1 1인 사주 -->
   <div class="panel" id="panel-1">
     <div class="card">
       <div class="card-title">저장된 고객 선택</div>
       <div class="chip-wrap" id="link-customer-list"><span style="color:#555;font-size:13px;">저장된 고객이 없습니다</span></div>
     </div>
     <div class="card">
-      <div class="card-title">리포트 링크 생성</div>
+      <div class="card-title">1인 사주 링크 생성 <span style="font-size:11px;color:#666;font-weight:400;">(고객 주소에 생일 안 보임 · 30일)</span></div>
       <div id="link-selected-info" style="font-size:13px;color:#888;margin-bottom:16px;">고객을 선택하거나 아래에 직접 입력하세요</div>
       <div class="form-row col2">
         <div><label>이름</label><input type="text" id="lnk-name" placeholder="홍길동"></div>
@@ -158,7 +191,7 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--go
       <div class="form-row col2">
         <div><label>생시 (HHMM)</label><input type="text" id="lnk-time" placeholder="0104" maxlength="4"></div>
         <div><label>유효기간</label>
-          <select id="lnk-expire"><option value="7">7일</option><option value="30" selected>30일</option><option value="60">60일</option><option value="0">무제한</option></select>
+          <div style="font-size:13px;color:#888;padding-top:6px;">링크 생성 시점부터 <strong style="color:var(--gold);">30일</strong> (고정)</div>
         </div>
       </div>
       <div class="toggle-row">
@@ -167,28 +200,34 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--go
       </div>
       <hr class="divider">
       <div style="display:flex;gap:10px;flex-wrap:wrap;">
-        <button class="btn" onclick="previewReport()" style="flex:1;">👁 미리보기 (검토)</button>
-        <button class="btn sec" onclick="generateReportLink()" style="flex:1;">🔗 링크 생성</button>
+        <button class="btn" onclick="previewReport()" style="flex:1;">👁 미리보기 (관리자·만료 없음)</button>
+        <button class="btn sec" onclick="generateReportLink()" style="flex:1;">🔗 고객용 링크 생성 (30일)</button>
       </div>
       <div id="link-result" style="display:none;margin-top:16px;">
-        <div style="font-size:11px;color:#888;margin-bottom:6px;">고객에게 전달할 링크</div>
-        <div class="link-box" id="link-url-text"></div>
+        <div style="font-size:11px;color:#888;margin-bottom:4px;">발급 코드 (내부 순번)</div>
+        <div class="link-code-display" id="link-code-display">—</div>
+        <div class="link-code-meta" id="link-code-meta"></div>
         <div style="margin-top:8px;font-size:12px;color:#888;">만료일: <span id="link-expiry" style="color:var(--gold);"></span></div>
+        <details style="margin-top:12px;font-size:12px;color:#666;">
+          <summary style="cursor:pointer;color:#888;">전체 URL 보기</summary>
+          <div class="link-box" id="link-url-text" style="margin-top:8px;word-break:break-all;font-size:11px;"></div>
+        </details>
         <div style="display:flex;gap:8px;margin-top:10px;">
-          <button class="btn sec" id="copy-link-btn" onclick="copyLink('link-url-text')" style="flex:1;">📋 링크 복사</button>
+          <button class="btn sec" id="copy-link-btn" onclick="copyCustomerLink('link-url-text')" style="flex:1;">📋 고객용 링크 복사</button>
         </div>
+        <div class="link-code-hint"><strong style="color:var(--gold);">고객 전달은 위 URL만</strong> (<code>?code=a…</code> · 생일 없음). 미리보기 주소는 확인용이라 생년월일이 주소에 보입니다.</div>
       </div>
       <div id="preview-wrap" style="display:none;margin-top:16px;">
         <button onclick="window.open(document.getElementById('preview-wrap').dataset.url,'_blank')" 
           style="width:100%;padding:14px;background:rgba(199,167,106,0.12);border:1px solid var(--gold);border-radius:10px;color:var(--gold);font-size:14px;font-weight:600;cursor:pointer;">
           👁 새 탭에서 리포트 미리보기
         </button>
-        <div style="font-size:11px;color:#666;margin-top:8px;text-align:center;">미리보기 확인 후 위 📋 링크 복사 버튼으로 고객에게 전달하세요</div>
+        <div style="font-size:11px;color:#666;margin-top:8px;text-align:center;">미리보기는 확인용입니다. 고객 전달은 <strong style="color:var(--gold);">「링크 생성」</strong> 후 📋 복사한 URL만 사용하세요 (30일 만료)</div>
       </div>
     </div>
   </div>
 
-  <!-- 탭2 궁합 링크 -->
+  <!-- 탭2 커플 사주 -->
   <div class="panel" id="panel-2">
     <div class="card">
       <div class="card-title">A 사람 선택</div>
@@ -201,17 +240,34 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--go
       <div id="couple-b-info" style="font-size:13px;color:#888;margin-top:10px;">선택 안 됨</div>
     </div>
     <div class="card">
-      <div class="card-title">링크 옵션</div>
-      <div class="form-row" style="max-width:300px;">
+      <div class="card-title">커플 사주 링크 <span style="font-size:11px;color:#666;font-weight:400;">(고객 URL: ?code=b… · 30일)</span></div>
+      <div class="form-row" style="max-width:340px;">
         <div><label>유효기간</label>
-          <select id="couple-expire"><option value="7">7일</option><option value="30" selected>30일</option><option value="60">60일</option><option value="0">무제한</option></select>
+          <div style="font-size:13px;color:#888;padding-top:6px;">링크 생성 시점부터 <strong style="color:var(--gold);">30일</strong> (고정)</div>
         </div>
       </div>
-      <button class="btn purple" onclick="generateCoupleLink()">💞 궁합 링크 생성</button>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button type="button" class="btn sec" onclick="previewCoupleReport()" style="flex:1;">👁 미리보기 (관리자·만료 없음)</button>
+        <button type="button" class="btn purple" onclick="generateCoupleLink()" style="flex:1;">💞 고객용 링크 생성 (30일)</button>
+      </div>
+      <div style="font-size:11px;color:#666;margin-top:8px;line-height:1.55;">미리보기는 확인만 하고, <strong style="color:#aaa;">고객에게 보낼 때는 반드시 「고객용 링크 생성」</strong>으로 만든 URL을 복사하세요. (생성 링크만 30일 만료)</div>
       <div id="couple-result" style="display:none;">
-        <div class="link-box" id="couple-url-text"></div>
+        <div style="font-size:11px;color:#888;margin-bottom:4px;">발급 코드 (내부 순번)</div>
+        <div class="link-code-display" id="couple-code-display">—</div>
+        <div class="link-code-meta" id="couple-code-meta"></div>
         <div style="margin-top:10px;font-size:12px;color:#888;">만료일: <span id="couple-expiry" style="color:var(--gold);"></span></div>
-        <button class="btn sec" style="margin-top:10px;" onclick="copyLink('couple-url-text')">📋 링크 복사</button>
+        <details style="margin-top:12px;font-size:12px;color:#666;">
+          <summary style="cursor:pointer;color:#888;">전체 URL 보기</summary>
+          <div class="link-box" id="couple-url-text" style="margin-top:8px;word-break:break-all;font-size:11px;"></div>
+        </details>
+        <div id="couple-preview-wrap" style="display:none;margin-top:14px;">
+          <button type="button" onclick="window.open(document.getElementById('couple-preview-wrap').dataset.url,'_blank','noopener,noreferrer')"
+            style="width:100%;padding:14px;background:rgba(124,141,255,0.12);border:1px solid var(--purple);border-radius:10px;color:#b0b8ff;font-size:14px;font-weight:600;cursor:pointer;">
+            👁 다시 미리보기 (관리자 전용·만료 없음)
+          </button>
+          <div style="font-size:11px;color:#666;margin-top:8px;text-align:center;">고객 전달은 <strong style="color:var(--gold);">위 만료일이 있는 링크</strong>만 복사해 보내세요 (30일)</div>
+        </div>
+        <button class="btn sec" style="margin-top:10px;" onclick="copyCustomerLink('couple-url-text')">📋 고객용 링크 복사</button>
       </div>
     </div>
   </div>
@@ -225,6 +281,7 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--go
   </div>
 </div>
 
+<script src="../report/assets/sajux-link-api.js"></script>
 <script>
 const PASS = '1357642';
 let selectedCoupleA = null;
@@ -235,12 +292,88 @@ function getCustomers(){try{return JSON.parse(localStorage.getItem('sajux_custom
 function saveCustomers(a){localStorage.setItem('sajux_customers',JSON.stringify(a));}
 function getLinks(){try{return JSON.parse(localStorage.getItem('sajux_links')||'[]');}catch(e){return[];}}
 function saveLinks(a){localStorage.setItem('sajux_links',JSON.stringify(a));}
+function nextLinkSeq(){
+  const n=(parseInt(localStorage.getItem('sajux_link_seq')||'0',10)||0)+1;
+  localStorage.setItem('sajux_link_seq',String(n));
+  return n;
+}
 function today(){return new Date().toISOString().slice(0,10);}
+
+/** URL·표시용 성별 코드: m=남, w=여 */
+function genderCode(g){
+  const s=String(g||'').toLowerCase();
+  if(s==='m'||s==='male'||s==='남')return'm';
+  if(s==='w'||s==='female'||s==='f'||s==='여')return'w';
+  return'm';
+}
+function kindCode(type){return type==='couple'?'b':'a';}
+function buildLinkCode(type,seq){return kindCode(type)+String(seq).padStart(3,'0');}
+function linkDisplayLine(link){
+  const code=link.code||buildLinkCode(link.type,link.seq||0);
+  const seq=link.seq?('#'+String(link.seq).padStart(3,'0')+' '):'';
+  if(link.type==='couple'){
+    return seq+code+' · '+ (link.maskA||'?')+'('+genderCode(link.genA)+') · '+ (link.maskB||'?')+'('+genderCode(link.genB)+')';
+  }
+  return seq+code+' · '+(link.maskName||'?')+'('+genderCode(link.gen)+')';
+}
+function registerLinkRecord(base){
+  const seq=nextLinkSeq();
+  const internalCode=buildLinkCode(base.type,seq);
+  const code=base.serverCode||internalCode;
+  return Object.assign({},base,{seq,code,internalCode,kind:kindCode(base.type)});
+}
+async function ensureLinkServer(){
+  if(typeof SajuxLinkApi==='undefined'){alert('링크 모듈을 불러오지 못했습니다. 새로고침해 주세요.');return false;}
+  try{if(!sessionStorage.getItem('sajux_admin_sess')){alert('관리자 로그인이 필요합니다.');return false;}}catch(e){return false;}
+  var base='';
+  try{base=(SajuxLinkApi.getApiBase()||'').replace(/\/$/,'');}catch(e2){}
+  if(!base){alert('링크 저장 서버 주소를 찾지 못했습니다. Vercel 사이트에서 관리자를 열어 주세요.');return false;}
+  try{
+    var r=await fetch(base+'/api/v1/health',{headers:{Accept:'application/json'}});
+    if(!r.ok)throw new Error('health');
+  }catch(err){
+    alert('고객 생일 저장 서버가 아직 준비되지 않았습니다.\n\nVercel 대시보드에서:\n1) Storage → Upstash → Create → x-saju 연결\n2) Settings → Environment Variables → ADMIN_PASS (관리자 비밀번호)\n3) Redeploy\n\n자세한 안내: VERCEL-SERVER-SETUP.md');
+    return false;
+  }
+  return true;
+}
+function custToPayloadSide(c){
+  return{
+    name:c.name,
+    gender:c.gender,
+    cal:c.cal,
+    y:c.y,mo:c.mo,d:c.d,
+    h:c.unknown?12:(c.h!=null?c.h:12),
+    mi:c.unknown?0:(c.mi!=null?c.mi:0),
+    unknown:!!c.unknown
+  };
+}
+function buildCouplePayload(a,b){
+  return{a:custToPayloadSide(a),b:custToPayloadSide(b),rel:'lover',by:getIssuerMasked()};
+}
+function buildSinglePayload(cust,unknown){
+  const p=custToPayloadSide(cust);
+  p.yundal=!!cust.yundal;
+  p.unknown=!!unknown;
+  return p;
+}
+function showLinkIssued(kind,linkObj,url){
+  const codeEl=document.getElementById(kind==='couple'?'couple-code-display':'link-code-display');
+  const metaEl=document.getElementById(kind==='couple'?'couple-code-meta':'link-code-meta');
+  const urlEl=document.getElementById(kind==='couple'?'couple-url-text':'link-url-text');
+  if(codeEl)codeEl.textContent=linkObj.code||'—';
+  if(metaEl)metaEl.textContent=linkDisplayLine(linkObj).replace(/^#\d+\s*/,'');
+  if(urlEl){
+    urlEl.textContent=url;
+    urlEl.dataset.url=url;
+  }
+}
 
 // ── 잠금
 function doLogin(){
   const v=document.getElementById('pw-input').value;
   if(v===PASS){
+    try{sessionStorage.setItem('sajux_admin_sess',PASS);}catch(e){}
     document.getElementById('lock-screen').style.display='none';
     document.getElementById('app').style.display='block';
     renderAll();
@@ -250,6 +383,7 @@ function doLogin(){
   }
 }
 function doLogout(){
+  try{sessionStorage.removeItem('sajux_admin_sess');}catch(e){}
   document.getElementById('app').style.display='none';
   document.getElementById('lock-screen').style.display='flex';
   document.getElementById('pw-input').value='';
@@ -292,7 +426,8 @@ function parseTimeInput(raw){
 function fmtDate(c){return String(c.y)+'-'+String(c.mo).padStart(2,'0')+'-'+String(c.d).padStart(2,'0');}
 function fmtTime(c){return c.unknown?'시간 모름':String(c.h).padStart(2,'0')+':'+String(c.mi).padStart(2,'0');}
 
-// ── 만료 타임스탬프
+// ── 만료 타임스탬프 (고객 전달 링크 공통: 생성 시점 + 일수)
+const CUSTOMER_LINK_EXPIRE_DAYS = 30;
 function calcExpAt(days){
   if(!days||days===0)return 0;
   return Date.now()+days*24*60*60*1000;
@@ -311,31 +446,72 @@ function dDayBadge(expAt){
   return '<span class="badge ok">D-'+diff+'</span>';
 }
 
-// ── 링크 빌더
+// ── 링크 빌더 (고객 전달용: 담당자 표기 마스킹 by=)
+/** URL용 이름: 첫·끝 글자만 남기고 가운데는 * (예: 심나영 → 심*영, 장경현 → 장**현) */
+function maskNameForLink(name){
+  const s=String(name||'').trim();
+  if(!s)return'';
+  if(s.length<=1)return'*';
+  if(s.length===2)return s.charAt(0)+'*';
+  return s.charAt(0)+'*'.repeat(s.length-2)+s.charAt(s.length-1);
+}
+function saveIssuerName(){
+  try{
+    const el=document.getElementById('issuer-name');
+    if(el)localStorage.setItem('sajux_issuer_name',(el.value||'').trim()||'장경현');
+  }catch(e){}
+}
+function getIssuerMasked(){
+  saveIssuerName();
+  try{
+    const el=document.getElementById('issuer-name');
+    const raw=(el&&el.value.trim())||localStorage.getItem('sajux_issuer_name')||'장경현';
+    return maskNameForLink(raw);
+  }catch(e2){return maskNameForLink('장경현');}
+}
+function appendIssuerParam(p){
+  const m=getIssuerMasked();
+  if(m)p.set('by',m);
+}
+function appendCoupleSide(prefix,cust,p){
+  p.set(prefix+'_n',maskNameForLink(cust.name));
+  p.set(prefix+'_g',genderCode(cust.gender));
+  p.set(prefix+'_c',cust.cal);
+  p.set(prefix+'_y',cust.y);p.set(prefix+'_mo',cust.mo);p.set(prefix+'_d',cust.d);
+  if(cust.unknown){
+    p.set(prefix+'_unk','1');
+    p.set(prefix+'_h',12);p.set(prefix+'_mi',0);
+  }else{
+    p.set(prefix+'_h',cust.h!=null?cust.h:12);
+    p.set(prefix+'_mi',cust.mi!=null?cust.mi:0);
+  }
+}
 function buildReportUrl(cust,expAt,unknown){
   const base='https://sajux.com/report/saju.html';
   const p=new URLSearchParams();
-  p.set('n',cust.name);
-  p.set('g',cust.gender==='male'?'male':'female');
+  p.set('t','a');
+  p.set('n',maskNameForLink(cust.name));
+  p.set('g',genderCode(cust.gender));
   p.set('c',cust.cal==='solar'?'solar':'lunar');
   p.set('y',cust.y);p.set('mo',cust.mo);p.set('d',cust.d);
   if(!unknown)p.set('h',cust.h);
   if(!unknown)p.set('mi',cust.mi);
   if(unknown)p.set('unk','1');
-  if(expAt)p.set('exp',expAt);
-  p.set('v', Date.now()); // 캐시버스터
+  if(expAt)p.set('exp',String(expAt));
+  appendIssuerParam(p);
+  p.set('v', Date.now());
   return base+'?'+p.toString();
 }
 function buildCoupleUrl(a,b,expAt){
   const base='https://sajux.com/couple/';
   const p=new URLSearchParams();
-  p.set('a_n',a.name);p.set('a_g',a.gender);p.set('a_c',a.cal);
-  p.set('a_y',a.y);p.set('a_mo',a.mo);p.set('a_d',a.d);
-  p.set('a_h',a.h);p.set('a_mi',a.mi);
-  p.set('b_n',b.name);p.set('b_g',b.gender);p.set('b_c',b.cal);
-  p.set('b_y',b.y);p.set('b_mo',b.mo);p.set('b_d',b.d);
-  p.set('b_h',b.h);p.set('b_mi',b.mi);
-  if(expAt)p.set('exp',expAt);
+  p.set('t','b');
+  appendCoupleSide('a',a,p);
+  appendCoupleSide('b',b,p);
+  p.set('rel','lover');
+  if(expAt)p.set('exp',String(expAt));
+  appendIssuerParam(p);
+  p.set('v', Date.now());
   return base+'?'+p.toString();
 }
 
@@ -415,8 +591,7 @@ function getLinkParams() {
   if(!parsed){alert('생년월일을 입력하세요');return null;}
   const unknown=document.getElementById('lnk-unknown').checked;
   const t=parseTimeInput(document.getElementById('lnk-time').value);
-  const expDays=parseInt(document.getElementById('lnk-expire').value);
-  const expAt=expDays?calcExpAt(expDays):0;
+  const expAt=calcExpAt(CUSTOMER_LINK_EXPIRE_DAYS);
   const cust={id:selectedLinkCust?selectedLinkCust.id:Date.now(),name,
     gender:document.getElementById('lnk-gender').value,
     cal:document.getElementById('lnk-cal').value,
@@ -429,36 +604,39 @@ function previewReport() {
   const url=buildReportUrl(p.cust,0,p.unknown);
   window.open(url,'_blank');
 }
-function generateReportLink(){
+async function generateReportLink(){
   const p=getLinkParams();if(!p)return;
-  // 미리보기용 URL (만료 없음)
+  if(!(await ensureLinkServer()))return;
   const previewUrl=buildReportUrl(p.cust,0,p.unknown);
-  // 고객 전송용 URL (만료 있음)
-  const url=buildReportUrl(p.cust,p.expAt,p.unknown);
-
-  // 버튼 다시 비활성화 (새 생성 시작)
   const copyBtn = document.getElementById('copy-link-btn');
   const statusDot = document.getElementById('status-dot');
   const statusTxt = document.getElementById('status-text');
-  if(copyBtn){ copyBtn.style.opacity='1'; copyBtn.style.pointerEvents='auto'; copyBtn.textContent='📋 링크 복사'; }
+  if(copyBtn){ copyBtn.style.opacity='0.5'; copyBtn.style.pointerEvents='none'; copyBtn.textContent='발급 중…'; }
   if(statusDot){ statusDot.style.background='#555'; statusDot.style.animation='pulse 1.2s infinite'; }
-  if(statusTxt){ statusTxt.textContent='생성 중...'; statusTxt.style.color='#666'; }
-
-  // iframe 미리보기 표시
+  if(statusTxt){ statusTxt.textContent='서버에 링크 등록 중…'; statusTxt.style.color='#666'; }
   const iframeWrap = document.getElementById('preview-wrap');
-  if (iframeWrap) {
-    iframeWrap.style.display = 'block';
-    iframeWrap.dataset.url = previewUrl;
+  if(iframeWrap){iframeWrap.style.display='block';iframeWrap.dataset.url=previewUrl;}
+  let issued;
+  try{
+    issued=await SajuxLinkApi.issueLink('single',buildSinglePayload(p.cust,p.unknown),p.expAt);
+  }catch(e){
+    alert('링크 발급 실패: '+(e.message||e));
+    if(copyBtn){copyBtn.style.opacity='1';copyBtn.style.pointerEvents='auto';copyBtn.textContent='📋 링크 복사';}
+    if(statusTxt){statusTxt.textContent='발급 실패';statusTxt.style.color='#ff6b6b';}
+    return;
   }
-
-  // 링크 결과 표시
-  document.getElementById('link-url-text').textContent=url;
+  const url=issued.url;
+  const linkObj=registerLinkRecord({
+    id:Date.now(),customerId:selectedLinkCust?selectedLinkCust.id:0,type:'single',url,serverCode:issued.code,expAt:p.expAt,createdAt:today(),bCustomerId:null,
+    maskName:maskNameForLink(p.cust.name),gen:p.cust.gender
+  });
+  showLinkIssued('single',linkObj,url);
   document.getElementById('link-expiry').textContent=fmtExpAt(p.expAt);
   document.getElementById('link-result').style.display='block';
-
-  // 링크 저장
-  const linkObj={id:Date.now(),customerId:selectedLinkCust?selectedLinkCust.id:0,type:'single',url,expAt:p.expAt,createdAt:today(),bCustomerId:null};
   const links=getLinks();links.push(linkObj);saveLinks(links);
+  if(copyBtn){copyBtn.style.opacity='1';copyBtn.style.pointerEvents='auto';copyBtn.textContent='📋 링크 복사';}
+  if(statusDot){statusDot.style.background='#00C853';statusDot.style.animation='none';}
+  if(statusTxt){statusTxt.textContent='✅ 발급 완료 — code 링크를 복사해 전송하세요';statusTxt.style.color='#00C853';}
 }
 
 // ── 탭2: 궁합 링크
@@ -481,17 +659,38 @@ function selectCoupleB(id){
   document.getElementById('couple-b-info').textContent=selectedCoupleB?'선택됨: '+selectedCoupleB.name+' ('+fmtDate(selectedCoupleB)+', '+fmtTime(selectedCoupleB)+')':'선택 안 됨';
   renderCoupleList();
 }
-function generateCoupleLink(){
+function previewCoupleReport(){
   if(!selectedCoupleA)return alert('A 사람을 선택하세요');
   if(!selectedCoupleB)return alert('B 사람을 선택하세요');
   if(selectedCoupleA.id===selectedCoupleB.id)return alert('서로 다른 고객을 선택하세요');
-  const expDays=parseInt(document.getElementById('couple-expire').value);
-  const expAt=expDays?calcExpAt(expDays):0;
-  const url=buildCoupleUrl(selectedCoupleA,selectedCoupleB,expAt);
-  document.getElementById('couple-url-text').textContent=url;
+  const url=buildCoupleUrl(selectedCoupleA,selectedCoupleB,0);
+  window.open(url,'_blank','noopener,noreferrer');
+}
+async function generateCoupleLink(){
+  if(!selectedCoupleA)return alert('A 사람을 선택하세요');
+  if(!selectedCoupleB)return alert('B 사람을 선택하세요');
+  if(selectedCoupleA.id===selectedCoupleB.id)return alert('서로 다른 고객을 선택하세요');
+  if(!(await ensureLinkServer()))return;
+  const expAt=calcExpAt(CUSTOMER_LINK_EXPIRE_DAYS);
+  const previewUrl=buildCoupleUrl(selectedCoupleA,selectedCoupleB,0);
+  let issued;
+  try{
+    issued=await SajuxLinkApi.issueLink('couple',buildCouplePayload(selectedCoupleA,selectedCoupleB),expAt);
+  }catch(e){
+    alert('커플 링크 발급 실패: '+(e.message||e));
+    return;
+  }
+  const url=issued.url;
+  const linkObj=registerLinkRecord({
+    id:Date.now(),customerId:selectedCoupleA.id,type:'couple',url,serverCode:issued.code,expAt,createdAt:today(),bCustomerId:selectedCoupleB.id,
+    maskA:maskNameForLink(selectedCoupleA.name),maskB:maskNameForLink(selectedCoupleB.name),
+    genA:selectedCoupleA.gender,genB:selectedCoupleB.gender
+  });
+  showLinkIssued('couple',linkObj,url);
   document.getElementById('couple-expiry').textContent=fmtExpAt(expAt);
   document.getElementById('couple-result').style.display='block';
-  const linkObj={id:Date.now(),customerId:selectedCoupleA.id,type:'couple',url,expAt,createdAt:today(),bCustomerId:selectedCoupleB.id};
+  const cw=document.getElementById('couple-preview-wrap');
+  if(cw){cw.style.display='block';cw.dataset.url=previewUrl;}
   const links=getLinks();links.push(linkObj);saveLinks(links);
 }
 
@@ -505,11 +704,13 @@ function renderManageList(){
     const custLinks=links.filter(l=>l.customerId===c.id||l.bCustomerId===c.id);
     const linksHtml=custLinks.length?custLinks.map(l=>{
       const isExpired=l.expAt&&Date.now()>l.expAt;
+      const line=linkDisplayLine(l);
       return `<div class="link-item">
-        <span class="badge ${l.type==='couple'?'warn':'ok'}">${l.type==='couple'?'궁합':'리포트'}</span>
+        <span class="badge ${l.type==='couple'?'warn':'ok'}">${l.type==='couple'?'b 커플':'a 1인'}</span>
         ${dDayBadge(l.expAt)}
-        <span class="link-item-url">${l.url}</span>
-        <button class="btn sec sm" onclick="copyLinkDirect('${escapeHtml(l.url)}')">복사</button>
+        <span class="link-item-code">${l.code||buildLinkCode(l.type,l.seq||0)}</span>
+        <span class="link-item-meta">${escapeHtml(line)}</span>
+        <button class="btn sec sm" onclick="copyLinkDirect('${escapeHtml(l.url)}')">URL복사</button>
         ${!isExpired?`<button class="btn danger sm" onclick="expireLink(${l.id})">만료</button>`:''}
         <button class="btn danger sm" onclick="deleteLink(${l.id})">삭제</button>
       </div>`;
@@ -527,10 +728,15 @@ function renderManageList(){
     </div>`;
   }).join('');
 }
-function expireLink(id){
+async function expireLink(id){
   if(!confirm('이 링크를 즉시 만료 처리하시겠습니까?'))return;
-  const links=getLinks().map(l=>{if(l.id===id)l.expAt=Date.now()-1000;return l;});
-  saveLinks(links);renderAll();
+  const links=getLinks();
+  const target=links.find(l=>l.id===id);
+  if(target&&target.serverCode&&typeof SajuxLinkApi!=='undefined'&&SajuxLinkApi.getApiBase()){
+    try{await SajuxLinkApi.revokeLink(target.serverCode);}catch(e){console.warn('revoke',e);}
+  }
+  saveLinks(links.map(l=>{if(l.id===id)l.expAt=Date.now()-1000;return l;}));
+  renderAll();
 }
 function deleteLink(id){
   if(!confirm('이 링크 기록을 삭제하시겠습니까?'))return;
@@ -545,8 +751,19 @@ function escapeHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').repla
 
 // ── 복사
 function copyLink(elId){
-  const t=document.getElementById(elId).textContent;
+  const el=document.getElementById(elId);
+  const t=(el&&el.dataset.url)||(el&&el.textContent)||'';
   navigator.clipboard.writeText(t).then(()=>alert('링크가 복사되었습니다!')).catch(()=>prompt('링크를 복사하세요:',t));
+}
+function copyCustomerLink(elId){
+  const el=document.getElementById(elId);
+  const t=((el&&el.dataset.url)||(el&&el.textContent)||'').trim();
+  if(!t){alert('먼저 「고객용 링크 생성」을 눌러 주세요.');return;}
+  if(typeof SajuxLinkApi!=='undefined'&&SajuxLinkApi.isCodeOnlyUrl&&!SajuxLinkApi.isCodeOnlyUrl(t)){
+    alert('이 주소는 미리보기용(생일이 URL에 보임)입니다.\n\n「고객용 링크 생성」 후 나온 ?code=… 주소만 복사해 주세요.');
+    return;
+  }
+  copyLink(elId);
 }
 function copyLinkDirect(url){
   navigator.clipboard.writeText(url).then(()=>alert('복사되었습니다!')).catch(()=>prompt('복사:',url));
@@ -554,6 +771,13 @@ function copyLinkDirect(url){
 
 // ── 전체 렌더
 function renderAll(){
+  try{
+    const ie=document.getElementById('issuer-name');
+    if(ie&&!ie.dataset.hydrated){
+      ie.value=localStorage.getItem('sajux_issuer_name')||'장경현';
+      ie.dataset.hydrated='1';
+    }
+  }catch(e){}
   renderRegCustomerList();
   renderLinkCustomerList();
   renderCoupleList();
