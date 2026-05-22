@@ -45,7 +45,7 @@ html:not([data-theme="light"]) .water,
 html:not([data-theme="light"]) .manse-cell .water,
 html:not([data-theme="light"]) [class~="water"] .top,
 html:not([data-theme="light"]) [class~="water"] .bottom {
-  color: var(--water, #5d8ab9) !important;
+  color: var(--water, #3d9eff) !important;
   -webkit-text-stroke: 0 !important;
   paint-order: initial !important;
 }
@@ -54,7 +54,7 @@ html[data-theme="light"] .vip-hanja[style*="color:var(--water)"],
 html[data-theme="light"] .water,
 html[data-theme="light"] [class~="water"] .top,
 html[data-theme="light"] [class~="water"] .bottom {
-  color: var(--water, #2563b8) !important;
+  color: var(--water, #1478e8) !important;
   -webkit-text-stroke: 0 !important;
 }
 
