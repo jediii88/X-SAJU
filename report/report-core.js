@@ -2205,7 +2205,7 @@ function colorizeHanjaInline(html) {
     var s = String(html);
     var STEM_OH = { '甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water' };
     var BRANCH_OH = { '子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water' };
-    var COLOR = { wood:'var(--wood, #6FBF73)', fire:'var(--fire, #E76F51)', earth:'var(--earth, #C8A45C)', metal:'var(--metal, #C9CDD2)', water:'var(--water, #5d8ab9)' };
+    var COLOR = { wood:'var(--wood, #6FBF73)', fire:'var(--fire, #E76F51)', earth:'var(--earth, #C8A45C)', metal:'var(--metal, #C9CDD2)', water:'var(--water, #3d9eff)' };
     var HAN_RE = /[甲乙丙丁戊己庚辛壬癸子丑寅卯辰巳午未申酉戌亥](?!\()/g;
 
     // 보호할 영역(이미 색/스타일이 들어간 곳)을 placeholder로 치환했다가 마지막에 복원
@@ -11368,7 +11368,7 @@ function getHiddenVipTableCell(branch, dayStem) {
             var lab = typeof sipToManseBadge === 'function' ? sipToManseBadge(ss, false) : (ss || '');
             var cls = HAN_COLOR[ch] || '';
             var hanStyle = 'font-size:14px;font-weight:300;font-family:\'Noto Sans KR\',\'Noto Sans SC\',sans-serif;'
-                + (cls === 'water' ? 'color:var(--water,#5d8ab9);' : '');
+                + (cls === 'water' ? 'color:var(--water,#3d9eff);' : '');
             return '<div style="display:flex;flex-direction:column;align-items:center;line-height:1.2;">'
                 + '<span class="vip-hanja ' + cls + '" style="' + hanStyle + '">' + ch + '</span>'
                 + '<span style="font-size:9px;color:var(--text-dim,rgba(255,255,255,0.55));font-weight:500;margin-top:1px;">' + lab + '</span>'
@@ -11483,7 +11483,7 @@ function buildVipEvidenceBlock(data) {
             if(isUnk&&i===0){ev+='<td style="text-align:center;color:#444;font-size:11px;">미상</td>';return;}
             var g=p.h[0]||''; var col=hanCol(g);
             var gKr=HK_GAN[g]||g;
-            var hanjaStyle='font-size:1.55em;font-weight:300;color:'+(STEM_OH[g]==='water'?'var(--water,#5d8ab9)':col)+';font-family:\'Noto Sans KR\',\'Noto Sans SC\',sans-serif;';
+            var hanjaStyle='font-size:1.55em;font-weight:300;color:'+(STEM_OH[g]==='water'?'var(--water,#3d9eff)':col)+';font-family:\'Noto Sans KR\',\'Noto Sans SC\',sans-serif;';
             ev+='<td style="padding:6px 6px;text-align:center;vertical-align:middle;"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;line-height:1.05;"><span class="vip-hanja" style="'+hanjaStyle+'">'+g+'</span><span style="font-size:10px;color:var(--text-dim,rgba(255,255,255,0.55));font-weight:500;">'+gKr+'</span></div></td>';
         });
         ev += '</tr>';
@@ -11494,7 +11494,7 @@ function buildVipEvidenceBlock(data) {
             if(isUnk&&i===0){ev+='<td style="text-align:center;color:#444;font-size:11px;">미상</td>';return;}
             var j=p.h[1]||''; var col=hanCol(j);
             var jKr=HK_JI[j]||j;
-            var hanjaStyle='font-size:1.55em;font-weight:300;color:'+(BRNCH_OH[j]==='water'?'var(--water,#5d8ab9)':col)+';font-family:\'Noto Sans KR\',\'Noto Sans SC\',sans-serif;';
+            var hanjaStyle='font-size:1.55em;font-weight:300;color:'+(BRNCH_OH[j]==='water'?'var(--water,#3d9eff)':col)+';font-family:\'Noto Sans KR\',\'Noto Sans SC\',sans-serif;';
             ev+='<td style="padding:6px 6px;text-align:center;vertical-align:middle;"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;line-height:1.05;"><span class="vip-hanja" style="'+hanjaStyle+'">'+j+'</span><span style="font-size:10px;color:var(--text-dim,rgba(255,255,255,0.55));font-weight:500;">'+jKr+'</span></div></td>';
         });
         ev += '</tr>';
