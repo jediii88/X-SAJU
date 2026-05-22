@@ -23,7 +23,7 @@
 })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="sajux-build" content="1779414782">
+<meta name="sajux-build" content="1779415496">
 <title>사주X — 두 사람의 인연 구조</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;700;900&display=swap" rel="stylesheet">
@@ -390,10 +390,32 @@ body::before {
   #floating-toc, .sticky-part-nav, #star-canvas { display: none !important; }
 }
 
+/* 두 사람 만세력 + 하단 안내 — 한 덩어리 유리 패널 */
+.compat-duo-manse-wrap {
+  margin: 24px 0 20px;
+  padding: 14px 12px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(199,167,106,0.22);
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.16);
+}
+.duo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0; }
+.person-card {
+  border-radius: 12px;
+  padding: 16px 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.03);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: none;
+}
 .compat-manse-notes {
-  margin: 4px 0 20px;
-  padding: 0 12px 4px;
+  margin: 14px 0 0;
+  padding: 12px 10px 2px;
   text-align: center;
+  border-top: 1px solid rgba(199,167,106,0.16);
 }
 .compat-manse-notes .compat-manse-note-line {
   margin: 0;
@@ -404,16 +426,6 @@ body::before {
 }
 .compat-manse-notes .compat-manse-note-gap {
   height: 10px;
-}
-.duo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 24px 0 8px; }
-.person-card {
-  border-radius: 14px;
-  padding: 18px 14px;
-  border: 1px solid rgba(199,167,106,0.22);
-  background: rgba(255,255,255,0.06);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
 }
 .person-card.a { border-left: 3px solid rgba(199,167,106,0.55); }
 .person-card.b { border-left: 3px solid rgba(199,167,106,0.28); }
