@@ -171,6 +171,7 @@
 
   global.SajuxLinkApi = {
     getApiBase: getApiBase,
+    isCodeOnlyUrl: isCodeOnlyUrl,
     fetchByCode: fetchByCode,
     issueLink: issueLink,
     revokeLink: revokeLink,
