@@ -1,4 +1,6 @@
-const { kv } = require('@vercel/kv');
+const { Redis } = require('@upstash/redis');
+
+const redis = Redis.fromEnv();
 
 function cors(res, req) {
   const origin = (req && req.headers && req.headers.origin) || '';
@@ -54,16 +56,16 @@ async function saveLink(type, payload, expAt) {
       revoked: false,
     };
     const key = 'link:' + code;
-    const exists = await kv.get(key);
+    const exists = await redis.get(key);
     if (exists) continue;
-    await kv.set(key, record);
+    await redis.set(key, record);
     return record;
   }
   throw new Error('code_generation_failed');
 }
 
 async function loadLink(code) {
-  const record = await kv.get('link:' + code);
+  const record = await redis.get('link:' + code);
   if (!record) return { status: 'not_found' };
   if (record.revoked) return { status: 'revoked', record };
   if (record.expAt && Date.now() > record.expAt) return { status: 'expired', record };
@@ -72,10 +74,10 @@ async function loadLink(code) {
 
 async function revokeLink(code) {
   const key = 'link:' + code;
-  const record = await kv.get(key);
+  const record = await redis.get(key);
   if (!record) return false;
   record.revoked = true;
-  await kv.set(key, record);
+  await redis.set(key, record);
   return true;
 }
 
