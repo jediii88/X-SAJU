@@ -1743,12 +1743,12 @@ function buildCompatSpousePanelHtml(ctx, aSpouse, bSpouse) {
         + [
         '<div class="insight-card" style="border-left:3px solid var(--gold);">',
         '<div class="tag">💛 ' + escHtmlAttr(aName) + '님이 끌리는 이성</div><br>',
-        '<strong>일지: ' + escHtmlAttr(aDB) + '</strong><br><br>',
+        '<strong>일지: ' + escHtmlAttr(compatHanjaGlossChar(aDB, 'branch')) + '</strong><br><br>',
         '<p style="font-size:13.5px;color:#bbb;line-height:1.85;margin:0;">' + polishCompatLine(ctx, 'a', aSpouse) + '</p>',
         '<br><span style="font-size:11px;color:#777;">※ 배우자궁은 무의식적으로 끌리는 온도입니다.</span></div>',
         '<div class="insight-card" style="border-left:3px solid var(--gold-soft);">',
         '<div class="tag">✦ ' + escHtmlAttr(bName) + '님이 끌리는 이성</div><br>',
-        '<strong>일지: ' + escHtmlAttr(bDB) + '</strong><br><br>',
+        '<strong>일지: ' + escHtmlAttr(compatHanjaGlossChar(bDB, 'branch')) + '</strong><br><br>',
         '<p style="font-size:13.5px;color:#bbb;line-height:1.85;margin:0;">' + polishCompatLine(ctx, 'b', bSpouse) + '</p></div>',
         '<div class="insight-card"><div class="tag">🔄 두 사람이 끌리는 이유</div><br>',
         '<p style="font-size:13.5px;color:#bbb;line-height:1.85;margin:0;">' + compatFmt(why) + '</p></div>'
@@ -1952,10 +1952,12 @@ function buildCompatIdealFamilyAppendixHtml(ctx) {
     var bName = compatNm(ctx, 'b');
     var aDb = (ctx.a && ctx.a.dayBranch) || '';
     var bDb = (ctx.b && ctx.b.dayBranch) || '';
+    var aDbG = compatHanjaGlossChar(aDb, 'branch');
+    var bDbG = compatHanjaGlossChar(bDb, 'branch');
     var fit = ctx.isHap
-        ? escHtmlAttr(aName) + '님 배우자궁 일지(' + escHtmlAttr(aDb) + ')와 ' + escHtmlAttr(bName) + '님의 실제 일지(' + escHtmlAttr(bDb) + ')가 **합(合)**으로 맞닿아 있어, 서로의 무의식 그림이 비교적 잘 겹치는 편으로 읽힙니다.'
+        ? escHtmlAttr(aName) + '님 배우자궁 일지(' + escHtmlAttr(aDbG) + ')와 ' + escHtmlAttr(bName) + '님의 실제 일지(' + escHtmlAttr(bDbG) + ')가 **합(合)**으로 맞닿아 있어, 서로의 무의식 그림이 비교적 잘 겹치는 편으로 읽힙니다.'
         : ctx.isChung
-        ? escHtmlAttr(aName) + '님의 배우자궁(' + escHtmlAttr(aDb) + ')과 ' + escHtmlAttr(bName) + '님의 일지(' + escHtmlAttr(bDb) + ')가 **충(冲)**이라, “그리던 얼굴”과는 다르게 느껴져도 **긴장·성장**을 같이 쓰는 인연으로 읽힙니다.'
+        ? escHtmlAttr(aName) + '님의 배우자궁(' + escHtmlAttr(aDbG) + ')과 ' + escHtmlAttr(bName) + '님의 일지(' + escHtmlAttr(bDbG) + ')가 **충(冲)**이라, “그리던 얼굴”과는 다르게 느껴져도 **긴장·성장**을 같이 쓰는 인연으로 읽힙니다.'
         : '일지끼리 직접 합·충이 없어도, 오행·십성으로 필요한 결을 채우는 인연이면 “그림은 다른데 생활은 맞는” 경우가 흔합니다.';
     var ideal = ctx.isHap
         ? '합(合)으로 맞닿아 있어, 무의식에 그려 둔 “편하게 숨 쉴 수 있는 사람” 상과 **결이 비슷한 온도**로 닿아 있어요.'
@@ -1974,7 +1976,7 @@ function buildCompatIdealFamilyAppendixHtml(ctx) {
         + '<div class="insight-card" style="border-left:3px solid rgba(199,167,106,0.45);margin-bottom:10px;"><div class="tag">💫 이상형과의 거리(일지 무의식 기준)</div>'
         + '<p style="font-size:13.5px;color:#bbb;line-height:1.9;margin:12px 0 0;">' + compatFmt(mirror) + '</p>'
         + '<p style="font-size:11.5px;color:#777;line-height:1.75;margin:12px 0 0;font-style:italic;">'
-        + escHtmlAttr(aName) + '님 무의식 일지: ' + escHtmlAttr(aDb) + ' · ' + escHtmlAttr(bName) + '님 무의식 일지: ' + escHtmlAttr(bDb) + '</p></div>'
+        + escHtmlAttr(aName) + '님 무의식 일지: ' + escHtmlAttr(aDbG) + ' · ' + escHtmlAttr(bName) + '님 무의식 일지: ' + escHtmlAttr(bDbG) + '</p></div>'
         + '<div class="insight-card"><div class="tag" style="letter-spacing:0.08em;">✨ 자미두수로 보강할 수 있는 지점</div>'
         + '<p style="font-size:13.5px;color:#bbb;line-height:1.9;margin:12px 0 0;">' + ziweiNote + '</p>'
         + '<p style="font-size:12px;color:#888;line-height:1.8;margin:12px 0 0;">'
