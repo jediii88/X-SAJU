@@ -332,7 +332,7 @@ async function ensureLinkServer(){
     var r=await fetch(base+'/api/v1/health',{headers:{Accept:'application/json'}});
     if(!r.ok)throw new Error('health');
   }catch(err){
-    alert('고객 생일 저장 서버가 아직 준비되지 않았습니다.\n\nVercel 대시보드에서:\n1) Storage → KV 만들고 프로젝트에 연결\n2) Settings → Environment Variables → ADMIN_PASS (관리자 비밀번호)\n3) Redeploy\n\n자세한 안내: VERCEL-SERVER-SETUP.md');
+    alert('고객 생일 저장 서버가 아직 준비되지 않았습니다.\n\nVercel 대시보드에서:\n1) Storage → Upstash → Create → x-saju 연결\n2) Settings → Environment Variables → ADMIN_PASS (관리자 비밀번호)\n3) Redeploy\n\n자세한 안내: VERCEL-SERVER-SETUP.md');
     return false;
   }
   return true;
