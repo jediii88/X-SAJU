@@ -23,7 +23,7 @@
 })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="sajux-build" content="1779415799">
+<meta name="sajux-build" content="1779416317">
 <title>사주X — 두 사람의 인연 구조</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;700;900&display=swap" rel="stylesheet">
@@ -395,20 +395,20 @@ body::before {
   margin: 24px 0 20px;
   padding: 14px 12px 16px;
   border-radius: 16px;
-  border: 1px solid rgba(199,167,106,0.22);
-  background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.16);
+  border: 1px solid rgba(199,167,106,0.14);
+  background: rgba(255,255,255,0.02);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
 }
 .duo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0; }
 .person-card {
   border-radius: 12px;
   padding: 16px 12px;
-  border: 1px solid rgba(255,255,255,0.08);
-  background: rgba(255,255,255,0.03);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.05);
+  background: rgba(255,255,255,0.012);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   box-shadow: none;
 }
 .compat-manse-notes {
@@ -459,7 +459,7 @@ body::before {
 .pillar-mini .pillar-ss-badge {
   display: inline-block;
   font-size: 10px;
-  background: rgba(199,167,106,0.12);
+  background: rgba(199,167,106,0.06);
   color: var(--gold-soft);
   padding: 1px 6px;
   border-radius: 6px;
@@ -1320,8 +1320,7 @@ function renderPersonCard(prefix, info, saju) {
   (function(){
     var dsStroke = '';
     var dbStroke = '';
-    const glossFn = (typeof compatHanjaGlossCharFull === 'function') ? compatHanjaGlossCharFull
-      : (typeof compatHanjaGlossChar === 'function') ? compatHanjaGlossChar : null;
+    const glossFn = (typeof compatHanjaGlossChar === 'function') ? compatHanjaGlossChar : null;
     const dsLbl = glossFn ? glossFn(ds, 'stem') : ds + '(' + (HAN_KOR[ds]||'') + ')';
     const dbLbl = glossFn ? glossFn(db, 'branch') : db + '(' + (HAN_KOR[db]||'') + ')';
     iljuEl.innerHTML = `<span class="${HAN_COLOR[ds]}" style="font-family:'Noto Sans KR',sans-serif;font-weight:300;font-size:15px;${dsStroke}">${dsLbl}</span> <span class="${HAN_COLOR[db]}" style="font-family:'Noto Sans KR',sans-serif;font-weight:300;font-size:15px;${dbStroke}">${dbLbl}</span>`;
@@ -1370,7 +1369,6 @@ function renderPersonCard(prefix, info, saju) {
     return "font-family:'Noto Sans KR',sans-serif;font-weight:300;font-size:19px;";
   }
   function _pillarGloss(ch, kind) {
-    if (typeof compatHanjaGlossCharFull === 'function') return compatHanjaGlossCharFull(ch, kind);
     if (typeof compatHanjaGlossChar === 'function') return compatHanjaGlossChar(ch, kind);
     return ch + '(' + (KOR_MAP[ch] || '') + ')';
   }
@@ -2016,8 +2014,7 @@ function buildTimeline(a, b, aInfo, bInfo, params) {
       tlPanel.innerHTML = buildCompatTimelineSynergyHtml(ctx);
     }
   }
-  const tlGloss = (typeof compatHanjaGlossCharFull === 'function') ? compatHanjaGlossCharFull
-    : (typeof compatHanjaGlossChar === 'function') ? compatHanjaGlossChar : null;
+  const tlGloss = (typeof compatHanjaGlossChar === 'function') ? compatHanjaGlossChar : null;
   const tlGzPair = (gz) => {
     if (!gz || gz.length < 2) return gz || '';
     const g0 = tlGloss ? tlGloss(gz[0], 'stem') : gz[0];
