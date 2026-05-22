@@ -200,8 +200,8 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--go
       </div>
       <hr class="divider">
       <div style="display:flex;gap:10px;flex-wrap:wrap;">
-        <button class="btn" onclick="previewReport()" style="flex:1;">👁 미리보기 (검토)</button>
-        <button class="btn sec" onclick="generateReportLink()" style="flex:1;">🔗 링크 생성</button>
+        <button class="btn" onclick="previewReport()" style="flex:1;">👁 미리보기 (관리자·만료 없음)</button>
+        <button class="btn sec" onclick="generateReportLink()" style="flex:1;">🔗 고객용 링크 생성 (30일)</button>
       </div>
       <div id="link-result" style="display:none;margin-top:16px;">
         <div style="font-size:11px;color:#888;margin-bottom:4px;">발급 코드 (내부 순번)</div>
@@ -247,9 +247,10 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--go
         </div>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;">
-        <button type="button" class="btn sec" onclick="previewCoupleReport()" style="flex:1;">👁 새 탭에서 궁합 미리보기</button>
-        <button type="button" class="btn purple" onclick="generateCoupleLink()" style="flex:1;">💞 커플 링크 생성</button>
+        <button type="button" class="btn sec" onclick="previewCoupleReport()" style="flex:1;">👁 미리보기 (관리자·만료 없음)</button>
+        <button type="button" class="btn purple" onclick="generateCoupleLink()" style="flex:1;">💞 고객용 링크 생성 (30일)</button>
       </div>
+      <div style="font-size:11px;color:#666;margin-top:8px;line-height:1.55;">미리보기는 확인만 하고, <strong style="color:#aaa;">고객에게 보낼 때는 반드시 「고객용 링크 생성」</strong>으로 만든 URL을 복사하세요. (생성 링크만 30일 만료)</div>
       <div id="couple-result" style="display:none;">
         <div style="font-size:11px;color:#888;margin-bottom:4px;">발급 코드 (내부 순번)</div>
         <div class="link-code-display" id="couple-code-display">—</div>
@@ -262,9 +263,9 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--go
         <div id="couple-preview-wrap" style="display:none;margin-top:14px;">
           <button type="button" onclick="window.open(document.getElementById('couple-preview-wrap').dataset.url,'_blank','noopener,noreferrer')"
             style="width:100%;padding:14px;background:rgba(124,141,255,0.12);border:1px solid var(--purple);border-radius:10px;color:#b0b8ff;font-size:14px;font-weight:600;cursor:pointer;">
-            👁 새 탭에서 궁합 미리보기 (만료 없음)
+            👁 다시 미리보기 (관리자 전용·만료 없음)
           </button>
-          <div style="font-size:11px;color:#666;margin-top:8px;text-align:center;">확인 후 아래 링크를 고객에게 보내세요</div>
+          <div style="font-size:11px;color:#666;margin-top:8px;text-align:center;">고객 전달은 <strong style="color:var(--gold);">위 만료일이 있는 링크</strong>만 복사해 보내세요 (30일)</div>
         </div>
         <button class="btn sec" style="margin-top:10px;" onclick="copyLink('couple-url-text')">📋 링크 복사</button>
       </div>
