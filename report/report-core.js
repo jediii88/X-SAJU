@@ -1364,23 +1364,45 @@ function buildCompatChemScoreBanner(ctx, caption) {
         + '</div>';
 }
 
+/** 긴 본문 — 문단 분리·여백 (궁합 모바일 가독성) */
+function compatProseParagraphs(raw, opts) {
+    opts = opts || {};
+    var s = String(raw == null ? '' : raw).trim();
+    if (!s) return '';
+    var chunks = s.split(/<br\s*\/?>\s*<br\s*\/?>/i).map(function (c) { return c.trim(); }).filter(Boolean);
+    if (chunks.length === 1) {
+        var sent = s.split(/(?<=[\.。!?\uFF01\uFF1F])\s+/).map(function (c) { return c.trim(); }).filter(function (c) { return c.length > 6; });
+        if (sent.length >= 2) chunks = sent;
+    }
+    var pStyle = opts.pStyle || 'font-size:13.5px;color:#ccc;line-height:2.05;margin:0;';
+    return chunks.map(function (c, i) {
+        var content = opts.skipFmt ? c : compatFmt(c);
+        var gap = i < chunks.length - 1 ? 'margin-bottom:20px;' : '';
+        var lab = (opts.label && i === 0)
+            ? '<span style="display:block;font-size:10px;color:rgba(199,167,106,0.75);letter-spacing:0.06em;margin-bottom:10px;">' + escHtmlAttr(opts.label) + '</span>'
+            : '';
+        return '<p class="compat-prose-p" style="' + pStyle + gap + '">' + lab + content + '</p>';
+    }).join('');
+}
+
 function buildCompatStoryCard(tag, situation, conflict, resolution, scripts) {
     var scriptHtml = '';
     if (scripts && scripts.length) {
-        scriptHtml = '<div style="margin-top:14px;padding-top:12px;border-top:1px dashed rgba(199,167,106,0.22);">'
-            + '<div style="font-size:11px;color:var(--gold);font-weight:700;letter-spacing:0.06em;margin-bottom:8px;">💬 바로 써 보실 대화</div>';
+        scriptHtml = '<div style="margin-top:18px;padding-top:14px;border-top:1px dashed rgba(199,167,106,0.22);">'
+            + '<div style="font-size:11px;color:var(--gold);font-weight:700;letter-spacing:0.06em;margin-bottom:12px;">💬 바로 써 보실 대화</div>';
         scripts.forEach(function (line) {
-            scriptHtml += '<p style="font-size:13px;color:#e8e4dc;line-height:1.9;margin:0 0 10px;padding-left:14px;border-left:2px solid rgba(199,167,106,0.35);">'
+            scriptHtml += '<p style="font-size:13px;color:#e8e4dc;line-height:2;margin:0 0 14px;padding-left:14px;border-left:2px solid rgba(199,167,106,0.35);">'
                 + compatFmt(line) + '</p>';
         });
         scriptHtml += '</div>';
     }
-    return '<div class="insight-card" style="margin-bottom:12px;">'
+    return '<div class="insight-card compat-prose-card" style="margin-bottom:16px;">'
         + '<div class="tag">' + escHtmlAttr(compatPolishTone(tag)) + '</div>'
-        + '<p style="font-size:13.5px;color:#ccc;line-height:1.95;margin:12px 0 0;">' + compatFmt(situation) + '</p>'
-        + '<p style="font-size:13.5px;color:#bbb;line-height:1.95;margin:12px 0 0;"><span style="font-size:10px;color:rgba(199,167,106,0.7);letter-spacing:0.06em;">🌱 조율·성장 포인트</span><br>' + compatFmt(conflict) + '</p>'
-        + '<p style="font-size:13.5px;color:#ddd;line-height:1.95;margin:12px 0 0;">' + compatFmt(resolution) + '</p>'
-        + scriptHtml + '</div>';
+        + '<div class="compat-prose" style="margin-top:14px;">'
+        + compatProseParagraphs(situation, { pStyle: 'font-size:13.5px;color:#ccc;line-height:2.05;margin:0;' })
+        + compatProseParagraphs(conflict, { pStyle: 'font-size:13.5px;color:#bbb;line-height:2.05;margin:0;', label: '🌱 조율·성장 포인트' })
+        + compatProseParagraphs(resolution, { pStyle: 'font-size:13.5px;color:#ddd;line-height:2.05;margin:0;' })
+        + '</div>' + scriptHtml + '</div>';
 }
 
 function compatAssetForPerson(ctx, who) {
@@ -1574,16 +1596,18 @@ function buildCompatPanelSynergyEmphasis(ctx, topic) {
     var lead = topic === 'spouse'
         ? '무의식의 끌림이 맞물릴 때 **편안함과 자극**이 동시에 살아 납니다.'
         : '이상형 그림과 실제 상대가 달라도, **생활 온도**가 맞으면 오래 갑니다.';
-    return '<div class="compat-synergy-emphasis" style="margin:0 0 14px;padding:16px 18px;border-radius:12px;background:rgba(199,167,106,0.07);border:1px solid rgba(199,167,106,0.24);">'
-        + '<div style="font-size:11px;color:var(--gold);font-weight:700;letter-spacing:0.08em;margin-bottom:12px;text-align:center;">✨ 시너지 포인트 · 핵심 조언</div>'
-        + '<p style="font-size:14px;color:#e8e4dc;line-height:2.15;margin:0 0 16px;text-align:center;">' + compatFmt(meet) + '</p>'
-        + '<p style="font-size:13.5px;color:#ddd;line-height:2.2;margin:0 0 14px;">' + compatFmt(lead) + '</p>'
-        + '<p style="font-size:13.5px;color:#ddd;line-height:2.2;margin:0 0 14px;">' + compatFmt(o.money) + '</p>'
-        + '<p style="font-size:13.5px;color:#ddd;line-height:2.2;margin:0 0 14px;">' + compatFmt(o.psych) + '</p>'
-        + '<p style="font-size:13.5px;color:#ccc;line-height:2.2;margin:0;">' + compatFmt(o.outer) + '</p></div>';
+    return '<div class="compat-synergy-emphasis" style="margin:0 0 18px;padding:18px 20px;border-radius:12px;background:rgba(199,167,106,0.07);border:1px solid rgba(199,167,106,0.24);">'
+        + '<div style="font-size:11px;color:var(--gold);font-weight:700;letter-spacing:0.08em;margin-bottom:14px;text-align:center;">✨ 시너지 포인트 · 핵심 조언</div>'
+        + '<div class="compat-prose">'
+        + compatProseParagraphs(meet, { pStyle: 'font-size:14px;color:#e8e4dc;line-height:2.15;margin:0;text-align:center;' })
+        + compatProseParagraphs(lead, { pStyle: 'font-size:13.5px;color:#ddd;line-height:2.2;margin:0;' })
+        + compatProseParagraphs(o.money, { pStyle: 'font-size:13.5px;color:#ddd;line-height:2.2;margin:0;' })
+        + compatProseParagraphs(o.psych, { pStyle: 'font-size:13.5px;color:#ddd;line-height:2.2;margin:0;' })
+        + compatProseParagraphs(o.outer, { pStyle: 'font-size:13.5px;color:#ccc;line-height:2.2;margin:0;' })
+        + '</div></div>';
 }
 
-/** 인연 보강 하단 — 우리 커플의 시너지 미션 */
+/** 인연 보강(12) 하단 — 이번 주 시너지 미션 박스 */
 function buildCompatCoupleSynergyMissionBox(ctx) {
     var aName = compatNm(ctx, 'a');
     var bName = compatNm(ctx, 'b');
@@ -1592,13 +1616,55 @@ function buildCompatCoupleSynergyMissionBox(ctx) {
         bName + '님: “내가 편해졌던 순간을 **한 가지**만 말해 줄래?”',
         '둘 다: **한 달 목표 한 줄**(돈·휴식·만남)만 맞추고, 메모 사진으로 서로에게 보내기.'
     ];
-    var scriptHtml = scripts.map(function (line) {
-        return '<p style="font-size:13px;color:#e8e4dc;line-height:2;margin:0 0 12px;padding-left:14px;border-left:2px solid rgba(199,167,106,0.4);">'
+    var scriptHtml = scripts.map(function (line, i) {
+        var gap = i < scripts.length - 1 ? 'margin-bottom:16px;' : 'margin-bottom:0;';
+        return '<p class="compat-mission-line" style="font-size:14px;color:#e8e4dc;line-height:2;' + gap + 'padding:14px 16px;border-radius:10px;background:rgba(0,0,0,0.22);border-left:3px solid rgba(245,158,11,0.65);">'
             + compatFmt(line) + '</p>';
     }).join('');
-    return '<div class="compat-couple-mission-box" style="margin:18px 0 10px;padding:18px 20px;border-radius:14px;background:rgba(255,255,255,0.05);border:1px solid rgba(199,167,106,0.32);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">'
-        + '<div style="font-size:12px;color:var(--gold);font-weight:800;letter-spacing:0.1em;margin-bottom:14px;text-align:center;">💞 우리 커플의 시너지 미션</div>'
-        + scriptHtml + '</div>';
+    return '<div class="compat-couple-mission-box" role="region" aria-label="이번 주 시너지 미션">'
+        + '<h3 class="compat-mission-title">💌 우리 커플을 위한 이번 주 시너지 미션</h3>'
+        + '<p class="compat-mission-sub">' + escHtmlAttr(aName) + '님 · ' + escHtmlAttr(bName) + '님 — 이번 주에 꼭 해볼 실천</p>'
+        + '<div class="compat-mission-body">' + scriptHtml + '</div></div>';
+}
+
+/** 대운 싱크(14) 최하단 — 공유 CTA */
+function buildCompatShareCtaHtml(ctx) {
+    ctx = ctx || {};
+    var aName = compatNm(ctx, 'a');
+    var bName = compatNm(ctx, 'b');
+    var hint = escHtmlAttr(aName) + '님과 ' + escHtmlAttr(bName) + '님의 궁합 리포트를 함께 읽으며, 오늘 저녁 한 가지 대화만 이어가 보세요.';
+    return '<div class="compat-share-cta-wrap" id="compat-share-cta">'
+        + '<p class="compat-share-cta-hint">' + hint + '</p>'
+        + '<button type="button" class="compat-share-cta-btn" id="compat-share-cta-btn" onclick="sajuxCompatShareReport()">💌 내 연인에게 리포트 결과 공유하기</button>'
+        + '<p class="compat-share-cta-toast" id="compat-share-cta-toast" aria-live="polite"></p></div>';
+}
+
+function sajuxCompatShareReport() {
+    var url = typeof location !== 'undefined' ? location.href : '';
+    var title = '사주X 궁합 리포트';
+    var text = '우리 궁합 리포트를 함께 읽어볼래요?';
+    var toast = typeof document !== 'undefined' ? document.getElementById('compat-share-cta-toast') : null;
+    function showToast(msg) {
+        if (!toast) return;
+        toast.textContent = msg;
+        toast.style.display = 'block';
+        setTimeout(function () { toast.style.display = 'none'; }, 4200);
+    }
+    if (typeof navigator !== 'undefined' && navigator.share) {
+        navigator.share({ title: title, text: text, url: url }).catch(function () {});
+        return;
+    }
+    if (typeof navigator !== 'undefined' && navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(function () {
+            showToast('링크를 복사했어요. 카톡·문자로 보내 보세요.');
+        }).catch(function () {
+            showToast('링크: ' + url);
+        });
+        return;
+    }
+    if (typeof window !== 'undefined' && window.prompt) {
+        window.prompt('아래 링크를 복사해 연인에게 보내 주세요.', url);
+    }
 }
 
 /** 운의 흐름·대운 싱크 하단 결론 */
@@ -1782,17 +1848,17 @@ function buildCompatSpousePanelHtml(ctx, aSpouse, bSpouse) {
         + buildCompatStoryCard('💫 두 분이 서로에게 끌리는 이유', meet + ', 연인 관계에서도 **“편한데 설렌다”**는 느낌이 오면 끌림의 합(合)이 살아 있는 신호예요.<br><br>' + pullStr, why, '서로에게 **존중받았다고 느낀 포인트 한 가지**만 말해 보세요.', [])
         + buildCompatPanelSynergyEmphasis(ctx, 'spouse')
         + [
-        '<div class="insight-card" style="border-left:3px solid var(--gold);">',
-        '<div class="tag">💛 ' + escHtmlAttr(aName) + '님이 끌리는 이성</div><br>',
-        '<strong>' + escHtmlAttr(iljiLbl) + ' ' + escHtmlAttr(compatHanjaGlossCharFull(aDB, 'branch')) + '</strong><br><br>',
-        '<p style="font-size:13.5px;color:#bbb;line-height:2;margin:0;">' + polishCompatLine(ctx, 'a', aSpouse) + '</p>',
-        '<br><span style="font-size:11px;color:#777;line-height:1.65;">※ 배우자궁(日支)은 무의식적으로 끌리는 온도입니다.</span></div>',
-        '<div class="insight-card" style="border-left:3px solid var(--gold-soft);">',
-        '<div class="tag">✦ ' + escHtmlAttr(bName) + '님이 끌리는 이성</div><br>',
-        '<strong>' + escHtmlAttr(iljiLbl) + ' ' + escHtmlAttr(compatHanjaGlossCharFull(bDB, 'branch')) + '</strong><br><br>',
-        '<p style="font-size:13.5px;color:#bbb;line-height:2;margin:0;">' + polishCompatLine(ctx, 'b', bSpouse) + '</p></div>',
-        '<div class="insight-card"><div class="tag">🔄 두 사람이 끌리는 이유</div><br>',
-        '<p style="font-size:13.5px;color:#bbb;line-height:2.05;margin:0;">' + compatFmt(why) + '</p></div>'
+        '<div class="insight-card compat-prose-card" style="border-left:3px solid var(--gold);">',
+        '<div class="tag">💛 ' + escHtmlAttr(aName) + '님이 끌리는 이성</div>',
+        '<p style="font-size:12px;color:var(--gold-soft);margin:12px 0 16px;line-height:1.6;"><strong>' + escHtmlAttr(iljiLbl) + ' ' + escHtmlAttr(compatHanjaGlossCharFull(aDB, 'branch')) + '</strong></p>',
+        '<div class="compat-prose">' + compatProseParagraphs(polishCompatLine(ctx, 'a', aSpouse), { skipFmt: true, pStyle: 'font-size:13.5px;color:#bbb;line-height:2.1;margin:0;' }) + '</div>',
+        '<p style="font-size:11px;color:#777;line-height:1.7;margin:16px 0 0;">※ 배우자궁(日支)은 무의식적으로 끌리는 온도입니다.</p></div>',
+        '<div class="insight-card compat-prose-card" style="border-left:3px solid var(--gold-soft);">',
+        '<div class="tag">✦ ' + escHtmlAttr(bName) + '님이 끌리는 이성</div>',
+        '<p style="font-size:12px;color:var(--gold-soft);margin:12px 0 16px;line-height:1.6;"><strong>' + escHtmlAttr(iljiLbl) + ' ' + escHtmlAttr(compatHanjaGlossCharFull(bDB, 'branch')) + '</strong></p>',
+        '<div class="compat-prose">' + compatProseParagraphs(polishCompatLine(ctx, 'b', bSpouse), { skipFmt: true, pStyle: 'font-size:13.5px;color:#bbb;line-height:2.1;margin:0;' }) + '</div></div>',
+        '<div class="insight-card compat-prose-card"><div class="tag">🔄 두 사람이 끌리는 이유</div>',
+        '<div class="compat-prose" style="margin-top:14px;">' + compatProseParagraphs(why, { pStyle: 'font-size:13.5px;color:#bbb;line-height:2.1;margin:0;' }) + '</div></div>'
     ].join('')
         + buildCompatCoachQuestion(ctx, 'spouse');
 }
@@ -2016,14 +2082,14 @@ function buildCompatIdealFamilyAppendixHtml(ctx) {
     return buildCompatPanelPrefix(ctx, 'idealFamily')
         + buildCompatStoryCard('🏡 가정·이상형 — 두 분의 거리', famSit + '<br><br>' + famStr, fit, ideal, [])
         + buildCompatPanelSynergyEmphasis(ctx, 'idealFamily')
-        + '<div class="insight-card" style="border-left:3px solid rgba(199,167,106,0.45);margin-bottom:10px;"><div class="tag">💫 이상형과의 거리(日支·일지 무의식 기준)</div>'
-        + '<p style="font-size:13.5px;color:#bbb;line-height:2.05;margin:12px 0 0;">' + compatFmt(mirror) + '</p>'
-        + '<p style="font-size:11.5px;color:#777;line-height:1.85;margin:14px 0 0;font-style:italic;">'
+        + '<div class="insight-card compat-prose-card" style="border-left:3px solid rgba(199,167,106,0.45);margin-bottom:12px;"><div class="tag">💫 이상형과의 거리(日支·일지 무의식 기준)</div>'
+        + '<div class="compat-prose" style="margin-top:14px;">' + compatProseParagraphs(mirror, { pStyle: 'font-size:13.5px;color:#bbb;line-height:2.1;margin:0;' }) + '</div>'
+        + '<p style="font-size:11.5px;color:#777;line-height:1.85;margin:18px 0 0;font-style:italic;">'
         + escHtmlAttr(aName) + '님 무의식 일지: ' + escHtmlAttr(aDbG) + '<br>'
         + escHtmlAttr(bName) + '님 무의식 일지: ' + escHtmlAttr(bDbG) + '</p></div>'
-        + '<div class="insight-card"><div class="tag" style="letter-spacing:0.08em;">✨ 자미두수(紫微斗數)로 보강할 수 있는 지점</div>'
-        + '<p style="font-size:13.5px;color:#bbb;line-height:2.05;margin:12px 0 0;">' + compatFmt(ziweiNote) + '</p>'
-        + '<p style="font-size:12px;color:#888;line-height:1.85;margin:14px 0 0;">'
+        + '<div class="insight-card compat-prose-card"><div class="tag" style="letter-spacing:0.08em;">✨ 자미두수(紫微斗數)로 보강할 수 있는 지점</div>'
+        + '<div class="compat-prose" style="margin-top:14px;">' + compatProseParagraphs(ziweiNote, { pStyle: 'font-size:13.5px;color:#bbb;line-height:2.1;margin:0;' }) + '</div>'
+        + '<p style="font-size:12px;color:#888;line-height:1.85;margin:18px 0 0;">'
         + '※ 자녀에 관한 선택은 명리 한 장만으로 세우지 마시고, 의학·양육·정책은 전문 분야 정보와 함께 보셔야 합니다.</p></div>'
         + buildCompatCoupleSynergyMissionBox(ctx)
         + buildCompatCoachQuestion(ctx, 'idealFamily');
@@ -2073,6 +2139,8 @@ if (typeof window !== 'undefined') {
     window.buildCompatChemGuideText = buildCompatChemGuideText;
     window.buildManseWaterColorNoteHtml = buildManseWaterColorNoteHtml;
     window.buildCompatCoupleSynergyMissionBox = buildCompatCoupleSynergyMissionBox;
+    window.buildCompatShareCtaHtml = buildCompatShareCtaHtml;
+    window.sajuxCompatShareReport = sajuxCompatShareReport;
     window.compatHanjaGlossCharFull = compatHanjaGlossCharFull;
 }
 
