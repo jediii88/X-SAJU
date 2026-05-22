@@ -1233,13 +1233,17 @@ var SAJUX_PHRASE_GLOSS = [
     ['비견', '비견', '주체성/자아'], ['겁재', '겁재', '실행/독립'], ['식신', '식신', '창의성/표현'], ['상관', '상관', '혁신/기획'],
     ['편재', '편재', '기회/확장'], ['정재', '정재', '안정 수입'], ['편관', '편관', '도전/추진'], ['정관', '정관', '명예/책임'],
     ['편인', '편인', '직관/통찰'], ['정인', '정인', '배움/보호'], ['合', '합', '조화/인연'], ['冲', '충', '성장 자극/조율'],
-    ['害', '해', '섬세한 조율'], ['刑', '형', '규칙/성숙'], ['破', '파', '전환/갱신']
+    ['害', '해', '섬세한 조율'], ['刑', '형', '규칙/성숙'], ['破', '파', '전환/갱신'],
+    ['日支', '일지', '배우자궁'], ['日柱', '일주', '나의 본체'], ['月柱', '월주', '부모·사회'],
+    ['年柱', '년주', '조상·외연'], ['时柱', '시주', '말년·자녀'], ['時柱', '시주', '말년·자녀'],
+    ['財星', '재성', '재물과 결과'], ['官星', '관성', '명예와 책임'], ['印星', '인성', '배움과 보호'],
+    ['比劫', '비겁', '자아와 경쟁'], ['日主', '일간', '나의 중심'], ['用神', '용신', '삶의 핵심 처방'],
+    ['喜神', '희신', '도움이 되는 기운'], ['忌神', '기신', '과하면 부담되는 기운'],
+    ['空亡', '공망', '비어 있는 자리'], ['三合局', '삼합', '방향 맞춤'], ['六合局', '육합', '인연 조화']
 ];
 
 function compatHanjaGlossChar(ch, kind) {
-    var g = (kind === 'branch' ? SAJUX_BRANCH_GLOSS : SAJUX_STEM_GLOSS)[ch];
-    if (!g) return ch;
-    return ch + '(' + g.r + ')';
+    return compatHanjaGlossCharFull(ch, kind);
 }
 
 /** 본문용 — 한자(한글음:핵심의미) */
@@ -1573,6 +1577,55 @@ function buildCompatCoachQuestion(ctx, topic) {
     return buildCompatMissionCard(ctx, topic);
 }
 
+/** 배우자궁·인연 보강 — 시너지·핵심 조언 강조 블록 */
+function buildCompatPanelSynergyEmphasis(ctx, topic) {
+    var o = compatSynergyOutcomes(ctx, topic);
+    var meet = compatMeetPairPhrase(ctx);
+    var lead = topic === 'spouse'
+        ? '무의식의 끌림이 맞물릴 때 **편안함과 자극**이 동시에 살아 납니다.'
+        : '이상형 그림과 실제 상대가 달라도, **생활 온도**가 맞으면 오래 갑니다.';
+    return '<div class="compat-synergy-emphasis" style="margin:0 0 14px;padding:16px 18px;border-radius:12px;background:rgba(199,167,106,0.07);border:1px solid rgba(199,167,106,0.24);">'
+        + '<div style="font-size:11px;color:var(--gold);font-weight:700;letter-spacing:0.08em;margin-bottom:12px;text-align:center;">✨ 시너지 포인트 · 핵심 조언</div>'
+        + '<p style="font-size:14px;color:#e8e4dc;line-height:2.15;margin:0 0 16px;text-align:center;">' + compatFmt(meet) + '</p>'
+        + '<p style="font-size:13.5px;color:#ddd;line-height:2.2;margin:0 0 14px;">' + compatFmt(lead) + '</p>'
+        + '<p style="font-size:13.5px;color:#ddd;line-height:2.2;margin:0 0 14px;">' + compatFmt(o.money) + '</p>'
+        + '<p style="font-size:13.5px;color:#ddd;line-height:2.2;margin:0 0 14px;">' + compatFmt(o.psych) + '</p>'
+        + '<p style="font-size:13.5px;color:#ccc;line-height:2.2;margin:0;">' + compatFmt(o.outer) + '</p></div>';
+}
+
+/** 인연 보강 하단 — 우리 커플의 시너지 미션 */
+function buildCompatCoupleSynergyMissionBox(ctx) {
+    var aName = compatNm(ctx, 'a');
+    var bName = compatNm(ctx, 'b');
+    var scripts = [
+        aName + '님: “이번 주엔 우리 **함께 쉬는 날**을 하루만 달력에 박아 두자.”',
+        bName + '님: “내가 편해졌던 순간을 **한 가지**만 말해 줄래?”',
+        '둘 다: **한 달 목표 한 줄**(돈·휴식·만남)만 맞추고, 메모 사진으로 서로에게 보내기.'
+    ];
+    var scriptHtml = scripts.map(function (line) {
+        return '<p style="font-size:13px;color:#e8e4dc;line-height:2;margin:0 0 12px;padding-left:14px;border-left:2px solid rgba(199,167,106,0.4);">'
+            + compatFmt(line) + '</p>';
+    }).join('');
+    return '<div class="compat-couple-mission-box" style="margin:18px 0 10px;padding:18px 20px;border-radius:14px;background:rgba(255,255,255,0.05);border:1px solid rgba(199,167,106,0.32);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">'
+        + '<div style="font-size:12px;color:var(--gold);font-weight:800;letter-spacing:0.1em;margin-bottom:14px;text-align:center;">💞 우리 커플의 시너지 미션</div>'
+        + scriptHtml + '</div>';
+}
+
+/** 운의 흐름·대운 싱크 하단 결론 */
+function buildCompatFortuneSyncConclusion(ctx, topic) {
+    ctx = ctx || {};
+    var peak = ctx.peakSyncLabel || '✨ 함께 좋음 구간이 겹치는 시기';
+    var goal = (ctx.isHap || ctx.shengAB || ctx.shengBA)
+        ? '관계의 도약과 외부 기회'
+        : '재물적 성취와 생활 리듬 맞추기';
+    var intro = topic === 'fortuneMix'
+        ? '두 분의 운의 흐름(Mix)이 가장 잘 맞물리는'
+        : '두 분의 대운 싱크로율이 폭발하는';
+    var line = intro + ' **' + peak + '**에는 **' + goal + '**을 위한 공동의 목표를 세우는 것이 가장 유리합니다.';
+    return '<div class="compat-sync-conclusion" style="margin:20px 0 8px;padding:16px 20px;border-radius:12px;background:rgba(199,167,106,0.08);border:1px solid rgba(199,167,106,0.28);">'
+        + '<p style="font-size:14px;color:#e8e4dc;line-height:2.15;margin:0;text-align:center;">' + compatFmt(line) + '</p></div>';
+}
+
 function buildCompatPanelPrefix(ctx, topic) {
     return buildCompatSynergyHookHtml(ctx)
         + buildCompatSynergyEngine(ctx, topic)
@@ -1734,20 +1787,22 @@ function buildCompatSpousePanelHtml(ctx, aSpouse, bSpouse) {
         : '직접 합충은 없어도 **온습도·상생**으로 서로의 기후를 맞춰 주는 인연이에요.';
     var meet = compatMeetPairPhrase(ctx);
     var pullStr = '**합(合)의 강점** — 무의식의 끌림이 맞물리면 **편안함과 자극**이 동시에 와서, 오래 가는 인연의 온도가 됩니다.';
+    var iljiLbl = '日支(일지: 배우자궁)';
     return buildCompatPanelPrefix(ctx, 'spouse')
-        + buildCompatStoryCard('💫 두 분이 서로에게 끌리는 이유', meet + ', 연인 관계에서도 **“편한데 설렌다”**는 느낌이 오면 끌림의 합이 살아 있는 신호예요. ' + pullStr, why, '서로에게 **존중받았다고 느낀 포인트 한 가지**만 말해 보세요.', [])
+        + buildCompatStoryCard('💫 두 분이 서로에게 끌리는 이유', meet + ', 연인 관계에서도 **“편한데 설렌다”**는 느낌이 오면 끌림의 합(合)이 살아 있는 신호예요.<br><br>' + pullStr, why, '서로에게 **존중받았다고 느낀 포인트 한 가지**만 말해 보세요.', [])
+        + buildCompatPanelSynergyEmphasis(ctx, 'spouse')
         + [
         '<div class="insight-card" style="border-left:3px solid var(--gold);">',
         '<div class="tag">💛 ' + escHtmlAttr(aName) + '님이 끌리는 이성</div><br>',
-        '<strong>일지: ' + escHtmlAttr(compatHanjaGlossChar(aDB, 'branch')) + '</strong><br><br>',
-        '<p style="font-size:13.5px;color:#bbb;line-height:1.85;margin:0;">' + polishCompatLine(ctx, 'a', aSpouse) + '</p>',
-        '<br><span style="font-size:11px;color:#777;">※ 배우자궁은 무의식적으로 끌리는 온도입니다.</span></div>',
+        '<strong>' + escHtmlAttr(iljiLbl) + ' ' + escHtmlAttr(compatHanjaGlossCharFull(aDB, 'branch')) + '</strong><br><br>',
+        '<p style="font-size:13.5px;color:#bbb;line-height:2;margin:0;">' + polishCompatLine(ctx, 'a', aSpouse) + '</p>',
+        '<br><span style="font-size:11px;color:#777;line-height:1.65;">※ 배우자궁(日支)은 무의식적으로 끌리는 온도입니다.</span></div>',
         '<div class="insight-card" style="border-left:3px solid var(--gold-soft);">',
         '<div class="tag">✦ ' + escHtmlAttr(bName) + '님이 끌리는 이성</div><br>',
-        '<strong>일지: ' + escHtmlAttr(compatHanjaGlossChar(bDB, 'branch')) + '</strong><br><br>',
-        '<p style="font-size:13.5px;color:#bbb;line-height:1.85;margin:0;">' + polishCompatLine(ctx, 'b', bSpouse) + '</p></div>',
+        '<strong>' + escHtmlAttr(iljiLbl) + ' ' + escHtmlAttr(compatHanjaGlossCharFull(bDB, 'branch')) + '</strong><br><br>',
+        '<p style="font-size:13.5px;color:#bbb;line-height:2;margin:0;">' + polishCompatLine(ctx, 'b', bSpouse) + '</p></div>',
         '<div class="insight-card"><div class="tag">🔄 두 사람이 끌리는 이유</div><br>',
-        '<p style="font-size:13.5px;color:#bbb;line-height:1.85;margin:0;">' + compatFmt(why) + '</p></div>'
+        '<p style="font-size:13.5px;color:#bbb;line-height:2.05;margin:0;">' + compatFmt(why) + '</p></div>'
     ].join('')
         + buildCompatCoachQuestion(ctx, 'spouse');
 }
@@ -1849,9 +1904,10 @@ function buildCompatFortuneMixPanelHtml(ctx) {
     var syncStr = '**대운·월운 싱크** — 아래 타임라인에서 **✨ 함께 좋음** 구간이 겹치면 큰 결정 타이밍이고, **⚡ 조율 필요** 구간엔 휴식·일정 조정이 **합을 지키는 선택**입니다.';
     return buildCompatPanelPrefix(ctx, 'fortuneMix')
         + buildCompatChemScoreBanner(ctx)
-        + buildCompatStoryCard('🌊 운의 흐름 (Mix)', sit + ' ' + syncStr, conf, res, [])
+        + buildCompatStoryCard('🌊 운의 흐름 (Mix)', sit + '<br><br>' + syncStr, conf, res, [])
         + '<div class="insight-card" style="margin-bottom:12px;"><div class="tag">📅 시너지 타이밍 — 한 달·한 해</div>'
-        + '<p style="font-size:13.5px;color:#ccc;line-height:1.95;margin:12px 0 0;">' + compatFmt(mixDetail) + '</p></div>'
+        + '<p style="font-size:13.5px;color:#ccc;line-height:2.1;margin:12px 0 0;">' + compatFmt(mixDetail) + '</p></div>'
+        + buildCompatFortuneSyncConclusion(ctx, 'fortuneMix')
         + buildCompatCoachQuestion(ctx, 'fortuneMix');
 }
 
@@ -1968,15 +2024,18 @@ function buildCompatIdealFamilyAppendixHtml(ctx) {
     var famSit = meet + ', 가정을 그릴 때 **이상형 그림**과 **실제 상대**가 다르게 느껴져도, 생활 리듬이 맞으면 오래 가는 경우가 많아요.';
     var famStr = '**합(合)의 강점** — 무의식 일지가 맞물리면 **편안함**이 먼저 오고, 다름은 **성장 자극**으로 쓸 수 있습니다.';
     return buildCompatPanelPrefix(ctx, 'idealFamily')
-        + buildCompatStoryCard('🏡 가정·이상형 — 두 분의 거리', famSit + ' ' + famStr, fit, ideal, [])
-        + '<div class="insight-card" style="border-left:3px solid rgba(199,167,106,0.45);margin-bottom:10px;"><div class="tag">💫 이상형과의 거리(일지 무의식 기준)</div>'
-        + '<p style="font-size:13.5px;color:#bbb;line-height:1.9;margin:12px 0 0;">' + compatFmt(mirror) + '</p>'
-        + '<p style="font-size:11.5px;color:#777;line-height:1.75;margin:12px 0 0;font-style:italic;">'
-        + escHtmlAttr(aName) + '님 무의식 일지: ' + escHtmlAttr(aDbG) + ' · ' + escHtmlAttr(bName) + '님 무의식 일지: ' + escHtmlAttr(bDbG) + '</p></div>'
-        + '<div class="insight-card"><div class="tag" style="letter-spacing:0.08em;">✨ 자미두수로 보강할 수 있는 지점</div>'
-        + '<p style="font-size:13.5px;color:#bbb;line-height:1.9;margin:12px 0 0;">' + ziweiNote + '</p>'
-        + '<p style="font-size:12px;color:#888;line-height:1.8;margin:12px 0 0;">'
+        + buildCompatStoryCard('🏡 가정·이상형 — 두 분의 거리', famSit + '<br><br>' + famStr, fit, ideal, [])
+        + buildCompatPanelSynergyEmphasis(ctx, 'idealFamily')
+        + '<div class="insight-card" style="border-left:3px solid rgba(199,167,106,0.45);margin-bottom:10px;"><div class="tag">💫 이상형과의 거리(日支·일지 무의식 기준)</div>'
+        + '<p style="font-size:13.5px;color:#bbb;line-height:2.05;margin:12px 0 0;">' + compatFmt(mirror) + '</p>'
+        + '<p style="font-size:11.5px;color:#777;line-height:1.85;margin:14px 0 0;font-style:italic;">'
+        + escHtmlAttr(aName) + '님 무의식 일지: ' + escHtmlAttr(aDbG) + '<br>'
+        + escHtmlAttr(bName) + '님 무의식 일지: ' + escHtmlAttr(bDbG) + '</p></div>'
+        + '<div class="insight-card"><div class="tag" style="letter-spacing:0.08em;">✨ 자미두수(紫微斗數)로 보강할 수 있는 지점</div>'
+        + '<p style="font-size:13.5px;color:#bbb;line-height:2.05;margin:12px 0 0;">' + compatFmt(ziweiNote) + '</p>'
+        + '<p style="font-size:12px;color:#888;line-height:1.85;margin:14px 0 0;">'
         + '※ 자녀에 관한 선택은 명리 한 장만으로 세우지 마시고, 의학·양육·정책은 전문 분야 정보와 함께 보셔야 합니다.</p></div>'
+        + buildCompatCoupleSynergyMissionBox(ctx)
         + buildCompatCoachQuestion(ctx, 'idealFamily');
 }
 
@@ -2011,7 +2070,8 @@ function buildCompatTimelineSynergyHtml(ctx) {
     var conf = '**⚡ 조율 필요** 구간에는 큰 결정(이사·동업·결혼)을 미루고, **관계 점검·휴식·일정 조정**만 하세요. 한쪽만 바쁜 해에는 “왜 나를 안 챙겨?”가 아니라 **회복 시간 약속**이 먼저입니다.';
     var res = '**✨ 함께 좋음** 카드가 겹치는 해·구간에만 큰 결정을 맞추십시오. **🌙 무난** 구간엔 공통 취미·작은 성공을 쌓아 **대운 싱크**를 키우면, 다음 좋은 시기에 더 잘 맞습니다.';
     return buildCompatPanelPrefix(ctx, 'timeline')
-        + buildCompatStoryCard('📅 10년 대운 싱크 — 시너지 타이밍', sit + ' **월운·대운 데이터**는 아래 카드의 색·아이콘으로 읽으시면 됩니다.', conf, res, [])
+        + buildCompatStoryCard('📅 10년 대운 싱크 — 시너지 타이밍', sit + '<br><br>**월운·대운 데이터**는 아래 카드의 색·아이콘으로 읽으시면 됩니다.', conf, res, [])
+        + buildCompatFortuneSyncConclusion(ctx, 'timeline')
         + buildCompatCoachQuestion(ctx, 'timeline');
 }
 
@@ -2022,6 +2082,8 @@ if (typeof window !== 'undefined') {
     window.compatFmt = compatFmt;
     window.buildCompatChemGuideText = buildCompatChemGuideText;
     window.buildManseWaterColorNoteHtml = buildManseWaterColorNoteHtml;
+    window.buildCompatCoupleSynergyMissionBox = buildCompatCoupleSynergyMissionBox;
+    window.compatHanjaGlossCharFull = compatHanjaGlossCharFull;
 }
 
 function compatTimelineLine(cls, seed) {
