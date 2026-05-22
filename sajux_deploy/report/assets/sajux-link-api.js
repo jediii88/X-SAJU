@@ -24,14 +24,80 @@
     return '';
   }
 
+  var CUSTOMER_SITE = 'https://sajux.com';
+
   /** 고객용 code 링크인지 (생일이 URL에 없음) */
   function isCodeOnlyUrl(url) {
     try {
       var u = new URL(String(url || ''), location.origin);
-      return !!(u.searchParams.get('code') && !u.searchParams.get('y'));
+      return !!(u.searchParams.get('code') && !u.searchParams.get('y') && !u.searchParams.get('a_y'));
     } catch (e) {
       return false;
     }
+  }
+
+  function toCustomerSiteUrl(url) {
+    try {
+      var u = new URL(String(url || ''));
+      var code = u.searchParams.get('code');
+      if (!code) return url;
+      if (u.hostname === 'sajux.com' || u.hostname === 'www.sajux.com') return u.toString();
+      if (/vercel\.app$/i.test(u.hostname) || /x-saju/i.test(u.hostname)) {
+        if ((u.pathname || '').indexOf('couple') >= 0) {
+          return CUSTOMER_SITE + '/couple/?code=' + encodeURIComponent(code);
+        }
+        return CUSTOMER_SITE + '/report/saju.html?code=' + encodeURIComponent(code);
+      }
+    } catch (e0) {}
+    return url;
+  }
+
+  /** 궁합 공유·복사용 (?code= 만, 생일 파라미터 없음) */
+  function getCoupleShareUrl() {
+    try {
+      var code = new URLSearchParams(location.search).get('code');
+      if (!code) return '';
+      var base =
+        location.hostname === 'sajux.com' || location.hostname === 'www.sajux.com'
+          ? CUSTOMER_SITE
+          : location.origin;
+      var path = '/couple/';
+      if (location.pathname.indexOf('couple') >= 0) {
+        path = location.pathname.replace(/\/index\.html$/i, '');
+        if (!/\/$/.test(path)) path += '/';
+      }
+      return base + path + '?code=' + encodeURIComponent(code);
+    } catch (e1) {
+      return '';
+    }
+  }
+
+  function scrubCoupleLocationBar() {
+    try {
+      var share = getCoupleShareUrl();
+      if (!share || !history.replaceState) return;
+      var local = share;
+      if (location.hostname !== 'sajux.com' && location.hostname !== 'www.sajux.com') {
+        local = location.origin + location.pathname.replace(/\/index\.html$/i, '/') + location.search;
+        var sp = new URLSearchParams(location.search);
+        if (!sp.get('code')) return;
+        local =
+          location.origin +
+          (location.pathname.indexOf('couple') >= 0
+            ? location.pathname.replace(/\/index\.html$/i, '/')
+            : '/couple/') +
+          '?code=' +
+          encodeURIComponent(sp.get('code'));
+      }
+      if (location.href !== local) history.replaceState(null, '', local);
+    } catch (e2) {}
+  }
+
+  async function openCoupleCodeLink(payload, expAt) {
+    var issued = await issueLink('couple', payload, expAt || 0);
+    var url = toCustomerSiteUrl(issued.url);
+    window.open(url, '_blank', 'noopener,noreferrer');
+    return url;
   }
 
   function apiUrl(path) {
@@ -172,6 +238,10 @@
   global.SajuxLinkApi = {
     getApiBase: getApiBase,
     isCodeOnlyUrl: isCodeOnlyUrl,
+    toCustomerSiteUrl: toCustomerSiteUrl,
+    getCoupleShareUrl: getCoupleShareUrl,
+    scrubCoupleLocationBar: scrubCoupleLocationBar,
+    openCoupleCodeLink: openCoupleCodeLink,
     fetchByCode: fetchByCode,
     issueLink: issueLink,
     revokeLink: revokeLink,
