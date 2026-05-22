@@ -2004,8 +2004,8 @@ function buildCompatIdealFamilyAppendixHtml(ctx) {
     var bName = compatNm(ctx, 'b');
     var aDb = (ctx.a && ctx.a.dayBranch) || '';
     var bDb = (ctx.b && ctx.b.dayBranch) || '';
-    var aDbG = compatHanjaGlossChar(aDb, 'branch');
-    var bDbG = compatHanjaGlossChar(bDb, 'branch');
+    var aDbG = compatHanjaGlossCharFull(aDb, 'branch');
+    var bDbG = compatHanjaGlossCharFull(bDb, 'branch');
     var fit = ctx.isHap
         ? escHtmlAttr(aName) + '님 배우자궁 일지(' + escHtmlAttr(aDbG) + ')와 ' + escHtmlAttr(bName) + '님의 실제 일지(' + escHtmlAttr(bDbG) + ')가 **합(合)**으로 맞닿아 있어, 서로의 무의식 그림이 비교적 잘 겹치는 편으로 읽힙니다.'
         : ctx.isChung
