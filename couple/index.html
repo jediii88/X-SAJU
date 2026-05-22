@@ -23,7 +23,7 @@
 })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="sajux-build" content="1779417722">
+<meta name="sajux-build" content="1779418489">
 <title>사주X — 두 사람의 인연 구조</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;700;900&display=swap" rel="stylesheet">
@@ -533,6 +533,79 @@ body::before {
   border-radius: 10px; padding: 16px; margin-bottom: 10px;
   font-size: 13px; color: var(--text-soft); line-height: 1.75;
 }
+.insight-card.compat-prose-card { padding: 18px 16px 20px; margin-bottom: 14px; }
+.compat-prose { display: flex; flex-direction: column; gap: 0; }
+.compat-prose .compat-prose-p:last-child { margin-bottom: 0 !important; }
+/* 인연 보강 — 이번 주 시너지 미션 박스 */
+.compat-couple-mission-box {
+  margin-top: 32px;
+  margin-bottom: 12px;
+  padding: 24px;
+  border-radius: 12px;
+  background: rgba(17, 24, 39, 0.94);
+  border: 1px solid rgba(55, 65, 81, 0.9);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+.compat-mission-title {
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-align: center;
+  color: #fbbf24;
+  line-height: 1.45;
+}
+.compat-mission-sub {
+  margin: 0 0 18px;
+  font-size: 11px;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 0.02em;
+}
+.compat-mission-body { display: flex; flex-direction: column; gap: 0; }
+/* 최하단 공유 CTA */
+.compat-share-cta-wrap {
+  margin: 32px 0 56px;
+  padding: 0 2px;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.compat-share-cta-hint {
+  font-size: 12px;
+  color: var(--text-dim);
+  text-align: center;
+  line-height: 1.75;
+  margin: 0 0 14px;
+}
+.compat-share-cta-btn {
+  display: block;
+  width: 100%;
+  padding: 16px 20px;
+  border: none;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #1a1208;
+  cursor: pointer;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  box-shadow: 0 8px 28px rgba(245, 158, 11, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.compat-share-cta-btn:hover { transform: translateY(-1px); box-shadow: 0 10px 32px rgba(245, 158, 11, 0.45); }
+.compat-share-cta-btn:active { transform: translateY(0); }
+.compat-share-cta-toast {
+  display: none;
+  margin: 12px 0 0;
+  font-size: 12px;
+  text-align: center;
+  color: var(--gold);
+  line-height: 1.6;
+}
 .insight-card strong { color: var(--text); }
 .tag {
   display: inline-block; margin-bottom: 8px;
@@ -828,6 +901,7 @@ body::before {
       <div id="compat-voice-timeline" class="compat-voice-wrap" style="margin:28px 0 8px;"></div>
       <div id="panel-timeline" class="rel-panel"></div>
       <div class="timeline-scroll" id="timeline-scroll"></div>
+      <div id="compat-share-cta-mount"></div>
     </div>
   </div>
 </div>
@@ -2071,6 +2145,11 @@ function init() {
     buildRelPanels(params, sajuA, sajuB, result);
     renderScore(result);
     buildTimeline(sajuA, sajuB, params.a, params.b, params);
+
+    const shareMount = document.getElementById('compat-share-cta-mount');
+    if (shareMount && typeof buildCompatShareCtaHtml === 'function' && window.__compatCtx) {
+      shareMount.innerHTML = buildCompatShareCtaHtml(window.__compatCtx);
+    }
 
     // CSS 오행 배경색 클래스
     const st = document.createElement('style');
