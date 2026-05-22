@@ -20,7 +20,7 @@
             '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#000;color:#888;text-align:center;padding:40px;">' +
             '<div><div style="font-size:48px;margin-bottom:16px;">⏰</div>' +
             '<div style="font-size:18px;color:#c7a76a;font-weight:700;margin-bottom:8px;">리포트 유효기간 만료</div>' +
-            '<div style="font-size:13px;">PDF를 저장하지 않으셨다면 SAJUX에 문의해주세요.</div></div></div>';
+            '<div style="font-size:13px;">사주 다운로드를 받지 않으셨다면 SAJUX에 문의해 주세요.</div></div></div>';
         });
         return;
       }
@@ -57,7 +57,7 @@
       // 자동실행은 window.load IIFE에서 처리 (하단 스크립트 참조)
     })();
     </script>
-    <meta name="version" content="1779087376">
+    <meta name="version" content="1779419393">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -98,9 +98,9 @@
             --fire: #cf3e39;
             --earth: #c9a632;
             --metal: #b8c0d0;
-            /* 수(水)·현색(玄色): 명리 정통 검정. 다크 배경 가시성은 --water-stroke의 흰 윤곽으로 확보 */
-            --water: #181828;
-            --water-stroke: rgba(255,255,255,0.85);
+            /* 수(水): 파란색 (다크) */
+            --water: #1a6fd4;
+            --water-stroke: transparent;
             --text-muted: rgba(255,255,255,0.55);
             --bg-rgb: 8, 8, 16;
         }
@@ -145,8 +145,8 @@
             --earth: #856321;
             --metal: #3d4c5a;
             /* 라이트 모드: 흰 배경 위의 잉크 검정. 흰 윤곽은 보이지 않게 alpha 0 */
-            --water: #0d1020;
-            --water-stroke: rgba(255,255,255,0);
+            --water: #0f52b8;
+            --water-stroke: transparent;
         }
 
         #theme-toggle {
@@ -663,14 +663,31 @@
             mix-blend-mode: screen;
             opacity: 0.96;
         }
-        .sajux-logo.light { display: none; }
+        .sajux-logo.light:not(.sajux-logo-cover-print) { display: none; }
 
-        /* 표지: 화면 전용 — 인쇄 시에는 @media print 규칙 사용 */
+        /* 표지: 인쇄용 로고는 display:none 금지 — PDF에서 미렌더 방지 */
         @media screen {
-            .cover-page .sajux-logo-cover-print { display: none !important; }
+            .cover-page .sajux-logo-cover-print {
+                position: absolute !important;
+                left: -9999px !important;
+                top: 0 !important;
+                width: clamp(320px, 55vw, 600px) !important;
+                max-width: 100% !important;
+                height: auto !important;
+                opacity: 0.01 !important;
+                pointer-events: none !important;
+                display: block !important;
+                visibility: visible !important;
+            }
             .cover-page .sajux-logo-cover-screen { display: block; mix-blend-mode: screen; opacity: 0.96; }
             body.light-mode .cover-page .sajux-logo-cover-screen { display: none !important; }
-            body.light-mode .cover-page .sajux-logo-cover-print { display: block !important; mix-blend-mode: normal !important; opacity: 1 !important; }
+            body.light-mode .cover-page .sajux-logo-cover-print {
+                position: static !important;
+                left: auto !important;
+                display: block !important;
+                mix-blend-mode: normal !important;
+                opacity: 1 !important;
+            }
         }
 
         /* Light mode: use black logo, remove white matte */
@@ -2028,14 +2045,24 @@
         display: table-cell !important;
         vertical-align: top !important;
     }
-    .card, .yearly-card, .monthly-card, .module-item {
-        background: #f8f9fa !important;
+    .card, .yearly-card, .monthly-card, .module-item, .glass-panel, .sajux-glass-heavy {
+        background: transparent !important;
         backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
-        border: 1px solid #ddd !important;
+        border: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+    }
+    #report-container div[style*="background:rgba"],
+    #report-container div[style*="border-left"] {
+        background: transparent !important;
+        border: none !important;
+        border-left: none !important;
+        border-radius: 0 !important;
     }
     .badge, .tag, .jijanggan {
-        background: #e9ecef !important;
+        background: transparent !important;
+        border: none !important;
         }
 
             /* 화면용 UI 전부 숨기기 */
@@ -2047,25 +2074,66 @@
             #step-2 > .step-content > *:not(#sec-report-full) { display: none !important; }
             #sec-report-full > #report-inline-top { display: none !important; }
             /* 배경/색상 */
-            body { background: #fff !important; color: #111 !important; margin: 0 !important; }
-            html { background: #fff !important; color-scheme: light !important; --bg-primary: #fff !important; --text-primary: #111 !important; --card-bg: #f5f5f5 !important; --accent-color: #8b6914 !important; --accent-rgb: 139, 105, 20 !important; --gold: #8b6914 !important; --text: #111 !important; --text-soft: #242424 !important; --text-dim: #444 !important; }
-            .container { max-width: 100% !important; padding: 0 !important; }
+            html, body,
+            html[data-theme="dark"] body,
+            html:not([data-theme="light"]) body {
+                background: #fff !important;
+                background-color: #fff !important;
+                color: #111 !important;
+                margin: 0 !important;
+                color-scheme: light !important;
+            }
+            html {
+                --bg-primary: #fff !important;
+                --text-primary: #111 !important;
+                --card-bg: #f5f5f5 !important;
+                --accent-color: #8b6914 !important;
+                --accent-rgb: 139, 105, 20 !important;
+                --gold: #8b6914 !important;
+                --text: #111 !important;
+                --text-soft: #242424 !important;
+                --text-dim: #444 !important;
+            }
+            #step-2,
+            #step-2.page,
+            #sec-report-full {
+                width: 100% !important;
+                max-width: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                background: #fff !important;
+            }
+            .container,
+            #report-container {
+                width: 100% !important;
+                max-width: 500px !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
+                padding-left: 18px !important;
+                padding-right: 18px !important;
+                background: #fff !important;
+                box-sizing: border-box !important;
+            }
             #step-2, .step-content, #sec-report-full { padding: 0 !important; margin: 0 !important; }
             /* 리포트 챕터 스타일 */
-            .cover-page { page-break-after: always; min-height: 100vh; display: flex !important; flex-direction: column; justify-content: center; align-items: center; background: #fff !important; color: #111 !important; }
+            .cover-page { page-break-after: always; min-height: auto !important; height: auto !important; display: flex !important; flex-direction: column; justify-content: center; align-items: center; background: #fff !important; color: #111 !important; padding: 18mm 6mm !important; }
             .print-only { display: flex !important; }
             .toc-page.print-only { display: block !important; }
             .toc-page { page-break-after: always; background: #fff !important; color: #111 !important; padding: 40px !important; }
             .chapter-start, .report-chapter.chapter-start { page-break-before: always !important; }
-            .report-chapter { break-inside: avoid; page-break-inside: avoid; padding: 20px 0; margin: 0 0 8mm; }
-            .f-card, .seyun-year-card, .seyun-year-body, .lifecycle-card, .fortune-scroll .f-card { break-inside: avoid; page-break-inside: avoid; }
-            .pillar-card { break-inside: avoid; }
-            .interp-box { break-inside: avoid; min-height: 0; }
-            .bar-group, .manse-table, .table, table, .cat-section { break-inside: avoid; page-break-inside: avoid; }
-            table, .card, .module-item, .yearly-card, .monthly-card, .glass-panel, .appendix-ziwei, .yearly-card-container, .monthly-card-container, .seyun-year-card, .f-card {
+            .report-chapter { padding: 20px 0; margin: 0 0 8mm; background: #fff !important; box-shadow: none !important; backdrop-filter: none !important; border: none !important; border-radius: 0 !important; }
+            .f-card, .seyun-year-card, .seyun-year-body, .lifecycle-card, .fortune-scroll .f-card,
+            .pillar-card, .interp-box, .card, .glass-panel, .sajux-print-surface, .domain-summary-3box {
+                break-inside: avoid; page-break-inside: avoid;
+            }
+            .bar-group, .manse-table, table, .cat-section, .remedy-checklist-table {
+                break-inside: avoid; page-break-inside: avoid;
+            }
+            table, .card, .module-item, .yearly-card, .monthly-card, .yearly-card-container, .monthly-card-container, .seyun-year-card, .f-card {
                 page-break-inside: avoid !important;
                 break-inside: avoid !important;
             }
+            .part-header-block { page-break-before: always !important; break-before: page !important; }
             h1, h2, h3, .section-title, .ch-title {
                 page-break-inside: avoid !important;
                 break-inside: avoid !important;
@@ -2163,7 +2231,7 @@
             '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#000;color:#888;text-align:center;padding:40px;">' +
             '<div><div style="font-size:48px;margin-bottom:16px;">&#9200;</div>' +
             '<div style="font-size:18px;color:#c7a76a;font-weight:700;margin-bottom:8px;">리포트 유효기간 만료</div>' +
-            '<div style="font-size:13px;">PDF를 저장하지 않으셨다면 SAJUX에 문의해주세요.</div></div></div>';
+            '<div style="font-size:13px;">사주 다운로드를 받지 않으셨다면 SAJUX에 문의해 주세요.</div></div></div>';
         });
         return;
       }
@@ -2200,13 +2268,13 @@
     </script>
 
 <!-- SAJUX_CACHE_BUSTER_START -->
-<meta name="sajux-build" content="1779087376">
-<script>(function(){var v='1779087376';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
+<meta name="sajux-build" content="1779419393">
+<script>(function(){var v='1779419393';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
 <!-- SAJUX_CACHE_BUSTER_END -->
 <link rel="stylesheet" href="assets/css/core.css">
-<link rel="stylesheet" href="assets/override.css">
+<link rel="stylesheet" href="assets/override.css?v=1779247233">
 <style id="override-inline">
-/* Inline override to ensure dark-mode card contrast and light-mode readability */
+/* Inline override — 표 위 패널 등은 어둡게. 리포트 본문(#report-container)은 아래 블록에서 글래스로 재정의 */
 html:not([data-theme="light"]) .card,
 html:not([data-theme="light"]) .yearly-card,
 html:not([data-theme="light"]) .monthly-card,
@@ -2216,7 +2284,7 @@ html:not([data-theme="light"]) .jijanggan,
 html:not([data-theme="light"]) .badge,
 html:not([data-theme="light"]) .tag,
 html:not([data-theme="light"]) div[class*="box"],
-html:not([data-theme="light"]) div[class*="card"] {
+html:not([data-theme="light"]) div[class*="card"]:not(.ilju-profile-card) {
   background: rgba(8,10,12,0.72) !important;
   border: 1px solid rgba(255,255,255,0.04) !important;
   box-shadow: none !important;
@@ -2227,6 +2295,36 @@ html:not([data-theme="light"]) .inline-interp,
 html:not([data-theme="light"]) .section-interp {
   background: rgba(12,12,14,0.66) !important;
   border-color: rgba(255,255,255,0.03) !important;
+}
+html:not([data-theme="light"]) #report-container .card,
+html:not([data-theme="light"]) #report-container .yearly-card,
+html:not([data-theme="light"]) #report-container .monthly-card,
+html:not([data-theme="light"]) #report-container .inner-card,
+html:not([data-theme="light"]) #report-container .detail-box,
+html:not([data-theme="light"]) #report-container .jijanggan,
+html:not([data-theme="light"]) #report-container .badge,
+html:not([data-theme="light"]) #report-container .tag,
+html:not([data-theme="light"]) #report-container div[class*="box"],
+html:not([data-theme="light"]) #report-container div[class*="card"],
+html:not([data-theme="light"]) #report-container .glass-card,
+html:not([data-theme="light"]) #report-container .glass-panel,
+html:not([data-theme="light"]) #report-container .inline-interp,
+html:not([data-theme="light"]) #report-container .section-interp,
+html:not([data-theme="light"]) #report-container .report-chapter:not(.part-header-block),
+html:not([data-theme="light"]) #report-container .sajux-glass-heavy {
+  background: linear-gradient(
+    165deg,
+    rgba(255, 255, 255, 0.085) 0%,
+    rgba(255, 255, 255, 0.032) 52%,
+    rgba(255, 255, 255, 0.014) 100%
+  ) !important;
+  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+  backdrop-filter: blur(52px) saturate(165%) brightness(1.03) !important;
+  -webkit-backdrop-filter: blur(52px) saturate(165%) brightness(1.03) !important;
+  box-shadow:
+    0 16px 56px rgba(0, 0, 0, 0.32),
+    0 3px 14px rgba(0, 0, 0, 0.16) !important;
+  color: rgba(255, 255, 255, 0.94) !important;
 }
 html[data-theme="light"] body,
 html[data-theme="light"] .report-chapter,
@@ -2254,14 +2352,19 @@ html:not([data-theme="light"]) .brand {
 }
 </style>
 <style type="text/css" media="print">
-  .card, .yearly-card, .monthly-card, .inner-card, .detail-box, 
-  .jijanggan, .jijanggan span, .badge, .tag, div[class*="box"], div[class*="card"] {
-      background: #ffffff !important;
-      background-color: #ffffff !important;
-      border: 1px solid #cccccc !important;
+  .card, .yearly-card, .monthly-card, .inner-card, .detail-box,
+  .glass-panel, .sajux-glass-heavy, div[class*="card"] {
+      background: transparent !important;
+      background-color: transparent !important;
+      border: none !important;
+      border-radius: 0 !important;
       box-shadow: none !important;
       -webkit-print-color-adjust: exact !important;
       print-color-adjust: exact !important;
+  }
+  .jijanggan, .jijanggan span, .badge, .tag {
+      background: transparent !important;
+      border: none !important;
   }
   h1, h2, h3, h4, h5, .section-title, .part-title, .title-card {
       page-break-after: avoid !important;
@@ -2276,27 +2379,23 @@ html:not([data-theme="light"]) .brand {
 </head>
 <body>
 
-<button id="theme-toggle" onclick="toggleTheme()" aria-label="테마 전환">☀️ 라이트</button>
-
-<!-- 플로팅 목차 — 5부 구조 (웹 전용, PDF 숨김) -->
+<!-- 플로팅 목차 — 4부 구조 (웹 전용, PDF 숨김) -->
 <div id="floating-toc" class="nav-floating" style="display:none; position:fixed; right:12px; top:50%; transform:translateY(-50%); z-index:9999; background:var(--panel); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid var(--line); border-radius:14px; padding:10px 6px; box-shadow:0 8px 32px rgba(0,0,0,0.45); max-width:44px; overflow:hidden; transition:max-width 0.3s, padding 0.3s;" onmouseenter="expandToc()" onmouseleave="collapseToc()">
     <div style="font-size:10px; color:var(--gold); text-align:center; margin-bottom:8px; letter-spacing:1px; white-space:nowrap; opacity:0.85;">☰</div>
     <div id="toc-links" style="display:flex; flex-direction:column; gap:4px; min-width:168px;">
-        <a onclick="tocGo('sec-part1-narrative'); return false;" href="#sec-part1-narrative" class="toc-link" title="1부 당신이라는 사람">1부 당신이라는 사람</a>
-        <a onclick="tocGo('sec-part2-hardware'); return false;" href="#sec-part2-hardware" class="toc-link" title="2부 하드웨어 스펙">2부 하드웨어 스펙</a>
-        <a onclick="tocGo('sec-part3-four'); return false;" href="#sec-part3-four" class="toc-link" title="3부 핵심 4대운">3부 핵심 4대운</a>
-        <a onclick="tocGo('sec-part4-timeline'); return false;" href="#sec-part4-timeline" class="toc-link" title="4부 타임라인 전략">4부 타임라인 전략</a>
-        <a onclick="tocGo('sec-part5-final'); return false;" href="#sec-part5-final" class="toc-link" title="5부 최종 지침">5부 최종 지침</a>
+        <a onclick="tocGo('sec-part1-narrative'); return false;" href="#sec-part1-narrative" class="toc-link" title="1부 나라는 사람">1부 나라는 사람</a>
+        <a onclick="tocGo('sec-part2-now'); return false;" href="#sec-part2-now" class="toc-link" title="2부 지금 이 시절">2부 지금 이 시절</a>
+        <a onclick="tocGo('sec-part3-life'); return false;" href="#sec-part3-life" class="toc-link" title="3부 삶의 영역">3부 삶의 영역</a>
+        <a onclick="tocGo('sec-part4-final'); return false;" href="#sec-part4-final" class="toc-link" title="4부 지금부터의 선택">4부 지금부터의 선택</a>
         <div style="border-top:1px solid var(--line); margin:6px 0 4px;"></div>
-        <a onclick="window.print(); return false;" class="toc-link toc-link-print" href="#">🖨 PDF 저장</a>
+        <a onclick="if(window.sajuxCaptureReportAsImage){sajuxCaptureReportAsImage();}return false;" class="toc-link toc-link-print" href="#">📥 사주 다운로드</a>
     </div>
 </div>
-<nav id="sticky-part-nav" class="sticky-part-nav nav-floating" aria-label="리포트 5부 이동">
-    <button type="button" class="spn-item" onclick="tocGo('sec-part1-narrative')" title="1부">1부<br><span class="spn-sub">당신</span></button>
-    <button type="button" class="spn-item" onclick="tocGo('sec-part2-hardware')" title="2부">2부<br><span class="spn-sub">스펙</span></button>
-    <button type="button" class="spn-item" onclick="tocGo('sec-part3-four')" title="3부">3부<br><span class="spn-sub">4대운</span></button>
-    <button type="button" class="spn-item" onclick="tocGo('sec-part4-timeline')" title="4부">4부<br><span class="spn-sub">타임라인</span></button>
-    <button type="button" class="spn-item" onclick="tocGo('sec-part5-final')" title="5부">5부<br><span class="spn-sub">지침</span></button>
+<nav id="sticky-part-nav" class="sticky-part-nav nav-floating" aria-label="리포트 4부 이동">
+    <button type="button" class="spn-item" onclick="tocGo('sec-part1-narrative')" title="1부">1부<br><span class="spn-sub">나라는</span></button>
+    <button type="button" class="spn-item" onclick="tocGo('sec-part2-now')" title="2부">2부<br><span class="spn-sub">이 시절</span></button>
+    <button type="button" class="spn-item" onclick="tocGo('sec-part3-life')" title="3부">3부<br><span class="spn-sub">영역</span></button>
+    <button type="button" class="spn-item" onclick="tocGo('sec-part4-final')" title="4부">4부<br><span class="spn-sub">선택</span></button>
 </nav>
 <style>
 .toc-link {
@@ -2401,26 +2500,16 @@ body.light-mode .spn-sub {
 </style>
 <script>
 function applyTheme(mode){
-    var isLight = mode === 'light';
-    document.documentElement.setAttribute('data-theme', isLight ? 'light' : 'dark');
-    document.body.classList.toggle('light-mode', isLight);
-    var b = document.getElementById('theme-toggle');
-    if(b) b.textContent = isLight ? '🌙 다크' : '☀️ 라이트';
-    try { localStorage.setItem('sajux-theme', mode); } catch(e) {}
+    mode = 'dark';
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.body.classList.remove('light-mode');
+    try { localStorage.setItem('sajux-theme', 'dark'); } catch(e) {}
 }
 function toggleTheme(){
-    var isLight = document.body.classList.contains('light-mode');
-    applyTheme(isLight ? 'dark' : 'light');
+    applyTheme('dark');
 }
 function initTheme(){
-    var saved = null;
-    try { saved = localStorage.getItem('sajux-theme'); } catch(e) {}
-    if(saved === 'light' || saved === 'dark'){
-        applyTheme(saved);
-    } else {
-        var prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
-        applyTheme(prefersLight ? 'light' : 'dark');
-    }
+    applyTheme('dark');
 }
 if(document.readyState === 'loading'){
     document.addEventListener('DOMContentLoaded', initTheme);
@@ -2870,11 +2959,8 @@ function startReport() {
 }
 </script>
 
-        <div id="sec-report-full" style="display:block; padding-bottom:60px;">
+        <div id="sec-report-full" style="display:block; padding-bottom:28px;">
             <div id="report-container" style="padding:0; border-radius:0; background:transparent; border:none; box-shadow:none;"></div>
-            <div class="print-actions" style="text-align:center; margin-top:40px; padding-top:20px; border-top:1px solid var(--border);">
-                <button class="btn subtle" onclick="window.print()">🖨️ PDF로 저장</button>
-            </div>
         </div>
 <div class="section" id="sec-manse" style="display:none;margin-top:0;">
             <div class="section-title"><div class="title-left"><span>만세력 원국</span><span class="help-icon" onclick="openHelp('manse')">?</span></div><span>나의 8글자 사주 원본</span></div>
@@ -3030,9 +3116,6 @@ function startReport() {
         </div>
 
         <!-- 인라인 통합 리포트 (버튼 클릭 후 이 자리에 펼쳐짐) -->
-        
-
-        <button class="btn subtle" onclick="go(1)" style="margin-bottom:30px;">입력 정보 수정</button>
 
     </div>
 </div> <!-- End of container -->
@@ -3186,150 +3269,15 @@ body.light-mode #sajux-pdf-fab {
         margin: 0 auto 12px !important;
     }
     .sajux-logo-wrap img { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-    .card, .yearly-card, .monthly-card, .module-item, table, h1, h2, h3 {
+    h1, h2, h3, .section-title, .ch-title {
         page-break-inside: avoid !important;
         break-inside: avoid !important;
     }
 }
 </style>
 <style id="sajux-pdf-print-force">
-/* =========================================
-   [사주X PDF 인쇄 — 배경만 화이트닝, 오행 글자색 유지]
-========================================= */
-@media print {
-  body, html {
-    background: #ffffff !important;
-    background-color: #ffffff !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    box-shadow: none !important;
-  }
-
-  /* 지장간, 십성 배지, 태그 — 배경만 */
-  .jijanggan, .jijanggan span, .jijanggan div,
-  .badge, .tag, .m-badge, .m-badge-shinsal, .m-badge--gongmang-hit,
-  .highlight, [class*="badge"], [class*="tag"] {
-    background: #ffffff !important;
-    background-color: #ffffff !important;
-    border: 1px solid #999999 !important;
-    box-shadow: none !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-
-  /* 카드·내부 박스 — 배경만 (글자색 건드리지 않음) */
-  .card, .yearly-card, .monthly-card, .module-item,
-  .inner-card, .detail-box, .content-box,
-  .sajux-print-surface, .report-inner-box,
-  .vip-evidence-block table,
-  .manse-cell, .manse-table,
-  [class*="box"]:not(.checkbox):not(.search-box),
-  [class*="card"] {
-    background: #ffffff !important;
-    background-color: #ffffff !important;
-    border: 1px solid #cccccc !important;
-    box-shadow: none !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-  }
-
-  /* report-core 인라인 반투명 박스 */
-  #report-container div[style*="background:rgba(255,255,255"],
-  #report-container div[style*="background:rgba(0,0,0"] {
-    background: #ffffff !important;
-    background-color: #ffffff !important;
-    border: 1px solid #cccccc !important;
-    box-shadow: none !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-  }
-
-  /* 오행 한자·천간지지 색상 보존 */
-  .wood, .fire, .earth, .metal, .water,
-  .m-hanja, .m-hanja.wood, .m-hanja.fire, .m-hanja.earth, .m-hanja.metal, .m-hanja.water,
-  .rel-char span, [class*="han-"] {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-
-  /* 단락 제목 고립 방지 */
-  .section-title, .part-title, .part-header-label, .part-header-block,
-  .report-chapter, .ch-title, h1, h2, h3, .title-card {
-    page-break-after: avoid !important;
-    break-after: avoid !important;
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
-    margin-bottom: 10px !important;
-  }
-
-  .report-container, #report-container, .print-container, .layout-wrapper,
-  .seyun-premium-vertical, .part-header-block, .cover-page {
-    display: block !important;
-  }
-  .manse-table { display: flex !important; flex-direction: column !important; gap: 4px !important; }
-  .manse-row { display: grid !important; grid-template-columns: 60px repeat(4, 1fr) !important; gap: 4px !important; }
-  .part-header-block { page-break-before: always !important; break-before: page !important; page-break-after: avoid !important; break-after: avoid !important; }
-  .part-follow-content > *:first-child { page-break-before: avoid !important; break-before: avoid !important; }
-  .yearly-indicators, #report-container div[style*="background:rgba(0,0,0"] { background: #f7f7f7 !important; }
-  .yearly-ind-val, .m-hangul { color: #333333 !important; }
-
-  table {
-    border-collapse: collapse !important;
-    width: 100% !important;
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
-  }
-  th, td {
-    border: 1px solid #dee2e6 !important;
-    padding: 10px !important;
-    background-color: #ffffff !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-
-  .remedy-checklist-table,
-  .remedy-checklist-table thead,
-  .remedy-checklist-table tbody {
-    display: table !important;
-    width: 100% !important;
-    border-collapse: collapse !important;
-  }
-  .remedy-checklist-table tr { display: table-row !important; }
-  .remedy-checklist-table th,
-  .remedy-checklist-table td {
-    display: table-cell !important;
-    vertical-align: top !important;
-  }
-
-  #floating-toc, #theme-toggle, #sticky-part-nav, #sajux-pdf-fab,
-  .pdf-btn, .nav-floating, .sajux-pdf-wide-btn {
-    display: none !important;
-  }
-  #sec-cover, .cover-page { background: #ffffff !important; }
-  .cover-page .sajux-logo-cover-screen,
-  .sajux-logo.dark { display: none !important; visibility: hidden !important; mix-blend-mode: normal !important; }
-  .cover-page .sajux-logo-cover-print,
-  .sajux-logo.light,
-  .sajux-logo-cover-print {
-    display: block !important;
-    visibility: visible !important;
-    mix-blend-mode: normal !important;
-    opacity: 1 !important;
-    filter: none !important;
-    max-width: 520px !important;
-    width: 72% !important;
-    height: auto !important;
-    margin: 0 auto 12px !important;
-  }
-  .sajux-logo-wrap img {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-}
-
+/* PDF 인쇄 — report-print.css 단일 소스 (그림자·페이지 분할·플랫 문서형) */
 </style>
-<link rel="stylesheet" href="report-print.css">
+<link rel="stylesheet" href="report-print.css?v=1779419393">
 </body>
 </html>

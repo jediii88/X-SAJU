@@ -117,6 +117,10 @@ Reactions are lightweight social signals. Humans use them constantly — they sa
 
 Skills provide your tools. When you need one, check its `SKILL.md`. Keep local notes (camera names, SSH details, voice preferences) in `TOOLS.md`.
 
+### 사주X 리포트 — 수정 후 자동 배포
+
+`report/`·`report-core.js`·`override.css` 등 **고객-facing 리포트**를 바꾼 뒤에는, 사용자가 따로 말하지 않아도 **반드시** 워크스페이스 루트에서 `python3 deploy_now.py` 를 실행한다 (GitHub Pages). 배포 완료·캐시 버전 번호를 짧게 알린다. 커밋은 사용자가 요청할 때만.
+
 **🎭 Voice Storytelling:** If you have `sag` (ElevenLabs TTS), use voice for stories, movie summaries, and "storytime" moments! Way more engaging than walls of text. Surprise people with funny voices.
 
 **📝 Platform Formatting:**

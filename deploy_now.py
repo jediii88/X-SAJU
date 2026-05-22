@@ -17,6 +17,8 @@ def bump_build_version():
         os.path.join(ROOT, 'report', 'index.html'),
         os.path.join(ROOT, 'report', 'view.html'),
         os.path.join(ROOT, 'report', 'saju.html'),
+        os.path.join(ROOT, 'couple', 'index.html'),
+        os.path.join(ROOT, 'admin', 'index.html'),
     ]
 
     for path in targets:
@@ -38,11 +40,28 @@ def bump_build_version():
             rf"\g<1>{build_v}\2",
             out,
         )
+        out = re.sub(
+            r'(href="report-print\.css\?v=)\d+(")',
+            rf"\g<1>{build_v}\2",
+            out,
+        )
 
         if out != src:
             with open(path, 'w', encoding='utf-8') as f:
                 f.write(out)
             print(f'  [version] {os.path.relpath(path, ROOT)} -> {build_v}')
+
+
+def sync_deploy_pages():
+    """정본 couple·admin → sajux_deploy (Pages 업로드 직전 복사)."""
+    for name in ('couple/index.html', 'admin/index.html'):
+        src = os.path.join(ROOT, name.replace('/', os.sep))
+        dst = os.path.join(ROOT, 'sajux_deploy', name.replace('/', os.sep))
+        if not os.path.isfile(src):
+            raise SystemExit(f'{name} 이 없습니다.')
+        os.makedirs(os.path.dirname(dst), exist_ok=True)
+        shutil.copy2(src, dst)
+        print(f'  [sync] {name} -> sajux_deploy/{name}')
 
 
 def sync_report_bundle():
@@ -157,6 +176,7 @@ def cache_token(token):
 
 def main():
     bump_build_version()
+    sync_deploy_pages()
     sync_report_bundle()
     refresh_root_master_html()
 
@@ -180,7 +200,11 @@ def main():
         )
 
     deploy_dir = os.path.join(ROOT, 'sajux_deploy')
-    files = [
+    nojekyll = os.path.join(ROOT, '.nojekyll')
+    files = []
+    if os.path.isfile(nojekyll):
+        files.append((nojekyll, '.nojekyll'))
+    files.extend([
         (f'{deploy_dir}/index.html', 'index.html'),
         (f'{deploy_dir}/report/index.html', 'report/index.html'),
         (f'{deploy_dir}/report/view.html', 'report/view.html'),
@@ -190,7 +214,7 @@ def main():
         (f'{deploy_dir}/report/compatibility/index.html', 'report/compatibility/index.html'),
         (f'{deploy_dir}/admin/index.html', 'admin/index.html'),
         (f'{deploy_dir}/couple/index.html', 'couple/index.html'),
-    ]
+    ])
 
     for js in ['app.js', 'klc.min.js', 'lunar.js']:
         src = f'{deploy_dir}/{js}'

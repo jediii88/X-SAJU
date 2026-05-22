@@ -52,6 +52,11 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--go
 .badge.ok{background:rgba(100,220,120,0.15);color:#6ddc78;}
 .badge.warn{background:rgba(255,200,50,0.15);color:#ffc83a;}
 .badge.exp{background:rgba(255,80,80,0.15);color:#ff6b6b;}
+.link-code-display{font-size:26px;font-weight:800;letter-spacing:0.12em;color:var(--gold);margin:8px 0 4px;}
+.link-code-meta{font-size:14px;color:#ccc;margin-bottom:12px;line-height:1.6;}
+.link-code-hint{font-size:11px;color:#666;margin-top:6px;}
+.link-item-code{font-size:13px;font-weight:700;color:var(--gold);letter-spacing:0.06em;min-width:88px;}
+.link-item-meta{font-size:12px;color:#888;flex:1;min-width:0;}
 .cust-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:14px;}
 .cust-name{font-size:16px;font-weight:700;color:#fff;margin-bottom:4px;}
 .cust-meta{font-size:12px;color:#666;margin-bottom:12px;}
@@ -99,8 +104,8 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--go
   </div>
   <div class="tabs">
     <div class="tab active" onclick="showTab(0)">👤 고객 등록</div>
-    <div class="tab" onclick="showTab(1)">🔗 리포트 링크</div>
-    <div class="tab" onclick="showTab(2)">💞 궁합 링크</div>
+    <div class="tab" onclick="showTab(1)">📜 1인 사주</div>
+    <div class="tab" onclick="showTab(2)">💞 커플 사주</div>
     <div class="tab" onclick="showTab(3)">📋 고객 관리</div>
   </div>
 
@@ -162,14 +167,14 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--go
     </div>
   </div>
 
-  <!-- 탭1 리포트 링크 -->
+  <!-- 탭1 1인 사주 -->
   <div class="panel" id="panel-1">
     <div class="card">
       <div class="card-title">저장된 고객 선택</div>
       <div class="chip-wrap" id="link-customer-list"><span style="color:#555;font-size:13px;">저장된 고객이 없습니다</span></div>
     </div>
     <div class="card">
-      <div class="card-title">리포트 링크 생성</div>
+      <div class="card-title">1인 사주 링크 생성 <span style="font-size:11px;color:#666;font-weight:400;">(코드 a · 성별 m/w)</span></div>
       <div id="link-selected-info" style="font-size:13px;color:#888;margin-bottom:16px;">고객을 선택하거나 아래에 직접 입력하세요</div>
       <div class="form-row col2">
         <div><label>이름</label><input type="text" id="lnk-name" placeholder="홍길동"></div>
@@ -186,7 +191,7 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--go
       <div class="form-row col2">
         <div><label>생시 (HHMM)</label><input type="text" id="lnk-time" placeholder="0104" maxlength="4"></div>
         <div><label>유효기간</label>
-          <select id="lnk-expire"><option value="7">7일</option><option value="30" selected>30일</option><option value="60">60일</option><option value="0">무제한</option></select>
+          <div style="font-size:13px;color:#888;padding-top:6px;">링크 생성 시점부터 <strong style="color:var(--gold);">30일</strong> (고정)</div>
         </div>
       </div>
       <div class="toggle-row">
@@ -199,12 +204,18 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--go
         <button class="btn sec" onclick="generateReportLink()" style="flex:1;">🔗 링크 생성</button>
       </div>
       <div id="link-result" style="display:none;margin-top:16px;">
-        <div style="font-size:11px;color:#888;margin-bottom:6px;">고객에게 전달할 링크</div>
-        <div class="link-box" id="link-url-text"></div>
+        <div style="font-size:11px;color:#888;margin-bottom:4px;">발급 코드 (내부 순번)</div>
+        <div class="link-code-display" id="link-code-display">—</div>
+        <div class="link-code-meta" id="link-code-meta"></div>
         <div style="margin-top:8px;font-size:12px;color:#888;">만료일: <span id="link-expiry" style="color:var(--gold);"></span></div>
+        <details style="margin-top:12px;font-size:12px;color:#666;">
+          <summary style="cursor:pointer;color:#888;">전체 URL 보기</summary>
+          <div class="link-box" id="link-url-text" style="margin-top:8px;word-break:break-all;font-size:11px;"></div>
+        </details>
         <div style="display:flex;gap:8px;margin-top:10px;">
           <button class="btn sec" id="copy-link-btn" onclick="copyLink('link-url-text')" style="flex:1;">📋 링크 복사</button>
         </div>
+        <div class="link-code-hint">고객 이름은 URL에 가운데 *만 표시됩니다 (예: 심*영). 코드: <strong>a</strong>=1인, <strong>b</strong>=커플, <strong>m</strong>=남, <strong>w</strong>=여</div>
       </div>
       <div id="preview-wrap" style="display:none;margin-top:16px;">
         <button onclick="window.open(document.getElementById('preview-wrap').dataset.url,'_blank')" 
@@ -216,7 +227,7 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--go
     </div>
   </div>
 
-  <!-- 탭2 궁합 링크 -->
+  <!-- 탭2 커플 사주 -->
   <div class="panel" id="panel-2">
     <div class="card">
       <div class="card-title">A 사람 선택</div>
@@ -229,19 +240,25 @@ input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--go
       <div id="couple-b-info" style="font-size:13px;color:#888;margin-top:10px;">선택 안 됨</div>
     </div>
     <div class="card">
-      <div class="card-title">링크 옵션</div>
-      <div class="form-row" style="max-width:300px;">
+      <div class="card-title">커플 사주 링크 <span style="font-size:11px;color:#666;font-weight:400;">(코드 b · 30일 만료)</span></div>
+      <div class="form-row" style="max-width:340px;">
         <div><label>유효기간</label>
-          <select id="couple-expire"><option value="7">7일</option><option value="30" selected>30일</option><option value="60">60일</option><option value="0">무제한</option></select>
+          <div style="font-size:13px;color:#888;padding-top:6px;">링크 생성 시점부터 <strong style="color:var(--gold);">30일</strong> (고정)</div>
         </div>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;">
         <button type="button" class="btn sec" onclick="previewCoupleReport()" style="flex:1;">👁 새 탭에서 궁합 미리보기</button>
-        <button type="button" class="btn purple" onclick="generateCoupleLink()" style="flex:1;">💞 궁합 링크 생성</button>
+        <button type="button" class="btn purple" onclick="generateCoupleLink()" style="flex:1;">💞 커플 링크 생성</button>
       </div>
       <div id="couple-result" style="display:none;">
-        <div class="link-box" id="couple-url-text"></div>
+        <div style="font-size:11px;color:#888;margin-bottom:4px;">발급 코드 (내부 순번)</div>
+        <div class="link-code-display" id="couple-code-display">—</div>
+        <div class="link-code-meta" id="couple-code-meta"></div>
         <div style="margin-top:10px;font-size:12px;color:#888;">만료일: <span id="couple-expiry" style="color:var(--gold);"></span></div>
+        <details style="margin-top:12px;font-size:12px;color:#666;">
+          <summary style="cursor:pointer;color:#888;">전체 URL 보기</summary>
+          <div class="link-box" id="couple-url-text" style="margin-top:8px;word-break:break-all;font-size:11px;"></div>
+        </details>
         <div id="couple-preview-wrap" style="display:none;margin-top:14px;">
           <button type="button" onclick="window.open(document.getElementById('couple-preview-wrap').dataset.url,'_blank','noopener,noreferrer')"
             style="width:100%;padding:14px;background:rgba(124,141,255,0.12);border:1px solid var(--purple);border-radius:10px;color:#b0b8ff;font-size:14px;font-weight:600;cursor:pointer;">
@@ -273,7 +290,46 @@ function getCustomers(){try{return JSON.parse(localStorage.getItem('sajux_custom
 function saveCustomers(a){localStorage.setItem('sajux_customers',JSON.stringify(a));}
 function getLinks(){try{return JSON.parse(localStorage.getItem('sajux_links')||'[]');}catch(e){return[];}}
 function saveLinks(a){localStorage.setItem('sajux_links',JSON.stringify(a));}
+function nextLinkSeq(){
+  const n=(parseInt(localStorage.getItem('sajux_link_seq')||'0',10)||0)+1;
+  localStorage.setItem('sajux_link_seq',String(n));
+  return n;
+}
 function today(){return new Date().toISOString().slice(0,10);}
+
+/** URL·표시용 성별 코드: m=남, w=여 */
+function genderCode(g){
+  const s=String(g||'').toLowerCase();
+  if(s==='m'||s==='male'||s==='남')return'm';
+  if(s==='w'||s==='female'||s==='f'||s==='여')return'w';
+  return'm';
+}
+function kindCode(type){return type==='couple'?'b':'a';}
+function buildLinkCode(type,seq){return kindCode(type)+String(seq).padStart(3,'0');}
+function linkDisplayLine(link){
+  const code=link.code||buildLinkCode(link.type,link.seq||0);
+  const seq=link.seq?('#'+String(link.seq).padStart(3,'0')+' '):'';
+  if(link.type==='couple'){
+    return seq+code+' · '+ (link.maskA||'?')+'('+genderCode(link.genA)+') · '+ (link.maskB||'?')+'('+genderCode(link.genB)+')';
+  }
+  return seq+code+' · '+(link.maskName||'?')+'('+genderCode(link.gen)+')';
+}
+function registerLinkRecord(base){
+  const seq=nextLinkSeq();
+  const code=buildLinkCode(base.type,seq);
+  return Object.assign({},base,{seq,code,kind:kindCode(base.type)});
+}
+function showLinkIssued(kind,linkObj,url){
+  const codeEl=document.getElementById(kind==='couple'?'couple-code-display':'link-code-display');
+  const metaEl=document.getElementById(kind==='couple'?'couple-code-meta':'link-code-meta');
+  const urlEl=document.getElementById(kind==='couple'?'couple-url-text':'link-url-text');
+  if(codeEl)codeEl.textContent=linkObj.code||'—';
+  if(metaEl)metaEl.textContent=linkDisplayLine(linkObj).replace(/^#\d+\s*/,'');
+  if(urlEl){
+    urlEl.textContent=url;
+    urlEl.dataset.url=url;
+  }
+}
 
 // ── 잠금
 function doLogin(){
@@ -330,7 +386,8 @@ function parseTimeInput(raw){
 function fmtDate(c){return String(c.y)+'-'+String(c.mo).padStart(2,'0')+'-'+String(c.d).padStart(2,'0');}
 function fmtTime(c){return c.unknown?'시간 모름':String(c.h).padStart(2,'0')+':'+String(c.mi).padStart(2,'0');}
 
-// ── 만료 타임스탬프
+// ── 만료 타임스탬프 (고객 전달 링크 공통: 생성 시점 + 일수)
+const CUSTOMER_LINK_EXPIRE_DAYS = 30;
 function calcExpAt(days){
   if(!days||days===0)return 0;
   return Date.now()+days*24*60*60*1000;
@@ -378,7 +435,7 @@ function appendIssuerParam(p){
 }
 function appendCoupleSide(prefix,cust,p){
   p.set(prefix+'_n',maskNameForLink(cust.name));
-  p.set(prefix+'_g',cust.gender);
+  p.set(prefix+'_g',genderCode(cust.gender));
   p.set(prefix+'_c',cust.cal);
   p.set(prefix+'_y',cust.y);p.set(prefix+'_mo',cust.mo);p.set(prefix+'_d',cust.d);
   if(cust.unknown){
@@ -392,14 +449,15 @@ function appendCoupleSide(prefix,cust,p){
 function buildReportUrl(cust,expAt,unknown){
   const base='https://sajux.com/report/saju.html';
   const p=new URLSearchParams();
+  p.set('t','a');
   p.set('n',maskNameForLink(cust.name));
-  p.set('g',cust.gender==='male'?'male':'female');
+  p.set('g',genderCode(cust.gender));
   p.set('c',cust.cal==='solar'?'solar':'lunar');
   p.set('y',cust.y);p.set('mo',cust.mo);p.set('d',cust.d);
   if(!unknown)p.set('h',cust.h);
   if(!unknown)p.set('mi',cust.mi);
   if(unknown)p.set('unk','1');
-  if(expAt)p.set('exp',expAt);
+  if(expAt)p.set('exp',String(expAt));
   appendIssuerParam(p);
   p.set('v', Date.now());
   return base+'?'+p.toString();
@@ -407,10 +465,11 @@ function buildReportUrl(cust,expAt,unknown){
 function buildCoupleUrl(a,b,expAt){
   const base='https://sajux.com/couple/';
   const p=new URLSearchParams();
+  p.set('t','b');
   appendCoupleSide('a',a,p);
   appendCoupleSide('b',b,p);
   p.set('rel','lover');
-  if(expAt)p.set('exp',expAt);
+  if(expAt)p.set('exp',String(expAt));
   appendIssuerParam(p);
   p.set('v', Date.now());
   return base+'?'+p.toString();
@@ -492,8 +551,7 @@ function getLinkParams() {
   if(!parsed){alert('생년월일을 입력하세요');return null;}
   const unknown=document.getElementById('lnk-unknown').checked;
   const t=parseTimeInput(document.getElementById('lnk-time').value);
-  const expDays=parseInt(document.getElementById('lnk-expire').value);
-  const expAt=expDays?calcExpAt(expDays):0;
+  const expAt=calcExpAt(CUSTOMER_LINK_EXPIRE_DAYS);
   const cust={id:selectedLinkCust?selectedLinkCust.id:Date.now(),name,
     gender:document.getElementById('lnk-gender').value,
     cal:document.getElementById('lnk-cal').value,
@@ -529,12 +587,14 @@ function generateReportLink(){
   }
 
   // 링크 결과 표시
-  document.getElementById('link-url-text').textContent=url;
+  const linkObj=registerLinkRecord({
+    id:Date.now(),customerId:selectedLinkCust?selectedLinkCust.id:0,type:'single',url,expAt:p.expAt,createdAt:today(),bCustomerId:null,
+    maskName:maskNameForLink(p.cust.name),gen:p.cust.gender
+  });
+  showLinkIssued('single',linkObj,url);
   document.getElementById('link-expiry').textContent=fmtExpAt(p.expAt);
   document.getElementById('link-result').style.display='block';
 
-  // 링크 저장
-  const linkObj={id:Date.now(),customerId:selectedLinkCust?selectedLinkCust.id:0,type:'single',url,expAt:p.expAt,createdAt:today(),bCustomerId:null};
   const links=getLinks();links.push(linkObj);saveLinks(links);
 }
 
@@ -569,16 +629,19 @@ function generateCoupleLink(){
   if(!selectedCoupleA)return alert('A 사람을 선택하세요');
   if(!selectedCoupleB)return alert('B 사람을 선택하세요');
   if(selectedCoupleA.id===selectedCoupleB.id)return alert('서로 다른 고객을 선택하세요');
-  const expDays=parseInt(document.getElementById('couple-expire').value);
-  const expAt=expDays?calcExpAt(expDays):0;
+  const expAt=calcExpAt(CUSTOMER_LINK_EXPIRE_DAYS);
   const previewUrl=buildCoupleUrl(selectedCoupleA,selectedCoupleB,0);
   const url=buildCoupleUrl(selectedCoupleA,selectedCoupleB,expAt);
-  document.getElementById('couple-url-text').textContent=url;
+  const linkObj=registerLinkRecord({
+    id:Date.now(),customerId:selectedCoupleA.id,type:'couple',url,expAt,createdAt:today(),bCustomerId:selectedCoupleB.id,
+    maskA:maskNameForLink(selectedCoupleA.name),maskB:maskNameForLink(selectedCoupleB.name),
+    genA:selectedCoupleA.gender,genB:selectedCoupleB.gender
+  });
+  showLinkIssued('couple',linkObj,url);
   document.getElementById('couple-expiry').textContent=fmtExpAt(expAt);
   document.getElementById('couple-result').style.display='block';
   const cw=document.getElementById('couple-preview-wrap');
   if(cw){cw.style.display='block';cw.dataset.url=previewUrl;}
-  const linkObj={id:Date.now(),customerId:selectedCoupleA.id,type:'couple',url,expAt,createdAt:today(),bCustomerId:selectedCoupleB.id};
   const links=getLinks();links.push(linkObj);saveLinks(links);
 }
 
@@ -592,11 +655,13 @@ function renderManageList(){
     const custLinks=links.filter(l=>l.customerId===c.id||l.bCustomerId===c.id);
     const linksHtml=custLinks.length?custLinks.map(l=>{
       const isExpired=l.expAt&&Date.now()>l.expAt;
+      const line=linkDisplayLine(l);
       return `<div class="link-item">
-        <span class="badge ${l.type==='couple'?'warn':'ok'}">${l.type==='couple'?'궁합':'리포트'}</span>
+        <span class="badge ${l.type==='couple'?'warn':'ok'}">${l.type==='couple'?'b 커플':'a 1인'}</span>
         ${dDayBadge(l.expAt)}
-        <span class="link-item-url">${l.url}</span>
-        <button class="btn sec sm" onclick="copyLinkDirect('${escapeHtml(l.url)}')">복사</button>
+        <span class="link-item-code">${l.code||buildLinkCode(l.type,l.seq||0)}</span>
+        <span class="link-item-meta">${escapeHtml(line)}</span>
+        <button class="btn sec sm" onclick="copyLinkDirect('${escapeHtml(l.url)}')">URL복사</button>
         ${!isExpired?`<button class="btn danger sm" onclick="expireLink(${l.id})">만료</button>`:''}
         <button class="btn danger sm" onclick="deleteLink(${l.id})">삭제</button>
       </div>`;
@@ -632,7 +697,8 @@ function escapeHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').repla
 
 // ── 복사
 function copyLink(elId){
-  const t=document.getElementById(elId).textContent;
+  const el=document.getElementById(elId);
+  const t=(el&&el.dataset.url)||(el&&el.textContent)||'';
   navigator.clipboard.writeText(t).then(()=>alert('링크가 복사되었습니다!')).catch(()=>prompt('링크를 복사하세요:',t));
 }
 function copyLinkDirect(url){

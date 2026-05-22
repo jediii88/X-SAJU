@@ -16,7 +16,7 @@
             '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#000;color:#888;text-align:center;padding:40px;">' +
             '<div><div style="font-size:48px;margin-bottom:16px;">⏰</div>' +
             '<div style="font-size:18px;color:#c7a76a;font-weight:700;margin-bottom:8px;">리포트 유효기간 만료</div>' +
-            '<div style="font-size:13px;">PDF를 저장하지 않으셨다면 SAJUX에 문의해주세요.</div></div></div>';
+            '<div style="font-size:13px;">사주 다운로드를 받지 않으셨다면 SAJUX에 문의해 주세요.</div></div></div>';
         });
         return;
       }
@@ -53,7 +53,7 @@
       // 자동실행은 window.load IIFE에서 처리 (하단 스크립트 참조)
     })();
     </script>
-    <meta name="version" content="1779087376">
+    <meta name="version" content="1779419393">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>X-사주 마스터 | 프리미엄 만세력</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
@@ -79,9 +79,9 @@
             --fire: #d45a52;
             --earth: #c9a24c;
             --metal: #9ea4aa;
-            /* 수(水)·현색(玄色): 명리 정통 검정 + 다크 배경 가시성용 흰 윤곽 */
-            --water: #181828;
-            --water-stroke: rgba(255,255,255,0.85);
+            /* 수(水): 파란색 (다크) */
+            --water: #1a6fd4;
+            --water-stroke: transparent;
             --text-muted: rgba(255,255,255,0.55);
             --bg-rgb: 0, 0, 0;
         }
@@ -137,9 +137,9 @@
             --fire: #b4221a;
             --earth: #856321;
             --metal: #3d4c5a;
-            /* 라이트 모드: 흰 배경 위의 잉크 검정. 흰 윤곽은 보이지 않게 alpha 0 */
-            --water: #0d1020;
-            --water-stroke: rgba(255,255,255,0);
+            /* 수(水): 파란색 (라이트) */
+            --water: #0f52b8;
+            --water-stroke: transparent;
             --text-muted: rgba(40, 36, 32, 0.45);
             --bg-rgb: 250, 248, 244;
         }
@@ -1609,14 +1609,22 @@
         display: table-cell !important;
         vertical-align: top !important;
     }
-    .card, .yearly-card, .monthly-card, .module-item {
-        background: #f8f9fa !important;
+    .card, .yearly-card, .monthly-card, .module-item, .glass-panel, .sajux-glass-heavy {
+        background: transparent !important;
         backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
-        border: 1px solid #ddd !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+    #report-container div[style*="background:rgba"],
+    #report-container div[style*="border-left"] {
+        background: transparent !important;
+        border: none !important;
+        border-left: none !important;
     }
     .badge, .tag, .jijanggan {
-        background: #e9ecef !important;
+        background: transparent !important;
+        border: none !important;
         }
 
             /* 화면용 UI 전부 숨기기 */
@@ -1629,26 +1637,57 @@
             #sec-report-full > #report-inline-top { display: none !important; }
             /* 배경/색상 */
             @page { size: A4; margin: 14mm 12mm 16mm; }
-            body { background: #fff !important; color: #111 !important; margin: 0 !important; }
-            html { background: #fff !important; --text-primary: #111 !important; --accent-rgb: 139, 105, 20 !important; }
-            .container { max-width: 100% !important; padding: 0 !important; }
+            html, body,
+            html[data-theme="dark"] body,
+            html:not([data-theme="light"]) body {
+                background: #fff !important;
+                background-color: #fff !important;
+                color: #111 !important;
+                margin: 0 !important;
+                color-scheme: light !important;
+            }
+            html { --bg-primary: #fff !important; --text-primary: #111 !important; --accent-rgb: 139, 105, 20 !important; }
+            #step-2,
+            #step-2.page,
+            #sec-report-full {
+                width: 100% !important;
+                max-width: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                background: #fff !important;
+            }
+            .container,
+            #report-container {
+                width: 100% !important;
+                max-width: 500px !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
+                padding-left: 18px !important;
+                padding-right: 18px !important;
+                background: #fff !important;
+                box-sizing: border-box !important;
+            }
             #step-2, .step-content, #sec-report-full { padding: 0 !important; margin: 0 !important; }
             /* 리포트 챕터 스타일 */
-            .cover-page { page-break-after: always; min-height: 100vh; display: flex !important; flex-direction: column; justify-content: center; align-items: center; background: #fff !important; color: #111 !important; }
+            .cover-page { page-break-after: always; min-height: auto !important; height: auto !important; display: flex !important; flex-direction: column; justify-content: center; align-items: center; background: #fff !important; color: #111 !important; padding: 18mm 6mm !important; }
             .print-only { display: none !important; }
             @media print { .print-only { display: flex !important; } }
             .toc-page.print-only { display:none; }
             @media print { .toc-page.print-only { display:block !important; } }
             .toc-page { page-break-after: always; background: #fff !important; color: #111 !important; padding: 40px !important; }
             .chapter-start, .report-chapter.chapter-start { page-break-before: always !important; }
-            .report-chapter { break-inside: avoid; page-break-inside: avoid; padding: 20px 0; margin: 0 0 8mm; }
-            .pillar-card { break-inside: avoid; }
-            .interp-box { break-inside: avoid; min-height: 0; }
-            .bar-group, .manse-table, .table, table, .cat-section { break-inside: avoid; page-break-inside: avoid; }
-            table, .card, .module-item, .yearly-card, .monthly-card, .glass-panel, .appendix-ziwei, .yearly-card-container, .monthly-card-container, .seyun-year-card, .f-card {
+            .report-chapter { padding: 20px 0; margin: 0 0 8mm; background: #fff !important; box-shadow: none !important; backdrop-filter: none !important; border: none !important; border-radius: 0 !important; }
+            .pillar-card, .interp-box, .card, .glass-panel, .sajux-print-surface, .domain-summary-3box {
+                break-inside: avoid; page-break-inside: avoid;
+            }
+            .bar-group, .manse-table, table, .cat-section, .remedy-checklist-table {
+                break-inside: avoid; page-break-inside: avoid;
+            }
+            table, .card, .module-item, .yearly-card, .monthly-card, .yearly-card-container, .monthly-card-container, .seyun-year-card, .f-card {
                 page-break-inside: avoid !important;
                 break-inside: avoid !important;
             }
+            .part-header-block { page-break-before: always !important; break-before: page !important; }
             h1, h2, h3, .section-title, .ch-title {
                 page-break-inside: avoid !important;
                 break-inside: avoid !important;
@@ -1744,9 +1783,9 @@
     </style>
     
     <link rel="stylesheet" href="assets/css/core.css">
-    <link rel="stylesheet" href="assets/override.css">
+    <link rel="stylesheet" href="assets/override.css?v=1779247233">
     <style id="override-inline">
-    /* Inline override to ensure dark-mode card contrast and light-mode readability */
+    /* Inline override — 표 위 패널 등은 어둡게. 리포트 본문(#report-container)은 아래 블록에서 글래스로 재정의 */
     html:not([data-theme="light"]) .card,
     html:not([data-theme="light"]) .yearly-card,
     html:not([data-theme="light"]) .monthly-card,
@@ -1756,7 +1795,7 @@
     html:not([data-theme="light"]) .badge,
     html:not([data-theme="light"]) .tag,
     html:not([data-theme="light"]) div[class*="box"],
-    html:not([data-theme="light"]) div[class*="card"] {
+    html:not([data-theme="light"]) div[class*="card"]:not(.ilju-profile-card) {
       background: rgba(8,10,12,0.72) !important;
       border: 1px solid rgba(255,255,255,0.04) !important;
       box-shadow: none !important;
@@ -1767,6 +1806,36 @@
     html:not([data-theme="light"]) .section-interp {
       background: rgba(12,12,14,0.66) !important;
       border-color: rgba(255,255,255,0.03) !important;
+    }
+    html:not([data-theme="light"]) #report-container .card,
+    html:not([data-theme="light"]) #report-container .yearly-card,
+    html:not([data-theme="light"]) #report-container .monthly-card,
+    html:not([data-theme="light"]) #report-container .inner-card,
+    html:not([data-theme="light"]) #report-container .detail-box,
+    html:not([data-theme="light"]) #report-container .jijanggan,
+    html:not([data-theme="light"]) #report-container .badge,
+    html:not([data-theme="light"]) #report-container .tag,
+    html:not([data-theme="light"]) #report-container div[class*="box"],
+    html:not([data-theme="light"]) #report-container div[class*="card"],
+    html:not([data-theme="light"]) #report-container .glass-card,
+    html:not([data-theme="light"]) #report-container .glass-panel,
+    html:not([data-theme="light"]) #report-container .inline-interp,
+    html:not([data-theme="light"]) #report-container .section-interp,
+    html:not([data-theme="light"]) #report-container .report-chapter:not(.part-header-block),
+    html:not([data-theme="light"]) #report-container .sajux-glass-heavy {
+      background: linear-gradient(
+        165deg,
+        rgba(255, 255, 255, 0.085) 0%,
+        rgba(255, 255, 255, 0.032) 52%,
+        rgba(255, 255, 255, 0.014) 100%
+      ) !important;
+      border: 1px solid rgba(255, 255, 255, 0.10) !important;
+      backdrop-filter: blur(52px) saturate(165%) brightness(1.03) !important;
+      -webkit-backdrop-filter: blur(52px) saturate(165%) brightness(1.03) !important;
+      box-shadow:
+        0 16px 56px rgba(0, 0, 0, 0.32),
+        0 3px 14px rgba(0, 0, 0, 0.16) !important;
+      color: rgba(255, 255, 255, 0.94) !important;
     }
     html[data-theme="light"] body,
     html[data-theme="light"] .report-chapter,
@@ -1831,7 +1900,7 @@
         <a onclick="tocGo('sec-personality')" class="toc-link">성격 분석</a>
         <a onclick="tocGo('sec-daeun-detail')" class="toc-link">대운 상세</a>
         <div style="border-top:1px solid rgba(255,255,255,0.1); margin:4px 0;"></div>
-        <a onclick="window.print()" class="toc-link" style="color:rgba(199,167,106,0.9);">🖨 PDF 저장</a>
+        <a onclick="if(window.sajuxCaptureReportAsImage){sajuxCaptureReportAsImage();}return false;" class="toc-link toc-link-print" href="#" style="color:rgba(199,167,106,0.9);">📥 사주 다운로드</a>
     </div>
 </div>
 <style>
@@ -2298,7 +2367,7 @@ function startReport() {
 }
 </script>
 
-        <div id="sec-report-full" style="display:block; padding-bottom:60px;">
+        <div id="sec-report-full" style="display:block; padding-bottom:28px;">
             <div id="report-inline-top" style="text-align:center; padding: 30px 0 10px;">
                 <div style="font-size:11px; letter-spacing:3px; color:var(--text-soft); margin-bottom:6px;">X · S A J U · R E P O R T</div>
                 <div style="font-size:22px; font-weight:800; color:var(--gold); font-family:'Noto Serif KR',serif;">당신의 운명 서사</div>
@@ -2324,9 +2393,6 @@ function startReport() {
             </style>
             <div id="report-container" style="padding:0; border-radius:0; background:transparent; border:none; box-shadow:none;">
 </div>
-            <div style="text-align:center; margin-top:40px; padding-top:20px; border-top:1px solid var(--border);">
-                <button class="btn subtle" onclick="window.print()">🖨️ PDF로 저장</button>
-            </div>
         </div>
 <div class="section" id="sec-manse" style="display:none;margin-top:0;">
             <div class="section-title"><div class="title-left"><span>만세력 원국</span><span class="help-icon" onclick="openHelp('manse')">?</span></div><span>나의 8글자 사주 원본</span></div>
@@ -2481,9 +2547,6 @@ function startReport() {
         </div>
 
         <!-- 인라인 통합 리포트 (버튼 클릭 후 이 자리에 펼쳐짐) -->
-        
-
-        <button class="btn subtle" onclick="go(1)" style="margin-bottom:30px;">입력 정보 수정</button>
 
     </div>
 </div> <!-- End of container -->
@@ -2611,7 +2674,7 @@ html[data-theme="light"] #sajux-pdf-fab {
 <style id="sajux-print-global-footer">
 @media print {
     .pdf-btn, .nav-floating { display: none !important; }
-    .card, .yearly-card, .monthly-card, .module-item, table, h1, h2, h3 {
+    h1, h2, h3, .section-title, .ch-title {
         page-break-inside: avoid !important;
         break-inside: avoid !important;
     }
@@ -2619,129 +2682,9 @@ html[data-theme="light"] #sajux-pdf-fab {
 </style>
 
 <style id="sajux-pdf-print-force">
-/* =========================================
-   [사주X PDF 인쇄 — 배경만 화이트닝, 오행 글자색 유지]
-========================================= */
-@media print {
-  body, html {
-    background: #ffffff !important;
-    background-color: #ffffff !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    box-shadow: none !important;
-  }
-
-  /* 지장간, 십성 배지, 태그 — 배경만 */
-  .jijanggan, .jijanggan span, .jijanggan div,
-  .badge, .tag, .m-badge, .m-badge-shinsal, .m-badge--gongmang-hit,
-  .highlight, [class*="badge"], [class*="tag"] {
-    background: #ffffff !important;
-    background-color: #ffffff !important;
-    border: 1px solid #999999 !important;
-    box-shadow: none !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-
-  /* 카드·내부 박스 — 배경만 (글자색 건드리지 않음) */
-  .card, .yearly-card, .monthly-card, .module-item,
-  .inner-card, .detail-box, .content-box,
-  .sajux-print-surface, .report-inner-box,
-  .vip-evidence-block table,
-  .manse-cell, .manse-table,
-  [class*="box"]:not(.checkbox):not(.search-box),
-  [class*="card"] {
-    background: #ffffff !important;
-    background-color: #ffffff !important;
-    border: 1px solid #cccccc !important;
-    box-shadow: none !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-  }
-
-  /* report-core 인라인 반투명 박스 */
-  #report-container div[style*="background:rgba(255,255,255"],
-  #report-container div[style*="background:rgba(0,0,0"] {
-    background: #ffffff !important;
-    background-color: #ffffff !important;
-    border: 1px solid #cccccc !important;
-    box-shadow: none !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-  }
-
-  /* 오행 한자·천간지지 색상 보존 */
-  .wood, .fire, .earth, .metal, .water,
-  .m-hanja, .m-hanja.wood, .m-hanja.fire, .m-hanja.earth, .m-hanja.metal, .m-hanja.water,
-  .rel-char span, [class*="han-"] {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-
-  /* 단락 제목 고립 방지 */
-  .section-title, .part-title, .part-header-label, .part-header-block,
-  .report-chapter, .ch-title, h1, h2, h3, .title-card {
-    page-break-after: avoid !important;
-    break-after: avoid !important;
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
-    margin-bottom: 10px !important;
-  }
-
-  .report-container, #report-container, .print-container, .layout-wrapper,
-  .seyun-premium-vertical, .part-header-block, .cover-page, .manse-table, .manse-row {
-    display: block !important;
-  }
-
-  table {
-    border-collapse: collapse !important;
-    width: 100% !important;
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
-  }
-  th, td {
-    border: 1px solid #dee2e6 !important;
-    padding: 10px !important;
-    background-color: #ffffff !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-
-  .remedy-checklist-table,
-  .remedy-checklist-table thead,
-  .remedy-checklist-table tbody {
-    display: table !important;
-    width: 100% !important;
-    border-collapse: collapse !important;
-  }
-  .remedy-checklist-table tr { display: table-row !important; }
-  .remedy-checklist-table th,
-  .remedy-checklist-table td {
-    display: table-cell !important;
-    vertical-align: top !important;
-  }
-
-  #floating-toc, #theme-toggle, #sticky-part-nav, #sajux-pdf-fab,
-  .pdf-btn, .nav-floating, .sajux-pdf-wide-btn {
-    display: none !important;
-  }
-  .sajux-logo.dark { display: none !important; mix-blend-mode: normal !important; }
-  .sajux-logo.light {
-    display: block !important;
-    mix-blend-mode: normal !important;
-    opacity: 1 !important;
-    filter: none !important;
-  }
-  .sajux-logo-wrap img {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-}
-
+/* PDF 인쇄 — report-print.css 단일 소스 (그림자·페이지 분할·플랫 문서형) */
 </style>
-<link rel="stylesheet" href="report-print.css">
+<link rel="stylesheet" href="report-print.css?v=1779419393">
 
 </body>
 </html>

@@ -1,0 +1,237 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+from pathlib import Path
+
+p = Path(__file__).resolve().parents[1] / 'report-core.js'
+text = p.read_text(encoding='utf-8')
+
+HELPERS = r'''
+/** ── 대운·세운·월운 계층 풀이 (천간·지지 조합 + 상위 운 맥락) ── */
+var _SAJUX_FORTUNE_GAN_OH = {'甲':'wood','乙':'wood','丙':'fire','丁':'fire','戊':'earth','己':'earth','庚':'metal','辛':'metal','壬':'water','癸':'water'};
+var _SAJUX_FORTUNE_JI_OH  = {'子':'water','丑':'earth','寅':'wood','卯':'wood','辰':'earth','巳':'fire','午':'fire','未':'earth','申':'metal','酉':'metal','戌':'earth','亥':'water'};
+var _SAJUX_FORTUNE_HK = {'甲':'갑','乙':'을','丙':'병','丁':'정','戊':'무','己':'기','庚':'경','辛':'신','壬':'임','癸':'계','子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해'};
+var _SAJUX_GAN_LINE = {
+    '甲':'천간 갑(甲)은 새 출발·학습·확장의 기운으로, 한 시기의 큰 방향을 여는 쪽에 가깝습니다.',
+    '乙':'천간 을(乙)은 관계·협업·유연한 연결의 기운으로, 사람을 통해 길이 열리는 쪽에 가깝습니다.',
+    '丙':'천간 병(丙)은 드러남·표현·인정의 기운으로, 밖으로 결과가 보이기 쉬운 쪽에 가깝습니다.',
+    '丁':'천간 정(丁)은 깊이·전문·집중의 기운으로, 한 가지를 파고들 때 힘이 실리는 쪽에 가깝습니다.',
+    '戊':'천간 무(戊)는 안정·축적·신뢰의 기운으로, 천천히 단단히 쌓이는 쪽에 가깝습니다.',
+    '己':'천간 기(己)는 정리·마무리·연장의 기운으로, 이미 벌인 일의 결산에 가깝습니다.',
+    '庚':'천간 경(庚)은 결단·정리·기준의 기운으로, 잘라 내고 새 기준을 세울 때 힘이 실립니다.',
+    '辛':'천간 신(辛)은 완성·세련·브랜딩의 기운으로, 다듬고 마무리할 때 빛이 납니다.',
+    '壬':'천간 임(壬)은 흐름·정보·확장의 기운으로, 채널과 인맥이 넓어지기 쉽습니다.',
+    '癸':'천간 계(癸)는 학습·연구·내공의 기운으로, 조용히 채우는 쪽에 가깝습니다.'
+};
+var _SAJUX_JI_LINE = {
+    '子':'지지 자(子)는 기획·문서·집중의 자리입니다.','丑':'지지 축(丑)은 인내·저력·천천히 쌓는 자리입니다.',
+    '寅':'지지 인(寅)은 활동·새 출발·이동의 자리입니다.','卯':'지지 묘(卯)는 인맥·협업·확장의 자리입니다.',
+    '辰':'지지 진(辰)은 잠재력과 변수가 함께 오는 자리입니다.','巳':'지지 사(巳)는 결단·변신이 따라오는 자리입니다.',
+    '午':'지지 오(午)는 성취·인정·결과가 드러나는 자리입니다.','未':'지지 미(未)는 창작·풍요·감성의 자리입니다.',
+    '申':'지지 신(申)은 판단·속도·승부가 갈리는 자리입니다.','酉':'지지 유(酉)는 완성·보상·수확의 자리입니다.',
+    '戌':'지지 술(戌)은 정리·전환·끊고 남기기의 자리입니다.','亥':'지지 해(亥)는 잠복·준비·내실의 자리입니다.'
+};
+var _SAJUX_BRANCH_CHUNG = [['子','午'],['丑','未'],['寅','申'],['卯','酉'],['辰','戌'],['巳','亥']];
+var _SAJUX_BRANCH_LIUHE = [['子','丑'],['寅','亥'],['卯','戌'],['辰','酉'],['巳','申'],['午','未']];
+
+function sajuxFortuneScore(data, g, j) {
+    if (!g || !j) return 0;
+    var yong = data.yong || ''; var hee = data.hee || ''; var gi = data.gi || ''; var goo = data.goo || '';
+    var go = _SAJUX_FORTUNE_GAN_OH[g]; var jo = _SAJUX_FORTUNE_JI_OH[j];
+    var s = 0;
+    if (go === yong || go === hee) s += 2; if (go === gi || go === goo) s -= 2;
+    if (jo === yong || jo === hee) s += 2; if (jo === gi || jo === goo) s -= 2;
+    return s;
+}
+function sajuxFortuneTone(sc) {
+    return sc >= 3 ? 'good' : sc >= 1 ? 'mild' : sc === 0 ? 'flat' : sc >= -2 ? 'caution' : 'tough';
+}
+function sajuxFortuneToneColor(t) {
+    return ({ good:'#c7a76a', mild:'#5ec183', flat:'#9b9b9b', caution:'#e0a040', tough:'#c84a4a' })[t] || '#888';
+}
+function sajuxFortuneHK() { return _SAJUX_FORTUNE_HK; }
+function sajuxAgeInCalendarYear(data, calendarYear) {
+    var refData = Object.assign({}, data, { reportBaseAt: String(calendarYear) + '-07-01' });
+    return (typeof getClientAgeYearsAtReport === 'function') ? getClientAgeYearsAtReport(refData) : Math.max(0, calendarYear - (data.coverSolarY || data.birthYear || 1988));
+}
+function sajuxBranchPairHit(pairs, ja, jb) {
+    for (var i = 0; i < pairs.length; i++) {
+        if ((ja === pairs[i][0] && jb === pairs[i][1]) || (ja === pairs[i][1] && jb === pairs[i][0])) return true;
+    }
+    return false;
+}
+function sajuxGetDaeunContext(data, calendarYear) {
+    var rows = (data.daeunRows && data.daeunRows.length) ? data.daeunRows : (data.daewunList || []);
+    if (!rows.length) return null;
+    var age = sajuxAgeInCalendarYear(data, calendarYear);
+    var picked = null;
+    for (var i = 0; i < rows.length; i++) {
+        var r = rows[i];
+        var start = (typeof r.age === 'number') ? r.age : (typeof r.startAge === 'number' ? r.startAge : NaN);
+        if (isNaN(start)) continue;
+        if (age >= start && age <= start + 9) { picked = { row: r, startAge: start }; break; }
+    }
+    if (!picked) {
+        var idx0 = (typeof data.activeDaeunIdx === 'number') ? data.activeDaeunIdx : 0;
+        var r0 = rows[idx0] || rows[rows.length - 1];
+        var a0 = (typeof r0.age === 'number') ? r0.age : (typeof r0.startAge === 'number' ? r0.startAge : 0);
+        picked = { row: r0, startAge: a0 };
+    }
+    var rr = picked.row;
+    var g = (rr.gz && rr.gz[0]) || (rr.h && rr.h[0]) || rr.gan || '';
+    var j = (rr.gz && rr.gz[1]) || (rr.h && rr.h[1]) || rr.ji || '';
+    if (!g || !j) return null;
+    var sc = sajuxFortuneScore(data, g, j);
+    var HK = sajuxFortuneHK();
+    return {
+        g: g, j: j, gz: g + j, gKr: HK[g] || g, jKr: HK[j] || j,
+        startAge: picked.startAge, endAge: picked.startAge + 9,
+        score: sc, tone: sajuxFortuneTone(sc),
+        gOh: _SAJUX_FORTUNE_GAN_OH[g] || '', jOh: _SAJUX_FORTUNE_JI_OH[j] || ''
+    };
+}
+function sajuxYongsinLayerNote(data, g, j, seed) {
+    var yong = data.yong || ''; var hee = data.hee || ''; var gi = data.gi || ''; var goo = data.goo || '';
+    var go = _SAJUX_FORTUNE_GAN_OH[g]; var jo = _SAJUX_FORTUNE_JI_OH[j];
+    var HK = sajuxFortuneHK();
+    var hits = [];
+    if (go === yong) hits.push('천간 ' + (HK[g] || g) + '이 용신(用)과 맞물립니다');
+    else if (go === hee) hits.push('천간이 희신(喜) 쪽으로 받쳐 줍니다');
+    else if (go === gi || go === goo) hits.push('천간이 기신(忌)·구신(仇) 쪽으로 부담을 줍니다');
+    if (jo === yong) hits.push('지지 ' + (HK[j] || j) + '가 용신(用)과 맞물립니다');
+    else if (jo === hee) hits.push('지지가 희신(喜) 쪽으로 받쳐 줍니다');
+    else if (jo === gi || jo === goo) hits.push('지지가 기신(忌)·구신(仇) 쪽으로 부담을 줍니다');
+    if (!hits.length) return '';
+    return pickVoiceLine([
+        hits.join(', ') + ' — ' + nmUi(data.name || '고객') + ' 사주와 직접 맞닿는 층이에요.',
+        hits[0] + '. 같은 글자라도 ' + nmUi(data.name || '고객') + ' 원국 안에서는 이렇게 읽힙니다.'
+    ], seed + '|yong');
+}
+function sajuxDescribeGzPair(data, g, j, seed) {
+    var HK = sajuxFortuneHK();
+    var gzKr = (HK[g] || g) + (HK[j] || j);
+    var gan = _SAJUX_GAN_LINE[g] || ('천간 ' + (HK[g] || g) + '의 기운이 앞을 이끕니다.');
+    var ji = _SAJUX_JI_LINE[j] || ('지지 ' + (HK[j] || j) + '가 바탕을 받칩니다.');
+    var yong = sajuxYongsinLayerNote(data, g, j, seed);
+    var combo = pickVoiceLine([
+        '<strong>' + gzKr + '(' + g + j + ')</strong> 조합은 ' + gan + ' ' + ji,
+        '<strong>' + gzKr + '(' + g + j + ')</strong> — ' + gan + ' 그 위에 ' + ji
+    ], seed + '|pair');
+    return combo + (yong ? ' ' + yong : '');
+}
+function sajuxLayerBridgeDaeunSewun(data, daeun, g, j, sewunScore, yr) {
+    if (!daeun || !g || !j) return '';
+    var HK = sajuxFortuneHK();
+    var dKr = daeun.gKr + daeun.jKr;
+    var sKr = (HK[g] || g) + (HK[j] || j);
+    var seed = (daeun.gz || '') + '|' + g + j + '|' + yr;
+    var parts = [pickVoiceLine([
+        yr + '년은 <strong>' + dKr + ' 대운</strong>(' + daeun.startAge + '세~' + daeun.endAge + '세) 안에 깔린 한 해로, 먼저 그 10년의 바탕 위에 <strong>' + sKr + ' 세운</strong>이 겹칩니다.',
+        '큰 틀은 <strong>' + dKr + ' 대운</strong>, 그 안의 한 해가 <strong>' + sKr + ' 세운</strong>(' + yr + '년)입니다.'
+    ], seed + '|open')];
+    if (sajuxBranchPairHit(_SAJUX_BRANCH_CHUNG, daeun.j, j)) {
+        parts.push(pickVoiceLine([
+            '대운 지지와 세운 지지가 충(沖)으로 맞서, 한 해 안에 방향이 두 번 꺾이기 쉽습니다. 큰 결정은 분기당 한 가지만 잡으십시오.',
+            '지지가 정면으로 부딪혀, 겉으로는 기회처럼 보여도 마음이 갈라지는 선택이 잦을 수 있어요. 서두르지 마시고 한 번 더 적어 보십시오.'
+        ], seed + '|chung'));
+    } else if (sajuxBranchPairHit(_SAJUX_BRANCH_LIUHE, daeun.j, j)) {
+        parts.push('대운·세운 지지가 합(合)으로 맞물려, 관계·돈·자리가 빠르게 붙는 해로 읽힙니다.');
+    }
+    var delta = sewunScore - daeun.score;
+    if (delta >= 2) parts.push(pickVoiceLine([
+        '세운이 대운보다 한 단계 밝아, 이 해에 미뤄 두신 일을 밀기 좋습니다.',
+        '대운은 받쳐 주는데 세운이 더 앞서 나가, 올해가 10년 안에서 눈에 띄는 해가 될 수 있어요.'
+    ], seed + '|up'));
+    else if (delta <= -2) parts.push(pickVoiceLine([
+        '대운은 버티는데 세운이 앞서 당겨, 무리한 확장은 올해 피하시는 편이 낫습니다.',
+        '큰 10년의 무게는 있는데 한 해 기운이 가볍지 않아, 새 계약·새 보증은 한 번 더 검토하십시오.'
+    ], seed + '|down'));
+    return parts.join(' ');
+}
+function sajuxLayerBridgeWolun(data, daeun, seyun, g, j, monthScore, yr, mo) {
+    if (!g || !j) return '';
+    var HK = sajuxFortuneHK();
+    var mKr = (HK[g] || g) + (HK[j] || j);
+    var seed = yr + '-' + mo + '|' + g + j;
+    var open = '';
+    if (daeun && seyun) {
+        open = pickVoiceLine([
+            '<strong>' + (daeun.gKr + daeun.jKr) + ' 대운</strong>과 <strong>' + (seyun.gKr + seyun.jKr) + ' ' + seyun.year + '년 세운</strong> 위에, <strong>' + mKr + ' 월운</strong>이 ' + yr + '년 ' + mo + '월을 짧게 흔듭니다.',
+            '막고 계신 <strong>' + (daeun.gKr + daeun.jKr) + ' 대운</strong>·<strong>' + seyun.year + '년 ' + (seyun.gKr + seyun.jKr) + ' 세운</strong> 위에 이번 달 <strong>' + mKr + '</strong>이 겹칩니다.'
+        ], seed + '|open');
+    } else {
+        open = yr + '년 ' + mo + '월 <strong>' + mKr + ' 월운</strong>은 한 달 단위의 결이에요.';
+    }
+    var parts = [open, _SAJUX_GAN_LINE[g] || '', _SAJUX_JI_LINE[j] || ''];
+    if (seyun && sajuxBranchPairHit(_SAJUX_BRANCH_CHUNG, seyun.j, j)) {
+        parts.push(pickVoiceLine([
+            '세운 지지와 월운 지지가 충(沖)이라, 이번 달은 한 달 안에 감정·일정이 급격히 바뀌기 쉽습니다.',
+            '연간 흐름과 달의 지지가 부딪혀, 작은 일에도 크게 느껴지실 수 있어요. 큰 결정은 이번 달 한 가지만.'
+        ], seed + '|mchung'));
+    }
+    if (daeun && seyun) {
+        var base = (daeun.score + seyun.score) / 2;
+        var md = monthScore - base;
+        if (md >= 2) parts.push('월운이 대운·세운보다 밝게 들어와, 이번 달이 올해의 작은 전성기처럼 느껴질 수 있어요.');
+        else if (md <= -2) parts.push('월운이 위 두 층보다 무거워, 이번 달은 쉬고 점검하는 쪽이 낫습니다.');
+    }
+    return parts.filter(Boolean).join(' ');
+}
+function sajuxToneAdvice(data, tone, kind, seed) {
+    var nm = data.name || '고객';
+    var pools = {
+        daeun: {
+            good: ['이 10년은 ' + nmKke(nm) + ' 평생 두세 번 만나기 어려운 “밀어도 되는 10년”에 가깝습니다. 큰 축 한두 가지에만 힘을 모으십시오.', '미뤄 두신 결혼·이직·창업·자격 중 하나를 이 구간에 매듭지으시면 다음 10년의 기둥이 됩니다.'],
+            mild: ['한 발씩 내디뎌도 결과가 따라붙는 10년이에요. 한 해에 한 번, 쌓인 것을 한 줄로 적어 두십시오.', '평소 페이스를 유지하시면 10년 뒤 자리가 한 단계 올라가 있습니다.'],
+            flat: ['큰 사건보다 정리·다듬기에 좋은 10년입니다. 끊을 것·이어 갈 것 한 가지씩만 가르십시오.', '새로 벌이기보다 손에 쥔 것을 단단히 하는 쪽이 이득입니다.'],
+            caution: ['부담이 깔린 10년이라 큰 결정은 한 박자 늦추시고, 지키는 쪽에 무게를 두십시오.', '신규 보증·동업·대출은 이 구간에 가급적 늘리지 마십시오.'],
+            tough: ['새로 벌이기보다 무너지지 않게 지키는 데 힘이 있습니다. 다음 대운으로 미뤄도 늦지 않아요.', '이 10년을 무사히 지나신 분이 다음 대운에서 가장 단단히 서는 경우가 많습니다.']
+        },
+        seyun: {
+            good: ['올해는 미뤄 두신 결정 한두 가지를 매듭짓기 좋습니다. 분기당 큰 결정은 한 가지만.', '한 해의 처음에 우선순위 한 줄을 정해 두시면 다음 해가 단단해집니다.'],
+            mild: ['큰 풍파 없이 결실이 붙는 해예요. 검증된 일 한 가지에만 속도를 올리십시오.', '새 시도는 분기에 한 번, 무리하게 다 끝내지 마십시오.'],
+            flat: ['정리·점검의 해입니다. 끊을 한 가지·이어 갈 한 가지를 가르십시오.', '새 시작보다 역할·돈·관계 한 줄 정리가 다음 해를 가볍게 합니다.'],
+            caution: ['큰돈·큰 관계·큰 자리를 동시에 흔들지 마십시오. 한 가지에만 집중하시면 한 해가 부드럽습니다.', '새 계약·보증은 한 분기 미루고 다시 보십시오.'],
+            tough: ['새 시작·큰 투자는 내년 이후로 미루시고, 지키는 한 가지 목표만 가져가십시오.', '건강·가족·핵심 거래처만 흔들리지 않게 챙기시면 출발선이 됩니다.']
+        },
+        wolun: {
+            good: ['이번 달은 결정 결과가 빨리 보이는 달입니다. 미뤄 두신 안건 한 가지를 중심에 두십시오.', '약속·계약·발표 중 하나를 이번 달 일정의 정중앙에 두세요.'],
+            mild: ['차분히 흘러가는 달입니다. 지난달 리듬을 이어 가시거나 가벼운 시도 하나만 더하십시오.', '한 가지 마무리 + 한 가지 시작이 균형에 맞습니다.'],
+            flat: ['평탄한 달입니다. 수면·식사·관계 정리에 시간을 쓰시면 다음 달이 가벼워집니다.', '새 일보다 빠져 있던 자기 관리 한 가지를 챙기십시오.'],
+            caution: ['큰 결정이 몰리면 하나가 어긋나기 쉽습니다. 이번 달 큰 결정은 한 가지만.', '서두르지 마시고 일정을 반 나누어 잡으십시오.'],
+            tough: ['큰돈·큰 약속·큰 변화는 멈추시고, 있는 것을 점검하는 달로 쓰십시오.', '지키는 것만 해도 다음 달이 자연스럽게 풀립니다.']
+        }
+    };
+    var arr = (pools[kind] || pools.seyun)[tone] || pools.seyun.flat;
+    return pickVoiceLine(arr, seed + '|' + kind + '|' + tone);
+}
+
+'''
+
+if 'function sajuxFortuneScore' not in text:
+    anchor = 'function buildCurrentPeriodCard(data) {'
+    if anchor not in text:
+        raise SystemExit('anchor not found for helpers')
+    text = text.replace(anchor, HELPERS + anchor, 1)
+
+# chip layout
+old_chips = """    function chip(label, color, ko, hj) {
+        return '<motion style="background:rgba(255,255,255,0.04);border-radius:10px;padding:10px 14px;border-left:3px solid ' + color + ';flex:1;min-width:140px;">'
+"""
+# actual file content
+old_chips = """    function chip(label, color, ko, hj) {
+        return '<motion style="background:rgba(255,255,255,0.04);border-radius:10px;padding:10px 14px;border-left:3px solid ' + color + ';flex:1;min-width:140px;">'
+"""
+old_chips = """    function chip(label, color, ko, hj) {
+        return '<div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:10px 14px;border-left:3px solid ' + color + ';flex:1;min-width:140px;">'
+            + '<motion style="font-size:10px;letter-spacing:0.10em;color:' + color + ';font-weight:700;margin-bottom:4px;">' + label + '</div>'
+"""
+# read exact from file
+import re
+m = re.search(r"    function chip\(label, color, ko, hj\) \{.*?    var snapshotHtml = .*?\+ '</motion>';", text, re.S)
+if not m:
+    m = re.search(r"    function chip\(label, color, ko, hj\) \{[\s\S]*?    var snapshotHtml = [\s\S]*?\+ '</div>';", text)
+if m:
+    new_chips = """    function chipBox(label, color, ko, hj, widthCss) {
+        return '<motion style="background:rgba(255,255,255,0.04);border-radius:10px;padding:10px 14px;border-left:3px solid ' + color + ';' + widthCss + 'box-sizing:border-box;">'
+"""
+PYEOF

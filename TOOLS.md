@@ -37,4 +37,10 @@ Skills are shared. Your setup is yours. Keeping them apart means you can update 
 
 ---
 
+## 사주X (sajux) 배포
+
+- **명령:** `python3 deploy_now.py` (워크스페이스 루트)
+- **대상:** `report/*` → GitHub Pages (`jediii88/X-SAJU`)
+- **규칙:** 리포트·`report-core.js` 등 고객 노출 파일 수정 후 **자동 실행** (별도 요청 없이). 커밋은 사용자 요청 시만.
+
 Add whatever helps you do your job. This is your cheat sheet.
