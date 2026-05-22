@@ -23,7 +23,7 @@
 })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="sajux-build" content="1779413310">
+<meta name="sajux-build" content="1779414160">
 <title>사주X — 두 사람의 인연 구조</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;700;900&display=swap" rel="stylesheet">
@@ -390,7 +390,13 @@ body::before {
   #floating-toc, .sticky-part-nav, #star-canvas { display: none !important; }
 }
 
-.duo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 24px 0; }
+.compat-manse-notes {
+  margin: 20px 0 10px;
+  padding: 0 2px;
+}
+.compat-manse-notes p { margin: 0 0 6px; }
+.compat-manse-notes p:last-child { margin-bottom: 0; }
+.duo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0 24px; }
 .person-card {
   border-radius: 14px;
   padding: 18px 14px;
@@ -711,6 +717,7 @@ body::before {
   </div>
 
   <div class="container">
+    <div id="compat-manse-notes" class="compat-manse-notes" aria-label="만세력 표 안내"></div>
     <div class="duo-grid">
       <div class="person-card a">
         <div class="compat-person-tag">첫 번째 사주</div>
@@ -1264,6 +1271,16 @@ function analyzeCoupling(a, b) {
 // ══════════════════════════════════════
 // UI 렌더링
 // ══════════════════════════════════════
+function renderCompatManseSharedNotes() {
+  const el = document.getElementById('compat-manse-notes');
+  if (!el) return;
+  const orderNote = '<p style="font-size:9.5px;color:var(--text-dim);line-height:1.55;letter-spacing:0.01em;text-align:left;">'
+    + '아래 두 만세력 표는 모두 왼쪽부터 <strong style="color:var(--text-soft);font-weight:600;">시주</strong> · 일주(나) · 월주 · <strong style="color:var(--text-soft);font-weight:600;">년주(연도)</strong> 순입니다. '
+    + '첫 칸이 태어난 시이고, 가장 오른쪽이 연도 기둥입니다.</p>';
+  const waterNote = (typeof buildManseWaterColorNoteHtml === 'function') ? buildManseWaterColorNoteHtml() : '';
+  el.innerHTML = orderNote + waterNote;
+}
+
 function renderPersonCard(prefix, info, saju) {
   const nameEl    = document.getElementById(prefix + '-name');
   const iljuEl    = document.getElementById(prefix + '-ilju');
@@ -1328,7 +1345,6 @@ function renderPersonCard(prefix, info, saju) {
     return ch + '(' + (KOR_MAP[ch] || '') + ')';
   }
   pillarsEl.innerHTML = `
-    <p style="margin:10px 0 6px;font-size:9.5px;color:var(--text-dim);line-height:1.5;letter-spacing:0.02em;text-align:left;">왼쪽부터 <strong style="color:var(--text-soft);font-weight:600;">시주</strong> · 일주(나) · 월주 · <strong style="color:var(--text-soft);font-weight:600;">년주(연도)</strong>입니다. 첫 칸이 태어난 시이고, 가장 오른쪽이 연도 기둥입니다.</p>
     <table style="width:100%;border-collapse:collapse;margin-top:2px;table-layout:fixed;">
       <tr style="border-bottom:1px solid rgba(199,167,106,0.22);">
         <td style="padding:5px 2px;width:42px;"></td>
@@ -1374,8 +1390,7 @@ function renderPersonCard(prefix, info, saju) {
           return `<td style="text-align:center;padding:3px 3px;"><span class="pillar-ss-badge">${ss}</span></td>`;
         }).join('')}
       </tr>
-    </table>`
-    + (typeof buildManseWaterColorNoteHtml === 'function' ? buildManseWaterColorNoteHtml() : '');
+    </table>`;
 
   const ohKeys = [{k:'wood',l:'목'},{k:'fire',l:'화'},{k:'earth',l:'토'},{k:'metal',l:'금'},{k:'water',l:'수'}];
   ohaengEl.innerHTML = ohKeys.map(o => {
@@ -2011,6 +2026,7 @@ function init() {
 
     renderPersonCard('a', params.a, sajuA);
     renderPersonCard('b', params.b, sajuB);
+    renderCompatManseSharedNotes();
     buildRelPanels(params, sajuA, sajuB, result);
     renderScore(result);
     buildTimeline(sajuA, sajuB, params.a, params.b, params);
