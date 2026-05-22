@@ -38,9 +38,7 @@ function generateCode(type) {
 }
 
 function publicUrl(req, type, code) {
-  const host = req.headers['x-forwarded-host'] || req.headers.host || 'localhost';
-  const proto = req.headers['x-forwarded-proto'] || 'https';
-  const base = proto + '://' + host;
+  const base = (process.env.PUBLIC_SITE_URL || 'https://sajux.com').replace(/\/$/, '');
   if (type === 'couple') {
     return base + '/couple/?code=' + encodeURIComponent(code);
   }
