@@ -10,7 +10,12 @@
   try {
     var p = new URLSearchParams(location.search);
     var exp = p.get('exp');
-    if (exp && /^\d+$/.test(String(exp)) && Date.now() > parseInt(exp, 10)) {
+    var expMs = 0;
+    if (exp && /^\d+$/.test(String(exp))) {
+      expMs = parseInt(String(exp), 10);
+      if (String(exp).length === 10) expMs *= 1000;
+    }
+    if (expMs && Date.now() > expMs) {
       document.addEventListener('DOMContentLoaded', function () {
         document.body.innerHTML =
           '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#000;color:#888;font-family:\'Noto Sans KR\',sans-serif;text-align:center;padding:40px;">' +
@@ -23,7 +28,7 @@
 })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="sajux-build" content="1779418570">
+<meta name="sajux-build" content="1779419393">
 <title>사주X — 두 사람의 인연 구조</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;700;900&display=swap" rel="stylesheet">
@@ -1054,6 +1059,13 @@ function getEcTimeBranch(ec) {
   }
 }
 
+function parseGenderFromUrl(raw) {
+  const s = String(raw || '').toLowerCase();
+  if (s === 'm' || s === 'male' || s === '남') return 'male';
+  if (s === 'w' || s === 'female' || s === 'f' || s === '여') return 'female';
+  return 'male';
+}
+
 function parseParams() {
   const sp = new URLSearchParams(location.search);
   const g = (k,d='') => sp.get(k) || d;
@@ -1070,7 +1082,7 @@ function parseParams() {
   return {
     a: {
       name:   dec('a_n', '첫번째'),
-      gender: g('a_g', 'male'),
+      gender: parseGenderFromUrl(g('a_g', 'm')),
       cal:    g('a_c', 'solar'),
       year:   parseInt(g('a_y', 1990), 10), month: parseInt(g('a_mo', 1), 10),
       day:    parseInt(g('a_d', 1), 10),   hour:  parseInt(g('a_h', 12), 10),
@@ -1078,7 +1090,7 @@ function parseParams() {
     },
     b: {
       name:   dec('b_n', '두번째'),
-      gender: g('b_g', 'female'),
+      gender: parseGenderFromUrl(g('b_g', 'w')),
       cal:    g('b_c', 'solar'),
       year:   parseInt(g('b_y', 1992), 10), month: parseInt(g('b_mo', 1), 10),
       day:    parseInt(g('b_d', 1), 10),   hour:  parseInt(g('b_h', 12), 10),
