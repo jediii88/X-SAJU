@@ -4,7 +4,8 @@
 (function (global) {
   'use strict';
 
-  var DEFAULT_META_API = '';
+  /** Worker 배포 후 한 줄만 수정 (고객·관리자 화면 공통) */
+  var SAJUX_LINK_API_BASE = '';
 
   function metaApiBase() {
     try {
@@ -14,16 +15,8 @@
     return '';
   }
 
-  function storedApiBase() {
-    try {
-      return (localStorage.getItem('sajux_api_base') || '').trim();
-    } catch (e2) {
-      return '';
-    }
-  }
-
   function getApiBase() {
-    return metaApiBase() || storedApiBase() || DEFAULT_META_API;
+    return metaApiBase() || SAJUX_LINK_API_BASE || '';
   }
 
   function apiUrl(path) {
@@ -57,12 +50,12 @@
     return body;
   }
 
-  async function issueLink(type, payload, expAt, adminKey) {
-    var key = adminKey || '';
+  async function issueLink(type, payload, expAt, adminPass) {
+    var key = adminPass || '';
     try {
-      if (!key) key = (localStorage.getItem('sajux_api_key') || '').trim();
+      if (!key) key = (sessionStorage.getItem('sajux_admin_sess') || '').trim();
     } catch (e2) {}
-    if (!key) throw new Error('API_KEY_NOT_CONFIGURED');
+    if (!key) throw new Error('ADMIN_NOT_LOGGED_IN');
     var res = await fetch(apiUrl('/v1/links'), {
       method: 'POST',
       headers: {
@@ -86,12 +79,12 @@
     return body;
   }
 
-  async function revokeLink(code, adminKey) {
-    var key = adminKey || '';
+  async function revokeLink(code, adminPass) {
+    var key = adminPass || '';
     try {
-      if (!key) key = (localStorage.getItem('sajux_api_key') || '').trim();
+      if (!key) key = (sessionStorage.getItem('sajux_admin_sess') || '').trim();
     } catch (e4) {}
-    if (!key) throw new Error('API_KEY_NOT_CONFIGURED');
+    if (!key) throw new Error('ADMIN_NOT_LOGGED_IN');
     var res = await fetch(apiUrl('/v1/links/' + encodeURIComponent(code) + '/revoke'), {
       method: 'POST',
       headers: { Authorization: 'Bearer ' + key },
