@@ -23,7 +23,7 @@
 })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="sajux-build" content="1779413103">
+<meta name="sajux-build" content="1779413310">
 <title>사주X — 두 사람의 인연 구조</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;700;900&display=swap" rel="stylesheet">
@@ -50,8 +50,8 @@
   --earth: #c9a24c;
   --metal: #9ea4aa;
   /* 수(水): 파란색 — 오행 막대·한자 공통 */
-  --water: #3d9eff;
-  --water-edge: rgba(61, 158, 255, 0.5);
+  --water: #1a6fd4;
+  --water-edge: rgba(26, 111, 212, 0.5);
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body {
@@ -1374,7 +1374,8 @@ function renderPersonCard(prefix, info, saju) {
           return `<td style="text-align:center;padding:3px 3px;"><span class="pillar-ss-badge">${ss}</span></td>`;
         }).join('')}
       </tr>
-    </table>`;
+    </table>`
+    + (typeof buildManseWaterColorNoteHtml === 'function' ? buildManseWaterColorNoteHtml() : '');
 
   const ohKeys = [{k:'wood',l:'목'},{k:'fire',l:'화'},{k:'earth',l:'토'},{k:'metal',l:'금'},{k:'water',l:'수'}];
   ohaengEl.innerHTML = ohKeys.map(o => {
