@@ -1640,7 +1640,16 @@ function buildCompatShareCtaHtml(ctx) {
 }
 
 function sajuxCompatShareReport() {
-    var url = typeof location !== 'undefined' ? location.href : '';
+    var url = '';
+    if (typeof SajuxLinkApi !== 'undefined' && SajuxLinkApi.getCoupleShareUrl) {
+        url = SajuxLinkApi.getCoupleShareUrl();
+    }
+    if (!url && typeof location !== 'undefined') {
+        try {
+            var sp = new URLSearchParams(location.search);
+            if (sp.get('code') && !sp.get('a_y')) url = location.href;
+        } catch (e0) {}
+    }
     var title = '사주X 궁합 리포트';
     var text = '우리 궁합 리포트를 함께 읽어볼래요?';
     var toast = typeof document !== 'undefined' ? document.getElementById('compat-share-cta-toast') : null;
@@ -1649,6 +1658,10 @@ function sajuxCompatShareReport() {
         toast.textContent = msg;
         toast.style.display = 'block';
         setTimeout(function () { toast.style.display = 'none'; }, 4200);
+    }
+    if (!url) {
+        showToast('공유는 담당자가 보낸 ?code= 링크로 열었을 때만 가능합니다.');
+        return;
     }
     if (typeof navigator !== 'undefined' && navigator.share) {
         navigator.share({ title: title, text: text, url: url }).catch(function () {});
