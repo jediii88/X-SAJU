@@ -4890,47 +4890,106 @@ function ensureCoverLogoForPrint() {
 
 
 
-function ensureHtml2CanvasLoaded(done) {
-    if (typeof html2canvas === 'function') { done(); return; }
-    var existing = document.getElementById('sajux-html2canvas-script');
+var _sajuxCaptureBusy = false;
+var _sajuxCaptureRevokeTimer = null;
+
+function ensureExternalScriptLoaded(opts) {
+    opts = opts || {};
+    var id = opts.id;
+    var src = opts.src;
+    var ready = opts.ready || function () { return false; };
+    var done = opts.done;
+    var fail = opts.fail || function () {
+        alert('사주 다운로드 도구를 불러오지 못했습니다. 네트워크 연결 후 다시 시도해 주세요.');
+    };
+    if (ready()) { done(); return; }
+    var existing = document.getElementById(id);
     if (existing) {
-        existing.addEventListener('load', function () { done(); }, { once: true });
-        return;
+        if (existing.getAttribute('data-sajux-load') === 'error') {
+            try { existing.remove(); } catch (eRm) {}
+            existing = null;
+        } else {
+            var t0 = Date.now();
+            var poll = setInterval(function () {
+                if (ready()) {
+                    clearInterval(poll);
+                    done();
+                } else if (existing.getAttribute('data-sajux-load') === 'error' || Date.now() - t0 > 22000) {
+                    clearInterval(poll);
+                    fail(new Error('SCRIPT_LOAD_TIMEOUT'));
+                }
+            }, 80);
+            return;
+        }
     }
     var sc = document.createElement('script');
-    sc.id = 'sajux-html2canvas-script';
-    sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+    sc.id = id;
+    sc.src = src;
     sc.crossOrigin = 'anonymous';
-    sc.onload = function () { done(); };
-    sc.onerror = function () { alert('사주 다운로드 도구를 불러오지 못했습니다. 네트워크 연결 후 다시 시도해 주세요.'); };
+    sc.onload = function () {
+        sc.setAttribute('data-sajux-load', 'ok');
+        if (ready()) done();
+        else setTimeout(function () { if (ready()) done(); else fail(new Error('SCRIPT_LOAD_EMPTY')); }, 50);
+    };
+    sc.onerror = function () {
+        sc.setAttribute('data-sajux-load', 'error');
+        fail(new Error('SCRIPT_LOAD_ERROR'));
+    };
     document.head.appendChild(sc);
+}
+function sajuxReleaseCaptureBusy() {
+    _sajuxCaptureBusy = false;
+}
+function ensureHtml2CanvasLoaded(done) {
+    ensureExternalScriptLoaded({
+        id: 'sajux-html2canvas-script',
+        src: 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',
+        ready: function () { return typeof html2canvas === 'function'; },
+        done: done,
+        fail: function () { sajuxReleaseCaptureBusy(); }
+    });
 }
 function ensureJsZipLoaded(done) {
-    if (typeof JSZip === 'function') { done(); return; }
-    var existing = document.getElementById('sajux-jszip-script');
-    if (existing) {
-        existing.addEventListener('load', function () { done(); }, { once: true });
-        return;
-    }
-    var sc = document.createElement('script');
-    sc.id = 'sajux-jszip-script';
-    sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
-    sc.crossOrigin = 'anonymous';
-    sc.onload = function () { done(); };
-    sc.onerror = function () { alert('사주 다운로드 도구를 불러오지 못했습니다. 네트워크 연결 후 다시 시도해 주세요.'); };
-    document.head.appendChild(sc);
+    ensureExternalScriptLoaded({
+        id: 'sajux-jszip-script',
+        src: 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js',
+        ready: function () { return typeof JSZip === 'function'; },
+        done: done,
+        fail: function () { sajuxReleaseCaptureBusy(); }
+    });
 }
-function sajuxShowCaptureOverlay(message) {
+function sajuxPreloadCaptureLibs() {
+    try {
+        ensureHtml2CanvasLoaded(function () {});
+        ensureJsZipLoaded(function () {});
+    } catch (e) {}
+}
+function sajuxShowCaptureOverlay(message, opts) {
+    opts = opts || {};
     var id = 'sajux-capture-overlay';
     var el = document.getElementById(id);
     if (!el) {
         el = document.createElement('div');
         el.id = id;
         el.style.cssText = 'position:fixed;inset:0;z-index:100050;background:rgba(0,0,0,0.72);display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;';
-        el.innerHTML = '<div style="max-width:320px;text-align:center;font-family:\'Noto Sans KR\',sans-serif;color:#f5f0e6;font-size:14px;line-height:1.75;white-space:pre-line;"></div>';
+        el.innerHTML = '<div class="sajux-capture-overlay-inner" style="max-width:340px;text-align:center;font-family:\'Noto Sans KR\',sans-serif;color:#f5f0e6;font-size:14px;line-height:1.75;white-space:pre-line;"></div>';
         document.body.appendChild(el);
     }
-    el.querySelector('div').textContent = message || '사주 다운로드 준비 중…';
+    var inner = el.querySelector('.sajux-capture-overlay-inner') || el.querySelector('div');
+    inner.textContent = message || '사주 다운로드 준비 중…';
+    var oldBtn = el.querySelector('.sajux-capture-download-btn');
+    if (oldBtn) oldBtn.remove();
+    if (opts.downloadUrl && opts.filename) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'sajux-capture-download-btn';
+        btn.textContent = opts.buttonLabel || 'ZIP 파일 저장';
+        btn.style.cssText = 'display:block;margin:18px auto 0;padding:14px 22px;border:none;border-radius:999px;background:linear-gradient(165deg,#c7a76a,#8a6f3c);color:#111;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;';
+        btn.addEventListener('click', function () {
+            sajuxDownloadBlob(opts.downloadUrl, opts.filename);
+        });
+        inner.appendChild(btn);
+    }
     el.style.display = 'flex';
     return el;
 }
@@ -5262,14 +5321,34 @@ function sajuxSliceCaptureLabel(slice, index) {
     return sajuxPadCaptureIndex(index) + '-' + julSlug + titleSlug;
 }
 function sajuxCanvasToBlob(canvas, type) {
+    var mime = type || 'image/png';
     return new Promise(function (resolve, reject) {
         try {
-            canvas.toBlob(function (blob) {
-                if (blob) resolve(blob);
-                else reject(new Error('이미지 변환 실패'));
-            }, type || 'image/png');
+            if (typeof canvas.toBlob === 'function') {
+                canvas.toBlob(function (blob) {
+                    if (blob) resolve(blob);
+                    else sajuxCanvasDataUrlToBlob(canvas, mime).then(resolve).catch(reject);
+                }, mime);
+                return;
+            }
+            sajuxCanvasDataUrlToBlob(canvas, mime).then(resolve).catch(reject);
         } catch (e) {
-            reject(e);
+            sajuxCanvasDataUrlToBlob(canvas, mime).then(resolve).catch(reject);
+        }
+    });
+}
+function sajuxCanvasDataUrlToBlob(canvas, mime) {
+    return new Promise(function (resolve, reject) {
+        try {
+            var dataUrl = canvas.toDataURL(mime || 'image/png');
+            var parts = dataUrl.split(',');
+            if (parts.length < 2) { reject(new Error('이미지 변환 실패')); return; }
+            var bin = atob(parts[1]);
+            var arr = new Uint8Array(bin.length);
+            for (var i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+            resolve(new Blob([arr], { type: mime || 'image/png' }));
+        } catch (e2) {
+            reject(e2);
         }
     });
 }
@@ -5347,12 +5426,43 @@ function sajuxRestoreAfterCapture(hidden) {
     (hidden || []).forEach(function (x) { x.el.style.display = x.display; });
 }
 function sajuxDownloadBlob(url, filename) {
-    var a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    if (!url) return false;
+    try {
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = filename || '사주X-리포트.zip';
+        a.rel = 'noopener';
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function () {
+            try { document.body.removeChild(a); } catch (eRm) {}
+        }, 200);
+        return true;
+    } catch (e) {
+        try { window.open(url, '_blank', 'noopener,noreferrer'); return true; } catch (e2) {}
+        return false;
+    }
+}
+function sajuxRevokeCaptureObjectUrl(url) {
+    if (!url) return;
+    if (_sajuxCaptureRevokeTimer) clearTimeout(_sajuxCaptureRevokeTimer);
+    _sajuxCaptureRevokeTimer = setTimeout(function () {
+        try { URL.revokeObjectURL(url); } catch (e) {}
+        _sajuxCaptureRevokeTimer = null;
+    }, 120000);
+}
+function sajuxOfferZipDownload(zipBlob, filename) {
+    var url = URL.createObjectURL(zipBlob);
+    var autoOk = sajuxDownloadBlob(url, filename);
+    sajuxShowCaptureOverlay(
+        (autoOk
+            ? '다운로드가 시작됐어요.\n파일이 안 보이면 아래 버튼을 눌러 주세요.'
+            : '브라우저가 자동 저장을 막았을 수 있어요.\n아래 「ZIP 파일 저장」 버튼을 눌러 주세요.'),
+        { downloadUrl: url, filename: filename, buttonLabel: 'ZIP 파일 저장' }
+    );
+    sajuxRevokeCaptureObjectUrl(url);
+    setTimeout(sajuxHideCaptureOverlay, 8000);
 }
 function sajuxBuildCaptureBaseName(data) {
     var ctx = window.__compatCtx;
@@ -5370,11 +5480,16 @@ function sajuxBuildZipFilename(data) {
     return sajuxBuildCaptureBaseName(data) + '.zip';
 }
 function sajuxCaptureReportAsImage() {
+    if (_sajuxCaptureBusy) {
+        alert('사주 저장이 진행 중입니다. 완료될 때까지 잠시만 기다려 주세요.');
+        return;
+    }
     var root = sajuxGetCaptureRoot();
     if (!root || root.offsetHeight < 20) {
         alert('리포트가 아직 준비되지 않았습니다. 분석이 끝난 뒤 다시 시도해 주세요.');
         return;
     }
+    _sajuxCaptureBusy = true;
     ensureHtml2CanvasLoaded(function () {
         ensureJsZipLoaded(function () { sajuxRunReportImageCapture(root); });
     });
@@ -5434,6 +5549,7 @@ function sajuxRunReportImageCapture(root) {
         sajuxRestoreStarCanvas(starStash);
         restorePattern();
         if (fab) { fab.disabled = false; fab.textContent = '📥 사주 저장'; }
+        _sajuxCaptureBusy = false;
     }
     function captureNext() {
         if (idx >= total) {
@@ -5443,11 +5559,8 @@ function sajuxRunReportImageCapture(root) {
                 return;
             }
             finishOk().then(function (zipBlob) {
-                var url = URL.createObjectURL(zipBlob);
-                sajuxDownloadBlob(url, sajuxBuildZipFilename(window.globalSajuData || null));
-                setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
-                sajuxShowCaptureOverlay('다운로드 완료!\n' + captures.length + '개 절이 사주 다운로드 파일로 저장됐어요.\n압축을 푼 뒤 번호 순서대로 보시면 됩니다.');
-                setTimeout(sajuxHideCaptureOverlay, 2200);
+                var zipName = sajuxBuildZipFilename(window.globalSajuData || null);
+                sajuxOfferZipDownload(zipBlob, zipName);
                 cleanup();
             }).catch(function (err) {
                 finishErr(err);
@@ -5469,24 +5582,33 @@ function sajuxRunReportImageCapture(root) {
             try { liveAnchor.scrollIntoView({ block: 'start', behavior: 'instant' }); } catch (e1) { try { liveAnchor.scrollIntoView(true); } catch (e2) {} }
         }
         sajuxShowCaptureOverlay('사주 다운로드 중… (' + (idx + 1) + '/' + total + ')\n' + (slice.jul || '') + ' ' + (slice.title || ''));
-        html2canvas(captureTarget, {
-            backgroundColor: '#050508',
-            scale: sliceScale,
-            useCORS: true,
-            allowTaint: true,
-            logging: false,
-            ignoreElements: sajuxHtml2canvasIgnoreEl,
-            onclone: sajuxOnCaptureClone
-        }).then(function (canvas) {
-            return sajuxCanvasToBlob(canvas, 'image/png').then(function (blob) {
-                captures.push({ name: fileBase, blob: blob });
-                idx += 1;
-                captureNext();
+        function runSliceCapture(attempt) {
+            var scaleUse = attempt > 0 ? Math.max(1, sliceScale * 0.82) : sliceScale;
+            html2canvas(captureTarget, {
+                backgroundColor: '#050508',
+                scale: scaleUse,
+                useCORS: true,
+                allowTaint: true,
+                logging: false,
+                imageTimeout: 15000,
+                ignoreElements: sajuxHtml2canvasIgnoreEl,
+                onclone: sajuxOnCaptureClone
+            }).then(function (canvas) {
+                return sajuxCanvasToBlob(canvas, 'image/png').then(function (blob) {
+                    captures.push({ name: fileBase, blob: blob });
+                    idx += 1;
+                    setTimeout(captureNext, 48);
+                });
+            }).catch(function (err) {
+                if (attempt < 1) {
+                    setTimeout(function () { runSliceCapture(attempt + 1); }, 120);
+                    return;
+                }
+                finishErr(err);
+                cleanup();
             });
-        }).catch(function (err) {
-            finishErr(err);
-            cleanup();
-        });
+        }
+        setTimeout(function () { runSliceCapture(0); }, 32);
     }
     captureNext();
 }
@@ -5522,6 +5644,7 @@ function injectSajuxPdfUi() {
     imgFab.setAttribute('aria-label', '사주 다운로드');
     imgFab.textContent = '📥 사주 저장';
     imgFab.addEventListener('click', function () { sajuxCaptureReportAsImage(); });
+    sajuxPreloadCaptureLibs();
     document.body.appendChild(imgFab);
     document.querySelectorAll('.toc-link-print').forEach(function (a) {
         a.textContent = '📥 사주 다운로드';
