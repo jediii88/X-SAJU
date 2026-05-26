@@ -29,11 +29,12 @@
 })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="sajux-build" content="1779753042">
+<meta name="sajux-build" content="1779753895">
 <title>사주X — 두 사람의 인연 구조</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;700;900&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Nanum+Brush+Script&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../report/assets/override.css">
 <style>
 @font-face {
   font-family: 'Jeongseon Arirang Ppuri';
@@ -64,10 +65,26 @@ html, body {
   background: var(--bg);
   color: var(--text);
   font-family: 'Noto Sans KR', sans-serif;
+  font-size: 16px;
+  line-height: 1.72;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
 }
 body { overflow-x: hidden; }
+@media (max-width: 900px) {
+  html { font-size: 18px; }
+  #main-content p,
+  #main-content .compat-prose-p,
+  #main-content .compat-voice-opener,
+  #main-content .insight-card,
+  #main-content .compat-mission-body {
+    font-size: 1.05em !important;
+    line-height: 1.88 !important;
+  }
+  .compat-section-title { font-size: 14px !important; }
+  .compat-person-hint,
+  .compat-manse-note-line { font-size: 13px !important; }
+}
 
 /* 개인 만세력(report)과 동일: 순검정 + 별 입자 */
 #star-canvas {
