@@ -1219,7 +1219,7 @@ html[data-theme="light"] #star-canvas {
     line-height: 1.82;
   }
 
-  #report-container p,
+  #report-container p:not(.cover-brush-name):not(.cover-brush-sub),
   #report-container li,
   #report-container .cat-text,
   #report-container .cat-body,
@@ -1235,7 +1235,7 @@ html[data-theme="light"] #star-canvas {
   #report-container .compat-prose-p,
   #report-container .insight-card,
   #report-container .axe-advice,
-  #main-content p,
+  #main-content p:not(.cover-brush-name):not(.cover-brush-sub),
   #main-content li,
   #main-content .compat-prose-p,
   #main-content .compat-voice-opener,
@@ -1305,13 +1305,57 @@ html[data-theme="light"] #star-canvas {
   #main-content {
     line-height: 1.78;
   }
-  #report-container p,
+  #report-container p:not(.cover-brush-name):not(.cover-brush-sub),
   #report-container .cat-text,
   #report-container .vip-module-desc,
-  #main-content p,
+  #main-content p:not(.cover-brush-name):not(.cover-brush-sub),
   #main-content .compat-prose-p {
     font-size: 1.02em;
     line-height: 1.82;
+  }
+}
+
+/* 붓글씨(정선아리랑·표지) — 본문 em 확대 규칙에서 제외, 크게 유지 */
+.cover-brush-name,
+.cover-page .cover-brush-name,
+#report-container .cover-brush-name,
+#sec-cover .cover-brush-name,
+#sec-client-cover .cover-brush-name,
+#main-content .cover-brush-name,
+.compat-title-cover .cover-brush-name {
+  font-family: 'Jeongseon Arirang Ppuri', 'Nanum Brush Script', cursive !important;
+  font-size: clamp(44px, 9.5vw, 58px) !important;
+  font-weight: 400 !important;
+  line-height: 1.12 !important;
+  letter-spacing: -0.02em !important;
+}
+.hero-brush-title,
+#hero-brush-title {
+  font-family: 'Jeongseon Arirang Ppuri', 'Nanum Brush Script', cursive !important;
+  font-size: clamp(34px, 8.2vw, 56px) !important;
+  line-height: 1.2 !important;
+}
+.report-inline-book-title,
+.avatar-name {
+  font-family: 'Jeongseon Arirang Ppuri', 'Nanum Brush Script', cursive !important;
+  font-size: clamp(30px, 6.5vw, 38px) !important;
+  line-height: 1.2 !important;
+}
+@media screen and (max-width: 900px) {
+  .cover-brush-name,
+  .cover-page .cover-brush-name,
+  #report-container .cover-brush-name,
+  #main-content .cover-brush-name,
+  .compat-title-cover .cover-brush-name {
+    font-size: clamp(50px, 13vw, 66px) !important;
+  }
+  .hero-brush-title,
+  #hero-brush-title {
+    font-size: clamp(40px, 10vw, 60px) !important;
+  }
+  .report-inline-book-title,
+  .avatar-name {
+    font-size: clamp(32px, 8vw, 42px) !important;
   }
 }
 
