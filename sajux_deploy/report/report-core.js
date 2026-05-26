@@ -12870,7 +12870,7 @@ function buildClientCoverPage(data) {
 
     return `<div id="sec-client-cover" class="cover-page chapter-start" style="display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:90vh;padding:78px 28px 72px;text-align:center;border-bottom:1px solid rgba(199,167,106,0.12);margin-bottom:56px;">
         <div class="cover-brush-block" style="margin-top:0;">
-            <p class="cover-brush-name">${escHtmlAttr(name)}님의 사주풀이</p>
+            <p class="cover-brush-name">${escHtmlAttr(name)}님의 <span class="cover-brush-fixed">사주풀이</span></p>
             
         </div>
 
