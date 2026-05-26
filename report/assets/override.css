@@ -1315,7 +1315,7 @@ html[data-theme="light"] #star-canvas {
   }
 }
 
-/* 붓글씨(정선아리랑·표지) — 본문 em 확대 제외, 한 줄에 맞게 소형~중형 */
+/* 붓글씨(정선아리랑·표지) — 43px 고정, 본문 em 확대 제외 */
 .cover-brush-name,
 .cover-page .cover-brush-name,
 #report-container .cover-brush-name,
@@ -1324,9 +1324,9 @@ html[data-theme="light"] #star-canvas {
 #main-content .cover-brush-name,
 .compat-title-cover .cover-brush-name {
   font-family: 'Jeongseon Arirang Ppuri', 'Nanum Brush Script', cursive !important;
-  font-size: clamp(30px, 6.2vw, 44px) !important;
+  font-size: 43px !important;
   font-weight: 400 !important;
-  line-height: 1.15 !important;
+  line-height: 1.12 !important;
   letter-spacing: -0.03em !important;
   word-break: keep-all !important;
   overflow-wrap: normal !important;
@@ -1343,8 +1343,8 @@ html[data-theme="light"] #star-canvas {
 .hero-brush-title,
 #hero-brush-title {
   font-family: 'Jeongseon Arirang Ppuri', 'Nanum Brush Script', cursive !important;
-  font-size: clamp(26px, 5.8vw, 42px) !important;
-  line-height: 1.22 !important;
+  font-size: 43px !important;
+  line-height: 1.15 !important;
   letter-spacing: -0.03em !important;
   word-break: keep-all !important;
   max-width: 100% !important;
@@ -1354,25 +1354,8 @@ html[data-theme="light"] #star-canvas {
 .report-inline-book-title,
 .avatar-name {
   font-family: 'Jeongseon Arirang Ppuri', 'Nanum Brush Script', cursive !important;
-  font-size: clamp(26px, 5.5vw, 34px) !important;
-  line-height: 1.2 !important;
-}
-@media screen and (max-width: 900px) {
-  .cover-brush-name,
-  .cover-page .cover-brush-name,
-  #report-container .cover-brush-name,
-  #main-content .cover-brush-name,
-  .compat-title-cover .cover-brush-name {
-    font-size: clamp(24px, 6vw, 34px) !important;
-  }
-  .hero-brush-title,
-  #hero-brush-title {
-    font-size: clamp(22px, 5.2vw, 32px) !important;
-  }
-  .report-inline-book-title,
-  .avatar-name {
-    font-size: clamp(24px, 6vw, 32px) !important;
-  }
+  font-size: 43px !important;
+  line-height: 1.15 !important;
 }
 
 /* ── 단일 다크 테마 고정 (라이트 모드 종료) ── */
