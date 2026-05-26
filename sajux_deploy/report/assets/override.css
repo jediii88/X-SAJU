@@ -1205,10 +1205,113 @@ html[data-theme="light"] #star-canvas {
   }
 }
 
-/* 모바일 — 스티키 4부 네비 위로 PDF FAB이 올라가도록 본문 하단 여백 */
+/* ── 모바일 가독성 (본문 전반 확대) ── */
 @media screen and (max-width: 900px) {
+  html {
+    font-size: 18px !important;
+  }
+
+  #report-container,
+  #sec-report-full,
+  #main-content,
+  #step-2 {
+    font-size: 1rem;
+    line-height: 1.82;
+  }
+
+  #report-container p,
+  #report-container li,
+  #report-container .cat-text,
+  #report-container .cat-body,
+  #report-container .cat-advice,
+  #report-container .cat-advice p,
+  #report-container .cat-highlight,
+  #report-container .vip-module-desc,
+  #report-container .vip-module-title,
+  #report-container .ch-voice-opener,
+  #report-container .ch-sub-under-main,
+  #report-container .ch-head-main-sub,
+  #report-container .inline-interp,
+  #report-container .compat-prose-p,
+  #report-container .insight-card,
+  #report-container .axe-advice,
+  #main-content p,
+  #main-content li,
+  #main-content .compat-prose-p,
+  #main-content .compat-voice-opener,
+  #main-content .compat-prose,
+  #main-content .compat-mission-body,
+  #main-content .insight-card,
+  #main-content .rel-panel {
+    font-size: 1.05em !important;
+    line-height: 1.88 !important;
+  }
+
+  #report-container [style*="font-size:12px"],
+  #report-container [style*="font-size:13px"],
+  #report-container [style*="font-size:13.5px"],
+  #report-container [style*="font-size:14px"],
+  #main-content [style*="font-size:12px"],
+  #main-content [style*="font-size:13px"],
+  #main-content [style*="font-size:13.5px"],
+  #main-content [style*="font-size:14px"] {
+    font-size: 1.05em !important;
+    line-height: 1.85 !important;
+  }
+
+  .ch-main-topic-title,
+  .ch-head-main-sub .ch-main-heading-xl {
+    font-size: clamp(18px, 4.8vw, 24px) !important;
+  }
+  .part-tier-title,
+  .part-header-title,
+  .part-header-block .part-header-title {
+    font-size: clamp(18px, 4.4vw, 22px) !important;
+  }
+  #sec-personal-portrait .personal-portrait-lede,
+  #sec-ilju-narrative-unified .personal-portrait-lede,
+  #sec-han-line-narrative .personal-portrait-lede {
+    font-size: 14px !important;
+    line-height: 1.7 !important;
+  }
+
+  .f-head, .f-sip, .f-kr, .f-un,
+  .m-hangul, .bar-label, .bar-label-main, .bar-value,
+  .compat-manse-notes, .compat-manse-note-line,
+  .compat-person-hint, .compat-section-title {
+    font-size: max(14px, 0.88em) !important;
+  }
+  .compat-section-title > span:last-child {
+    font-size: max(13px, 0.82em) !important;
+  }
+
+  .ch-sec-num, .ch-section-num, .toc-link {
+    font-size: max(12px, 0.78em) !important;
+  }
+
+  /* 모바일 — 스티키 4부 네비 위로 PDF FAB이 올라가도록 본문 하단 여백 */
   #sec-report-full {
     padding-bottom: calc(132px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}
+
+/* 데스크톱 — 읽기 편하게 소폭 확대 */
+@media screen and (min-width: 901px) {
+  html {
+    font-size: 17px;
+  }
+  #report-container,
+  #sec-report-full,
+  #main-content {
+    line-height: 1.78;
+  }
+  #report-container p,
+  #report-container .cat-text,
+  #report-container .vip-module-desc,
+  #main-content p,
+  #main-content .compat-prose-p {
+    font-size: 1.02em;
+    line-height: 1.82;
   }
 }
 
