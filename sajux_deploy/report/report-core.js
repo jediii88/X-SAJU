@@ -1319,7 +1319,7 @@ function compatPolishTone(s) {
     t = t.replace(/싸우/g, '말이 엇갈리');
     t = t.replace(/부딪히는/g, '조율이 필요한');
     t = t.replace(/일지\s*충/g, '일지 충(충: 성장 자극)');
-    return t;
+    return fixKoreanNarrativeGlitch(t);
 }
 
 function compatFmt(s) {
@@ -2710,6 +2710,21 @@ function fixKoreanNarrativeGlitch(s) {
     t = t.replace(/갑니다\s*입니다/g, '갑니다');
     t = t.replace(/합니다\s*입니다/g, '합니다');
     t = t.replace(/([가-힣])니다\.입니다/g, '$1니다.');
+    t = t.replace(/네요\s*입니다/g, '네요');
+    t = t.replace(/군요\s*입니다/g, '군요');
+    t = t.replace(/같아요\s*입니다/g, '같아요');
+    t = t.replace(/해요\s*입니다/g, '해요');
+    t = t.replace(/돼요\s*입니다/g, '돼요');
+    t = t.replace(/이에요\s*네요/g, '이에요');
+    t = t.replace(/님의의/g, '님의');
+    t = t.replace(/(공격|균형|방어)\s*결의\s*달/g, '$1 흐름의 달');
+    t = t.replace(/비겹/g, '비견');
+    t = t.replace(/황혘/g, '황혼');
+    t = t.replace(/풍요롭은/g, '풍요로운');
+    t = t.replace(/운제/g, '운세');
+    t = t.replace(/알·창작/g, '일·창작');
+    t = t.replace(/풍요로운의/g, '풍요로움의');
+    t = t.replace(/([가-힣]+)롭은(?=\s|분|것|형|인|자|때|데|며|고|\.|,|$)/g, '$1로운');
     return t;
 }
 SAJUX_VOICE.sipseongModernPrompt = '';
@@ -3137,6 +3152,7 @@ function voicePolishParagraph(data, text) {
     //   고른 어미를 그대로 살리고, 격식이 필요한 곳에서는 템플릿 단계에서 결정합니다.
     s = voiceModernizeSipseong(s);
     s = voiceCustomerLexicon(s);
+    s = fixKoreanNarrativeGlitch(s);
     return s;
 }
 
@@ -6551,7 +6567,7 @@ function buildPremiumExecutiveSummary(data) {
             m1: iljuScene + ' — 이 물상처럼 ' + nmUi(nm) + ' 에너지는 한 방향으로 모아질 때 비로소 진짜 힘이 나는 모습이에요. 지금은 여러 갈래를 동시에 펼치시려는 분산만 살짝 줄여 두시면 충분해요.',
             m2: daeunLabel + dJosaEun + ' ' + dTrend + ' 국면이네요. 지금 이 10년은 다음 20년을 받쳐 줄 기반을 차곡차곡 다지는 시기로 보여요. 크게 벌리기보다 내 것을 단단하게 만드시는 쪽이 더 어울리는 흐름입니다.',
             m3: curY + '년은 ' + yTrend + ' 흐름의 한 해예요. 올해는 새로운 출발보다 이미 시작해 둔 일을 끝까지 마무리하는 데 손을 모아 보십시오. 결과가 한결 곱게 떨어집니다.',
-            m4: curM + '월은 ' + mTrend + ' 결의 달이군요. 이달은 속도보다 정확도가 더 중요해요. 연락처·계약·결제 흐름을 한 번만 정돈해 두시고, 무리한 일정은 미리 걷어내 두십시오.'
+            m4: curM + '월은 ' + mTrend + ' 흐름의 달이군요. 이달은 속도보다 정확도가 더 중요해요. 연락처·계약·결제 흐름을 한 번만 정돈해 두시고, 무리한 일정은 미리 걷어내 두십시오.'
         },
         {
             m1: iljuScene + ' — ' + nmUi(nm) + ' 추진력은 이미 차고 넘치는 편이세요. 지금 필요한 건 더 많이 벌리는 일이 아니라, 가장 중요한 한 가지에 손과 마음을 모으는 일입니다.',
