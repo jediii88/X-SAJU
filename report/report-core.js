@@ -5315,12 +5315,19 @@ function sajuxIsMobileCapture() {
     return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent || '');
 }
 function sajuxCaptureHostWidthPx() {
-    return Math.min(720, Math.max(320, window.innerWidth || 390));
+    // 모바일도 720px 고정 — 세로로 길게 쌓이는 좁은 레이아웃보다 짧고 빠름
+    return 720;
 }
 function sajuxStyleCaptureHost(host) {
     if (!host) return host;
     var w = sajuxCaptureHostWidthPx();
-    host.style.cssText = 'position:fixed;left:-12000px;top:0;width:' + w + 'px;max-width:' + w + 'px;z-index:-1;opacity:1;visibility:visible;pointer-events:none;overflow:visible;background:#050508;';
+    var mobile = sajuxIsMobileCapture();
+    // iOS Safari: 완전히 화면 밖(-12000px)이면 빈 캔버스 → on-screen + 투명
+    if (mobile) {
+        host.style.cssText = 'position:fixed;left:0;top:0;width:' + w + 'px;max-width:' + w + 'px;z-index:-1;opacity:0.01;visibility:visible;pointer-events:none;overflow:visible;background:#050508;';
+    } else {
+        host.style.cssText = 'position:fixed;left:-12000px;top:0;width:' + w + 'px;max-width:' + w + 'px;z-index:-1;opacity:1;visibility:visible;pointer-events:none;overflow:visible;background:#050508;';
+    }
     return host;
 }
 function sajuxIsCaptureableEl(el) {
@@ -5671,8 +5678,8 @@ function sajuxAttachPartBanners(slices) {
 }
 function sajuxCalcSliceCaptureScale(el) {
     var mobile = sajuxIsMobileCapture();
-    var maxDim = mobile ? 8192 : 16384;
-    var prefer = mobile ? 1.25 : 1.5;
+    var maxDim = mobile ? 6144 : 16384;
+    var prefer = mobile ? 1 : 1.5;
     if (!el) return prefer;
     var w = Math.max(el.offsetWidth || 0, el.scrollWidth || 0, 320);
     var h = Math.max(el.offsetHeight || 0, el.scrollHeight || 0, 1);
@@ -5683,8 +5690,8 @@ function sajuxCanAutoDownloadBlob() {
     return true;
 }
 function sajuxCaptureEtaSeconds(remaining) {
-    var perSlice = sajuxIsMobileCapture() ? 4 : 2.5;
-    return Math.max(6, Math.ceil(remaining * perSlice));
+    var perSlice = sajuxIsMobileCapture() ? 2.2 : 1.8;
+    return Math.max(5, Math.ceil(remaining * perSlice));
 }
 function sajuxValidateCaptureCanvas(canvas) {
     if (!canvas || canvas.width < 8 || canvas.height < 8) return false;
@@ -5922,7 +5929,6 @@ function sajuxPrepareSliceForCapture(root) {
     }
 }
 function sajuxWaitImagesInRoot(root, maxMs) {
-    maxMs = maxMs || (sajuxIsMobileCapture() ? 1800 : 1200);
     if (!root) return Promise.resolve();
     var imgs = root.querySelectorAll('img');
     var pending = [];
@@ -5930,6 +5936,7 @@ function sajuxWaitImagesInRoot(root, maxMs) {
         if (imgs[i].src && !imgs[i].complete) pending.push(imgs[i]);
     }
     if (!pending.length) return Promise.resolve();
+    maxMs = maxMs || (sajuxIsMobileCapture() ? 600 : 900);
     return new Promise(function (resolve) {
         var left = pending.length;
         var timer = setTimeout(resolve, maxMs);
@@ -5945,6 +5952,11 @@ function sajuxWaitImagesInRoot(root, maxMs) {
             img.onerror = done;
         });
     });
+}
+function sajuxSliceNeedsImageWait(slice) {
+    if (!slice || !slice.el) return false;
+    if (slice.jul === '표지') return true;
+    return !!slice.el.querySelector('img');
 }
 function sajuxResolveCaptureTarget(slice, pack, captureHost) {
     var source = slice && slice.el ? slice.el : null;
@@ -6431,14 +6443,17 @@ function sajuxRunReportImageCapture(root) {
             captureHost.appendChild(el);
         }
         var captureTarget = (captureHost && captureHost.firstChild) ? captureHost.firstChild : el;
-        sajuxWaitImagesInRoot(captureTarget, 2000).then(function () { startCapture(); });
+        var imgWaitMs = sajuxSliceNeedsImageWait(slice) ? (sajuxIsMobileCapture() ? 600 : 900) : 0;
+        var waitP = imgWaitMs ? sajuxWaitImagesInRoot(captureTarget, imgWaitMs) : Promise.resolve();
+        waitP.then(function () { startCapture(); });
         function startCapture() {
         var sliceScale = sajuxCalcSliceCaptureScale(captureTarget);
         var fullW = Math.max(captureTarget.offsetWidth, captureTarget.scrollWidth, 320);
         var fullH = Math.max(captureTarget.offsetHeight, captureTarget.scrollHeight, 1);
+        var sliceTimeout = sajuxIsMobileCapture() ? 22000 : 35000;
         function attempt(scale) {
             var timedOut = false;
-            var timer = setTimeout(function () { timedOut = true; advance(); }, 40000);
+            var timer = setTimeout(function () { timedOut = true; advance(); }, sliceTimeout);
             var settled = false;
             function advance() {
                 if (settled) return;
@@ -6478,7 +6493,7 @@ function sajuxRunReportImageCapture(root) {
                 captureNext();
             }).catch(function (err) {
                 if (timedOut || settled) return;
-                if (scale > 1) {
+                if (!sajuxIsMobileCapture() && scale > 1) {
                     settled = true;
                     clearTimeout(timer);
                     attempt(1);
