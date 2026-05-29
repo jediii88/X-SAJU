@@ -6132,13 +6132,14 @@ function sajuxHtml2canvasRegion(target, scale, region, timeoutMs) {
 }
 function sajuxCaptureTargetToBlobs(target, mime, timeoutMs) {
     var scale = sajuxCalcSliceCaptureScale(target);
-    /* 이미지가 로드된 후 캡처 — iOS에서 cloneNode로 복사된 img src가 캐시에서 로드될 때까지 대기 */
-    return sajuxWaitImagesInRoot(target, sajuxIsMobileDevice() ? 4000 : 2000).then(function () {
+    /* 슬라이스별 이미지 대기 짧게 — 메인 루프에서 이미 전체 컨테이너 이미지를 한 번 대기함.
+       클론된 img는 캐시 hit으로 즉시 complete되므로 긴 대기 불필요(속도 핵심). */
+    return sajuxWaitImagesInRoot(target, sajuxIsMobileDevice() ? 500 : 1200).then(function () {
         return sajuxWaitCaptureTargetLayout(target);
     }).then(function (dims) {
-        /* clip chunk 접근법 폐기: scale:1 기준 720×8000px≈5.76M 픽셀 → iOS 한도(16.7M) 이하로 안전
-           대신 직접 캡처 후 너무 클 경우에만 y-offset 청킹(PC 방식) 사용 */
-        var chunkH = 6000;
+        /* 모바일 너비≈390 → 390×9000≈3.5M 픽셀, iOS 한도(16.7M) 이내. 청킹 임계값을 높여
+           대부분 1회 렌더(병합 페이지 평균 높이 < 9000) → 청킹 횟수 최소화. */
+        var chunkH = sajuxIsMobileDevice() ? 9000 : 6000;
         var useChunks = dims.h > chunkH;
         if (!useChunks) {
             return sajuxHtml2canvasRegion(target, scale, { w: dims.w, h: dims.h, y: 0 }, timeoutMs).then(function (canvas) {
@@ -6167,6 +6168,9 @@ function sajuxCaptureTargetToBlobs(target, mime, timeoutMs) {
 }
 function sajuxValidateCaptureCanvas(canvas) {
     if (!canvas || canvas.width < 8 || canvas.height < 8) return false;
+    /* 모바일: 픽셀 스캔(getImageData 수천 회 = GPU readback)은 너무 느려 속도 저하 주범.
+       크기만 검증 (배경색 #050508로 채워져 빈 캔버스 거의 없음). */
+    if (sajuxIsMobileDevice()) return true;
     try {
         var ctx = canvas.getContext('2d');
         if (!ctx) return true;
