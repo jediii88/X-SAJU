@@ -6044,8 +6044,9 @@ function sajuxCaptureTypographyCss() {
         + '.part-header-sub{font-size:12.5px!important;color:rgba(255,255,255,0.52)!important;letter-spacing:0.04em!important;line-height:1.55!important;}';
 }
 function sajuxCalcSliceCaptureScale(el) {
-    /* 모바일은 scale 1.0 고정 — PNG→JPEG 전환과 합쳐서 속도 최대화 */
-    if (sajuxIsMobileDevice()) return 1;
+    /* 모바일: 읽기에 무리 없는 선까지 해상도를 낮춰 렌더·인코딩·문서클론 비용 감소(속도 핵심).
+       해상도를 낮추면 같은 iOS 캔버스 한도 안에서 더 큰 영역을 1회에 담아 조각 수도 줄어든다. */
+    if (sajuxIsMobileDevice()) return 0.65;
     var maxDim = 16384;
     var prefer = 1.5;
     if (!el) return prefer;
@@ -6179,8 +6180,10 @@ function sajuxCaptureTargetToBlobs(target, mime, timeoutMs) {
     }).then(function (dims) {
         /* 모바일 너비≈390 → 390×9000≈3.5M 픽셀, iOS 한도(16.7M) 이내. 청킹 임계값을 높여
            대부분 1회 렌더(병합 페이지 평균 높이 < 9000) → 청킹 횟수 최소화. */
-        /* iOS canvas 한도 회피 — 한 이미지를 3500px 이하로 유지(큰 캔버스는 캡처 실패) */
-        var chunkH = sajuxIsMobileDevice() ? 3500 : 6000;
+        /* iOS canvas 한도 회피 — 실제 캔버스 높이(논리h×scale)를 ~3300px 이하로 유지.
+           scale 0.65에서 논리 chunkH≈5000 → 캔버스 3300. 대부분 절이 1조각 → html2canvas 호출 최소화. */
+        var maxCanvasH = 3300;
+        var chunkH = sajuxIsMobileDevice() ? Math.floor(maxCanvasH / (scale || 1)) : 6000;
         var useChunks = dims.h > chunkH;
         if (!useChunks) {
             return sajuxHtml2canvasRegion(target, scale, { w: dims.w, h: dims.h, y: 0 }, timeoutMs).then(function (canvas) {
