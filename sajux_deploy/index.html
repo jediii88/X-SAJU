@@ -48,6 +48,12 @@ section{position:relative;z-index:1;padding:80px 24px;}
 .price-card .p-items{margin-top:16px;text-align:left;}
 .price-card .p-items li{font-size:13px;color:#aaa;padding:4px 0;list-style:none;padding-left:16px;position:relative;}
 .price-card .p-items li::before{content:'✓';color:var(--gold);position:absolute;left:0;}
+.price-card.coming-soon{opacity:0.72;border-style:dashed;border-color:rgba(255,255,255,0.12);}
+.price-card.coming-soon .p-sale{font-size:22px;color:#888;font-weight:700;}
+.price-card.coming-soon .p-items li{color:#666;}
+.price-card.coming-soon .p-items li::before{content:'·';color:#555;}
+.price-card .p-badge{display:inline-block;margin-bottom:10px;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:0.04em;background:rgba(255,255,255,0.08);color:#aaa;}
+.price-card.coming-soon .p-badge{background:rgba(199,167,106,0.12);color:var(--gold);}
 .steps{display:flex;flex-direction:column;gap:16px;}
 .step{display:flex;align-items:flex-start;gap:16px;padding:20px;background:rgba(255,255,255,0.03);border-radius:10px;}
 .step-num{flex-shrink:0;width:36px;height:36px;background:var(--gold);color:#000;font-weight:900;font-size:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
@@ -126,7 +132,7 @@ footer a{color:#666;text-decoration:none;}
 <section id="pricing">
   <div class="section-inner">
     <div class="section-title">상품 구성</div>
-    <div class="section-sub">오픈 기념 특가로 진행 중입니다.</div>
+    <div class="section-sub">오픈 기념 특가 — 현재 1인·2인 리포트 신청 가능합니다.</div>
     <div class="pricing">
       <div class="price-card">
         <div class="ptype">1인</div>
@@ -154,17 +160,17 @@ footer a{color:#666;text-decoration:none;}
           <li>관계 발전 전략</li>
         </ul>
       </div>
-      <div class="price-card">
+      <div class="price-card coming-soon" aria-disabled="true">
+        <div class="p-badge">준비 중</div>
         <div class="ptype">패밀리</div>
         <div class="pname">3~4인 리포트</div>
-        <div class="p-original">129,900원</div>
-        <div class="p-sale">29,900원</div>
-        <div class="p-note">가족 단위 완전 분석</div>
+        <div class="p-sale">곧 오픈 예정</div>
+        <div class="p-note">가족 단위 리포트를 제작 중입니다</div>
         <ul class="p-items">
-          <li>개인 리포트 × 최대 4인</li>
-          <li>가족 관계 역학 분석</li>
-          <li>시너지 극대화 전략</li>
-          <li>가족 공통 주의 시기</li>
+          <li>개인 리포트 × 최대 4인 (예정)</li>
+          <li>가족 관계 역학 분석 (예정)</li>
+          <li>시너지·주의 시기 안내 (예정)</li>
+          <li>오픈 시 이 페이지에 안내드립니다</li>
         </ul>
       </div>
     </div>
