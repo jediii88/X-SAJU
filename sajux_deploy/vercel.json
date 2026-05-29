@@ -1,0 +1,8 @@
+{
+  "functions": {
+    "api/render-report.js": {
+      "maxDuration": 60,
+      "includeFiles": "node_modules/@sparticuz/chromium/bin/**"
+    }
+  }
+}
