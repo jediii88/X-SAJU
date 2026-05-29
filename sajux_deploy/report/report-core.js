@@ -5536,8 +5536,6 @@ function sajuxIsMobileCapture() {
     return sajuxIsMobileDevice();
 }
 function sajuxCaptureHostWidthPx() {
-    /* A안: 모바일은 실제 뷰포트 너비로 캡처 — 화면에 보이는 그대로, 빠름 */
-    if (sajuxIsMobileCapture()) return Math.max(window.innerWidth || 375, 320);
     return SAJUX_CAPTURE_PAGE_W;
 }
 function sajuxStyleCaptureHost(host) {
@@ -6111,7 +6109,7 @@ function sajuxHtml2canvasRegion(target, scale, region, timeoutMs) {
             height: h,
             x: 0,
             y: yOff,
-            windowWidth: sajuxIsMobileCapture() ? (window.innerWidth || 390) : SAJUX_CAPTURE_WINDOW_W,
+            windowWidth: SAJUX_CAPTURE_WINDOW_W,
             windowHeight: SAJUX_CAPTURE_WINDOW_H,
             scrollX: 0,
             scrollY: 0,
