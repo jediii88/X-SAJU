@@ -5216,7 +5216,7 @@ function sajuxStartCaptureProgress(total, destMode) {
     sajuxEnsureCapturePulseStyles();
     el.innerHTML = ''
         + '<div class="sajux-capture-overlay-inner" style="width:min(320px,92vw);text-align:center;font-family:\'Noto Sans KR\',sans-serif;color:#f5f0e6;margin:auto;padding:32px 20px;">'
-        + '<div class="sajux-cap-title-pulse" style="font-size:15px;font-weight:600;">사주 저장 중<span class="sajux-cap-live-badge">LIVE</span></div>'
+        + '<div class="sajux-cap-title-pulse" style="font-size:15px;font-weight:600;">사주 저장 중</div>'
         + '<div class="sajux-cap-gauge-track">'
         + '<div id="sajux-cap-gauge-fill" class="sajux-cap-gauge-fill" style="width:0%;"></div>'
         + '<div class="sajux-cap-gauge-shimmer" aria-hidden="true"></div>'
@@ -5227,7 +5227,7 @@ function sajuxStartCaptureProgress(total, destMode) {
         + '</div>'
         + '<div id="sajux-cap-status" class="sajux-cap-status">화면을 건드리지 마세요</div>'
         + '<div id="sajux-cap-elapsed" class="sajux-cap-elapsed">0초 경과 · 지금도 저장 중이에요</div>'
-        + (sajuxIsIosDevice() ? '<div style="font-size:11px;color:rgba(245,240,232,.38);margin-top:8px;">총 ' + total + '장 · 장마다 10~20초 걸릴 수 있어요</div>' : '')
+        + (sajuxIsMobileDevice() ? '<div style="font-size:11px;color:rgba(245,240,232,.38);margin-top:8px;">총 ' + total + '장 · 장마다 10~20초 걸릴 수 있어요</div>' : '')
         + '</div>';
     el.style.display = 'flex';
     sajuxStartCapturePulse();
@@ -5633,12 +5633,68 @@ function sajuxMergeCaptureSliceMany(list, meta) {
 }
 function sajuxGroupMobileMainCaptureSlices(slices) {
     if (!slices || !slices.length || !sajuxIsMobileDevice()) return slices || [];
-    /* 모바일: 섹션 병합 시 html2canvas 대량 실패 → 목차만 제외, 절별 캡처 */
-    return slices.filter(function (s) { return String(s.jul || '') !== '목차'; });
+    var cover = [], part1 = [], part2Now = [], part2Future = [], part3LoveWealth = [], part3Rest = [], tail = [];
+    function classify(s) {
+        var jul = String(s.jul || '');
+        if (jul === '표지') return 'cover';
+        if (jul === '목차') return 'skip';
+        if (jul === '보너스' || jul === '별첨') return 'tail';
+        var m = jul.match(/^(\d+)-(\d+)/);
+        if (!m) return 'tail';
+        return { part: parseInt(m[1], 10), sec: parseInt(m[2], 10) };
+    }
+    for (var i = 0; i < slices.length; i++) {
+        var s = slices[i];
+        var cls = classify(s);
+        if (cls === 'cover') { cover.push(s); continue; }
+        if (cls === 'skip') continue;
+        if (cls === 'tail') { tail.push(s); continue; }
+        if (cls.part === 1) part1.push(s);
+        else if (cls.part === 2) { (cls.sec <= 2 ? part2Now : part2Future).push(s); }
+        else if (cls.part === 3) { (cls.sec <= 2 ? part3LoveWealth : part3Rest).push(s); }
+        else tail.push(s);
+    }
+    var plan = [
+        { list: cover,            jul: '표지', title: '표지' },
+        { list: part1,            jul: '1-1',  title: '1부 · 나라는 사람' },
+        { list: part2Now,         jul: '2-1',  title: '지금 운 · 80년 지도' },
+        { list: part2Future,      jul: '2-3',  title: '앞으로의 대운·세운·월운' },
+        { list: part3LoveWealth,  jul: '3-1',  title: '애정 · 재물' },
+        { list: part3Rest,        jul: '3-3',  title: '합격 · 직업 · 건강' },
+        { list: tail,             jul: '4-1',  title: '개운법 · 마무리' }
+    ];
+    var out = [];
+    plan.forEach(function (g) {
+        if (!g.list.length) return;
+        var merged = g.list.length === 1 ? g.list[0] : sajuxMergeCaptureSliceMany(g.list, { jul: g.jul, title: g.title });
+        if (merged) out.push(merged);
+    });
+    return out.length ? out : slices;
 }
 function sajuxGroupMobileCompatCaptureSlices(slices) {
     if (!slices || !slices.length || !sajuxIsMobileDevice()) return slices || [];
-    return slices;
+    var cover = [], summary = [], blockA = [], blockB = [], blockC = [];
+    function julNum(s) { var m = String(s.jul || '').match(/^1-(\d+)/); return m ? parseInt(m[1], 10) : 99; }
+    for (var i = 0; i < slices.length; i++) {
+        var jul = String(slices[i].jul || '');
+        if (jul === '표지') cover.push(slices[i]);
+        else if (jul === '요약') summary.push(slices[i]);
+        else { var n = julNum(slices[i]); (n <= 4 ? blockA : n <= 8 ? blockB : blockC).push(slices[i]); }
+    }
+    var plan = [
+        { list: cover,   jul: '표지', title: '표지' },
+        { list: summary, jul: '요약', title: '두 사람 요약' },
+        { list: blockA,  jul: '1-1',  title: '궁합 · 총평~부부' },
+        { list: blockB,  jul: '1-5',  title: '궁합 · 조율~배우자궁' },
+        { list: blockC,  jul: '1-9',  title: '궁합 · 인연~대운' }
+    ];
+    var out = [];
+    plan.forEach(function (g) {
+        if (!g.list.length) return;
+        var merged = g.list.length === 1 ? g.list[0] : sajuxMergeCaptureSliceMany(g.list, { jul: g.jul, title: g.title });
+        if (merged) out.push(merged);
+    });
+    return out.length ? out : slices;
 }
 function sajuxMergeCaptureSlices(slices) {
     if (!slices || !slices.length) return slices || [];
