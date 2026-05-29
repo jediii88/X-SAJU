@@ -5527,7 +5527,9 @@ function sajuxEndDesktopCaptureSession() {
     try { document.documentElement.classList.remove('sajux-capture-desktop'); } catch (eCls) {}
 }
 function sajuxCaptureHostOnScreen() {
-    return /iPhone|iPad|iPod/i.test(navigator.userAgent || '');
+    /* z-index:-1 on iOS causes html2canvas to fail for large elements (behind body stacking context).
+       Use same off-screen approach as all other platforms. */
+    return false;
 }
 function sajuxIsMobileCapture() {
     if (_sajuxDesktopCaptureActive) return false;
@@ -5633,40 +5635,54 @@ function sajuxMergeCaptureSliceMany(list, meta) {
 }
 function sajuxGroupMobileMainCaptureSlices(slices) {
     if (!slices || !slices.length || !sajuxIsMobileDevice()) return slices || [];
-    var cover = [], part1 = [], part2Now = [], part2Future = [], part3LoveWealth = [], part3Rest = [], tail = [];
-    function classify(s) {
-        var jul = String(s.jul || '');
-        if (jul === '표지') return 'cover';
-        if (jul === '목차') return 'skip';
-        if (jul === '보너스' || jul === '별첨') return 'tail';
-        var m = jul.match(/^(\d+)-(\d+)/);
-        if (!m) return 'tail';
-        return { part: parseInt(m[1], 10), sec: parseInt(m[2], 10) };
-    }
+    /*
+     * 8-page plan (user-specified):
+     * P1  표지 + 1-1
+     * P2  1-2 ~ 1-끝
+     * P3  2-1 ~ 2-3 (현재 운세, 80년 지도)
+     * P4  2-4 (대운)
+     * P5  2-5 이상 (세운·월운)
+     * P6  3-1, 3-2 (애정·재물)
+     * P7  3-3 ~ 3-끝 (합격·직업·건강)
+     * P8  4부 이상 + 보너스/별첨/기타
+     */
+    var p1 = [], p2 = [], p3 = [], p4 = [], p5 = [], p6 = [], p7 = [], p8 = [];
     for (var i = 0; i < slices.length; i++) {
         var s = slices[i];
-        var cls = classify(s);
-        if (cls === 'cover') { cover.push(s); continue; }
-        if (cls === 'skip') continue;
-        if (cls === 'tail') { tail.push(s); continue; }
-        if (cls.part === 1) part1.push(s);
-        else if (cls.part === 2) { (cls.sec <= 2 ? part2Now : part2Future).push(s); }
-        else if (cls.part === 3) { (cls.sec <= 2 ? part3LoveWealth : part3Rest).push(s); }
-        else tail.push(s);
+        var jul = String(s.jul || '');
+        if (jul === '목차') continue;
+        if (jul === '표지') { p1.push(s); continue; }
+        if (jul === '보너스' || jul === '별첨') { p8.push(s); continue; }
+        var m = jul.match(/^(\d+)-(\d+)/);
+        if (!m) { p8.push(s); continue; }
+        var part = parseInt(m[1], 10);
+        var sec  = parseInt(m[2], 10);
+        if (part === 1) {
+            (sec === 1 ? p1 : p2).push(s);
+        } else if (part === 2) {
+            if (sec <= 3)      p3.push(s);
+            else if (sec === 4) p4.push(s);
+            else               p5.push(s);
+        } else if (part === 3) {
+            (sec <= 2 ? p6 : p7).push(s);
+        } else {
+            p8.push(s);
+        }
     }
     var plan = [
-        { list: cover,            jul: '표지', title: '표지' },
-        { list: part1,            jul: '1-1',  title: '1부 · 나라는 사람' },
-        { list: part2Now,         jul: '2-1',  title: '지금 운 · 80년 지도' },
-        { list: part2Future,      jul: '2-3',  title: '앞으로의 대운·세운·월운' },
-        { list: part3LoveWealth,  jul: '3-1',  title: '애정 · 재물' },
-        { list: part3Rest,        jul: '3-3',  title: '합격 · 직업 · 건강' },
-        { list: tail,             jul: '4-1',  title: '개운법 · 마무리' }
+        { list: p1, jul: '표지', title: '표지 · 일주' },
+        { list: p2, jul: '1-2',  title: '1부 · 원국 분석' },
+        { list: p3, jul: '2-1',  title: '현재 운세 · 80년 지도' },
+        { list: p4, jul: '2-4',  title: '앞으로 올 대운' },
+        { list: p5, jul: '2-5',  title: '앞으로 올 세운 · 월운' },
+        { list: p6, jul: '3-1',  title: '애정 · 재물' },
+        { list: p7, jul: '3-3',  title: '합격 · 직업 · 건강' },
+        { list: p8, jul: '4-1',  title: '개운법 · 마무리' }
     ];
     var out = [];
-    plan.forEach(function (g) {
-        if (!g.list.length) return;
-        var merged = g.list.length === 1 ? g.list[0] : sajuxMergeCaptureSliceMany(g.list, { jul: g.jul, title: g.title });
+    plan.forEach(function (grp) {
+        if (!grp.list.length) return;
+        var merged = grp.list.length === 1 ? grp.list[0] : sajuxMergeCaptureSliceMany(grp.list, { jul: grp.jul, title: grp.title });
         if (merged) out.push(merged);
     });
     return out.length ? out : slices;
