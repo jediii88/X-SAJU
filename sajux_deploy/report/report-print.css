@@ -931,153 +931,102 @@ body,
 }
 
 /* =====================================================================
-   [사주X PDF 책 모드 — 폰트 깨짐 방지 + 라이트 가독성 강화]
-   목적:
-   1) iOS Safari 인쇄 시 한글 따옴표·괄호·구두점이 깨지는 문제 차단
-      → 시스템 폰트(Apple SD Gothic Neo / Malgun Gothic)로 강제.
-        시스템 폰트는 임베드 없이 모든 글리프가 디바이스에 내장돼 100% 안전.
-   2) 책처럼 보이는 라이트 PDF — 컬러 톤·여백·자간·줄높이 가독성 최적화.
-   3) 페이지 번호·작은 푸터 (브라우저 지원하면 자동 표시).
+   [사주X PDF — 원본 디자인 유지 + 흰글씨 박멸 + 여백 (사용자 피드백 반영)]
+   원칙:
+   1) 화면 본문 컬럼(500px)을 인쇄에서도 그대로 유지 → 표·카드 레이아웃이
+      화면과 동일하게 나오고(흩어짐 없음) A4 안에 가운데 정렬되어 좌우 여백 확보.
+   2) 흰색·연한 글씨는 절대 금지 → 모든 본문 텍스트를 진한 회색(#2a2a2a)으로 강제.
+      오행·한자 의미색만 '진한 채도' 버전으로 예외 유지.
+   3) 시스템 한글 고딕 강제 → 글리프 깨짐(따옴표·괄호·구두점) 차단. 명조 강제 안 함.
+   4) 위아래·좌우 여백 증가.
    ===================================================================== */
 @page {
   size: A4 portrait;
-  margin: 14mm 14mm 16mm;
-  @bottom-center {
-    content: counter(page) " / " counter(pages);
-    font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
-    font-size: 9pt;
-    color: #8a7a55;
-    letter-spacing: 0.06em;
-  }
-  @bottom-right {
-    content: "사주X";
-    font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
-    font-size: 9pt;
-    color: #b09a6f;
-    letter-spacing: 0.18em;
-  }
-}
-@page :first {
-  margin: 0 !important;
-  @bottom-center { content: ""; }
-  @bottom-right { content: ""; }
+  margin: 20mm 16mm 20mm;
 }
 
 @media print {
-  /* 폰트 강제 — 모든 요소에 시스템 한글 폰트 (PDF 글자 깨짐 차단) */
-  html, body,
-  body *, body *::before, body *::after,
-  #report-container, #report-container *,
-  #step-2, #step-2 *,
-  #sec-report-full, #sec-report-full * {
+  /* 1) 폰트 — 시스템 한글 고딕 강제 (글리프 깨짐 차단) */
+  html, body, body *, body *::before, body *::after {
     font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo',
                  'Malgun Gothic', '맑은 고딕', 'Noto Sans KR', sans-serif !important;
-    font-feature-settings: "kern" 1, "liga" 1 !important;
-    text-rendering: optimizeLegibility !important;
-    -webkit-font-smoothing: antialiased !important;
-  }
-  /* 표지·챕터 타이틀은 살짝 명조 느낌 — 시스템 명조 폴백 (안전 폰트만) */
-  .cover-title, .cover-subtitle, h1.cover-title,
-  .report-chapter > h2, .report-chapter > h3,
-  .ch-head-main-sub .ch-sec-title,
-  .ii-h1, .ii-h2 {
-    font-family: 'Apple SD Gothic Neo', 'Nanum Myeongjo', 'Batang',
-                 '바탕', Georgia, 'Times New Roman', serif !important;
-    font-weight: 700 !important;
-    letter-spacing: -0.01em !important;
   }
 
-  /* 본문 톤 — 책 가독성 (살짝 따뜻한 검정 + 행간 1.75) */
+  /* 2) 흰색·연한 글씨 박멸 — 본문 모든 텍스트를 진한 회색으로 강제
+        (-webkit-text-fill-color까지 덮어 그라디언트 흰 글씨도 차단) */
+  #report-container, #report-container *,
+  #sec-report-full, #sec-report-full *,
+  #step-2, #step-2 *,
+  .report-chapter, .report-chapter *,
+  .cover-page, .cover-page *,
+  .toc-page, .toc-page * {
+    color: #2a2a2a !important;
+    -webkit-text-fill-color: #2a2a2a !important;
+    text-shadow: none !important;
+  }
+
+  /* 2-1) 오행·한자 의미색만 진한 채도로 예외 (id 포함 → 위 강제보다 우선) */
+  #report-container .wood, #sec-report-full .wood,
+  #report-container [class*="wood"], #sec-report-full [class*="wood"] {
+    color: #15692f !important; -webkit-text-fill-color: #15692f !important;
+  }
+  #report-container .fire, #sec-report-full .fire,
+  #report-container [class*="fire"], #sec-report-full [class*="fire"] {
+    color: #be2f2f !important; -webkit-text-fill-color: #be2f2f !important;
+  }
+  #report-container .earth, #sec-report-full .earth,
+  #report-container [class*="earth"], #sec-report-full [class*="earth"] {
+    color: #8a6a1a !important; -webkit-text-fill-color: #8a6a1a !important;
+  }
+  #report-container .metal, #sec-report-full .metal,
+  #report-container [class*="metal"], #sec-report-full [class*="metal"] {
+    color: #555555 !important; -webkit-text-fill-color: #555555 !important;
+  }
+  #report-container .water, #sec-report-full .water,
+  #report-container [class*="water"], #sec-report-full [class*="water"] {
+    color: #1746c4 !important; -webkit-text-fill-color: #1746c4 !important;
+  }
+  /* 챕터 번호 골드만 유지 */
+  #report-container .ch-sec-num, #sec-report-full .ch-sec-num {
+    color: #9a7a2e !important; -webkit-text-fill-color: #9a7a2e !important;
+  }
+  /* 강조는 더 진하게 (id 포함 → 우선) */
+  #report-container strong, #report-container b,
+  #sec-report-full strong, #sec-report-full b {
+    color: #111 !important; -webkit-text-fill-color: #111 !important; font-weight: 700 !important;
+  }
+
+  /* 3) 본문 폭 — 화면 컬럼(≈500px=132mm) 유지 → 표·카드 원본 레이아웃 보존 + 좌우 여백 */
+  #sec-report-full, #step-2, .step-content {
+    width: 100% !important;
+    max-width: none !important;
+    background: #ffffff !important;
+  }
+  #report-container {
+    max-width: 132mm !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    background: #ffffff !important;
+  }
+
+  /* 4) 가독성 — 행간/단락 여백 (레이아웃은 원본 유지, 간격만) */
   body, #report-container {
-    color: #1a1a1a !important;
-    line-height: 1.75 !important;
-    font-size: 10.5pt !important;
-    word-break: keep-all !important;
-    overflow-wrap: break-word !important;
-    letter-spacing: 0 !important;
-  }
-  p, .p, .ch-text, .ii-text, li, td, th {
-    color: #1f1f1f !important;
-    line-height: 1.75 !important;
+    line-height: 1.7 !important;
     word-break: keep-all !important;
     overflow-wrap: break-word !important;
   }
-
-  /* 챕터 타이틀 — 골드 라인 한 줄로 책 챕터 분위기 */
-  .ch-head-main-sub, .ch-head-topic-first {
-    color: #1a1a1a !important;
-    border: none !important;
-    border-bottom: 0.6pt solid #c7a76a !important;
-    padding: 0 0 3.5mm !important;
-    margin: 0 0 5mm !important;
-    page-break-after: avoid !important;
-    break-after: avoid !important;
-  }
-  .ch-sec-num, .ch-head-main-sub .ch-sec-num {
-    color: #b08a3c !important;
-    font-weight: 800 !important;
-    letter-spacing: 0.04em !important;
-  }
-  .ch-head-main-sub .ch-sec-title,
-  .ch-head-topic-first .ch-sec-title {
-    color: #111 !important;
+  p, .p, .ch-text, .ii-text, li {
+    line-height: 1.7 !important;
+    margin-bottom: 2.5mm !important;
+    word-break: keep-all !important;
   }
   .report-chapter {
-    color: #1f1f1f !important;
+    padding-top: 5mm !important;
+    padding-bottom: 5mm !important;
+    margin-bottom: 6mm !important;
   }
 
-  /* 강조 — 책 답게 절제된 굵기/컬러 */
-  strong, b { color: #111 !important; font-weight: 700 !important; }
-  em, i { color: #1a1a1a !important; }
-
-  /* 카드/패널 — 책 박스 스타일 (얇은 테두리, 크림 배경) */
-  .sajux-card, .sajux-panel-plain, .sip-detail-card,
-  .sajux-upcoming-daeun-card, .daeun-decade-card,
-  .yearly-card, .monthly-card {
-    background: #fbf8f1 !important;
-    border: 0.6pt solid #d6cdb4 !important;
-    border-radius: 2px !important;
-    box-shadow: none !important;
-    color: #1f1f1f !important;
-  }
-
-  /* 표 — 깔끔 라이트 */
-  table { border-collapse: collapse !important; width: 100% !important; }
-  table th, table td {
-    border: 0.4pt solid #c8bfa6 !important;
-    padding: 2mm 2.5mm !important;
-    color: #1f1f1f !important;
-    background: #fff !important;
-  }
-  table th { background: #f5efe2 !important; font-weight: 700 !important; }
-
-  /* 표지 — 책 표지 처럼 가운데 큰 제목 + 절제된 부제 */
-  .cover-page {
-    page-break-after: always !important;
-    break-after: page !important;
-    padding: 26mm 12mm !important;
-  }
-  .cover-page .cover-title {
-    font-size: 28pt !important;
-    line-height: 1.25 !important;
-    color: #111 !important;
-    margin: 0 0 6mm !important;
-  }
-  .cover-page .cover-subtitle {
-    font-size: 12pt !important;
-    color: #5b4a25 !important;
-    line-height: 1.7 !important;
-    letter-spacing: 0.02em !important;
-  }
-
-  /* TOC — 책 목차 스타일 */
-  .toc-page {
-    color: #1a1a1a !important;
-    page-break-after: always !important;
-  }
-  .toc-page * { color: #1a1a1a !important; }
-
-  /* UI 잡요소 완전 숨김 (인쇄 시 보이면 안 되는 것) */
+  /* 5) UI 잡요소 숨김 */
   #sajux-image-fab, #sajux-pdf-fab, #floating-toc, #sticky-part-nav,
   #theme-toggle, #star-canvas, #sajux-capture-overlay,
   .pdf-btn, .nav-floating, .sajux-pdf-wide-btn, .print-actions {
@@ -1085,7 +1034,7 @@ body,
     visibility: hidden !important;
   }
 
-  /* 화면용 다크 그라디언트/오버레이가 인쇄에 흘러들지 않게 차단 */
+  /* 6) 화면용 다크 그라디언트/오버레이가 인쇄에 흘러들지 않게 차단 */
   body::before, body::after,
   #report-container::before, #report-container::after,
   #sec-report-full::before, #sec-report-full::after {
@@ -1094,7 +1043,7 @@ body,
     background: none !important;
   }
 
-  /* 너무 짧은 단락 다음에 챕터 타이틀이 붙어 끊기지 않게 */
+  /* 7) 끊김 방지 */
   h1, h2, h3, .ch-head-main-sub, .ch-head-topic-first {
     page-break-after: avoid !important;
     break-after: avoid !important;
