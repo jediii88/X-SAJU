@@ -5227,6 +5227,7 @@ function sajuxStartCaptureProgress(total, destMode) {
         + '</div>'
         + '<div id="sajux-cap-status" class="sajux-cap-status">화면을 건드리지 마세요</div>'
         + '<div id="sajux-cap-elapsed" class="sajux-cap-elapsed">0초 경과 · 지금도 저장 중이에요</div>'
+        + (sajuxIsIosDevice() ? '<div style="font-size:11px;color:rgba(245,240,232,.38);margin-top:8px;">총 ' + total + '장 · 장마다 10~20초 걸릴 수 있어요</div>' : '')
         + '</div>';
     el.style.display = 'flex';
     sajuxStartCapturePulse();
@@ -5632,100 +5633,12 @@ function sajuxMergeCaptureSliceMany(list, meta) {
 }
 function sajuxGroupMobileMainCaptureSlices(slices) {
     if (!slices || !slices.length || !sajuxIsMobileDevice()) return slices || [];
-    /* iOS: 섹션 병합 시 html2canvas가 대부분 실패 → 목차만 제외하고 절별 캡처 */
-    if (sajuxIsIosDevice()) {
-        return slices.filter(function (s) { return String(s.jul || '') !== '목차'; });
-    }
-    var cover = [];
-    var part1 = [];
-    var part2Now = [];
-    var part2Future = [];
-    var part3LoveWealth = [];
-    var part3Rest = [];
-    var tail = [];
-    function classifySlice(s) {
-        var jul = String(s.jul || '');
-        if (jul === '표지') return 'cover';
-        if (jul === '목차') return 'skip';
-        if (jul === '보너스' || jul === '별첨') return 'tail';
-        var m = jul.match(/^(\d+)-(\d+)/);
-        if (!m) return 'tail';
-        return { part: parseInt(m[1], 10), sec: parseInt(m[2], 10) };
-    }
-    for (var i = 0; i < slices.length; i++) {
-        var s = slices[i];
-        var cls = classifySlice(s);
-        if (cls === 'cover') { cover.push(s); continue; }
-        if (cls === 'skip') continue;
-        if (cls === 'tail') { tail.push(s); continue; }
-        if (cls.part === 1) part1.push(s);
-        else if (cls.part === 2) {
-            if (cls.sec <= 2) part2Now.push(s);
-            else part2Future.push(s);
-        } else if (cls.part === 3) {
-            if (cls.sec <= 2) part3LoveWealth.push(s);
-            else part3Rest.push(s);
-        } else if (cls.part === 4) tail.push(s);
-        else tail.push(s);
-    }
-    var plan = [
-        { list: cover, jul: '표지', title: '표지' },
-        { list: part1, jul: '1-1', title: '1부 · 나라는 사람' },
-        { list: part2Now, jul: '2-1', title: '지금 운 · 80년 지도' },
-        { list: part2Future, jul: '2-3', title: '앞으로의 대운·세운·월운' },
-        { list: part3LoveWealth, jul: '3-1', title: '애정 · 재물' },
-        { list: part3Rest, jul: '3-3', title: '합격 · 직업 · 건강' },
-        { list: tail, jul: '4-1', title: '개운법 · 마무리' }
-    ];
-    var out = [];
-    plan.forEach(function (g) {
-        if (!g.list.length) return;
-        if (g.list.length === 1) {
-            out.push(g.list[0]);
-            return;
-        }
-        var merged = sajuxMergeCaptureSliceMany(g.list, { jul: g.jul, title: g.title });
-        if (merged) out.push(merged);
-    });
-    return out.length ? out : slices;
+    /* 모바일: 섹션 병합 시 html2canvas 대량 실패 → 목차만 제외, 절별 캡처 */
+    return slices.filter(function (s) { return String(s.jul || '') !== '목차'; });
 }
 function sajuxGroupMobileCompatCaptureSlices(slices) {
     if (!slices || !slices.length || !sajuxIsMobileDevice()) return slices || [];
-    if (sajuxIsIosDevice()) return slices;
-    var cover = [];
-    var summary = [];
-    var blockA = [];
-    var blockB = [];
-    var blockC = [];
-    var julNums = function (s) {
-        var m = String(s.jul || '').match(/^1-(\d+)/);
-        return m ? parseInt(m[1], 10) : 99;
-    };
-    for (var i = 0; i < slices.length; i++) {
-        var s = slices[i];
-        var jul = String(s.jul || '');
-        if (jul === '표지') { cover.push(s); continue; }
-        if (jul === '요약') { summary.push(s); continue; }
-        var n = julNums(s);
-        if (n <= 4) blockA.push(s);
-        else if (n <= 8) blockB.push(s);
-        else blockC.push(s);
-    }
-    var plan = [
-        { list: cover, jul: '표지', title: '표지' },
-        { list: summary, jul: '요약', title: '두 사람 요약' },
-        { list: blockA, jul: '1-1', title: '궁합 · 총평~부부' },
-        { list: blockB, jul: '1-5', title: '궁합 · 조율~배우자궁' },
-        { list: blockC, jul: '1-9', title: '궁합 · 인연~대운' }
-    ];
-    var out = [];
-    plan.forEach(function (g) {
-        if (!g.list.length) return;
-        if (g.list.length === 1) { out.push(g.list[0]); return; }
-        var merged = sajuxMergeCaptureSliceMany(g.list, { jul: g.jul, title: g.title });
-        if (merged) out.push(merged);
-    });
-    return out.length ? out : slices;
+    return slices;
 }
 function sajuxMergeCaptureSlices(slices) {
     if (!slices || !slices.length) return slices || [];
@@ -5785,7 +5698,7 @@ function sajuxPushCaptureSlice(slices, container, startNode, endNode, headEl) {
     }
     var wrap = sajuxWrapDomRange(container, startNode, endNode, { jul: jul, title: title });
     if (!wrap) return;
-    var maxSlicePx = sajuxIsIosDevice() ? 2000 : 6800;
+    var maxSlicePx = sajuxIsMobileDevice() ? 2000 : 6800;
     if (wrap.scrollHeight <= maxSlicePx) {
         slices.push({ el: wrap, jul: jul, title: title, headEl: headEl });
         return;
@@ -6068,7 +5981,7 @@ var SAJUX_IOS_CHUNK_H = 1800;
 function sajuxMobileChunkThreshold() {
     return sajuxIsIosDevice() ? SAJUX_IOS_CHUNK_H : SAJUX_MOBILE_CHUNK_H;
 }
-function sajuxHtml2canvasIosClipChunk(host, target, scale, y0, ch, w, timeoutMs) {
+function sajuxHtml2canvasClipChunk(host, target, scale, y0, ch, w, timeoutMs) {
     host = host || document.getElementById('sajux-capture-host') || document.body;
     var clip = document.createElement('div');
     clip.className = 'sajux-ios-capture-clip';
@@ -6165,8 +6078,8 @@ function sajuxCaptureTargetToBlobs(target, mime, timeoutMs) {
         function nextChunk() {
             if (y0 >= dims.h) return Promise.resolve(blobs);
             var ch = Math.min(stepH, dims.h - y0);
-            var capturePromise = sajuxIsIosDevice()
-                ? sajuxHtml2canvasIosClipChunk(host, target, scale, y0, ch, dims.w, perChunk)
+            var capturePromise = sajuxIsMobileDevice()
+                ? sajuxHtml2canvasClipChunk(host, target, scale, y0, ch, dims.w, perChunk)
                 : sajuxHtml2canvasRegion(target, scale, { w: dims.w, h: ch, y: y0 }, perChunk);
             return capturePromise.then(function (canvas) {
                 return sajuxCanvasToBlob(canvas, mime);
@@ -6739,27 +6652,41 @@ function sajuxOfferZipDownload(zipBlob, filename, extraMsg, captures) {
             msg = '⚠️ 지금 앱 안 브라우저에서 열려 있어요.\n\nSafari에서 sajux.com을 열고\n다시 「사주 저장」을 눌러 주세요.';
             buttons.push({ label: '확인', primary: true, onClick: function () { sajuxHideCaptureOverlay(); sajuxClearPendingZip(); } });
         } else if (android) {
-            /* Android: 직접 다운로드가 가장 안정적 (Chrome에선 항상 작동) */
-            msg = '✅ 저장 준비 완료!\n\n아래 버튼을 눌러 다운로드하세요.';
-            msg += (extraMsg || '');
-            buttons.push({
-                label: '📥 ZIP 다운로드',
-                primary: true,
-                onClick: function () {
-                    if (sajuxTriggerZipDownload(url, filename)) {
-                        showSavedNote('✅ 다운로드 시작!\n\n「내 파일」→ 다운로드 폴더에서 확인해 주세요.\n\n안 됐으면 Chrome 브라우저로 다시 시도해 주세요.');
-                    } else if (sajuxIsAndroidInAppBrowser()) {
-                        sajuxShowCaptureOverlay('Chrome 브라우저에서 열어야 저장할 수 있어요.\n\n주소창 우측 ⋮ → \"Chrome으로 열기\"', {
-                            buttons: [{ label: '확인', primary: true, onClick: function () { sajuxHideCaptureOverlay(); sajuxClearPendingZip(); } }]
-                        });
-                    } else {
+            if (sajuxIsAndroidInAppBrowser()) {
+                msg = '⚠️ 앱 안 브라우저에서는 저장이 막혀요.\n\nChrome에서 sajux.com을 열고\n다시 「사주 저장」을 눌러 주세요.';
+                buttons.push({ label: '확인', primary: true, onClick: function () { sajuxHideCaptureOverlay(); sajuxClearPendingZip(); } });
+            } else {
+                msg = '✅ 저장 준비 완료!\n\n아래 「ZIP 다운로드」를 눌러 주세요.';
+                msg += (extraMsg || '');
+                buttons.push({
+                    label: '📥 ZIP 다운로드',
+                    primary: true,
+                    href: url,
+                    download: filename
+                });
+                if (canPick) {
+                    buttons.push({
+                        label: '📂 폴더에 저장',
+                        primary: false,
+                        onClick: function () {
+                            sajuxPickSaveFolder(zipBlob, filename, function (mode) {
+                                if (mode === 'saved') showSavedNote('✅ 저장 완료!\n\n선택한 폴더에서 ZIP을 확인해 주세요.');
+                                else if (mode === 'failed') alert('폴더 선택이 막혔습니다.\n「ZIP 다운로드」를 눌러 주세요.');
+                            });
+                        }
+                    });
+                }
+                buttons.push({
+                    label: '📤 공유하기',
+                    primary: false,
+                    onClick: function () {
                         sajuxShareZipFiles(zipBlob, filename, function (mode) {
                             if (mode === 'shared') showSavedNote('✅ 저장 완료!');
-                            else alert('저장 창이 열리지 않았습니다.\nChrome 브라우저에서 다시 시도해 주세요.');
+                            else if (mode !== 'cancel') alert('공유창이 열리지 않았습니다.\n「ZIP 다운로드」를 눌러 주세요.');
                         });
                     }
-                }
-            });
+                });
+            }
         } else if (ios) {
             /* iOS Safari: ZIP → "파일에 저장" 이 유일하게 전체 저장 가능
                "이미지 저장"은 첫 장 1개만 저장되므로 사용하지 않음 */
@@ -6982,6 +6909,11 @@ function sajuxRunReportImageCapture(root) {
             sajuxUpdateCaptureProgress(total, total);
             if (!captures.length) {
                 finishErr(new Error('캡처된 이미지가 없습니다. 페이지를 새로고침한 뒤 다시 시도해 주세요.'));
+                cleanup();
+                return;
+            }
+            if (captures.length <= 1 && total >= 3) {
+                finishErr(new Error('표지만 저장됐습니다 (' + captures.length + '/' + total + '). Chrome·Safari에서 새로고침 후 다시 시도해 주세요.'));
                 cleanup();
                 return;
             }
