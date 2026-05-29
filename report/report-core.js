@@ -5889,14 +5889,16 @@ function sajuxCollectCaptureSlices(root) {
     var slices = [];
     if (!container) return { container: null, slices: [], host: null };
 
+    /* 표지 + 목차 = 1부 시작 전까지 한 페이지로 묶음 */
     var coverEl = container.querySelector('#sec-cover');
     var clientCoverEl = container.querySelector('#sec-client-cover');
-    if (sajuxIsVisibleEl(coverEl) || sajuxIsVisibleEl(clientCoverEl)) {
+    var tocEl = container.querySelector('.toc-page');
+    if (sajuxIsVisibleEl(coverEl) || sajuxIsVisibleEl(clientCoverEl) || sajuxIsVisibleEl(tocEl)) {
         var coverWrap = document.createElement('div');
         coverWrap.className = 'sajux-capture-jul-wrap';
         coverWrap.style.cssText = 'background:#050508;box-sizing:border-box;width:100%;';
         coverWrap.setAttribute('data-sajux-jul', '표지');
-        coverWrap.setAttribute('data-sajux-jul-title', '표지');
+        coverWrap.setAttribute('data-sajux-jul-title', '표지·목차');
         if (sajuxIsVisibleEl(coverEl)) {
             var coverClone = coverEl.cloneNode(true);
             coverClone.style.minHeight = 'auto';
@@ -5912,17 +5914,13 @@ function sajuxCollectCaptureSlices(root) {
             clientClone.style.paddingTop = '24px';
             coverWrap.appendChild(clientClone);
         }
-        slices.push({ el: coverWrap, jul: '표지', title: '표지' });
-    }
-    var tocEl = container.querySelector('.toc-page');
-    if (sajuxIsVisibleEl(tocEl)) {
-        var tocWrap = document.createElement('div');
-        tocWrap.className = 'sajux-capture-jul-wrap';
-        tocWrap.style.cssText = 'background:#050508;box-sizing:border-box;width:100%;';
-        tocWrap.setAttribute('data-sajux-jul', '목차');
-        tocWrap.setAttribute('data-sajux-jul-title', '목차');
-        tocWrap.appendChild(tocEl.cloneNode(true));
-        slices.push({ el: tocWrap, jul: '목차', title: '목차' });
+        if (sajuxIsVisibleEl(tocEl)) {
+            var tocClone = tocEl.cloneNode(true);
+            tocClone.style.minHeight = 'auto';
+            tocClone.style.paddingTop = '24px';
+            coverWrap.appendChild(tocClone);
+        }
+        slices.push({ el: coverWrap, jul: '표지', title: '표지·목차' });
     }
 
     var heads = sajuxFilterCaptureHeads(container, sajuxCollectJulHeads(container));
