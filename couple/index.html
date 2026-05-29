@@ -29,7 +29,7 @@
 })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="sajux-build" content="1780043854">
+<meta name="sajux-build" content="1780044517">
 <title>사주X — 두 사람의 인연 구조</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;700;900&display=swap" rel="stylesheet">
@@ -262,12 +262,6 @@ body::before {
   text-wrap: balance;
 }
 .compat-title-cover .rel-badge { margin-top: 20px; }
-.compat-title-cover #couple-issuer-hint {
-  margin-top: 38px;
-  font-size: 10px;
-  color: rgba(210, 214, 223, 0.34);
-  letter-spacing: 0.14em;
-}
 .compat-section-title {
   display: flex; justify-content: space-between; align-items: center;
   flex-wrap: wrap; gap: 8px;
@@ -361,7 +355,9 @@ body::before {
   transition: opacity 0.2s;
   pointer-events: none;
 }
+#floating-toc.toc-open,
 #floating-toc:hover { max-width: 220px; padding: 10px 8px; }
+#floating-toc.toc-open #toc-links,
 #floating-toc:hover #toc-links { opacity: 1; pointer-events: all; }
 .toc-link {
   font-size: 12px;
@@ -652,23 +648,39 @@ body::before {
 
 .timeline-section { margin: 24px 0; }
 .timeline-scroll {
-  display: flex; overflow-x: auto; gap: 8px;
-  padding-bottom: 16px; margin-top: 12px;
-  scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+  overflow: visible;
 }
-.timeline-scroll::-webkit-scrollbar { height: 3px; }
-.timeline-scroll::-webkit-scrollbar-thumb { background: rgba(199,167,106,0.3); border-radius: 2px; }
 .t-card {
-  flex: 0 0 96px; border-radius: 10px; padding: 12px 8px;
-  text-align: center; border: 1px solid; scroll-snap-align: start;
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 12px;
+  padding: 16px 14px;
+  text-align: left;
+  border: 1px solid;
+}
+.t-card-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.t-card .t-desc {
+  font-size: 12px;
+  color: #aaa;
+  margin-top: 8px;
+  line-height: 1.65;
 }
 .t-card.good { background: rgba(82,179,106,0.08); border-color: rgba(82,179,106,0.3); }
 .t-card.half { background: rgba(199,167,106,0.07); border-color: rgba(199,167,106,0.25); }
 .t-card.hard { background: rgba(212,90,82,0.07); border-color: rgba(212,90,82,0.2); }
-.t-age { font-size: 10px; color: var(--text-dim); margin-bottom: 4px; }
-.t-icon { font-size: 16px; margin-bottom: 4px; }
-.t-gz { font-size: 11px; margin-bottom: 2px; }
-.t-label { font-size: 9px; margin-top: 5px; letter-spacing: 0.05em; }
+.t-age { font-size: 11px; color: var(--text-dim); margin-bottom: 6px; font-weight: 600; }
+.t-icon { font-size: 18px; line-height: 1; }
+.t-gz { font-size: 12px; margin-bottom: 2px; line-height: 1.5; }
+.t-label { font-size: 10px; letter-spacing: 0.05em; font-weight: 700; }
 .t-card.good .t-gz, .t-card.good .t-label { color: #52b36a; }
 .t-card.half .t-gz { color: var(--gold); }
 .t-card.half .t-label { color: var(--gold); }
@@ -784,9 +796,10 @@ body::before {
   <p>리포트를 불러오지 못했습니다.<br>새로고침 후 다시 열어 주세요. 계속되면 담당자에게 문의해 주세요.</p>
 </div>
 
-<div id="floating-toc" class="nav-floating" onmouseenter="expandToc()" onmouseleave="collapseToc()">
+<div id="floating-toc" class="nav-floating" onmouseenter="expandToc()" onmouseleave="collapseToc()" onclick="toggleToc(event)">
   <div style="font-size:10px;color:var(--gold);text-align:center;margin-bottom:8px;letter-spacing:1px;">☰</div>
   <div id="toc-links">
+    <a class="toc-link" href="#sec-cover" onclick="return compatTocGo('sec-cover')">처음으로</a>
     <a class="toc-link" href="#section-positioning" onclick="return compatTocGo('section-positioning')">관계 포지셔닝</a>
     <a class="toc-link" href="#section-personality" onclick="return compatTocGo('section-personality')">성격·기질</a>
     <a class="toc-link" href="#section-lover" onclick="return compatTocGo('section-lover')">연인으로서</a>
@@ -803,6 +816,7 @@ body::before {
   </div>
 </div>
 <nav id="sticky-part-nav" class="sticky-part-nav" aria-label="궁합 섹션 이동">
+  <button type="button" class="spn-item spn-home" onclick="compatTocGo('sec-cover')" title="처음으로">처음<br><span class="spn-sub">으로</span></button>
   <button type="button" class="spn-item" onclick="compatTocGo('section-positioning')">포지션<br><span class="spn-sub">역할</span></button>
   <button type="button" class="spn-item" onclick="compatTocGo('section-lover')">연인<br><span class="spn-sub">애정</span></button>
   <button type="button" class="spn-item" onclick="compatTocGo('section-married')">부부<br><span class="spn-sub">생활</span></button>
@@ -833,7 +847,6 @@ body::before {
       <div style="width:96px;height:1px;background:rgba(199,167,106,0.36);margin:38px auto 28px;"></div>
       <p class="hero-sub">궁합 리포트 — 원국 표는 개인 만세력과 같은 규칙으로 계산합니다.<br>출생 시각은 한국 경도에 맞춰 약 32분 당겨 적용하며,<br>왼쪽부터 시주 · 일주 · 월주 · 년주 순입니다.</p>
       <div class="rel-badge" id="rel-badge">연인 궁합</div>
-      <div id="couple-issuer-hint"></div>
     </div>
   </div>
 
@@ -2141,11 +2154,13 @@ function buildTimeline(a, b, aInfo, bInfo, params) {
   };
   const tlCards = slots.map(s =>
     `<div class="t-card ${s.cls}" ${s.isCurrent?'style="box-shadow:0 0 0 2px var(--gold);"':''}>
+      <div class="t-card-head">
+        <span class="t-icon">${s.icon}</span>
+        <span class="t-label">${s.label}</span>
+      </div>
       <div class="t-age">${params.a.name||'A'}님 ${s.ageA}세 / ${params.b.name||'B'}님 ${s.ageB}세</div>
-      <div class="t-icon">${s.icon}</div>
-      <div class="t-gz" style="font-size:10px;line-height:1.5;"><span class="${HAN_COLOR[s.aGZ[0]]}">${tlGzPair(s.aGZ)}</span> · <span class="${HAN_COLOR[s.bGZ[0]]}">${tlGzPair(s.bGZ)}</span></div>
-      <div class="t-label">${s.label}</div>
-      <div style="font-size:11px;color:#aaa;margin-top:6px;line-height:1.6;">${typeof compatTimelineLine === 'function' ? compatTimelineLine(s.cls, String(s.ageA) + s.ageB + s.cls) : tlRand(TL_DESC[s.cls])}</div>
+      <div class="t-gz"><span class="${HAN_COLOR[s.aGZ[0]]}">${tlGzPair(s.aGZ)}</span> · <span class="${HAN_COLOR[s.bGZ[0]]}">${tlGzPair(s.bGZ)}</span></div>
+      <div class="t-desc">${typeof compatTimelineLine === 'function' ? compatTimelineLine(s.cls, String(s.ageA) + s.ageB + s.cls) : tlRand(TL_DESC[s.cls])}</div>
     </div>`
   ).join('');
   const tlEl = document.getElementById('timeline-scroll');
@@ -2185,9 +2200,6 @@ async function init() {
 
     const relLabels = {lover:'💕 연인 궁합',married:'💍 부부 궁합',friend:'🤝 친구 궁합',business:'💼 비즈니스 궁합'};
     document.getElementById('rel-badge').textContent = relLabels[params.rel] || '궁합 리포트';
-
-    const byHint = document.getElementById('couple-issuer-hint');
-    if (byHint && params.by) byHint.textContent = '발행 · ' + params.by;
 
     renderPersonCard('a', params.a, sajuA);
     renderPersonCard('b', params.b, sajuB);
@@ -2251,16 +2263,29 @@ async function init() {
 <script>
 function compatTocGo(id) {
   var el = document.getElementById(id);
-  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (!el) return false;
+  try {
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch (e) {
+    el.scrollIntoView(true);
+  }
+  var t = document.getElementById('floating-toc');
+  if (t) t.classList.remove('toc-open');
   return false;
 }
 function expandToc() {
   var t = document.getElementById('floating-toc');
-  if (t) { t.style.maxWidth = '220px'; t.style.padding = '10px 8px'; }
+  if (t) t.classList.add('toc-open');
 }
 function collapseToc() {
   var t = document.getElementById('floating-toc');
-  if (t) { t.style.maxWidth = '44px'; t.style.padding = '10px 6px'; }
+  if (t) t.classList.remove('toc-open');
+}
+function toggleToc(e) {
+  if (window.innerWidth <= 900) return;
+  if (e && e.target && e.target.closest && e.target.closest('.toc-link')) return;
+  var t = document.getElementById('floating-toc');
+  if (t) t.classList.toggle('toc-open');
 }
 </script>
 <link rel="stylesheet" href="../report/report-print.css?v=1779201000">
