@@ -5542,11 +5542,7 @@ function sajuxCaptureHostWidthPx() {
 function sajuxStyleCaptureHost(host) {
     if (!host) return host;
     var w = sajuxCaptureHostWidthPx();
-    if (sajuxCaptureHostOnScreen()) {
-        host.style.cssText = 'position:fixed;left:0;top:0;width:' + w + 'px;max-width:' + w + 'px;z-index:-1;opacity:0.01;visibility:visible;pointer-events:none;overflow:visible;background:#050508;';
-    } else {
-        host.style.cssText = 'position:fixed;left:-12000px;top:0;width:' + w + 'px;max-width:' + w + 'px;z-index:-1;opacity:1;visibility:visible;pointer-events:none;overflow:visible;background:#050508;';
-    }
+    host.style.cssText = 'position:fixed;left:-20000px;top:0;width:' + w + 'px;max-width:' + w + 'px;z-index:-1;opacity:1;visibility:visible;pointer-events:none;overflow:visible;background:#050508;';
     return host;
 }
 function sajuxIsCaptureableEl(el) {
@@ -6092,6 +6088,28 @@ function sajuxHtml2canvasRegion(target, scale, region, timeoutMs) {
     var w = region.w || SAJUX_CAPTURE_PAGE_W;
     var h = region.h || 1;
     var yOff = region.y || 0;
+    var isMobile = sajuxIsMobileCapture();
+    /* 모바일: y=0인 전체 캡처는 파라미터 최소화 (iOS html2canvas 호환성)
+       y>0인 청킹 캡처만 명시적 crop 파라미터 사용 */
+    var opts = {
+        backgroundColor: '#050508',
+        scale: scale,
+        useCORS: true,
+        allowTaint: true,
+        logging: false,
+        ignoreElements: sajuxHtml2canvasIgnoreEl,
+        onclone: sajuxOnCaptureClone
+    };
+    if (!isMobile || yOff > 0) {
+        opts.width = w;
+        opts.height = h;
+        opts.x = 0;
+        opts.y = yOff;
+        opts.windowWidth = isMobile ? (window.innerWidth || 390) : SAJUX_CAPTURE_WINDOW_W;
+        opts.windowHeight = SAJUX_CAPTURE_WINDOW_H;
+        opts.scrollX = 0;
+        opts.scrollY = 0;
+    }
     return new Promise(function (resolve, reject) {
         var done = false;
         var timer = setTimeout(function () {
@@ -6099,23 +6117,7 @@ function sajuxHtml2canvasRegion(target, scale, region, timeoutMs) {
             done = true;
             reject(new Error('capture timeout'));
         }, timeoutMs || 28000);
-        html2canvas(target, {
-            backgroundColor: '#050508',
-            scale: scale,
-            useCORS: true,
-            allowTaint: true,
-            logging: false,
-            width: w,
-            height: h,
-            x: 0,
-            y: yOff,
-            windowWidth: sajuxIsMobileCapture() ? (window.innerWidth || 390) : SAJUX_CAPTURE_WINDOW_W,
-            windowHeight: SAJUX_CAPTURE_WINDOW_H,
-            scrollX: 0,
-            scrollY: 0,
-            ignoreElements: sajuxHtml2canvasIgnoreEl,
-            onclone: sajuxOnCaptureClone
-        }).then(function (canvas) {
+        html2canvas(target, opts).then(function (canvas) {
             if (done) return;
             done = true;
             clearTimeout(timer);
@@ -6483,7 +6485,7 @@ function sajuxOnCaptureClone(doc) {
             + '.card,.yearly-card,.monthly-card,.glass-panel,.report-chapter,.module-item,.inner-card,.detail-box,.rel-panel,.person-card,.score-section,.compat-duo-manse-wrap,.f-card,.t-card,.seyun-year-card,.ch-story-card,.vip-module-item,.module-box,.analysis-card,.fortune-scroll>div,.yearly-card-container>div,.monthly-card-container>div{background:rgba(14,14,20,0.96)!important;background-color:rgba(14,14,20,0.96)!important;}'
             + '.badge,.tag,.jijanggan,.sp-badge,.rel-badge,.compat-person-tag{background:rgba(32,32,42,0.92)!important;color:inherit!important;}'
             + 'body::before{display:none!important;}'
-            + (function(){ var pw = sajuxCaptureHostWidthPx(); return '#sajux-capture-host,#sajux-capture-host .sajux-capture-jul-wrap,#sajux-capture-host #report-container{width:'+pw+'px!important;max-width:'+pw+'px!important;min-width:0!important;}' + (sajuxIsMobileCapture() ? '#sajux-capture-host *{min-width:0!important;max-width:100%!important;word-break:break-word!important;}' : ''); })()
+            + (function(){ var pw = sajuxCaptureHostWidthPx(); return '#sajux-capture-host,#sajux-capture-host .sajux-capture-jul-wrap{width:'+pw+'px!important;max-width:'+pw+'px!important;box-sizing:border-box!important;}'; })()
             + '*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}';
         doc.head.appendChild(st);
     }
@@ -7021,11 +7023,6 @@ function sajuxRunReportImageCapture(root) {
     var hidden = sajuxHideForCapture();
     var fab = document.getElementById('sajux-image-fab');
     if (fab) { fab.disabled = true; fab.textContent = '잠시만 기다려 주세요…'; }
-    /* 모바일: 라이브 DOM Y-crop 방식 (모바일 레이아웃 그대로) */
-    if (sajuxIsMobileDevice()) {
-        sajuxRunMobileLiveCrop(root, fab, restorePattern, starStash, hidden);
-        return;
-    }
     var pack = sajuxCollectCaptureSlices(root);
     var slices = pack.slices;
     var captureHost = pack.host;
@@ -7086,11 +7083,7 @@ function sajuxRunReportImageCapture(root) {
                 cleanup();
                 return;
             }
-            if (captures.length <= 1 && total >= 3) {
-                finishErr(new Error('표지만 저장됐습니다 (' + captures.length + '/' + total + '). Chrome·Safari에서 새로고침 후 다시 시도해 주세요.'));
-                cleanup();
-                return;
-            }
+            /* 모바일: 부분 성공도 다운로드 허용 (완전 실패만 오류 처리) */
             sajuxOfferCaptureDownload(captures, baseName, cleanup).catch(function (err) {
                 finishErr(err);
                 cleanup();
@@ -7110,10 +7103,17 @@ function sajuxRunReportImageCapture(root) {
         }
         var captureTarget = (captureHost && captureHost.firstChild) ? captureHost.firstChild : el;
         sajuxPrepareSliceForCapture(captureTarget);
+        /* 모바일: 라이브 앵커 scrollIntoView → 브라우저가 해당 영역 이미지 로드 */
+        var liveAnchor = slice.headEl || null;
+        if (liveAnchor && sajuxIsMobileDevice()) {
+            try { liveAnchor.scrollIntoView({ block: 'start', behavior: 'instant' }); } catch (e1) {
+                try { liveAnchor.scrollIntoView(true); } catch (e2) {}
+            }
+        }
         /* 슬라이스마다 16ms 숨 틔워 게이지 렌더 + 모바일 JS 스레드 해제 */
-        setTimeout(startCapture, 16);
+        setTimeout(startCapture, sajuxIsMobileDevice() ? 80 : 16);
         function startCapture() {
-        var sliceTimeout = sajuxIsMobileDevice() ? 20000 : 30000;
+        var sliceTimeout = sajuxIsMobileDevice() ? 90000 : 30000;
         var timedOut = false;
         var timer = setTimeout(function () { timedOut = true; advance(); }, sliceTimeout * 3);
         var settled = false;
