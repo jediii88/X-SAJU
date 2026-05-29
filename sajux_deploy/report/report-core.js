@@ -6992,6 +6992,13 @@ function sajuxCaptureReportAsImage() {
         alert('리포트가 아직 준비되지 않았습니다. 분석이 끝난 뒤 다시 시도해 주세요.');
         return;
     }
+    /* iOS Safari: html2canvas는 큰 캔버스에서 빈 이미지를 반환해 "1장만 저장" 문제가 반복됨.
+       대신 Safari 자체 인쇄→PDF 저장 흐름으로 안내 (디자인·내용 100% 그대로, 즉시, 8페이지 모두 포함). */
+    if (sajuxIsIosDevice()) {
+        _sajuxCaptureBusy = true;
+        sajuxRunIosPrintFlow(root);
+        return;
+    }
     _sajuxCaptureBusy = true;
     sajuxEnsureCaptureLibs(function () {
         if (typeof html2canvas !== 'function' || typeof JSZip !== 'function') {
@@ -7002,6 +7009,53 @@ function sajuxCaptureReportAsImage() {
         }
         sajuxRunReportImageCapture(root);
     });
+}
+
+/* iOS 전용: Safari 인쇄→PDF 저장 흐름.
+   화면에 보이는 그대로(report-print.css 적용) Apple 자체 렌더러로 PDF 생성 → 즉시 다운로드.
+   html2canvas 회피 → "1장만 저장" 구조적 차단. */
+function sajuxRunIosPrintFlow(root) {
+    var fab = document.getElementById('sajux-image-fab');
+    if (fab) { fab.disabled = true; fab.textContent = '저장 준비 중…'; }
+
+    function finishUi() {
+        if (fab) { fab.disabled = false; fab.textContent = '📥 사주 저장'; }
+        _sajuxCaptureBusy = false;
+    }
+
+    sajuxShowCaptureOverlay(
+        '아이폰은 Safari 자체 PDF 저장으로 안전하게 받습니다.\n\n' +
+        '1) 「PDF 저장 열기」를 누르면 인쇄 화면이 떠요\n' +
+        '2) 미리보기 썸네일을 두 손가락으로 살짝 펼치세요\n' +
+        '3) 우측 상단 공유(↑) → 「파일에 저장」을 선택\n\n' +
+        '준비되면 아래 버튼을 눌러 주세요.',
+        {
+            buttons: [
+                {
+                    label: 'PDF 저장 열기',
+                    primary: true,
+                    onClick: function () {
+                        sajuxHideCaptureOverlay();
+                        try { window.scrollTo(0, 0); } catch (e0) {}
+                        setTimeout(function () {
+                            try { window.print(); } catch (ePrint) {
+                                alert('인쇄 화면을 열지 못했습니다. Safari 메뉴(공유 ↑) → 인쇄 → 미리보기 핀치줌으로 PDF 저장을 시도해 주세요.');
+                            }
+                            setTimeout(finishUi, 600);
+                        }, 50);
+                    }
+                },
+                {
+                    label: '취소',
+                    primary: false,
+                    onClick: function () {
+                        sajuxHideCaptureOverlay();
+                        finishUi();
+                    }
+                }
+            ]
+        }
+    );
 }
 /* ── 모바일 라이브 DOM 크롭 캡처 ─────────────────────────────────────
    DOM 복사·캡처 호스트 없이, 화면에 렌더된 컨테이너를 그대로 Y-crop.
