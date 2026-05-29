@@ -5034,15 +5034,25 @@ function sajuxClearDisplaySectionCache() {
     _sajuxDisplaySecCache.main = null;
     _sajuxDisplaySecCache.compat = null;
 }
+function sajuxIsMobileCapture() {
+    try {
+        if (window.innerWidth <= 900) return true;
+        if (window.matchMedia && window.matchMedia('(max-width: 900px)').matches) return true;
+    } catch (e0) {}
+    return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent || '');
+}
 function sajuxEnsureCaptureHost() {
     var host = document.getElementById('sajux-capture-host');
+    var mobile = sajuxIsMobileCapture();
     if (!host) {
         host = document.createElement('div');
         host.id = 'sajux-capture-host';
         host.setAttribute('aria-hidden', 'true');
-        host.style.cssText = 'position:fixed;left:-20000px;top:0;width:min(100vw,720px);max-width:720px;z-index:-1;pointer-events:none;overflow:visible;background:#050508;';
         document.body.appendChild(host);
     }
+    host.style.cssText = mobile
+        ? 'position:fixed;left:0;top:0;width:100%;max-width:100vw;z-index:2147483645;opacity:0.01;pointer-events:none;overflow:visible;visibility:visible;background:#050508;'
+        : 'position:fixed;left:-20000px;top:0;width:min(100vw,720px);max-width:720px;z-index:-1;pointer-events:none;overflow:visible;background:#050508;';
     return host;
 }
 function sajuxWrapDomRange(container, startNode, endNode, meta) {
@@ -5312,13 +5322,38 @@ function sajuxCollectCaptureSlices(root) {
     return { container: container, slices: slices, host: sajuxEnsureCaptureHost() };
 }
 function sajuxCalcSliceCaptureScale(el) {
-    var maxDim = 16384;
+    var maxDim = sajuxIsMobileCapture() ? 8192 : 16384;
     var dpr = window.devicePixelRatio || 1;
-    var prefer = Math.min(2, Math.max(1.5, dpr));
+    var mobile = sajuxIsMobileCapture();
+    var prefer = mobile ? 1 : Math.min(2, Math.max(1.5, dpr));
     if (!el) return prefer;
     var w = Math.max(el.offsetWidth || 0, el.scrollWidth || 0, 320);
     var h = Math.max(el.offsetHeight || 0, el.scrollHeight || 0, 1);
-    return Math.max(1, Math.min(prefer, maxDim / w, maxDim / h));
+    if (mobile && h > 4500) prefer = Math.min(prefer, 0.85);
+    if (mobile && h > 8000) prefer = Math.min(prefer, 0.72);
+    return Math.max(0.75, Math.min(prefer, maxDim / w, maxDim / h));
+}
+function sajuxHtml2canvasPromise(target, opts, timeoutMs) {
+    var ms = timeoutMs || (sajuxIsMobileCapture() ? 120000 : 90000);
+    return new Promise(function (resolve, reject) {
+        var done = false;
+        var timer = setTimeout(function () {
+            if (done) return;
+            done = true;
+            reject(new Error('capture timeout'));
+        }, ms);
+        html2canvas(target, opts).then(function (canvas) {
+            if (done) return;
+            done = true;
+            clearTimeout(timer);
+            resolve(canvas);
+        }).catch(function (err) {
+            if (done) return;
+            done = true;
+            clearTimeout(timer);
+            reject(err);
+        });
+    });
 }
 function sajuxPadCaptureIndex(n) {
     return (n < 10 ? '0' : '') + String(n);
@@ -5599,32 +5634,40 @@ function sajuxRunReportImageCapture(root) {
         }
         sajuxShowCaptureOverlay('사주 다운로드 중… (' + (idx + 1) + '/' + total + ')\n' + (slice.jul || '') + ' ' + (slice.title || ''));
         function runSliceCapture(attempt) {
-            var scaleUse = attempt > 0 ? Math.max(1, sliceScale * 0.82) : sliceScale;
-            html2canvas(captureTarget, {
+            var scaleUse = attempt > 0 ? Math.max(0.75, sliceScale * (attempt > 1 ? 0.65 : 0.82)) : sliceScale;
+            if (sajuxIsMobileCapture() && attempt > 0) scaleUse = Math.min(scaleUse, 1);
+            var hCap = Math.max(captureTarget.offsetHeight || 0, captureTarget.scrollHeight || 0, 0);
+            if (sajuxIsMobileCapture() && hCap > 6000 && scaleUse > 0.8) scaleUse = 0.8;
+            sajuxHtml2canvasPromise(captureTarget, {
                 backgroundColor: '#050508',
                 scale: scaleUse,
                 useCORS: true,
                 allowTaint: true,
                 logging: false,
-                imageTimeout: 15000,
+                imageTimeout: sajuxIsMobileCapture() ? 25000 : 15000,
                 ignoreElements: sajuxHtml2canvasIgnoreEl,
                 onclone: sajuxOnCaptureClone
             }).then(function (canvas) {
                 return sajuxCanvasToBlob(canvas, 'image/png').then(function (blob) {
                     captures.push({ name: fileBase, blob: blob });
                     idx += 1;
-                    setTimeout(captureNext, 48);
+                    setTimeout(captureNext, sajuxIsMobileCapture() ? 120 : 48);
                 });
             }).catch(function (err) {
-                if (attempt < 1) {
-                    setTimeout(function () { runSliceCapture(attempt + 1); }, 120);
+                if (attempt < 2) {
+                    setTimeout(function () { runSliceCapture(attempt + 1); }, sajuxIsMobileCapture() ? 280 : 120);
                     return;
                 }
                 finishErr(err);
                 cleanup();
             });
         }
-        setTimeout(function () { runSliceCapture(0); }, 32);
+        var preDelay = sajuxIsMobileCapture() ? 220 : 32;
+        if (typeof requestAnimationFrame === 'function') {
+            requestAnimationFrame(function () { setTimeout(function () { runSliceCapture(0); }, preDelay); });
+        } else {
+            setTimeout(function () { runSliceCapture(0); }, preDelay);
+        }
     }
     captureNext();
 }
@@ -5788,7 +5831,7 @@ function generateDeepReport(data) {
     var part4Body = '';
     part4Body += safeCall(()=>buildChapter9_Remedy(data)||'', 'ch9-remedy');
     html += safeCall(()=>wrapPartSection(
-        buildPartHeader(4,'지금부터의 선택','개운법 · 일상 적용','sec-part4-final',{name:data.name}),
+        buildPartHeader(4,'🌙','개운법 · 일상 적용','sec-part4-final',{name:data.name}),
         part4Body
     ), 'part4section');
 
@@ -11624,11 +11667,12 @@ function buildPartHeader(num, title, subtitle, anchorId, opts) {
     var color = c[num] != null ? c[num] : '199,167,106';
     var border = h[num] != null ? h[num] : '#c7a76a';
     var icon = ic[num] != null ? ic[num] : '📌';
+    var titleLine = (num === 4) ? '🌙' : (title + icon);
     var preludeHtml = preludes[num]
         ? '<div class="part-prelude" style="margin-top:18px;padding-top:16px;border-top:1px dashed rgba(' + color + ',0.32);font-size:13px;line-height:1.95;color:var(--text-dim);font-style:italic;">' + preludes[num] + '</div>'
         : '';
     return '<div' + idAttr + ' class="part-header-block report-chapter sajux-print-surface sajux-glass-panel" style="display:block;background:rgba(255,255,255,0.04);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:none;border-radius:16px;padding:24px 28px;margin:40px 0 4px;page-break-before:always;break-before:page;page-break-inside:avoid;break-inside:avoid;page-break-after:avoid;break-after:avoid;border-top:3px solid ' + border + ';">'
-        + '<div class="part-header-label part-tier-title part-brush-title" style="display:block;margin-bottom:8px;"><span class="part-brush-num" style="color:' + border + ';margin-right:8px;">' + num + ' ·</span>' + title + icon + '</div>'
+        + '<div class="part-header-label part-tier-title part-brush-title" style="display:block;margin-bottom:8px;"><span class="part-brush-num" style="color:' + border + ';margin-right:8px;">' + num + ' ·</span>' + titleLine + '</div>'
         + '<div class="part-header-sub" style="display:block;font-size:12.5px;color:rgba(255,255,255,0.52);letter-spacing:0.04em;line-height:1.55;">' + subtitle + '</div>'
         + preludeHtml
         + '</div>';
@@ -13031,7 +13075,7 @@ function buildTOC(data) {
         1: { head: '1부 · 나라는 사람', sub: '원국 · 오행 · 십성' },
         2: { head: '2부 · 지금 이 시절', sub: '현재 운 · 80년 지도 · 앞으로의 대운·세운·월운' },
         3: { head: '3부 · 삶의 영역', sub: '애정 · 재물 · 합격 · 직업 · 건강' },
-        4: { head: '4부 · 오늘부터', sub: '개운법 · 루틴 · 공간 · 위기 대응' }
+        4: { head: '4부 · 🌙', sub: '개운법 · 일상 적용' }
     };
     function tocRow(num, title, sub) {
         var mainHtml = (num && num !== '—') ? buildSectionTitleHtml(num, title) : escHtmlAttr(title);
