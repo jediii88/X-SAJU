@@ -5078,8 +5078,53 @@ function sajuxCaptureProgressMsg(head, detail) {
     if (detail) s += '\n' + detail;
     return s + '\n\n잠시만 기다려 주세요.\n화면을 건드리지 말고 그대로 두시면 됩니다.';
 }
+var _sajuxCaptureCountdownTid = null;
+function sajuxStopCaptureCountdown() {
+    if (_sajuxCaptureCountdownTid) {
+        clearInterval(_sajuxCaptureCountdownTid);
+        _sajuxCaptureCountdownTid = null;
+    }
+}
+function sajuxStartCaptureCountdown(total) {
+    sajuxStopCaptureCountdown();
+    var mobile = sajuxIsMobileCapture();
+    var etaSec = sajuxCaptureEtaSeconds(total);
+    var id = 'sajux-capture-overlay';
+    var el = document.getElementById(id);
+    if (!el) {
+        el = document.createElement('div');
+        el.id = id;
+        document.body.appendChild(el);
+    }
+    el.style.cssText = 'position:fixed;inset:0;z-index:100050;background:rgba(0,0,0,0.78);display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;visibility:visible;opacity:1;';
+    el.innerHTML = ''
+        + '<div class="sajux-capture-overlay-inner" style="max-width:320px;text-align:center;font-family:\'Noto Sans KR\',sans-serif;color:#f5f0e6;">'
+        + '<div style="font-size:15px;font-weight:600;letter-spacing:0.02em;">' + (mobile ? '사진 저장 중' : '사주 저장 중') + '</div>'
+        + '<div id="sajux-cap-eta-num" style="font-size:52px;font-weight:800;color:#c7a76a;line-height:1.15;margin:18px 0 8px;font-variant-numeric:tabular-nums;">' + etaSec + '</div>'
+        + '<div style="font-size:13px;color:rgba(245,240,232,0.68);line-height:1.6;">초 남음 · 화면을 건드리지 마세요</div>'
+        + '</div>';
+    el.style.display = 'flex';
+    var left = etaSec;
+    _sajuxCaptureCountdownTid = setInterval(function () {
+        left -= 1;
+        if (left < 0) left = 0;
+        var num = document.getElementById('sajux-cap-eta-num');
+        if (num) num.textContent = String(left);
+        if (left <= 0) sajuxStopCaptureCountdown();
+    }, 1000);
+    return el;
+}
+function sajuxTickCaptureCountdown(remainingSlices) {
+    var num = document.getElementById('sajux-cap-eta-num');
+    if (!num) return;
+    var est = sajuxCaptureEtaSeconds(remainingSlices);
+    var cur = parseInt(num.textContent, 10);
+    if (!isFinite(cur) || est < cur) num.textContent = String(est);
+}
 function sajuxShowCaptureOverlay(message, opts) {
     opts = opts || {};
+    var isProgressOnly = !!opts.progressOnly;
+    if (!isProgressOnly) sajuxStopCaptureCountdown();
     var id = 'sajux-capture-overlay';
     var el = document.getElementById(id);
     if (!el) {
@@ -5129,6 +5174,7 @@ function sajuxShowCaptureOverlay(message, opts) {
     return el;
 }
 function sajuxHideCaptureOverlay() {
+    sajuxStopCaptureCountdown();
     var el = document.getElementById('sajux-capture-overlay');
     if (el) el.style.display = 'none';
 }
@@ -5166,7 +5212,7 @@ function sajuxCaptureHostWidthPx() {
 function sajuxStyleCaptureHost(host) {
     if (!host) return host;
     var w = sajuxCaptureHostWidthPx();
-    host.style.cssText = 'position:fixed;left:0;top:0;width:' + w + 'px;max-width:' + w + 'px;z-index:100049;opacity:0.02;visibility:visible;pointer-events:none;overflow:visible;background:#050508;';
+    host.style.cssText = 'position:fixed;left:-12000px;top:0;width:' + w + 'px;max-width:' + w + 'px;z-index:-1;opacity:1;visibility:visible;pointer-events:none;overflow:visible;background:#050508;';
     return host;
 }
 function sajuxIsCaptureableEl(el) {
@@ -5811,12 +5857,12 @@ function sajuxCaptureSaveHint(kind, filename) {
         + '파일명: ' + fn + '\n\n'
         + '아래 「ZIP 받기」를 눌러 주세요.';
 }
-function sajuxOfferZipDownload(zipBlob, filename) {
+function sajuxOfferZipDownload(zipBlob, filename, extraMsg) {
     var url = URL.createObjectURL(zipBlob);
     var mobile = sajuxIsMobileCapture();
     var autoOk = !mobile && sajuxCanAutoDownloadBlob() && sajuxDownloadBlob(url, filename);
     var head = autoOk ? '✅ 저장 완료!' : '✅ ZIP 준비 완료!';
-    var msg = head + '\n\n' + sajuxCaptureSaveHint(autoOk ? 'zip-auto' : 'zip-manual', filename);
+    var msg = head + '\n\n' + sajuxCaptureSaveHint(autoOk ? 'zip-auto' : 'zip-manual', filename) + (extraMsg || '');
     var buttons = [];
     if (mobile) {
         buttons.push({
@@ -5881,9 +5927,10 @@ function sajuxOfferCaptureDownload(captures, baseName, onDone) {
     }
 
     function deliverZip() {
-        sajuxShowCaptureOverlay(sajuxCaptureProgressMsg('ZIP 파일을 만드는 중이에요.', '잠시만 기다려 주세요.'));
+        sajuxTickCaptureCountdown(2);
         return sajuxBuildCaptureZipBlob(captures, baseName).then(function (zipBlob) {
-            sajuxOfferZipDownload(zipBlob, zipName);
+            var partial = captures.length < (window.__sajuxLastCaptureTotal || captures.length);
+            sajuxOfferZipDownload(zipBlob, zipName, partial ? ('\n\n⚠ ' + captures.length + '장만 저장됐어요. Wi-Fi에서 새로고침 후 다시 시도해 주세요.') : '');
             finishDone();
         });
     }
@@ -5998,11 +6045,9 @@ function sajuxRunReportImageCapture(root) {
     var captures = [];
     var idx = 0;
     var total = slices.length;
+    window.__sajuxLastCaptureTotal = total;
     var baseName = sajuxBuildCaptureBaseName(window.globalSajuData || null);
-    sajuxShowCaptureOverlay(sajuxCaptureProgressMsg(
-        sajuxIsMobileCapture() ? '사진으로 저장을 시작할게요.' : '사주 저장을 시작할게요.',
-        '총 ' + total + '장'
-    ));
+    sajuxStartCaptureCountdown(total);
     function finishErr(err) {
         console.error('sajuxCaptureReportAsImage', err);
         var hint = (err && err.message && /캡처된 이미지/.test(err.message))
@@ -6032,15 +6077,14 @@ function sajuxRunReportImageCapture(root) {
                 finishErr(err);
                 cleanup();
             });
+            if (captures.length < total) {
+                console.warn('[sajux] partial capture', captures.length + '/' + total);
+            }
             return;
         }
         var slice = slices[idx];
         var fileBase = sajuxSliceCaptureLabel(slice, idx + 1);
-        var progressHead = (sajuxIsMobileCapture() ? '사진 저장 중…' : '사주 저장 중…') + ' (' + (idx + 1) + '/' + total + ')';
-        var eta = sajuxCaptureEtaSeconds(total - idx);
-        var overlayMsg = sajuxCaptureProgressMsg(progressHead, (slice.jul || '') + ' ' + (slice.title || '') + '\n약 ' + eta + '초 남음');
-        sajuxShowCaptureOverlay(overlayMsg);
-        var overlayEl = document.getElementById('sajux-capture-overlay');
+        sajuxTickCaptureCountdown(total - idx);
         var sliceDelay = sajuxIsMobileCapture() ? 16 : 8;
         function pushCaptureBlob(blob) {
             captures.push({ name: fileBase, blob: blob });
@@ -6074,13 +6118,10 @@ function sajuxRunReportImageCapture(root) {
                 ignoreElements: sajuxHtml2canvasIgnoreEl,
                 onclone: sajuxOnCaptureClone
             };
-            if (overlayEl) overlayEl.style.visibility = 'hidden';
             function doneCapture(blob) {
-                if (overlayEl) overlayEl.style.visibility = '';
                 pushCaptureBlob(blob);
             }
             function failCapture(err) {
-                if (overlayEl) overlayEl.style.visibility = '';
                 if (attempt < 3) {
                     setTimeout(function () { runSliceCapture(attempt + 1); }, 100);
                     return;
