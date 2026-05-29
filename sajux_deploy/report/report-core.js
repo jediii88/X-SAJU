@@ -6137,6 +6137,23 @@ function sajuxHtml2canvasRegion(target, scale, region, timeoutMs) {
         });
     });
 }
+/* 캡처된 이미지 사방에 배경색 여백을 덧댄다(내용은 그대로 — 디자인·퀄리티 무영향). */
+function sajuxPadCaptureCanvas(canvas, scale) {
+    if (!canvas) return canvas;
+    var pad = Math.round(34 * (scale || 1));
+    if (pad <= 0) return canvas;
+    try {
+        var out = document.createElement('canvas');
+        out.width = canvas.width + pad * 2;
+        out.height = canvas.height + pad * 2;
+        var ctx = out.getContext('2d');
+        if (!ctx) return canvas;
+        ctx.fillStyle = '#050508';
+        ctx.fillRect(0, 0, out.width, out.height);
+        ctx.drawImage(canvas, pad, pad);
+        return out;
+    } catch (e) { return canvas; }
+}
 function sajuxCaptureTargetToBlobs(target, mime, timeoutMs) {
     var scale = sajuxCalcSliceCaptureScale(target);
     /* 슬라이스별 이미지 대기 짧게 — 메인 루프에서 이미 전체 컨테이너 이미지를 한 번 대기함.
@@ -6151,7 +6168,7 @@ function sajuxCaptureTargetToBlobs(target, mime, timeoutMs) {
         if (!useChunks) {
             return sajuxHtml2canvasRegion(target, scale, { w: dims.w, h: dims.h, y: 0 }, timeoutMs).then(function (canvas) {
                 if (!sajuxValidateCaptureCanvas(canvas)) return [];
-                return sajuxCanvasToBlob(canvas, mime).then(function (blob) {
+                return sajuxCanvasToBlob(sajuxPadCaptureCanvas(canvas, scale), mime).then(function (blob) {
                     return (blob && blob.size > 100) ? [blob] : [];
                 });
             });
@@ -6163,7 +6180,7 @@ function sajuxCaptureTargetToBlobs(target, mime, timeoutMs) {
             if (y0 >= dims.h) return Promise.resolve(blobs);
             var ch = Math.min(chunkH, dims.h - y0);
             return sajuxHtml2canvasRegion(target, scale, { w: dims.w, h: ch, y: y0 }, perChunk).then(function (canvas) {
-                return sajuxCanvasToBlob(canvas, mime);
+                return sajuxCanvasToBlob(sajuxPadCaptureCanvas(canvas, scale), mime);
             }).then(function (blob) {
                 if (blob && blob.size > 100) blobs.push(blob);
                 y0 += ch;
