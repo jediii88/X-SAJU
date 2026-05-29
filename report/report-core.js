@@ -5536,6 +5536,8 @@ function sajuxIsMobileCapture() {
     return sajuxIsMobileDevice();
 }
 function sajuxCaptureHostWidthPx() {
+    /* A안: 모바일은 실제 뷰포트 너비로 캡처 — 화면에 보이는 그대로, 빠름 */
+    if (sajuxIsMobileCapture()) return Math.max(window.innerWidth || 375, 320);
     return SAJUX_CAPTURE_PAGE_W;
 }
 function sajuxStyleCaptureHost(host) {
@@ -6109,7 +6111,7 @@ function sajuxHtml2canvasRegion(target, scale, region, timeoutMs) {
             height: h,
             x: 0,
             y: yOff,
-            windowWidth: SAJUX_CAPTURE_WINDOW_W,
+            windowWidth: sajuxIsMobileCapture() ? (window.innerWidth || 390) : SAJUX_CAPTURE_WINDOW_W,
             windowHeight: SAJUX_CAPTURE_WINDOW_H,
             scrollX: 0,
             scrollY: 0,
@@ -6387,14 +6389,14 @@ function sajuxPrepareSliceForCapture(root) {
     });
 }
 function sajuxMeasureCaptureTarget(target) {
-    if (!target) return { w: SAJUX_CAPTURE_PAGE_W, h: 1 };
-    target.style.width = SAJUX_CAPTURE_PAGE_W + 'px';
-    target.style.maxWidth = SAJUX_CAPTURE_PAGE_W + 'px';
+    var pageW = sajuxCaptureHostWidthPx();
+    if (!target) return { w: pageW, h: 1 };
+    target.style.width = pageW + 'px';
+    target.style.maxWidth = pageW + 'px';
     target.style.boxSizing = 'border-box';
     target.style.background = '#050508';
-    var w = SAJUX_CAPTURE_PAGE_W;
     var h = Math.max(target.offsetHeight || 0, target.scrollHeight || 0, 1);
-    return { w: w, h: h };
+    return { w: pageW, h: h };
 }
 function sajuxWaitImagesInRoot(root, maxMs) {
     if (!root) return Promise.resolve();
@@ -6923,7 +6925,7 @@ function sajuxRunReportImageCapture(root) {
     var hidden = sajuxHideForCapture();
     var fab = document.getElementById('sajux-image-fab');
     if (fab) { fab.disabled = true; fab.textContent = '잠시만 기다려 주세요…'; }
-    if (sajuxIsMobileDevice()) sajuxBeginDesktopCaptureSession();
+    /* A안: 모바일은 sajuxBeginDesktopCaptureSession 호출 안 함 → 모바일 레이아웃 그대로 캡처 */
     var pack = sajuxCollectCaptureSlices(root);
     var slices = pack.slices;
     var captureHost = pack.host;
@@ -7011,7 +7013,7 @@ function sajuxRunReportImageCapture(root) {
         /* 슬라이스마다 16ms 숨 틔워 게이지 렌더 + 모바일 JS 스레드 해제 */
         setTimeout(startCapture, 16);
         function startCapture() {
-        var sliceTimeout = sajuxIsMobileDevice() ? 90000 : 30000;
+        var sliceTimeout = sajuxIsMobileDevice() ? 45000 : 30000;
         var timedOut = false;
         var timer = setTimeout(function () { timedOut = true; advance(); }, sliceTimeout * 3);
         var settled = false;
