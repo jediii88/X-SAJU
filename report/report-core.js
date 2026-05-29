@@ -5767,7 +5767,9 @@ function sajuxPushCaptureSlice(slices, container, startNode, endNode, headEl) {
     }
     var wrap = sajuxWrapDomRange(container, startNode, endNode, { jul: jul, title: title });
     if (!wrap) return;
-    var maxSlicePx = sajuxIsMobileDevice() ? 2000 : 6800;
+    /* 절 단위 유지 — 절이 하위 헤더를 여럿 품고 매우 길 때만(>9000px) 쪼갬.
+       캡처 단계의 청킹(9000px)이 큰 절을 안전하게 처리하므로 슬라이스는 절 단위로 둔다. */
+    var maxSlicePx = sajuxIsMobileDevice() ? 9000 : 6800;
     if (wrap.scrollHeight <= maxSlicePx) {
         slices.push({ el: wrap, jul: jul, title: title, headEl: headEl });
         return;
@@ -5951,7 +5953,7 @@ function sajuxCollectCaptureSlices(root) {
         slices.push({ el: container, jul: '전체', title: '리포트' });
     }
     slices = sajuxMergeCaptureSlices(slices);
-    if (sajuxIsMobileDevice()) slices = sajuxGroupMobileMainCaptureSlices(slices);
+    slices = sajuxAttachPartBanners(slices, container);
     return { container: container, slices: slices, host: sajuxEnsureCaptureHost() };
 }
 var SAJUX_CAPTURE_PART_DEFS = {
@@ -5960,8 +5962,11 @@ var SAJUX_CAPTURE_PART_DEFS = {
     '3': { num: 3, title: '삶의 영역', sub: '애정 · 재물 · 합격 · 직업 · 건강' },
     '4': { num: 4, title: '지금의 선택', sub: '개운법 · 일상 적용' }
 };
-function sajuxAttachPartBanners(slices) {
-    if (!slices || !slices.length) return slices || [];
+function sajuxAttachPartBanners(slices, container) {
+    /* 부 헤더(1부·2부·3부·4부)는 단독 절로 자르지 않고, 각 부의 첫 절 슬라이스 맨 위에 붙인다.
+       원본 화면의 부 헤더 DOM을 그대로 클론해 디자인 일치(칸막이 X). */
+    if (!slices || !slices.length || !container) return slices || [];
+    var idMap = { '1': 'sec-part1-narrative', '2': 'sec-part2-now', '3': 'sec-part3-life', '4': 'sec-part4-final' };
     var seen = {};
     for (var i = 0; i < slices.length; i++) {
         var s = slices[i];
@@ -5971,13 +5976,16 @@ function sajuxAttachPartBanners(slices) {
         var partNum = m[1];
         if (seen[partNum]) continue;
         seen[partNum] = true;
-        var def = SAJUX_CAPTURE_PART_DEFS[partNum];
-        if (!def || typeof buildPartHeader !== 'function') continue;
-        var wrap = document.createElement('div');
-        wrap.className = 'sajux-capture-part-intro';
-        wrap.innerHTML = buildPartHeader(def.num, def.title, def.sub, null, {});
-        if (s.el && s.el.firstChild) s.el.insertBefore(wrap, s.el.firstChild);
-        else if (s.el) s.el.appendChild(wrap);
+        var hdrId = idMap[partNum];
+        if (!hdrId || !s.el) continue;
+        var hdrEl = container.querySelector('#' + hdrId);
+        if (!hdrEl) continue;
+        var clone = hdrEl.cloneNode(true);
+        clone.style.pageBreakBefore = 'auto';
+        clone.style.breakBefore = 'auto';
+        clone.style.marginTop = '0';
+        if (s.el.firstChild) s.el.insertBefore(clone, s.el.firstChild);
+        else s.el.appendChild(clone);
     }
     return slices;
 }
