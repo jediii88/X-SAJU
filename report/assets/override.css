@@ -81,7 +81,7 @@ html:not([data-theme="light"]) .part-tier-title:not(.part-brush-title) {
 #report-container .part-brush-title,
 #sec-report-full .part-brush-title {
   font-family: 'Jeongseon Arirang Ppuri', 'Nanum Brush Script', cursive !important;
-  font-size: clamp(48px, 10vw, 64px) !important;
+  font-size: clamp(43px, 9vw, 58px) !important;
   font-weight: 400 !important;
   line-height: 1.18 !important;
   letter-spacing: -0.03em !important;
@@ -1310,7 +1310,7 @@ html[data-theme="light"] #star-canvas {
   }
   #report-container .part-brush-title,
   #report-container .part-header-label.part-tier-title.part-brush-title {
-    font-size: clamp(44px, 11vw, 58px) !important;
+    font-size: clamp(40px, 10vw, 52px) !important;
     line-height: 1.16 !important;
   }
   #sec-personal-portrait .personal-portrait-lede,
