@@ -8407,8 +8407,7 @@ function buildPersonalPortraitInnerHtml(data) {
         nmKke: nmKke
     });
 
-    return '<p class="personal-portrait-eyebrow">' + escHtmlAttr(nmDnim(name)) + ' · 인생 서사</p>'
-        + '<h2 class="personal-portrait-title">' + escHtmlAttr(nmDnim(name)) + '의 인생 서사</h2>'
+    return '<p class="personal-portrait-eyebrow">' + escHtmlAttr(nmDnim(name)) + '의 인생 서사</p>'
         + para(introText)
         + connectedArc;
 }
