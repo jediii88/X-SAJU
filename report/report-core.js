@@ -4957,40 +4957,30 @@ function sajuxReleaseCaptureBusy() {
     _sajuxCaptureBusy = false;
 }
 function ensureHtml2CanvasLoaded(done) {
-    if (typeof html2canvas === 'function') { if (typeof done === 'function') done(); return; }
-    var existing = document.getElementById('sajux-html2canvas-script');
-    if (existing) {
-        existing.addEventListener('load', function () { if (typeof done === 'function') done(); }, { once: true });
-        return;
-    }
-    var sc = document.createElement('script');
-    sc.id = 'sajux-html2canvas-script';
-    sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-    sc.crossOrigin = 'anonymous';
-    sc.onload = function () { if (typeof done === 'function') done(); };
-    sc.onerror = function () {
-        sajuxReleaseCaptureBusy();
-        alert('사주 다운로드 도구를 불러오지 못했습니다. 네트워크 연결 후 다시 시도해 주세요.');
-    };
-    document.head.appendChild(sc);
+    ensureExternalScriptLoaded({
+        id: 'sajux-html2canvas-script',
+        src: 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',
+        ready: function () { return typeof html2canvas === 'function'; },
+        done: done,
+        fail: function () {
+            sajuxReleaseCaptureBusy();
+            sajuxHideCaptureOverlay();
+            alert('사주 다운로드 도구(html2canvas)를 불러오지 못했습니다.\n네트워크 확인 후 새로고침해 주세요.');
+        }
+    });
 }
 function ensureJsZipLoaded(done) {
-    if (typeof JSZip === 'function') { if (typeof done === 'function') done(); return; }
-    var existing = document.getElementById('sajux-jszip-script');
-    if (existing) {
-        existing.addEventListener('load', function () { if (typeof done === 'function') done(); }, { once: true });
-        return;
-    }
-    var sc = document.createElement('script');
-    sc.id = 'sajux-jszip-script';
-    sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
-    sc.crossOrigin = 'anonymous';
-    sc.onload = function () { if (typeof done === 'function') done(); };
-    sc.onerror = function () {
-        sajuxReleaseCaptureBusy();
-        alert('사주 다운로드 도구를 불러오지 못했습니다. 네트워크 연결 후 다시 시도해 주세요.');
-    };
-    document.head.appendChild(sc);
+    ensureExternalScriptLoaded({
+        id: 'sajux-jszip-script',
+        src: 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js',
+        ready: function () { return typeof JSZip === 'function'; },
+        done: done,
+        fail: function () {
+            sajuxReleaseCaptureBusy();
+            sajuxHideCaptureOverlay();
+            alert('사주 다운로드 도구(JSZip)를 불러오지 못했습니다.\n네트워크 확인 후 새로고침해 주세요.');
+        }
+    });
 }
 function ensureHtmlToImageLoaded(done) {
     ensureExternalScriptLoaded({
@@ -5091,11 +5081,27 @@ function sajuxPreloadCaptureLibs() {
     } catch (e) {}
 }
 function sajuxEnsureCaptureLibs(done) {
-    var n = 0;
-    function tick() {
-        n += 1;
-        if (n >= 2 && typeof done === 'function') done();
+    var finished = false;
+    var left = 2;
+    function finish() {
+        if (finished) return;
+        finished = true;
+        if (typeof done === 'function') done();
     }
+    function tick() {
+        left -= 1;
+        if (left <= 0) finish();
+    }
+    setTimeout(function () {
+        if (finished) return;
+        if (typeof html2canvas === 'function' && typeof JSZip === 'function') {
+            finish();
+            return;
+        }
+        sajuxReleaseCaptureBusy();
+        sajuxHideCaptureOverlay();
+        alert('사주 저장 도구를 불러오지 못했습니다.\nWi-Fi 확인 후 페이지를 새로고침해 주세요.');
+    }, 15000);
     ensureHtml2CanvasLoaded(tick);
     ensureJsZipLoaded(tick);
 }
@@ -6269,8 +6275,14 @@ function sajuxBuildZipFilename(data) {
 }
 function sajuxCaptureReportAsImage() {
     if (_sajuxCaptureBusy) {
-        alert('사주 저장이 진행 중입니다. 완료될 때까지 잠시만 기다려 주세요.');
-        return;
+        var ovBusy = document.getElementById('sajux-capture-overlay');
+        var gaugeBusy = document.getElementById('sajux-cap-gauge-fill');
+        if (!ovBusy || ovBusy.style.display === 'none' || !gaugeBusy) {
+            _sajuxCaptureBusy = false;
+        } else {
+            alert('사주 저장이 진행 중입니다. 완료될 때까지 잠시만 기다려 주세요.');
+            return;
+        }
     }
     var root = sajuxGetCaptureRoot();
     if (!root || root.offsetHeight < 20) {
@@ -6278,7 +6290,6 @@ function sajuxCaptureReportAsImage() {
         return;
     }
     _sajuxCaptureBusy = true;
-    sajuxShowCaptureOverlay('사주 저장 준비 중…\n잠시만 기다려 주세요.', { progressOnly: true });
     sajuxEnsureCaptureLibs(function () {
         if (typeof html2canvas !== 'function' || typeof JSZip !== 'function') {
             _sajuxCaptureBusy = false;
@@ -6286,7 +6297,7 @@ function sajuxCaptureReportAsImage() {
             alert('사주 저장 도구를 불러오지 못했습니다. 새로고침 후 다시 시도해 주세요.');
             return;
         }
-        setTimeout(function () { sajuxRunReportImageCapture(root); }, 30);
+        sajuxRunReportImageCapture(root);
     });
 }
 function sajuxRunReportImageCapture(root) {
