@@ -5767,9 +5767,9 @@ function sajuxPushCaptureSlice(slices, container, startNode, endNode, headEl) {
     }
     var wrap = sajuxWrapDomRange(container, startNode, endNode, { jul: jul, title: title });
     if (!wrap) return;
-    /* 절 단위 유지 — 절이 하위 헤더를 여럿 품고 매우 길 때만(>9000px) 쪼갬.
-       캡처 단계의 청킹(9000px)이 큰 절을 안전하게 처리하므로 슬라이스는 절 단위로 둔다. */
-    var maxSlicePx = sajuxIsMobileDevice() ? 9000 : 6800;
+    /* 모바일: 절을 절대 쪼개지 않는다(쪼개기 과정에서 내용 누락 발생). 절은 통째로 한 슬라이스.
+       8장 병합 후 큰 그룹은 캡처 단계의 청킹이 누락 없이 처리. */
+    var maxSlicePx = sajuxIsMobileDevice() ? 999999 : 6800;
     if (wrap.scrollHeight <= maxSlicePx) {
         slices.push({ el: wrap, jul: jul, title: title, headEl: headEl });
         return;
@@ -5952,6 +5952,7 @@ function sajuxCollectCaptureSlices(root) {
     }
     slices = sajuxMergeCaptureSlices(slices);
     slices = sajuxAttachPartBanners(slices, container);
+    if (sajuxIsMobileDevice()) slices = sajuxGroupMobileMainCaptureSlices(slices);
     return { container: container, slices: slices, host: sajuxEnsureCaptureHost() };
 }
 var SAJUX_CAPTURE_PART_DEFS = {
@@ -6163,7 +6164,7 @@ function sajuxCaptureTargetToBlobs(target, mime, timeoutMs) {
     }).then(function (dims) {
         /* 모바일 너비≈390 → 390×9000≈3.5M 픽셀, iOS 한도(16.7M) 이내. 청킹 임계값을 높여
            대부분 1회 렌더(병합 페이지 평균 높이 < 9000) → 청킹 횟수 최소화. */
-        var chunkH = sajuxIsMobileDevice() ? 9000 : 6000;
+        var chunkH = sajuxIsMobileDevice() ? 12000 : 6000;
         var useChunks = dims.h > chunkH;
         if (!useChunks) {
             return sajuxHtml2canvasRegion(target, scale, { w: dims.w, h: dims.h, y: 0 }, timeoutMs).then(function (canvas) {
@@ -6176,13 +6177,23 @@ function sajuxCaptureTargetToBlobs(target, mime, timeoutMs) {
         var blobs = [];
         var y0 = 0;
         var perChunk = timeoutMs || 60000;
+        var clipHost = document.getElementById('sajux-capture-host') || document.body;
         function nextChunk() {
             if (y0 >= dims.h) return Promise.resolve(blobs);
             var ch = Math.min(chunkH, dims.h - y0);
-            return sajuxHtml2canvasRegion(target, scale, { w: dims.w, h: ch, y: y0 }, perChunk).then(function (canvas) {
+            /* 첫 조각(y=0)은 직접 캡처, 이후 조각은 clip 방식(내용을 끌어올려 y=0에서 캡처).
+               iOS에서 y-offset 캡처가 빈 이미지로 누락되는 문제를 방지한다. */
+            var p = (y0 === 0)
+                ? sajuxHtml2canvasRegion(target, scale, { w: dims.w, h: ch, y: 0 }, perChunk)
+                : sajuxHtml2canvasClipChunk(clipHost, target, scale, y0, ch, dims.w, perChunk);
+            return p.then(function (canvas) {
                 return sajuxCanvasToBlob(sajuxPadCaptureCanvas(canvas, scale), mime);
             }).then(function (blob) {
                 if (blob && blob.size > 100) blobs.push(blob);
+                y0 += ch;
+                return nextChunk();
+            }).catch(function (err) {
+                console.warn('[sajux] chunk skip', y0, err && err.message);
                 y0 += ch;
                 return nextChunk();
             });
