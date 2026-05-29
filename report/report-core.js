@@ -7000,6 +7000,40 @@ function sajuxCaptureReportAsImage() {
     sajuxRunPrintPdfFlow(root);
 }
 
+/* 인쇄(PDF) 동안만 라이트 테마 강제 → 흰 배경·진한 글씨·오행 진한색 적용.
+   화면 상태는 인쇄가 끝나면 원래대로 복원. */
+var _sajuxPrintThemePrev = null;
+function sajuxSetPrintLightTheme(on) {
+    var de = document.documentElement, body = document.body;
+    if (on) {
+        if (_sajuxPrintThemePrev === null) {
+            _sajuxPrintThemePrev = {
+                theme: de.getAttribute('data-theme'),
+                lightClass: body ? body.classList.contains('light-mode') : false
+            };
+        }
+        de.setAttribute('data-theme', 'light');
+        if (body) body.classList.add('light-mode');
+    } else if (_sajuxPrintThemePrev) {
+        if (_sajuxPrintThemePrev.theme === null) de.removeAttribute('data-theme');
+        else de.setAttribute('data-theme', _sajuxPrintThemePrev.theme);
+        if (body && !_sajuxPrintThemePrev.lightClass) body.classList.remove('light-mode');
+        _sajuxPrintThemePrev = null;
+    }
+}
+/* 수동 인쇄(Ctrl+P / 공유→인쇄)도 라이트로 나오게 전역 훅 (1회 등록) */
+if (!window.__sajuxPrintHook) {
+    window.__sajuxPrintHook = true;
+    try {
+        window.addEventListener('beforeprint', function () { sajuxSetPrintLightTheme(true); });
+        window.addEventListener('afterprint', function () { sajuxSetPrintLightTheme(false); });
+        var _mqp = window.matchMedia && window.matchMedia('print');
+        if (_mqp && _mqp.addListener) {
+            _mqp.addListener(function (m) { sajuxSetPrintLightTheme(!!m.matches); });
+        }
+    } catch (eHook) {}
+}
+
 /* 모든 디바이스: 브라우저 자체 인쇄 → PDF 저장.
    디자인·내용 100% 그대로(라이트 책 디자인), 즉시, 페이지 잘림 없음. */
 function sajuxRunPrintPdfFlow(root) {
@@ -7042,12 +7076,15 @@ function sajuxRunPrintPdfFlow(root) {
                 onClick: function () {
                     sajuxHideCaptureOverlay();
                     try { window.scrollTo(0, 0); } catch (e0) {}
+                    sajuxSetPrintLightTheme(true);
                     setTimeout(function () {
                         try { window.print(); } catch (ePrint) {
                             alert('인쇄 화면을 열지 못했습니다. 브라우저 메뉴 → 인쇄(또는 공유 → 인쇄)를 눌러 PDF로 저장해 주세요.');
                         }
-                        setTimeout(finishUi, 600);
-                    }, 50);
+                        /* 데스크탑은 print()가 끝난 뒤, 모바일은 시간차로 복원.
+                           afterprint 훅이 먼저 복원하면 이 호출은 무시됨. */
+                        setTimeout(function () { sajuxSetPrintLightTheme(false); finishUi(); }, 1500);
+                    }, 120);
                 }
             },
             {
