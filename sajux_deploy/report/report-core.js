@@ -5447,13 +5447,13 @@ function sajuxCollectCaptureSlices(root) {
 }
 function sajuxCalcSliceCaptureScale(el) {
     var mobile = sajuxIsMobileCapture();
-    var maxDim = mobile ? 4096 : 16384;
+    var maxDim = mobile ? 8192 : 16384;
     var dpr = window.devicePixelRatio || 1;
-    var prefer = mobile ? Math.min(1.25, dpr) : Math.min(2, Math.max(1.5, dpr));
+    var prefer = mobile ? Math.min(1.75, Math.max(1.25, dpr)) : Math.min(2, Math.max(1.5, dpr));
     if (!el) return prefer;
     var w = Math.max(el.offsetWidth || 0, el.scrollWidth || 0, 320);
     var h = Math.max(el.offsetHeight || 0, el.scrollHeight || 0, 1);
-    var floor = mobile ? 0.4 : 1;
+    var floor = mobile ? 0.7 : 1;
     return Math.max(floor, Math.min(prefer, maxDim / w, maxDim / h));
 }
 function sajuxValidateCaptureCanvas(canvas) {
@@ -5739,22 +5739,48 @@ function sajuxRevokeCaptureObjectUrl(url) {
         _sajuxCaptureRevokeTimer = null;
     }, 120000);
 }
+function sajuxCaptureSaveHint(kind, filename) {
+    var mobile = sajuxIsMobileCapture();
+    var fn = filename || '사주X-리포트.zip';
+    if (kind === 'share') {
+        return '저장 위치: 사진(갤러리) 앱\n\n'
+            + '① 아래 「사진 앱에 저장」을 누르세요\n'
+            + '② 공유 창에서 「이미지 저장」·「사진에 저장」을 고르세요\n'
+            + '(아이폰·안드로이드 공통)\n\n'
+            + 'ZIP으로 받으려면 「ZIP으로 받기」를 눌러 주세요.';
+    }
+    if (mobile) {
+        if (kind === 'zip-auto') {
+            return '저장 위치: 「파일」앱 → 「다운로드」\n'
+                + '파일명: ' + fn + '\n\n'
+                + 'ZIP을 터치해 압축을 푸시면 PNG가 나옵니다.\n'
+                + '(PNG는 원본 화질 · ZIP은 재압축 없이 담았습니다)';
+        }
+        return '저장 위치: 「파일」앱 → 「다운로드」\n'
+            + '파일명: ' + fn + '\n\n'
+            + '아래 「ZIP 받기」를 누른 뒤, 파일 앱에서 확인해 주세요.\n'
+            + 'PNG는 원본 화질 그대로입니다.';
+    }
+    if (kind === 'zip-auto') {
+        return '저장 위치: PC 「다운로드」 폴더\n'
+            + '파일명: ' + fn + '\n\n'
+            + 'ZIP을 풀면 PNG가 순서대로 나옵니다.\n'
+            + '(PNG 무손실 · ZIP 재압축 없음)';
+    }
+    return '저장 위치: PC 「다운로드」 폴더\n'
+        + '파일명: ' + fn + '\n\n'
+        + '자동 저장이 막혔을 수 있어요.\n아래 「ZIP 받기」를 눌러 주세요.';
+}
 function sajuxOfferZipDownload(zipBlob, filename) {
     var url = URL.createObjectURL(zipBlob);
     var autoOk = sajuxDownloadBlob(url, filename);
-    var mobile = sajuxIsMobileCapture();
+    var kind = autoOk ? 'zip-auto' : 'zip-manual';
     sajuxShowCaptureOverlay(
-        (autoOk
-            ? (mobile
-                ? 'ZIP 저장이 시작됐어요.\n「다운로드」·「내 파일」 폴더를 확인해 주세요.\n압축을 푼 뒤 PNG를 사진 앱에 옮기실 수 있어요.'
-                : '다운로드가 시작됐어요.\n파일이 안 보이면 아래 버튼을 눌러 주세요.')
-            : (mobile
-                ? '아래 「ZIP 받기」를 눌러 주세요.\n저장 위치는 기기의 「다운로드」·「파일」 앱입니다.'
-                : '브라우저가 자동 저장을 막았을 수 있어요.\n아래 「ZIP 받기」 버튼을 눌러 주세요.')),
+        sajuxCaptureSaveHint(kind, filename),
         { downloadUrl: url, filename: filename, buttonLabel: 'ZIP 받기' }
     );
     sajuxRevokeCaptureObjectUrl(url);
-    setTimeout(sajuxHideCaptureOverlay, 12000);
+    setTimeout(sajuxHideCaptureOverlay, 18000);
 }
 function sajuxCaptureFilesFromItems(captures) {
     return (captures || []).map(function (item) {
@@ -5778,14 +5804,15 @@ function sajuxBuildCaptureZipBlob(captures, baseName) {
             + '압축을 푼 뒤, 파일명 앞 숫자(01, 02…) 순서대로 보시면 화면 흐름과 같습니다.\n'
         : '사주X 리포트 다운로드 파일입니다.\n'
             + '압축을 푼 뒤, 파일명 앞 숫자(01, 02…) 순서대로 보시면 목차 절 순서와 같습니다.\n';
-    folder.file('00-읽는법.txt', readMe + '총 ' + captures.length + '장 · ' + baseName + '\n');
+    folder.file('00-읽는법.txt', readMe
+        + '총 ' + captures.length + '장 · ' + baseName + '\n'
+        + 'PNG는 무손실 원본 · ZIP은 재압축 없이 담았습니다.\n');
     captures.forEach(function (item) {
         folder.file(item.name + '.png', item.blob);
     });
     return zip.generateAsync({
         type: 'blob',
-        compression: 'DEFLATE',
-        compressionOptions: { level: sajuxIsMobileCapture() ? 1 : 6 }
+        compression: 'STORE'
     });
 }
 function sajuxOfferCaptureDownload(captures, baseName, onDone) {
@@ -5804,17 +5831,13 @@ function sajuxOfferCaptureDownload(captures, baseName, onDone) {
         });
     }
 
-    if (sajuxIsMobileCapture() && files.length && sajuxCanShareCaptureFiles(files)) {
+    if (sajuxIsMobileCapture() && files.length && files.length <= 10 && sajuxCanShareCaptureFiles(files)) {
         sajuxShowCaptureOverlay(
-            '사진 저장이 끝났어요.\n\n'
-                + '아래 「사진 앨범에 저장」을 누르신 뒤\n'
-                + '「이미지 저장」 또는 「사진에 저장」을 선택해 주세요.\n'
-                + '(아이폰·안드로이드 모두 사진·갤러리 앱으로 들어갑니다)\n\n'
-                + 'ZIP이 필요하시면 「ZIP으로 받기」를 눌러 주세요.',
+            sajuxCaptureSaveHint('share', zipName),
             {
                 buttons: [
                     {
-                        label: '사진 앨범에 저장',
+                        label: '사진 앱에 저장',
                         primary: true,
                         onClick: function () {
                             navigator.share({ files: files, title: '사주X · ' + baseName })
