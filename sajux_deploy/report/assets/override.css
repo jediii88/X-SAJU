@@ -76,16 +76,31 @@ html:not([data-theme="light"]) .part-tier-title {
   font-weight: 700 !important;
 }
 
-/* 소챕터 제목 — 파트 헤더(한 줄)보다 한 단계 작게 */
+/* 절 제목 (예: 1-2 만세력 · 원국 표) — 본문보다 또렷하게 */
 .ch-main-topic-title,
-h2.ch-main-topic-title {
-  font-size: clamp(15px, 3.55vw, 19px) !important;
+h2.ch-main-topic-title,
+.ch-main-heading-xl,
+h2.ch-main-heading-xl {
+  font-size: clamp(20px, 5.2vw, 28px) !important;
+  font-weight: 800 !important;
+  line-height: 1.28 !important;
+}
+.ch-main-topic-title .ch-sec-num,
+.ch-main-heading-xl .ch-sec-num {
+  font-size: 0.94em !important;
   font-weight: 700 !important;
+  color: rgba(199, 167, 106, 0.9) !important;
+  letter-spacing: 0.04em !important;
+}
+.ch-main-topic-title .ch-sec-title,
+.ch-main-heading-xl .ch-sec-title {
+  font-size: 1em !important;
+  font-weight: 800 !important;
 }
 .ch-title-current-period,
 h2.ch-title-current-period {
-  font-size: clamp(15px, 3.55vw, 19px) !important;
-  font-weight: 700 !important;
+  font-size: clamp(20px, 5.2vw, 28px) !important;
+  font-weight: 800 !important;
 }
 
 /* ─────────────────────────────────
@@ -1219,7 +1234,7 @@ html[data-theme="light"] #star-canvas {
     line-height: 1.82;
   }
 
-  #report-container p:not(.cover-brush-name):not(.cover-brush-sub),
+  #report-container p:not(.cover-brush-name):not(.cover-brush-sub):not(.age-basis-note),
   #report-container li,
   #report-container .cat-text,
   #report-container .cat-body,
@@ -1235,7 +1250,7 @@ html[data-theme="light"] #star-canvas {
   #report-container .compat-prose-p,
   #report-container .insight-card,
   #report-container .axe-advice,
-  #main-content p:not(.cover-brush-name):not(.cover-brush-sub),
+  #main-content p:not(.cover-brush-name):not(.cover-brush-sub):not(.age-basis-note),
   #main-content li,
   #main-content .compat-prose-p,
   #main-content .compat-voice-opener,
@@ -1247,21 +1262,28 @@ html[data-theme="light"] #star-canvas {
     line-height: 1.88 !important;
   }
 
-  #report-container [style*="font-size:12px"],
-  #report-container [style*="font-size:13px"],
-  #report-container [style*="font-size:13.5px"],
-  #report-container [style*="font-size:14px"],
-  #main-content [style*="font-size:12px"],
-  #main-content [style*="font-size:13px"],
-  #main-content [style*="font-size:13.5px"],
-  #main-content [style*="font-size:14px"] {
+  #report-container [style*="font-size:12px"]:not(.age-basis-note),
+  #report-container [style*="font-size:13px"]:not(.age-basis-note),
+  #report-container [style*="font-size:13.5px"]:not(.age-basis-note),
+  #report-container [style*="font-size:14px"]:not(.age-basis-note),
+  #main-content [style*="font-size:12px"]:not(.age-basis-note),
+  #main-content [style*="font-size:13px"]:not(.age-basis-note),
+  #main-content [style*="font-size:13.5px"]:not(.age-basis-note),
+  #main-content [style*="font-size:14px"]:not(.age-basis-note) {
     font-size: 1.05em !important;
     line-height: 1.85 !important;
   }
 
   .ch-main-topic-title,
-  .ch-head-main-sub .ch-main-heading-xl {
-    font-size: clamp(18px, 4.8vw, 24px) !important;
+  .ch-head-main-sub .ch-main-heading-xl,
+  h2.ch-main-topic-title,
+  h2.ch-main-heading-xl {
+    font-size: clamp(22px, 5.8vw, 30px) !important;
+    line-height: 1.26 !important;
+  }
+  .ch-main-topic-title .ch-sec-num,
+  .ch-main-heading-xl .ch-sec-num {
+    font-size: 0.94em !important;
   }
   .part-tier-title,
   .part-header-title,
@@ -1285,8 +1307,14 @@ html[data-theme="light"] #star-canvas {
     font-size: max(13px, 0.82em) !important;
   }
 
-  .ch-sec-num, .ch-section-num, .toc-link {
+  .ch-section-num, .toc-link {
     font-size: max(12px, 0.78em) !important;
+  }
+  .toc-main-line {
+    font-size: clamp(15px, 4vw, 18px) !important;
+  }
+  .toc-main-line .ch-sec-num {
+    font-size: 0.95em !important;
   }
 
   /* 모바일 — 스티키 4부 네비 위로 PDF FAB이 올라가도록 본문 하단 여백 */
@@ -1305,10 +1333,10 @@ html[data-theme="light"] #star-canvas {
   #main-content {
     line-height: 1.78;
   }
-  #report-container p:not(.cover-brush-name):not(.cover-brush-sub),
+  #report-container p:not(.cover-brush-name):not(.cover-brush-sub):not(.age-basis-note),
   #report-container .cat-text,
   #report-container .vip-module-desc,
-  #main-content p:not(.cover-brush-name):not(.cover-brush-sub),
+  #main-content p:not(.cover-brush-name):not(.cover-brush-sub):not(.age-basis-note),
   #main-content .compat-prose-p {
     font-size: 1.02em;
     line-height: 1.82;
@@ -1358,6 +1386,61 @@ html[data-theme="light"] #star-canvas {
   line-height: 1.15 !important;
 }
 
+/* 고객 표지 — 생년월일시 강조 · 만 나이 안내는 각주 크기 */
+#sec-client-cover .client-birth-block,
+.cover-page .client-birth-block {
+  margin: 20px auto 0;
+  max-width: 92%;
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: rgba(199, 167, 106, 0.09);
+  border: 1px solid rgba(199, 167, 106, 0.32);
+  text-align: center;
+}
+#sec-client-cover .client-birth-label,
+.cover-page .client-birth-label {
+  font-size: 10px !important;
+  letter-spacing: 0.14em;
+  font-weight: 700;
+  color: rgba(199, 167, 106, 0.88);
+  margin-bottom: 8px;
+}
+#sec-client-cover .client-birth-primary,
+#sec-client-cover .birth-info,
+.cover-page .client-birth-primary,
+.cover-page .birth-info {
+  font-size: clamp(17px, 4.4vw, 21px) !important;
+  font-weight: 700 !important;
+  line-height: 1.55 !important;
+  color: rgba(245, 240, 232, 0.96) !important;
+  letter-spacing: -0.02em;
+  margin: 0 !important;
+}
+.age-basis-note,
+p.age-basis-note,
+#report-container .age-basis-note,
+#sec-client-cover .age-basis-note,
+.age-basis-note--inline {
+  font-size: 10px !important;
+  line-height: 1.45 !important;
+  color: rgba(168, 174, 186, 0.58) !important;
+  font-weight: 400 !important;
+  margin: 8px auto 0 !important;
+  max-width: 92%;
+  text-align: center;
+}
+.age-basis-note--cover {
+  margin-top: 10px !important;
+}
+.age-basis-note--inline {
+  display: inline;
+  font-size: 10px !important;
+  color: rgba(168, 174, 186, 0.55) !important;
+}
+#daeun-summary .age-basis-note--inline {
+  margin-right: 4px;
+}
+
 /* ── 단일 다크 테마 고정 (라이트 모드 종료) ── */
 html {
   color-scheme: dark !important;
@@ -1390,14 +1473,16 @@ html {
 
 .ch-section-num { display: none !important; }
 
-/* 부-절 번호 — 제목보다 한 톤 낮은 회색 */
-.ch-sec-num,
-.ch-main-heading-xl .ch-sec-num,
-.ch-main-topic-title .ch-sec-num,
+/* 부-절 번호 — 절 제목·목차 */
 .toc-main-line .ch-sec-num {
-  color: rgba(255, 255, 255, 0.42) !important;
-  font-weight: 600 !important;
-  letter-spacing: 0.06em !important;
+  color: rgba(199, 167, 106, 0.82) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.05em !important;
+}
+.toc-main-line {
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  line-height: 1.45 !important;
 }
 .ch-sec-num-sep { color: rgba(255, 255, 255, 0.32) !important; font-weight: 500 !important; }
 .ch-sec-title { font-weight: inherit; color: inherit; }
