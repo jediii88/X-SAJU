@@ -5952,7 +5952,6 @@ function sajuxCollectCaptureSlices(root) {
     }
     slices = sajuxMergeCaptureSlices(slices);
     if (sajuxIsMobileDevice()) slices = sajuxGroupMobileMainCaptureSlices(slices);
-    slices = sajuxAttachPartBanners(slices);
     return { container: container, slices: slices, host: sajuxEnsureCaptureHost() };
 }
 var SAJUX_CAPTURE_PART_DEFS = {
