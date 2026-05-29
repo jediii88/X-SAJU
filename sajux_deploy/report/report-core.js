@@ -315,7 +315,7 @@ function buildChapterHeadMainSub(mainTitle, subTitle, opts) {
     var subCol = opts.subColor || 'rgba(199,167,106,0.72)';
     var subWt = opts.subFontWeight || '700';
     var subLs = opts.subLetterSpacing || '0.10em';
-    var h2style = opts.mainHeadingStyle || 'font-family:\'Noto Sans KR\',sans-serif;font-size:clamp(22px,5vw,28px);font-weight:800;line-height:1.2;margin:0 0 8px;color:var(--text,rgba(255,255,255,0.96));';
+    var h2style = opts.mainHeadingStyle || 'font-family:\'Jeongseon Arirang Ppuri\',\'Nanum Brush Script\',cursive;font-size:clamp(18px,4.3vw,25px);font-weight:400;line-height:1.26;letter-spacing:-0.02em;margin:0 0 8px;color:var(--text,rgba(255,255,255,0.96));';
     var sub = '';
     if (subTitle && String(subTitle).trim()) {
         var inner = opts.subIsHtml ? String(subTitle) : escHtmlAttr(subTitle);
@@ -361,7 +361,7 @@ function buildChapterHeadTopicFirst(mainTitle, eyebrowLabel, leadHook, opts) {
     var julAttrTf = opts.sajuxJul ? ' data-sajux-jul="' + escHtmlAttr(String(opts.sajuxJul)) + '"' : '';
     var julTitleAttrTf = opts.sajuxJulTitle ? ' data-sajux-jul-title="' + escHtmlAttr(String(opts.sajuxJulTitle)) + '"' : '';
     return '<div class="ch-head-topic-first"' + julAttrTf + julTitleAttrTf + ' style="margin-bottom:16px;' + extra + '">'
-        + '<h2 class="ch-main-topic-title" style="font-family:\'Noto Sans KR\',sans-serif;font-size:clamp(20px,5.2vw,28px);font-weight:800;line-height:1.28;margin:0 0 6px;color:var(--text,rgba(255,255,255,0.96));">' + titleInnerTf + '</h2>'
+        + '<h2 class="ch-main-topic-title" style="font-family:\'Jeongseon Arirang Ppuri\',\'Nanum Brush Script\',cursive;font-size:clamp(18px,4.3vw,25px);font-weight:400;line-height:1.26;letter-spacing:-0.02em;margin:0 0 6px;color:var(--text,rgba(255,255,255,0.96));">' + titleInnerTf + '</h2>'
         + subHtml
         + hookHtml
         + '</div>';
@@ -12898,7 +12898,7 @@ function buildClientCoverPage(data) {
         <div style="width:110px;height:110px;margin:2px auto 12px;display:flex;align-items:center;justify-content:center;"><img src="${animalImage}" alt="${animalPlain || '일주 동물'}" loading="lazy" style="width:100%;height:100%;object-fit:contain;display:block;"/></div>
         <div style="font-size:30px;line-height:1.15;margin:0 0 6px;">${iljuBig}</div>
         ${animalHighlight ? `<div class="animal-symbol">${nmUi(name)} 상징 동물은 <span class="cover-highlight">${escHtmlAttr(animalHighlight)}</span>입니다.</div>` : ''}
-        ${coverLine ? '<div class="birth-info">' + escHtmlAttr(coverLine) + '</div>' + getAgeBasisNoteHtml('cover') : getAgeBasisNoteHtml('cover')}
+        ${coverLine ? '<div class="birth-info" style="display:block;font-size:15px;font-weight:500;color:rgba(200,205,215,0.9);margin-top:14px;line-height:1.65;text-align:center;background:none;border:none;padding:0;box-shadow:none;">' + escHtmlAttr(coverLine) + '</div>' + getAgeBasisNoteHtml('cover') : getAgeBasisNoteHtml('cover')}
 
         <div style="margin-top:38px;font-size:10px;color:rgba(210,214,223,0.34);letter-spacing:0.14em;">${formatReportAccessLine(data)}</div>
     </div>`;
