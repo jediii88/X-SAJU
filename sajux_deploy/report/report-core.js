@@ -4974,9 +4974,130 @@ function ensureJsZipLoaded(done) {
         fail: function () { sajuxReleaseCaptureBusy(); }
     });
 }
+function ensureHtmlToImageLoaded(done) {
+    ensureExternalScriptLoaded({
+        id: 'sajux-html-to-image-script',
+        src: 'https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js',
+        ready: function () { return typeof htmlToImage !== 'undefined' && typeof htmlToImage.toCanvas === 'function'; },
+        done: done,
+        fail: function () { if (typeof done === 'function') done(); }
+    });
+}
+function sajuxWrapTextLines(ctx, text, maxWidth) {
+    var lines = [];
+    var paras = String(text || '').split('\n');
+    paras.forEach(function (p) {
+        if (!p) { lines.push(''); return; }
+        var line = '';
+        for (var i = 0; i < p.length; i++) {
+            var ch = p.charAt(i);
+            var test = line + ch;
+            if (ctx.measureText(test).width > maxWidth && line) {
+                lines.push(line);
+                line = ch;
+            } else {
+                line = test;
+            }
+        }
+        if (line) lines.push(line);
+    });
+    return lines;
+}
+function sajuxCanvasFromLiteCard(div, w) {
+    w = w || Math.min(720, window.innerWidth || 390);
+    var jul = div.children[0] ? (div.children[0].textContent || '') : '';
+    var title = div.children[1] ? (div.children[1].textContent || '') : '';
+    var body = div.children[2] ? (div.children[2].textContent || '') : '';
+    var canvas = document.createElement('canvas');
+    var ctx = canvas.getContext('2d');
+    var lines = sajuxWrapTextLines(ctx, body, w - 36);
+    var h = Math.min(96 + lines.length * 17, 14000);
+    canvas.width = w;
+    canvas.height = h;
+    ctx.fillStyle = '#050508';
+    ctx.fillRect(0, 0, w, h);
+    ctx.fillStyle = '#c7a76a';
+    ctx.font = '600 13px "Apple SD Gothic Neo","Noto Sans KR",sans-serif';
+    ctx.fillText(jul, 18, 28);
+    ctx.fillStyle = '#f5f0e6';
+    ctx.font = '700 17px "Apple SD Gothic Neo","Noto Sans KR",sans-serif';
+    ctx.fillText(title.slice(0, 48), 18, 52);
+    ctx.fillStyle = '#cccccc';
+    ctx.font = '14px "Apple SD Gothic Neo","Noto Sans KR",sans-serif';
+    lines.forEach(function (line, i) {
+        ctx.fillText(line, 18, 78 + i * 17);
+    });
+    return sajuxCanvasToBlob(canvas, 'image/png');
+}
+function sajuxBuildMobileLiteCard(jul, title, bodyText) {
+    var div = document.createElement('div');
+    div.className = 'sajux-mobile-lite-card';
+    div.style.cssText = 'background:#050508;padding:22px 18px;box-sizing:border-box;width:100%;max-width:720px;color:#e8e8e8;font-family:"Apple SD Gothic Neo","Noto Sans KR",sans-serif;';
+    var hJul = document.createElement('div');
+    hJul.style.cssText = 'color:#c7a76a;font-size:13px;margin-bottom:6px;';
+    hJul.textContent = jul || '';
+    var hTitle = document.createElement('div');
+    hTitle.style.cssText = 'color:#f5f0e6;font-size:17px;font-weight:700;margin-bottom:14px;line-height:1.35;';
+    hTitle.textContent = title || '';
+    var body = document.createElement('div');
+    body.style.cssText = 'color:#ccc;font-size:12px;line-height:1.72;white-space:pre-wrap;word-break:keep-all;';
+    var raw = String(bodyText || '').replace(/\r/g, '').replace(/\n{3,}/g, '\n\n').trim();
+    if (raw.length > 11000) raw = raw.slice(0, 11000) + '\n…(이하는 웹 리포트에서 이어집니다)';
+    body.textContent = raw;
+    div.appendChild(hJul);
+    div.appendChild(hTitle);
+    div.appendChild(body);
+    return div;
+}
+function sajuxConvertToMobileLiteCard(sourceEl, jul, title) {
+    if (jul === '표지') {
+        return sajuxBuildMobileLiteCard('표지', 'SAJUX', '사주X 프리미엄 리포트\n표지·로고는 웹 화면과 동일하게 보실 수 있습니다.');
+    }
+    var raw = '';
+    if (sourceEl) {
+        try { raw = sourceEl.innerText || sourceEl.textContent || ''; } catch (eTxt) { raw = ''; }
+    }
+    if (jul === '고객표지' && sourceEl) {
+        var nm = sourceEl.querySelector('.cover-brush-name');
+        var birth = sourceEl.querySelector('.birth-info');
+        raw = (nm ? nm.textContent + '\n' : '') + (birth ? birth.textContent : '');
+    }
+    return sajuxBuildMobileLiteCard(jul, title, raw);
+}
+function sajuxMobileLiteSliceToBlob(div) {
+    return new Promise(function (resolve, reject) {
+        var host = sajuxEnsureCaptureHost();
+        host.innerHTML = '';
+        host.style.opacity = '0.01';
+        host.style.left = '0';
+        host.appendChild(div);
+        var w = Math.min(720, window.innerWidth || 390);
+        div.style.width = w + 'px';
+        var ch = Math.min(Math.max(div.scrollHeight + 24, 120), 10000);
+        function fallbackCanvas() {
+            sajuxCanvasFromLiteCard(div, w).then(resolve).catch(reject);
+        }
+        if (typeof htmlToImage !== 'undefined' && htmlToImage.toCanvas) {
+            htmlToImage.toCanvas(div, {
+                pixelRatio: 1,
+                backgroundColor: '#050508',
+                width: w,
+                height: ch,
+                cacheBust: true
+            }).then(function (canvas) {
+                return sajuxCanvasToBlob(canvas, 'image/png');
+            }).then(resolve).catch(function () {
+                fallbackCanvas();
+            });
+            return;
+        }
+        fallbackCanvas();
+    });
+}
 function sajuxPreloadCaptureLibs() {
     try {
         ensureHtml2CanvasLoaded(function () {});
+        ensureHtmlToImageLoaded(function () {});
         ensureJsZipLoaded(function () {});
     } catch (e) {}
 }
@@ -5624,8 +5745,16 @@ function sajuxCaptureReportAsImage() {
         return;
     }
     _sajuxCaptureBusy = true;
-    ensureHtml2CanvasLoaded(function () {
-        ensureJsZipLoaded(function () { sajuxRunReportImageCapture(root); });
+    ensureJsZipLoaded(function () {
+        if (sajuxIsMobileCapture()) {
+            ensureHtmlToImageLoaded(function () {
+                sajuxRunReportImageCapture(root);
+            });
+            return;
+        }
+        ensureHtml2CanvasLoaded(function () {
+            sajuxRunReportImageCapture(root);
+        });
     });
 }
 function sajuxRunReportImageCapture(root) {
@@ -5711,53 +5840,63 @@ function sajuxRunReportImageCapture(root) {
         if (liveAnchor && !slice.liveSel) {
             try { liveAnchor.scrollIntoView({ block: 'start', behavior: 'instant' }); } catch (e1) { try { liveAnchor.scrollIntoView(true); } catch (e2) {} }
         }
-        sajuxShowCaptureOverlay('사주 다운로드 중… (' + (idx + 1) + '/' + total + ')\n' + (slice.jul || '') + ' ' + (slice.title || ''));
+        var mobile = sajuxIsMobileCapture();
+        var overlayMsg = '사주 다운로드 중… (' + (idx + 1) + '/' + total + ')\n' + (slice.jul || '') + ' ' + (slice.title || '');
+        if (mobile && idx === 0) overlayMsg += '\n(모바일: 가벼운 카드 방식)';
+        sajuxShowCaptureOverlay(overlayMsg);
         var overlayEl = document.getElementById('sajux-capture-overlay');
         function runSliceCapture(attempt) {
+            if (mobile) {
+                var liteDiv = slice._liteDiv;
+                if (!liteDiv) {
+                    liteDiv = sajuxConvertToMobileLiteCard(captureTarget, slice.jul, slice.title);
+                    slice._liteDiv = liteDiv;
+                }
+                sajuxMobileLiteSliceToBlob(liteDiv).then(function (blob) {
+                    captures.push({ name: fileBase, blob: blob });
+                    idx += 1;
+                    setTimeout(captureNext, 60);
+                }).catch(function (err) {
+                    console.warn('[sajux] mobile lite skip', idx + 1, fileBase, err);
+                    idx += 1;
+                    setTimeout(captureNext, 60);
+                });
+                return;
+            }
             var scaleUse = attempt > 0 ? Math.max(0.75, sliceScale * (attempt > 1 ? 0.65 : 0.82)) : sliceScale;
-            if (sajuxIsMobileCapture()) scaleUse = Math.min(scaleUse, attempt > 0 ? 0.85 : 1);
             var hCap = Math.max(captureTarget.offsetHeight || 0, captureTarget.scrollHeight || 0, 0);
-            if (sajuxIsMobileCapture() && hCap > 5000) scaleUse = Math.min(scaleUse, 0.75);
-            var mobile = sajuxIsMobileCapture();
             var h2cOpts = {
                 backgroundColor: '#050508',
                 scale: scaleUse,
                 useCORS: true,
                 allowTaint: true,
                 logging: false,
-                imageTimeout: mobile ? 8000 : 15000,
+                imageTimeout: 15000,
                 ignoreElements: sajuxHtml2canvasIgnoreEl,
                 onclone: sajuxOnCaptureClone
             };
-            if (mobile) {
-                h2cOpts.foreignObjectRendering = false;
-                h2cOpts.scrollX = 0;
-                h2cOpts.scrollY = -(window.scrollY || 0);
-                h2cOpts.windowWidth = document.documentElement.clientWidth || 390;
-                if (hCap > 0) h2cOpts.height = Math.min(hCap, 3200);
-            }
             if (overlayEl) overlayEl.style.visibility = 'hidden';
             sajuxWaitImagesInRoot(captureTarget).then(function () {
-                return sajuxHtml2canvasPromise(captureTarget, h2cOpts, mobile ? 55000 : 90000);
+                return sajuxHtml2canvasPromise(captureTarget, h2cOpts, 90000);
             }).then(function (canvas) {
                 if (overlayEl) overlayEl.style.visibility = '';
                 return sajuxCanvasToBlob(canvas, 'image/png').then(function (blob) {
                     captures.push({ name: fileBase, blob: blob });
                     idx += 1;
-                    setTimeout(captureNext, mobile ? 160 : 48);
+                    setTimeout(captureNext, 48);
                 });
             }).catch(function (err) {
                 if (overlayEl) overlayEl.style.visibility = '';
                 if (attempt < 2) {
-                    setTimeout(function () { runSliceCapture(attempt + 1); }, mobile ? 320 : 120);
+                    setTimeout(function () { runSliceCapture(attempt + 1); }, 120);
                     return;
                 }
                 console.warn('[sajux] slice capture skip', idx + 1, fileBase, err);
                 idx += 1;
-                setTimeout(captureNext, mobile ? 120 : 48);
+                setTimeout(captureNext, 48);
             });
         }
-        var preDelay = sajuxIsMobileCapture() ? 280 : 32;
+        var preDelay = mobile ? 80 : 32;
         if (typeof requestAnimationFrame === 'function') {
             requestAnimationFrame(function () { setTimeout(function () { runSliceCapture(0); }, preDelay); });
         } else {
