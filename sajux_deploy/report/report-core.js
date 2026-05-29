@@ -5146,7 +5146,6 @@ function sajuxEnsureCaptureOverlayVisible(el) {
 }
 function sajuxStartCaptureProgress(total, destMode) {
     sajuxStopCaptureCountdown();
-    var mobileDevice = sajuxIsMobileDevice();
     var id = 'sajux-capture-overlay';
     var el = document.getElementById(id);
     if (!el) {
@@ -5157,16 +5156,11 @@ function sajuxStartCaptureProgress(total, destMode) {
     sajuxEnsureCaptureOverlayVisible(el);
     el.innerHTML = ''
         + '<div class="sajux-capture-overlay-inner" style="width:min(320px,88vw);text-align:center;font-family:\'Noto Sans KR\',sans-serif;color:#f5f0e6;">'
-        + '<div style="font-size:15px;font-weight:600;">' + (mobileDevice ? 'PC 화질로 저장 중' : '사주 저장 중') + '</div>'
+        + '<div style="font-size:15px;font-weight:600;">사주 저장 중</div>'
         + '<div style="width:100%;height:10px;background:rgba(255,255,255,0.12);border-radius:999px;margin:22px 0 12px;overflow:hidden;">'
         + '<div id="sajux-cap-gauge-fill" style="width:0%;height:100%;background:linear-gradient(90deg,#8a6f3c,#c7a76a);border-radius:999px;transition:width 0.35s ease;"></div></div>'
         + '<div id="sajux-cap-progress-label" style="font-size:14px;color:rgba(245,240,232,0.78);">0 / ' + total + '</div>'
-        + '<div style="font-size:12px;color:rgba(245,240,232,0.48);margin-top:10px;">' + sajuxCaptureDestLabel(destMode) + '</div>'
-        + '<div style="font-size:12px;color:rgba(245,240,232,0.42);margin-top:6px;">'
-        + (mobileDevice
-            ? '캡처 중엔 인터넷 불필요 · iPhone은 기기 성능 때문에 시간이 걸릴 수 있어요'
-            : '화면을 건드리지 마세요')
-        + '</div>'
+        + '<div style="font-size:12px;color:rgba(245,240,232,0.42);margin-top:10px;">화면을 건드리지 마세요</div>'
         + '</div>';
     el.style.display = 'flex';
     return el;
@@ -5189,37 +5183,42 @@ function sajuxIsIosDevice() {
     return /iPhone|iPad|iPod/i.test(navigator.userAgent || '');
 }
 function sajuxMobileSaveHint() {
-    if (sajuxIsIosDevice()) return '「저장 위치 선택」→ 「파일에 저장」→ 원하는 폴더를 고르세요.';
-    if (sajuxIsAndroidDevice()) return '「저장 위치 선택」→ 「내 파일」·Google Drive 등 원하는 앱·폴더를 고르세요.';
-    return '「저장 위치 선택」을 눌러 주세요.';
+    if (sajuxIsIosDevice()) return '「파일 앱에 저장」→ 「파일에 저장」→ 폴더를 고르세요.';
+    if (sajuxIsAndroidDevice()) return '「폴더에 저장」을 누르면 저장할 폴더를 고를 수 있어요.\n안 되면 「다운로드」를 눌러 주세요.';
+    return '저장 버튼을 눌러 주세요.';
 }
-function sajuxPromptCaptureDestination(onPick) {
-    var mobileDevice = sajuxIsMobileDevice();
-    var msg = mobileDevice
-        ? ('어디에 저장할까요?\n\n캡처가 끝나면 「저장 위치 선택」으로\n'
-            + (sajuxIsAndroidDevice() ? '내 파일·드라이브' : '파일 앱')
-            + '에서 폴더를 직접 고르실 수 있어요.')
-        : '어디에 저장할까요?\n\n캡처가 끝나면 PC 저장 창이 열립니다.\n폴더와 파일명을 직접 고르실 수 있어요.';
-    var buttons = [];
-    buttons.push({
-        label: mobileDevice ? '저장 위치 선택 후 시작' : '다운로드 폴더에 저장',
-        primary: true,
-        onClick: function () {
-            window.__sajuxCaptureDest = mobileDevice ? 'share' : 'download';
-            sajuxHideCaptureOverlay();
-            if (typeof onPick === 'function') onPick(window.__sajuxCaptureDest);
-        }
-    });
-    buttons.push({
-        label: '취소',
-        primary: false,
-        onClick: function () {
-            sajuxHideCaptureOverlay();
-            _sajuxCaptureBusy = false;
-            if (typeof onPick === 'function') onPick(null);
-        }
-    });
-    sajuxShowCaptureOverlay(msg, { buttons: buttons, progressOnly: true });
+function sajuxTriggerZipDownload(url, filename) {
+    if (!url) return false;
+    try {
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = filename || '사주X-리포트.zip';
+        a.rel = 'noopener';
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function () {
+            try { document.body.removeChild(a); } catch (eRm) {}
+        }, 200);
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
+function sajuxSaveZipOnMobile(zipBlob, filename, url, onResult) {
+    onResult = onResult || function () {};
+    function fallbackChain() {
+        return sajuxShareOrDownloadZip(zipBlob, filename, url, onResult);
+    }
+    if (sajuxIsAndroidDevice() && sajuxCanUseSaveFilePicker()) {
+        sajuxPickSaveFolder(zipBlob, filename, function (mode) {
+            if (mode === 'saved') onResult('saved');
+            else if (mode === 'cancel') onResult('cancel');
+            else fallbackChain();
+        });
+        return;
+    }
+    fallbackChain();
 }
 function sajuxShowCaptureOverlay(message, opts) {
     opts = opts || {};
@@ -6253,61 +6252,42 @@ function sajuxCanShareZipBlob(zipBlob, filename) {
     }
 }
 function sajuxOpenMobileSaveSheet(zipBlob, filename, onResult) {
-    onResult = onResult || function () {};
-    var finished = false;
-    function done(mode) {
-        if (finished) return;
-        finished = true;
-        onResult(mode);
-    }
-    function tryPicker() {
-        if (!sajuxIsAndroidDevice() || !sajuxCanUseSaveFilePicker()) {
-            done('unsupported');
-            return;
-        }
-        sajuxPickSaveFolder(zipBlob, filename, done);
-    }
-    if (sajuxCanShareZipBlob(zipBlob, filename)) {
-        var file = sajuxMakeZipShareFile(zipBlob, filename);
-        navigator.share({ files: [file] }).then(function () {
-            done('shared');
-        }).catch(function (err) {
-            if (err && err.name === 'AbortError') {
-                done('cancel');
-                return;
-            }
-            tryPicker();
-        });
-        return;
-    }
-    tryPicker();
+    var url = _sajuxPendingZip && _sajuxPendingZip.url ? _sajuxPendingZip.url : URL.createObjectURL(zipBlob);
+    sajuxSaveZipOnMobile(zipBlob, filename, url, onResult);
 }
 function sajuxPickSaveFolder(zipBlob, filename, onDone) {
     if (!sajuxCanUseSaveFilePicker()) {
         if (typeof onDone === 'function') onDone('unsupported');
         return;
     }
-    var pickerOpts = {
-        suggestedName: filename,
-        types: [{ description: 'ZIP 파일', accept: { 'application/zip': ['.zip'], 'application/octet-stream': ['.zip'] } }]
-    };
-    if (sajuxIsAndroidDevice()) {
-        try { pickerOpts.startIn = 'downloads'; } catch (eStart) {}
-    }
-    window.showSaveFilePicker(pickerOpts).then(function (handle) {
-        return handle.createWritable();
-    }).then(function (writable) {
-        return writable.write(zipBlob).then(function () { return writable.close(); });
-    }).then(function () {
-        if (typeof onDone === 'function') onDone('saved');
-    }).catch(function (err) {
-        if (err && err.name === 'AbortError') {
-            if (typeof onDone === 'function') onDone('cancel');
-            return;
+    function runPicker(useStartIn) {
+        var pickerOpts = {
+            suggestedName: filename,
+            types: [{ description: 'ZIP 파일', accept: { 'application/zip': ['.zip'], 'application/octet-stream': ['.zip'] } }]
+        };
+        if (useStartIn && sajuxIsAndroidDevice()) {
+            try { pickerOpts.startIn = 'downloads'; } catch (eStart) {}
         }
-        console.warn('[sajux] save picker failed', err && err.message);
-        if (typeof onDone === 'function') onDone('failed');
-    });
+        window.showSaveFilePicker(pickerOpts).then(function (handle) {
+            return handle.createWritable();
+        }).then(function (writable) {
+            return writable.write(zipBlob).then(function () { return writable.close(); });
+        }).then(function () {
+            if (typeof onDone === 'function') onDone('saved');
+        }).catch(function (err) {
+            if (err && err.name === 'AbortError') {
+                if (typeof onDone === 'function') onDone('cancel');
+                return;
+            }
+            if (useStartIn && sajuxIsAndroidDevice()) {
+                runPicker(false);
+                return;
+            }
+            console.warn('[sajux] save picker failed', err && err.message);
+            if (typeof onDone === 'function') onDone('failed');
+        });
+    }
+    runPicker(true);
 }
 function sajuxOfferZipDownload(zipBlob, filename, extraMsg) {
     sajuxClearPendingZip();
@@ -6330,38 +6310,64 @@ function sajuxOfferZipDownload(zipBlob, filename, extraMsg) {
         });
     }
     function onMobileSave(mode) {
-        if (mode === 'shared' || mode === 'saved') {
+        if (mode === 'shared' || mode === 'saved' || mode === 'download' || mode === 'opened') {
             showSavedNote('✅ 저장 완료!\n\n선택하신 위치에서 ZIP을 확인해 주세요.');
         } else if (mode === 'failed' || mode === 'unsupported') {
             alert(ios
-                ? '공유 창이 열리지 않았습니다.\n「Safari에서 받기」를 이용해 주세요.'
-                : '저장 창이 열리지 않았습니다.\nChrome 최신 버전에서 다시 시도하거나 「Chrome 폴더 지정」을 눌러 주세요.');
+                ? '저장 창이 열리지 않았습니다.\n「Safari에서 받기」를 이용해 주세요.'
+                : '저장 창이 열리지 않았습니다.\n「다운로드」 버튼을 눌러 주세요.');
         }
     }
     if (mobileDevice) {
-        buttons.push({
-            label: '📁 저장 위치 선택',
-            primary: true,
-            onClick: function () { sajuxOpenMobileSaveSheet(zipBlob, filename, onMobileSave); }
-        });
-        if (android && canPick) {
+        if (android) {
             buttons.push({
-                label: '📂 Chrome 폴더 지정',
+                label: '📂 폴더에 저장',
+                primary: true,
+                onClick: function () { sajuxSaveZipOnMobile(zipBlob, filename, url, onMobileSave); }
+            });
+            buttons.push({
+                label: '📤 다른 앱으로 보내기',
                 primary: false,
                 onClick: function () {
-                    sajuxPickSaveFolder(zipBlob, filename, function (mode) {
-                        if (mode === 'saved') showSavedNote('✅ 저장 완료!\n\n선택하신 폴더에 ZIP이 저장됐어요.');
-                        else if (mode === 'failed') alert('폴더 지정에 실패했습니다.\n「저장 위치 선택」을 다시 시도해 주세요.');
-                    });
+                    sajuxShareOrDownloadZip(zipBlob, filename, url, onMobileSave);
+                }
+            });
+            buttons.push({
+                label: '📥 다운로드',
+                primary: false,
+                onClick: function () {
+                    if (sajuxTriggerZipDownload(url, filename)) onMobileSave('download');
+                    else alert('다운로드가 막혔습니다.\nChrome 브라우저에서 다시 시도해 주세요.');
+                }
+            });
+        } else if (ios) {
+            buttons.push({
+                label: '📤 파일 앱에 저장',
+                primary: true,
+                onClick: function () { sajuxShareOrDownloadZip(zipBlob, filename, url, onMobileSave); }
+            });
+            buttons.push({
+                label: '📥 Safari에서 받기',
+                primary: false,
+                onClick: function () {
+                    if (sajuxTriggerZipDownload(url, filename)) onMobileSave('download');
+                    else if (sajuxOpenZipInNewTab(url)) onMobileSave('opened');
+                }
+            });
+        } else {
+            buttons.push({
+                label: '📤 저장하기',
+                primary: true,
+                onClick: function () { sajuxShareOrDownloadZip(zipBlob, filename, url, onMobileSave); }
+            });
+            buttons.push({
+                label: '📥 다운로드',
+                primary: false,
+                onClick: function () {
+                    if (sajuxTriggerZipDownload(url, filename)) onMobileSave('download');
                 }
             });
         }
-        buttons.push({
-            label: ios ? '📥 Safari에서 받기' : '📥 다운로드 폴더에 저장',
-            primary: false,
-            href: url,
-            download: filename
-        });
     } else {
         buttons.push({ label: '📥 ZIP 저장', primary: true, href: url, download: filename });
         if (canPick) {
@@ -6475,28 +6481,15 @@ function sajuxCaptureReportAsImage() {
         return;
     }
     _sajuxCaptureBusy = true;
-    function startCaptureFlow() {
-        sajuxEnsureCaptureLibs(function () {
-            if (typeof html2canvas !== 'function' || typeof JSZip !== 'function') {
-                _sajuxCaptureBusy = false;
-                sajuxHideCaptureOverlay();
-                alert('사주 저장 도구를 불러오지 못했습니다. 새로고침 후 다시 시도해 주세요.');
-                return;
-            }
-            sajuxRunReportImageCapture(root);
-        });
-    }
-    if (sajuxIsMobileDevice()) {
-        sajuxPromptCaptureDestination(function (dest) {
-            if (!dest) {
-                _sajuxCaptureBusy = false;
-                return;
-            }
-            startCaptureFlow();
-        });
-        return;
-    }
-    startCaptureFlow();
+    sajuxEnsureCaptureLibs(function () {
+        if (typeof html2canvas !== 'function' || typeof JSZip !== 'function') {
+            _sajuxCaptureBusy = false;
+            sajuxHideCaptureOverlay();
+            alert('사주 저장 도구를 불러오지 못했습니다. 새로고침 후 다시 시도해 주세요.');
+            return;
+        }
+        sajuxRunReportImageCapture(root);
+    });
 }
 function sajuxRunReportImageCapture(root) {
     var restorePattern = sajuxPatchCreatePatternForCapture();
@@ -6528,7 +6521,7 @@ function sajuxRunReportImageCapture(root) {
     var total = slices.length;
     window.__sajuxLastCaptureTotal = total;
     var baseName = sajuxBuildCaptureBaseName(window.globalSajuData || null);
-    sajuxStartCaptureProgress(total, window.__sajuxCaptureDest || 'download');
+    sajuxStartCaptureProgress(total);
     var imgExt = sajuxCaptureImageExt();
     function finishErr(err) {
         console.error('sajuxCaptureReportAsImage', err);
