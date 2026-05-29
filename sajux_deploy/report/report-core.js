@@ -5548,7 +5548,14 @@ function sajuxCaptureHostWidthPx() {
 function sajuxStyleCaptureHost(host) {
     if (!host) return host;
     var w = sajuxCaptureHostWidthPx();
-    host.style.cssText = 'position:fixed;left:-20000px;top:0;width:' + w + 'px;max-width:' + w + 'px;z-index:-1;opacity:1;visibility:visible;pointer-events:none;overflow:visible;background:#050508;';
+    if (sajuxIsMobileCapture()) {
+        /* iOS 핵심: 화면 밖(left:-20000) + position:fixed 요소는 html2canvas가 빈 이미지를 만든다
+           (→ "1장만 저장"). viewport 안(문서 좌상단)에 실제 렌더하고, 진행 오버레이
+           (z-index 2147483647, 불투명)로 가려 사용자에겐 안 보이게 한다. */
+        host.style.cssText = 'position:absolute;left:0;top:0;width:' + w + 'px;max-width:' + w + 'px;z-index:1;opacity:1;visibility:visible;pointer-events:none;overflow:visible;background:#050508;';
+    } else {
+        host.style.cssText = 'position:fixed;left:-20000px;top:0;width:' + w + 'px;max-width:' + w + 'px;z-index:-1;opacity:1;visibility:visible;pointer-events:none;overflow:visible;background:#050508;';
+    }
     return host;
 }
 function sajuxIsCaptureableEl(el) {
