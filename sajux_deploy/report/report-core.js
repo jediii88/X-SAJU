@@ -5966,8 +5966,11 @@ function sajuxCollectCaptureSlices(root) {
     }
     slices = sajuxMergeCaptureSlices(slices);
     slices = sajuxAttachPartBanners(slices, container);
-    /* 8장 병합은 한 장이 너무 커져 iOS canvas 한도를 초과 → 캡처 실패(1장만 저장).
-       절 단위로 두고, 캡처 단계에서 iOS 안전 크기(3500px)로 잘게 분할한다. */
+    /* 모바일: 사용자 지정 8장 그룹으로 묶는다. 캡처 단계(sajuxCaptureTargetToBlobs)에서
+       각 그룹을 iOS 캔버스 한도에 맞춰 해상도를 자동 조정해 '한 그룹 = 한 이미지'(8장)로 저장. */
+    if (sajuxIsMobileDevice()) {
+        slices = sajuxGroupMobileMainCaptureSlices(slices);
+    }
     return { container: container, slices: slices, host: sajuxEnsureCaptureHost() };
 }
 var SAJUX_CAPTURE_PART_DEFS = {
@@ -6053,6 +6056,18 @@ function sajuxCalcSliceCaptureScale(el) {
     var w = Math.max(el.offsetWidth || 0, el.scrollWidth || 0, SAJUX_CAPTURE_PAGE_W);
     var h = Math.max(el.offsetHeight || 0, el.scrollHeight || 0, 1);
     return Math.max(1, Math.min(prefer, maxDim / w, maxDim / h));
+}
+/* 8장 그룹을 '한 그룹 = 한 이미지'로 저장하기 위한 해상도.
+   큰 그룹(대운·세운 등)도 iOS 캔버스 한도(면적 ~16.7M px, 한 변 ~8192px) 안에 들도록
+   해상도를 자동으로 낮춰 단일 캡처가 빈 이미지 없이 성공하게 한다. 작은 그룹은 선명하게. */
+function sajuxFitMobileCaptureScale(w, h) {
+    var maxArea = 16000000;   // iOS canvas 면적 한도(보수적)
+    var maxSide = 8192;       // iOS canvas 한 변 한도(보수적)
+    var prefer = 1.35;        // 작은 그룹 선명도 상한
+    w = Math.max(1, w);
+    h = Math.max(1, h);
+    var s = Math.min(prefer, maxSide / h, maxSide / w, Math.sqrt(maxArea / (w * h)));
+    return Math.max(0.32, s);
 }
 function sajuxCaptureImageMime() {
     /* 모바일 전체 JPEG — PNG 대비 인코딩 속도 3-5배 빠름 */
@@ -6172,18 +6187,28 @@ function sajuxPadCaptureCanvas(canvas, scale) {
     } catch (e) { return canvas; }
 }
 function sajuxCaptureTargetToBlobs(target, mime, timeoutMs) {
-    var scale = sajuxCalcSliceCaptureScale(target);
-    /* 슬라이스별 이미지 대기 짧게 — 메인 루프에서 이미 전체 컨테이너 이미지를 한 번 대기함.
-       클론된 img는 캐시 hit으로 즉시 complete되므로 긴 대기 불필요(속도 핵심). */
-    return sajuxWaitImagesInRoot(target, sajuxIsMobileDevice() ? 150 : 1200).then(function () {
+    var mobile = sajuxIsMobileDevice();
+    /* 슬라이스별 이미지 대기 짧게 — 메인 루프에서 이미 전체 컨테이너 이미지를 한 번 대기함. */
+    return sajuxWaitImagesInRoot(target, mobile ? 150 : 1200).then(function () {
         return sajuxWaitCaptureTargetLayout(target);
     }).then(function (dims) {
-        /* 모바일 너비≈390 → 390×9000≈3.5M 픽셀, iOS 한도(16.7M) 이내. 청킹 임계값을 높여
-           대부분 1회 렌더(병합 페이지 평균 높이 < 9000) → 청킹 횟수 최소화. */
-        /* iOS canvas 한도 회피 — 실제 캔버스 높이(논리h×scale)를 ~3300px 이하로 유지.
-           scale 0.65에서 논리 chunkH≈5000 → 캔버스 3300. 대부분 절이 1조각 → html2canvas 호출 최소화. */
-        var maxCanvasH = 3300;
-        var chunkH = sajuxIsMobileDevice() ? Math.floor(maxCanvasH / (scale || 1)) : 6000;
+        if (mobile) {
+            /* 8장: 한 그룹 = 한 이미지. 큰 그룹은 iOS 캔버스 한도에 맞춰 해상도를 자동으로 낮춰
+               단일 캡처(clip 청킹 제거 → 예전처럼 단순·빠름, 누락 없음). */
+            var mScale = sajuxFitMobileCaptureScale(dims.w, dims.h);
+            return sajuxHtml2canvasRegion(target, mScale, { w: dims.w, h: dims.h, y: 0 }, timeoutMs).then(function (canvas) {
+                if (!sajuxValidateCaptureCanvas(canvas)) return [];
+                return sajuxCanvasToBlob(sajuxPadCaptureCanvas(canvas, mScale), mime).then(function (blob) {
+                    return (blob && blob.size > 100) ? [blob] : [];
+                });
+            }).catch(function (err) {
+                console.warn('[sajux] mobile capture fail', err && err.message);
+                return [];
+            });
+        }
+        /* 데스크탑: 기존 방식 유지 */
+        var scale = sajuxCalcSliceCaptureScale(target);
+        var chunkH = 6000;
         var useChunks = dims.h > chunkH;
         if (!useChunks) {
             return sajuxHtml2canvasRegion(target, scale, { w: dims.w, h: dims.h, y: 0 }, timeoutMs).then(function (canvas) {
@@ -6200,8 +6225,6 @@ function sajuxCaptureTargetToBlobs(target, mime, timeoutMs) {
         function nextChunk() {
             if (y0 >= dims.h) return Promise.resolve(blobs);
             var ch = Math.min(chunkH, dims.h - y0);
-            /* 모든 조각을 clip 방식으로 — 내용을 끌어올려 작은(≤3500px) 캔버스에서 y=0 캡처.
-               큰 target을 통째로 렌더하지 않으므로 iOS 한도 초과·빈 이미지 누락을 모두 방지. */
             return sajuxHtml2canvasClipChunk(clipHost, target, scale, y0, ch, dims.w, perChunk).then(function (canvas) {
                 return sajuxCanvasToBlob(sajuxPadCaptureCanvas(canvas, scale), mime);
             }).then(function (blob) {
