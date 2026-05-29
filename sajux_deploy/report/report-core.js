@@ -5059,10 +5059,10 @@ function sajuxMobileLiteSliceToBlob(div) {
     var w = Math.min(720, window.innerWidth || 390);
     return sajuxCanvasFromLiteCard(div, w);
 }
-function sajuxMobilePrepareLiteSlices(slices, pack) {
+function sajuxMobilePrepareLiteSlices(slices) {
     if (!sajuxIsMobileCapture()) return;
     slices.forEach(function (sl) {
-        if (sl._liteDiv) return;
+        if (sl._liteDiv || sl.mobileLite || !sl.el) return;
         sl._liteDiv = sajuxConvertToMobileLiteCard(sl.el, sl.jul, sl.title);
     });
 }
@@ -5372,35 +5372,17 @@ function sajuxCollectCaptureSlices(root) {
         { sel: '#sec-client-cover', jul: '고객표지', title: '고객 정보' },
         { sel: '.toc-page', jul: '목차', title: '목차' }
     ];
-    if (sajuxIsMobileCapture()) {
-        var introParts = [];
-        introDefs.forEach(function (def) {
-            var el = container.querySelector(def.sel);
-            if (!sajuxIsVisibleEl(el)) return;
-            var t = (el.innerText || '').replace(/\r/g, '').trim();
-            introParts.push('■ ' + def.title + '\n' + t.slice(0, 850));
-        });
-        if (introParts.length) {
-            slices.push({
-                jul: '시작',
-                title: '표지·고객정보·목차',
-                _liteDiv: sajuxBuildMobileLiteCard('시작', '표지 · 고객정보 · 목차', introParts.join('\n\n')),
-                mobileLite: true
-            });
-        }
-    } else {
-        introDefs.forEach(function (def) {
-            var el = container.querySelector(def.sel);
-            if (!sajuxIsVisibleEl(el)) return;
-            var wrap = document.createElement('div');
-            wrap.className = 'sajux-capture-jul-wrap';
-            wrap.style.cssText = 'background:#050508;box-sizing:border-box;width:100%;';
-            wrap.setAttribute('data-sajux-jul', def.jul);
-            wrap.setAttribute('data-sajux-jul-title', def.title);
-            wrap.appendChild(el.cloneNode(true));
-            slices.push({ el: wrap, jul: def.jul, title: def.title });
-        });
-    }
+    introDefs.forEach(function (def) {
+        var el = container.querySelector(def.sel);
+        if (!sajuxIsVisibleEl(el)) return;
+        var wrap = document.createElement('div');
+        wrap.className = 'sajux-capture-jul-wrap';
+        wrap.style.cssText = 'background:#050508;box-sizing:border-box;width:100%;';
+        wrap.setAttribute('data-sajux-jul', def.jul);
+        wrap.setAttribute('data-sajux-jul-title', def.title);
+        wrap.appendChild(el.cloneNode(true));
+        slices.push({ el: wrap, jul: def.jul, title: def.title });
+    });
 
     var heads = sajuxFilterCaptureHeads(container, sajuxCollectJulHeads(container));
     for (var i = 0; i < heads.length; i++) {
@@ -5435,14 +5417,11 @@ function sajuxCollectCaptureSlices(root) {
 function sajuxCalcSliceCaptureScale(el) {
     var maxDim = sajuxIsMobileCapture() ? 8192 : 16384;
     var dpr = window.devicePixelRatio || 1;
-    var mobile = sajuxIsMobileCapture();
-    var prefer = mobile ? 1 : Math.min(2, Math.max(1.5, dpr));
+    var prefer = Math.min(2, Math.max(1.5, dpr));
     if (!el) return prefer;
     var w = Math.max(el.offsetWidth || 0, el.scrollWidth || 0, 320);
     var h = Math.max(el.offsetHeight || 0, el.scrollHeight || 0, 1);
-    if (mobile && h > 4500) prefer = Math.min(prefer, 0.85);
-    if (mobile && h > 8000) prefer = Math.min(prefer, 0.72);
-    return Math.max(0.75, Math.min(prefer, maxDim / w, maxDim / h));
+    return Math.max(1, Math.min(prefer, maxDim / w, maxDim / h));
 }
 function sajuxHtml2canvasPromise(target, opts, timeoutMs) {
     var ms = timeoutMs || (sajuxIsMobileCapture() ? 120000 : 90000);
@@ -5731,12 +5710,6 @@ function sajuxCaptureReportAsImage() {
     }
     _sajuxCaptureBusy = true;
     ensureJsZipLoaded(function () {
-        if (sajuxIsMobileCapture()) {
-            ensureHtmlToImageLoaded(function () {
-                sajuxRunReportImageCapture(root);
-            });
-            return;
-        }
         ensureHtml2CanvasLoaded(function () {
             sajuxRunReportImageCapture(root);
         });
@@ -5768,10 +5741,7 @@ function sajuxRunReportImageCapture(root) {
     var idx = 0;
     var total = slices.length;
     var baseName = sajuxBuildCaptureBaseName(window.globalSajuData || null);
-    if (sajuxIsMobileCapture()) {
-        sajuxShowCaptureOverlay('다운로드 준비 중…\n총 ' + total + '장');
-        sajuxMobilePrepareLiteSlices(slices, pack);
-    }
+    sajuxShowCaptureOverlay('다운로드 준비 중…\n총 ' + total + '장');
 
     function finishOk() {
         var zip = new JSZip();
@@ -5781,11 +5751,6 @@ function sajuxRunReportImageCapture(root) {
                 + '압축을 푼 뒤, 파일명 앞 숫자(01, 02…) 순서대로 보시면 화면 흐름과 같습니다.\n'
             : '사주X 리포트 다운로드 파일입니다.\n'
                 + '압축을 푼 뒤, 파일명 앞 숫자(01, 02…) 순서대로 보시면 목차 절 순서와 같습니다.\n';
-        if (sajuxIsMobileCapture()) {
-            readMe += '\n[모바일 저장 안내]\n'
-                + '· 휴대폰에서는 화면 전체 캡처 대신 글 카드 형태 PNG로 저장됩니다.\n'
-                + '· 만세력 표·디자인 표지는 웹 리포트 링크에서 그대로 보실 수 있습니다.\n';
-        }
         folder.file('00-읽는법.txt', readMe + '총 ' + captures.length + '장 · ' + baseName + '\n');
         captures.forEach(function (item) {
             folder.file(item.name + '.png', item.blob);
@@ -5831,24 +5796,11 @@ function sajuxRunReportImageCapture(root) {
         }
         var slice = slices[idx];
         var fileBase = sajuxSliceCaptureLabel(slice, idx + 1);
-        var mobile = sajuxIsMobileCapture();
         var overlayMsg = '사주 다운로드 중… (' + (idx + 1) + '/' + total + ')\n' + (slice.jul || '') + ' ' + (slice.title || '');
         sajuxShowCaptureOverlay(overlayMsg);
         var overlayEl = document.getElementById('sajux-capture-overlay');
+        var sliceDelay = sajuxIsMobileCapture() ? 64 : 48;
         function runSliceCapture(attempt) {
-            if (mobile) {
-                var liteDiv = slice._liteDiv || sajuxConvertToMobileLiteCard(slice.el, slice.jul, slice.title);
-                sajuxMobileLiteSliceToBlob(liteDiv).then(function (blob) {
-                    captures.push({ name: fileBase, blob: blob });
-                    idx += 1;
-                    captureNext();
-                }).catch(function (err) {
-                    console.warn('[sajux] mobile lite skip', idx + 1, fileBase, err);
-                    idx += 1;
-                    captureNext();
-                });
-                return;
-            }
             var resolved = sajuxResolveCaptureTarget(slice, pack, captureHost);
             var captureTarget = resolved.target;
             var sliceScale = sajuxCalcSliceCaptureScale(captureTarget);
@@ -5876,7 +5828,7 @@ function sajuxRunReportImageCapture(root) {
                 return sajuxCanvasToBlob(canvas, 'image/png').then(function (blob) {
                     captures.push({ name: fileBase, blob: blob });
                     idx += 1;
-                    setTimeout(captureNext, 48);
+                    setTimeout(captureNext, sliceDelay);
                 });
             }).catch(function (err) {
                 if (overlayEl) overlayEl.style.visibility = '';
@@ -5886,12 +5838,10 @@ function sajuxRunReportImageCapture(root) {
                 }
                 console.warn('[sajux] slice capture skip', idx + 1, fileBase, err);
                 idx += 1;
-                setTimeout(captureNext, 48);
+                setTimeout(captureNext, sliceDelay);
             });
         }
-        if (mobile) {
-            runSliceCapture(0);
-        } else if (typeof requestAnimationFrame === 'function') {
+        if (typeof requestAnimationFrame === 'function') {
             requestAnimationFrame(function () { setTimeout(function () { runSliceCapture(0); }, 32); });
         } else {
             setTimeout(function () { runSliceCapture(0); }, 32);
