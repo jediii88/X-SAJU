@@ -332,6 +332,13 @@ body,
     padding-bottom: 6px !important;
     margin-bottom: 10px !important;
   }
+  .part-brush-title,
+  .part-header-label.part-tier-title,
+  .ch-main-topic-title,
+  .ch-main-heading-xl {
+    font-family: 'Jeongseon Arirang Ppuri', 'Nanum Brush Script', cursive !important;
+    font-weight: 400 !important;
+  }
   .part-header-block {
     background: transparent !important;
     border: none !important;
