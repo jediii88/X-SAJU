@@ -5094,6 +5094,7 @@ function sajuxPreloadCaptureLibs() {
     try {
         ensureHtml2CanvasLoaded(function () {});
         ensureJsZipLoaded(function () {});
+        sajuxEnsureCaptureFonts();
     } catch (e) {}
 }
 function sajuxEnsureCaptureLibs(done) {
@@ -5697,12 +5698,11 @@ function sajuxCollectCaptureSlices(root) {
     slices = sajuxAttachPartBanners(slices);
     return { container: container, slices: slices, host: sajuxEnsureCaptureHost() };
 }
-var SAJUX_CAPTURE_PART_META = {
-    '1': { head: '1부 · 나라는 사람', sub: '원국 · 오행 · 십성' },
-    '2': { head: '2부 · 지금 이 시절', sub: '현재 운 · 80년 지도 · 앞으로의 대운·세운·월운' },
-    '3': { head: '3부 · 삶의 영역', sub: '애정 · 재물 · 합격 · 직업 · 건강' },
-    '4': { head: '4부 · 지금의 선택 🌙', sub: '개운법 · 일상 적용' },
-    '5': { head: '5부 · 안내', sub: '리뷰 · 열람 · 이용 안내' }
+var SAJUX_CAPTURE_PART_DEFS = {
+    '1': { num: 1, title: '나라는 사람', sub: '원국 · 오행 · 십성' },
+    '2': { num: 2, title: '지금 이 시절', sub: '현재 운 · 80년 지도 · 앞으로의 대운·세운·월운' },
+    '3': { num: 3, title: '삶의 영역', sub: '애정 · 재물 · 합격 · 직업 · 건강' },
+    '4': { num: 4, title: '지금의 선택', sub: '개운법 · 일상 적용' }
 };
 function sajuxAttachPartBanners(slices) {
     if (!slices || !slices.length) return slices || [];
@@ -5715,18 +5715,54 @@ function sajuxAttachPartBanners(slices) {
         var partNum = m[1];
         if (seen[partNum]) continue;
         seen[partNum] = true;
-        var meta = SAJUX_CAPTURE_PART_META[partNum];
-        if (!meta) continue;
-        var banner = document.createElement('div');
-        banner.className = 'sajux-capture-part-banner';
-        banner.innerHTML =
-            '<div class="sajux-part-eyebrow">[ SAJU X · PART ' + partNum + ' ]</div>'
-            + '<div class="sajux-part-head">' + meta.head + '</div>'
-            + '<div class="sajux-part-sub">' + meta.sub + '</div>';
-        if (s.el && s.el.firstChild) s.el.insertBefore(banner, s.el.firstChild);
-        else if (s.el) s.el.appendChild(banner);
+        var def = SAJUX_CAPTURE_PART_DEFS[partNum];
+        if (!def || typeof buildPartHeader !== 'function') continue;
+        var wrap = document.createElement('div');
+        wrap.className = 'sajux-capture-part-intro';
+        wrap.innerHTML = buildPartHeader(def.num, def.title, def.sub, null, {});
+        if (s.el && s.el.firstChild) s.el.insertBefore(wrap, s.el.firstChild);
+        else if (s.el) s.el.appendChild(wrap);
     }
     return slices;
+}
+function sajuxCaptureFontUrl(file) {
+    try {
+        if (typeof window !== 'undefined' && window.location && window.location.href) {
+            return new URL(file, window.location.href).href;
+        }
+    } catch (eUrl) {}
+    return file;
+}
+function sajuxInjectCaptureFonts(doc) {
+    if (!doc || !doc.head || doc.getElementById('sajux-capture-fonts')) return;
+    var st = doc.createElement('style');
+    st.id = 'sajux-capture-fonts';
+    var ppuri = sajuxCaptureFontUrl('fonts/JeongseonArirangPpuri.ttf');
+    st.textContent = "@font-face{font-family:'Jeongseon Arirang Ppuri';src:url('" + ppuri + "') format('truetype');font-weight:400;font-style:normal;font-display:swap;}"
+        + "@import url('https://fonts.googleapis.com/css2?family=Nanum+Brush+Script&display=swap');";
+    doc.head.appendChild(st);
+}
+function sajuxEnsureCaptureFonts() {
+    if (typeof document === 'undefined' || !document.fonts || typeof document.fonts.load !== 'function') {
+        return Promise.resolve();
+    }
+    var loads = [
+        document.fonts.load('400 58px "Jeongseon Arirang Ppuri"'),
+        document.fonts.load('400 32px "Jeongseon Arirang Ppuri"'),
+        document.fonts.load('400 32px "Nanum Brush Script"')
+    ];
+    return Promise.all(loads).catch(function () {}).then(function () {
+        return document.fonts.ready || Promise.resolve();
+    });
+}
+function sajuxCaptureTypographyCss() {
+    return ''
+        + '.part-brush-title,.part-header-label.part-brush-title,.part-header-label.part-tier-title.part-brush-title{font-family:\'Jeongseon Arirang Ppuri\',\'Nanum Brush Script\',cursive!important;font-size:58px!important;font-weight:400!important;line-height:1.18!important;letter-spacing:-0.03em!important;color:rgba(248,246,238,0.96)!important;}'
+        + '.part-brush-title .part-brush-num{font-weight:400!important;font-size:1em!important;}'
+        + '.ch-main-topic-title,.ch-main-heading-xl,h2.ch-main-topic-title,h2.ch-main-heading-xl{font-family:\'Jeongseon Arirang Ppuri\',\'Nanum Brush Script\',cursive!important;font-size:32px!important;font-weight:400!important;line-height:1.28!important;letter-spacing:-0.02em!important;color:rgba(255,255,255,0.96)!important;}'
+        + '.ch-main-topic-title .ch-sec-num,.ch-main-heading-xl .ch-sec-num{font-size:0.92em!important;font-weight:400!important;color:rgba(199,167,106,0.92)!important;}'
+        + '.cover-brush-name,.cover-brush-fixed,.hero-brush-title{font-family:\'Jeongseon Arirang Ppuri\',\'Nanum Brush Script\',cursive!important;}'
+        + '.part-header-sub{font-size:12.5px!important;color:rgba(255,255,255,0.52)!important;letter-spacing:0.04em!important;line-height:1.55!important;}';
 }
 function sajuxCalcSliceCaptureScale(el) {
     var maxDim = sajuxIsIosDevice() ? 8192 : 16384;
@@ -6053,6 +6089,7 @@ function sajuxOnCaptureClone(doc) {
         if (n) n.remove();
     });
     doc.querySelectorAll('canvas').forEach(function (c) { c.remove(); });
+    sajuxInjectCaptureFonts(doc);
     if (!doc.getElementById('sajux-capture-clone-style')) {
         var st = doc.createElement('style');
         st.id = 'sajux-capture-clone-style';
@@ -6061,10 +6098,8 @@ function sajuxOnCaptureClone(doc) {
             + '.cover-page .sajux-logo-cover-print,.sajux-logo-cover-print,.sajux-logo.light{display:none!important;}'
             + '.cover-page .sajux-logo-cover-screen,.sajux-logo-cover-screen,.sajux-logo.dark{position:static!important;left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;display:block!important;visibility:visible!important;opacity:1!important;mix-blend-mode:screen!important;pointer-events:auto!important;margin:0 auto!important;filter:brightness(1.6) contrast(1.05)!important;}'
             + 'img.sajux-logo{max-width:min(360px,82vw)!important;height:auto!important;}'
-            + '.sajux-capture-part-banner{width:100%;box-sizing:border-box;padding:18px 24px 14px;margin:0 0 18px;border-bottom:1px solid rgba(199,167,106,0.22);background:linear-gradient(180deg,rgba(199,167,106,0.10),rgba(199,167,106,0));text-align:left;}'
-            + '.sajux-capture-part-banner .sajux-part-eyebrow{font-size:11px;letter-spacing:0.22em;color:rgba(199,167,106,0.85);font-weight:700;margin-bottom:6px;}'
-            + '.sajux-capture-part-banner .sajux-part-head{font-size:22px;font-weight:700;color:#f1e5cc;letter-spacing:-0.01em;margin-bottom:4px;}'
-            + '.sajux-capture-part-banner .sajux-part-sub{font-size:12px;color:rgba(220,220,230,0.65);letter-spacing:0.02em;}'
+            + sajuxCaptureTypographyCss()
+            + '.sajux-capture-part-intro .part-header-block{margin:0 0 18px!important;padding:20px 24px!important;}'
             + '.sajux-glass-heavy,.report-chapter,.card,.glass-panel,.badge,.tag,.jijanggan,.module-item,.yearly-card,.monthly-card,.inner-card,.detail-box,.rel-panel,.compat-voice-wrap,.person-card,.score-section,.compat-duo-manse-wrap,.f-card,.t-card,.seyun-year-card,.ch-story-card,.vip-module-item,.compat-section-title,.toc-page,.pillar-mini,.breakdown-grid,.duo-grid,.compat-manse-notes,.yearly-card-container,.monthly-card-container,.fortune-scroll,.seyun-premium-vertical,.module-box,.analysis-card,.compat-share-cta{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}'
             + '.card,.yearly-card,.monthly-card,.glass-panel,.report-chapter,.module-item,.inner-card,.detail-box,.rel-panel,.person-card,.score-section,.compat-duo-manse-wrap,.f-card,.t-card,.seyun-year-card,.ch-story-card,.vip-module-item,.module-box,.analysis-card,.fortune-scroll>div,.yearly-card-container>div,.monthly-card-container>div{background:rgba(14,14,20,0.96)!important;background-color:rgba(14,14,20,0.96)!important;}'
             + '.badge,.tag,.jijanggan,.sp-badge,.rel-badge,.compat-person-tag{background:rgba(32,32,42,0.92)!important;color:inherit!important;}'
@@ -6517,7 +6552,9 @@ function sajuxRunReportImageCapture(root) {
         if (fab) { fab.disabled = false; fab.textContent = '📥 사주 저장'; }
         _sajuxCaptureBusy = false;
     }
-    sajuxWaitImagesInRoot(pack.container || root, sajuxIsIosDevice() ? 2500 : 1200).then(function () {
+    sajuxEnsureCaptureFonts().then(function () {
+        return sajuxWaitImagesInRoot(pack.container || root, sajuxIsIosDevice() ? 2500 : 1200);
+    }).then(function () {
         captureNext();
     });
     function captureNext() {
