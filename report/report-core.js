@@ -5131,6 +5131,7 @@ var _sajuxCaptureCountdownTid = null;
 var _sajuxCapturePulseTid = null;
 var _sajuxCaptureStartedAt = 0;
 var _sajuxCapturePulseStep = 0;
+var _sajuxCaptureProgressPct = 0;
 function sajuxStopCaptureCountdown() {
     if (_sajuxCaptureCountdownTid) {
         clearInterval(_sajuxCaptureCountdownTid);
@@ -5181,7 +5182,10 @@ function sajuxTickCapturePulse() {
     }
     var statusEl = document.getElementById('sajux-cap-status');
     if (statusEl) {
-        var msgs = ['화면을 건드리지 마세요', '이미지 만드는 중…', '잠시만 기다려 주세요', '거의 다 됐어요'];
+        /* '거의 다 됐어요'는 진행률 70% 이상일 때만 노출 — 초반에 띄우면 거짓말처럼 느껴짐 */
+        var msgs = (_sajuxCaptureProgressPct >= 70)
+            ? ['거의 다 됐어요', '마무리 중이에요']
+            : ['화면을 건드리지 마세요', '이미지 만드는 중…', '잠시만 기다려 주세요'];
         statusEl.textContent = msgs[Math.floor(_sajuxCapturePulseStep / 2) % msgs.length];
     }
 }
@@ -5189,6 +5193,7 @@ function sajuxStartCapturePulse() {
     sajuxEnsureCapturePulseStyles();
     _sajuxCaptureStartedAt = Date.now();
     _sajuxCapturePulseStep = 0;
+    _sajuxCaptureProgressPct = 0;
     sajuxTickCapturePulse();
     if (_sajuxCapturePulseTid) clearInterval(_sajuxCapturePulseTid);
     _sajuxCapturePulseTid = setInterval(sajuxTickCapturePulse, 650);
@@ -5235,6 +5240,7 @@ function sajuxStartCaptureProgress(total, destMode) {
 }
 function sajuxUpdateCaptureProgress(done, total, detail) {
     var pct = total ? Math.min(100, Math.round((done / total) * 100)) : 0;
+    _sajuxCaptureProgressPct = pct;
     var fill = document.getElementById('sajux-cap-gauge-fill');
     var label = document.getElementById('sajux-cap-progress-label');
     if (fill) fill.style.width = pct + '%';
