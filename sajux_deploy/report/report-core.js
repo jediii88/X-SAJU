@@ -6115,10 +6115,14 @@ function sajuxHtml2canvasRegion(target, scale, region, timeoutMs) {
 }
 function sajuxCaptureTargetToBlobs(target, mime, timeoutMs) {
     var scale = sajuxCalcSliceCaptureScale(target);
-    var host = document.getElementById('sajux-capture-host') || target.parentNode;
-    return sajuxWaitCaptureTargetLayout(target).then(function (dims) {
-        var chunkH = sajuxMobileChunkThreshold();
-        var useChunks = sajuxIsMobileDevice() && dims.h > chunkH;
+    /* 이미지가 로드된 후 캡처 — iOS에서 cloneNode로 복사된 img src가 캐시에서 로드될 때까지 대기 */
+    return sajuxWaitImagesInRoot(target, sajuxIsMobileDevice() ? 4000 : 2000).then(function () {
+        return sajuxWaitCaptureTargetLayout(target);
+    }).then(function (dims) {
+        /* clip chunk 접근법 폐기: scale:1 기준 720×8000px≈5.76M 픽셀 → iOS 한도(16.7M) 이하로 안전
+           대신 직접 캡처 후 너무 클 경우에만 y-offset 청킹(PC 방식) 사용 */
+        var chunkH = 6000;
+        var useChunks = dims.h > chunkH;
         if (!useChunks) {
             return sajuxHtml2canvasRegion(target, scale, { w: dims.w, h: dims.h, y: 0 }, timeoutMs).then(function (canvas) {
                 if (!sajuxValidateCaptureCanvas(canvas)) return [];
@@ -6129,15 +6133,11 @@ function sajuxCaptureTargetToBlobs(target, mime, timeoutMs) {
         }
         var blobs = [];
         var y0 = 0;
-        var perChunk = timeoutMs || 28000;
-        var stepH = sajuxIsIosDevice() ? SAJUX_IOS_CHUNK_H : SAJUX_MOBILE_CHUNK_H;
+        var perChunk = timeoutMs || 60000;
         function nextChunk() {
             if (y0 >= dims.h) return Promise.resolve(blobs);
-            var ch = Math.min(stepH, dims.h - y0);
-            var capturePromise = sajuxIsMobileDevice()
-                ? sajuxHtml2canvasClipChunk(host, target, scale, y0, ch, dims.w, perChunk)
-                : sajuxHtml2canvasRegion(target, scale, { w: dims.w, h: ch, y: y0 }, perChunk);
-            return capturePromise.then(function (canvas) {
+            var ch = Math.min(chunkH, dims.h - y0);
+            return sajuxHtml2canvasRegion(target, scale, { w: dims.w, h: ch, y: y0 }, perChunk).then(function (canvas) {
                 return sajuxCanvasToBlob(canvas, mime);
             }).then(function (blob) {
                 if (blob && blob.size > 100) blobs.push(blob);
@@ -6995,9 +6995,9 @@ function sajuxRunReportImageCapture(root) {
         /* 슬라이스마다 16ms 숨 틔워 게이지 렌더 + 모바일 JS 스레드 해제 */
         setTimeout(startCapture, 16);
         function startCapture() {
-        var sliceTimeout = sajuxIsMobileDevice() ? 28000 : 30000;
+        var sliceTimeout = sajuxIsMobileDevice() ? 90000 : 30000;
         var timedOut = false;
-        var timer = setTimeout(function () { timedOut = true; advance(); }, sliceTimeout * 5);
+        var timer = setTimeout(function () { timedOut = true; advance(); }, sliceTimeout * 3);
         var settled = false;
         function advance() {
             if (settled) return;
