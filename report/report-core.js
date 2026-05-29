@@ -5142,7 +5142,7 @@ function sajuxCaptureDestLabel(mode) {
 }
 function sajuxEnsureCaptureOverlayVisible(el) {
     if (!el) return;
-    el.style.cssText = 'position:fixed;inset:0;z-index:2147483647;background:rgba(0,0,0,0.78);display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;visibility:visible;opacity:1;pointer-events:auto;';
+    el.style.cssText = 'position:fixed;inset:0;z-index:2147483647;background:rgba(0,0,0,0.82);display:flex;align-items:flex-start;justify-content:center;padding:0;box-sizing:border-box;visibility:visible;opacity:1;pointer-events:auto;overflow-y:auto;-webkit-overflow-scrolling:touch;';
 }
 function sajuxStartCaptureProgress(total, destMode) {
     sajuxStopCaptureCountdown();
@@ -5155,7 +5155,7 @@ function sajuxStartCaptureProgress(total, destMode) {
     }
     sajuxEnsureCaptureOverlayVisible(el);
     el.innerHTML = ''
-        + '<div class="sajux-capture-overlay-inner" style="width:min(320px,88vw);text-align:center;font-family:\'Noto Sans KR\',sans-serif;color:#f5f0e6;">'
+        + '<div class="sajux-capture-overlay-inner" style="width:min(320px,92vw);text-align:center;font-family:\'Noto Sans KR\',sans-serif;color:#f5f0e6;margin:auto;padding:32px 20px;">'
         + '<div style="font-size:15px;font-weight:600;">사주 저장 중</div>'
         + '<div style="width:100%;height:10px;background:rgba(255,255,255,0.12);border-radius:999px;margin:22px 0 12px;overflow:hidden;">'
         + '<div id="sajux-cap-gauge-fill" style="width:0%;height:100%;background:linear-gradient(90deg,#8a6f3c,#c7a76a);border-radius:999px;transition:width 0.35s ease;"></div></div>'
@@ -5266,6 +5266,11 @@ function sajuxIsIosInAppBrowser() {
     var ua = navigator.userAgent || '';
     return /(KAKAOTALK|KAKAO|Instagram|FBAN|FBAV|Line\/|Twitter|NAVER|Snapchat)/i.test(ua);
 }
+function sajuxIsAndroidInAppBrowser() {
+    if (!sajuxIsAndroidDevice()) return false;
+    var ua = navigator.userAgent || '';
+    return /(KAKAOTALK|KAKAO|Instagram|FBAN|FBAV|Line\/|Twitter|NAVER|Snapchat)/i.test(ua);
+}
 function sajuxShowIosZipLinkFallback(url, filename) {
     var inApp = sajuxIsIosInAppBrowser();
     var msg = inApp
@@ -5319,7 +5324,7 @@ function sajuxShowCaptureOverlay(message, opts) {
     if (!el) {
         el = document.createElement('div');
         el.id = id;
-        el.innerHTML = '<div class="sajux-capture-overlay-inner" style="max-width:340px;text-align:center;font-family:\'Noto Sans KR\',sans-serif;color:#f5f0e6;font-size:14px;line-height:1.75;white-space:pre-line;"></div>';
+        el.innerHTML = '<div class="sajux-capture-overlay-inner" style="width:min(320px,92vw);text-align:center;font-family:\'Noto Sans KR\',sans-serif;color:#f5f0e6;font-size:14px;line-height:1.75;white-space:pre-line;margin:auto;padding:32px 20px;"></div>';
         document.body.appendChild(el);
     }
     if (el.parentNode !== document.body) document.body.appendChild(el);
@@ -6430,82 +6435,82 @@ function sajuxOfferZipDownload(zipBlob, filename, extraMsg, captures) {
     }
     if (mobileDevice) {
         if (ios && sajuxIsIosInAppBrowser()) {
-            msg = '⚠️ 앱 안 브라우저에서는 ZIP 저장이 막혀 있습니다.\n\nSafari에서 sajux.com 을 연 뒤\n다시 「사주 저장」을 눌러 주세요.';
-            buttons.push({ label: '닫기', primary: true, onClick: function () { sajuxHideCaptureOverlay(); sajuxClearPendingZip(); } });
+            /* 카카오·인스타 등 앱 안 브라우저 → Safari로 유도 */
+            msg = '⚠️ 지금 앱 안 브라우저에서 열려 있어요.\n\nSafari에서 sajux.com을 열고\n다시 「사주 저장」을 눌러 주세요.';
+            buttons.push({ label: '확인', primary: true, onClick: function () { sajuxHideCaptureOverlay(); sajuxClearPendingZip(); } });
         } else if (android) {
+            /* Android: 직접 다운로드가 가장 안정적 (Chrome에선 항상 작동) */
+            msg = '✅ 저장 준비 완료!\n\n아래 버튼을 눌러 다운로드하세요.';
+            msg += (extraMsg || '');
             buttons.push({
-                label: '📂 폴더에 저장',
+                label: '📥 ZIP 다운로드',
                 primary: true,
-                onClick: function () { sajuxSaveZipOnMobile(zipBlob, filename, url, onMobileSave); }
-            });
-            buttons.push({
-                label: '📤 다른 앱으로 보내기',
-                primary: false,
                 onClick: function () {
-                    sajuxShareOrDownloadZip(zipBlob, filename, url, onMobileSave);
-                }
-            });
-            buttons.push({
-                label: '📥 다운로드',
-                primary: false,
-                onClick: function () {
-                    if (sajuxTriggerZipDownload(url, filename)) onMobileSave('download');
-                    else alert('다운로드가 막혔습니다.\nChrome 브라우저에서 다시 시도해 주세요.');
+                    if (sajuxTriggerZipDownload(url, filename)) {
+                        showSavedNote('✅ 다운로드 시작!\n\n「내 파일」→ 다운로드 폴더에서 확인해 주세요.\n\n안 됐으면 Chrome 브라우저로 다시 시도해 주세요.');
+                    } else if (sajuxIsAndroidInAppBrowser()) {
+                        sajuxShowCaptureOverlay('Chrome 브라우저에서 열어야 저장할 수 있어요.\n\n주소창 우측 ⋮ → \"Chrome으로 열기\"', {
+                            buttons: [{ label: '확인', primary: true, onClick: function () { sajuxHideCaptureOverlay(); sajuxClearPendingZip(); } }]
+                        });
+                    } else {
+                        sajuxShareZipFiles(zipBlob, filename, function (mode) {
+                            if (mode === 'shared') showSavedNote('✅ 저장 완료!');
+                            else alert('저장 창이 열리지 않았습니다.\nChrome 브라우저에서 다시 시도해 주세요.');
+                        });
+                    }
                 }
             });
         } else if (ios) {
-            buttons.push({
-                label: '📤 파일 앱에 저장',
-                primary: true,
-                onClick: function () {
-                    sajuxShareZipFiles(zipBlob, filename, function (mode) {
-                        if (mode === 'shared') {
-                            showSavedNote('✅ 저장 완료!\n\n파일 앱에서 ZIP을 확인해 주세요.');
-                        } else if (mode === 'cancel') {
-                            /* 사용자 취소 */
-                        } else {
-                            sajuxShowIosZipLinkFallback(url, filename);
-                        }
-                    });
-                }
-            });
+            /* iOS Safari: 이미지 공유(가장 신뢰성 높음) → ZIP 공유 → ZIP 링크 순 */
+            msg = '✅ 저장 준비 완료!';
+            msg += (extraMsg || '');
             if (captures && captures.length) {
                 buttons.push({
-                    label: '📷 사진으로 저장',
-                    primary: false,
+                    label: '📷 사진 앱에 저장',
+                    primary: true,
                     onClick: function () {
                         sajuxShareCaptureFilesDirect(captures, function (mode) {
-                            if (mode === 'shared') {
-                                showSavedNote('✅ 저장 완료!\n\n사진 앱에서 확인해 주세요.');
-                            } else if (mode === 'partial') {
-                                showSavedNote('✅ 사진 ' + Math.min(10, captures.length) + '장 저장됐어요.\n\n나머지는 「파일 앱에 저장」(ZIP)으로 받아 주세요.');
-                            } else if (mode === 'cancel') {
-                                /* 사용자 취소 */
-                            } else {
-                                alert('사진 공유창이 열리지 않았습니다.\n「파일 앱에 저장」 또는 「ZIP 열기」를 눌러 주세요.');
+                            if (mode === 'shared' || mode === 'partial') {
+                                var note = mode === 'partial'
+                                    ? '✅ 앞 ' + Math.min(10, captures.length) + '장 사진 앱에 저장됐어요.\n\n나머지는 「ZIP 저장」으로 받아 주세요.'
+                                    : '✅ 사진 앱에 저장됐어요!';
+                                showSavedNote(note);
+                            } else if (mode !== 'cancel') {
+                                sajuxShowCaptureOverlay('공유창이 열리지 않았어요.\n\n아래 「ZIP 저장」을 눌러 주세요.', {
+                                    buttons: [
+                                        { label: '📁 ZIP 저장', primary: true, onClick: function () {
+                                            sajuxShareZipFiles(zipBlob, filename, function (m) {
+                                                if (m === 'shared') showSavedNote('✅ 저장 완료!');
+                                                else if (m !== 'cancel') sajuxShowIosZipLinkFallback(url, filename);
+                                            });
+                                        }},
+                                        { label: '닫기', primary: false, onClick: function () { sajuxHideCaptureOverlay(); sajuxClearPendingZip(); } }
+                                    ]
+                                });
                             }
                         });
                     }
                 });
             }
             buttons.push({
-                label: '📥 ZIP 열기',
-                primary: false,
-                href: url,
-                target: '_blank'
+                label: captures && captures.length ? '📁 ZIP으로 저장' : '📤 파일 앱에 저장',
+                primary: !(captures && captures.length),
+                onClick: function () {
+                    sajuxShareZipFiles(zipBlob, filename, function (mode) {
+                        if (mode === 'shared') {
+                            showSavedNote('✅ 저장 완료!\n\n파일 앱 → 다운로드에서 확인해 주세요.');
+                        } else if (mode !== 'cancel') {
+                            sajuxShowIosZipLinkFallback(url, filename);
+                        }
+                    });
+                }
             });
+            buttons.push({ label: '📥 ZIP 링크 열기', primary: false, href: url, target: '_blank' });
         } else {
             buttons.push({
                 label: '📤 저장하기',
                 primary: true,
                 onClick: function () { sajuxShareOrDownloadZip(zipBlob, filename, url, onMobileSave); }
-            });
-            buttons.push({
-                label: '📥 다운로드',
-                primary: false,
-                onClick: function () {
-                    if (sajuxTriggerZipDownload(url, filename)) onMobileSave('download');
-                }
             });
         }
     } else {
@@ -6719,11 +6724,12 @@ function sajuxRunReportImageCapture(root) {
         }
         var captureTarget = (captureHost && captureHost.firstChild) ? captureHost.firstChild : el;
         sajuxPrepareSliceForCapture(captureTarget);
-        startCapture();
+        /* 슬라이스마다 16ms 숨 틔워 게이지 렌더 + 모바일 JS 스레드 해제 */
+        setTimeout(startCapture, 16);
         function startCapture() {
         var dims = sajuxMeasureCaptureTarget(captureTarget);
         var sliceScale = sajuxCalcSliceCaptureScale(captureTarget);
-        var sliceTimeout = sajuxIsIosDevice() ? 28000 : 35000;
+        var sliceTimeout = sajuxIsIosDevice() ? 25000 : 30000;
         function attempt(scale) {
             var timedOut = false;
             var timer = setTimeout(function () { timedOut = true; advance(); }, sliceTimeout);
@@ -6733,17 +6739,13 @@ function sajuxRunReportImageCapture(root) {
                 settled = true;
                 clearTimeout(timer);
                 idx += 1;
-                captureNext();
+                setTimeout(captureNext, 16);
             }
             function sliceDone() {
                 settled = true;
                 clearTimeout(timer);
                 idx += 1;
-                if (sajuxIsIosDevice() && typeof requestAnimationFrame === 'function') {
-                    requestAnimationFrame(captureNext);
-                } else {
-                    captureNext();
-                }
+                setTimeout(captureNext, 16);
             }
             html2canvas(captureTarget, {
                 backgroundColor: '#050508',
