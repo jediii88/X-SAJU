@@ -5166,8 +5166,14 @@ function sajuxCaptureHostWidthPx() {
 function sajuxStyleCaptureHost(host) {
     if (!host) return host;
     var w = sajuxCaptureHostWidthPx();
-    host.style.cssText = 'position:fixed;left:-12000px;top:0;width:' + w + 'px;max-width:' + w + 'px;z-index:-1;opacity:1;visibility:visible;pointer-events:none;overflow:visible;background:#050508;';
+    host.style.cssText = 'position:fixed;left:0;top:0;width:' + w + 'px;max-width:' + w + 'px;z-index:100049;opacity:0.02;visibility:visible;pointer-events:none;overflow:visible;background:#050508;';
     return host;
+}
+function sajuxIsCaptureableEl(el) {
+    if (!el || el.nodeType !== 1) return false;
+    var st = window.getComputedStyle(el);
+    if (st.display === 'none' || st.visibility === 'hidden') return false;
+    return (el.offsetHeight > 4 || el.scrollHeight > 4 || el.getBoundingClientRect().height > 4);
 }
 function sajuxEnsureCaptureHost() {
     var host = document.getElementById('sajux-capture-host');
@@ -5703,19 +5709,24 @@ function sajuxOnCaptureClone(doc) {
     if (!doc.getElementById('sajux-capture-clone-style')) {
         var st = doc.createElement('style');
         st.id = 'sajux-capture-clone-style';
-        st.textContent = '#report-container,#sec-report-full{overflow:visible!important;max-height:none!important;height:auto!important;}'
+        st.textContent = '#report-container,#sec-report-full,#main-content{overflow:visible!important;max-height:none!important;height:auto!important;background:#050508!important;}'
             + '.cover-page,#sec-cover,#sec-client-cover{min-height:auto!important;height:auto!important;padding:24px 16px!important;}'
             + '.sajux-logo-cover-screen,.sajux-logo.dark{display:none!important;}'
+            + '.sajux-logo-cover-print,.sajux-logo.light{display:block!important;visibility:visible!important;opacity:1!important;}'
             + 'img.sajux-logo{max-width:min(280px,78vw)!important;height:auto!important;}'
-            + '.sajux-glass-heavy,.report-chapter,.card,.glass-panel,.badge,.tag,.jijanggan,.module-item,.yearly-card,.monthly-card{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}'
-            + 'body::before{display:none!important;}';
+            + '.sajux-glass-heavy,.report-chapter,.card,.glass-panel,.badge,.tag,.jijanggan,.module-item,.yearly-card,.monthly-card,.inner-card,.detail-box,.rel-panel,.compat-voice-wrap,.person-card,.score-section,.compat-duo-manse-wrap,.f-card,.t-card,.seyun-year-card,.ch-story-card,.vip-module-item,.compat-section-title,.toc-page,.pillar-mini,.breakdown-grid,.duo-grid,.compat-manse-notes,.yearly-card-container,.monthly-card-container,.fortune-scroll,.seyun-premium-vertical,.module-box,.analysis-card,.compat-share-cta{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}'
+            + '.card,.yearly-card,.monthly-card,.glass-panel,.report-chapter,.module-item,.inner-card,.detail-box,.rel-panel,.person-card,.score-section,.compat-duo-manse-wrap,.f-card,.t-card,.seyun-year-card,.ch-story-card,.vip-module-item,.module-box,.analysis-card,.fortune-scroll>div,.yearly-card-container>div,.monthly-card-container>div{background:rgba(14,14,20,0.96)!important;background-color:rgba(14,14,20,0.96)!important;}'
+            + '.badge,.tag,.jijanggan,.sp-badge,.rel-badge,.compat-person-tag{background:rgba(32,32,42,0.92)!important;color:inherit!important;}'
+            + 'body::before{display:none!important;}'
+            + '*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}';
         doc.head.appendChild(st);
     }
-    var cloneRoot = doc.getElementById('report-container') || doc.getElementById('sec-report-full');
+    var cloneRoot = doc.getElementById('report-container') || doc.getElementById('sec-report-full') || doc.getElementById('main-content');
     if (cloneRoot) {
         cloneRoot.style.overflow = 'visible';
         cloneRoot.style.maxHeight = 'none';
         cloneRoot.style.height = 'auto';
+        cloneRoot.style.background = '#050508';
     }
 }
 function sajuxHideForCapture() {
@@ -5879,7 +5890,7 @@ function sajuxOfferCaptureDownload(captures, baseName, onDone) {
 
     if (sajuxIsMobileCapture() && files.length && files.length <= 10 && sajuxCanShareCaptureFiles(files)) {
         sajuxShowCaptureOverlay(
-            sajuxCaptureSaveHint('share', zipName),
+            '✅ 사진 준비 완료!\n\n' + sajuxCaptureSaveHint('share', zipName),
             {
                 buttons: [
                     {
@@ -5910,6 +5921,14 @@ function sajuxOfferCaptureDownload(captures, baseName, onDone) {
                                 alert('ZIP 저장에 실패했습니다. 새로고침 후 다시 시도해 주세요.');
                                 finishDone();
                             });
+                        }
+                    },
+                    {
+                        label: '닫기',
+                        primary: false,
+                        onClick: function () {
+                            sajuxHideCaptureOverlay();
+                            finishDone();
                         }
                     }
                 ]
@@ -6031,14 +6050,19 @@ function sajuxRunReportImageCapture(root) {
         function runSliceCapture(attempt) {
             var resolved = sajuxResolveCaptureTarget(slice, pack, captureHost);
             var captureTarget = resolved.target;
-            if (!captureTarget || !sajuxIsVisibleEl(captureTarget)) {
-                return sajuxLiteCardBlobFromSlice(slice).then(pushCaptureBlob).catch(function () {
-                    idx += 1;
-                    setTimeout(captureNext, sliceDelay);
-                });
+            if (!captureTarget || !sajuxIsCaptureableEl(captureTarget)) {
+                if (attempt < 2 && captureHost && slice.el) {
+                    setTimeout(function () { runSliceCapture(attempt + 1); }, 120);
+                    return;
+                }
+                console.warn('[sajux] slice skip (no target)', idx + 1, fileBase);
+                idx += 1;
+                setTimeout(captureNext, sliceDelay);
+                return;
             }
             var sliceScale = sajuxCalcSliceCaptureScale(captureTarget);
-            var scaleUse = sliceScale * (attempt > 1 ? 0.55 : (attempt > 0 ? 0.78 : 1));
+            var scaleFactors = [1, 0.82, 0.65, 0.5];
+            var scaleUse = sliceScale * (scaleFactors[attempt] || 0.45);
             var h2cOpts = {
                 backgroundColor: '#050508',
                 scale: scaleUse,
@@ -6051,6 +6075,31 @@ function sajuxRunReportImageCapture(root) {
                 onclone: sajuxOnCaptureClone
             };
             if (overlayEl) overlayEl.style.visibility = 'hidden';
+            function doneCapture(blob) {
+                if (overlayEl) overlayEl.style.visibility = '';
+                pushCaptureBlob(blob);
+            }
+            function failCapture(err) {
+                if (overlayEl) overlayEl.style.visibility = '';
+                if (attempt < 3) {
+                    setTimeout(function () { runSliceCapture(attempt + 1); }, 100);
+                    return;
+                }
+                if (attempt === 3) {
+                    sajuxHtmlToImageCanvasPromise(captureTarget, scaleUse).then(function (canvas) {
+                        if (!sajuxValidateCaptureCanvas(canvas)) return Promise.reject(new Error('blank canvas hti'));
+                        return sajuxCanvasToBlob(canvas, 'image/png');
+                    }).then(doneCapture).catch(function (htiErr) {
+                        console.warn('[sajux] slice design capture failed', idx + 1, fileBase, err, htiErr);
+                        idx += 1;
+                        setTimeout(captureNext, sliceDelay);
+                    });
+                    return;
+                }
+                console.warn('[sajux] slice skip', idx + 1, fileBase, err);
+                idx += 1;
+                setTimeout(captureNext, sliceDelay);
+            }
             sajuxWaitImagesInRoot(captureTarget).then(function () {
                 return sajuxWaitCaptureLayout();
             }).then(function () {
@@ -6060,21 +6109,7 @@ function sajuxRunReportImageCapture(root) {
                     return Promise.reject(new Error('blank canvas'));
                 }
                 return sajuxCanvasToBlob(canvas, 'image/png');
-            }).then(function (blob) {
-                if (overlayEl) overlayEl.style.visibility = '';
-                pushCaptureBlob(blob);
-            }).catch(function (err) {
-                if (overlayEl) overlayEl.style.visibility = '';
-                if (attempt < 1) {
-                    setTimeout(function () { runSliceCapture(attempt + 1); }, 80);
-                    return;
-                }
-                return sajuxLiteCardBlobFromSlice(slice).then(pushCaptureBlob).catch(function (liteErr) {
-                    console.warn('[sajux] slice capture skip', idx + 1, fileBase, err, liteErr);
-                    idx += 1;
-                    setTimeout(captureNext, sliceDelay);
-                });
-            });
+            }).then(doneCapture).catch(failCapture);
         }
         if (typeof requestAnimationFrame === 'function') {
             requestAnimationFrame(function () { setTimeout(function () { runSliceCapture(0); }, 32); });
