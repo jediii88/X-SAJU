@@ -12,7 +12,11 @@
   --accent-rgb: 139,105,20;
 }
 
-html,body{font-family:'Noto Sans KR',sans-serif;color:var(--text);background:var(--bg);}
+html{font-size:16px;}
+@media screen and (max-width:900px){
+  html{font-size:18px;}
+}
+html,body{font-family:'Noto Sans KR',sans-serif;color:var(--text);background:var(--bg);line-height:1.72;}
 
 /* Dark-mode card tone (reduced brightness to avoid eye strain) */
 .report-chapter,
