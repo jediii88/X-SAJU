@@ -5073,6 +5073,11 @@ function sajuxPreloadCaptureLibs() {
         ensureJsZipLoaded(function () {});
     } catch (e) {}
 }
+function sajuxCaptureProgressMsg(head, detail) {
+    var s = head || '사주 저장 중…';
+    if (detail) s += '\n' + detail;
+    return s + '\n\n잠시만 기다려 주세요.\n화면을 건드리지 말고 그대로 두시면 됩니다.';
+}
 function sajuxShowCaptureOverlay(message, opts) {
     opts = opts || {};
     var id = 'sajux-capture-overlay';
@@ -5085,15 +5090,39 @@ function sajuxShowCaptureOverlay(message, opts) {
         document.body.appendChild(el);
     }
     var inner = el.querySelector('.sajux-capture-overlay-inner') || el.querySelector('div');
-    inner.textContent = message || '사주 다운로드 준비 중…';
-    var oldBtn = el.querySelector('.sajux-capture-download-btn');
-    if (oldBtn) oldBtn.remove();
-    if (opts.downloadUrl && opts.filename) {
+    inner.textContent = message || sajuxCaptureProgressMsg('사주 저장 준비 중…');
+    el.querySelectorAll('.sajux-capture-download-btn').forEach(function (b) { b.remove(); });
+    var btnBase = 'display:block;margin:18px auto 0;padding:14px 22px;border:none;border-radius:999px;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;width:100%;max-width:280px;';
+    if (opts.buttons && opts.buttons.length) {
+        opts.buttons.forEach(function (def, i) {
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'sajux-capture-download-btn';
+            btn.textContent = def.label || '확인';
+            var marginTop = i === 0 ? '18px' : '10px';
+            var bg = def.primary !== false
+                ? 'linear-gradient(165deg,#c7a76a,#8a6f3c);color:#111;'
+                : 'rgba(255,255,255,0.1);color:#f5f0e6;border:1px solid rgba(255,255,255,0.22);';
+            btn.style.cssText = btnBase + 'margin-top:' + marginTop + ';background:' + (def.primary !== false ? '' : '') + bg;
+            if (def.primary !== false) {
+                btn.style.background = 'linear-gradient(165deg,#c7a76a,#8a6f3c)';
+                btn.style.color = '#111';
+            } else {
+                btn.style.background = 'rgba(255,255,255,0.1)';
+                btn.style.color = '#f5f0e6';
+                btn.style.border = '1px solid rgba(255,255,255,0.22)';
+            }
+            if (typeof def.onClick === 'function') {
+                btn.addEventListener('click', def.onClick);
+            }
+            inner.appendChild(btn);
+        });
+    } else if (opts.downloadUrl && opts.filename) {
         var btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'sajux-capture-download-btn';
         btn.textContent = opts.buttonLabel || 'ZIP 파일 저장';
-        btn.style.cssText = 'display:block;margin:18px auto 0;padding:14px 22px;border:none;border-radius:999px;background:linear-gradient(165deg,#c7a76a,#8a6f3c);color:#111;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;';
+        btn.style.cssText = btnBase + 'background:linear-gradient(165deg,#c7a76a,#8a6f3c);color:#111;';
         btn.addEventListener('click', function () {
             sajuxDownloadBlob(opts.downloadUrl, opts.filename);
         });
@@ -5674,14 +5703,114 @@ function sajuxRevokeCaptureObjectUrl(url) {
 function sajuxOfferZipDownload(zipBlob, filename) {
     var url = URL.createObjectURL(zipBlob);
     var autoOk = sajuxDownloadBlob(url, filename);
+    var mobile = sajuxIsMobileCapture();
     sajuxShowCaptureOverlay(
         (autoOk
-            ? '다운로드가 시작됐어요.\n파일이 안 보이면 아래 버튼을 눌러 주세요.'
-            : '브라우저가 자동 저장을 막았을 수 있어요.\n아래 「ZIP 파일 저장」 버튼을 눌러 주세요.'),
-        { downloadUrl: url, filename: filename, buttonLabel: 'ZIP 파일 저장' }
+            ? (mobile
+                ? 'ZIP 저장이 시작됐어요.\n「다운로드」·「내 파일」 폴더를 확인해 주세요.\n압축을 푼 뒤 PNG를 사진 앱에 옮기실 수 있어요.'
+                : '다운로드가 시작됐어요.\n파일이 안 보이면 아래 버튼을 눌러 주세요.')
+            : (mobile
+                ? '아래 「ZIP 받기」를 눌러 주세요.\n저장 위치는 기기의 「다운로드」·「파일」 앱입니다.'
+                : '브라우저가 자동 저장을 막았을 수 있어요.\n아래 「ZIP 받기」 버튼을 눌러 주세요.')),
+        { downloadUrl: url, filename: filename, buttonLabel: 'ZIP 받기' }
     );
     sajuxRevokeCaptureObjectUrl(url);
-    setTimeout(sajuxHideCaptureOverlay, 8000);
+    setTimeout(sajuxHideCaptureOverlay, 12000);
+}
+function sajuxCaptureFilesFromItems(captures) {
+    return (captures || []).map(function (item) {
+        return new File([item.blob], item.name + '.png', { type: 'image/png', lastModified: Date.now() });
+    });
+}
+function sajuxCanShareCaptureFiles(files) {
+    if (!files || !files.length || typeof navigator === 'undefined' || typeof navigator.share !== 'function') return false;
+    try {
+        if (typeof navigator.canShare === 'function') return navigator.canShare({ files: files });
+        return files.length <= 10;
+    } catch (e) {
+        return false;
+    }
+}
+function sajuxBuildCaptureZipBlob(captures, baseName) {
+    var zip = new JSZip();
+    var folder = zip.folder(baseName) || zip;
+    var readMe = window.__compatCtx
+        ? '사주X 궁합 리포트 다운로드 파일입니다.\n'
+            + '압축을 푼 뒤, 파일명 앞 숫자(01, 02…) 순서대로 보시면 화면 흐름과 같습니다.\n'
+        : '사주X 리포트 다운로드 파일입니다.\n'
+            + '압축을 푼 뒤, 파일명 앞 숫자(01, 02…) 순서대로 보시면 목차 절 순서와 같습니다.\n';
+    folder.file('00-읽는법.txt', readMe + '총 ' + captures.length + '장 · ' + baseName + '\n');
+    captures.forEach(function (item) {
+        folder.file(item.name + '.png', item.blob);
+    });
+    return zip.generateAsync({
+        type: 'blob',
+        compression: 'DEFLATE',
+        compressionOptions: { level: sajuxIsMobileCapture() ? 1 : 6 }
+    });
+}
+function sajuxOfferCaptureDownload(captures, baseName, onDone) {
+    var files = sajuxCaptureFilesFromItems(captures);
+    var zipName = sajuxBuildZipFilename(window.globalSajuData || null);
+
+    function finishDone() {
+        if (typeof onDone === 'function') onDone();
+    }
+
+    function deliverZip() {
+        sajuxShowCaptureOverlay(sajuxCaptureProgressMsg('ZIP 파일을 만드는 중이에요.', '잠시만 기다려 주세요.'));
+        return sajuxBuildCaptureZipBlob(captures, baseName).then(function (zipBlob) {
+            sajuxOfferZipDownload(zipBlob, zipName);
+            finishDone();
+        });
+    }
+
+    if (sajuxIsMobileCapture() && files.length && sajuxCanShareCaptureFiles(files)) {
+        sajuxShowCaptureOverlay(
+            '사진 저장이 끝났어요.\n\n'
+                + '아래 「사진 앨범에 저장」을 누르신 뒤\n'
+                + '「이미지 저장」 또는 「사진에 저장」을 선택해 주세요.\n'
+                + '(아이폰·안드로이드 모두 사진·갤러리 앱으로 들어갑니다)\n\n'
+                + 'ZIP이 필요하시면 「ZIP으로 받기」를 눌러 주세요.',
+            {
+                buttons: [
+                    {
+                        label: '사진 앨범에 저장',
+                        primary: true,
+                        onClick: function () {
+                            navigator.share({ files: files, title: '사주X · ' + baseName })
+                                .then(function () {
+                                    sajuxHideCaptureOverlay();
+                                    finishDone();
+                                })
+                                .catch(function (err) {
+                                    if (err && err.name === 'AbortError') return;
+                                    deliverZip().catch(function (zipErr) {
+                                        console.error('sajuxOfferCaptureDownload zip fallback', zipErr);
+                                        alert('사진 저장에 실패했습니다. ZIP 받기를 다시 시도해 주세요.');
+                                        finishDone();
+                                    });
+                                });
+                        }
+                    },
+                    {
+                        label: 'ZIP으로 받기',
+                        primary: false,
+                        onClick: function () {
+                            deliverZip().catch(function (zipErr) {
+                                console.error('sajuxOfferCaptureDownload zip', zipErr);
+                                alert('ZIP 저장에 실패했습니다. 새로고침 후 다시 시도해 주세요.');
+                                finishDone();
+                            });
+                        }
+                    }
+                ]
+            }
+        );
+        return Promise.resolve();
+    }
+
+    return deliverZip();
 }
 function sajuxBuildCaptureBaseName(data) {
     var ctx = window.__compatCtx;
@@ -5720,7 +5849,7 @@ function sajuxRunReportImageCapture(root) {
     var starStash = sajuxDetachStarCanvas();
     var hidden = sajuxHideForCapture();
     var fab = document.getElementById('sajux-image-fab');
-    if (fab) { fab.disabled = true; fab.textContent = '저장 중…'; }
+    if (fab) { fab.disabled = true; fab.textContent = '잠시만 기다려 주세요…'; }
     var pack = sajuxCollectCaptureSlices(root);
     var slices = pack.slices;
     var captureHost = pack.host;
@@ -5741,27 +5870,10 @@ function sajuxRunReportImageCapture(root) {
     var idx = 0;
     var total = slices.length;
     var baseName = sajuxBuildCaptureBaseName(window.globalSajuData || null);
-    sajuxShowCaptureOverlay('다운로드 준비 중…\n총 ' + total + '장');
-
-    function finishOk() {
-        var zip = new JSZip();
-        var folder = zip.folder(baseName) || zip;
-        var readMe = window.__compatCtx
-            ? '사주X 궁합 리포트 다운로드 파일입니다.\n'
-                + '압축을 푼 뒤, 파일명 앞 숫자(01, 02…) 순서대로 보시면 화면 흐름과 같습니다.\n'
-            : '사주X 리포트 다운로드 파일입니다.\n'
-                + '압축을 푼 뒤, 파일명 앞 숫자(01, 02…) 순서대로 보시면 목차 절 순서와 같습니다.\n';
-        folder.file('00-읽는법.txt', readMe + '총 ' + captures.length + '장 · ' + baseName + '\n');
-        captures.forEach(function (item) {
-            folder.file(item.name + '.png', item.blob);
-        });
-        sajuxShowCaptureOverlay('사주 다운로드 파일 만드는 중…\n거의 다 됐어요.');
-        return zip.generateAsync({
-            type: 'blob',
-            compression: 'DEFLATE',
-            compressionOptions: { level: sajuxIsMobileCapture() ? 1 : 6 }
-        });
-    }
+    sajuxShowCaptureOverlay(sajuxCaptureProgressMsg(
+        sajuxIsMobileCapture() ? '사진으로 저장을 시작할게요.' : '사주 저장을 시작할게요.',
+        '총 ' + total + '장'
+    ));
     function finishErr(err) {
         console.error('sajuxCaptureReportAsImage', err);
         alert('사주 다운로드에 실패했습니다. Chrome·Safari 최신 버전에서 다시 시도해 주세요.\n(' + (err && err.message ? err.message : err) + ')');
@@ -5784,11 +5896,7 @@ function sajuxRunReportImageCapture(root) {
                 cleanup();
                 return;
             }
-            finishOk().then(function (zipBlob) {
-                var zipName = sajuxBuildZipFilename(window.globalSajuData || null);
-                sajuxOfferZipDownload(zipBlob, zipName);
-                cleanup();
-            }).catch(function (err) {
+            sajuxOfferCaptureDownload(captures, baseName, cleanup).catch(function (err) {
                 finishErr(err);
                 cleanup();
             });
@@ -5796,7 +5904,10 @@ function sajuxRunReportImageCapture(root) {
         }
         var slice = slices[idx];
         var fileBase = sajuxSliceCaptureLabel(slice, idx + 1);
-        var overlayMsg = '사주 다운로드 중… (' + (idx + 1) + '/' + total + ')\n' + (slice.jul || '') + ' ' + (slice.title || '');
+        var overlayMsg = sajuxCaptureProgressMsg(
+            '사진 저장 중… (' + (idx + 1) + '/' + total + ')',
+            (slice.jul || '') + ' ' + (slice.title || '')
+        );
         sajuxShowCaptureOverlay(overlayMsg);
         var overlayEl = document.getElementById('sajux-capture-overlay');
         var sliceDelay = sajuxIsMobileCapture() ? 64 : 48;
