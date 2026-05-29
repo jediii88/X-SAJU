@@ -5773,6 +5773,14 @@ function sajuxPushCaptureSlice(slices, container, startNode, endNode, headEl) {
     }
     var wrap = sajuxWrapDomRange(container, startNode, endNode, { jul: jul, title: title });
     if (!wrap) return;
+    /* 절 범위에 딸려 들어온 부 헤더(다음 부 제목 카드)를 제거 — sajuxAttachPartBanners가
+       각 부의 첫 절에만 정확히 다시 붙인다. (이전 절 끝에 다음 부 헤더가 중복되는 문제 해결) */
+    if (wrap.querySelectorAll) {
+        var strayHdrs = wrap.querySelectorAll('.part-header-block');
+        for (var ph = 0; ph < strayHdrs.length; ph++) {
+            if (strayHdrs[ph].parentNode) strayHdrs[ph].parentNode.removeChild(strayHdrs[ph]);
+        }
+    }
     /* 모바일: 절을 절대 쪼개지 않는다(쪼개기 과정에서 내용 누락 발생). 절은 통째로 한 슬라이스.
        8장 병합 후 큰 그룹은 캡처 단계의 청킹이 누락 없이 처리. */
     var maxSlicePx = sajuxIsMobileDevice() ? 999999 : 6800;
