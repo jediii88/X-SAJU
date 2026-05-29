@@ -5845,9 +5845,9 @@ function sajuxEnsureCaptureFonts() {
         document.fonts.load('400 32px "Jeongseon Arirang Ppuri"'),
         document.fonts.load('400 32px "Nanum Brush Script"')
     ];
-    return Promise.all(loads).catch(function () {}).then(function () {
-        return document.fonts.ready || Promise.resolve();
-    });
+    /* 폰트 대기 최대 1.5초 — 이미 로드됐으면 즉시 통과 */
+    var timeout = new Promise(function (res) { setTimeout(res, 1500); });
+    return Promise.race([Promise.all(loads).catch(function () {}), timeout]);
 }
 function sajuxCaptureTypographyCss() {
     return ''
@@ -5859,18 +5859,21 @@ function sajuxCaptureTypographyCss() {
         + '.part-header-sub{font-size:12.5px!important;color:rgba(255,255,255,0.52)!important;letter-spacing:0.04em!important;line-height:1.55!important;}';
 }
 function sajuxCalcSliceCaptureScale(el) {
-    var maxDim = sajuxIsIosDevice() ? 8192 : 16384;
-    var prefer = sajuxIsIosDevice() ? 1 : 1.5;
+    /* 모바일은 scale 1.0 고정 — PNG→JPEG 전환과 합쳐서 속도 최대화 */
+    if (sajuxIsMobileDevice()) return 1;
+    var maxDim = 16384;
+    var prefer = 1.5;
     if (!el) return prefer;
     var w = Math.max(el.offsetWidth || 0, el.scrollWidth || 0, SAJUX_CAPTURE_PAGE_W);
     var h = Math.max(el.offsetHeight || 0, el.scrollHeight || 0, 1);
     return Math.max(1, Math.min(prefer, maxDim / w, maxDim / h));
 }
 function sajuxCaptureImageMime() {
-    return sajuxIsIosDevice() ? 'image/jpeg' : 'image/png';
+    /* 모바일 전체 JPEG — PNG 대비 인코딩 속도 3-5배 빠름 */
+    return sajuxIsMobileDevice() ? 'image/jpeg' : 'image/png';
 }
 function sajuxCaptureImageExt() {
-    return sajuxIsIosDevice() ? '.jpg' : '.png';
+    return sajuxIsMobileDevice() ? '.jpg' : '.png';
 }
 function sajuxCanAutoDownloadBlob() {
     if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent || '')) return false;
@@ -6667,7 +6670,7 @@ function sajuxRunReportImageCapture(root) {
         _sajuxCaptureBusy = false;
     }
     sajuxEnsureCaptureFonts().then(function () {
-        return sajuxWaitImagesInRoot(pack.container || root, sajuxIsIosDevice() ? 2500 : 1200);
+        return sajuxWaitImagesInRoot(pack.container || root, 800);
     }).then(function () {
         captureNext();
     });
@@ -6703,7 +6706,7 @@ function sajuxRunReportImageCapture(root) {
         function startCapture() {
         var dims = sajuxMeasureCaptureTarget(captureTarget);
         var sliceScale = sajuxCalcSliceCaptureScale(captureTarget);
-        var sliceTimeout = sajuxIsIosDevice() ? 25000 : 30000;
+        var sliceTimeout = sajuxIsMobileDevice() ? 20000 : 30000;
         function attempt(scale) {
             var timedOut = false;
             var timer = setTimeout(function () { timedOut = true; advance(); }, sliceTimeout);
