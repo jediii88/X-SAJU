@@ -7151,9 +7151,10 @@ function sajuxRunReportImageCapture(root) {
         /* 슬라이스마다 짧게 숨 틔워 게이지 렌더 + 모바일 JS 스레드 해제 */
         setTimeout(startCapture, sajuxIsMobileDevice() ? 24 : 16);
         function startCapture() {
-        var sliceTimeout = sajuxIsMobileDevice() ? 90000 : 30000;
+        /* 실패한 슬라이스에서 오래 멈추지 않도록 단축 — 실패 시 빨리 포기하고 다음으로 */
+        var sliceTimeout = sajuxIsMobileDevice() ? 30000 : 30000;
         var timedOut = false;
-        var timer = setTimeout(function () { timedOut = true; advance(); }, sliceTimeout * 3);
+        var timer = setTimeout(function () { timedOut = true; advance(); }, Math.round(sliceTimeout * 1.5));
         var settled = false;
         function advance() {
             if (settled) return;
