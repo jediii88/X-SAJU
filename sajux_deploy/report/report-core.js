@@ -5540,13 +5540,115 @@ function sajuxResolveCaptureEnd(container, startHead, endHead) {
 }
 function sajuxMergeCaptureSlicePair(a, b) {
     if (!a || !b || !a.el || !b.el) return a || b;
+    return sajuxMergeCaptureSliceMany([a, b], { jul: a.jul || b.jul, title: a.title || b.title, headEl: a.headEl || b.headEl });
+}
+function sajuxMergeCaptureSliceMany(list, meta) {
+    meta = meta || {};
+    if (!list || !list.length) return null;
+    if (list.length === 1) return list[0];
     var merged = document.createElement('div');
     merged.className = 'sajux-capture-jul-wrap';
     merged.style.cssText = 'background:#050508;box-sizing:border-box;width:100%;padding:0;margin:0;';
-    merged.setAttribute('data-sajux-jul', a.jul || b.jul || '');
-    merged.setAttribute('data-sajux-jul-title', a.title || b.title || '');
-    merged.innerHTML = a.el.innerHTML + b.el.innerHTML;
-    return { el: merged, jul: a.jul || b.jul, title: a.title || b.title, headEl: a.headEl || b.headEl };
+    var jul = meta.jul != null ? meta.jul : (list[0].jul || '');
+    var title = meta.title != null ? meta.title : (list[0].title || '');
+    merged.setAttribute('data-sajux-jul', jul);
+    merged.setAttribute('data-sajux-jul-title', title);
+    for (var i = 0; i < list.length; i++) {
+        if (list[i].el) merged.innerHTML += list[i].el.innerHTML;
+    }
+    return { el: merged, jul: jul, title: title, headEl: meta.headEl || list[0].headEl || null };
+}
+function sajuxGroupMobileMainCaptureSlices(slices) {
+    if (!slices || !slices.length || !sajuxIsMobileDevice()) return slices || [];
+    var cover = [];
+    var part1 = [];
+    var part2Now = [];
+    var part2Future = [];
+    var part3LoveWealth = [];
+    var part3Rest = [];
+    var tail = [];
+    function classifySlice(s) {
+        var jul = String(s.jul || '');
+        if (jul === '표지') return 'cover';
+        if (jul === '목차') return 'skip';
+        if (jul === '보너스' || jul === '별첨') return 'tail';
+        var m = jul.match(/^(\d+)-(\d+)/);
+        if (!m) return 'tail';
+        return { part: parseInt(m[1], 10), sec: parseInt(m[2], 10) };
+    }
+    for (var i = 0; i < slices.length; i++) {
+        var s = slices[i];
+        var cls = classifySlice(s);
+        if (cls === 'cover') { cover.push(s); continue; }
+        if (cls === 'skip') continue;
+        if (cls === 'tail') { tail.push(s); continue; }
+        if (cls.part === 1) part1.push(s);
+        else if (cls.part === 2) {
+            if (cls.sec <= 2) part2Now.push(s);
+            else part2Future.push(s);
+        } else if (cls.part === 3) {
+            if (cls.sec <= 2) part3LoveWealth.push(s);
+            else part3Rest.push(s);
+        } else if (cls.part === 4) tail.push(s);
+        else tail.push(s);
+    }
+    var plan = [
+        { list: cover, jul: '표지', title: '표지' },
+        { list: part1, jul: '1-1', title: '1부 · 나라는 사람' },
+        { list: part2Now, jul: '2-1', title: '지금 운 · 80년 지도' },
+        { list: part2Future, jul: '2-3', title: '앞으로의 대운·세운·월운' },
+        { list: part3LoveWealth, jul: '3-1', title: '애정 · 재물' },
+        { list: part3Rest, jul: '3-3', title: '합격 · 직업 · 건강' },
+        { list: tail, jul: '4-1', title: '개운법 · 마무리' }
+    ];
+    var out = [];
+    plan.forEach(function (g) {
+        if (!g.list.length) return;
+        if (g.list.length === 1) {
+            out.push(g.list[0]);
+            return;
+        }
+        var merged = sajuxMergeCaptureSliceMany(g.list, { jul: g.jul, title: g.title });
+        if (merged) out.push(merged);
+    });
+    return out.length ? out : slices;
+}
+function sajuxGroupMobileCompatCaptureSlices(slices) {
+    if (!slices || !slices.length || !sajuxIsMobileDevice()) return slices || [];
+    var cover = [];
+    var summary = [];
+    var blockA = [];
+    var blockB = [];
+    var blockC = [];
+    var julNums = function (s) {
+        var m = String(s.jul || '').match(/^1-(\d+)/);
+        return m ? parseInt(m[1], 10) : 99;
+    };
+    for (var i = 0; i < slices.length; i++) {
+        var s = slices[i];
+        var jul = String(s.jul || '');
+        if (jul === '표지') { cover.push(s); continue; }
+        if (jul === '요약') { summary.push(s); continue; }
+        var n = julNums(s);
+        if (n <= 4) blockA.push(s);
+        else if (n <= 8) blockB.push(s);
+        else blockC.push(s);
+    }
+    var plan = [
+        { list: cover, jul: '표지', title: '표지' },
+        { list: summary, jul: '요약', title: '두 사람 요약' },
+        { list: blockA, jul: '1-1', title: '궁합 · 총평~부부' },
+        { list: blockB, jul: '1-5', title: '궁합 · 조율~배우자궁' },
+        { list: blockC, jul: '1-9', title: '궁합 · 인연~대운' }
+    ];
+    var out = [];
+    plan.forEach(function (g) {
+        if (!g.list.length) return;
+        if (g.list.length === 1) { out.push(g.list[0]); return; }
+        var merged = sajuxMergeCaptureSliceMany(g.list, { jul: g.jul, title: g.title });
+        if (merged) out.push(merged);
+    });
+    return out.length ? out : slices;
 }
 function sajuxMergeCaptureSlices(slices) {
     if (!slices || !slices.length) return slices || [];
@@ -5714,6 +5816,7 @@ function sajuxCollectCompatCaptureSlices(root) {
     if (!slices.length && sajuxIsVisibleEl(container)) {
         slices.push({ el: container.cloneNode(true), jul: '전체', title: '궁합 리포트' });
     }
+    if (sajuxIsMobileDevice()) slices = sajuxGroupMobileCompatCaptureSlices(slices);
     return { container: container, slices: slices, host: sajuxEnsureCaptureHost() };
 }
 function sajuxCollectCaptureSlices(root) {
@@ -5789,6 +5892,7 @@ function sajuxCollectCaptureSlices(root) {
         slices.push({ el: container, jul: '전체', title: '리포트' });
     }
     slices = sajuxMergeCaptureSlices(slices);
+    if (sajuxIsMobileDevice()) slices = sajuxGroupMobileMainCaptureSlices(slices);
     slices = sajuxAttachPartBanners(slices);
     return { container: container, slices: slices, host: sajuxEnsureCaptureHost() };
 }
