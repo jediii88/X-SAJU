@@ -6992,70 +6992,74 @@ function sajuxCaptureReportAsImage() {
         alert('리포트가 아직 준비되지 않았습니다. 분석이 끝난 뒤 다시 시도해 주세요.');
         return;
     }
-    /* iOS Safari: html2canvas는 큰 캔버스에서 빈 이미지를 반환해 "1장만 저장" 문제가 반복됨.
-       대신 Safari 자체 인쇄→PDF 저장 흐름으로 안내 (디자인·내용 100% 그대로, 즉시, 8페이지 모두 포함). */
-    if (sajuxIsIosDevice()) {
-        _sajuxCaptureBusy = true;
-        sajuxRunIosPrintFlow(root);
-        return;
-    }
+    /* 사주X 저장 — 전 디바이스 PDF 통일.
+       html2canvas 이미지 캡처는 iOS에서 "1장만 저장" 등 구조적 실패가 반복되고,
+       동일한 디자인·내용을 모든 기기에서 안정적으로 받기 위해 브라우저 자체 인쇄→PDF 흐름으로 일원화.
+       (report-print.css의 책 모드 라이트 디자인이 적용된 깨끗한 PDF) */
     _sajuxCaptureBusy = true;
-    sajuxEnsureCaptureLibs(function () {
-        if (typeof html2canvas !== 'function' || typeof JSZip !== 'function') {
-            _sajuxCaptureBusy = false;
-            sajuxHideCaptureOverlay();
-            alert('사주 저장 도구를 불러오지 못했습니다. 새로고침 후 다시 시도해 주세요.');
-            return;
-        }
-        sajuxRunReportImageCapture(root);
-    });
+    sajuxRunPrintPdfFlow(root);
 }
 
-/* iOS 전용: Safari 인쇄→PDF 저장 흐름.
-   화면에 보이는 그대로(report-print.css 적용) Apple 자체 렌더러로 PDF 생성 → 즉시 다운로드.
-   html2canvas 회피 → "1장만 저장" 구조적 차단. */
-function sajuxRunIosPrintFlow(root) {
+/* 모든 디바이스: 브라우저 자체 인쇄 → PDF 저장.
+   디자인·내용 100% 그대로(라이트 책 디자인), 즉시, 페이지 잘림 없음. */
+function sajuxRunPrintPdfFlow(root) {
     var fab = document.getElementById('sajux-image-fab');
     if (fab) { fab.disabled = true; fab.textContent = '저장 준비 중…'; }
 
     function finishUi() {
-        if (fab) { fab.disabled = false; fab.textContent = '📥 사주 저장'; }
+        if (fab) { fab.disabled = false; fab.textContent = '📥 사주 PDF 저장'; }
         _sajuxCaptureBusy = false;
     }
 
-    sajuxShowCaptureOverlay(
-        '아이폰은 Safari 자체 PDF 저장으로 안전하게 받습니다.\n\n' +
-        '1) 「PDF 저장 열기」를 누르면 인쇄 화면이 떠요\n' +
-        '2) 미리보기 썸네일을 두 손가락으로 살짝 펼치세요\n' +
-        '3) 우측 상단 공유(↑) → 「파일에 저장」을 선택\n\n' +
-        '준비되면 아래 버튼을 눌러 주세요.',
-        {
-            buttons: [
-                {
-                    label: 'PDF 저장 열기',
-                    primary: true,
-                    onClick: function () {
-                        sajuxHideCaptureOverlay();
-                        try { window.scrollTo(0, 0); } catch (e0) {}
-                        setTimeout(function () {
-                            try { window.print(); } catch (ePrint) {
-                                alert('인쇄 화면을 열지 못했습니다. Safari 메뉴(공유 ↑) → 인쇄 → 미리보기 핀치줌으로 PDF 저장을 시도해 주세요.');
-                            }
-                            setTimeout(finishUi, 600);
-                        }, 50);
-                    }
-                },
-                {
-                    label: '취소',
-                    primary: false,
-                    onClick: function () {
-                        sajuxHideCaptureOverlay();
-                        finishUi();
-                    }
+    var isIos = sajuxIsIosDevice();
+    var isAndroid = sajuxIsAndroidDevice();
+    var hint;
+    if (isIos) {
+        hint =
+            '아이폰 Safari로 PDF를 저장합니다.\n\n' +
+            '1) 「PDF 저장 열기」를 누르면 인쇄 화면이 떠요\n' +
+            '2) 미리보기 썸네일을 두 손가락으로 살짝 펼치세요\n' +
+            '3) 우측 상단 공유(↑) → 「파일에 저장」을 선택';
+    } else if (isAndroid) {
+        hint =
+            '안드로이드 Chrome으로 PDF를 저장합니다.\n\n' +
+            '1) 「PDF 저장 열기」를 누르면 인쇄 화면이 떠요\n' +
+            '2) 대상(프린터)을 「PDF로 저장」으로 변경\n' +
+            '3) 우측 상단 「PDF 저장」 또는 「다운로드」를 누르세요';
+    } else {
+        hint =
+            '브라우저 인쇄 기능으로 PDF를 저장합니다.\n\n' +
+            '1) 「PDF 저장 열기」를 누르면 인쇄 창이 떠요\n' +
+            '2) 대상(프린터)에서 「PDF로 저장」 선택\n' +
+            '3) 「저장」을 누르면 끝';
+    }
+
+    sajuxShowCaptureOverlay(hint, {
+        buttons: [
+            {
+                label: 'PDF 저장 열기',
+                primary: true,
+                onClick: function () {
+                    sajuxHideCaptureOverlay();
+                    try { window.scrollTo(0, 0); } catch (e0) {}
+                    setTimeout(function () {
+                        try { window.print(); } catch (ePrint) {
+                            alert('인쇄 화면을 열지 못했습니다. 브라우저 메뉴 → 인쇄(또는 공유 → 인쇄)를 눌러 PDF로 저장해 주세요.');
+                        }
+                        setTimeout(finishUi, 600);
+                    }, 50);
                 }
-            ]
-        }
-    );
+            },
+            {
+                label: '취소',
+                primary: false,
+                onClick: function () {
+                    sajuxHideCaptureOverlay();
+                    finishUi();
+                }
+            }
+        ]
+    });
 }
 /* ── 모바일 라이브 DOM 크롭 캡처 ─────────────────────────────────────
    DOM 복사·캡처 호스트 없이, 화면에 렌더된 컨테이너를 그대로 Y-crop.
@@ -7134,7 +7138,7 @@ function sajuxRunMobileLiveCrop(root, fab, restorePattern, starStash, hidden) {
     if (!groups.length) {
         alert('저장할 리포트 영역을 찾지 못했습니다.');
         sajuxRestoreAfterCapture(hidden); sajuxRestoreStarCanvas(starStash); restorePattern();
-        if (fab) { fab.disabled = false; fab.textContent = '📥 사주 저장'; }
+        if (fab) { fab.disabled = false; fab.textContent = '📥 사주 PDF 저장'; }
         _sajuxCaptureBusy = false;
         return;
     }
@@ -7161,7 +7165,7 @@ function sajuxRunMobileLiveCrop(root, fab, restorePattern, starStash, hidden) {
         root.style.overflow = prevOv;
         if (container !== root) container.style.overflow = '';
         sajuxRestoreAfterCapture(hidden); sajuxRestoreStarCanvas(starStash); restorePattern();
-        if (fab) { fab.disabled = false; fab.textContent = '📥 사주 저장'; }
+        if (fab) { fab.disabled = false; fab.textContent = '📥 사주 PDF 저장'; }
         _sajuxCaptureBusy = false;
     }
     function next() {
@@ -7207,7 +7211,7 @@ function sajuxRunReportImageCapture(root) {
         alert('저장할 리포트 영역을 찾지 못했습니다.');
         sajuxEndDesktopCaptureSession();
         sajuxRestoreAfterCapture(hidden);
-        if (fab) { fab.disabled = false; fab.textContent = '📥 사주 저장'; }
+        if (fab) { fab.disabled = false; fab.textContent = '📥 사주 PDF 저장'; }
         _sajuxCaptureBusy = false;
         return;
     }
@@ -7244,7 +7248,7 @@ function sajuxRunReportImageCapture(root) {
         sajuxRestoreAfterCapture(hidden);
         sajuxRestoreStarCanvas(starStash);
         restorePattern();
-        if (fab) { fab.disabled = false; fab.textContent = '📥 사주 저장'; }
+        if (fab) { fab.disabled = false; fab.textContent = '📥 사주 PDF 저장'; }
         _sajuxCaptureBusy = false;
     }
     sajuxEnsureCaptureFonts().then(function () {
@@ -7358,7 +7362,7 @@ function injectSajuxPdfUi() {
     imgFab.className = 'pdf-btn';
     imgFab.type = 'button';
     imgFab.setAttribute('aria-label', '사주 다운로드');
-    imgFab.textContent = '📥 사주 저장';
+    imgFab.textContent = '📥 사주 PDF 저장';
     imgFab.addEventListener('click', function () { sajuxCaptureReportAsImage(); });
     sajuxPreloadCaptureLibs();
     document.body.appendChild(imgFab);
