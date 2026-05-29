@@ -29,7 +29,7 @@
 })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="sajux-build" content="1780048775">
+<meta name="sajux-build" content="1780049216">
 <title>사주X — 두 사람의 인연 구조</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;700;900&display=swap" rel="stylesheet">
@@ -991,7 +991,9 @@ if (typeof KoreanLunarCalendar === 'undefined') {
   try {
     coreHref = new URL('../report/report-core.js', location.href).href;
   } catch (eUrl) {}
-  coreHref += (coreHref.indexOf('?') < 0 ? '?' : '&') + '_=' + String(Math.floor(Date.now() / 1800000));
+  var buildMeta = document.querySelector('meta[name="sajux-build"]');
+  var buildV = (buildMeta && buildMeta.getAttribute('content')) || String(Date.now());
+  coreHref += (coreHref.indexOf('?') < 0 ? '?' : '&') + 'v=' + encodeURIComponent(buildV);
 
   var st = document.createElement('script');
   st.charset = 'UTF-8';
