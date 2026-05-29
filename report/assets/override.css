@@ -76,26 +76,42 @@ html:not([data-theme="light"]) .part-tier-title {
   font-weight: 700 !important;
 }
 
-/* 절 제목 (예: 1-2 만세력 · 원국 표) — 본문보다 또렷하게 */
+/* 부·절 챕터 제목 — 붓글씨, 표지와 동일 계열 */
+.part-header-label.part-tier-title,
+.part-brush-title {
+  font-family: 'Jeongseon Arirang Ppuri', 'Nanum Brush Script', cursive !important;
+  font-size: clamp(32px, 7.2vw, 42px) !important;
+  font-weight: 400 !important;
+  line-height: 1.22 !important;
+  letter-spacing: -0.03em !important;
+  color: rgba(248, 246, 238, 0.96) !important;
+}
+.part-brush-title .part-brush-num {
+  font-weight: 400 !important;
+}
+
+/* 절 제목 (예: 1-2 만세력 · 원국 표) */
 .ch-main-topic-title,
 h2.ch-main-topic-title,
 .ch-main-heading-xl,
 h2.ch-main-heading-xl {
-  font-size: clamp(20px, 5.2vw, 28px) !important;
-  font-weight: 800 !important;
-  line-height: 1.28 !important;
+  font-family: 'Jeongseon Arirang Ppuri', 'Nanum Brush Script', cursive !important;
+  font-size: clamp(26px, 6.2vw, 36px) !important;
+  font-weight: 400 !important;
+  line-height: 1.26 !important;
+  letter-spacing: -0.02em !important;
 }
 .ch-main-topic-title .ch-sec-num,
 .ch-main-heading-xl .ch-sec-num {
-  font-size: 0.94em !important;
-  font-weight: 700 !important;
-  color: rgba(199, 167, 106, 0.9) !important;
-  letter-spacing: 0.04em !important;
+  font-size: 0.92em !important;
+  font-weight: 400 !important;
+  color: rgba(199, 167, 106, 0.92) !important;
+  letter-spacing: 0.02em !important;
 }
 .ch-main-topic-title .ch-sec-title,
 .ch-main-heading-xl .ch-sec-title {
   font-size: 1em !important;
-  font-weight: 800 !important;
+  font-weight: 400 !important;
 }
 .ch-title-current-period,
 h2.ch-title-current-period {
@@ -1278,17 +1294,19 @@ html[data-theme="light"] #star-canvas {
   .ch-head-main-sub .ch-main-heading-xl,
   h2.ch-main-topic-title,
   h2.ch-main-heading-xl {
-    font-size: clamp(22px, 5.8vw, 30px) !important;
-    line-height: 1.26 !important;
+    font-size: clamp(28px, 6.8vw, 34px) !important;
+    line-height: 1.24 !important;
   }
   .ch-main-topic-title .ch-sec-num,
   .ch-main-heading-xl .ch-sec-num {
-    font-size: 0.94em !important;
+    font-size: 0.92em !important;
   }
   .part-tier-title,
+  .part-brush-title,
+  .part-header-label.part-tier-title,
   .part-header-title,
   .part-header-block .part-header-title {
-    font-size: clamp(18px, 4.4vw, 22px) !important;
+    font-size: clamp(30px, 7.5vw, 38px) !important;
   }
   #sec-personal-portrait .personal-portrait-lede,
   #sec-ilju-narrative-unified .personal-portrait-lede,
