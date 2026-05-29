@@ -96,7 +96,7 @@ h2.ch-main-topic-title,
 .ch-main-heading-xl,
 h2.ch-main-heading-xl {
   font-family: 'Jeongseon Arirang Ppuri', 'Nanum Brush Script', cursive !important;
-  font-size: clamp(26px, 6.2vw, 36px) !important;
+  font-size: clamp(18px, 4.3vw, 25px) !important;
   font-weight: 400 !important;
   line-height: 1.26 !important;
   letter-spacing: -0.02em !important;
@@ -1294,7 +1294,7 @@ html[data-theme="light"] #star-canvas {
   .ch-head-main-sub .ch-main-heading-xl,
   h2.ch-main-topic-title,
   h2.ch-main-heading-xl {
-    font-size: clamp(28px, 6.8vw, 34px) !important;
+    font-size: clamp(20px, 4.8vw, 24px) !important;
     line-height: 1.24 !important;
   }
   .ch-main-topic-title .ch-sec-num,
@@ -1406,12 +1406,35 @@ html[data-theme="light"] #star-canvas {
 
 /* 고객 표지 — 생년월일시 (단순 표기, 이전 대비 글자만 소폭 상향) */
 #sec-client-cover .birth-info,
-.cover-page .birth-info {
+.cover-page .birth-info,
+#sec-client-cover .client-birth-block,
+.cover-page .client-birth-block {
   font-size: 15px !important;
   font-weight: 500 !important;
   color: rgba(200, 205, 215, 0.9) !important;
   margin-top: 14px !important;
   line-height: 1.65 !important;
+  text-align: center !important;
+  background: none !important;
+  border: none !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  max-width: 100% !important;
+}
+#sec-client-cover .client-birth-label,
+.cover-page .client-birth-label {
+  display: none !important;
+}
+#sec-client-cover .client-birth-primary,
+.cover-page .client-birth-primary {
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  color: rgba(200, 205, 215, 0.9) !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: none !important;
+  border: none !important;
 }
 .age-basis-note,
 p.age-basis-note,
