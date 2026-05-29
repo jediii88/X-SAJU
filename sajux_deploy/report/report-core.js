@@ -5571,22 +5571,41 @@ function sajuxCollectCaptureSlices(root) {
     var slices = [];
     if (!container) return { container: null, slices: [], host: null };
 
-    var introDefs = [
-        { sel: '#sec-cover', jul: '표지', title: '표지' },
-        { sel: '#sec-client-cover', jul: '고객표지', title: '고객 정보' },
-        { sel: '.toc-page', jul: '목차', title: '목차' }
-    ];
-    introDefs.forEach(function (def) {
-        var el = container.querySelector(def.sel);
-        if (!sajuxIsVisibleEl(el)) return;
-        var wrap = document.createElement('div');
-        wrap.className = 'sajux-capture-jul-wrap';
-        wrap.style.cssText = 'background:#050508;box-sizing:border-box;width:100%;';
-        wrap.setAttribute('data-sajux-jul', def.jul);
-        wrap.setAttribute('data-sajux-jul-title', def.title);
-        wrap.appendChild(el.cloneNode(true));
-        slices.push({ el: wrap, jul: def.jul, title: def.title });
-    });
+    var coverEl = container.querySelector('#sec-cover');
+    var clientCoverEl = container.querySelector('#sec-client-cover');
+    if (sajuxIsVisibleEl(coverEl) || sajuxIsVisibleEl(clientCoverEl)) {
+        var coverWrap = document.createElement('div');
+        coverWrap.className = 'sajux-capture-jul-wrap';
+        coverWrap.style.cssText = 'background:#050508;box-sizing:border-box;width:100%;';
+        coverWrap.setAttribute('data-sajux-jul', '표지');
+        coverWrap.setAttribute('data-sajux-jul-title', '표지');
+        if (sajuxIsVisibleEl(coverEl)) {
+            var coverClone = coverEl.cloneNode(true);
+            coverClone.style.minHeight = 'auto';
+            coverClone.style.borderBottom = 'none';
+            coverClone.style.marginBottom = '0';
+            coverClone.style.paddingTop = '48px';
+            coverClone.style.paddingBottom = '24px';
+            coverWrap.appendChild(coverClone);
+        }
+        if (sajuxIsVisibleEl(clientCoverEl)) {
+            var clientClone = clientCoverEl.cloneNode(true);
+            clientClone.style.minHeight = 'auto';
+            clientClone.style.paddingTop = '24px';
+            coverWrap.appendChild(clientClone);
+        }
+        slices.push({ el: coverWrap, jul: '표지', title: '표지' });
+    }
+    var tocEl = container.querySelector('.toc-page');
+    if (sajuxIsVisibleEl(tocEl)) {
+        var tocWrap = document.createElement('div');
+        tocWrap.className = 'sajux-capture-jul-wrap';
+        tocWrap.style.cssText = 'background:#050508;box-sizing:border-box;width:100%;';
+        tocWrap.setAttribute('data-sajux-jul', '목차');
+        tocWrap.setAttribute('data-sajux-jul-title', '목차');
+        tocWrap.appendChild(tocEl.cloneNode(true));
+        slices.push({ el: tocWrap, jul: '목차', title: '목차' });
+    }
 
     var heads = sajuxFilterCaptureHeads(container, sajuxCollectJulHeads(container));
     for (var i = 0; i < heads.length; i++) {
@@ -5616,13 +5635,44 @@ function sajuxCollectCaptureSlices(root) {
         slices.push({ el: container, jul: '전체', title: '리포트' });
     }
     slices = sajuxMergeCaptureSlices(slices);
+    slices = sajuxAttachPartBanners(slices);
     return { container: container, slices: slices, host: sajuxEnsureCaptureHost() };
+}
+var SAJUX_CAPTURE_PART_META = {
+    '1': { head: '1부 · 나라는 사람', sub: '원국 · 오행 · 십성' },
+    '2': { head: '2부 · 지금 이 시절', sub: '현재 운 · 80년 지도 · 앞으로의 대운·세운·월운' },
+    '3': { head: '3부 · 삶의 영역', sub: '애정 · 재물 · 합격 · 직업 · 건강' },
+    '4': { head: '4부 · 지금의 선택 🌙', sub: '개운법 · 일상 적용' },
+    '5': { head: '5부 · 안내', sub: '리뷰 · 열람 · 이용 안내' }
+};
+function sajuxAttachPartBanners(slices) {
+    if (!slices || !slices.length) return slices || [];
+    var seen = {};
+    for (var i = 0; i < slices.length; i++) {
+        var s = slices[i];
+        var jul = String(s.jul || '');
+        var m = jul.match(/^(\d+)-/);
+        if (!m) continue;
+        var partNum = m[1];
+        if (seen[partNum]) continue;
+        seen[partNum] = true;
+        var meta = SAJUX_CAPTURE_PART_META[partNum];
+        if (!meta) continue;
+        var banner = document.createElement('div');
+        banner.className = 'sajux-capture-part-banner';
+        banner.innerHTML =
+            '<div class="sajux-part-eyebrow">[ SAJU X · PART ' + partNum + ' ]</div>'
+            + '<div class="sajux-part-head">' + meta.head + '</div>'
+            + '<div class="sajux-part-sub">' + meta.sub + '</div>';
+        if (s.el && s.el.firstChild) s.el.insertBefore(banner, s.el.firstChild);
+        else if (s.el) s.el.appendChild(banner);
+    }
+    return slices;
 }
 function sajuxCalcSliceCaptureScale(el) {
     var mobile = sajuxIsMobileCapture();
     var maxDim = mobile ? 8192 : 16384;
-    var dpr = window.devicePixelRatio || 1;
-    var prefer = mobile ? 1.5 : Math.min(2, Math.max(1.5, dpr));
+    var prefer = mobile ? 1.25 : 1.5;
     if (!el) return prefer;
     var w = Math.max(el.offsetWidth || 0, el.scrollWidth || 0, 320);
     var h = Math.max(el.offsetHeight || 0, el.scrollHeight || 0, 1);
@@ -5942,10 +5992,14 @@ function sajuxOnCaptureClone(doc) {
         var st = doc.createElement('style');
         st.id = 'sajux-capture-clone-style';
         st.textContent = '#report-container,#sec-report-full,#main-content{overflow:visible!important;max-height:none!important;height:auto!important;background:#050508!important;}'
-            + '.cover-page,#sec-cover,#sec-client-cover{min-height:auto!important;height:auto!important;padding:24px 16px!important;}'
-            + '.sajux-logo-cover-screen,.sajux-logo.dark{display:none!important;}'
-            + '.sajux-logo-cover-print,.sajux-logo.light{display:block!important;visibility:visible!important;opacity:1!important;}'
-            + 'img.sajux-logo{max-width:min(280px,78vw)!important;height:auto!important;}'
+            + '.cover-page,#sec-cover,#sec-client-cover{min-height:auto!important;height:auto!important;padding:24px 16px!important;background:#050508!important;}'
+            + '.cover-page .sajux-logo-cover-print,.sajux-logo-cover-print,.sajux-logo.light{display:none!important;}'
+            + '.cover-page .sajux-logo-cover-screen,.sajux-logo-cover-screen,.sajux-logo.dark{position:static!important;left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;display:block!important;visibility:visible!important;opacity:1!important;mix-blend-mode:screen!important;pointer-events:auto!important;margin:0 auto!important;filter:brightness(1.6) contrast(1.05)!important;}'
+            + 'img.sajux-logo{max-width:min(360px,82vw)!important;height:auto!important;}'
+            + '.sajux-capture-part-banner{width:100%;box-sizing:border-box;padding:18px 24px 14px;margin:0 0 18px;border-bottom:1px solid rgba(199,167,106,0.22);background:linear-gradient(180deg,rgba(199,167,106,0.10),rgba(199,167,106,0));text-align:left;}'
+            + '.sajux-capture-part-banner .sajux-part-eyebrow{font-size:11px;letter-spacing:0.22em;color:rgba(199,167,106,0.85);font-weight:700;margin-bottom:6px;}'
+            + '.sajux-capture-part-banner .sajux-part-head{font-size:22px;font-weight:700;color:#f1e5cc;letter-spacing:-0.01em;margin-bottom:4px;}'
+            + '.sajux-capture-part-banner .sajux-part-sub{font-size:12px;color:rgba(220,220,230,0.65);letter-spacing:0.02em;}'
             + '.sajux-glass-heavy,.report-chapter,.card,.glass-panel,.badge,.tag,.jijanggan,.module-item,.yearly-card,.monthly-card,.inner-card,.detail-box,.rel-panel,.compat-voice-wrap,.person-card,.score-section,.compat-duo-manse-wrap,.f-card,.t-card,.seyun-year-card,.ch-story-card,.vip-module-item,.compat-section-title,.toc-page,.pillar-mini,.breakdown-grid,.duo-grid,.compat-manse-notes,.yearly-card-container,.monthly-card-container,.fortune-scroll,.seyun-premium-vertical,.module-box,.analysis-card,.compat-share-cta{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}'
             + '.card,.yearly-card,.monthly-card,.glass-panel,.report-chapter,.module-item,.inner-card,.detail-box,.rel-panel,.person-card,.score-section,.compat-duo-manse-wrap,.f-card,.t-card,.seyun-year-card,.ch-story-card,.vip-module-item,.module-box,.analysis-card,.fortune-scroll>div,.yearly-card-container>div,.monthly-card-container>div{background:rgba(14,14,20,0.96)!important;background-color:rgba(14,14,20,0.96)!important;}'
             + '.badge,.tag,.jijanggan,.sp-badge,.rel-badge,.compat-person-tag{background:rgba(32,32,42,0.92)!important;color:inherit!important;}'
@@ -6377,6 +6431,8 @@ function sajuxRunReportImageCapture(root) {
             captureHost.appendChild(el);
         }
         var captureTarget = (captureHost && captureHost.firstChild) ? captureHost.firstChild : el;
+        sajuxWaitImagesInRoot(captureTarget, 2000).then(function () { startCapture(); });
+        function startCapture() {
         var sliceScale = sajuxCalcSliceCaptureScale(captureTarget);
         var fullW = Math.max(captureTarget.offsetWidth, captureTarget.scrollWidth, 320);
         var fullH = Math.max(captureTarget.offsetHeight, captureTarget.scrollHeight, 1);
@@ -6433,6 +6489,7 @@ function sajuxRunReportImageCapture(root) {
             });
         }
         attempt(sliceScale);
+        }
     }
     captureNext();
 }
