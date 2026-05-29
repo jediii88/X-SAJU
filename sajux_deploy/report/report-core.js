@@ -12898,7 +12898,7 @@ function buildClientCoverPage(data) {
         <div style="width:110px;height:110px;margin:2px auto 12px;display:flex;align-items:center;justify-content:center;"><img src="${animalImage}" alt="${animalPlain || '일주 동물'}" loading="lazy" style="width:100%;height:100%;object-fit:contain;display:block;"/></div>
         <div style="font-size:30px;line-height:1.15;margin:0 0 6px;">${iljuBig}</div>
         ${animalHighlight ? `<div class="animal-symbol">${nmUi(name)} 상징 동물은 <span class="cover-highlight">${escHtmlAttr(animalHighlight)}</span>입니다.</div>` : ''}
-        ${coverLine ? '<div class="client-birth-block"><div class="client-birth-label">생년월일시</div><div class="client-birth-primary birth-info">' + escHtmlAttr(coverLine) + '</div></div>' + getAgeBasisNoteHtml('cover') : getAgeBasisNoteHtml('cover')}
+        ${coverLine ? '<div class="birth-info">' + escHtmlAttr(coverLine) + '</div>' + getAgeBasisNoteHtml('cover') : getAgeBasisNoteHtml('cover')}
 
         <div style="margin-top:38px;font-size:10px;color:rgba(210,214,223,0.34);letter-spacing:0.14em;">${formatReportAccessLine(data)}</div>
     </div>`;
