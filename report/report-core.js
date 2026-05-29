@@ -5069,9 +5069,17 @@ function sajuxMobilePrepareLiteSlices(slices) {
 function sajuxPreloadCaptureLibs() {
     try {
         ensureHtml2CanvasLoaded(function () {});
-        ensureHtmlToImageLoaded(function () {});
         ensureJsZipLoaded(function () {});
     } catch (e) {}
+}
+function sajuxEnsureCaptureLibs(done) {
+    var left = 2;
+    function tick() {
+        left -= 1;
+        if (left <= 0 && typeof done === 'function') done();
+    }
+    ensureHtml2CanvasLoaded(tick);
+    ensureJsZipLoaded(tick);
 }
 function sajuxCaptureProgressMsg(head, detail) {
     var s = head || '사주 저장 중…';
@@ -5512,13 +5520,13 @@ function sajuxCollectCaptureSlices(root) {
 }
 function sajuxCalcSliceCaptureScale(el) {
     var mobile = sajuxIsMobileCapture();
-    var maxDim = mobile ? 4096 : 16384;
+    var maxDim = mobile ? 4096 : 12288;
     var dpr = window.devicePixelRatio || 1;
-    var prefer = mobile ? Math.min(1.15, Math.max(1, dpr)) : Math.min(2, Math.max(1.5, dpr));
+    var prefer = mobile ? Math.min(1, dpr) : Math.min(1.25, Math.max(1, dpr));
     if (!el) return prefer;
     var w = Math.max(el.offsetWidth || 0, el.scrollWidth || 0, 320);
     var h = Math.max(el.offsetHeight || 0, el.scrollHeight || 0, 1);
-    var floor = mobile ? 0.85 : 1;
+    var floor = mobile ? 0.75 : 0.9;
     return Math.max(floor, Math.min(prefer, maxDim / w, maxDim / h));
 }
 function sajuxCanAutoDownloadBlob() {
@@ -5526,8 +5534,8 @@ function sajuxCanAutoDownloadBlob() {
     return true;
 }
 function sajuxCaptureEtaSeconds(remaining) {
-    var perSlice = sajuxIsMobileCapture() ? 6 : 4;
-    return Math.max(8, Math.ceil(remaining * perSlice));
+    var perSlice = sajuxIsMobileCapture() ? 4 : 2.5;
+    return Math.max(6, Math.ceil(remaining * perSlice));
 }
 function sajuxValidateCaptureCanvas(canvas) {
     return !!(canvas && canvas.width > 12 && canvas.height > 12);
@@ -5694,7 +5702,7 @@ function sajuxPrepareSliceForCapture(root) {
     }
 }
 function sajuxWaitImagesInRoot(root, maxMs) {
-    maxMs = maxMs || (sajuxIsMobileCapture() ? 5000 : 3000);
+    maxMs = maxMs || (sajuxIsMobileCapture() ? 1800 : 1200);
     if (!root) return Promise.resolve();
     var imgs = root.querySelectorAll('img');
     var pending = [];
