@@ -5073,11 +5073,27 @@ function sajuxPreloadCaptureLibs() {
     } catch (e) {}
 }
 function sajuxEnsureCaptureLibs(done) {
+    var finished = false;
     var left = 2;
+    function finish() {
+        if (finished) return;
+        finished = true;
+        if (typeof done === 'function') done();
+    }
     function tick() {
         left -= 1;
-        if (left <= 0 && typeof done === 'function') done();
+        if (left <= 0) finish();
     }
+    setTimeout(function () {
+        if (finished) return;
+        if (typeof html2canvas !== 'function' || typeof JSZip !== 'function') {
+            sajuxReleaseCaptureBusy();
+            sajuxHideCaptureOverlay();
+            alert('사주 저장 도구를 불러오지 못했습니다.\nWi-Fi 연결 확인 후 페이지를 새로고침해 주세요.');
+            return;
+        }
+        finish();
+    }, 12000);
     ensureHtml2CanvasLoaded(tick);
     ensureJsZipLoaded(tick);
 }
@@ -5591,13 +5607,14 @@ function sajuxCollectCaptureSlices(root) {
     return { container: container, slices: slices, host: sajuxEnsureCaptureHost() };
 }
 function sajuxCalcSliceCaptureScale(el) {
-    var maxDim = 16384;
+    var mobile = sajuxIsMobileCapture();
+    var maxDim = mobile ? 8192 : 16384;
     var dpr = window.devicePixelRatio || 1;
-    var prefer = Math.min(2, Math.max(1.5, dpr));
+    var prefer = mobile ? Math.min(1.25, Math.max(1, dpr)) : Math.min(2, Math.max(1.5, dpr));
     if (!el) return prefer;
     var w = Math.max(el.offsetWidth || 0, el.scrollWidth || 0, 320);
     var h = Math.max(el.offsetHeight || 0, el.scrollHeight || 0, 1);
-    return Math.max(1, Math.min(prefer, maxDim / w, maxDim / h));
+    return Math.max(mobile ? 0.85 : 1, Math.min(prefer, maxDim / w, maxDim / h));
 }
 function sajuxCanAutoDownloadBlob() {
     if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent || '')) return false;
@@ -6037,9 +6054,8 @@ function sajuxOfferZipDownload(zipBlob, filename, extraMsg) {
         buttons.push({
             label: '📥 Safari에서 받기',
             primary: false,
-            onClick: function () {
-                window.location.href = url;
-            }
+            href: url,
+            download: filename
         });
     } else {
         buttons.push({
@@ -6177,8 +6193,15 @@ function sajuxCaptureReportAsImage() {
         return;
     }
     _sajuxCaptureBusy = true;
+    sajuxShowCaptureOverlay('사주 저장 준비 중…\n잠시만 기다려 주세요.', { progressOnly: true });
     sajuxEnsureCaptureLibs(function () {
-        sajuxRunReportImageCapture(root);
+        if (typeof html2canvas !== 'function' || typeof JSZip !== 'function') {
+            _sajuxCaptureBusy = false;
+            sajuxHideCaptureOverlay();
+            alert('사주 저장 도구를 불러오지 못했습니다. 새로고침 후 다시 시도해 주세요.');
+            return;
+        }
+        setTimeout(function () { sajuxRunReportImageCapture(root); }, 30);
     });
 }
 function sajuxRunReportImageCapture(root) {
@@ -6254,12 +6277,8 @@ function sajuxRunReportImageCapture(root) {
             captureHost.appendChild(el);
         }
         var captureTarget = (captureHost && captureHost.firstChild) ? captureHost.firstChild : el;
-        var liveAnchor = slice.headEl || null;
-        if (liveAnchor) {
-            try { liveAnchor.scrollIntoView({ block: 'start', behavior: 'instant' }); } catch (e1) { try { liveAnchor.scrollIntoView(true); } catch (e2) {} }
-        }
         var sliceScale = sajuxCalcSliceCaptureScale(captureTarget);
-        html2canvas(captureTarget, {
+        var capOpts = {
             backgroundColor: '#050508',
             scale: sliceScale,
             useCORS: true,
@@ -6267,20 +6286,24 @@ function sajuxRunReportImageCapture(root) {
             logging: false,
             ignoreElements: sajuxHtml2canvasIgnoreEl,
             onclone: sajuxOnCaptureClone
-        }).then(function (canvas) {
-            if (!sajuxValidateCaptureCanvas(canvas)) {
-                return Promise.reject(new Error('blank canvas'));
-            }
-            return sajuxCanvasToBlob(canvas, 'image/png');
-        }).then(function (blob) {
-            captures.push({ name: fileBase, blob: blob });
-            idx += 1;
-            captureNext();
-        }).catch(function (err) {
-            console.warn('[sajux] slice skip', idx + 1, fileBase, err);
-            idx += 1;
-            captureNext();
-        });
+        };
+        var capTimeout = sajuxIsMobileCapture() ? 35000 : 55000;
+        setTimeout(function () {
+            sajuxHtml2canvasPromise(captureTarget, capOpts, capTimeout).then(function (canvas) {
+                if (!sajuxValidateCaptureCanvas(canvas)) {
+                    return Promise.reject(new Error('blank canvas'));
+                }
+                return sajuxCanvasToBlob(canvas, 'image/png');
+            }).then(function (blob) {
+                captures.push({ name: fileBase, blob: blob });
+                idx += 1;
+                captureNext();
+            }).catch(function (err) {
+                console.warn('[sajux] slice skip', idx + 1, fileBase, err);
+                idx += 1;
+                captureNext();
+            });
+        }, 20);
     }
     captureNext();
 }
