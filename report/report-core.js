@@ -5100,10 +5100,7 @@ function sajuxShowCaptureOverlay(message, opts) {
             btn.className = 'sajux-capture-download-btn';
             btn.textContent = def.label || '확인';
             var marginTop = i === 0 ? '18px' : '10px';
-            var bg = def.primary !== false
-                ? 'linear-gradient(165deg,#c7a76a,#8a6f3c);color:#111;'
-                : 'rgba(255,255,255,0.1);color:#f5f0e6;border:1px solid rgba(255,255,255,0.22);';
-            btn.style.cssText = btnBase + 'margin-top:' + marginTop + ';background:' + (def.primary !== false ? '' : '') + bg;
+            btn.style.cssText = btnBase + 'margin-top:' + marginTop + ';';
             if (def.primary !== false) {
                 btn.style.background = 'linear-gradient(165deg,#c7a76a,#8a6f3c)';
                 btn.style.color = '#111';
@@ -5163,19 +5160,24 @@ function sajuxIsMobileCapture() {
     } catch (e0) {}
     return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent || '');
 }
+function sajuxCaptureHostWidthPx() {
+    return Math.min(720, Math.max(320, window.innerWidth || 390));
+}
+function sajuxStyleCaptureHost(host) {
+    if (!host) return host;
+    var w = sajuxCaptureHostWidthPx();
+    host.style.cssText = 'position:fixed;left:-12000px;top:0;width:' + w + 'px;max-width:' + w + 'px;z-index:-1;opacity:1;visibility:visible;pointer-events:none;overflow:visible;background:#050508;';
+    return host;
+}
 function sajuxEnsureCaptureHost() {
     var host = document.getElementById('sajux-capture-host');
-    var mobile = sajuxIsMobileCapture();
     if (!host) {
         host = document.createElement('div');
         host.id = 'sajux-capture-host';
         host.setAttribute('aria-hidden', 'true');
         document.body.appendChild(host);
     }
-    host.style.cssText = mobile
-        ? 'position:fixed;left:0;top:0;width:100%;max-width:100vw;z-index:2147483645;opacity:0.01;pointer-events:none;overflow:visible;visibility:visible;background:#050508;'
-        : 'position:fixed;left:-20000px;top:0;width:min(100vw,720px);max-width:720px;z-index:-1;pointer-events:none;overflow:visible;background:#050508;';
-    return host;
+    return sajuxStyleCaptureHost(host);
 }
 function sajuxWrapDomRange(container, startNode, endNode, meta) {
     var wrap = document.createElement('div');
@@ -5444,13 +5446,45 @@ function sajuxCollectCaptureSlices(root) {
     return { container: container, slices: slices, host: sajuxEnsureCaptureHost() };
 }
 function sajuxCalcSliceCaptureScale(el) {
-    var maxDim = sajuxIsMobileCapture() ? 8192 : 16384;
+    var mobile = sajuxIsMobileCapture();
+    var maxDim = mobile ? 4096 : 16384;
     var dpr = window.devicePixelRatio || 1;
-    var prefer = Math.min(2, Math.max(1.5, dpr));
+    var prefer = mobile ? Math.min(1.25, dpr) : Math.min(2, Math.max(1.5, dpr));
     if (!el) return prefer;
     var w = Math.max(el.offsetWidth || 0, el.scrollWidth || 0, 320);
     var h = Math.max(el.offsetHeight || 0, el.scrollHeight || 0, 1);
-    return Math.max(1, Math.min(prefer, maxDim / w, maxDim / h));
+    var floor = mobile ? 0.4 : 1;
+    return Math.max(floor, Math.min(prefer, maxDim / w, maxDim / h));
+}
+function sajuxValidateCaptureCanvas(canvas) {
+    return !!(canvas && canvas.width > 12 && canvas.height > 12);
+}
+function sajuxEnsureHtmlToImagePromise() {
+    return new Promise(function (resolve, reject) {
+        ensureHtmlToImageLoaded(function () {
+            if (typeof htmlToImage !== 'undefined' && typeof htmlToImage.toCanvas === 'function') resolve();
+            else reject(new Error('html-to-image unavailable'));
+        });
+    });
+}
+function sajuxHtmlToImageCanvasPromise(target, scale) {
+    return sajuxEnsureHtmlToImagePromise().then(function () {
+        return htmlToImage.toCanvas(target, {
+            backgroundColor: '#050508',
+            pixelRatio: Math.max(0.5, Math.min(scale || 1, 2)),
+            cacheBust: true,
+            skipFonts: false
+        });
+    });
+}
+function sajuxLiteCardBlobFromSlice(slice) {
+    var el = slice.el;
+    var div = slice._liteDiv;
+    if (!div && el) {
+        div = sajuxConvertToMobileLiteCard(el, slice.jul, slice.title);
+    }
+    if (!div) return Promise.reject(new Error('lite card unavailable'));
+    return sajuxCanvasFromLiteCard(div, sajuxCaptureHostWidthPx());
 }
 function sajuxHtml2canvasPromise(target, opts, timeoutMs) {
     var ms = timeoutMs || (sajuxIsMobileCapture() ? 120000 : 90000);
@@ -5612,26 +5646,31 @@ function sajuxWaitImagesInRoot(root, maxMs) {
     });
 }
 function sajuxResolveCaptureTarget(slice, pack, captureHost) {
-    if (sajuxIsMobileCapture() && slice.liveSel && pack.container) {
-        var live = pack.container.querySelector(slice.liveSel);
-        if (live && sajuxIsVisibleEl(live)) {
-            sajuxPrepareSliceForCapture(live);
-            try {
-                var top = live.getBoundingClientRect().top + (window.pageYOffset || 0) - 4;
-                window.scrollTo(0, Math.max(0, top));
-            } catch (eScroll) {}
-            return { target: live, viaHost: false };
-        }
-    }
-    if (captureHost) {
+    if (captureHost && slice.el) {
+        sajuxStyleCaptureHost(captureHost);
         captureHost.innerHTML = '';
         captureHost.appendChild(slice.el);
         var via = captureHost.firstChild || slice.el;
+        via.style.width = '100%';
+        via.style.maxWidth = sajuxCaptureHostWidthPx() + 'px';
+        via.style.boxSizing = 'border-box';
         sajuxPrepareSliceForCapture(via);
         return { target: via, viaHost: true };
     }
     sajuxPrepareSliceForCapture(slice.el);
     return { target: slice.el, viaHost: false };
+}
+function sajuxWaitCaptureLayout() {
+    return new Promise(function (resolve) {
+        var n = 0;
+        function step() {
+            n += 1;
+            if (n >= (sajuxIsMobileCapture() ? 3 : 2)) resolve();
+            else if (typeof requestAnimationFrame === 'function') requestAnimationFrame(step);
+            else setTimeout(step, 16);
+        }
+        step();
+    });
 }
 function sajuxOnCaptureClone(doc) {
     var hideIds = ['sajux-pdf-fab', 'sajux-image-fab', 'floating-toc', 'sticky-part-nav', 'theme-toggle', 'star-canvas', 'sajux-capture-overlay'];
@@ -5840,7 +5879,9 @@ function sajuxCaptureReportAsImage() {
     _sajuxCaptureBusy = true;
     ensureJsZipLoaded(function () {
         ensureHtml2CanvasLoaded(function () {
-            sajuxRunReportImageCapture(root);
+            ensureHtmlToImageLoaded(function () {
+                sajuxRunReportImageCapture(root);
+            });
         });
     });
 }
@@ -5904,47 +5945,68 @@ function sajuxRunReportImageCapture(root) {
         }
         var slice = slices[idx];
         var fileBase = sajuxSliceCaptureLabel(slice, idx + 1);
-        var overlayMsg = sajuxCaptureProgressMsg(
-            '사진 저장 중… (' + (idx + 1) + '/' + total + ')',
-            (slice.jul || '') + ' ' + (slice.title || '')
-        );
+        var progressHead = (sajuxIsMobileCapture() ? '사진 저장 중…' : '사주 저장 중…') + ' (' + (idx + 1) + '/' + total + ')';
+        var overlayMsg = sajuxCaptureProgressMsg(progressHead, (slice.jul || '') + ' ' + (slice.title || ''));
         sajuxShowCaptureOverlay(overlayMsg);
         var overlayEl = document.getElementById('sajux-capture-overlay');
-        var sliceDelay = sajuxIsMobileCapture() ? 64 : 48;
+        var sliceDelay = sajuxIsMobileCapture() ? 120 : 48;
+        function pushCaptureBlob(blob) {
+            captures.push({ name: fileBase, blob: blob });
+            idx += 1;
+            setTimeout(captureNext, sliceDelay);
+        }
         function runSliceCapture(attempt) {
             var resolved = sajuxResolveCaptureTarget(slice, pack, captureHost);
             var captureTarget = resolved.target;
-            var sliceScale = sajuxCalcSliceCaptureScale(captureTarget);
-            var liveAnchor = slice.headEl || (slice.liveSel ? pack.container.querySelector(slice.liveSel) : null);
-            if (liveAnchor && !slice.liveSel) {
-                try { liveAnchor.scrollIntoView({ block: 'start', behavior: 'instant' }); } catch (e1) { try { liveAnchor.scrollIntoView(true); } catch (e2) {} }
+            if (!captureTarget || !sajuxIsVisibleEl(captureTarget)) {
+                return sajuxLiteCardBlobFromSlice(slice).then(pushCaptureBlob).catch(function () {
+                    idx += 1;
+                    setTimeout(captureNext, sliceDelay);
+                });
             }
-            var scaleUse = attempt > 0 ? Math.max(0.75, sliceScale * (attempt > 1 ? 0.65 : 0.82)) : sliceScale;
-            var hCap = Math.max(captureTarget.offsetHeight || 0, captureTarget.scrollHeight || 0, 0);
+            var sliceScale = sajuxCalcSliceCaptureScale(captureTarget);
+            var scaleUse = sliceScale * (attempt > 1 ? 0.55 : (attempt > 0 ? 0.78 : 1));
             var h2cOpts = {
                 backgroundColor: '#050508',
                 scale: scaleUse,
                 useCORS: true,
                 allowTaint: true,
+                foreignObjectRendering: false,
                 logging: false,
-                imageTimeout: 15000,
+                imageTimeout: 20000,
                 ignoreElements: sajuxHtml2canvasIgnoreEl,
                 onclone: sajuxOnCaptureClone
             };
             if (overlayEl) overlayEl.style.visibility = 'hidden';
             sajuxWaitImagesInRoot(captureTarget).then(function () {
-                return sajuxHtml2canvasPromise(captureTarget, h2cOpts, 90000);
+                return sajuxWaitCaptureLayout();
+            }).then(function () {
+                return sajuxHtml2canvasPromise(captureTarget, h2cOpts, sajuxIsMobileCapture() ? 120000 : 90000);
             }).then(function (canvas) {
+                if (!sajuxValidateCaptureCanvas(canvas)) {
+                    return Promise.reject(new Error('blank canvas'));
+                }
+                return sajuxCanvasToBlob(canvas, 'image/png');
+            }).then(function (blob) {
                 if (overlayEl) overlayEl.style.visibility = '';
-                return sajuxCanvasToBlob(canvas, 'image/png').then(function (blob) {
-                    captures.push({ name: fileBase, blob: blob });
-                    idx += 1;
-                    setTimeout(captureNext, sliceDelay);
-                });
+                pushCaptureBlob(blob);
             }).catch(function (err) {
                 if (overlayEl) overlayEl.style.visibility = '';
                 if (attempt < 2) {
-                    setTimeout(function () { runSliceCapture(attempt + 1); }, 120);
+                    setTimeout(function () { runSliceCapture(attempt + 1); }, 160);
+                    return;
+                }
+                if (attempt === 2) {
+                    sajuxHtmlToImageCanvasPromise(captureTarget, scaleUse).then(function (canvas) {
+                        if (!sajuxValidateCaptureCanvas(canvas)) return Promise.reject(new Error('blank canvas hti'));
+                        return sajuxCanvasToBlob(canvas, 'image/png');
+                    }).then(pushCaptureBlob).catch(function () {
+                        return sajuxLiteCardBlobFromSlice(slice).then(pushCaptureBlob);
+                    }).catch(function (liteErr) {
+                        console.warn('[sajux] slice capture skip', idx + 1, fileBase, err, liteErr);
+                        idx += 1;
+                        setTimeout(captureNext, sliceDelay);
+                    });
                     return;
                 }
                 console.warn('[sajux] slice capture skip', idx + 1, fileBase, err);
