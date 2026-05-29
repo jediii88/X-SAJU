@@ -5619,9 +5619,10 @@ function sajuxCollectCaptureSlices(root) {
     return { container: container, slices: slices, host: sajuxEnsureCaptureHost() };
 }
 function sajuxCalcSliceCaptureScale(el) {
-    var maxDim = 16384;
+    var mobile = sajuxIsMobileCapture();
+    var maxDim = mobile ? 8192 : 16384;
     var dpr = window.devicePixelRatio || 1;
-    var prefer = Math.min(2, Math.max(1.5, dpr));
+    var prefer = mobile ? 1.5 : Math.min(2, Math.max(1.5, dpr));
     if (!el) return prefer;
     var w = Math.max(el.offsetWidth || 0, el.scrollWidth || 0, 320);
     var h = Math.max(el.offsetHeight || 0, el.scrollHeight || 0, 1);
@@ -6377,25 +6378,61 @@ function sajuxRunReportImageCapture(root) {
         }
         var captureTarget = (captureHost && captureHost.firstChild) ? captureHost.firstChild : el;
         var sliceScale = sajuxCalcSliceCaptureScale(captureTarget);
-        html2canvas(captureTarget, {
-            backgroundColor: '#050508',
-            scale: sliceScale,
-            useCORS: true,
-            allowTaint: true,
-            logging: false,
-            ignoreElements: sajuxHtml2canvasIgnoreEl,
-            onclone: sajuxOnCaptureClone
-        }).then(function (canvas) {
-            return sajuxCanvasToBlob(canvas, 'image/png');
-        }).then(function (blob) {
-            captures.push({ name: fileBase, blob: blob });
-            idx += 1;
-            captureNext();
-        }).catch(function (err) {
-            console.warn('[sajux] slice skip', idx + 1, fileBase, err);
-            idx += 1;
-            captureNext();
-        });
+        var fullW = Math.max(captureTarget.offsetWidth, captureTarget.scrollWidth, 320);
+        var fullH = Math.max(captureTarget.offsetHeight, captureTarget.scrollHeight, 1);
+        function attempt(scale) {
+            var timedOut = false;
+            var timer = setTimeout(function () { timedOut = true; advance(); }, 40000);
+            var settled = false;
+            function advance() {
+                if (settled) return;
+                settled = true;
+                clearTimeout(timer);
+                idx += 1;
+                captureNext();
+            }
+            html2canvas(captureTarget, {
+                backgroundColor: '#050508',
+                scale: scale,
+                useCORS: true,
+                allowTaint: true,
+                logging: false,
+                width: fullW,
+                height: fullH,
+                windowWidth: fullW,
+                windowHeight: fullH,
+                scrollX: 0,
+                scrollY: 0,
+                x: 0,
+                y: 0,
+                ignoreElements: sajuxHtml2canvasIgnoreEl,
+                onclone: sajuxOnCaptureClone
+            }).then(function (canvas) {
+                if (timedOut || settled) return null;
+                if (!canvas || canvas.width < 4 || canvas.height < 4) {
+                    return Promise.reject(new Error('empty canvas'));
+                }
+                return sajuxCanvasToBlob(canvas, 'image/png');
+            }).then(function (blob) {
+                if (timedOut || settled) return;
+                if (blob && blob.size > 100) captures.push({ name: fileBase, blob: blob });
+                settled = true;
+                clearTimeout(timer);
+                idx += 1;
+                captureNext();
+            }).catch(function (err) {
+                if (timedOut || settled) return;
+                if (scale > 1) {
+                    settled = true;
+                    clearTimeout(timer);
+                    attempt(1);
+                    return;
+                }
+                console.warn('[sajux] slice skip', idx + 1, fileBase, err && err.message);
+                advance();
+            });
+        }
+        attempt(sliceScale);
     }
     captureNext();
 }
