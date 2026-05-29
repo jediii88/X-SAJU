@@ -315,7 +315,7 @@ function buildChapterHeadMainSub(mainTitle, subTitle, opts) {
     var subCol = opts.subColor || 'rgba(199,167,106,0.72)';
     var subWt = opts.subFontWeight || '700';
     var subLs = opts.subLetterSpacing || '0.10em';
-    var h2style = opts.mainHeadingStyle || 'font-family:\'Jeongseon Arirang Ppuri\',\'Nanum Brush Script\',cursive;font-size:clamp(18px,4.3vw,25px);font-weight:400;line-height:1.26;letter-spacing:-0.02em;margin:0 0 8px;color:var(--text,rgba(255,255,255,0.96));';
+    var h2style = opts.mainHeadingStyle || 'font-family:\'Jeongseon Arirang Ppuri\',\'Nanum Brush Script\',cursive;font-size:clamp(24px,5.8vw,32px);font-weight:400;line-height:1.28;letter-spacing:-0.02em;margin:0 0 8px;color:var(--text,rgba(255,255,255,0.96));';
     var sub = '';
     if (subTitle && String(subTitle).trim()) {
         var inner = opts.subIsHtml ? String(subTitle) : escHtmlAttr(subTitle);
@@ -361,7 +361,7 @@ function buildChapterHeadTopicFirst(mainTitle, eyebrowLabel, leadHook, opts) {
     var julAttrTf = opts.sajuxJul ? ' data-sajux-jul="' + escHtmlAttr(String(opts.sajuxJul)) + '"' : '';
     var julTitleAttrTf = opts.sajuxJulTitle ? ' data-sajux-jul-title="' + escHtmlAttr(String(opts.sajuxJulTitle)) + '"' : '';
     return '<div class="ch-head-topic-first"' + julAttrTf + julTitleAttrTf + ' style="margin-bottom:16px;' + extra + '">'
-        + '<h2 class="ch-main-topic-title" style="font-family:\'Jeongseon Arirang Ppuri\',\'Nanum Brush Script\',cursive;font-size:clamp(18px,4.3vw,25px);font-weight:400;line-height:1.26;letter-spacing:-0.02em;margin:0 0 6px;color:var(--text,rgba(255,255,255,0.96));">' + titleInnerTf + '</h2>'
+        + '<h2 class="ch-main-topic-title" style="font-family:\'Jeongseon Arirang Ppuri\',\'Nanum Brush Script\',cursive;font-size:clamp(24px,5.8vw,32px);font-weight:400;line-height:1.28;letter-spacing:-0.02em;margin:0 0 6px;color:var(--text,rgba(255,255,255,0.96));">' + titleInnerTf + '</h2>'
         + subHtml
         + hookHtml
         + '</div>';
