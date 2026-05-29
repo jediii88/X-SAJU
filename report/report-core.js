@@ -6461,40 +6461,13 @@ function sajuxOfferZipDownload(zipBlob, filename, extraMsg, captures) {
                 }
             });
         } else if (ios) {
-            /* iOS Safari: 이미지 공유(가장 신뢰성 높음) → ZIP 공유 → ZIP 링크 순 */
-            msg = '✅ 저장 준비 완료!';
+            /* iOS Safari: ZIP → "파일에 저장" 이 유일하게 전체 저장 가능
+               "이미지 저장"은 첫 장 1개만 저장되므로 사용하지 않음 */
+            msg = '✅ 저장 준비 완료!\n\n공유창이 열리면\n「파일에 저장」을 선택해 주세요.';
             msg += (extraMsg || '');
-            if (captures && captures.length) {
-                buttons.push({
-                    label: '📷 사진 앱에 저장',
-                    primary: true,
-                    onClick: function () {
-                        sajuxShareCaptureFilesDirect(captures, function (mode) {
-                            if (mode === 'shared' || mode === 'partial') {
-                                var note = mode === 'partial'
-                                    ? '✅ 앞 ' + Math.min(10, captures.length) + '장 사진 앱에 저장됐어요.\n\n나머지는 「ZIP 저장」으로 받아 주세요.'
-                                    : '✅ 사진 앱에 저장됐어요!';
-                                showSavedNote(note);
-                            } else if (mode !== 'cancel') {
-                                sajuxShowCaptureOverlay('공유창이 열리지 않았어요.\n\n아래 「ZIP 저장」을 눌러 주세요.', {
-                                    buttons: [
-                                        { label: '📁 ZIP 저장', primary: true, onClick: function () {
-                                            sajuxShareZipFiles(zipBlob, filename, function (m) {
-                                                if (m === 'shared') showSavedNote('✅ 저장 완료!');
-                                                else if (m !== 'cancel') sajuxShowIosZipLinkFallback(url, filename);
-                                            });
-                                        }},
-                                        { label: '닫기', primary: false, onClick: function () { sajuxHideCaptureOverlay(); sajuxClearPendingZip(); } }
-                                    ]
-                                });
-                            }
-                        });
-                    }
-                });
-            }
             buttons.push({
-                label: captures && captures.length ? '📁 ZIP으로 저장' : '📤 파일 앱에 저장',
-                primary: !(captures && captures.length),
+                label: '📁 파일 앱에 저장',
+                primary: true,
                 onClick: function () {
                     sajuxShareZipFiles(zipBlob, filename, function (mode) {
                         if (mode === 'shared') {
@@ -6505,7 +6478,8 @@ function sajuxOfferZipDownload(zipBlob, filename, extraMsg, captures) {
                     });
                 }
             });
-            buttons.push({ label: '📥 ZIP 링크 열기', primary: false, href: url, target: '_blank' });
+            /* 공유 API 실패 대비 직접 링크 */
+            buttons.push({ label: '📥 ZIP 직접 열기', primary: false, href: url, target: '_blank' });
         } else {
             buttons.push({
                 label: '📤 저장하기',
