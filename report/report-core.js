@@ -5074,7 +5074,9 @@ function sajuxPreloadCaptureLibs() {
 }
 function sajuxEnsureCaptureLibs(done) {
     var finished = false;
-    var left = 2;
+    var mobile = sajuxIsMobileCapture();
+    var need = mobile ? 3 : 2;
+    var left = need;
     function finish() {
         if (finished) return;
         finished = true;
@@ -5096,6 +5098,7 @@ function sajuxEnsureCaptureLibs(done) {
     }, 12000);
     ensureHtml2CanvasLoaded(tick);
     ensureJsZipLoaded(tick);
+    if (mobile) ensureHtmlToImageLoaded(tick);
 }
 function sajuxCaptureProgressMsg(head, detail) {
     var s = head || '사주 저장 중…';
@@ -5309,12 +5312,13 @@ function sajuxIsMobileCapture() {
 function sajuxCaptureHostWidthPx() {
     return Math.min(720, Math.max(320, window.innerWidth || 390));
 }
-function sajuxStyleCaptureHost(host) {
+function sajuxStyleCaptureHost(host, capturing) {
     if (!host) return host;
     var w = sajuxCaptureHostWidthPx();
     var mobile = sajuxIsMobileCapture();
     if (mobile) {
-        host.style.cssText = 'position:fixed;left:0;top:0;width:' + w + 'px;max-width:100%;z-index:2147483646;opacity:0.01;visibility:visible;pointer-events:none;overflow:visible;background:#050508;';
+        var op = capturing ? '1' : '0.01';
+        host.style.cssText = 'position:fixed;left:0;top:0;width:' + w + 'px;max-width:100%;z-index:2147483646;opacity:' + op + ';visibility:visible;pointer-events:none;overflow:visible;background:#050508;';
     } else {
         host.style.cssText = 'position:fixed;left:-12000px;top:0;width:' + w + 'px;max-width:' + w + 'px;z-index:-1;opacity:1;visibility:visible;pointer-events:none;overflow:visible;background:#050508;';
     }
@@ -5651,26 +5655,66 @@ function sajuxValidateCaptureCanvas(canvas) {
         return canvas.width > 12 && canvas.height > 12;
     }
 }
+function sajuxValidateCaptureBlob(blob) {
+    return !!(blob && blob.size > 256);
+}
+function sajuxHtmlToImageBlobPromise(target, scale, timeoutMs) {
+    return sajuxEnsureHtmlToImagePromise().then(function () {
+        return new Promise(function (resolve, reject) {
+            var done = false;
+            var timer = setTimeout(function () {
+                if (done) return;
+                done = true;
+                reject(new Error('html-to-image timeout'));
+            }, timeoutMs || 45000);
+            htmlToImage.toBlob(target, {
+                backgroundColor: '#050508',
+                pixelRatio: Math.max(1, Math.min(scale || 1, 2)),
+                cacheBust: true,
+                skipFonts: false
+            }).then(function (blob) {
+                if (done) return;
+                done = true;
+                clearTimeout(timer);
+                if (sajuxValidateCaptureBlob(blob)) resolve(blob);
+                else reject(new Error('empty blob'));
+            }).catch(function (err) {
+                if (done) return;
+                done = true;
+                clearTimeout(timer);
+                reject(err);
+            });
+        });
+    });
+}
 function sajuxCaptureSliceToBlob(target, capOpts, timeoutMs) {
+    var mobile = sajuxIsMobileCapture();
     var scales = [capOpts.scale];
     if (capOpts.scale > 1) scales.push(Math.max(0.85, capOpts.scale * 0.72));
     scales.push(1);
-    var i = 0;
-    function attempt() {
+    function h2cAttempt(i) {
         var sc = scales[i];
         var opts = {};
         for (var k in capOpts) { if (Object.prototype.hasOwnProperty.call(capOpts, k)) opts[k] = capOpts[k]; }
         opts.scale = sc;
+        opts.foreignObjectRendering = false;
         return sajuxHtml2canvasPromise(target, opts, timeoutMs).then(function (canvas) {
-            if (sajuxValidateCaptureCanvas(canvas)) return canvas;
+            if (sajuxValidateCaptureCanvas(canvas)) return sajuxCanvasToBlob(canvas, 'image/png');
             if (i + 1 >= scales.length) return Promise.reject(new Error('blank canvas'));
-            i += 1;
-            return attempt();
+            return h2cAttempt(i + 1);
         });
     }
-    return attempt().then(function (canvas) {
-        return sajuxCanvasToBlob(canvas, 'image/png');
-    });
+    function h2iAttempt(i) {
+        var sc = scales[i] || 1;
+        return sajuxHtmlToImageBlobPromise(target, sc, timeoutMs).catch(function (err) {
+            if (i + 1 >= scales.length) return Promise.reject(err);
+            return h2iAttempt(i + 1);
+        });
+    }
+    if (mobile && typeof htmlToImage !== 'undefined' && typeof htmlToImage.toBlob === 'function') {
+        return h2iAttempt(0).catch(function () { return h2cAttempt(0); });
+    }
+    return h2cAttempt(0);
 }
 function sajuxEnsureHtmlToImagePromise() {
     return new Promise(function (resolve, reject) {
@@ -5859,16 +5903,23 @@ function sajuxWaitImagesInRoot(root, maxMs) {
     });
 }
 function sajuxResolveCaptureTarget(slice, pack, captureHost) {
-    if (captureHost && slice.el) {
-        sajuxStyleCaptureHost(captureHost);
+    var source = slice && slice.el ? slice.el : null;
+    var node = source ? source.cloneNode(true) : null;
+    if (captureHost && node) {
+        sajuxStyleCaptureHost(captureHost, true);
         captureHost.innerHTML = '';
-        captureHost.appendChild(slice.el);
-        var via = captureHost.firstChild || slice.el;
+        captureHost.appendChild(node);
+        var via = captureHost.firstChild || node;
         via.style.width = '100%';
         via.style.maxWidth = sajuxCaptureHostWidthPx() + 'px';
         via.style.boxSizing = 'border-box';
+        via.style.background = '#050508';
         sajuxPrepareSliceForCapture(via);
         return { target: via, viaHost: true };
+    }
+    if (node) {
+        sajuxPrepareSliceForCapture(node);
+        return { target: node, viaHost: false };
     }
     sajuxPrepareSliceForCapture(slice.el);
     return { target: slice.el, viaHost: false };
@@ -5876,9 +5927,10 @@ function sajuxResolveCaptureTarget(slice, pack, captureHost) {
 function sajuxWaitCaptureLayout() {
     return new Promise(function (resolve) {
         var n = 0;
+        var max = sajuxIsMobileCapture() ? 6 : 2;
         function step() {
             n += 1;
-            if (n >= (sajuxIsMobileCapture() ? 3 : 2)) resolve();
+            if (n >= max) resolve();
             else if (typeof requestAnimationFrame === 'function') requestAnimationFrame(step);
             else setTimeout(step, 16);
         }
@@ -6336,10 +6388,12 @@ function sajuxRunReportImageCapture(root) {
             }).then(function () {
                 return sajuxCaptureSliceToBlob(captureTarget, capOpts, capTimeout);
             }).then(function (blob) {
+                if (captureHost) sajuxStyleCaptureHost(captureHost, false);
                 captures.push({ name: fileBase, blob: blob });
                 idx += 1;
                 captureNext();
             }).catch(function (err) {
+                if (captureHost) sajuxStyleCaptureHost(captureHost, false);
                 console.warn('[sajux] slice skip', idx + 1, fileBase, err);
                 idx += 1;
                 captureNext();
