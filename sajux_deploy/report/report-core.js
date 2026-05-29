@@ -6917,13 +6917,115 @@ function sajuxCaptureReportAsImage() {
         sajuxRunReportImageCapture(root);
     });
 }
+/* ── 모바일 라이브 DOM 크롭 캡처 ─────────────────────────────────────
+   DOM 복사·캡처 호스트 없이, 화면에 렌더된 컨테이너를 그대로 Y-crop.
+   → 모바일 레이아웃 그대로, 빈공간 없음, PC 레이아웃 강제 없음. */
+function sajuxMobileGetLiveGroups(container) {
+    var heads = sajuxFilterCaptureHeads(container, sajuxCollectJulHeads(container));
+    function classify(jul) {
+        if (jul === '표지') return 0;
+        if (jul === '목차') return -1;
+        if (jul === '보너스' || jul === '별첨') return 7;
+        var m = jul.match(/^(\d+)-(\d+)/);
+        if (!m) return 7;
+        var part = parseInt(m[1], 10), sec = parseInt(m[2], 10);
+        if (part === 1) return sec === 1 ? 0 : 1;
+        if (part === 2) { if (sec <= 3) return 2; if (sec === 4) return 3; return 4; }
+        if (part === 3) return sec <= 2 ? 5 : 6;
+        return 7;
+    }
+    var titles = ['표지·일주', '1부 원국', '현재 운세', '앞으로 올 대운', '세운·월운', '애정·재물', '합격·직업·건강', '개운법·마무리'];
+    var firstEl = new Array(8).fill(null);
+    /* 표지: 컨테이너 최상단(Y=0) */
+    firstEl[0] = container.querySelector('#sec-cover, #sec-client-cover, .cover-page') || container.firstElementChild;
+    heads.forEach(function(h) {
+        var idx = classify(h.getAttribute('data-sajux-jul') || '');
+        if (idx >= 0 && !firstEl[idx]) firstEl[idx] = h;
+    });
+    var groups = [];
+    for (var i = 0; i < 8; i++) {
+        if (firstEl[i]) groups.push({ idx: i, title: titles[i], el: firstEl[i] });
+    }
+    return groups;
+}
+
+function sajuxRunMobileLiveCrop(root, fab, restorePattern, starStash, hidden) {
+    var container = root.querySelector && (root.querySelector('#sec-report-full') || root.querySelector('#report-container') || root.querySelector('#main-content')) || root;
+    var groups = sajuxMobileGetLiveGroups(container);
+    if (!groups.length) {
+        alert('저장할 리포트 영역을 찾지 못했습니다.');
+        sajuxRestoreAfterCapture(hidden); sajuxRestoreStarCanvas(starStash); restorePattern();
+        if (fab) { fab.disabled = false; fab.textContent = '📥 사주 저장'; }
+        _sajuxCaptureBusy = false;
+        return;
+    }
+    window.scrollTo(0, 0);
+    var prevOv = root.style.overflow; root.style.overflow = 'visible';
+    if (container !== root) container.style.overflow = 'visible';
+    /* Y 측정: scrollTo(0,0) 후 getBoundingClientRect */
+    var cTop = container.getBoundingClientRect().top + window.scrollY;
+    var cW   = container.offsetWidth;
+    var cH   = container.scrollHeight;
+    function getY(el) { return Math.max(0, Math.round(el.getBoundingClientRect().top + window.scrollY - cTop)); }
+    for (var i = 0; i < groups.length; i++) {
+        groups[i].startY = (i === 0) ? 0 : getY(groups[i].el);
+        groups[i].endY   = (i < groups.length - 1) ? getY(groups[i + 1].el) : cH;
+    }
+    var captures = [];
+    var baseName = sajuxBuildCaptureBaseName(window.globalSajuData || null);
+    var mime = sajuxCaptureImageMime();
+    var imgExt = sajuxCaptureImageExt();
+    var total = groups.length;
+    sajuxStartCaptureProgress(total);
+    var idx = 0;
+    function cleanup() {
+        root.style.overflow = prevOv;
+        if (container !== root) container.style.overflow = '';
+        sajuxRestoreAfterCapture(hidden); sajuxRestoreStarCanvas(starStash); restorePattern();
+        if (fab) { fab.disabled = false; fab.textContent = '📥 사주 저장'; }
+        _sajuxCaptureBusy = false;
+    }
+    function next() {
+        if (idx >= total) {
+            sajuxUpdateCaptureProgress(total, total);
+            if (!captures.length) { alert('캡처된 이미지가 없습니다. 새로고침 후 다시 시도해 주세요.'); sajuxHideCaptureOverlay(); cleanup(); return; }
+            sajuxOfferCaptureDownload(captures, baseName, cleanup).catch(function(e) { console.warn('[sajux] zip err', e); cleanup(); });
+            return;
+        }
+        var g = groups[idx];
+        var h = Math.max(g.endY - g.startY, 1);
+        sajuxUpdateCaptureProgress(idx, total, g.title);
+        var fileBase = sajuxPadCaptureIndex(idx + 1) + '-' + sajuxSlugCaptureLabel(g.title);
+        var tout = 30000;
+        var done = false;
+        var timer = setTimeout(function() { if (!done) { done = true; idx++; setTimeout(next, 16); } }, tout * 2);
+        sajuxHtml2canvasRegion(container, 1, { w: cW, h: h, y: g.startY }, tout).then(function(canvas) {
+            if (done) return; done = true; clearTimeout(timer);
+            return sajuxCanvasToBlob(canvas, mime).then(function(blob) {
+                if (blob && blob.size > 100) captures.push({ name: fileBase, blob: blob, ext: imgExt });
+                idx++; setTimeout(next, 16);
+            });
+        }).catch(function(err) {
+            if (done) return; done = true; clearTimeout(timer);
+            console.warn('[sajux] mobile crop skip', idx + 1, err && err.message);
+            idx++; setTimeout(next, 16);
+        });
+    }
+    sajuxEnsureCaptureFonts().then(function() { return sajuxWaitImagesInRoot(container, 800); }).then(function() { setTimeout(next, 16); });
+}
+/* ───────────────────────────────────────────────────────────────── */
+
 function sajuxRunReportImageCapture(root) {
     var restorePattern = sajuxPatchCreatePatternForCapture();
     var starStash = sajuxDetachStarCanvas();
     var hidden = sajuxHideForCapture();
     var fab = document.getElementById('sajux-image-fab');
     if (fab) { fab.disabled = true; fab.textContent = '잠시만 기다려 주세요…'; }
-    /* A안: 모바일은 sajuxBeginDesktopCaptureSession 호출 안 함 → 모바일 레이아웃 그대로 캡처 */
+    /* 모바일: 라이브 DOM Y-crop 방식 (모바일 레이아웃 그대로) */
+    if (sajuxIsMobileDevice()) {
+        sajuxRunMobileLiveCrop(root, fab, restorePattern, starStash, hidden);
+        return;
+    }
     var pack = sajuxCollectCaptureSlices(root);
     var slices = pack.slices;
     var captureHost = pack.host;
