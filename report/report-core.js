@@ -5622,12 +5622,20 @@ function sajuxMergeCaptureSliceMany(list, meta) {
     merged.setAttribute('data-sajux-jul', jul);
     merged.setAttribute('data-sajux-jul-title', title);
     for (var i = 0; i < list.length; i++) {
-        if (list[i].el) merged.innerHTML += list[i].el.innerHTML;
+        if (!list[i].el) continue;
+        var kids = list[i].el.childNodes;
+        for (var k = 0; k < kids.length; k++) {
+            merged.appendChild(kids[k].cloneNode(true));
+        }
     }
     return { el: merged, jul: jul, title: title, headEl: meta.headEl || list[0].headEl || null };
 }
 function sajuxGroupMobileMainCaptureSlices(slices) {
     if (!slices || !slices.length || !sajuxIsMobileDevice()) return slices || [];
+    /* iOS: 섹션 병합 시 html2canvas가 대부분 실패 → 목차만 제외하고 절별 캡처 */
+    if (sajuxIsIosDevice()) {
+        return slices.filter(function (s) { return String(s.jul || '') !== '목차'; });
+    }
     var cover = [];
     var part1 = [];
     var part2Now = [];
@@ -5683,6 +5691,7 @@ function sajuxGroupMobileMainCaptureSlices(slices) {
 }
 function sajuxGroupMobileCompatCaptureSlices(slices) {
     if (!slices || !slices.length || !sajuxIsMobileDevice()) return slices || [];
+    if (sajuxIsIosDevice()) return slices;
     var cover = [];
     var summary = [];
     var blockA = [];
@@ -5776,7 +5785,7 @@ function sajuxPushCaptureSlice(slices, container, startNode, endNode, headEl) {
     }
     var wrap = sajuxWrapDomRange(container, startNode, endNode, { jul: jul, title: title });
     if (!wrap) return;
-    var maxSlicePx = 6800;
+    var maxSlicePx = sajuxIsIosDevice() ? 2000 : 6800;
     if (wrap.scrollHeight <= maxSlicePx) {
         slices.push({ el: wrap, jul: jul, title: title, headEl: headEl });
         return;
@@ -6055,6 +6064,32 @@ function sajuxCaptureEtaSeconds(remaining) {
     return Math.max(5, Math.ceil(remaining * 1.8));
 }
 var SAJUX_MOBILE_CHUNK_H = 2200;
+var SAJUX_IOS_CHUNK_H = 1800;
+function sajuxMobileChunkThreshold() {
+    return sajuxIsIosDevice() ? SAJUX_IOS_CHUNK_H : SAJUX_MOBILE_CHUNK_H;
+}
+function sajuxHtml2canvasIosClipChunk(host, target, scale, y0, ch, w, timeoutMs) {
+    host = host || document.getElementById('sajux-capture-host') || document.body;
+    var clip = document.createElement('div');
+    clip.className = 'sajux-ios-capture-clip';
+    clip.style.cssText = 'overflow:hidden;width:' + w + 'px;height:' + ch + 'px;background:#050508;position:relative;';
+    var inner = document.createElement('div');
+    inner.style.cssText = 'width:' + w + 'px;box-sizing:border-box;background:#050508;margin-top:-' + y0 + 'px;';
+    inner.innerHTML = target.innerHTML;
+    clip.appendChild(inner);
+    host.appendChild(clip);
+    var prevVis = target.style.visibility;
+    target.style.visibility = 'hidden';
+    return sajuxWaitCaptureTargetLayout(inner).then(function () {
+        return sajuxHtml2canvasRegion(clip, scale, { w: w, h: ch, y: 0 }, timeoutMs);
+    }).then(function (canvas) {
+        if (!sajuxValidateCaptureCanvas(canvas)) return Promise.reject(new Error('blank clip canvas'));
+        return canvas;
+    }).finally(function () {
+        target.style.visibility = prevVis;
+        try { host.removeChild(clip); } catch (eRm) {}
+    });
+}
 function sajuxWaitCaptureTargetLayout(target, tries) {
     tries = tries || 0;
     var dims = sajuxMeasureCaptureTarget(target);
@@ -6111,10 +6146,13 @@ function sajuxHtml2canvasRegion(target, scale, region, timeoutMs) {
 }
 function sajuxCaptureTargetToBlobs(target, mime, timeoutMs) {
     var scale = sajuxCalcSliceCaptureScale(target);
+    var host = document.getElementById('sajux-capture-host') || target.parentNode;
     return sajuxWaitCaptureTargetLayout(target).then(function (dims) {
-        var useChunks = sajuxIsMobileDevice() && dims.h > SAJUX_MOBILE_CHUNK_H;
+        var chunkH = sajuxMobileChunkThreshold();
+        var useChunks = sajuxIsMobileDevice() && dims.h > chunkH;
         if (!useChunks) {
             return sajuxHtml2canvasRegion(target, scale, { w: dims.w, h: dims.h, y: 0 }, timeoutMs).then(function (canvas) {
+                if (!sajuxValidateCaptureCanvas(canvas)) return [];
                 return sajuxCanvasToBlob(canvas, mime).then(function (blob) {
                     return (blob && blob.size > 100) ? [blob] : [];
                 });
@@ -6123,10 +6161,14 @@ function sajuxCaptureTargetToBlobs(target, mime, timeoutMs) {
         var blobs = [];
         var y0 = 0;
         var perChunk = timeoutMs || 28000;
+        var stepH = sajuxIsIosDevice() ? SAJUX_IOS_CHUNK_H : SAJUX_MOBILE_CHUNK_H;
         function nextChunk() {
             if (y0 >= dims.h) return Promise.resolve(blobs);
-            var ch = Math.min(SAJUX_MOBILE_CHUNK_H, dims.h - y0);
-            return sajuxHtml2canvasRegion(target, scale, { w: dims.w, h: ch, y: y0 }, perChunk).then(function (canvas) {
+            var ch = Math.min(stepH, dims.h - y0);
+            var capturePromise = sajuxIsIosDevice()
+                ? sajuxHtml2canvasIosClipChunk(host, target, scale, y0, ch, dims.w, perChunk)
+                : sajuxHtml2canvasRegion(target, scale, { w: dims.w, h: ch, y: y0 }, perChunk);
+            return capturePromise.then(function (canvas) {
                 return sajuxCanvasToBlob(canvas, mime);
             }).then(function (blob) {
                 if (blob && blob.size > 100) blobs.push(blob);
