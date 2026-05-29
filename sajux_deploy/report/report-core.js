@@ -6000,8 +6000,9 @@ function sajuxInjectCaptureFonts(doc) {
     var st = doc.createElement('style');
     st.id = 'sajux-capture-fonts';
     var ppuri = sajuxCaptureFontUrl('fonts/JeongseonArirangPpuri.ttf');
-    st.textContent = "@font-face{font-family:'Jeongseon Arirang Ppuri';src:url('" + ppuri + "') format('truetype');font-weight:400;font-style:normal;font-display:swap;}"
-        + "@import url('https://fonts.googleapis.com/css2?family=Nanum+Brush+Script&display=swap');";
+    /* 구글 폰트 @import 제거 — 캡처마다 인터넷 요청을 일으켜 속도 저하 주범.
+       로컬 ttf(Jeongseon)만 주입, Nanum Brush는 메인 페이지에 이미 로드된 것을 상속. */
+    st.textContent = "@font-face{font-family:'Jeongseon Arirang Ppuri';src:url('" + ppuri + "') format('truetype');font-weight:400;font-style:normal;font-display:swap;}";
     doc.head.appendChild(st);
 }
 function sajuxEnsureCaptureFonts() {
@@ -6140,7 +6141,7 @@ function sajuxCaptureTargetToBlobs(target, mime, timeoutMs) {
     var scale = sajuxCalcSliceCaptureScale(target);
     /* 슬라이스별 이미지 대기 짧게 — 메인 루프에서 이미 전체 컨테이너 이미지를 한 번 대기함.
        클론된 img는 캐시 hit으로 즉시 complete되므로 긴 대기 불필요(속도 핵심). */
-    return sajuxWaitImagesInRoot(target, sajuxIsMobileDevice() ? 500 : 1200).then(function () {
+    return sajuxWaitImagesInRoot(target, sajuxIsMobileDevice() ? 150 : 1200).then(function () {
         return sajuxWaitCaptureTargetLayout(target);
     }).then(function (dims) {
         /* 모바일 너비≈390 → 390×9000≈3.5M 픽셀, iOS 한도(16.7M) 이내. 청킹 임계값을 높여
@@ -7119,8 +7120,8 @@ function sajuxRunReportImageCapture(root) {
                 try { liveAnchor.scrollIntoView(true); } catch (e2) {}
             }
         }
-        /* 슬라이스마다 16ms 숨 틔워 게이지 렌더 + 모바일 JS 스레드 해제 */
-        setTimeout(startCapture, sajuxIsMobileDevice() ? 80 : 16);
+        /* 슬라이스마다 짧게 숨 틔워 게이지 렌더 + 모바일 JS 스레드 해제 */
+        setTimeout(startCapture, sajuxIsMobileDevice() ? 24 : 16);
         function startCapture() {
         var sliceTimeout = sajuxIsMobileDevice() ? 90000 : 30000;
         var timedOut = false;
