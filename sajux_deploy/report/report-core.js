@@ -5127,7 +5127,7 @@ function sajuxEnsureCaptureOverlayVisible(el) {
 }
 function sajuxStartCaptureProgress(total, destMode) {
     sajuxStopCaptureCountdown();
-    var mobile = sajuxIsMobileCapture();
+    var mobileDevice = sajuxIsMobileDevice();
     var id = 'sajux-capture-overlay';
     var el = document.getElementById(id);
     if (!el) {
@@ -5138,12 +5138,12 @@ function sajuxStartCaptureProgress(total, destMode) {
     sajuxEnsureCaptureOverlayVisible(el);
     el.innerHTML = ''
         + '<div class="sajux-capture-overlay-inner" style="width:min(320px,88vw);text-align:center;font-family:\'Noto Sans KR\',sans-serif;color:#f5f0e6;">'
-        + '<div style="font-size:15px;font-weight:600;">' + (mobile ? '사진 저장 중' : '사주 저장 중') + '</div>'
+        + '<div style="font-size:15px;font-weight:600;">' + (mobileDevice ? 'PC 화질로 저장 중' : '사주 저장 중') + '</div>'
         + '<div style="width:100%;height:10px;background:rgba(255,255,255,0.12);border-radius:999px;margin:22px 0 12px;overflow:hidden;">'
         + '<div id="sajux-cap-gauge-fill" style="width:0%;height:100%;background:linear-gradient(90deg,#8a6f3c,#c7a76a);border-radius:999px;transition:width 0.35s ease;"></div></div>'
         + '<div id="sajux-cap-progress-label" style="font-size:14px;color:rgba(245,240,232,0.78);">0 / ' + total + '</div>'
         + '<div style="font-size:12px;color:rgba(245,240,232,0.48);margin-top:10px;">' + sajuxCaptureDestLabel(destMode) + '</div>'
-        + '<div style="font-size:12px;color:rgba(245,240,232,0.42);margin-top:6px;">화면을 건드리지 마세요</div>'
+        + '<div style="font-size:12px;color:rgba(245,240,232,0.42);margin-top:6px;">' + (mobileDevice ? '모바일도 PC와 같은 화면으로 저장합니다' : '화면을 건드리지 마세요') + '</div>'
         + '</div>';
     el.style.display = 'flex';
     return el;
@@ -5307,23 +5307,40 @@ function sajuxClearDisplaySectionCache() {
     _sajuxDisplaySecCache.main = null;
     _sajuxDisplaySecCache.compat = null;
 }
-function sajuxIsMobileCapture() {
+function sajuxIsMobileDevice() {
     try {
+        if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent || '')) return true;
         if (window.innerWidth <= 900) return true;
         if (window.matchMedia && window.matchMedia('(max-width: 900px)').matches) return true;
     } catch (e0) {}
-    return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent || '');
+    return false;
+}
+var _sajuxDesktopCaptureActive = false;
+var SAJUX_CAPTURE_PAGE_W = 720;
+var SAJUX_CAPTURE_WINDOW_W = 1280;
+var SAJUX_CAPTURE_WINDOW_H = 900;
+function sajuxBeginDesktopCaptureSession() {
+    _sajuxDesktopCaptureActive = true;
+    try { document.documentElement.classList.add('sajux-capture-desktop'); } catch (eCls) {}
+}
+function sajuxEndDesktopCaptureSession() {
+    _sajuxDesktopCaptureActive = false;
+    try { document.documentElement.classList.remove('sajux-capture-desktop'); } catch (eCls) {}
+}
+function sajuxCaptureHostOnScreen() {
+    return /iPhone|iPad|iPod/i.test(navigator.userAgent || '');
+}
+function sajuxIsMobileCapture() {
+    if (_sajuxDesktopCaptureActive) return false;
+    return sajuxIsMobileDevice();
 }
 function sajuxCaptureHostWidthPx() {
-    // 모바일도 720px 고정 — 세로로 길게 쌓이는 좁은 레이아웃보다 짧고 빠름
-    return 720;
+    return SAJUX_CAPTURE_PAGE_W;
 }
 function sajuxStyleCaptureHost(host) {
     if (!host) return host;
     var w = sajuxCaptureHostWidthPx();
-    var mobile = sajuxIsMobileCapture();
-    // iOS Safari: 완전히 화면 밖(-12000px)이면 빈 캔버스 → on-screen + 투명
-    if (mobile) {
+    if (sajuxCaptureHostOnScreen()) {
         host.style.cssText = 'position:fixed;left:0;top:0;width:' + w + 'px;max-width:' + w + 'px;z-index:-1;opacity:0.01;visibility:visible;pointer-events:none;overflow:visible;background:#050508;';
     } else {
         host.style.cssText = 'position:fixed;left:-12000px;top:0;width:' + w + 'px;max-width:' + w + 'px;z-index:-1;opacity:1;visibility:visible;pointer-events:none;overflow:visible;background:#050508;';
@@ -5677,11 +5694,10 @@ function sajuxAttachPartBanners(slices) {
     return slices;
 }
 function sajuxCalcSliceCaptureScale(el) {
-    var mobile = sajuxIsMobileCapture();
-    var maxDim = mobile ? 6144 : 16384;
-    var prefer = mobile ? 1 : 1.5;
+    var maxDim = 16384;
+    var prefer = 1.5;
     if (!el) return prefer;
-    var w = Math.max(el.offsetWidth || 0, el.scrollWidth || 0, 320);
+    var w = Math.max(el.offsetWidth || 0, el.scrollWidth || 0, SAJUX_CAPTURE_PAGE_W);
     var h = Math.max(el.offsetHeight || 0, el.scrollHeight || 0, 1);
     return Math.max(1, Math.min(prefer, maxDim / w, maxDim / h));
 }
@@ -5690,8 +5706,7 @@ function sajuxCanAutoDownloadBlob() {
     return true;
 }
 function sajuxCaptureEtaSeconds(remaining) {
-    var perSlice = sajuxIsMobileCapture() ? 2.2 : 1.8;
-    return Math.max(5, Math.ceil(remaining * perSlice));
+    return Math.max(5, Math.ceil(remaining * 1.8));
 }
 function sajuxValidateCaptureCanvas(canvas) {
     if (!canvas || canvas.width < 8 || canvas.height < 8) return false;
@@ -5906,27 +5921,23 @@ function sajuxHtml2canvasIgnoreEl(node) {
 }
 function sajuxPrepareSliceForCapture(root) {
     if (!root) return;
-    var mobile = sajuxIsMobileCapture();
     root.querySelectorAll('#sec-cover, #sec-client-cover, .cover-page, .toc-page').forEach(function (el) {
         el.style.minHeight = '0';
         el.style.height = 'auto';
-        if (mobile) el.style.padding = '24px 16px';
     });
     root.querySelectorAll('img').forEach(function (img) {
         img.removeAttribute('loading');
-        var isLogo = img.classList && img.classList.contains('sajux-logo');
-        if (isLogo && mobile) {
-            img.style.maxWidth = 'min(280px, 78vw)';
-            img.style.width = 'auto';
-            img.style.height = 'auto';
-        }
     });
-    if (mobile) {
-        var logos = root.querySelectorAll('.sajux-logo-wrap img, .sajux-logo');
-        logos.forEach(function (img, i) {
-            if (i > 0) img.style.display = 'none';
-        });
-    }
+}
+function sajuxMeasureCaptureTarget(target) {
+    if (!target) return { w: SAJUX_CAPTURE_PAGE_W, h: 1 };
+    target.style.width = SAJUX_CAPTURE_PAGE_W + 'px';
+    target.style.maxWidth = SAJUX_CAPTURE_PAGE_W + 'px';
+    target.style.boxSizing = 'border-box';
+    target.style.background = '#050508';
+    var w = SAJUX_CAPTURE_PAGE_W;
+    var h = Math.max(target.offsetHeight || 0, target.scrollHeight || 0, 1);
+    return { w: w, h: h };
 }
 function sajuxWaitImagesInRoot(root, maxMs) {
     if (!root) return Promise.resolve();
@@ -5936,7 +5947,7 @@ function sajuxWaitImagesInRoot(root, maxMs) {
         if (imgs[i].src && !imgs[i].complete) pending.push(imgs[i]);
     }
     if (!pending.length) return Promise.resolve();
-    maxMs = maxMs || (sajuxIsMobileCapture() ? 600 : 900);
+    maxMs = maxMs || 900;
     return new Promise(function (resolve) {
         var left = pending.length;
         var timer = setTimeout(resolve, maxMs);
@@ -6016,6 +6027,7 @@ function sajuxOnCaptureClone(doc) {
             + '.card,.yearly-card,.monthly-card,.glass-panel,.report-chapter,.module-item,.inner-card,.detail-box,.rel-panel,.person-card,.score-section,.compat-duo-manse-wrap,.f-card,.t-card,.seyun-year-card,.ch-story-card,.vip-module-item,.module-box,.analysis-card,.fortune-scroll>div,.yearly-card-container>div,.monthly-card-container>div{background:rgba(14,14,20,0.96)!important;background-color:rgba(14,14,20,0.96)!important;}'
             + '.badge,.tag,.jijanggan,.sp-badge,.rel-badge,.compat-person-tag{background:rgba(32,32,42,0.92)!important;color:inherit!important;}'
             + 'body::before{display:none!important;}'
+            + '#sajux-capture-host,#sajux-capture-host .sajux-capture-jul-wrap,#sajux-capture-host #report-container{width:720px!important;max-width:720px!important;min-width:720px!important;}'
             + '*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}';
         doc.head.appendChild(st);
     }
@@ -6373,11 +6385,13 @@ function sajuxRunReportImageCapture(root) {
     var hidden = sajuxHideForCapture();
     var fab = document.getElementById('sajux-image-fab');
     if (fab) { fab.disabled = true; fab.textContent = '잠시만 기다려 주세요…'; }
+    if (sajuxIsMobileDevice()) sajuxBeginDesktopCaptureSession();
     var pack = sajuxCollectCaptureSlices(root);
     var slices = pack.slices;
     var captureHost = pack.host;
     if (!slices.length) {
         alert('저장할 리포트 영역을 찾지 못했습니다.');
+        sajuxEndDesktopCaptureSession();
         sajuxRestoreAfterCapture(hidden);
         if (fab) { fab.disabled = false; fab.textContent = '📥 사주 저장'; }
         _sajuxCaptureBusy = false;
@@ -6411,6 +6425,7 @@ function sajuxRunReportImageCapture(root) {
         root.style.overflow = prevOverflow;
         if (pack.container && pack.container !== root) pack.container.style.overflow = '';
         if (captureHost) captureHost.innerHTML = '';
+        sajuxEndDesktopCaptureSession();
         sajuxRestoreAfterCapture(hidden);
         sajuxRestoreStarCanvas(starStash);
         restorePattern();
@@ -6443,17 +6458,16 @@ function sajuxRunReportImageCapture(root) {
             captureHost.appendChild(el);
         }
         var captureTarget = (captureHost && captureHost.firstChild) ? captureHost.firstChild : el;
-        var imgWaitMs = sajuxSliceNeedsImageWait(slice) ? (sajuxIsMobileCapture() ? 600 : 900) : 0;
+        sajuxPrepareSliceForCapture(captureTarget);
+        var imgWaitMs = sajuxSliceNeedsImageWait(slice) ? 900 : 0;
         var waitP = imgWaitMs ? sajuxWaitImagesInRoot(captureTarget, imgWaitMs) : Promise.resolve();
         waitP.then(function () { startCapture(); });
         function startCapture() {
+        var dims = sajuxMeasureCaptureTarget(captureTarget);
         var sliceScale = sajuxCalcSliceCaptureScale(captureTarget);
-        var fullW = Math.max(captureTarget.offsetWidth, captureTarget.scrollWidth, 320);
-        var fullH = Math.max(captureTarget.offsetHeight, captureTarget.scrollHeight, 1);
-        var sliceTimeout = sajuxIsMobileCapture() ? 22000 : 35000;
         function attempt(scale) {
             var timedOut = false;
-            var timer = setTimeout(function () { timedOut = true; advance(); }, sliceTimeout);
+            var timer = setTimeout(function () { timedOut = true; advance(); }, 35000);
             var settled = false;
             function advance() {
                 if (settled) return;
@@ -6468,10 +6482,10 @@ function sajuxRunReportImageCapture(root) {
                 useCORS: true,
                 allowTaint: true,
                 logging: false,
-                width: fullW,
-                height: fullH,
-                windowWidth: fullW,
-                windowHeight: fullH,
+                width: dims.w,
+                height: dims.h,
+                windowWidth: SAJUX_CAPTURE_WINDOW_W,
+                windowHeight: SAJUX_CAPTURE_WINDOW_H,
                 scrollX: 0,
                 scrollY: 0,
                 x: 0,
@@ -6493,7 +6507,7 @@ function sajuxRunReportImageCapture(root) {
                 captureNext();
             }).catch(function (err) {
                 if (timedOut || settled) return;
-                if (!sajuxIsMobileCapture() && scale > 1) {
+                if (scale > 1) {
                     settled = true;
                     clearTimeout(timer);
                     attempt(1);
