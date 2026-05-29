@@ -7005,6 +7005,45 @@ function sajuxMobileGetLiveGroups(container) {
     return groups;
 }
 
+/* 서버(헤드리스 크롬) 캡처용: 8개 그룹의 절대 페이지 좌표를 계산해 반환.
+   서버는 page.screenshot({clip})로 이 좌표 영역을 그대로 잘라 8장 이미지를 만든다.
+   iOS 캔버스 한도와 무관하고, 렌더는 실제 Chrome이라 디자인이 100% 동일하다. */
+window.__sajuxComputeServerSlices = function () {
+    try {
+        var root = (typeof sajuxGetCaptureRoot === 'function') ? sajuxGetCaptureRoot() : null;
+        var container = (root && root.querySelector && (root.querySelector('#sec-report-full') || root.querySelector('#report-container') || root.querySelector('#main-content')))
+            || root
+            || document.querySelector('#sec-report-full')
+            || document.querySelector('#report-container')
+            || document.body;
+        if (!container) return { ok: false, error: 'no_container' };
+        var groups = sajuxMobileGetLiveGroups(container);
+        if (!groups || !groups.length) return { ok: false, error: 'no_groups' };
+        window.scrollTo(0, 0);
+        var crect = container.getBoundingClientRect();
+        var cLeft = Math.max(0, crect.left + window.scrollX);
+        var cTopAbs = crect.top + window.scrollY;
+        var cW = container.offsetWidth || container.scrollWidth;
+        var cH = container.scrollHeight;
+        function absY(el) { return el.getBoundingClientRect().top + window.scrollY; }
+        var slices = [];
+        for (var i = 0; i < groups.length; i++) {
+            var startY = (i === 0) ? cTopAbs : absY(groups[i].el);
+            var endY = (i < groups.length - 1) ? absY(groups[i + 1].el) : (cTopAbs + cH);
+            slices.push({
+                x: Math.round(cLeft),
+                y: Math.round(Math.max(0, startY)),
+                w: Math.round(cW),
+                h: Math.max(1, Math.round(endY - startY)),
+                label: (i + 1) + '-' + (groups[i].title || ('page' + (i + 1)))
+            });
+        }
+        return { ok: true, pageWidth: Math.round(cW), totalHeight: Math.round(cH), slices: slices };
+    } catch (e) {
+        return { ok: false, error: String((e && e.message) || e) };
+    }
+};
+
 function sajuxRunMobileLiveCrop(root, fab, restorePattern, starStash, hidden) {
     var container = root.querySelector && (root.querySelector('#sec-report-full') || root.querySelector('#report-container') || root.querySelector('#main-content')) || root;
     var groups = sajuxMobileGetLiveGroups(container);
