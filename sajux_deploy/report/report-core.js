@@ -5093,10 +5093,13 @@ function sajuxStopCaptureCountdown() {
         _sajuxCaptureCountdownTid = null;
     }
 }
-function sajuxStartCaptureCountdown(total) {
+function sajuxCaptureDestLabel(mode) {
+    if (mode === 'files') return '저장 위치 · 파일 앱';
+    return '저장 위치 · 다운로드 폴더';
+}
+function sajuxStartCaptureProgress(total, destMode) {
     sajuxStopCaptureCountdown();
     var mobile = sajuxIsMobileCapture();
-    var etaSec = sajuxCaptureEtaSeconds(total);
     var id = 'sajux-capture-overlay';
     var el = document.getElementById(id);
     if (!el) {
@@ -5106,28 +5109,49 @@ function sajuxStartCaptureCountdown(total) {
     }
     el.style.cssText = 'position:fixed;inset:0;z-index:100050;background:rgba(0,0,0,0.78);display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;visibility:visible;opacity:1;';
     el.innerHTML = ''
-        + '<div class="sajux-capture-overlay-inner" style="max-width:320px;text-align:center;font-family:\'Noto Sans KR\',sans-serif;color:#f5f0e6;">'
-        + '<div style="font-size:15px;font-weight:600;letter-spacing:0.02em;">' + (mobile ? '사진 저장 중' : '사주 저장 중') + '</div>'
-        + '<div id="sajux-cap-eta-num" style="font-size:52px;font-weight:800;color:#c7a76a;line-height:1.15;margin:18px 0 8px;font-variant-numeric:tabular-nums;">' + etaSec + '</div>'
-        + '<div style="font-size:13px;color:rgba(245,240,232,0.68);line-height:1.6;">초 남음 · 화면을 건드리지 마세요</div>'
+        + '<div class="sajux-capture-overlay-inner" style="width:min(320px,88vw);text-align:center;font-family:\'Noto Sans KR\',sans-serif;color:#f5f0e6;">'
+        + '<div style="font-size:15px;font-weight:600;">' + (mobile ? '사진 저장 중' : '사주 저장 중') + '</div>'
+        + '<div style="width:100%;height:10px;background:rgba(255,255,255,0.12);border-radius:999px;margin:22px 0 12px;overflow:hidden;">'
+        + '<div id="sajux-cap-gauge-fill" style="width:0%;height:100%;background:linear-gradient(90deg,#8a6f3c,#c7a76a);border-radius:999px;transition:width 0.35s ease;"></div></div>'
+        + '<div id="sajux-cap-progress-label" style="font-size:14px;color:rgba(245,240,232,0.78);">0 / ' + total + '</div>'
+        + '<div style="font-size:12px;color:rgba(245,240,232,0.48);margin-top:10px;">' + sajuxCaptureDestLabel(destMode) + '</div>'
+        + '<div style="font-size:12px;color:rgba(245,240,232,0.42);margin-top:6px;">화면을 건드리지 마세요</div>'
         + '</div>';
     el.style.display = 'flex';
-    var left = etaSec;
-    _sajuxCaptureCountdownTid = setInterval(function () {
-        left -= 1;
-        if (left < 0) left = 0;
-        var num = document.getElementById('sajux-cap-eta-num');
-        if (num) num.textContent = String(left);
-        if (left <= 0) sajuxStopCaptureCountdown();
-    }, 1000);
     return el;
 }
-function sajuxTickCaptureCountdown(remainingSlices) {
-    var num = document.getElementById('sajux-cap-eta-num');
-    if (!num) return;
-    var est = sajuxCaptureEtaSeconds(remainingSlices);
-    var cur = parseInt(num.textContent, 10);
-    if (!isFinite(cur) || est < cur) num.textContent = String(est);
+function sajuxUpdateCaptureProgress(done, total) {
+    var pct = total ? Math.min(100, Math.round((done / total) * 100)) : 0;
+    var fill = document.getElementById('sajux-cap-gauge-fill');
+    var label = document.getElementById('sajux-cap-progress-label');
+    if (fill) fill.style.width = pct + '%';
+    if (label) label.textContent = done + ' / ' + total;
+}
+function sajuxPromptCaptureDestination(onPick) {
+    var mobile = sajuxIsMobileCapture();
+    var msg = mobile
+        ? '어디에 저장할까요?\n\nZIP 안에 PNG가 들어 있습니다.\n저장 후 파일 앱에서 압축을 풀어 주세요.'
+        : '어디에 저장할까요?\n\nPC 「다운로드」 폴더에 ZIP 파일이 저장됩니다.';
+    var buttons = [];
+    buttons.push({
+        label: mobile ? '파일 앱에 저장' : '다운로드 폴더에 저장',
+        primary: true,
+        onClick: function () {
+            window.__sajuxCaptureDest = mobile ? 'files' : 'download';
+            sajuxHideCaptureOverlay();
+            if (typeof onPick === 'function') onPick(window.__sajuxCaptureDest);
+        }
+    });
+    buttons.push({
+        label: '취소',
+        primary: false,
+        onClick: function () {
+            sajuxHideCaptureOverlay();
+            _sajuxCaptureBusy = false;
+            if (typeof onPick === 'function') onPick(null);
+        }
+    });
+    sajuxShowCaptureOverlay(msg, { buttons: buttons, progressOnly: true });
 }
 function sajuxShowCaptureOverlay(message, opts) {
     opts = opts || {};
@@ -5519,15 +5543,13 @@ function sajuxCollectCaptureSlices(root) {
     return { container: container, slices: slices, host: sajuxEnsureCaptureHost() };
 }
 function sajuxCalcSliceCaptureScale(el) {
-    var mobile = sajuxIsMobileCapture();
-    var maxDim = mobile ? 4096 : 12288;
+    var maxDim = 16384;
     var dpr = window.devicePixelRatio || 1;
-    var prefer = mobile ? Math.min(1, dpr) : Math.min(1.25, Math.max(1, dpr));
+    var prefer = Math.min(2, Math.max(1.5, dpr));
     if (!el) return prefer;
     var w = Math.max(el.offsetWidth || 0, el.scrollWidth || 0, 320);
     var h = Math.max(el.offsetHeight || 0, el.scrollHeight || 0, 1);
-    var floor = mobile ? 0.75 : 0.9;
-    return Math.max(floor, Math.min(prefer, maxDim / w, maxDim / h));
+    return Math.max(1, Math.min(prefer, maxDim / w, maxDim / h));
 }
 function sajuxCanAutoDownloadBlob() {
     if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent || '')) return false;
@@ -5867,12 +5889,20 @@ function sajuxCaptureSaveHint(kind, filename) {
 }
 function sajuxOfferZipDownload(zipBlob, filename, extraMsg) {
     var url = URL.createObjectURL(zipBlob);
-    var mobile = sajuxIsMobileCapture();
-    var autoOk = !mobile && sajuxCanAutoDownloadBlob() && sajuxDownloadBlob(url, filename);
+    var dest = window.__sajuxCaptureDest || (sajuxIsMobileCapture() ? 'files' : 'download');
+    var autoOk = false;
+    if (dest === 'files' && sajuxIsMobileCapture()) {
+        autoOk = false;
+    } else if (dest === 'files') {
+        sajuxShareOrDownloadZip(zipBlob, filename, url);
+        autoOk = true;
+    } else {
+        autoOk = sajuxCanAutoDownloadBlob() && sajuxDownloadBlob(url, filename);
+    }
     var head = autoOk ? '✅ 저장 완료!' : '✅ ZIP 준비 완료!';
     var msg = head + '\n\n' + sajuxCaptureSaveHint(autoOk ? 'zip-auto' : 'zip-manual', filename) + (extraMsg || '');
     var buttons = [];
-    if (mobile) {
+    if (dest === 'files' && sajuxIsMobileCapture()) {
         buttons.push({
             label: '파일 앱에 저장',
             primary: true,
@@ -5923,76 +5953,22 @@ function sajuxBuildCaptureZipBlob(captures, baseName) {
     });
     return zip.generateAsync({
         type: 'blob',
-        compression: 'STORE'
+        compression: 'DEFLATE',
+        compressionOptions: { level: 6 }
     });
 }
 function sajuxOfferCaptureDownload(captures, baseName, onDone) {
-    var files = sajuxCaptureFilesFromItems(captures);
     var zipName = sajuxBuildZipFilename(window.globalSajuData || null);
-
-    function finishDone() {
+    var total = window.__sajuxLastCaptureTotal || captures.length;
+    var fill = document.getElementById('sajux-cap-gauge-fill');
+    var label = document.getElementById('sajux-cap-progress-label');
+    if (fill) fill.style.width = '100%';
+    if (label) label.textContent = 'ZIP 만드는 중…';
+    return sajuxBuildCaptureZipBlob(captures, baseName).then(function (zipBlob) {
+        var partial = captures.length < total;
+        sajuxOfferZipDownload(zipBlob, zipName, partial ? ('\n\n⚠ ' + captures.length + '장만 저장됐어요. Wi-Fi에서 새로고침 후 다시 시도해 주세요.') : '');
         if (typeof onDone === 'function') onDone();
-    }
-
-    function deliverZip() {
-        sajuxTickCaptureCountdown(2);
-        return sajuxBuildCaptureZipBlob(captures, baseName).then(function (zipBlob) {
-            var partial = captures.length < (window.__sajuxLastCaptureTotal || captures.length);
-            sajuxOfferZipDownload(zipBlob, zipName, partial ? ('\n\n⚠ ' + captures.length + '장만 저장됐어요. Wi-Fi에서 새로고침 후 다시 시도해 주세요.') : '');
-            finishDone();
-        });
-    }
-
-    if (sajuxIsMobileCapture() && files.length && files.length <= 10 && sajuxCanShareCaptureFiles(files)) {
-        sajuxShowCaptureOverlay(
-            '✅ 사진 준비 완료!\n\n' + sajuxCaptureSaveHint('share', zipName),
-            {
-                buttons: [
-                    {
-                        label: '사진 앱에 저장',
-                        primary: true,
-                        onClick: function () {
-                            navigator.share({ files: files, title: '사주X · ' + baseName })
-                                .then(function () {
-                                    sajuxHideCaptureOverlay();
-                                    finishDone();
-                                })
-                                .catch(function (err) {
-                                    if (err && err.name === 'AbortError') return;
-                                    deliverZip().catch(function (zipErr) {
-                                        console.error('sajuxOfferCaptureDownload zip fallback', zipErr);
-                                        alert('사진 저장에 실패했습니다. ZIP 받기를 다시 시도해 주세요.');
-                                        finishDone();
-                                    });
-                                });
-                        }
-                    },
-                    {
-                        label: 'ZIP으로 받기',
-                        primary: false,
-                        onClick: function () {
-                            deliverZip().catch(function (zipErr) {
-                                console.error('sajuxOfferCaptureDownload zip', zipErr);
-                                alert('ZIP 저장에 실패했습니다. 새로고침 후 다시 시도해 주세요.');
-                                finishDone();
-                            });
-                        }
-                    },
-                    {
-                        label: '닫기',
-                        primary: false,
-                        onClick: function () {
-                            sajuxHideCaptureOverlay();
-                            finishDone();
-                        }
-                    }
-                ]
-            }
-        );
-        return Promise.resolve();
-    }
-
-    return deliverZip();
+    });
 }
 function sajuxBuildCaptureBaseName(data) {
     var ctx = window.__compatCtx;
@@ -6020,11 +5996,10 @@ function sajuxCaptureReportAsImage() {
         return;
     }
     _sajuxCaptureBusy = true;
-    ensureJsZipLoaded(function () {
-        ensureHtml2CanvasLoaded(function () {
-            ensureHtmlToImageLoaded(function () {
-                sajuxRunReportImageCapture(root);
-            });
+    sajuxPromptCaptureDestination(function (dest) {
+        if (!dest) return;
+        sajuxEnsureCaptureLibs(function () {
+            sajuxRunReportImageCapture(root);
         });
     });
 }
@@ -6041,6 +6016,7 @@ function sajuxRunReportImageCapture(root) {
         alert('저장할 리포트 영역을 찾지 못했습니다.');
         sajuxRestoreAfterCapture(hidden);
         if (fab) { fab.disabled = false; fab.textContent = '📥 사주 저장'; }
+        _sajuxCaptureBusy = false;
         return;
     }
     window.scrollTo(0, 0);
@@ -6055,7 +6031,8 @@ function sajuxRunReportImageCapture(root) {
     var total = slices.length;
     window.__sajuxLastCaptureTotal = total;
     var baseName = sajuxBuildCaptureBaseName(window.globalSajuData || null);
-    sajuxStartCaptureCountdown(total);
+    var destMode = window.__sajuxCaptureDest || (sajuxIsMobileCapture() ? 'files' : 'download');
+    sajuxStartCaptureProgress(total, destMode);
     function finishErr(err) {
         console.error('sajuxCaptureReportAsImage', err);
         var hint = (err && err.message && /캡처된 이미지/.test(err.message))
@@ -6076,6 +6053,7 @@ function sajuxRunReportImageCapture(root) {
     }
     function captureNext() {
         if (idx >= total) {
+            sajuxUpdateCaptureProgress(total, total);
             if (!captures.length) {
                 finishErr(new Error('캡처된 이미지가 없습니다. 페이지를 새로고침한 뒤 다시 시도해 주세요.'));
                 cleanup();
@@ -6091,80 +6069,41 @@ function sajuxRunReportImageCapture(root) {
             return;
         }
         var slice = slices[idx];
+        var el = slice.el;
+        sajuxUpdateCaptureProgress(idx, total);
         var fileBase = sajuxSliceCaptureLabel(slice, idx + 1);
-        sajuxTickCaptureCountdown(total - idx);
-        var sliceDelay = sajuxIsMobileCapture() ? 16 : 8;
-        function pushCaptureBlob(blob) {
+        if (captureHost) {
+            captureHost.innerHTML = '';
+            captureHost.appendChild(el);
+        }
+        var captureTarget = (captureHost && captureHost.firstChild) ? captureHost.firstChild : el;
+        var liveAnchor = slice.headEl || null;
+        if (liveAnchor) {
+            try { liveAnchor.scrollIntoView({ block: 'start', behavior: 'instant' }); } catch (e1) { try { liveAnchor.scrollIntoView(true); } catch (e2) {} }
+        }
+        var sliceScale = sajuxCalcSliceCaptureScale(captureTarget);
+        html2canvas(captureTarget, {
+            backgroundColor: '#050508',
+            scale: sliceScale,
+            useCORS: true,
+            allowTaint: true,
+            logging: false,
+            ignoreElements: sajuxHtml2canvasIgnoreEl,
+            onclone: sajuxOnCaptureClone
+        }).then(function (canvas) {
+            if (!sajuxValidateCaptureCanvas(canvas)) {
+                return Promise.reject(new Error('blank canvas'));
+            }
+            return sajuxCanvasToBlob(canvas, 'image/png');
+        }).then(function (blob) {
             captures.push({ name: fileBase, blob: blob });
             idx += 1;
-            setTimeout(captureNext, sliceDelay);
-        }
-        function runSliceCapture(attempt) {
-            var resolved = sajuxResolveCaptureTarget(slice, pack, captureHost);
-            var captureTarget = resolved.target;
-            if (!captureTarget || !sajuxIsCaptureableEl(captureTarget)) {
-                if (attempt < 2 && captureHost && slice.el) {
-                    setTimeout(function () { runSliceCapture(attempt + 1); }, 120);
-                    return;
-                }
-                console.warn('[sajux] slice skip (no target)', idx + 1, fileBase);
-                idx += 1;
-                setTimeout(captureNext, sliceDelay);
-                return;
-            }
-            var sliceScale = sajuxCalcSliceCaptureScale(captureTarget);
-            var scaleFactors = [1, 0.82, 0.65, 0.5];
-            var scaleUse = sliceScale * (scaleFactors[attempt] || 0.45);
-            var h2cOpts = {
-                backgroundColor: '#050508',
-                scale: scaleUse,
-                useCORS: true,
-                allowTaint: true,
-                foreignObjectRendering: false,
-                logging: false,
-                imageTimeout: 20000,
-                ignoreElements: sajuxHtml2canvasIgnoreEl,
-                onclone: sajuxOnCaptureClone
-            };
-            function doneCapture(blob) {
-                pushCaptureBlob(blob);
-            }
-            function failCapture(err) {
-                if (attempt < 3) {
-                    setTimeout(function () { runSliceCapture(attempt + 1); }, 100);
-                    return;
-                }
-                if (attempt === 3) {
-                    sajuxHtmlToImageCanvasPromise(captureTarget, scaleUse).then(function (canvas) {
-                        if (!sajuxValidateCaptureCanvas(canvas)) return Promise.reject(new Error('blank canvas hti'));
-                        return sajuxCanvasToBlob(canvas, 'image/png');
-                    }).then(doneCapture).catch(function (htiErr) {
-                        console.warn('[sajux] slice design capture failed', idx + 1, fileBase, err, htiErr);
-                        idx += 1;
-                        setTimeout(captureNext, sliceDelay);
-                    });
-                    return;
-                }
-                console.warn('[sajux] slice skip', idx + 1, fileBase, err);
-                idx += 1;
-                setTimeout(captureNext, sliceDelay);
-            }
-            sajuxWaitImagesInRoot(captureTarget).then(function () {
-                return sajuxWaitCaptureLayout();
-            }).then(function () {
-                return sajuxHtml2canvasPromise(captureTarget, h2cOpts, sajuxIsMobileCapture() ? 120000 : 90000);
-            }).then(function (canvas) {
-                if (!sajuxValidateCaptureCanvas(canvas)) {
-                    return Promise.reject(new Error('blank canvas'));
-                }
-                return sajuxCanvasToBlob(canvas, 'image/png');
-            }).then(doneCapture).catch(failCapture);
-        }
-        if (typeof requestAnimationFrame === 'function') {
-            requestAnimationFrame(function () { setTimeout(function () { runSliceCapture(0); }, 32); });
-        } else {
-            setTimeout(function () { runSliceCapture(0); }, 32);
-        }
+            captureNext();
+        }).catch(function (err) {
+            console.warn('[sajux] slice skip', idx + 1, fileBase, err);
+            idx += 1;
+            captureNext();
+        });
     }
     captureNext();
 }
