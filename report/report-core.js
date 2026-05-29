@@ -5917,7 +5917,10 @@ function sajuxRunReportImageCapture(root) {
     ));
     function finishErr(err) {
         console.error('sajuxCaptureReportAsImage', err);
-        alert('사주 다운로드에 실패했습니다. Chrome·Safari 최신 버전에서 다시 시도해 주세요.\n(' + (err && err.message ? err.message : err) + ')');
+        var hint = (err && err.message && /캡처된 이미지/.test(err.message))
+            ? 'Wi-Fi 연결을 확인하신 뒤, 페이지를 새로고침하고 다시 「사주 저장」을 눌러 주세요.'
+            : 'Chrome·Safari 최신 버전에서 다시 시도해 주세요.';
+        alert('사주 저장에 실패했습니다.\n' + hint + '\n(' + (err && err.message ? err.message : err) + ')');
         sajuxHideCaptureOverlay();
     }
     function cleanup() {
