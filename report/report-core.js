@@ -361,7 +361,7 @@ function buildChapterHeadTopicFirst(mainTitle, eyebrowLabel, leadHook, opts) {
     var julAttrTf = opts.sajuxJul ? ' data-sajux-jul="' + escHtmlAttr(String(opts.sajuxJul)) + '"' : '';
     var julTitleAttrTf = opts.sajuxJulTitle ? ' data-sajux-jul-title="' + escHtmlAttr(String(opts.sajuxJulTitle)) + '"' : '';
     return '<div class="ch-head-topic-first"' + julAttrTf + julTitleAttrTf + ' style="margin-bottom:16px;' + extra + '">'
-        + '<h2 class="ch-main-topic-title" style="font-family:\'Noto Sans KR\',sans-serif;font-size:clamp(17px,3.9vw,21px);font-weight:800;line-height:1.25;margin:0 0 6px;color:var(--text,rgba(255,255,255,0.96));">' + titleInnerTf + '</h2>'
+        + '<h2 class="ch-main-topic-title" style="font-family:\'Noto Sans KR\',sans-serif;font-size:clamp(20px,5.2vw,28px);font-weight:800;line-height:1.28;margin:0 0 6px;color:var(--text,rgba(255,255,255,0.96));">' + titleInnerTf + '</h2>'
         + subHtml
         + hookHtml
         + '</div>';
@@ -472,8 +472,8 @@ function formatSectionTitleWithNum(numStr, title) {
 /** 부-절 번호(회색) + 제목 — HTML (인라인 색: override.css 캐시와 무관하게 적용) */
 function buildSectionTitleHtml(numStr, title) {
     var t = escHtmlAttr(String(title == null ? '' : title).trim());
-    var numSt = 'color:rgba(255,255,255,0.44);font-weight:600;letter-spacing:0.05em;';
-    var sepSt = 'color:rgba(255,255,255,0.30);font-weight:500;';
+    var numSt = 'color:rgba(199,167,106,0.88);font-weight:700;letter-spacing:0.04em;';
+    var sepSt = 'color:rgba(255,255,255,0.35);font-weight:500;';
     if (!numStr) return t;
     if (numStr === '별첨') {
         return '<span class="ch-sec-num" style="' + numSt + '">별첨</span><span class="ch-sec-num-sep" style="' + sepSt + '"> · </span><span class="ch-sec-title">' + t + '</span>';
@@ -6376,10 +6376,13 @@ function filterDaeunRowsByClientAge(rows, clientAge) {
 
 /** UI·리포트 공통 — 만 나이 기준 안내 (한국식 세는 나이 아님) */
 function getAgeBasisNoteHtml(style) {
-    var text = '대운·세운·연령대에 나오는 ○○세 표기는 모두 만 나이(양력 생일 기준)입니다. 한국식 세는 나이와 숫자가 다를 수 있습니다.';
-    if (style === 'disclaimer') return text;
-    if (style === 'plain') return '※ ' + text;
-    return '<p class="age-basis-note" style="margin:0 0 12px;font-size:11px;line-height:1.65;color:#888;">※ ' + text + '</p>';
+    var shortText = '연령·대운 표기는 만 나이(양력 생일 기준)입니다.';
+    var longText = '대운·세운·연령대에 나오는 ○○세 표기는 모두 만 나이(양력 생일 기준)입니다. 한국식 세는 나이와 숫자가 다를 수 있습니다.';
+    if (style === 'disclaimer') return longText;
+    if (style === 'plain') return '※ ' + shortText;
+    if (style === 'inline') return '<span class="age-basis-note age-basis-note--inline">※ ' + shortText + '</span> ';
+    if (style === 'cover') return '<p class="age-basis-note age-basis-note--cover">' + shortText + '</p>';
+    return '<p class="age-basis-note">' + shortText + '</p>';
 }
 
 /** 개운법 나이대 블록 — 이미 지난 연령대 조언은 숨김 (38세 → 20·30대 미표시, 40·50대만) */
@@ -12895,7 +12898,7 @@ function buildClientCoverPage(data) {
         <div style="width:110px;height:110px;margin:2px auto 12px;display:flex;align-items:center;justify-content:center;"><img src="${animalImage}" alt="${animalPlain || '일주 동물'}" loading="lazy" style="width:100%;height:100%;object-fit:contain;display:block;"/></div>
         <div style="font-size:30px;line-height:1.15;margin:0 0 6px;">${iljuBig}</div>
         ${animalHighlight ? `<div class="animal-symbol">${nmUi(name)} 상징 동물은 <span class="cover-highlight">${escHtmlAttr(animalHighlight)}</span>입니다.</div>` : ''}
-        ${coverLine ? `<div class="birth-info">${escHtmlAttr(coverLine)}</div><p style="margin:10px 0 0;font-size:11px;line-height:1.6;color:rgba(180,185,195,0.75);">※ 대운·연령 표기는 만 나이(양력 생일 기준)입니다.</p>` : `<p style="margin:10px 0 0;font-size:11px;line-height:1.6;color:rgba(180,185,195,0.75);">※ 대운·연령 표기는 만 나이(양력 생일 기준)입니다.</p>`}
+        ${coverLine ? '<div class="client-birth-block"><div class="client-birth-label">생년월일시</div><div class="client-birth-primary birth-info">' + escHtmlAttr(coverLine) + '</div></div>' + getAgeBasisNoteHtml('cover') : getAgeBasisNoteHtml('cover')}
 
         <div style="margin-top:38px;font-size:10px;color:rgba(210,214,223,0.34);letter-spacing:0.14em;">${formatReportAccessLine(data)}</div>
     </div>`;
@@ -13033,12 +13036,9 @@ function buildTOC(data) {
     };
     function tocRow(num, title, sub) {
         var mainHtml = (num && num !== '—') ? buildSectionTitleHtml(num, title) : escHtmlAttr(title);
-        return '<div class="toc-entry" style="' + row + '"><div style="flex:1;"><div class="toc-main-line" style="font-size:14px;font-weight:600;color:var(--text,rgba(255,255,255,0.88));margin-bottom:2px;">' + mainHtml + '</div><div style="font-size:11.5px;color:var(--text-dim,rgba(255,255,255,0.50));line-height:1.55;">' + escHtmlAttr(sub) + '</div></div></div>';
+        return '<div class="toc-entry" style="' + row + '"><div style="flex:1;"><div class="toc-main-line" style="font-size:16px;font-weight:700;color:var(--text,rgba(255,255,255,0.92));margin-bottom:3px;line-height:1.4;">' + mainHtml + '</div><div style="font-size:12px;color:var(--text-dim,rgba(255,255,255,0.50));line-height:1.55;">' + escHtmlAttr(sub) + '</div></div></div>';
     }
     var body = '';
-    body += '<div style="' + gHead + '">앞부분<span style="' + gSub + '">표지 · 확인 · 목차</span></div>';
-    body += tocRow('—', '표지 · 인사', '브랜드 톤 · 리포트 제목');
-    body += tocRow('—', '고객 정보 확인', '생년월일시 · 양음력 · 성별');
     [0, 1, 2, 3, 4].forEach(function (p) {
         var keys = [];
         Object.keys(SAJUX_SECTION_REGISTRY).forEach(function (k) {
@@ -15124,7 +15124,7 @@ var strat = _dText(s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>'
             const curSip = getSipseong(dayStem, curGz[0]);
             const curKr = `${HAN_KOR[curGz[0]]}${HAN_KOR[curGz[1]]}`;
             const dwEndAge = activeDaeunIdx < daeunData.length-1 ? (daeunData[activeDaeunIdx+1].getStartAge()-1) : (curDW.getStartAge()-1)+10;
-            daeunSummaryEl.innerHTML = getAgeBasisNoteHtml('block').replace('margin:0 0 12px','margin:0 0 8px') + `현재 <b>${curDW.getStartAge()-1}세 ~ ${dwEndAge}세</b> (만 나이)  · <b style="color:var(--gold);">${curGz[0]}${curGz[1]}(${curKr})</b> 대운 진행 중 &nbsp;·&nbsp; 십성 <b>${curSip || '-'}</b> 축이 10년을 이끕니다.`;
+            daeunSummaryEl.innerHTML = getAgeBasisNoteHtml('inline') + `현재 <b>${curDW.getStartAge()-1}세 ~ ${dwEndAge}세</b> · <b style="color:var(--gold);">${curGz[0]}${curGz[1]}(${curKr})</b> 대운 진행 중 · 십성 <b>${curSip || '-'}</b> 축이 10년을 이끕니다.`;
         } else if(daeunSummaryEl) {
             daeunSummaryEl.innerHTML = '만 나이 기준으로 현재 대운 구간을 확인하십시오. 진행 중인 대운이 굵게 표시됩니다.';
         }
