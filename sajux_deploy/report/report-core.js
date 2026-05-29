@@ -5128,11 +5128,70 @@ function sajuxCaptureProgressMsg(head, detail) {
     return s + '\n\n잠시만 기다려 주세요.\n화면을 건드리지 말고 그대로 두시면 됩니다.';
 }
 var _sajuxCaptureCountdownTid = null;
+var _sajuxCapturePulseTid = null;
+var _sajuxCaptureStartedAt = 0;
+var _sajuxCapturePulseStep = 0;
 function sajuxStopCaptureCountdown() {
     if (_sajuxCaptureCountdownTid) {
         clearInterval(_sajuxCaptureCountdownTid);
         _sajuxCaptureCountdownTid = null;
     }
+    if (_sajuxCapturePulseTid) {
+        clearInterval(_sajuxCapturePulseTid);
+        _sajuxCapturePulseTid = null;
+    }
+}
+function sajuxEnsureCapturePulseStyles() {
+    if (document.getElementById('sajux-capture-pulse-style')) return;
+    var st = document.createElement('style');
+    st.id = 'sajux-capture-pulse-style';
+    st.textContent = ''
+        + '@keyframes sajux-cap-blink{0%,100%{opacity:1}50%{opacity:.45}}'
+        + '@keyframes sajux-cap-shimmer{0%{transform:translateX(-120%)}100%{transform:translateX(320%)}}'
+        + '@keyframes sajux-cap-ring{0%{box-shadow:0 0 0 0 rgba(199,167,106,.55)}70%{box-shadow:0 0 0 10px rgba(199,167,106,0)}100%{box-shadow:0 0 0 0 rgba(199,167,106,0)}}'
+        + '.sajux-cap-title-pulse{animation:sajux-cap-blink 1.15s ease-in-out infinite}'
+        + '.sajux-cap-gauge-track{position:relative;width:100%;height:10px;background:rgba(255,255,255,.12);border-radius:999px;margin:22px 0 12px;overflow:hidden}'
+        + '.sajux-cap-gauge-fill{height:100%;background:linear-gradient(90deg,#8a6f3c,#c7a76a,#e2c88a);border-radius:999px;transition:width .35s ease;animation:sajux-cap-blink 1.4s ease-in-out infinite}'
+        + '.sajux-cap-gauge-shimmer{position:absolute;top:0;left:0;width:38%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.42),transparent);animation:sajux-cap-shimmer 1.6s ease-in-out infinite;pointer-events:none}'
+        + '.sajux-cap-dots{margin:14px 0 6px;font-size:0;line-height:1}'
+        + '.sajux-cap-dot{display:inline-block;width:9px;height:9px;margin:0 5px;border-radius:50%;background:rgba(255,255,255,.22);vertical-align:middle;transition:background .25s ease,transform .25s ease}'
+        + '.sajux-cap-dot.on{background:#c7a76a;transform:scale(1.15);animation:sajux-cap-blink .85s ease-in-out infinite}'
+        + '.sajux-cap-status{font-size:12px;color:rgba(245,240,232,.55);margin-top:8px;animation:sajux-cap-blink 1.8s ease-in-out infinite}'
+        + '.sajux-cap-elapsed{font-size:11px;color:rgba(199,167,106,.88);margin-top:10px;letter-spacing:.02em}'
+        + '.sajux-cap-live-badge{display:inline-block;margin-left:6px;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700;color:#111;background:#c7a76a;animation:sajux-cap-ring 1.6s ease-out infinite}';
+    document.head.appendChild(st);
+}
+function sajuxTickCapturePulse() {
+    _sajuxCapturePulseStep += 1;
+    var dots = document.querySelectorAll('#sajux-cap-activity .sajux-cap-dot');
+    if (dots.length) {
+        var active = _sajuxCapturePulseStep % dots.length;
+        for (var i = 0; i < dots.length; i++) {
+            if (i === active) dots[i].classList.add('on');
+            else dots[i].classList.remove('on');
+        }
+    }
+    var elapsedEl = document.getElementById('sajux-cap-elapsed');
+    if (elapsedEl && _sajuxCaptureStartedAt) {
+        var sec = Math.max(0, Math.floor((Date.now() - _sajuxCaptureStartedAt) / 1000));
+        var min = Math.floor(sec / 60);
+        var rem = sec % 60;
+        var timeStr = min > 0 ? (min + '분 ' + rem + '초') : (sec + '초');
+        elapsedEl.textContent = timeStr + ' 경과 · 지금도 저장 중이에요';
+    }
+    var statusEl = document.getElementById('sajux-cap-status');
+    if (statusEl) {
+        var msgs = ['화면을 건드리지 마세요', '이미지 만드는 중…', '잠시만 기다려 주세요', '거의 다 됐어요'];
+        statusEl.textContent = msgs[Math.floor(_sajuxCapturePulseStep / 2) % msgs.length];
+    }
+}
+function sajuxStartCapturePulse() {
+    sajuxEnsureCapturePulseStyles();
+    _sajuxCaptureStartedAt = Date.now();
+    _sajuxCapturePulseStep = 0;
+    sajuxTickCapturePulse();
+    if (_sajuxCapturePulseTid) clearInterval(_sajuxCapturePulseTid);
+    _sajuxCapturePulseTid = setInterval(sajuxTickCapturePulse, 650);
 }
 function sajuxCaptureDestLabel(mode) {
     if (mode === 'picker') return '저장 위치 · 직접 선택';
@@ -5154,15 +5213,23 @@ function sajuxStartCaptureProgress(total, destMode) {
         document.body.appendChild(el);
     }
     sajuxEnsureCaptureOverlayVisible(el);
+    sajuxEnsureCapturePulseStyles();
     el.innerHTML = ''
         + '<div class="sajux-capture-overlay-inner" style="width:min(320px,92vw);text-align:center;font-family:\'Noto Sans KR\',sans-serif;color:#f5f0e6;margin:auto;padding:32px 20px;">'
-        + '<div style="font-size:15px;font-weight:600;">사주 저장 중</div>'
-        + '<div style="width:100%;height:10px;background:rgba(255,255,255,0.12);border-radius:999px;margin:22px 0 12px;overflow:hidden;">'
-        + '<div id="sajux-cap-gauge-fill" style="width:0%;height:100%;background:linear-gradient(90deg,#8a6f3c,#c7a76a);border-radius:999px;transition:width 0.35s ease;"></div></div>'
+        + '<div class="sajux-cap-title-pulse" style="font-size:15px;font-weight:600;">사주 저장 중<span class="sajux-cap-live-badge">LIVE</span></div>'
+        + '<div class="sajux-cap-gauge-track">'
+        + '<div id="sajux-cap-gauge-fill" class="sajux-cap-gauge-fill" style="width:0%;"></div>'
+        + '<div class="sajux-cap-gauge-shimmer" aria-hidden="true"></div>'
+        + '</div>'
         + '<div id="sajux-cap-progress-label" style="font-size:14px;color:rgba(245,240,232,0.78);">0 / ' + total + '</div>'
-        + '<div style="font-size:12px;color:rgba(245,240,232,0.42);margin-top:10px;">화면을 건드리지 마세요</div>'
+        + '<div id="sajux-cap-activity" class="sajux-cap-dots" aria-hidden="true">'
+        + '<span class="sajux-cap-dot on"></span><span class="sajux-cap-dot"></span><span class="sajux-cap-dot"></span>'
+        + '</div>'
+        + '<div id="sajux-cap-status" class="sajux-cap-status">화면을 건드리지 마세요</div>'
+        + '<div id="sajux-cap-elapsed" class="sajux-cap-elapsed">0초 경과 · 지금도 저장 중이에요</div>'
         + '</div>';
     el.style.display = 'flex';
+    sajuxStartCapturePulse();
     return el;
 }
 function sajuxUpdateCaptureProgress(done, total, detail) {
@@ -5175,6 +5242,7 @@ function sajuxUpdateCaptureProgress(done, total, detail) {
         if (detail) line += '\n' + detail;
         label.textContent = line;
     }
+    sajuxTickCapturePulse();
 }
 function sajuxIsAndroidDevice() {
     return /Android/i.test(navigator.userAgent || '');
@@ -6753,7 +6821,13 @@ function sajuxOfferCaptureDownload(captures, baseName, onDone) {
             sajuxBuildCaptureZipBlob(captures, baseName).then(function (zipBlob) {
                 var partial = captures.length < total;
                 sajuxEndDesktopCaptureSession();
-                sajuxOfferZipDownload(zipBlob, zipName, partial ? ('\n\n⚠ ' + captures.length + '장만 저장됐어요. Wi-Fi에서 새로고침 후 다시 시도해 주세요.') : '', captures);
+                var partialMsg = '';
+                if (partial) {
+                    partialMsg = '\n\n⚠ ' + captures.length + '장만 저장됐어요 (전체 ' + total + '장).';
+                    if (captures.length <= 1) partialMsg += '\nSafari에서 새로고침 후 다시 시도해 주세요.';
+                    else partialMsg += '\nWi-Fi에서 새로고침 후 다시 시도해 주세요.';
+                }
+                sajuxOfferZipDownload(zipBlob, zipName, partialMsg, captures);
                 if (typeof onDone === 'function') onDone();
                 resolve();
             }).catch(reject);
