@@ -4983,23 +4983,14 @@ function ensureHtmlToImageLoaded(done) {
         fail: function () { if (typeof done === 'function') done(); }
     });
 }
-function sajuxWrapTextLines(ctx, text, maxWidth) {
+function sajuxFastWrapLines(text, maxChars) {
+    maxChars = maxChars || 34;
     var lines = [];
-    var paras = String(text || '').split('\n');
-    paras.forEach(function (p) {
+    String(text || '').split('\n').forEach(function (p) {
         if (!p) { lines.push(''); return; }
-        var line = '';
-        for (var i = 0; i < p.length; i++) {
-            var ch = p.charAt(i);
-            var test = line + ch;
-            if (ctx.measureText(test).width > maxWidth && line) {
-                lines.push(line);
-                line = ch;
-            } else {
-                line = test;
-            }
+        for (var i = 0; i < p.length; i += maxChars) {
+            lines.push(p.slice(i, i + maxChars));
         }
-        if (line) lines.push(line);
     });
     return lines;
 }
@@ -5010,7 +5001,7 @@ function sajuxCanvasFromLiteCard(div, w) {
     var body = div.children[2] ? (div.children[2].textContent || '') : '';
     var canvas = document.createElement('canvas');
     var ctx = canvas.getContext('2d');
-    var lines = sajuxWrapTextLines(ctx, body, w - 36);
+    var lines = sajuxFastWrapLines(body, 34);
     var h = Math.min(96 + lines.length * 17, 14000);
     canvas.width = w;
     canvas.height = h;
@@ -5042,7 +5033,7 @@ function sajuxBuildMobileLiteCard(jul, title, bodyText) {
     var body = document.createElement('div');
     body.style.cssText = 'color:#ccc;font-size:12px;line-height:1.72;white-space:pre-wrap;word-break:keep-all;';
     var raw = String(bodyText || '').replace(/\r/g, '').replace(/\n{3,}/g, '\n\n').trim();
-    if (raw.length > 11000) raw = raw.slice(0, 11000) + '\n…(이하는 웹 리포트에서 이어집니다)';
+    if (raw.length > 3800) raw = raw.slice(0, 3800) + '\n…(이하는 웹에서 이어집니다)';
     body.textContent = raw;
     div.appendChild(hJul);
     div.appendChild(hTitle);
@@ -5065,33 +5056,14 @@ function sajuxConvertToMobileLiteCard(sourceEl, jul, title) {
     return sajuxBuildMobileLiteCard(jul, title, raw);
 }
 function sajuxMobileLiteSliceToBlob(div) {
-    return new Promise(function (resolve, reject) {
-        var host = sajuxEnsureCaptureHost();
-        host.innerHTML = '';
-        host.style.opacity = '0.01';
-        host.style.left = '0';
-        host.appendChild(div);
-        var w = Math.min(720, window.innerWidth || 390);
-        div.style.width = w + 'px';
-        var ch = Math.min(Math.max(div.scrollHeight + 24, 120), 10000);
-        function fallbackCanvas() {
-            sajuxCanvasFromLiteCard(div, w).then(resolve).catch(reject);
-        }
-        if (typeof htmlToImage !== 'undefined' && htmlToImage.toCanvas) {
-            htmlToImage.toCanvas(div, {
-                pixelRatio: 1,
-                backgroundColor: '#050508',
-                width: w,
-                height: ch,
-                cacheBust: true
-            }).then(function (canvas) {
-                return sajuxCanvasToBlob(canvas, 'image/png');
-            }).then(resolve).catch(function () {
-                fallbackCanvas();
-            });
-            return;
-        }
-        fallbackCanvas();
+    var w = Math.min(720, window.innerWidth || 390);
+    return sajuxCanvasFromLiteCard(div, w);
+}
+function sajuxMobilePrepareLiteSlices(slices, pack) {
+    if (!sajuxIsMobileCapture()) return;
+    slices.forEach(function (sl) {
+        if (sl._liteDiv) return;
+        sl._liteDiv = sajuxConvertToMobileLiteCard(sl.el, sl.jul, sl.title);
     });
 }
 function sajuxPreloadCaptureLibs() {
@@ -5400,22 +5372,35 @@ function sajuxCollectCaptureSlices(root) {
         { sel: '#sec-client-cover', jul: '고객표지', title: '고객 정보' },
         { sel: '.toc-page', jul: '목차', title: '목차' }
     ];
-    introDefs.forEach(function (def) {
-        var el = container.querySelector(def.sel);
-        if (!sajuxIsVisibleEl(el)) return;
-        var wrap = document.createElement('div');
-        wrap.className = 'sajux-capture-jul-wrap';
-        wrap.style.cssText = 'background:#050508;box-sizing:border-box;width:100%;';
-        wrap.setAttribute('data-sajux-jul', def.jul);
-        wrap.setAttribute('data-sajux-jul-title', def.title);
-        wrap.appendChild(el.cloneNode(true));
-        slices.push({
-            el: wrap,
-            jul: def.jul,
-            title: def.title,
-            liveSel: sajuxIsMobileCapture() ? def.sel : null
+    if (sajuxIsMobileCapture()) {
+        var introParts = [];
+        introDefs.forEach(function (def) {
+            var el = container.querySelector(def.sel);
+            if (!sajuxIsVisibleEl(el)) return;
+            var t = (el.innerText || '').replace(/\r/g, '').trim();
+            introParts.push('■ ' + def.title + '\n' + t.slice(0, 850));
         });
-    });
+        if (introParts.length) {
+            slices.push({
+                jul: '시작',
+                title: '표지·고객정보·목차',
+                _liteDiv: sajuxBuildMobileLiteCard('시작', '표지 · 고객정보 · 목차', introParts.join('\n\n')),
+                mobileLite: true
+            });
+        }
+    } else {
+        introDefs.forEach(function (def) {
+            var el = container.querySelector(def.sel);
+            if (!sajuxIsVisibleEl(el)) return;
+            var wrap = document.createElement('div');
+            wrap.className = 'sajux-capture-jul-wrap';
+            wrap.style.cssText = 'background:#050508;box-sizing:border-box;width:100%;';
+            wrap.setAttribute('data-sajux-jul', def.jul);
+            wrap.setAttribute('data-sajux-jul-title', def.title);
+            wrap.appendChild(el.cloneNode(true));
+            slices.push({ el: wrap, jul: def.jul, title: def.title });
+        });
+    }
 
     var heads = sajuxFilterCaptureHeads(container, sajuxCollectJulHeads(container));
     for (var i = 0; i < heads.length; i++) {
@@ -5783,6 +5768,10 @@ function sajuxRunReportImageCapture(root) {
     var idx = 0;
     var total = slices.length;
     var baseName = sajuxBuildCaptureBaseName(window.globalSajuData || null);
+    if (sajuxIsMobileCapture()) {
+        sajuxShowCaptureOverlay('다운로드 준비 중…\n총 ' + total + '장');
+        sajuxMobilePrepareLiteSlices(slices, pack);
+    }
 
     function finishOk() {
         var zip = new JSZip();
@@ -5792,12 +5781,21 @@ function sajuxRunReportImageCapture(root) {
                 + '압축을 푼 뒤, 파일명 앞 숫자(01, 02…) 순서대로 보시면 화면 흐름과 같습니다.\n'
             : '사주X 리포트 다운로드 파일입니다.\n'
                 + '압축을 푼 뒤, 파일명 앞 숫자(01, 02…) 순서대로 보시면 목차 절 순서와 같습니다.\n';
+        if (sajuxIsMobileCapture()) {
+            readMe += '\n[모바일 저장 안내]\n'
+                + '· 휴대폰에서는 화면 전체 캡처 대신 글 카드 형태 PNG로 저장됩니다.\n'
+                + '· 만세력 표·디자인 표지는 웹 리포트 링크에서 그대로 보실 수 있습니다.\n';
+        }
         folder.file('00-읽는법.txt', readMe + '총 ' + captures.length + '장 · ' + baseName + '\n');
         captures.forEach(function (item) {
             folder.file(item.name + '.png', item.blob);
         });
         sajuxShowCaptureOverlay('사주 다운로드 파일 만드는 중…\n거의 다 됐어요.');
-        return zip.generateAsync({ type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 6 } });
+        return zip.generateAsync({
+            type: 'blob',
+            compression: 'DEFLATE',
+            compressionOptions: { level: sajuxIsMobileCapture() ? 1 : 6 }
+        });
     }
     function finishErr(err) {
         console.error('sajuxCaptureReportAsImage', err);
@@ -5833,35 +5831,30 @@ function sajuxRunReportImageCapture(root) {
         }
         var slice = slices[idx];
         var fileBase = sajuxSliceCaptureLabel(slice, idx + 1);
-        var resolved = sajuxResolveCaptureTarget(slice, pack, captureHost);
-        var captureTarget = resolved.target;
-        var sliceScale = sajuxCalcSliceCaptureScale(captureTarget);
-        var liveAnchor = slice.headEl || (slice.liveSel ? pack.container.querySelector(slice.liveSel) : null);
-        if (liveAnchor && !slice.liveSel) {
-            try { liveAnchor.scrollIntoView({ block: 'start', behavior: 'instant' }); } catch (e1) { try { liveAnchor.scrollIntoView(true); } catch (e2) {} }
-        }
         var mobile = sajuxIsMobileCapture();
         var overlayMsg = '사주 다운로드 중… (' + (idx + 1) + '/' + total + ')\n' + (slice.jul || '') + ' ' + (slice.title || '');
-        if (mobile && idx === 0) overlayMsg += '\n(모바일: 가벼운 카드 방식)';
         sajuxShowCaptureOverlay(overlayMsg);
         var overlayEl = document.getElementById('sajux-capture-overlay');
         function runSliceCapture(attempt) {
             if (mobile) {
-                var liteDiv = slice._liteDiv;
-                if (!liteDiv) {
-                    liteDiv = sajuxConvertToMobileLiteCard(captureTarget, slice.jul, slice.title);
-                    slice._liteDiv = liteDiv;
-                }
+                var liteDiv = slice._liteDiv || sajuxConvertToMobileLiteCard(slice.el, slice.jul, slice.title);
                 sajuxMobileLiteSliceToBlob(liteDiv).then(function (blob) {
                     captures.push({ name: fileBase, blob: blob });
                     idx += 1;
-                    setTimeout(captureNext, 60);
+                    captureNext();
                 }).catch(function (err) {
                     console.warn('[sajux] mobile lite skip', idx + 1, fileBase, err);
                     idx += 1;
-                    setTimeout(captureNext, 60);
+                    captureNext();
                 });
                 return;
+            }
+            var resolved = sajuxResolveCaptureTarget(slice, pack, captureHost);
+            var captureTarget = resolved.target;
+            var sliceScale = sajuxCalcSliceCaptureScale(captureTarget);
+            var liveAnchor = slice.headEl || (slice.liveSel ? pack.container.querySelector(slice.liveSel) : null);
+            if (liveAnchor && !slice.liveSel) {
+                try { liveAnchor.scrollIntoView({ block: 'start', behavior: 'instant' }); } catch (e1) { try { liveAnchor.scrollIntoView(true); } catch (e2) {} }
             }
             var scaleUse = attempt > 0 ? Math.max(0.75, sliceScale * (attempt > 1 ? 0.65 : 0.82)) : sliceScale;
             var hCap = Math.max(captureTarget.offsetHeight || 0, captureTarget.scrollHeight || 0, 0);
@@ -5896,11 +5889,12 @@ function sajuxRunReportImageCapture(root) {
                 setTimeout(captureNext, 48);
             });
         }
-        var preDelay = mobile ? 80 : 32;
-        if (typeof requestAnimationFrame === 'function') {
-            requestAnimationFrame(function () { setTimeout(function () { runSliceCapture(0); }, preDelay); });
+        if (mobile) {
+            runSliceCapture(0);
+        } else if (typeof requestAnimationFrame === 'function') {
+            requestAnimationFrame(function () { setTimeout(function () { runSliceCapture(0); }, 32); });
         } else {
-            setTimeout(function () { runSliceCapture(0); }, preDelay);
+            setTimeout(function () { runSliceCapture(0); }, 32);
         }
     }
     captureNext();
@@ -6065,7 +6059,7 @@ function generateDeepReport(data) {
     var part4Body = '';
     part4Body += safeCall(()=>buildChapter9_Remedy(data)||'', 'ch9-remedy');
     html += safeCall(()=>wrapPartSection(
-        buildPartHeader(4,'🌙','개운법 · 일상 적용','sec-part4-final',{name:data.name}),
+        buildPartHeader(4,'지금의 선택','개운법 · 일상 적용','sec-part4-final',{name:data.name}),
         part4Body
     ), 'part4section');
 
@@ -11901,7 +11895,7 @@ function buildPartHeader(num, title, subtitle, anchorId, opts) {
     var color = c[num] != null ? c[num] : '199,167,106';
     var border = h[num] != null ? h[num] : '#c7a76a';
     var icon = ic[num] != null ? ic[num] : '📌';
-    var titleLine = (num === 4) ? '🌙' : (title + icon);
+    var titleLine = (num === 4) ? (title + ' 🌙') : (title + icon);
     var preludeHtml = preludes[num]
         ? '<div class="part-prelude" style="margin-top:18px;padding-top:16px;border-top:1px dashed rgba(' + color + ',0.32);font-size:13px;line-height:1.95;color:var(--text-dim);font-style:italic;">' + preludes[num] + '</div>'
         : '';
@@ -13309,7 +13303,7 @@ function buildTOC(data) {
         1: { head: '1부 · 나라는 사람', sub: '원국 · 오행 · 십성' },
         2: { head: '2부 · 지금 이 시절', sub: '현재 운 · 80년 지도 · 앞으로의 대운·세운·월운' },
         3: { head: '3부 · 삶의 영역', sub: '애정 · 재물 · 합격 · 직업 · 건강' },
-        4: { head: '4부 · 🌙', sub: '개운법 · 일상 적용' }
+        4: { head: '4부 · 지금의 선택 🌙', sub: '개운법 · 일상 적용' }
     };
     function tocRow(num, title, sub) {
         var mainHtml = (num && num !== '—') ? buildSectionTitleHtml(num, title) : escHtmlAttr(title);
