@@ -6104,15 +6104,6 @@ function sajuxHtml2canvasRegion(target, scale, region, timeoutMs) {
             useCORS: true,
             allowTaint: true,
             logging: false,
-            imageTimeout: 0,
-            width: w,
-            height: h,
-            x: 0,
-            y: yOff,
-            windowWidth: SAJUX_CAPTURE_WINDOW_W,
-            windowHeight: SAJUX_CAPTURE_WINDOW_H,
-            scrollX: 0,
-            scrollY: 0,
             ignoreElements: sajuxHtml2canvasIgnoreEl,
             onclone: sajuxOnCaptureClone
         }).then(function (canvas) {
@@ -7011,7 +7002,7 @@ function sajuxRunReportImageCapture(root) {
         /* 슬라이스마다 16ms 숨 틔워 게이지 렌더 + 모바일 JS 스레드 해제 */
         setTimeout(startCapture, 16);
         function startCapture() {
-        var sliceTimeout = sajuxIsMobileDevice() ? 45000 : 30000;
+        var sliceTimeout = sajuxIsMobileDevice() ? 20000 : 30000;
         var timedOut = false;
         var timer = setTimeout(function () { timedOut = true; advance(); }, sliceTimeout * 3);
         var settled = false;
