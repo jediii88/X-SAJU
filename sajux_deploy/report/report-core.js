@@ -5966,7 +5966,8 @@ function sajuxCollectCaptureSlices(root) {
     }
     slices = sajuxMergeCaptureSlices(slices);
     slices = sajuxAttachPartBanners(slices, container);
-    if (sajuxIsMobileDevice()) slices = sajuxGroupMobileMainCaptureSlices(slices);
+    /* 8장 병합은 한 장이 너무 커져 iOS canvas 한도를 초과 → 캡처 실패(1장만 저장).
+       절 단위로 두고, 캡처 단계에서 iOS 안전 크기(3500px)로 잘게 분할한다. */
     return { container: container, slices: slices, host: sajuxEnsureCaptureHost() };
 }
 var SAJUX_CAPTURE_PART_DEFS = {
@@ -6178,7 +6179,8 @@ function sajuxCaptureTargetToBlobs(target, mime, timeoutMs) {
     }).then(function (dims) {
         /* 모바일 너비≈390 → 390×9000≈3.5M 픽셀, iOS 한도(16.7M) 이내. 청킹 임계값을 높여
            대부분 1회 렌더(병합 페이지 평균 높이 < 9000) → 청킹 횟수 최소화. */
-        var chunkH = sajuxIsMobileDevice() ? 12000 : 6000;
+        /* iOS canvas 한도 회피 — 한 이미지를 3500px 이하로 유지(큰 캔버스는 캡처 실패) */
+        var chunkH = sajuxIsMobileDevice() ? 3500 : 6000;
         var useChunks = dims.h > chunkH;
         if (!useChunks) {
             return sajuxHtml2canvasRegion(target, scale, { w: dims.w, h: dims.h, y: 0 }, timeoutMs).then(function (canvas) {
@@ -6195,12 +6197,9 @@ function sajuxCaptureTargetToBlobs(target, mime, timeoutMs) {
         function nextChunk() {
             if (y0 >= dims.h) return Promise.resolve(blobs);
             var ch = Math.min(chunkH, dims.h - y0);
-            /* 첫 조각(y=0)은 직접 캡처, 이후 조각은 clip 방식(내용을 끌어올려 y=0에서 캡처).
-               iOS에서 y-offset 캡처가 빈 이미지로 누락되는 문제를 방지한다. */
-            var p = (y0 === 0)
-                ? sajuxHtml2canvasRegion(target, scale, { w: dims.w, h: ch, y: 0 }, perChunk)
-                : sajuxHtml2canvasClipChunk(clipHost, target, scale, y0, ch, dims.w, perChunk);
-            return p.then(function (canvas) {
+            /* 모든 조각을 clip 방식으로 — 내용을 끌어올려 작은(≤3500px) 캔버스에서 y=0 캡처.
+               큰 target을 통째로 렌더하지 않으므로 iOS 한도 초과·빈 이미지 누락을 모두 방지. */
+            return sajuxHtml2canvasClipChunk(clipHost, target, scale, y0, ch, dims.w, perChunk).then(function (canvas) {
                 return sajuxCanvasToBlob(sajuxPadCaptureCanvas(canvas, scale), mime);
             }).then(function (blob) {
                 if (blob && blob.size > 100) blobs.push(blob);
