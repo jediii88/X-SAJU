@@ -4957,22 +4957,40 @@ function sajuxReleaseCaptureBusy() {
     _sajuxCaptureBusy = false;
 }
 function ensureHtml2CanvasLoaded(done) {
-    ensureExternalScriptLoaded({
-        id: 'sajux-html2canvas-script',
-        src: 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',
-        ready: function () { return typeof html2canvas === 'function'; },
-        done: done,
-        fail: function () { sajuxReleaseCaptureBusy(); }
-    });
+    if (typeof html2canvas === 'function') { if (typeof done === 'function') done(); return; }
+    var existing = document.getElementById('sajux-html2canvas-script');
+    if (existing) {
+        existing.addEventListener('load', function () { if (typeof done === 'function') done(); }, { once: true });
+        return;
+    }
+    var sc = document.createElement('script');
+    sc.id = 'sajux-html2canvas-script';
+    sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+    sc.crossOrigin = 'anonymous';
+    sc.onload = function () { if (typeof done === 'function') done(); };
+    sc.onerror = function () {
+        sajuxReleaseCaptureBusy();
+        alert('사주 다운로드 도구를 불러오지 못했습니다. 네트워크 연결 후 다시 시도해 주세요.');
+    };
+    document.head.appendChild(sc);
 }
 function ensureJsZipLoaded(done) {
-    ensureExternalScriptLoaded({
-        id: 'sajux-jszip-script',
-        src: 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js',
-        ready: function () { return typeof JSZip === 'function'; },
-        done: done,
-        fail: function () { sajuxReleaseCaptureBusy(); }
-    });
+    if (typeof JSZip === 'function') { if (typeof done === 'function') done(); return; }
+    var existing = document.getElementById('sajux-jszip-script');
+    if (existing) {
+        existing.addEventListener('load', function () { if (typeof done === 'function') done(); }, { once: true });
+        return;
+    }
+    var sc = document.createElement('script');
+    sc.id = 'sajux-jszip-script';
+    sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+    sc.crossOrigin = 'anonymous';
+    sc.onload = function () { if (typeof done === 'function') done(); };
+    sc.onerror = function () {
+        sajuxReleaseCaptureBusy();
+        alert('사주 다운로드 도구를 불러오지 못했습니다. 네트워크 연결 후 다시 시도해 주세요.');
+    };
+    document.head.appendChild(sc);
 }
 function ensureHtmlToImageLoaded(done) {
     ensureExternalScriptLoaded({
@@ -5073,27 +5091,11 @@ function sajuxPreloadCaptureLibs() {
     } catch (e) {}
 }
 function sajuxEnsureCaptureLibs(done) {
-    var finished = false;
-    var left = 2;
-    function finish() {
-        if (finished) return;
-        finished = true;
-        if (typeof done === 'function') done();
-    }
+    var n = 0;
     function tick() {
-        left -= 1;
-        if (left <= 0) finish();
+        n += 1;
+        if (n >= 2 && typeof done === 'function') done();
     }
-    setTimeout(function () {
-        if (finished) return;
-        if (typeof html2canvas !== 'function' || typeof JSZip !== 'function') {
-            sajuxReleaseCaptureBusy();
-            sajuxHideCaptureOverlay();
-            alert('사주 저장 도구를 불러오지 못했습니다.\nWi-Fi 연결 확인 후 페이지를 새로고침해 주세요.');
-            return;
-        }
-        finish();
-    }, 12000);
     ensureHtml2CanvasLoaded(tick);
     ensureJsZipLoaded(tick);
 }
@@ -5836,12 +5838,7 @@ function sajuxRestoreStarCanvas(stash) {
 }
 function sajuxHtml2canvasIgnoreEl(node) {
     if (!node || node.nodeType !== 1) return false;
-    var tag = (node.tagName || '').toUpperCase();
-    if (tag === 'CANVAS') return true;
-    var id = node.id || '';
-    if (id === 'sajux-capture-overlay' || id === 'sajux-capture-host' || id === 'star-canvas') return true;
-    if (node.classList && node.classList.contains('sajux-capture-overlay')) return true;
-    return false;
+    return (node.tagName || '').toUpperCase() === 'CANVAS';
 }
 function sajuxPrepareSliceForCapture(root) {
     if (!root) return;
@@ -6326,8 +6323,11 @@ function sajuxRunReportImageCapture(root) {
         var hint = (err && err.message && /캡처된 이미지/.test(err.message))
             ? 'Wi-Fi 연결을 확인하신 뒤, 페이지를 새로고침하고 다시 「사주 저장」을 눌러 주세요.'
             : 'Chrome·Safari 최신 버전에서 다시 시도해 주세요.';
-        alert('사주 저장에 실패했습니다.\n' + hint + '\n(' + (err && err.message ? err.message : err) + ')');
-        sajuxHideCaptureOverlay();
+        var msg = '사주 저장에 실패했습니다.\n' + hint + '\n(' + (err && err.message ? err.message : err) + ')';
+        alert(msg);
+        sajuxShowCaptureOverlay(msg, {
+            buttons: [{ label: '닫기', primary: false, onClick: function () { sajuxHideCaptureOverlay(); } }]
+        });
     }
     function cleanup() {
         root.style.overflow = prevOverflow;
