@@ -5255,8 +5255,8 @@ function sajuxShareCaptureFilesDirect(captures, onDone) {
 function sajuxOpenZipBlobOnMobile(url) {
     if (!url) return false;
     try {
-        window.location.assign(url);
-        return true;
+        var win = window.open(url, '_blank');
+        return !!(win);
     } catch (e) {
         return false;
     }
@@ -6491,10 +6491,8 @@ function sajuxOfferZipDownload(zipBlob, filename, extraMsg, captures) {
             buttons.push({
                 label: '📥 ZIP 열기',
                 primary: false,
-                onClick: function () {
-                    if (sajuxOpenZipBlobOnMobile(url)) return;
-                    sajuxShowIosZipLinkFallback(url, filename);
-                }
+                href: url,
+                target: '_blank'
             });
         } else {
             buttons.push({
