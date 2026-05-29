@@ -1386,35 +1386,14 @@ html[data-theme="light"] #star-canvas {
   line-height: 1.15 !important;
 }
 
-/* 고객 표지 — 생년월일시 강조 · 만 나이 안내는 각주 크기 */
-#sec-client-cover .client-birth-block,
-.cover-page .client-birth-block {
-  margin: 20px auto 0;
-  max-width: 92%;
-  padding: 14px 18px;
-  border-radius: 12px;
-  background: rgba(199, 167, 106, 0.09);
-  border: 1px solid rgba(199, 167, 106, 0.32);
-  text-align: center;
-}
-#sec-client-cover .client-birth-label,
-.cover-page .client-birth-label {
-  font-size: 10px !important;
-  letter-spacing: 0.14em;
-  font-weight: 700;
-  color: rgba(199, 167, 106, 0.88);
-  margin-bottom: 8px;
-}
-#sec-client-cover .client-birth-primary,
+/* 고객 표지 — 생년월일시 (단순 표기, 이전 대비 글자만 소폭 상향) */
 #sec-client-cover .birth-info,
-.cover-page .client-birth-primary,
 .cover-page .birth-info {
-  font-size: clamp(17px, 4.4vw, 21px) !important;
-  font-weight: 700 !important;
-  line-height: 1.55 !important;
-  color: rgba(245, 240, 232, 0.96) !important;
-  letter-spacing: -0.02em;
-  margin: 0 !important;
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  color: rgba(200, 205, 215, 0.9) !important;
+  margin-top: 14px !important;
+  line-height: 1.65 !important;
 }
 .age-basis-note,
 p.age-basis-note,
