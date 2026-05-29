@@ -5536,6 +5536,7 @@ function sajuxIsMobileCapture() {
     return sajuxIsMobileDevice();
 }
 function sajuxCaptureHostWidthPx() {
+    if (sajuxIsMobileCapture()) return Math.max(window.innerWidth || 375, 320);
     return SAJUX_CAPTURE_PAGE_W;
 }
 function sajuxStyleCaptureHost(host) {
@@ -6104,6 +6105,14 @@ function sajuxHtml2canvasRegion(target, scale, region, timeoutMs) {
             useCORS: true,
             allowTaint: true,
             logging: false,
+            width: w,
+            height: h,
+            x: 0,
+            y: yOff,
+            windowWidth: sajuxIsMobileCapture() ? (window.innerWidth || 390) : SAJUX_CAPTURE_WINDOW_W,
+            windowHeight: SAJUX_CAPTURE_WINDOW_H,
+            scrollX: 0,
+            scrollY: 0,
             ignoreElements: sajuxHtml2canvasIgnoreEl,
             onclone: sajuxOnCaptureClone
         }).then(function (canvas) {
@@ -6474,7 +6483,7 @@ function sajuxOnCaptureClone(doc) {
             + '.card,.yearly-card,.monthly-card,.glass-panel,.report-chapter,.module-item,.inner-card,.detail-box,.rel-panel,.person-card,.score-section,.compat-duo-manse-wrap,.f-card,.t-card,.seyun-year-card,.ch-story-card,.vip-module-item,.module-box,.analysis-card,.fortune-scroll>div,.yearly-card-container>div,.monthly-card-container>div{background:rgba(14,14,20,0.96)!important;background-color:rgba(14,14,20,0.96)!important;}'
             + '.badge,.tag,.jijanggan,.sp-badge,.rel-badge,.compat-person-tag{background:rgba(32,32,42,0.92)!important;color:inherit!important;}'
             + 'body::before{display:none!important;}'
-            + '#sajux-capture-host,#sajux-capture-host .sajux-capture-jul-wrap,#sajux-capture-host #report-container{width:720px!important;max-width:720px!important;min-width:720px!important;}'
+            + (function(){ var pw = sajuxCaptureHostWidthPx(); return '#sajux-capture-host,#sajux-capture-host .sajux-capture-jul-wrap,#sajux-capture-host #report-container{width:'+pw+'px!important;max-width:'+pw+'px!important;min-width:0!important;}' + (sajuxIsMobileCapture() ? '#sajux-capture-host *{min-width:0!important;max-width:100%!important;word-break:break-word!important;}' : ''); })()
             + '*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}';
         doc.head.appendChild(st);
     }
