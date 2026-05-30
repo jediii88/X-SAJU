@@ -550,11 +550,156 @@ html, body, #report-container, #report-container * {
   }
 
   /* ── 13) 궁합 리포트 (couple/index.html) ──────────────────────── */
+  #main-content, #main-content .compat-cover-column,
+  #main-content .container, .compat-cover-column {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #1c1c1c !important;
+  }
   #main-content, #main-content .compat-cover-column {
     max-width: 100% !important; width: 100% !important;
     margin-left: 0 !important; margin-right: 0 !important; box-sizing: border-box !important;
   }
   #main-content .container { max-width: 132mm !important; margin: 0 auto !important; padding: 0 0 12mm !important; }
+
+  /* 궁합 표지 2장 — 페이지 중앙 */
+  .compat-cover-column .cover-page,
+  #sec-cover.compat-brand-cover, #sec-compat-title.compat-title-cover {
+    min-height: 100vh !important;
+    height: auto !important;
+    padding: 0 8mm !important;
+    margin: 0 !important;
+    page-break-after: always !important;
+    break-after: page !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    background: #ffffff !important;
+    box-sizing: border-box !important;
+  }
+
+  /* 궁합 — 흰/연한 글씨 → 진한색 (1인 리포트와 동일 원칙) */
+  #main-content, #main-content *, .compat-cover-column, .compat-cover-column * {
+    --text: #1c1c1c !important;
+    --text-soft: rgba(28, 34, 46, 0.78) !important;
+    --text-dim: rgba(28, 34, 46, 0.58) !important;
+    --gold: #8b6914 !important;
+    --gold-soft: #8b6914 !important;
+  }
+  #main-content, #main-content *,
+  .compat-cover-column, .compat-cover-column * {
+    color: #232323 !important;
+    -webkit-text-fill-color: #232323 !important;
+    text-shadow: none !important;
+  }
+  #main-content .wood, #main-content .fire, #main-content .earth,
+  #main-content .metal, #main-content .water,
+  #main-content .hanja-oh, #main-content .hwood, #main-content .hfire,
+  #main-content .hearth, #main-content .hmetal, #main-content .hwater,
+  #main-content .m-hanja, #main-content .vip-hanja, #main-content .pz-hanja {
+    -webkit-text-fill-color: currentColor !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  #main-content [style*="color:#fff"]:not(.hanja-oh):not(.hwood):not(.hfire):not(.hearth):not(.hmetal):not(.hwater),
+  #main-content [style*="color: #fff"]:not(.hanja-oh),
+  #main-content [style*="color:#aaa"], #main-content [style*="color: #aaa"],
+  #main-content [style*="color:#888"], #main-content [style*="color: #888"],
+  #main-content [style*="color:#bbb"], #main-content [style*="color: #bbb"],
+  #main-content [style*="color:#ccc"], #main-content [style*="color: #ccc"],
+  #main-content [style*="color:#ddd"], #main-content [style*="color: #ddd"],
+  #main-content [style*="color:rgba(255,255,255"],
+  #main-content .compat-person-hint, #main-content .person-meta,
+  #main-content .score-sub, #main-content .tag,
+  #main-content .compat-voice-opener, #main-content .compat-prose-p,
+  #main-content .compat-mission-sub, #main-content .hero-sub,
+  #main-content .rel-panel .ch-sec-num, #main-content .ch-sec-num-sep {
+    color: #333 !important;
+    -webkit-text-fill-color: #333 !important;
+  }
+  #main-content .ch-sec-num, #main-content .compat-section-title,
+  #main-content .cover-highlight, #main-content .sajux-intro-heading,
+  #main-content .compat-person-tag, #main-content .score-grade {
+    color: #8b6914 !important;
+    -webkit-text-fill-color: #8b6914 !important;
+  }
+  #main-content strong, #main-content b {
+    color: #111 !important;
+    -webkit-text-fill-color: #111 !important;
+  }
+  /* 오행 한자색 유지 */
+  #main-content .wood, #main-content .bg-wood { color: #15692f !important; -webkit-text-fill-color: #15692f !important; }
+  #main-content .fire, #main-content .bg-fire { color: #be2f2f !important; -webkit-text-fill-color: #be2f2f !important; }
+  #main-content .earth, #main-content .bg-earth { color: #8a6a1a !important; -webkit-text-fill-color: #8a6a1a !important; }
+  #main-content .metal, #main-content .bg-metal { color: #555 !important; -webkit-text-fill-color: #555 !important; }
+  #main-content .water, #main-content .bg-water { color: #1746c4 !important; -webkit-text-fill-color: #1746c4 !important; }
+  #main-content .hanja-oh.hwood, #main-content .hwood { color: #15692f !important; -webkit-text-fill-color: #15692f !important; }
+  #main-content .hanja-oh.hfire, #main-content .hfire { color: #be2f2f !important; -webkit-text-fill-color: #be2f2f !important; }
+  #main-content .hanja-oh.hearth, #main-content .hearth { color: #8a6a1a !important; -webkit-text-fill-color: #8a6a1a !important; }
+  #main-content .hanja-oh.hmetal, #main-content .hmetal { color: #555 !important; -webkit-text-fill-color: #555 !important; }
+  #main-content .hanja-oh.hwater, #main-content .hwater { color: #1746c4 !important; -webkit-text-fill-color: #1746c4 !important; }
+
+  /* 궁합 절(섹션) — 다음 절은 새 페이지, 절 제목~본문은 한 덩어리로 흐름 */
+  #main-content .container > div[id^="section-"] {
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+    margin: 0 0 8px !important;
+    padding: 0 !important;
+  }
+  #main-content .container > div[id^="section-"]:not(:first-of-type) {
+    page-break-before: always !important;
+    break-before: page !important;
+  }
+  #main-content .compat-voice-wrap .ch-head-main-sub,
+  #main-content .compat-voice-wrap .ch-head-topic-first {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    margin-bottom: 8px !important;
+  }
+  #main-content .compat-voice-wrap,
+  #main-content .rel-panel {
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+  }
+  #main-content .insight-card, #main-content .compat-prose-card,
+  #main-content .compat-couple-mission-box, #main-content .t-card,
+  #main-content .compat-duo-manse-wrap, #main-content .score-section,
+  #main-content .person-card, #main-content .timeline-scroll > div {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* 궁합 카드·패널 — 외곽선·배경 제거 */
+  #main-content .insight-card, #main-content .rel-panel,
+  #main-content .person-card, #main-content .score-section,
+  #main-content .compat-duo-manse-wrap, #main-content .compat-voice-wrap,
+  #main-content .compat-couple-mission-box, #main-content .t-card,
+  #main-content .compat-manse-notes, #main-content .timeline-section {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    border: none !important;
+    border-left: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    outline: none !important;
+  }
+  #main-content [style*="border-left"], #main-content [style*="border:1px"],
+  #main-content [style*="background:rgba(199"], #main-content [style*="background:rgba(140"] {
+    background: transparent !important;
+    background-image: none !important;
+    border: none !important;
+    border-left: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  #floating-toc, #sticky-part-nav, #compat-share-cta-mount,
+  .compat-share-cta-wrap, .compat-share-cta-btn { display: none !important; }
+
   .page-header.cover-page, #main-content .page-header {
     min-height: 100vh !important;
     display: flex !important;
