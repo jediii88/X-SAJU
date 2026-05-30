@@ -151,7 +151,7 @@ html, body, #report-container, #report-container * {
     break-before: auto !important;
   }
 
-  /* ── 6) 카드 — 깔끔한 흰 카드로 통일 (외곽선 얇게, 글로우 없음) ── */
+  /* ── 6) 카드 — 외곽선·배경 박스 없음 (PDF는 본문만) ─────────────── */
   .sajux-card, .sajux-panel-plain, .glass-panel, .sajux-glass-panel,
   .sajux-glass-heavy, .sajux-print-surface, .deep-hook-panel,
   .premium-executive-summary, .daeun-decade-card, .sajux-upcoming-daeun-card,
@@ -159,26 +159,73 @@ html, body, #report-container, #report-container * {
   .ilju-profile-card, .insight-card, .four-domain-radar, .yearly-indicators,
   .sip-detail-card, .domain-summary-3box, .health-fatigue-block,
   .health-time-block, .health-mind-block, .report-review-callout,
-  .sajux-access-note, .sajux-gongmang-note {
-    background: #ffffff !important;
-    background-color: #ffffff !important;
-    border: 1px solid #e6e0d2 !important;
-    border-radius: 8px !important;
+  .sajux-access-note, .sajux-gongmang-note, .ziwei-surprise-intro,
+  .report-review-callout, .vip-evidence-block, .ziwei-appendix-block,
+  .rel-panel, .person-card, .score-section, .t-card, .compat-voice-wrap {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    outline: none !important;
     box-shadow: none !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
     filter: none !important;
-    padding: 11px 13px !important;
+    padding: 11px 0 !important;
     margin: 0 0 11px !important;
     box-sizing: border-box !important;
   }
-  /* 카드 안의 어두운 인라인 배경 박스 → 옅은 크림 톤 */
+  /* 부(제N부) 제목 — 외곽선·배경 완전 제거, 텍스트만 */
+  .part-header-block, .part-header-keep-group > .part-header-block,
+  [id^="sec-part"].part-header-block,
+  .part-header-block.sajux-print-surface,
+  .part-header-block.sajux-glass-panel, .part-header-block.report-chapter {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    border: none !important;
+    border-top: none !important;
+    border-bottom: none !important;
+    border-radius: 0 !important;
+    outline: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    padding: 12px 0 8px !important;
+    margin: 0 0 6mm !important;
+  }
+  .part-prelude { border-top: none !important; padding-top: 8px !important; }
+  /* 보너스·자미 구간 — 인라인 border/gradient 덮어쓰기 */
+  .sajux-bonus-flow, .sajux-bonus-flow .ziwei-surprise-intro,
+  .sajux-bonus-flow .ziwei-appendix-block, .sajux-bonus-flow .ziwei-palace-card,
+  #sec-ziwei-bonus.ziwei-surprise-intro {
+    background: transparent !important;
+    background-image: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+  .ziwei-appendix-block { border-top: none !important; padding-top: 0 !important; }
+  /* 카드 안 인라인 배경·테두리 박스도 평탄화 */
   #report-container div[style*="background:rgba(0,0,0"],
   #report-container div[style*="background: rgba(0,0,0"],
   #report-container div[style*="background:rgba(255,255,255,0.0"],
-  #report-container div[style*="background:rgba(255,255,255,0.1"] {
-    background: #faf7f0 !important;
-    border: 1px solid #ece5d6 !important;
+  #report-container div[style*="background:rgba(255,255,255,0.1"],
+  #report-container div[style*="background:linear-gradient"],
+  #report-container div[style*="border:1px"],
+  #report-container div[style*="border: 1px"],
+  #report-container [style*="border-radius:16px"],
+  #report-container [style*="border-radius: 16px"],
+  #report-container [style*="border-left"],
+  #report-container [style*="border-top:3px"],
+  #report-container [style*="border-top: 3px"] {
+    background: transparent !important;
+    background-image: none !important;
+    border: none !important;
+    border-left: none !important;
+    border-top: none !important;
+    border-radius: 0 !important;
     box-shadow: none !important;
   }
 
@@ -223,7 +270,7 @@ html, body, #report-container, #report-container * {
     word-break: keep-all !important;
   }
 
-  /* ── 8) 대분류(제N부) — 새 페이지 최상단에서 시작 ──────────────── */
+  /* ── 8) 대분류(제N부) — 새 페이지 최상단, 외곽선 없음 ───────────── */
   .part-header-block,
   .part-header-keep-group > .part-header-block,
   [id^="sec-part"].part-header-block {
@@ -233,13 +280,6 @@ html, body, #report-container, #report-container * {
     break-after: avoid !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
-    background: transparent !important;
-    border: none !important;
-    border-top: 2px solid #8b6914 !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
-    padding: 12px 0 8px !important;
-    margin: 0 0 6mm !important;
   }
   .part-header-label { color: #8b6914 !important; }
   .part-header-title { color: #111 !important; }
@@ -341,11 +381,8 @@ html, body, #report-container, #report-container * {
     break-inside: auto !important;
   }
   .vip-evidence-block {
-    background: #ffffff !important;
-    border: 1px solid #e6e0d2 !important;
-    border-radius: 8px !important;
     box-shadow: none !important;
-    padding: 10px 10px 12px !important;
+    padding: 10px 0 12px !important;
     margin: 0 0 8mm !important;
   }
   .vip-evidence-block .vip-row-gan .vip-hanja,
