@@ -81,7 +81,7 @@ html, body, #report-container, #report-container * {
     max-width: 132mm !important;
     margin-left: auto !important;
     margin-right: auto !important;
-    padding: 0 !important;
+    padding: 0 6mm !important;
     background: #ffffff !important;
     background-color: #ffffff !important;
     filter: none !important;
@@ -547,6 +547,114 @@ html, body, #report-container, #report-container * {
   #report-container .sipseong-bar-row div[style*="border-radius"] {
     border-radius: 999px !important;
     border: 1px solid #e5e5e5 !important;
+  }
+
+  /* ── 12b) 1인 PDF 최종 — 외곽선·베이지 배경 제거 + JS/인라인 CSS 덮어쓰기 ─ */
+  html[data-theme="light"] body,
+  html[data-theme="light"] .report-chapter,
+  html[data-theme="light"] .card,
+  html[data-theme="light"] div[class*="card"],
+  html[data-theme="light"] .inline-interp,
+  html[data-theme="light"] .section-interp,
+  html[data-theme="light"] .glass-card,
+  #report-container .report-chapter,
+  #report-container .part-header-block,
+  #report-container .ch-head-main-sub,
+  #report-container .ch-head-topic-first,
+  #report-container .premium-executive-summary,
+  #report-container .deep-hook-panel,
+  #report-container .sajux-panel-plain,
+  #report-container .sajux-gongmang-note,
+  #report-container #sec-life-panorama.report-chapter,
+  #report-container .yearly-indicators,
+  #report-container .cat-section,
+  #report-container .cat-stat,
+  #report-container .axe-advice,
+  #report-container .inline-interp,
+  #report-container .sajux-print-surface,
+  #report-container .sajux-glass-panel,
+  #report-container .glass-panel,
+  #report-container div[class*="box"],
+  #report-container div[class*="card"],
+  #report-container div[style*="background:rgba(255,255,255,0.0"],
+  #report-container div[style*="background:rgba(0,0,0"],
+  #report-container div[style*="background:rgba(199,167,106"],
+  #report-container div[style*="background:linear-gradient"],
+  #report-container div[style*="faf6"],
+  #report-container div[style*="faf8"],
+  #report-container div[style*="f4efe6"] {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+  }
+  #report-container .card,
+  #report-container .yearly-card,
+  #report-container .monthly-card,
+  #report-container .inner-card,
+  #report-container .detail-box,
+  #report-container .jijanggan,
+  #report-container .badge,
+  #report-container .tag,
+  #report-container div[class*="box"],
+  #report-container div[class*="card"],
+  #report-container .report-chapter,
+  #report-container .part-header-block,
+  #report-container .ch-head-main-sub,
+  #report-container .ch-head-topic-first,
+  #report-container .premium-executive-summary,
+  #report-container .deep-hook-panel,
+  #report-container .sajux-panel-plain,
+  #report-container .sajux-gongmang-note,
+  #report-container .inline-interp,
+  #report-container .section-interp,
+  #report-container .glass-panel,
+  #report-container .sajux-print-surface,
+  #report-container .sajux-glass-panel,
+  #report-container .cat-section,
+  #report-container .cat-stat,
+  #report-container .axe-advice,
+  #report-container .f-card,
+  #report-container .seyun-year-card,
+  #report-container .lifecycle-card,
+  #report-container .pillar-card,
+  #report-container .interp-box,
+  #report-container .domain-summary-3box {
+    border: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-top: none !important;
+    border-bottom: none !important;
+    border-radius: 0 !important;
+  }
+  #report-container .part-header-block[style*="border-top"],
+  #report-container [style*="border-left:3px"],
+  #report-container [style*="border-left: 3px"],
+  #report-container [style*="border:1px solid rgba(199"],
+  #report-container [style*="border: 1px solid rgba(199"] {
+    border: none !important;
+    border-left: none !important;
+    border-top: none !important;
+  }
+  #report-container .ch-head-main-sub,
+  #report-container .ch-head-topic-first,
+  #report-container .part-header-block {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+  #report-container .ch-text,
+  #report-container .ii-text,
+  #report-container .compat-prose-p,
+  #report-container p,
+  #report-container li,
+  #report-container .sajux-narrative-para {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
   }
 
   /* ── 13) 궁합 리포트 (couple/index.html) ──────────────────────── */
