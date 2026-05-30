@@ -4755,7 +4755,7 @@ function ensureSajuxReadablePanelStyles() {
         ".m-hanja,.vip-hanja,.report-pillar-hanja,.hanja-main,.f-hz .report-pillar-hanja,.sajux-hanja,.month-pillar-title,.monthly-card,.yearly-card,.seyun-year-card{font-family:'Noto Sans KR',sans-serif!important;}",
         ".month-pillar-title .sajux-hanja,.monthly-card .sajux-hanja,.yearly-card .sajux-hanja{font-family:'Noto Sans KR',sans-serif!important;font-weight:700;}",
         /* 화면에서는 패널 글래스는 override.css(.sajux-glass-*)가 담당 — 여기서 transparent로 덮어쓰면 유리 질감이 사라짐 */
-        "@media print{.sajux-panel-plain,.yearly-indicators,.deep-hook-panel,.premium-executive-summary,#sec-life-panorama.report-chapter,.sajux-gongmang-note{background:#ffffff!important;background-color:#ffffff!important;border:1px solid #dddddd!important;}}",
+        "@media print{.sajux-panel-plain,.yearly-indicators,.deep-hook-panel,.premium-executive-summary,#sec-life-panorama.report-chapter,.sajux-gongmang-note{background:transparent!important;background-color:transparent!important;background-image:none!important;border:none!important;box-shadow:none!important;}}",
         "body:not(.light-mode) .deep-hook-panel p,html[data-theme=dark] .deep-hook-panel p,body:not(.light-mode) .sajux-gongmang-note p,html[data-theme=dark] .sajux-gongmang-note p{color:#ddd!important;}",
         "body:not(.light-mode) .yearly-indicators .yearly-ind-val,html[data-theme=dark] .yearly-indicators .yearly-ind-val{color:#e8dcc8!important;}",
         ".yearly-indicators-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px 10px!important;width:100%!important;}",
