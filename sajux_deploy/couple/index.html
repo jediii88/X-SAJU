@@ -29,7 +29,7 @@
 })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="sajux-build" content="1780086286">
+<meta name="sajux-build" content="1780126757">
 <title>사주X — 두 사람의 인연 구조</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;700;900&display=swap" rel="stylesheet">
@@ -812,7 +812,7 @@ body::before {
     <a class="toc-link" href="#section-fortune-mix" onclick="return compatTocGo('section-fortune-mix')">운의 흐름</a>
     <a class="toc-link" href="#section-timeline" onclick="return compatTocGo('section-timeline')">대운 싱크</a>
     <div style="border-top:1px solid var(--line);margin:6px 0 4px;"></div>
-    <a class="toc-link toc-link-print" href="#" onclick="if(typeof sajuxCaptureReportAsImage==='function'){sajuxCaptureReportAsImage();}return false;">📥 사주 저장</a>
+    <a class="toc-link toc-link-print" href="#" onclick="if(typeof sajuxCaptureReportAsImage==='function'){sajuxCaptureReportAsImage();}return false;">📥 사주 PDF 저장</a>
   </div>
 </div>
 <nav id="sticky-part-nav" class="sticky-part-nav" aria-label="궁합 섹션 이동">
@@ -2239,7 +2239,7 @@ async function init() {
           fab.id = 'sajux-image-fab';
           fab.type = 'button';
           fab.className = 'pdf-btn';
-          fab.textContent = '📥 사주 저장';
+          fab.textContent = '📥 사주 PDF 저장';
           fab.style.cssText = 'position:fixed;bottom:22px;right:18px;z-index:10001;font-family:inherit;font-weight:700;font-size:14px;padding:14px 20px;border-radius:999px;border:none;background:linear-gradient(165deg,rgba(255,255,255,0.11),rgba(255,255,255,0.028));color:rgba(245,240,232,0.94);box-shadow:0 14px 46px rgba(0,0,0,0.44);backdrop-filter:blur(28px);cursor:pointer;';
           fab.addEventListener('click', function () { sajuxCaptureReportAsImage(); });
           document.body.appendChild(fab);
