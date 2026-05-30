@@ -6976,6 +6976,40 @@ function sajuxBuildCaptureBaseName(data) {
 function sajuxBuildZipFilename(data) {
     return sajuxBuildCaptureBaseName(data) + '.zip';
 }
+/** PDF 저장 시 브라우저 기본 파일명(document.title) — 예: 장경현_사주X_종합 / 김철수_이영희_사주X_궁합 */
+function sajuxSanitizePdfNamePart(s) {
+    return String(s || '').replace(/[\\/:*?"<>|]/g, '').replace(/\s+/g, '').trim();
+}
+function sajuxBuildPrintPdfTitle(data, root) {
+    data = data || window.globalSajuData || null;
+    root = root || sajuxGetCaptureRoot();
+    var ctx = window.__compatCtx;
+    if (ctx && sajuxIsCompatCapturePage(root)) {
+        var aN = sajuxSanitizePdfNamePart(compatNm ? compatNm(ctx, 'a') : (ctx.aName || (ctx.a && ctx.a.name) || ''));
+        var bN = sajuxSanitizePdfNamePart(compatNm ? compatNm(ctx, 'b') : (ctx.bName || (ctx.b && ctx.b.name) || ''));
+        if (!aN) aN = 'A';
+        if (!bN) bN = 'B';
+        return aN + '_' + bN + '_사주X_궁합';
+    }
+    var name = (data && data.name) ? String(data.name).trim() : '';
+    if (!name) {
+        var coverEl = document.querySelector('#sec-client-cover .cover-brush-name');
+        if (coverEl) name = String(coverEl.textContent || '').replace(/님의.*$/, '').trim();
+    }
+    var safe = sajuxSanitizePdfNamePart(nmNormalize(name)) || '고객';
+    return safe + '_사주X_종합';
+}
+var _sajuxPrintTitlePrev = null;
+function sajuxSetPrintPdfTitle(root) {
+    _sajuxPrintTitlePrev = document.title;
+    try { document.title = sajuxBuildPrintPdfTitle(null, root); } catch (eT) {}
+}
+function sajuxRestorePrintPdfTitle() {
+    if (_sajuxPrintTitlePrev !== null) {
+        try { document.title = _sajuxPrintTitlePrev; } catch (eT2) {}
+        _sajuxPrintTitlePrev = null;
+    }
+}
 function sajuxCaptureReportAsImage() {
     if (_sajuxCaptureBusy) {
         var ovBusy = document.getElementById('sajux-capture-overlay');
@@ -6983,7 +7017,7 @@ function sajuxCaptureReportAsImage() {
         if (!ovBusy || ovBusy.style.display === 'none' || !gaugeBusy) {
             _sajuxCaptureBusy = false;
         } else {
-            alert('사주 저장이 진행 중입니다. 완료될 때까지 잠시만 기다려 주세요.');
+            alert('PDF 저장이 진행 중입니다. 완료될 때까지 잠시만 기다려 주세요.');
             return;
         }
     }
@@ -7025,8 +7059,14 @@ function sajuxSetPrintLightTheme(on) {
 if (!window.__sajuxPrintHook) {
     window.__sajuxPrintHook = true;
     try {
-        window.addEventListener('beforeprint', function () { sajuxSetPrintLightTheme(true); });
-        window.addEventListener('afterprint', function () { sajuxSetPrintLightTheme(false); });
+        window.addEventListener('beforeprint', function () {
+            sajuxSetPrintLightTheme(true);
+            sajuxSetPrintPdfTitle(sajuxGetCaptureRoot());
+        });
+        window.addEventListener('afterprint', function () {
+            sajuxSetPrintLightTheme(false);
+            sajuxRestorePrintPdfTitle();
+        });
         var _mqp = window.matchMedia && window.matchMedia('print');
         if (_mqp && _mqp.addListener) {
             _mqp.addListener(function (m) { sajuxSetPrintLightTheme(!!m.matches); });
@@ -7077,13 +7117,18 @@ function sajuxRunPrintPdfFlow(root) {
                     sajuxHideCaptureOverlay();
                     try { window.scrollTo(0, 0); } catch (e0) {}
                     sajuxSetPrintLightTheme(true);
+                    sajuxSetPrintPdfTitle(root);
                     setTimeout(function () {
                         try { window.print(); } catch (ePrint) {
                             alert('인쇄 화면을 열지 못했습니다. 브라우저 메뉴 → 인쇄(또는 공유 → 인쇄)를 눌러 PDF로 저장해 주세요.');
                         }
                         /* 데스크탑은 print()가 끝난 뒤, 모바일은 시간차로 복원.
                            afterprint 훅이 먼저 복원하면 이 호출은 무시됨. */
-                        setTimeout(function () { sajuxSetPrintLightTheme(false); finishUi(); }, 1500);
+                        setTimeout(function () {
+                            sajuxSetPrintLightTheme(false);
+                            sajuxRestorePrintPdfTitle();
+                            finishUi();
+                        }, 1500);
                     }, 120);
                 }
             },
@@ -7404,7 +7449,7 @@ function injectSajuxPdfUi() {
     sajuxPreloadCaptureLibs();
     document.body.appendChild(imgFab);
     document.querySelectorAll('.toc-link-print').forEach(function (a) {
-        a.textContent = '📥 사주 다운로드';
+        a.textContent = '📥 사주 PDF 저장';
         a.onclick = function (e) { e.preventDefault(); sajuxCaptureReportAsImage(); return false; };
     });
     document.querySelectorAll('button[onclick*="print"], .sajux-pdf-wide-btn').forEach(function (el) {
@@ -7539,10 +7584,12 @@ function generateDeepReport(data) {
     // ── 별첨: 끝난 줄 알았죠? → 자미두수 (사주 저장은 서프라이즈 카드부터 분할)
     var ziweiBlock = safeCall(()=>buildZiWeiDestinyBlueprintSection(data)||'', 'ziwei');
     if (ziweiBlock) {
+        html += '<div class="sajux-bonus-flow">';
         html += safeCall(()=>buildZiweiSurpriseIntro(data)||'', 'ziwei-surprise-intro');
-        html += '<div class="ziwei-appendix-block" style="margin-top:24px;padding-top:24px;border-top:1px dashed rgba(199,167,106,0.20);">'
+        html += '<div class="ziwei-appendix-block" style="margin-top:12px;padding-top:12px;border-top:1px dashed rgba(199,167,106,0.20);">'
             + ziweiBlock
             + '</div>';
+        html += '</div>';
     }
 
     html += safeCall(()=>buildReviewCallout(data)||'', 'review-callout');
@@ -13502,7 +13549,7 @@ function buildVipEvidenceBlock(data) {
         });
         ev += '</tr>';
         // 천간
-        ev += '<tr style="border-bottom:1px solid rgba(255,255,255,0.04);">';
+        ev += '<tr class="vip-row-gan" style="border-bottom:1px solid rgba(255,255,255,0.04);">';
         ev += '<td class="vip-row-label" style="padding:6px 4px;font-size:10.5px;font-weight:600;letter-spacing:0.02em;">천간</td>';
         pillars.forEach(function(p,i){
             if(isUnk&&i===0){ev+='<td style="text-align:center;color:#444;font-size:11px;">미상</td>';return;}
@@ -13513,7 +13560,7 @@ function buildVipEvidenceBlock(data) {
         });
         ev += '</tr>';
         // 지지
-        ev += '<tr style="border-bottom:1px solid rgba(255,255,255,0.04);">';
+        ev += '<tr class="vip-row-ji" style="border-bottom:1px solid rgba(255,255,255,0.04);">';
         ev += '<td class="vip-row-label" style="padding:6px 4px;font-size:10.5px;font-weight:600;letter-spacing:0.02em;">지지</td>';
         pillars.forEach(function(p,i){
             if(isUnk&&i===0){ev+='<td style="text-align:center;color:#444;font-size:11px;">미상</td>';return;}
@@ -14665,7 +14712,7 @@ function buildForewordPage(data) {
 //   사이가 아니라 가장 마지막에서만 등장합니다.
 // ===================================================================
 
-/** 「끝난 줄 알았죠?」 — 사주 저장 ZIP 자미두수 구간 시작(카드만, 상단 절 헤더 없음). */
+/** 「끝난 줄 알았죠?」 — PDF 보너스(자미두수) 구간 시작 카드. */
 function buildZiweiSurpriseIntro(data) {
     var name = (data && data.name) ? data.name : '고객';
     return '<div id="sec-ziwei-bonus" class="ziwei-surprise-intro" data-sajux-jul="보너스" data-sajux-jul-title="끝난 줄 알았죠?" style="margin:36px 0 0;padding:26px 24px;border-radius:16px;'
@@ -14725,14 +14772,14 @@ function buildReportFooterUtilities(data) {
 
         + '<div style="font-size:10px;letter-spacing:0.22em;color:rgba(199,167,106,0.72);margin-bottom:12px;font-weight:700;text-align:center;">[ 리포트 부록 · 이용 안내 ]</div>'
         + '<h2 style="font-family:\'Noto Sans KR\',serif;font-size:22px;font-weight:700;color:var(--text,rgba(255,255,255,0.95));margin:0 0 6px;text-align:center;line-height:1.5;">' + escHtmlAttr(nmDn) + ', 함께한 여정 — 여기까지 동행해 주시느라 수고 많으셨어요</h2>'
-        + '<p style="margin:0 0 22px;font-size:12.5px;line-height:1.85;color:var(--text-dim,rgba(255,255,255,0.6));text-align:center;">본문은 모두 마무리되었어요. 아래는 이미지 저장과 보관 정책, 그리고 짧은 안내 몇 가지를 한 자리에 정리해 둔 부록입니다.</p>'
+        + '<p style="margin:0 0 22px;font-size:12.5px;line-height:1.85;color:var(--text-dim,rgba(255,255,255,0.6));text-align:center;">본문은 모두 마무리되었어요. 아래는 PDF 저장과 보관 정책, 그리고 짧은 안내 몇 가지를 한 자리에 정리해 둔 부록입니다.</p>'
 
         + '<div class="sajux-access-note" style="text-align:left;margin:0 0 18px;padding:16px 18px;border-radius:12px;border:1px solid rgba(199,167,106,0.28);background:rgba(199,167,106,0.05);font-size:13px;line-height:1.9;">'
-        + '<div style="' + headStyle + '">열람 · 이미지 저장 안내</div>'
-        + '<p style="' + pStyle + '">이 리포트는 발행일(<strong>' + reportDateStr + '</strong>)로부터 <strong>30일</strong> 동안만 같은 링크에서 보실 수 있어요. 그 이후에는 다시 들어오기 어려울 수 있으니, 오늘 안에 <strong>ZIP으로 한 번 꼭 저장</strong>해 두시기를 권해 드립니다.</p>'
-        + '<p style="margin:6px 0 0;font-size:13px;line-height:1.9;color:#d6dae2;">우하단 <strong>사주 저장</strong> 또는 아래 버튼으로 절마다 PNG를 받으시면, 링크 만료 이후에도 같은 문서를 두고두고 다시 펼쳐 보실 수 있어요.</p>'
+        + '<div style="' + headStyle + '">열람 · PDF 저장 안내</div>'
+        + '<p style="' + pStyle + '">이 리포트는 발행일(<strong>' + reportDateStr + '</strong>)로부터 <strong>30일</strong> 동안만 같은 링크에서 보실 수 있어요. 그 이후에는 다시 들어오기 어려울 수 있으니, 오늘 안에 <strong>PDF로 한 번 꼭 저장</strong>해 두시기를 권해 드립니다.</p>'
+        + '<p style="margin:6px 0 0;font-size:13px;line-height:1.9;color:#d6dae2;">우하단 <strong>사주 PDF 저장</strong> 또는 아래 버튼으로 PDF를 받으시면, 링크 만료 이후에도 같은 문서를 두고두고 다시 펼쳐 보실 수 있어요.</p>'
         + '<div style="' + btnRow + '">'
-        + '<button type="button" class="sajux-image-wide-btn sajux-footer-zip-btn" style="' + btnZip + '">ZIP으로 저장하기</button>'
+        + '<button type="button" class="sajux-image-wide-btn sajux-footer-zip-btn" style="' + btnZip + '">PDF로 저장하기</button>'
         + '</div>'
         + '</div>'
 
