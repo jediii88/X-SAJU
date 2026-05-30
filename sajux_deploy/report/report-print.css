@@ -31,9 +31,11 @@ html, body, #report-container, #report-container * {
     visibility: hidden !important;
   }
 
-  /* ── 2) 용지 = 흰색 (다크 배경/별/그라디언트 제거) ──────────────── */
+  /* ── 2) 용지 = 흰색 (다크·라이트 body 베이지 띠 제거) ─────────────── */
   html, body,
-  html[data-theme="dark"], html[data-theme="dark"] body {
+  html[data-theme="light"], html[data-theme="light"] body,
+  html[data-theme="dark"], html[data-theme="dark"] body,
+  .page, #step-2, #step-2.page, #sec-report-full, .step-content {
     background: #ffffff !important;
     background-color: #ffffff !important;
     color: #1c1c1c !important;
@@ -122,9 +124,31 @@ html, body, #report-container, #report-container * {
   #report-container [style*="color:#f5f"]:not(.hanja-oh),
   .cover-page [style*="color:#fff"], .cover-page [style*="color:white"],
   .cover-page [style*="color:rgba(255,255,255"],
-  .cover-title, .cover-subtitle, .cover-page .cover-title, .cover-page .cover-subtitle {
+  .cover-title, .cover-subtitle, .cover-page .cover-title, .cover-page .cover-subtitle,
+  .cover-brush-name, .cover-brush-sub, .animal-symbol, .sajux-intro-heading,
+  .birth-info, .cover-page .birth-info, #sec-client-cover .birth-info,
+  .part-header-label, .part-brush-title, .part-brush-num, .part-header-sub,
+  .part-header-title, .part-prelude, .ch-sec-num-sep {
     color: #232323 !important;
     -webkit-text-fill-color: #232323 !important;
+  }
+  .part-brush-num, .part-header-label, .ch-sec-num, .sajux-intro-heading {
+    color: #8b6914 !important;
+    -webkit-text-fill-color: #8b6914 !important;
+  }
+  .cover-highlight, strong, b { color: #111 !important; -webkit-text-fill-color: #111 !important; }
+
+  /* 웹 전용 부록(저장 버튼) — PDF에 포함하지 않음 */
+  #sec-report-footer-utilities, .report-footer-utilities {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  /* chapter-start 강제 새 페이지 해제 — 부(제N부) 헤더만 새 페이지 */
+  .report-chapter.chapter-start:not(.part-header-block),
+  .cover-page.chapter-start, #sec-cover.chapter-start, #sec-client-cover.chapter-start {
+    page-break-before: auto !important;
+    break-before: auto !important;
   }
 
   /* ── 6) 카드 — 깔끔한 흰 카드로 통일 (외곽선 얇게, 글로우 없음) ── */
@@ -158,20 +182,33 @@ html, body, #report-container, #report-container * {
     box-shadow: none !important;
   }
 
-  /* ── 7) 카드/표/단락 = 페이지에서 통째로 넘김 (중간 잘림 방지) ──── */
-  .report-chapter,
+  /* ── 7) 카드 단위만 페이지 끊김 방지 (챕터 전체 avoid 금지 → 빈 페이지 방지) ─ */
   .sajux-card, .sajux-panel-plain, .glass-panel, .sajux-glass-panel,
   .sajux-glass-heavy, .deep-hook-panel, .premium-executive-summary,
   .daeun-decade-card, .sajux-upcoming-daeun-card, .seyun-year-card,
   .yearly-card, .monthly-card, .f-card, .ziwei-palace-card, .ilju-profile-card,
   .insight-card, .four-domain-radar, .yearly-indicators, .sip-detail-card,
-  .domain-summary-3box, .vip-evidence-block, .vip-manse-keep-group,
-  .bar-group, .remedy-checklist-table, .manse-table,
-  #report-container .report-chapter > div[style*="border-radius"],
-  #report-container .report-chapter > div[style*="margin-bottom"] {
+  .domain-summary-3box, .vip-manse-keep-group, .bar-group,
+  .remedy-checklist-table, .manse-table, .ziwei-surprise-intro,
+  .report-review-callout, .rel-panel, .person-card, .score-section, .t-card {
     page-break-inside: avoid !important;
     break-inside: avoid !important;
   }
+  /* 부 본문·월운·보너스 구간은 페이지를 넘겨 카드 단위로 흐르게 */
+  .part-header-keep-group, .part-follow-content,
+  .report-chapter, #sec-upcoming-wolun, .sajux-wolun-capture-half,
+  .sajux-bonus-flow, .ziwei-appendix-block, .vip-evidence-block {
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+  }
+  .sajux-bonus-flow .ziwei-palace-card,
+  .sajux-bonus-flow .ziwei-surprise-intro,
+  .sajux-bonus-flow .report-chapter {
+    page-break-before: auto !important;
+    break-before: auto !important;
+    margin-top: 0 !important;
+  }
+  .sajux-bonus-flow > * + * { margin-top: 8px !important; }
   /* 제목은 다음 본문과 붙임 */
   h1, h2, h3, .ch-title, .section-title, .part-title, .part-header-label,
   .ch-head-main-sub, .ch-head-topic-first, .vip-manse-title, .title-card {
@@ -218,11 +255,13 @@ html, body, #report-container, #report-container * {
     break-before: auto !important;
   }
 
-  /* ── 9) 표지 / 목차 ───────────────────────────────────────────── */
-  .cover-page, #sec-cover, #sec-client-cover {
-    min-height: auto !important;
+  /* ── 9) 표지 / 목차 — 페이지 세로·가로 중앙 ─────────────────────── */
+  .cover-page, #sec-cover, #sec-client-cover,
+  .page-header.cover-page, .compat-cover-column .cover-page {
+    min-height: 100vh !important;
     height: auto !important;
-    padding: 16mm 8mm !important;
+    padding: 0 8mm !important;
+    margin: 0 !important;
     background: #ffffff !important;
     page-break-after: always !important;
     break-after: page !important;
@@ -232,6 +271,12 @@ html, body, #report-container, #report-container * {
     flex-direction: column !important;
     justify-content: center !important;
     align-items: center !important;
+    box-sizing: border-box !important;
+  }
+  .cover-page .sajux-logo-wrap, .cover-page .cover-brush-block,
+  .cover-page .sajux-intro-block, #sec-book-intro {
+    margin-left: auto !important;
+    margin-right: auto !important;
   }
   .cover-page .sajux-logo-cover-screen, .sajux-logo.dark {
     display: none !important; visibility: hidden !important;
@@ -282,7 +327,19 @@ html, body, #report-container, #report-container * {
   .toc-page .toc-entry > div { flex: 1 1 auto !important; min-width: 0 !important; }
   .toc-page .toc-main-line { font-size: 14px !important; line-height: 1.45 !important; }
 
-  /* ── 10) 만세력 VIP 표 — 화면 표 구조 유지, 인쇄용 스케일만 ─────── */
+  /* ── 10) 만세력 1-2 — 페이지 세로 중앙 + 천간·지지 3배 ─────────── */
+  #sec-vip-evidence.vip-evidence-block {
+    min-height: 100vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: stretch !important;
+    box-sizing: border-box !important;
+    padding: 8mm 0 !important;
+    margin: 0 !important;
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+  }
   .vip-evidence-block {
     background: #ffffff !important;
     border: 1px solid #e6e0d2 !important;
@@ -290,6 +347,27 @@ html, body, #report-container, #report-container * {
     box-shadow: none !important;
     padding: 10px 10px 12px !important;
     margin: 0 0 8mm !important;
+  }
+  .vip-evidence-block .vip-row-gan .vip-hanja,
+  .vip-evidence-block .vip-row-gan td div span[style*="font-size:1.2em"],
+  .vip-evidence-block .vip-row-gan td div span[style*="font-size:1.55em"] {
+    font-size: 42px !important;
+    line-height: 1.05 !important;
+  }
+  .vip-evidence-block .vip-row-ji .vip-hanja,
+  .vip-evidence-block .vip-row-ji td div span[style*="font-size:1.2em"],
+  .vip-evidence-block .vip-row-ji td div span[style*="font-size:1.55em"] {
+    font-size: 42px !important;
+    line-height: 1.05 !important;
+  }
+  .vip-evidence-block .vip-row-gan td div span[style*="font-size:10px"],
+  .vip-evidence-block .vip-row-ji td div span[style*="font-size:10px"] {
+    font-size: 14px !important;
+    color: #444 !important;
+  }
+  .vip-evidence-block .vip-row-gan td,
+  .vip-evidence-block .vip-row-ji td {
+    padding: 10px 8px !important;
   }
   .vip-evidence-block table,
   .remedy-checklist-table {
@@ -440,6 +518,16 @@ html, body, #report-container, #report-container * {
     margin-left: 0 !important; margin-right: 0 !important; box-sizing: border-box !important;
   }
   #main-content .container { max-width: 132mm !important; margin: 0 auto !important; padding: 0 0 12mm !important; }
-  .page-header.cover-page { padding: 16mm 8mm !important; min-height: auto !important; }
+  .page-header.cover-page, #main-content .page-header {
+    min-height: 100vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 0 8mm !important;
+    margin: 0 !important;
+    background: #ffffff !important;
+  }
   .page-header .sajux-logo-cover-row img { width: 70% !important; max-width: 420px !important; margin: 0 auto !important; }
+  .premium-executive-summary { page-break-after: auto !important; break-after: auto !important; }
 }
