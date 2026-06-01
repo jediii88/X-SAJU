@@ -11738,7 +11738,6 @@ function buildChapter2_Wuxing(data) {
         const isZero = p === 0;
         const col = OH_BAR[k] || '#aaa';
         const barW = Math.max(2, Math.min(100, p));
-        const labelColor = isExc ? 'var(--gold)' : (isZero ? '#888' : '#bbb');
         return `<div class="wuxing-bar-row" style="display:flex;align-items:center;gap:12px;margin-bottom:11px;">
             <div style="min-width:52px;text-align:right;font-size:13px;font-weight:${isExc?800:500};color:${isExc?'#8b6914':'#444'};">${OHHJ2[k]} ${OHKR2[k]}</div>
             <div class="wuxing-bar-track" style="flex:1;min-width:0;background:#e8e8e8;border-radius:6px;height:14px;overflow:hidden;border:1px solid #d0d0d0;box-sizing:border-box;">
