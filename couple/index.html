@@ -29,7 +29,7 @@
 })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="sajux-build" content="1780291910">
+<meta name="sajux-build" content="1780292462">
 <title>사주X — 두 사람의 인연 구조</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;700;900&display=swap" rel="stylesheet">
@@ -411,6 +411,17 @@ body::before {
 }
 @media print {
   #floating-toc, .sticky-part-nav, #star-canvas { display: none !important; }
+}
+
+.pillar-mini .manse-kor {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.42);
+  letter-spacing: 0.01em;
+}
+html[data-theme="light"] .pillar-mini .manse-kor,
+body.light-mode .pillar-mini .manse-kor {
+  color: #666;
 }
 
 /* 두 사람 만세력 + 하단 안내 — 한 덩어리 유리 패널 */
@@ -943,6 +954,7 @@ body::before {
       <div class="timeline-scroll" id="timeline-scroll"></div>
       <div id="compat-share-cta-mount"></div>
     </div>
+    <div id="compat-review-mount"></div>
   </div>
 </div>
 
@@ -1503,9 +1515,12 @@ function renderPersonCard(prefix, info, saju) {
   function _hanjaStyle(ch){
     return "font-family:'Noto Sans KR',sans-serif;font-weight:300;font-size:19px;";
   }
-  /** 만세력 표 전용 — 괄호 없이 丁정 형식 */
-  function _manseCellLabel(ch) {
-    return ch + (KOR_MAP[ch] || '');
+  /** 만세력 표 — 한자(오행색) + 한글 발음(회색) */
+  function _manseCellHtml(ch, colClass) {
+    var kor = KOR_MAP[ch] || '';
+    return '<span class="manse-cell-inline" style="display:inline-flex;align-items:baseline;justify-content:center;gap:1px;line-height:1.35;">'
+      + '<span class="manse-hanja ' + (colClass || '') + '" style="' + _hanjaStyle(ch) + 'font-size:14px;">' + ch + '</span>'
+      + '<span class="manse-kor">' + kor + '</span></span>';
   }
   pillarsEl.innerHTML = `
     <table style="width:100%;border-collapse:collapse;margin-top:2px;table-layout:fixed;">
@@ -1530,7 +1545,7 @@ function renderPersonCard(prefix, info, saju) {
           const gz = gzString(p && p.h);
           if (!gz || gz.length < 2) return '<td></td>';
           const col = HAN_COLOR[gz[0]]||'';
-          return `<td style="text-align:center;padding:6px 2px;"><span class="${col}" style="${_hanjaStyle(gz[0])}font-size:14px;line-height:1.35;">${_manseCellLabel(gz[0])}</span></td>`;
+          return `<td style="text-align:center;padding:6px 2px;">${_manseCellHtml(gz[0], col)}</td>`;
         }).join('')}
       </tr>
       <tr style="border-bottom:1px solid rgba(128,128,128,0.10);">
@@ -1540,7 +1555,7 @@ function renderPersonCard(prefix, info, saju) {
           const gz = gzString(p && p.h);
           if (!gz || gz.length < 2) return '<td></td>';
           const col = HAN_COLOR[gz[1]]||'';
-          return `<td style="text-align:center;padding:6px 2px;"><span class="${col}" style="${_hanjaStyle(gz[1])}font-size:14px;line-height:1.35;">${_manseCellLabel(gz[1])}</span></td>`;
+          return `<td style="text-align:center;padding:6px 2px;">${_manseCellHtml(gz[1], col)}</td>`;
         }).join('')}
       </tr>
       <tr>
@@ -2221,6 +2236,14 @@ async function init() {
       shareMount.innerHTML = buildCompatShareCtaHtml(window.__compatCtx);
     }
 
+    var reviewMount = document.getElementById('compat-review-mount');
+    if (reviewMount && typeof buildReviewCallout === 'function') {
+      reviewMount.innerHTML = buildReviewCallout(
+        { name: params.a.name || '고객' },
+        { nameB: params.b.name || '' }
+      );
+    }
+
     // CSS 오행 배경색 클래스
     const st = document.createElement('style');
     st.textContent = '.bg-wood{background:var(--wood)}.bg-fire{background:var(--fire)}.bg-earth{background:var(--earth)}.bg-metal{background:var(--metal)}.bg-water{background:var(--water);box-shadow:inset 0 0 0 1px var(--water-edge)}';
@@ -2296,7 +2319,7 @@ function toggleToc(e) {
   if (t) t.classList.toggle('toc-open');
 }
 </script>
-<link rel="stylesheet" href="../report/report-print.css?v=1780291910">
+<link rel="stylesheet" href="../report/report-print.css?v=1780292462">
 <script>
 (function () {
   if (window.__sajuxCoverPrintBound) return;
