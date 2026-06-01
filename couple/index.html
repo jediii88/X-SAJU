@@ -29,7 +29,7 @@
 })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="sajux-build" content="1780296867">
+<meta name="sajux-build" content="1780297607">
 <title>사주X — 두 사람의 인연 구조</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;700;900&display=swap" rel="stylesheet">
@@ -604,6 +604,13 @@ body.light-mode .pillar-mini .manse-kor {
   margin-top: 12px;
   margin-bottom: 32px;
 }
+.compat-footer-tail {
+  margin-top: 28px;
+  padding-top: 8px;
+  border-top: 1px dashed rgba(199,167,106,0.18);
+}
+.compat-footer-tail #compat-review-mount { margin-bottom: 4px; }
+.compat-footer-tail #compat-share-cta-mount { margin-top: 20px; }
   margin: 32px 0 56px;
   padding: 0 2px;
   max-width: 500px;
@@ -956,8 +963,11 @@ body.light-mode .pillar-mini .manse-kor {
       <div id="panel-timeline" class="rel-panel"></div>
       <div class="timeline-scroll" id="timeline-scroll"></div>
     </div>
-    <div id="compat-review-mount"></div>
-    <div id="compat-share-cta-mount"></div>
+
+    <div id="compat-footer-tail" class="compat-footer-tail">
+      <div id="compat-review-mount"></div>
+      <div id="compat-share-cta-mount"></div>
+    </div>
   </div>
 </div>
 
@@ -1445,6 +1455,25 @@ function analyzeCoupling(a, b) {
 // ══════════════════════════════════════
 // UI 렌더링
 // ══════════════════════════════════════
+/** 마지막 푸터 — 끝인사 → 공유 CTA 순서 고정 (구 HTML·캐시 대비) */
+function sajuxCompatEnsureFooterOrder() {
+  var container = document.querySelector('#main-content .container');
+  var tail = document.getElementById('compat-footer-tail');
+  var review = document.getElementById('compat-review-mount');
+  var share = document.getElementById('compat-share-cta-mount');
+  if (!container) return;
+  if (tail) container.appendChild(tail);
+  if (tail && review && review.parentElement !== tail) tail.insertBefore(review, tail.firstChild || null);
+  if (tail && share && share.parentElement !== tail) tail.appendChild(share);
+  if (!tail) {
+    if (review) container.appendChild(review);
+    if (share) container.appendChild(share);
+  }
+  document.querySelectorAll('#section-timeline #compat-share-cta-mount, #section-timeline .compat-share-cta-wrap').forEach(function (el) {
+    if (share && el !== share && !share.contains(el)) el.remove();
+  });
+}
+
 function renderCompatManseSharedNotes() {
   const el = document.getElementById('compat-manse-notes');
   if (!el) return;
@@ -2247,6 +2276,8 @@ async function init() {
       shareMount.innerHTML = buildCompatShareCtaHtml(window.__compatCtx);
     }
 
+    sajuxCompatEnsureFooterOrder();
+
     // CSS 오행 배경색 클래스
     const st = document.createElement('style');
     st.textContent = '.bg-wood{background:var(--wood)}.bg-fire{background:var(--fire)}.bg-earth{background:var(--earth)}.bg-metal{background:var(--metal)}.bg-water{background:var(--water);box-shadow:inset 0 0 0 1px var(--water-edge)}';
@@ -2322,7 +2353,7 @@ function toggleToc(e) {
   if (t) t.classList.toggle('toc-open');
 }
 </script>
-<link rel="stylesheet" href="../report/report-print.css?v=1780296867">
+<link rel="stylesheet" href="../report/report-print.css?v=1780297607">
 <script>
 (function () {
   if (window.__sajuxCoverPrintBound) return;
