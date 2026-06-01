@@ -29,7 +29,7 @@
 })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="sajux-build" content="1780296147">
+<meta name="sajux-build" content="1780296547">
 <title>사주X — 두 사람의 인연 구조</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;700;900&display=swap" rel="stylesheet">
@@ -952,9 +952,9 @@ body.light-mode .pillar-mini .manse-kor {
       <div id="compat-voice-timeline" class="compat-voice-wrap" style="margin:28px 0 8px;"></div>
       <div id="panel-timeline" class="rel-panel"></div>
       <div class="timeline-scroll" id="timeline-scroll"></div>
-      <div id="compat-share-cta-mount"></div>
     </div>
     <div id="compat-review-mount"></div>
+    <div id="compat-share-cta-mount"></div>
   </div>
 </div>
 
@@ -2231,17 +2231,17 @@ async function init() {
     renderScore(result);
     buildTimeline(sajuA, sajuB, params.a, params.b, params);
 
-    const shareMount = document.getElementById('compat-share-cta-mount');
-    if (shareMount && typeof buildCompatShareCtaHtml === 'function' && window.__compatCtx) {
-      shareMount.innerHTML = buildCompatShareCtaHtml(window.__compatCtx);
-    }
-
     var reviewMount = document.getElementById('compat-review-mount');
     if (reviewMount && typeof buildReviewCallout === 'function') {
       reviewMount.innerHTML = buildReviewCallout(
         { name: params.a.name || '고객' },
         { nameB: params.b.name || '' }
       );
+    }
+
+    const shareMount = document.getElementById('compat-share-cta-mount');
+    if (shareMount && typeof buildCompatShareCtaHtml === 'function' && window.__compatCtx) {
+      shareMount.innerHTML = buildCompatShareCtaHtml(window.__compatCtx);
     }
 
     // CSS 오행 배경색 클래스
@@ -2319,7 +2319,7 @@ function toggleToc(e) {
   if (t) t.classList.toggle('toc-open');
 }
 </script>
-<link rel="stylesheet" href="../report/report-print.css?v=1780296147">
+<link rel="stylesheet" href="../report/report-print.css?v=1780296547">
 <script>
 (function () {
   if (window.__sajuxCoverPrintBound) return;
