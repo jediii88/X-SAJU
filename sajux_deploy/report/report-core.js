@@ -371,7 +371,7 @@ function buildChapterHeadTopicFirst(mainTitle, eyebrowLabel, leadHook, opts) {
 /** 부-절 번호 체계 — 개인 리포트 절 목록 (topic → buildChapterIntroHtml 키) */
 var SAJUX_SECTION_REGISTRY = {
     ilju: { part: 1, section: 1, title: '일주 · 한 줄기 서사', eyebrow: '60일주 물상 · 삶의 중심축', topic: 'basic', inToc: true },
-    manse: { part: 1, section: 2, title: '만세력 · 원국 표', eyebrow: '원국 근거 · 격국·조후·공망', topic: null, inToc: true },
+    manse: { part: 1, section: 2, title: '만세력', eyebrow: '원국 근거 · 격국·조후·공망', topic: null, inToc: true },
     wuxing: { part: 1, section: 3, title: '오행 — 다섯 기운의 짜임', eyebrow: '오행의 강약과 균형', topic: 'wuxing', inToc: true },
     sipseong: { part: 1, section: 4, title: '십성 — 돈·일·관계의 다섯 축', eyebrow: '만세력 · 십성 다섯 축', topic: 'sipseong', inToc: true },
     current: { part: 2, section: 1, title: '현재의 운세', eyebrow: '대운 · 세운 · 월운', topic: 'current', inToc: true, headerMode: 'mainSub' },
@@ -493,7 +493,7 @@ function buildSectionHeader(sectionKey, data, opts) {
     var hook = opts.leadHook != null ? opts.leadHook : (opts.hook || '');
     if (opts.leadHook === false) hook = '';
     var mode = opts.headerMode || reg.headerMode || 'topicFirst';
-    var numStr = formatPartSectionNum(reg.part, reg.section, reg, sectionKey, opts);
+    var numStr = opts.hideSectionNum ? '' : formatPartSectionNum(reg.part, reg.section, reg, sectionKey, opts);
     var titleHtml = buildSectionTitleHtml(numStr, title);
     var headOpts = Object.assign({}, opts, {
         mainTitleIsHtml: true,
@@ -11706,7 +11706,7 @@ function buildChapter2_Wuxing(data) {
     const wuxing = data.wuxing || {};
     const OHKR2 = {wood:'목',fire:'화',earth:'토',metal:'금',water:'수'};
     const OHHJ2 = {wood:'木',fire:'火',earth:'土',metal:'金',water:'水'};
-    const OH_BAR = {wood:'var(--wood)',fire:'var(--fire)',earth:'var(--earth)',metal:'var(--metal)',water:'var(--water)'};
+    const OH_BAR = {wood:'#15692f',fire:'#be2f2f',earth:'#8a6a1a',metal:'#555555',water:'#1746c4'};
 
     const oh5 = ['wood','fire','earth','metal','water'];
     const totalRaw = oh5.reduce((s,k)=>s+(Number(wuxing[k])||0), 0);
@@ -11740,11 +11740,11 @@ function buildChapter2_Wuxing(data) {
         const barW = Math.max(2, Math.min(100, p));
         const labelColor = isExc ? 'var(--gold)' : (isZero ? '#888' : '#bbb');
         return `<div class="wuxing-bar-row" style="display:flex;align-items:center;gap:12px;margin-bottom:11px;">
-            <div style="min-width:52px;text-align:right;font-size:13px;font-weight:${isExc?800:500};color:${labelColor};">${OHHJ2[k]} ${OHKR2[k]}</div>
-            <div style="flex:1;min-width:0;background:rgba(255,255,255,0.08);border-radius:6px;height:14px;overflow:hidden;border:1px solid rgba(255,255,255,0.06);">
-                <div style="width:${barW}%;max-width:100%;height:100%;background:linear-gradient(90deg,${col},rgba(255,255,255,0.15));border-radius:5px;transition:width .3s;"></div>
+            <div style="min-width:52px;text-align:right;font-size:13px;font-weight:${isExc?800:500};color:${isExc?'#8b6914':'#444'};">${OHHJ2[k]} ${OHKR2[k]}</div>
+            <div class="wuxing-bar-track" style="flex:1;min-width:0;background:#e8e8e8;border-radius:6px;height:14px;overflow:hidden;border:1px solid #d0d0d0;box-sizing:border-box;">
+                <div class="wuxing-bar-fill wuxing-bar-fill-${k}" style="width:${barW}%;max-width:100%;height:100%;background:${col};border-radius:5px;-webkit-print-color-adjust:exact;print-color-adjust:exact;"></div>
             </div>
-            <div style="min-width:40px;font-size:13px;font-weight:700;color:${isExc?'var(--gold)':'#999'};">${p}%</div>
+            <div style="min-width:40px;font-size:13px;font-weight:700;color:${isExc?'#8b6914':'#555'};">${p}%</div>
             ${isExc ? '<span style="font-size:10px;background:rgba(199,167,106,0.25);color:var(--gold);padding:2px 7px;border-radius:6px;font-weight:700;letter-spacing:0.04em;">과다</span>' : ''}
             ${(isLack && !isZero) ? '<span style="font-size:10px;background:rgba(120,120,120,0.18);color:#bbb;padding:2px 7px;border-radius:6px;letter-spacing:0.04em;">부족</span>' : ''}
             ${isZero ? '<span style="font-size:10px;background:rgba(120,120,120,0.18);color:#bbb;padding:2px 7px;border-radius:6px;letter-spacing:0.04em;">비어있음</span>' : ''}
@@ -11814,8 +11814,8 @@ function buildChapter2_Wuxing(data) {
 
     return buildChapterWithSingleIntro('wuxing', data, `
         ${para(introLine)}
-        <div class="wuxing-bar-chart" style="background:var(--panel,rgba(0,0,0,0.22));border:1px solid rgba(199,167,106,0.2);border-radius:12px;padding:18px 20px;margin:0 0 22px;">
-            <div style="font-size:12px;font-weight:800;color:var(--gold);margin-bottom:14px;letter-spacing:0.5px;">오행 비율</div>
+        <div class="wuxing-bar-chart wuxing-chart-keep-group" style="background:transparent;border:none;border-radius:0;padding:12px 0 18px;margin:0 0 22px;">
+            <div class="wuxing-chart-title" style="font-size:12px;font-weight:800;color:#8b6914;margin-bottom:14px;letter-spacing:0.5px;">오행 비율</div>
             ${balanceRows}
         </div>
         ${excessHtml}
@@ -11941,9 +11941,9 @@ function buildSipseongChapterHook(data, topG, primaryList) {
 }
 
 function buildSipseongChartCardTitleHtml() {
-    return '<div style="margin-bottom:12px;">'
-        + '<div style="font-size:12px;font-weight:800;color:var(--gold);letter-spacing:0.06em;margin:0;">십성 비중</div>'
-        + '<div style="font-size:10px;font-weight:600;color:rgba(255,255,255,0.42);letter-spacing:0.04em;margin-top:5px;">비겁 · 식상 · 재성 · 관성 · 인성</div>'
+    return '<div class="sipseong-chart-title-wrap" style="margin-bottom:12px;">'
+        + '<div class="sipseong-chart-title" style="font-size:12px;font-weight:800;color:#8b6914;letter-spacing:0.06em;margin:0;">십성 비중</div>'
+        + '<div style="font-size:10px;font-weight:600;color:#666;letter-spacing:0.04em;margin-top:5px;">비겁 · 식상 · 재성 · 관성 · 인성</div>'
         + '</div>';
 }
 
@@ -11990,16 +11990,17 @@ function buildChapter3_Sipseong(data) {
     const topG = groupRank[0] || { key: '비겁', label: '동료·자아 (비견/겁재):', shortLabel: sipGroupInternalLabel('비겁'), pct: 0 };
     const mainGroupKey = topG.key;
 
+    var SIP_BAR_COL = { '비겁': '#3d6b48', '식상': '#c94a28', '재성': '#9a7018', '관성': '#4a5568', '인성': '#6b5520' };
     const sipRows = SIP_BAR_GROUPS.map(function (g, idx) {
         var pct = normInts[idx];
         var isMain = g.key === mainGroupKey;
-        var col = isMain ? 'var(--gold)' : '#a8a8a8';
+        var col = isMain ? '#7a5a0a' : (SIP_BAR_COL[g.key] || '#555555');
         var barW = pct <= 0 ? 0 : Math.min(100, pct);
         var lab = g.shortLabel || g.key;
         return '<div class="sipseong-bar-row" style="display:grid;grid-template-columns:minmax(36px,52px) minmax(0,1fr) 40px;align-items:center;column-gap:10px;margin-bottom:11px;">'
             + '<div style="font-size:12px;font-weight:' + (isMain ? 800 : 600) + ';color:' + col + ';letter-spacing:-0.02em;">' + lab + '</div>'
-            + '<div style="height:12px;border-radius:999px;background:rgba(255,255,255,0.11);overflow:hidden;box-sizing:border-box;border:1px solid rgba(255,255,255,0.06);">'
-            + '<div style="height:100%;width:' + barW + '%;max-width:100%;border-radius:999px;background:linear-gradient(90deg,' + col + ',rgba(255,255,255,0.14));box-sizing:border-box;"></div></div>'
+            + '<div class="sipseong-bar-track" style="height:12px;border-radius:999px;background:#e8e8e8;overflow:hidden;box-sizing:border-box;border:1px solid #d0d0d0;">'
+            + '<div class="sipseong-bar-fill" style="height:100%;width:' + barW + '%;max-width:100%;border-radius:999px;background:' + col + ';box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact;"></div></div>'
             + '<div style="font-size:12px;font-weight:800;color:' + col + ';text-align:right;white-space:nowrap;letter-spacing:-0.02em;">' + pct + '%</div></div>';
     }).join('');
 
@@ -12020,7 +12021,7 @@ function buildChapter3_Sipseong(data) {
     return `<div class="report-chapter">
         ${chHead3}
         ${chIntro3}
-        <div class="sipseong-bar-chart sajux-glass-heavy" style="background:rgba(255,255,255,0.06);border:1px solid rgba(199,167,106,0.22);border-radius:12px;padding:18px 20px;margin:0 0 14px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
+        <div class="sipseong-bar-chart sipseong-chart-keep-group" style="background:transparent;border:none;border-radius:0;padding:12px 0 14px;margin:0 0 14px;">
             ${buildSipseongChartCardTitleHtml()}
             ${sipRows || '<p style="color:#888;font-size:12px;margin:0;">분포 데이터를 불러오는 중입니다.</p>'}
         </div>
@@ -13525,8 +13526,8 @@ function buildVipEvidenceBlock(data) {
     function ohColor(k){ return OH_COL[k]||'#aaa'; }
     function hanCol(h){ return ohColor(STEM_OH[h]||BRNCH_OH[h]||'earth'); }
     var ev = '';
-    ev += '<div id="sec-vip-evidence" class="report-chapter chapter-start vip-evidence-block" style="padding-top:4px;margin-bottom:32px;">';
-    ev += buildSectionHeader('manse', data, { skipIntro: true });
+    ev += '<div id="sec-vip-evidence" class="report-chapter chapter-start vip-evidence-block sajux-manse-section" style="padding-top:4px;margin-bottom:32px;">';
+    ev += buildSectionHeader('manse', data, { skipIntro: true, hideSectionNum: true, title: '만세력', headerMode: 'mainSub', subTitle: '원국 근거 · 격국·조후·공망' });
     // ── ① 만세력 원국 8자 표 ──
     ev += '<div class="vip-manse-keep-group" style="page-break-inside:avoid;break-inside:avoid;">';
     ev += '<div class="vip-manse-title" style="font-size:13px;color:var(--gold);font-weight:800;letter-spacing:1.2px;line-height:1.45;margin-bottom:12px;page-break-after:avoid;break-after:avoid;">① 타고난 8자 — 사주 원국</div>';
