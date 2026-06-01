@@ -5,8 +5,7 @@
       오행 한자색(--wood/--fire/--earth/--metal/--water)이 인쇄용 진한 값으로 적용.
    2) 본문 컬럼은 화면(500px)을 유지해 A4 가운데 정렬 → 좌우 여백, 원본 비율.
    3) 외부 광선(box-shadow/글로우) 전부 제거.
-   4) 카드는 깔끔한 흰 카드(얇은 테두리)로 통일하고, 카드 단위로 페이지를 넘겨
-      내용이 중간에 잘리지 않게 한다.
+   4) 카드·절 제목 — 외곽선·베이지 배경 없음, 본문 컬럼 좌우 6mm 안쪽 여백.
    ===================================================================== */
 
 /* 배경색·차트 색상 유지 (전역) */
@@ -367,18 +366,37 @@ html, body, #report-container, #report-container * {
   .toc-page .toc-entry > div { flex: 1 1 auto !important; min-width: 0 !important; }
   .toc-page .toc-main-line { font-size: 14px !important; line-height: 1.45 !important; }
 
-  /* ── 10) 만세력 1-2 — 페이지 세로 중앙 + 천간·지지 3배 ─────────── */
-  #sec-vip-evidence.vip-evidence-block {
+  /* ── 10) 만세력 — 페이지 세로 중앙 + 표·제목 가로 중앙 + 천간·지지 3배 ── */
+  #sec-vip-evidence.vip-evidence-block,
+  #sec-vip-evidence.sajux-manse-section {
     min-height: 100vh !important;
     display: flex !important;
     flex-direction: column !important;
     justify-content: center !important;
-    align-items: stretch !important;
+    align-items: center !important;
     box-sizing: border-box !important;
     padding: 8mm 0 !important;
     margin: 0 !important;
     page-break-inside: auto !important;
     break-inside: auto !important;
+    text-align: center !important;
+  }
+  #sec-vip-evidence.sajux-manse-section .ch-head-main-sub,
+  #sec-vip-evidence.sajux-manse-section .vip-manse-keep-group,
+  #sec-vip-evidence.sajux-manse-section .vip-manse-title,
+  #sec-vip-evidence.sajux-manse-section .sajux-water-color-note {
+    width: 100% !important;
+    max-width: 100% !important;
+    text-align: center !important;
+  }
+  #sec-vip-evidence.sajux-manse-section .vip-manse-keep-group > div[style*="overflow-x"] {
+    display: flex !important;
+    justify-content: center !important;
+    width: 100% !important;
+  }
+  #sec-vip-evidence.sajux-manse-section .vip-manse-keep-group table {
+    margin-left: auto !important;
+    margin-right: auto !important;
   }
   .vip-evidence-block {
     box-shadow: none !important;
@@ -574,12 +592,12 @@ html, body, #report-container, #report-container * {
   #report-container .sajux-print-surface,
   #report-container .sajux-glass-panel,
   #report-container .glass-panel,
-  #report-container div[class*="box"],
-  #report-container div[class*="card"],
+  #report-container div[class*="box"]:not(.wuxing-bar-track):not(.sipseong-bar-track),
+  #report-container div[class*="card"]:not(.wuxing-bar-chart):not(.sipseong-bar-chart),
   #report-container div[style*="background:rgba(255,255,255,0.0"],
   #report-container div[style*="background:rgba(0,0,0"],
   #report-container div[style*="background:rgba(199,167,106"],
-  #report-container div[style*="background:linear-gradient"],
+  #report-container div[style*="background:linear-gradient"]:not(.wuxing-bar-fill):not(.sipseong-bar-fill),
   #report-container div[style*="faf6"],
   #report-container div[style*="faf8"],
   #report-container div[style*="f4efe6"] {
@@ -656,6 +674,49 @@ html, body, #report-container, #report-container * {
     padding-left: 0 !important;
     padding-right: 0 !important;
   }
+
+  /* ── 12c) 오행·십성 게이지 — 제목+표 한 페이지, 진한 막대색 ─────── */
+  .wuxing-chart-keep-group,
+  .sipseong-chart-keep-group {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    background: transparent !important;
+    border: none !important;
+  }
+  .wuxing-chart-title,
+  .sipseong-chart-title-wrap,
+  .sipseong-chart-title {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+  .wuxing-bar-row,
+  .sipseong-bar-row {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+  .wuxing-bar-track,
+  .sipseong-bar-track {
+    background: #e8e8e8 !important;
+    background-color: #e8e8e8 !important;
+    border: 1px solid #d0d0d0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .wuxing-bar-fill,
+  .sipseong-bar-fill {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    box-shadow: none !important;
+  }
+  .wuxing-bar-fill-wood { background: #15692f !important; background-color: #15692f !important; }
+  .wuxing-bar-fill-fire { background: #be2f2f !important; background-color: #be2f2f !important; }
+  .wuxing-bar-fill-earth { background: #8a6a1a !important; background-color: #8a6a1a !important; }
+  .wuxing-bar-fill-metal { background: #555555 !important; background-color: #555555 !important; }
+  .wuxing-bar-fill-water { background: #1746c4 !important; background-color: #1746c4 !important; }
+  .wuxing-chart-title,
+  .sipseong-chart-title { color: #8b6914 !important; -webkit-text-fill-color: #8b6914 !important; }
 
   /* ── 13) 궁합 리포트 (couple/index.html) ──────────────────────── */
   #main-content, #main-content .compat-cover-column,
