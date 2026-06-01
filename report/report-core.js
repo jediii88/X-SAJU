@@ -14731,30 +14731,35 @@ function buildZiweiSurpriseIntro(data) {
         + '</div>';
 }
 
-/** 보고서 맨 마지막 리뷰 카드 — 「리뷰 안내」절 헤더 없이 카드만 */
+/** 보고서 맨 마지막 리뷰 카드 — 「리뷰 안내」절 헤더 없이 카드만 (1인 / 궁합 분기) */
 function buildReviewCallout(data, opts) {
     opts = opts || {};
     var name = (data && data.name) ? data.name : '고객';
     var nameB = opts.nameB || opts.secondName || '';
-    var closingTarget = nameB
-        ? (nmUi(name) + '님 · ' + nmUi(nameB) + '님')
-        : (nmUi(name) + '님');
+    var isCompat = !!(nameB && String(nameB).trim());
     var REVIEW_URL = (typeof window !== 'undefined' && window.SAJUX_REVIEW_URL) ? window.SAJUX_REVIEW_URL : '';
     var btn = REVIEW_URL
         ? '<a href="' + REVIEW_URL + '" target="_blank" rel="noopener" style="display:inline-block;margin-top:18px;padding:12px 28px;border-radius:999px;background:linear-gradient(135deg, #c7a76a, #8a6f3c);color:#fff;font-size:13.5px;font-weight:700;letter-spacing:0.05em;text-decoration:none;box-shadow:0 4px 12px rgba(199,167,106,0.30);">리뷰 남기러 가기 →</a>'
         : '';
-    var closingMsg = '저희 사주X는 이 리포트를 살아가는데 힘이 드시거나 용기가 필요한 분들이 희망을 갖고 앞으로 나아가기 위해서 제작하기 시작하였습니다. '
-        + closingTarget + ' 가시는 길 항상 좋은 일만 가득하시길 바라겠습니다.';
+    var closingTitle = isCompat
+        ? '마치며 · 함께 걸어갈 두 분에게'
+        : '마지막 인사 · 당신의 빛나는 여정을 위하여';
+    var closingMsg = isCompat
+        ? ('각자의 우주가 만나 하나의 새로운 세계를 만들어가는 과정은 참으로 소중하고 경이롭습니다. 이 작은 비밀문서가 두 분이 서로를 더 깊이 아껴주는 든든한 나침반으로 남기를 바랍니다. '
+            + nmDnim(name) + '과 ' + nmDnim(nameB) + '이 나란히 걸어갈 앞으로의 모든 길 위에 평안과 행복이 늘 함께하기를 기원합니다.')
+        : ('누구나 길을 잃고 용기가 필요한 순간이 있습니다. 사주X는 그 아득한 순간에 작은 희망의 불씨를 전하고 싶어 탄생했습니다. '
+            + nmIGa(name) + ' 내딛는 앞으로의 모든 길 위에 따스한 행복이 늘 함께하길 바랍니다.');
+    var reviewWho = isCompat ? '두 분의 한마디' : (nmDnim(name) + ' 한마디');
 
     return '<div id="sec-review-callout" class="report-review-callout sajux-glass-heavy" style="margin:36px 0 24px;padding:28px 26px;border-radius:18px;'
         + 'background:linear-gradient(135deg, rgba(199,167,106,0.10), rgba(255,255,255,0.02));'
         + 'border:1px solid rgba(199,167,106,0.28);text-align:center;">'
-        + '<div style="font-size:10px;letter-spacing:0.22em;color:var(--gold);font-weight:700;margin-bottom:12px;">끝인사 · 다음에 또 봐요</div>'
+        + '<div style="font-size:10px;letter-spacing:0.22em;color:var(--gold);font-weight:700;margin-bottom:12px;">' + escHtmlAttr(closingTitle) + '</div>'
         + '<p style="font-size:14px;color:#ddd;line-height:1.95;margin:0 auto 14px;max-width:560px;">'
         + voicePolishParagraph(data, closingMsg)
         + '</p>'
         + '<p style="font-size:14px;color:#ddd;line-height:1.95;margin:0 auto 6px;max-width:560px;">'
-        + voicePolishParagraph(data, '저희 시스템이 마음에 드셨거나, 또는 아쉬운 점이 있으셨다면 <strong>리뷰로 남겨 주세요.</strong> 별 다섯 개도 좋고, “이 부분은 좀 더 자세했으면 좋겠어요” 같은 한 줄도 좋아요. ' + nmUi(name) + ' 한마디가 다음 분의 보고서를 한 단계 더 따뜻하게 만들어 줍니다.')
+        + voicePolishParagraph(data, '저희 시스템이 마음에 드셨거나, 또는 아쉬운 점이 있으셨다면 <strong>리뷰로 남겨 주세요.</strong> 별 다섯 개도 좋고, “이 부분은 좀 더 자세했으면 좋겠어요” 같은 한 줄도 좋아요. ' + reviewWho + '가 다음 분의 보고서를 한 단계 더 따뜻하게 만들어 줍니다.')
         + '</p>'
         + '<p style="font-size:12px;color:#999;line-height:1.85;margin:6px auto 0;max-width:480px;">'
         + voicePolishParagraph(data, '여기까지 함께해 주셔서 고마워요. 한 줄의 리뷰가 사주X의 가장 큰 응원입니다.')
