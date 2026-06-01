@@ -11744,7 +11744,7 @@ function buildChapter2_Wuxing(data) {
                 <div class="wuxing-bar-fill wuxing-bar-fill-${k}" style="width:${barW}%;max-width:100%;height:100%;background:${col};border-radius:5px;-webkit-print-color-adjust:exact;print-color-adjust:exact;"></div>
             </div>
             <div style="min-width:40px;font-size:13px;font-weight:700;color:${isExc?'#8b6914':'#555'};">${p}%</div>
-            ${isExc ? '<span style="font-size:10px;background:rgba(199,167,106,0.25);color:var(--gold);padding:2px 7px;border-radius:6px;font-weight:700;letter-spacing:0.04em;">과다</span>' : ''}
+            ${isExc ? '<span style="font-size:10px;background:rgba(199,167,106,0.25);color:#8b6914;padding:2px 7px;border-radius:6px;font-weight:700;letter-spacing:0.04em;">과다</span>' : ''}
             ${(isLack && !isZero) ? '<span style="font-size:10px;background:rgba(120,120,120,0.18);color:#bbb;padding:2px 7px;border-radius:6px;letter-spacing:0.04em;">부족</span>' : ''}
             ${isZero ? '<span style="font-size:10px;background:rgba(120,120,120,0.18);color:#bbb;padding:2px 7px;border-radius:6px;letter-spacing:0.04em;">비어있음</span>' : ''}
         </div>`;
@@ -14732,17 +14732,27 @@ function buildZiweiSurpriseIntro(data) {
 }
 
 /** 보고서 맨 마지막 리뷰 카드 — 「리뷰 안내」절 헤더 없이 카드만 */
-function buildReviewCallout(data) {
+function buildReviewCallout(data, opts) {
+    opts = opts || {};
     var name = (data && data.name) ? data.name : '고객';
+    var nameB = opts.nameB || opts.secondName || '';
+    var closingTarget = nameB
+        ? (nmUi(name) + '님 · ' + nmUi(nameB) + '님')
+        : (nmUi(name) + '님');
     var REVIEW_URL = (typeof window !== 'undefined' && window.SAJUX_REVIEW_URL) ? window.SAJUX_REVIEW_URL : '';
     var btn = REVIEW_URL
         ? '<a href="' + REVIEW_URL + '" target="_blank" rel="noopener" style="display:inline-block;margin-top:18px;padding:12px 28px;border-radius:999px;background:linear-gradient(135deg, #c7a76a, #8a6f3c);color:#fff;font-size:13.5px;font-weight:700;letter-spacing:0.05em;text-decoration:none;box-shadow:0 4px 12px rgba(199,167,106,0.30);">리뷰 남기러 가기 →</a>'
         : '';
+    var closingMsg = '저희 사주X는 이 리포트를 살아가는데 힘이 드시거나 용기가 필요한 분들이 희망을 갖고 앞으로 나아가기 위해서 제작하기 시작하였습니다. '
+        + closingTarget + ' 가시는 길 항상 좋은 일만 가득하시길 바라겠습니다.';
 
     return '<div id="sec-review-callout" class="report-review-callout sajux-glass-heavy" style="margin:36px 0 24px;padding:28px 26px;border-radius:18px;'
         + 'background:linear-gradient(135deg, rgba(199,167,106,0.10), rgba(255,255,255,0.02));'
         + 'border:1px solid rgba(199,167,106,0.28);text-align:center;">'
-        + '<div style="font-size:10px;letter-spacing:0.22em;color:var(--gold);font-weight:700;margin-bottom:12px;">REVIEW · 잠깐만요</div>'
+        + '<div style="font-size:10px;letter-spacing:0.22em;color:var(--gold);font-weight:700;margin-bottom:12px;">끝인사 · 다음에 또 봐요</div>'
+        + '<p style="font-size:14px;color:#ddd;line-height:1.95;margin:0 auto 14px;max-width:560px;">'
+        + voicePolishParagraph(data, closingMsg)
+        + '</p>'
         + '<p style="font-size:14px;color:#ddd;line-height:1.95;margin:0 auto 6px;max-width:560px;">'
         + voicePolishParagraph(data, '저희 시스템이 마음에 드셨거나, 또는 아쉬운 점이 있으셨다면 <strong>리뷰로 남겨 주세요.</strong> 별 다섯 개도 좋고, “이 부분은 좀 더 자세했으면 좋겠어요” 같은 한 줄도 좋아요. ' + nmUi(name) + ' 한마디가 다음 분의 보고서를 한 단계 더 따뜻하게 만들어 줍니다.')
         + '</p>'
