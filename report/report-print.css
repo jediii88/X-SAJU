@@ -958,4 +958,18 @@ html, body, #report-container, #report-container * {
     -webkit-text-fill-color: #8b6914 !important;
   }
   #sec-review-callout a[href] { display: none !important; }
+
+  /* 궁합 — 마지막 순서: 끝인사 → 공유 CTA (화면·PDF 공통) */
+  #main-content #compat-review-mount { order: 998; }
+  #main-content #compat-share-cta-mount {
+    order: 999;
+    margin-top: 8px !important;
+    margin-bottom: 24px !important;
+    page-break-before: auto !important;
+    break-before: auto !important;
+  }
+  #main-content .compat-share-cta-wrap {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
 }
