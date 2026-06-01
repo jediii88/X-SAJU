@@ -915,6 +915,19 @@ html, body, #report-container, #report-container * {
   #floating-toc, #sticky-part-nav, #compat-share-cta-mount,
   .compat-share-cta-wrap, .compat-share-cta-btn { display: none !important; }
 
+  /* 궁합 마지막 — 끝인사 후 공유(화면 전용, PDF는 공유 숨김) */
+  #main-content .compat-footer-tail {
+    page-break-before: auto !important;
+    break-before: auto !important;
+    margin-top: 4.5em !important;
+    padding-top: 0 !important;
+    border-top: none !important;
+  }
+  #main-content .compat-footer-tail #compat-review-mount {
+    page-break-before: always !important;
+    break-before: page !important;
+  }
+
   .page-header.cover-page, #main-content .page-header {
     min-height: 100vh !important;
     display: flex !important;
