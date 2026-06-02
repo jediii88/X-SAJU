@@ -1347,6 +1347,63 @@ html[data-theme="light"] #star-canvas {
   #sec-report-full {
     padding-bottom: calc(132px + env(safe-area-inset-bottom, 0px)) !important;
   }
+
+  /* 모바일 — 글자 확대 시 em 자간이 과하게 벌어지는 현상 보정 */
+  #report-container,
+  #main-content,
+  #sec-report-full {
+    letter-spacing: -0.01em;
+  }
+  #report-container p:not(.cover-brush-name):not(.cover-brush-sub):not(.age-basis-note):not(.ch-section-label),
+  #report-container li,
+  #report-container .cat-text,
+  #report-container .cat-body,
+  #report-container .cat-advice,
+  #report-container .cat-advice p,
+  #report-container .cat-highlight,
+  #report-container .vip-module-desc,
+  #report-container .ch-voice-opener,
+  #report-container .ch-sub-under-main,
+  #report-container .ch-head-main-sub,
+  #report-container .inline-interp,
+  #report-container .compat-prose-p,
+  #report-container .insight-card,
+  #report-container .axe-advice,
+  #main-content p:not(.cover-brush-name):not(.cover-brush-sub):not(.age-basis-note),
+  #main-content li,
+  #main-content .compat-prose-p,
+  #main-content .compat-voice-opener,
+  #main-content .compat-prose,
+  #main-content .compat-mission-body,
+  #main-content .insight-card,
+  #main-content .rel-panel,
+  #main-content .compat-mission-body p {
+    letter-spacing: 0 !important;
+  }
+  .ch-section-label,
+  .ch-topic-sub-under-main,
+  .ch-section-num,
+  .part-header-sub,
+  .compat-section-title,
+  .compat-person-tag,
+  .compat-person-hint,
+  .sajux-intro-heading,
+  #sec-review-callout div[style*="letter-spacing"],
+  .report-footer-utilities div[style*="letter-spacing"],
+  .report-footer-utilities p,
+  #loading-screen p,
+  #loading-msg,
+  .loading-text {
+    letter-spacing: 0.05em !important;
+  }
+  .cover-brush-name,
+  .hero-brush-title,
+  .ch-main-topic-title,
+  .ch-main-heading-xl,
+  .part-brush-title,
+  .part-header-label.part-brush-title {
+    letter-spacing: -0.02em !important;
+  }
 }
 
 /* 데스크톱 — 읽기 편하게 소폭 확대 */
