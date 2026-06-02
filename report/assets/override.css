@@ -1363,7 +1363,7 @@ html[data-theme="light"] #star-canvas {
     padding-bottom: calc(132px + env(safe-area-inset-bottom, 0px)) !important;
   }
 
-  /* 모바일 — 본문: 좌측 정렬(justify는 띄어쓰기 간격만 벌림·자간 아님) + 자간 0 */
+  /* 모바일 — 본문: 좌측 정렬 + keep-all 금지(오른쪽 빈 공간 방지) */
   .ch-text,
   .ii-text,
   .sajux-narrative-para,
@@ -1379,26 +1379,34 @@ html[data-theme="light"] #star-canvas {
   #main-content .report-chapter p:not(.ch-section-label):not(.ch-topic-sub-under-main):not(.ch-sub-under-main),
   #main-content .compat-prose-p {
     text-align: left !important;
-    word-break: keep-all !important;
+    word-break: normal !important;
     overflow-wrap: break-word;
     line-break: loose;
     word-spacing: normal !important;
     letter-spacing: 0 !important;
     text-wrap: pretty;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
-  /* 모바일 — 카드·컨테이너 여백 축소(줄 길이 확보 → 양쪽정렬·들쭉날쭉 완화) */
+  /* 모바일 — 패딩 중복 축소(본문 가로폭 확보) */
   .container,
   #main-ui.container,
   body > .container {
-    padding-left: 14px !important;
-    padding-right: 14px !important;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
   }
   #report-container .report-chapter,
   #main-content .report-chapter,
   .report-chapter:not(.part-header-block) {
-    padding-left: 14px !important;
-    padding-right: 14px !important;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+  #report-container .sajux-upcoming-daeun-card,
+  #report-container .sajux-wolun-month-card,
+  #report-container .report-chapter > div[style*="border-radius"] {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
   }
 
   /* 모바일 — em·인라인 style 자간 전역 보정 (글자 확대 시 과한 벌어짐 방지) */
