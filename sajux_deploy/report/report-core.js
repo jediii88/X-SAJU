@@ -2160,6 +2160,7 @@ if (typeof window !== 'undefined') {
     window.sajuxIsInAppBrowser = sajuxIsInAppBrowser;
     window.sajuxEnsureBrowserAccessNote = sajuxEnsureBrowserAccessNote;
     window.sajuxUpgradeBrowserAccessNote = sajuxUpgradeBrowserAccessNote;
+    window.sajuxStripBrowserNoteFromCover = sajuxStripBrowserNoteFromCover;
 }
 
 function compatTimelineLine(cls, seed) {
@@ -5373,7 +5374,16 @@ function buildSajuxBrowserAccessNoteHtml() {
         '<p class="sajux-browser-access-note__body">' + body + '</p>' +
         '</div>';
 }
+function sajuxStripBrowserNoteFromCover() {
+    document.querySelectorAll(
+        '#sec-cover .sajux-browser-access-note, #loading-screen .sajux-browser-access-note, #loading .sajux-browser-access-note, #sajux-browser-note-mount'
+    ).forEach(function (el) {
+        if (el.id === 'sajux-browser-note-mount') el.innerHTML = '';
+        else el.remove();
+    });
+}
 function sajuxEnsureBrowserAccessNote() {
+    sajuxStripBrowserNoteFromCover();
     var toc = document.querySelector('.toc-page');
     if (!toc || toc.querySelector('.sajux-browser-access-note')) return;
     var html = typeof buildSajuxBrowserAccessNoteHtml === 'function'
