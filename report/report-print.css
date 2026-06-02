@@ -327,8 +327,10 @@ html, body, #report-container, #report-container * {
     visibility: visible !important;
     position: static !important;
     left: auto !important;
+    top: auto !important;
     opacity: 1 !important;
-    filter: none !important;
+    -webkit-filter: invert(1) !important;
+    filter: invert(1) !important;
     mix-blend-mode: normal !important;
     max-width: 420px !important;
     width: clamp(260px, 70%, 420px) !important;
