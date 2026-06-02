@@ -1484,30 +1484,41 @@ html[data-theme="light"] #star-canvas {
     box-sizing: border-box !important;
   }
 
-  /* 3칸 요약 — 모바일: 가로 3열 유지, 글자만 축소 */
+  /* 3칸 요약 — 모바일: 가로 3열 유지, 글자만 축소 (본문 em·인라인 px 부스트보다 항상 우선) */
+  #report-container .domain-summary-3box,
+  #report-container .domain-summary-3box *,
+  #main-content .domain-summary-3box,
+  #main-content .domain-summary-3box * {
+    letter-spacing: 0 !important;
+  }
   .domain-summary-3box {
     padding: 10px !important;
     margin: 10px 0 14px !important;
   }
-  .domain-summary-3box-title {
-    font-size: 9px !important;
-    margin-bottom: 8px !important;
+  .domain-summary-3box-title,
+  #report-container .domain-summary-3box-title,
+  #main-content .domain-summary-3box-title,
+  #report-container .domain-summary-3box .domain-summary-3box-title,
+  #report-container .domain-summary-3box [style*="font-size:11px"] {
+    font-size: 8px !important;
+    margin-bottom: 6px !important;
     font-weight: 700 !important;
-    letter-spacing: 0.06em !important;
+    letter-spacing: 0.05em !important;
+    line-height: 1.25 !important;
   }
   .domain-summary-3box-grid,
   .domain-summary-3box > div[style*="grid-template-columns:1fr 1fr 1fr"],
   .domain-summary-3box > div[style*="display:grid"] {
     display: grid !important;
     grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-    gap: 6px !important;
+    gap: 5px !important;
     width: 100% !important;
     overflow: visible !important;
   }
   .domain-summary-3box-cell,
   .domain-summary-3box > div[style*="grid-template-columns"] > div,
   .domain-summary-3box > div[style*="display:grid"] > div {
-    padding: 7px 5px !important;
+    padding: 6px 4px !important;
     min-width: 0 !important;
     word-break: normal !important;
     overflow-wrap: break-word !important;
@@ -1517,19 +1528,23 @@ html[data-theme="light"] #star-canvas {
   #report-container .domain-summary-3box .domain-summary-3box-cell .domain-summary-3box-label,
   #report-container .domain-summary-3box div[style*="font-size:10px"],
   #main-content .domain-summary-3box div[style*="font-size:10px"] {
-    font-size: 9px !important;
-    margin-bottom: 4px !important;
+    font-size: 8px !important;
+    margin-bottom: 3px !important;
     font-weight: 500 !important;
-    letter-spacing: 0.01em !important;
-    line-height: 1.3 !important;
+    letter-spacing: 0 !important;
+    line-height: 1.28 !important;
   }
   #report-container .domain-summary-3box-value,
   #main-content .domain-summary-3box-value,
   #report-container .domain-summary-3box .domain-summary-3box-cell .domain-summary-3box-value,
   #report-container .domain-summary-3box [style*="font-size:12px"],
-  #main-content .domain-summary-3box [style*="font-size:12px"] {
-    font-size: 11px !important;
-    line-height: 1.45 !important;
+  #main-content .domain-summary-3box [style*="font-size:12px"],
+  #report-container .domain-summary-3box [style*="font-size:13px"],
+  #main-content .domain-summary-3box [style*="font-size:13px"],
+  #report-container .domain-summary-3box [style*="font-weight:700"],
+  #main-content .domain-summary-3box [style*="font-weight:700"] {
+    font-size: 10px !important;
+    line-height: 1.4 !important;
     font-weight: 500 !important;
     word-break: normal !important;
     overflow-wrap: break-word !important;
