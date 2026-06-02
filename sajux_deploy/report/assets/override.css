@@ -1503,7 +1503,10 @@ html[data-theme="light"] #star-canvas {
     margin-bottom: 8px !important;
     padding-right: 10px;
   }
-  .domain-summary-3box-grid {
+  /* 신규 클래스 + 구 inline grid(캐시된 report-core) 모두 대응 */
+  .domain-summary-3box-grid,
+  .domain-summary-3box > div[style*="grid-template-columns:1fr 1fr 1fr"],
+  .domain-summary-3box > div[style*="display:grid"] {
     display: flex !important;
     flex-direction: row !important;
     flex-wrap: nowrap !important;
@@ -1515,17 +1518,27 @@ html[data-theme="light"] #star-canvas {
     scroll-padding-left: 0;
     padding-bottom: 4px;
     margin-right: -4px;
+    grid-template-columns: unset !important;
+    width: 100% !important;
   }
-  .domain-summary-3box-cell {
+  .domain-summary-3box-cell,
+  .domain-summary-3box > div[style*="grid-template-columns"] > div,
+  .domain-summary-3box > div[style*="display:grid"] > div {
     flex: 0 0 min(78vw, 300px) !important;
     scroll-snap-align: start;
     padding: 9px 10px !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
   }
-  .domain-summary-3box-label {
+  .domain-summary-3box-label,
+  .domain-summary-3box > div[style*="grid"] > div > div[style*="font-size:10px"] {
     font-size: 9px !important;
     margin-bottom: 5px !important;
   }
-  .domain-summary-3box-value {
+  .domain-summary-3box-value,
+  .domain-summary-3box > div[style*="grid"] > div > div[style*="font-size:12px"] {
     font-size: 11px !important;
     line-height: 1.58 !important;
     word-break: normal !important;
