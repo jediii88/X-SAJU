@@ -2154,6 +2154,7 @@ if (typeof window !== 'undefined') {
     window.buildCompatCoupleSynergyMissionBox = buildCompatCoupleSynergyMissionBox;
     window.buildCompatShareCtaHtml = buildCompatShareCtaHtml;
     window.sajuxCompatShareReport = sajuxCompatShareReport;
+    window.sajuxEnsureReportFonts = sajuxEnsureReportFonts;
     window.compatHanjaGlossCharFull = compatHanjaGlossCharFull;
 }
 
@@ -6031,18 +6032,35 @@ function sajuxInjectCaptureFonts(doc) {
     st.textContent = "@font-face{font-family:'Jeongseon Arirang Ppuri';src:url('" + ppuri + "') format('truetype');font-weight:400;font-style:normal;font-display:swap;}";
     doc.head.appendChild(st);
 }
-function sajuxEnsureCaptureFonts() {
+function sajuxEnsureReportFonts(opts) {
+    opts = opts || {};
+    var maxMs = opts.timeoutMs != null ? opts.timeoutMs : 12000;
+    var minMs = opts.minMs != null ? opts.minMs : 600;
     if (typeof document === 'undefined' || !document.fonts || typeof document.fonts.load !== 'function') {
-        return Promise.resolve();
+        return minMs > 0 ? new Promise(function (res) { setTimeout(res, minMs); }) : Promise.resolve();
     }
+    var started = Date.now();
     var loads = [
+        document.fonts.load('400 16px "Noto Sans KR"'),
+        document.fonts.load('700 16px "Noto Sans KR"'),
+        document.fonts.load('400 16px "Noto Serif KR"'),
+        document.fonts.load('700 20px "Noto Serif KR"'),
         document.fonts.load('400 58px "Jeongseon Arirang Ppuri"'),
         document.fonts.load('400 32px "Jeongseon Arirang Ppuri"'),
         document.fonts.load('400 32px "Nanum Brush Script"')
     ];
-    /* 폰트 대기 최대 1.5초 — 이미 로드됐으면 즉시 통과 */
-    var timeout = new Promise(function (res) { setTimeout(res, 1500); });
-    return Promise.race([Promise.all(loads).catch(function () {}), timeout]);
+    var fontWait = Promise.all([
+        document.fonts.ready,
+        Promise.all(loads).catch(function () {})
+    ]);
+    var timeout = new Promise(function (res) { setTimeout(res, maxMs); });
+    return Promise.race([fontWait, timeout]).then(function () {
+        var remain = minMs - (Date.now() - started);
+        if (remain > 0) return new Promise(function (res) { setTimeout(res, remain); });
+    });
+}
+function sajuxEnsureCaptureFonts() {
+    return sajuxEnsureReportFonts({ timeoutMs: 1500, minMs: 0 });
 }
 function sajuxCaptureTypographyCss() {
     return ''
@@ -15527,19 +15545,34 @@ function showLoading(msg, callback) {
     const msgEl = document.getElementById('loading-msg');
     if(loadEl) loadEl.style.display = 'flex';
     if(msgEl) msgEl.innerText = msg || '사주를 분석하는 중입니다...';
-    setTimeout(() => {
-        try { callback(); } catch(e) {
-            console.error('분석 오류:', e);
-            if(loadEl) loadEl.style.display = 'none';
-            try { document.documentElement.classList.remove('sajux-autoload-pending'); } catch (e0) {}
-            var _bv = (typeof window !== 'undefined' && window.__SAJUX_CORE_V__) ? window.__SAJUX_CORE_V__ : '';
-            alert('분석 중 오류가 발생했습니다:\n' + e.message + '\n\n' + (e.stack||'').split('\n').slice(0,3).join('\n') + (_bv ? '\n\n[빌드 ' + _bv + '] 캐시일 수 있습니다. Cmd+Shift+R(맥) 또는 Ctrl+F5로 새로고침 후 다시 시도하세요.' : '\n\nCmd+Shift+R(맥) 또는 Ctrl+F5로 강력 새로고침 후 다시 시도하세요.'));
-        }
+
+    function finishHide() {
         if(loadEl) loadEl.style.display = 'none';
         try { document.documentElement.classList.remove('sajux-autoload-pending'); } catch (e1) {}
         var _mainUi = document.getElementById('main-ui');
         if (_mainUi) _mainUi.style.display = '';
-    }, 100);
+    }
+
+    function failShow(err) {
+        console.error('분석 오류:', err);
+        finishHide();
+        var _bv = (typeof window !== 'undefined' && window.__SAJUX_CORE_V__) ? window.__SAJUX_CORE_V__ : '';
+        alert('분석 중 오류가 발생했습니다:\n' + (err && err.message ? err.message : err) + '\n\n' + ((err && err.stack) || '').split('\n').slice(0,3).join('\n') + (_bv ? '\n\n[빌드 ' + _bv + '] 캐시일 수 있습니다. Cmd+Shift+R(맥) 또는 Ctrl+F5로 새로고침 후 다시 시도하세요.' : '\n\nCmd+Shift+R(맥) 또는 Ctrl+F5로 강력 새로고침 후 다시 시도하세요.'));
+    }
+
+    new Promise(function (resolve, reject) {
+        setTimeout(function () {
+            try {
+                callback();
+                resolve();
+            } catch (e) {
+                reject(e);
+            }
+        }, 50);
+    }).then(function () {
+        if (msgEl) msgEl.innerText = '글꼴을 불러오는 중…';
+        return sajuxEnsureReportFonts();
+    }).then(finishHide).catch(failShow);
 }
 
 const ni = document.getElementById('user-name');
