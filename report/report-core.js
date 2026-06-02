@@ -4866,9 +4866,13 @@ function ensureSajuxPdfPrintForceStyles() {
   .sajux-logo-cover-print {
     display: block !important;
     visibility: visible !important;
+    position: static !important;
+    left: auto !important;
+    top: auto !important;
     mix-blend-mode: normal !important;
     opacity: 1 !important;
-    filter: none !important;
+    -webkit-filter: invert(1) !important;
+    filter: invert(1) !important;
     max-width: 520px !important;
     width: 72% !important;
     height: auto !important;
@@ -4885,22 +4889,34 @@ function ensureSajuxPdfPrintForceStyles() {
 
 /** 와이드 PDF 버튼 스타일 + 우하단 FAB (인쇄 시 숨김) */
 
+function sajuxApplyCoverLogoForPrint() {
+    document.querySelectorAll('.sajux-logo-cover-screen, .cover-page .sajux-logo.dark').forEach(function (el) {
+        el.style.setProperty('display', 'none', 'important');
+        el.style.setProperty('visibility', 'hidden', 'important');
+    });
+    document.querySelectorAll('.sajux-logo-cover-print, .cover-page .sajux-logo.light').forEach(function (el) {
+        el.style.setProperty('display', 'block', 'important');
+        el.style.setProperty('visibility', 'visible', 'important');
+        el.style.setProperty('position', 'static', 'important');
+        el.style.setProperty('left', 'auto', 'important');
+        el.style.setProperty('top', 'auto', 'important');
+        el.style.setProperty('width', '72%', 'important');
+        el.style.setProperty('max-width', '520px', 'important');
+        el.style.setProperty('height', 'auto', 'important');
+        el.style.setProperty('opacity', '1', 'important');
+        el.style.setProperty('mix-blend-mode', 'normal', 'important');
+        el.style.setProperty('-webkit-filter', 'invert(1)', 'important');
+        el.style.setProperty('filter', 'invert(1)', 'important');
+        el.style.setProperty('clip', 'auto', 'important');
+        el.style.setProperty('clip-path', 'none', 'important');
+    });
+}
 function ensureCoverLogoForPrint() {
     if (window.__sajuxCoverPrintBound) return;
     window.__sajuxCoverPrintBound = true;
+    window.sajuxApplyCoverLogoForPrint = sajuxApplyCoverLogoForPrint;
     function applyCoverLogo() {
-        document.querySelectorAll('.sajux-logo-cover-screen, .cover-page .sajux-logo.dark').forEach(function (el) {
-            el.style.setProperty('display', 'none', 'important');
-        });
-        document.querySelectorAll('.sajux-logo-cover-print, .cover-page .sajux-logo.light').forEach(function (el) {
-            el.style.setProperty('display', 'block', 'important');
-            el.style.setProperty('visibility', 'visible', 'important');
-            el.style.setProperty('position', 'static', 'important');
-            el.style.setProperty('left', 'auto', 'important');
-            el.style.setProperty('opacity', '1', 'important');
-            el.style.setProperty('mix-blend-mode', 'normal', 'important');
-            el.style.setProperty('filter', 'none', 'important');
-        });
+        sajuxApplyCoverLogoForPrint();
     }
     window.addEventListener('beforeprint', applyCoverLogo);
     if (window.matchMedia) {
@@ -7201,8 +7217,10 @@ function sajuxRunPrintPdfFlow(root) {
                     sajuxHideCaptureOverlay();
                     try { window.scrollTo(0, 0); } catch (e0) {}
                     sajuxSetPrintLightTheme(true);
+                    if (typeof sajuxApplyCoverLogoForPrint === 'function') sajuxApplyCoverLogoForPrint();
                     sajuxSetPrintPdfTitle(root);
                     setTimeout(function () {
+                        if (typeof sajuxApplyCoverLogoForPrint === 'function') sajuxApplyCoverLogoForPrint();
                         try { window.print(); } catch (ePrint) {
                             alert('인쇄 화면을 열지 못했습니다. 브라우저 메뉴 → 인쇄(또는 공유 → 인쇄)를 눌러 PDF로 저장해 주세요.');
                         }
@@ -14695,12 +14713,11 @@ function buildLifePanoramaSection(data) {
 // buildCoverPage: 표지 페이지
 // ===================================================================
 function buildCoverPage(data) {
-    var logoLight = getReportAssetUrl('sajux-logo-light.png');
     var logoDark = getReportAssetUrl('sajux-logo-dark.png');
     return `<div id="sec-cover" class="cover-page chapter-start" style="display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:90vh;padding:72px 28px 56px;text-align:center;border-bottom:1px solid rgba(199,167,106,0.12);margin-bottom:56px;">
         <div class="sajux-logo-wrap" style="width:100%;max-width:90vw;margin:0 auto;display:flex;flex-direction:column;justify-content:center;align-items:center;">
             <div class="sajux-logo-cover-row" style="display:flex;justify-content:center;align-items:center;width:100%;">
-                <img class="sajux-logo light sajux-logo-cover-print" src="${logoLight}" alt="SAJU X 로고" loading="eager" decoding="sync" style="width:clamp(320px,55vw,600px);max-width:100%;height:auto;margin:0 auto;" />
+                <img class="sajux-logo light sajux-logo-cover-print" src="${logoDark}" alt="SAJU X 로고" loading="eager" decoding="sync" style="width:clamp(320px,55vw,600px);max-width:100%;height:auto;margin:0 auto;" />
                 <img class="sajux-logo dark sajux-logo-cover-screen" src="${logoDark}" alt="SAJU X 로고" loading="eager" decoding="sync" style="width:clamp(320px,55vw,600px);max-width:100%;height:auto;margin:0 auto;" />
             </div>
             <div id="sec-book-intro" class="sajux-intro-block" style="width:100%;max-width:760px;margin:24px auto 0;text-align:center;">
