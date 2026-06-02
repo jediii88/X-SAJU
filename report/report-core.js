@@ -14812,11 +14812,13 @@ function buildReportFooterUtilities(data) {
 
         + '<div class="sajux-access-note" style="text-align:left;margin:0 0 18px;padding:16px 18px;border-radius:12px;border:1px solid rgba(199,167,106,0.28);background:rgba(199,167,106,0.05);font-size:13px;line-height:1.9;">'
         + '<div style="' + headStyle + '">열람 · PDF 저장 안내</div>'
-        + '<p style="' + pStyle + '">이 리포트는 발행일(<strong>' + reportDateStr + '</strong>)로부터 <strong>30일</strong> 동안만 같은 링크에서 보실 수 있어요. 그 이후에는 다시 들어오기 어려울 수 있으니, 오늘 안에 <strong>PDF로 한 번 꼭 저장</strong>해 두시기를 권해 드립니다.</p>'
-        + '<p style="margin:6px 0 0;font-size:13px;line-height:1.9;color:#d6dae2;">우하단 <strong>사주 PDF 저장</strong> 또는 아래 버튼을 누르면, 화면에 보이는 리포트 전체가 <strong>한 개의 PDF 파일</strong>로 저장됩니다. 링크 만료 이후에도 같은 문서를 두고두고 다시 펼쳐 보실 수 있어요.</p>'
+        + '<p style="' + pStyle + '">이 리포트 링크는 발행일(<strong>' + reportDateStr + '</strong>)로부터 <strong>30일</strong> 동안 열람할 수 있어요. <strong>스마트폰</strong>으로는 이 30일 동안 가볍게 읽기 좋지만, 긴 본문·표·만세력은 작은 화면에서는 눈이 조금 피로할 수 있습니다.</p>'
+        + '<p style="margin:8px 0 0;font-size:13px;line-height:1.9;color:#d6dae2;">30일이 지나면 같은 링크로는 다시 들어오기 어려우니, 기간 안에 <strong>PDF로 한 번 꼭 저장</strong>해 두시기를 권해 드립니다. 저장한 PDF는 <strong>PC·태블릿에서 보거나, 필요하면 인쇄</strong>하시는 편이 글자와 레이아웃을 확인하기에 훨씬 편합니다.</p>'
+        + '<p style="margin:8px 0 0;font-size:13px;line-height:1.9;color:#d6dae2;">우하단 <strong>사주 PDF 저장</strong> 또는 아래 버튼을 누르면, 화면에 보이는 리포트 전체가 <strong>한 개의 PDF 파일</strong>로 저장됩니다. 휴대폰에서 저장하셔도 되고, 저장한 파일은 PC로 옮겨 두시면 오래 두고 편하게 다시 보실 수 있어요.</p>'
         + '<p style="margin:8px 0 0;font-size:12.5px;line-height:1.85;color:var(--text-dim,rgba(255,255,255,0.58));">'
         + '<strong style="color:rgba(199,167,106,0.9);">iPhone</strong> — PDF 저장 열기 → 미리보기 펼치기 → 공유(↑) → 「파일에 저장」<br>'
-        + '<strong style="color:rgba(199,167,106,0.9);">Android</strong> — PDF 저장 열기 → 대상을 「PDF로 저장」 → 저장 또는 다운로드</p>'
+        + '<strong style="color:rgba(199,167,106,0.9);">Android</strong> — PDF 저장 열기 → 대상을 「PDF로 저장」 → 저장 또는 다운로드<br>'
+        + '<strong style="color:rgba(199,167,106,0.9);">PC</strong> — PDF 저장 열기 → 「PDF로 저장」 → 저장 후 PC에서 열거나 인쇄</p>'
         + '<div style="' + btnRow + '">'
         + '<button type="button" class="sajux-image-wide-btn sajux-footer-zip-btn" style="' + btnZip + '">PDF로 저장하기</button>'
         + '</div>'
@@ -14893,7 +14895,8 @@ function buildTOC(data) {
     body += '<div style="margin-top:28px;padding:16px 18px;border-radius:12px;background:rgba(255,255,255,0.04);border:1px solid rgba(199,167,106,0.18);">'
         + '<div style="font-size:12px;color:rgba(255,255,255,0.72);line-height:1.85;">'
         + escHtmlAttr(nmLine) + ' 리포트는 <strong style="color:var(--gold);font-weight:700;">부-절 번호</strong>(예: 2-5) 순으로 읽으시면 됩니다. '
-        + '우하단 <strong style="color:var(--gold);font-weight:700;">사주 PDF 저장</strong>으로 전체 리포트를 한 번에 PDF 파일로 받을 수 있어요.'
+        + '링크는 <strong style="color:var(--gold);font-weight:700;">30일</strong> 동안 열람 가능하며, 스마트폰으로 가볍게 읽기 좋아요. '
+        + '오래 보관·출력·PC에서 편하게 읽으시려면 <strong style="color:var(--gold);font-weight:700;">사주 PDF 저장</strong>을 권해 드립니다.'
         + '</div></div>';
     return '<div class="toc-page" style="padding:60px 40px 80px;border-bottom:1px solid rgba(199,167,106,0.1);margin-bottom:48px;">' +
         '<div style="font-size:10px;letter-spacing:0.22em;color:rgba(199,167,106,0.75);margin-bottom:14px;font-weight:700;">[ X-SAJU MASTER ]</div>' +
