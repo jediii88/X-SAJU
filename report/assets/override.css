@@ -1348,6 +1348,16 @@ html[data-theme="light"] #star-canvas {
     padding-bottom: calc(132px + env(safe-area-inset-bottom, 0px)) !important;
   }
 
+  /* 모바일 — 한글 본문 양쪽정렬 해제(글자 사이 벌어짐 방지) */
+  .ch-text,
+  .ii-text,
+  .sajux-narrative-para,
+  #report-container p.ch-text,
+  #main-content p.ch-text {
+    text-align: left !important;
+    text-align: start !important;
+  }
+
   /* 모바일 — em·인라인 style 자간 전역 보정 (글자 확대 시 과한 벌어짐 방지) */
   #report-container,
   #report-container *,
@@ -1453,7 +1463,7 @@ html[data-theme="light"] .sajux-browser-access-note__body strong {
   color: #111008;
 }
 
-/* 데스크톱 — 읽기 편하게 소폭 확대 */
+/* 데스크톱 — 읽기 편하게 소폭 확대 + 가로 스크롤 운세 카드 복원 */
 @media screen and (min-width: 901px) {
   html {
     font-size: 17px;
@@ -1470,6 +1480,22 @@ html[data-theme="light"] .sajux-browser-access-note__body strong {
   #main-content .compat-prose-p {
     font-size: 1.02em;
     line-height: 1.82;
+  }
+  #report-container .fortune-scroll:not(.fortune-scroll--stack),
+  .yearly-card-container .fortune-scroll:not(.fortune-scroll--stack),
+  .monthly-card-container .fortune-scroll:not(.fortune-scroll--stack) {
+    display: flex !important;
+    flex-direction: row !important;
+    overflow-x: auto !important;
+    scroll-snap-type: x mandatory !important;
+    align-items: stretch !important;
+  }
+  #report-container .fortune-scroll:not(.fortune-scroll--stack) .f-card,
+  .yearly-card-container .fortune-scroll:not(.fortune-scroll--stack) .f-card,
+  .monthly-card-container .fortune-scroll:not(.fortune-scroll--stack) .f-card {
+    flex: 0 0 76px !important;
+    width: auto !important;
+    max-width: none !important;
   }
 }
 
