@@ -2156,6 +2156,8 @@ if (typeof window !== 'undefined') {
     window.sajuxCompatShareReport = sajuxCompatShareReport;
     window.sajuxEnsureReportFonts = sajuxEnsureReportFonts;
     window.compatHanjaGlossCharFull = compatHanjaGlossCharFull;
+    window.buildSajuxBrowserAccessNoteHtml = buildSajuxBrowserAccessNoteHtml;
+    window.sajuxIsInAppBrowser = sajuxIsInAppBrowser;
 }
 
 function compatTimelineLine(cls, seed) {
@@ -5337,15 +5339,32 @@ function sajuxOpenZipBlobOnMobile(url) {
         return false;
     }
 }
+function sajuxInAppBrowserUaPattern() {
+    return /(KAKAOTALK|KAKAO|Instagram|FBAN|FBAV|Line\/|Twitter|NAVER|Snapchat|Daangn|Karrot|당근|; wv\)|; wv\b|WebView)/i;
+}
+function sajuxIsInAppBrowser() {
+    var ua = navigator.userAgent || '';
+    return sajuxInAppBrowserUaPattern().test(ua);
+}
 function sajuxIsIosInAppBrowser() {
     if (!sajuxIsIosDevice()) return false;
-    var ua = navigator.userAgent || '';
-    return /(KAKAOTALK|KAKAO|Instagram|FBAN|FBAV|Line\/|Twitter|NAVER|Snapchat)/i.test(ua);
+    return sajuxIsInAppBrowser();
 }
 function sajuxIsAndroidInAppBrowser() {
     if (!sajuxIsAndroidDevice()) return false;
-    var ua = navigator.userAgent || '';
-    return /(KAKAOTALK|KAKAO|Instagram|FBAN|FBAV|Line\/|Twitter|NAVER|Snapchat)/i.test(ua);
+    return sajuxIsInAppBrowser();
+}
+function buildSajuxBrowserAccessNoteHtml() {
+    var inApp = sajuxIsInAppBrowser();
+    var cls = 'sajux-browser-access-note' + (inApp ? ' is-in-app' : '');
+    var title = inApp ? 'Safari·Chrome에서 다시 열어 주세요' : '읽기 환경 안내';
+    var body = inApp
+        ? '지금은 앱 안 브라우저로 열려 있어요. <strong>PDF 저장</strong>까지 하시려면 링크를 복사해 <strong>Safari</strong>(iPhone) 또는 <strong>Chrome</strong>에서 sajux.com으로 다시 열어 주세요.'
+        : '이 리포트는 <strong>Safari</strong>(iPhone)·<strong>Chrome</strong>(Android·PC)에서 읽으시는 것을 권해 드립니다. 당근·카카오 등 앱 안에서 열면 <strong>PDF 저장</strong>이 되지 않을 수 있어요.';
+    return '<div class="' + cls + '" role="note" aria-label="브라우저 안내">' +
+        '<div class="sajux-browser-access-note__title">' + title + '</div>' +
+        '<p class="sajux-browser-access-note__body">' + body + '</p>' +
+        '</div>';
 }
 function sajuxShowIosZipLinkFallback(url, filename) {
     var inApp = sajuxIsIosInAppBrowser();
@@ -14642,6 +14661,7 @@ function buildCoverPage(data) {
                 <img class="sajux-logo light sajux-logo-cover-print" src="${logoLight}" alt="SAJU X 로고" loading="eager" decoding="sync" style="width:clamp(320px,55vw,600px);max-width:100%;height:auto;margin:0 auto;" />
                 <img class="sajux-logo dark sajux-logo-cover-screen" src="${logoDark}" alt="SAJU X 로고" loading="eager" decoding="sync" style="width:clamp(320px,55vw,600px);max-width:100%;height:auto;margin:0 auto;" />
             </div>
+            ${buildSajuxBrowserAccessNoteHtml()}
             <div id="sec-book-intro" class="sajux-intro-block" style="width:100%;max-width:760px;margin:24px auto 0;text-align:center;">
                 <div class="sajux-intro-heading" style="font-size:13px;letter-spacing:0.12em;color:rgba(199,167,106,0.9);margin-bottom:16px;font-weight:700;">사주X란?</div>
                 <div class="intro-text-container">
