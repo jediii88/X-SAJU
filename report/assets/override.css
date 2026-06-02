@@ -1430,9 +1430,9 @@ html[data-theme="light"] #star-canvas {
     font-size: 0.95em !important;
   }
 
-  /* 모바일 — 스티키 4부 네비 위로 PDF FAB이 올라가도록 본문 하단 여백 */
+  /* 모바일 — 하단 FAB(목차·PDF) 여백 */
   #sec-report-full {
-    padding-bottom: calc(132px + env(safe-area-inset-bottom, 0px)) !important;
+    padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)) !important;
   }
 
   /* 모바일 — 본문 가상 박스: 화면 여백 + 카드 안쪽 한 글자(1em) */
