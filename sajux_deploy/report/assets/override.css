@@ -1502,8 +1502,24 @@ html[data-theme="light"] .sajux-browser-access-note__body strong {
   color: #111008;
 }
 
-/* 데스크톱 — 읽기 편하게 소폭 확대 + 가로 스크롤 운세 카드 복원 */
+/* 데스크톱 — 전체 150% 확대 + 가로 스크롤 운세 카드 복원 */
 @media screen and (min-width: 901px) {
+  #main-ui,
+  body > .container,
+  body > #main-content {
+    zoom: 1.5;
+  }
+  @supports not (zoom: 1) {
+    #main-ui,
+    body > .container,
+    body > #main-content {
+      zoom: unset;
+      max-width: 750px !important;
+    }
+    html {
+      font-size: 25.5px;
+    }
+  }
   html {
     font-size: 17px;
   }
