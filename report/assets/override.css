@@ -1407,7 +1407,7 @@ html[data-theme="light"] #star-canvas {
 }
 
 /* ─────────────────────────────────
-   표지 초입 — 브라우저 권장 안내
+   목차 하단 — 브라우저 권장 안내
 ───────────────────────────────── */
 .sajux-browser-access-note {
   width: 100%;
@@ -1420,6 +1420,9 @@ html[data-theme="light"] #star-canvas {
   line-height: 1.65;
   border: 1px solid rgba(199, 167, 106, 0.22);
   background: rgba(199, 167, 106, 0.06);
+}
+.toc-page .sajux-browser-access-note {
+  margin-top: 24px;
 }
 .sajux-browser-access-note.is-in-app {
   border-color: rgba(245, 158, 11, 0.45);
