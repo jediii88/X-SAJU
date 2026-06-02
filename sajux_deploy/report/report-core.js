@@ -2154,7 +2154,10 @@ if (typeof window !== 'undefined') {
     window.buildCompatCoupleSynergyMissionBox = buildCompatCoupleSynergyMissionBox;
     window.buildCompatShareCtaHtml = buildCompatShareCtaHtml;
     window.sajuxCompatShareReport = sajuxCompatShareReport;
+    window.sajuxEnsureReportFonts = sajuxEnsureReportFonts;
     window.compatHanjaGlossCharFull = compatHanjaGlossCharFull;
+    window.buildSajuxBrowserAccessNoteHtml = buildSajuxBrowserAccessNoteHtml;
+    window.sajuxIsInAppBrowser = sajuxIsInAppBrowser;
 }
 
 function compatTimelineLine(cls, seed) {
@@ -5123,7 +5126,7 @@ function sajuxEnsureCaptureLibs(done) {
     ensureJsZipLoaded(tick);
 }
 function sajuxCaptureProgressMsg(head, detail) {
-    var s = head || '사주 저장 중…';
+    var s = head || 'PDF 저장 준비 중…';
     if (detail) s += '\n' + detail;
     return s + '\n\n잠시만 기다려 주세요.\n화면을 건드리지 말고 그대로 두시면 됩니다.';
 }
@@ -5336,15 +5339,32 @@ function sajuxOpenZipBlobOnMobile(url) {
         return false;
     }
 }
+function sajuxInAppBrowserUaPattern() {
+    return /(KAKAOTALK|KAKAO|Instagram|FBAN|FBAV|Line\/|Twitter|NAVER|Snapchat|Daangn|Karrot|당근|; wv\)|; wv\b|WebView)/i;
+}
+function sajuxIsInAppBrowser() {
+    var ua = navigator.userAgent || '';
+    return sajuxInAppBrowserUaPattern().test(ua);
+}
 function sajuxIsIosInAppBrowser() {
     if (!sajuxIsIosDevice()) return false;
-    var ua = navigator.userAgent || '';
-    return /(KAKAOTALK|KAKAO|Instagram|FBAN|FBAV|Line\/|Twitter|NAVER|Snapchat)/i.test(ua);
+    return sajuxIsInAppBrowser();
 }
 function sajuxIsAndroidInAppBrowser() {
     if (!sajuxIsAndroidDevice()) return false;
-    var ua = navigator.userAgent || '';
-    return /(KAKAOTALK|KAKAO|Instagram|FBAN|FBAV|Line\/|Twitter|NAVER|Snapchat)/i.test(ua);
+    return sajuxIsInAppBrowser();
+}
+function buildSajuxBrowserAccessNoteHtml() {
+    var inApp = sajuxIsInAppBrowser();
+    var cls = 'sajux-browser-access-note' + (inApp ? ' is-in-app' : '');
+    var title = inApp ? 'Safari·Chrome에서 다시 열어 주세요' : '읽기 환경 안내';
+    var body = inApp
+        ? '지금은 앱 안 브라우저로 열려 있어요. <strong>PDF 저장</strong>까지 하시려면 링크를 복사해 <strong>Safari</strong>(iPhone) 또는 <strong>Chrome</strong>에서 sajux.com으로 다시 열어 주세요.'
+        : '이 리포트는 <strong>Safari</strong>(iPhone)·<strong>Chrome</strong>(Android·PC)에서 읽으시는 것을 권해 드립니다. 당근·카카오 등 앱 안에서 열면 <strong>PDF 저장</strong>이 되지 않을 수 있어요.';
+    return '<div class="' + cls + '" role="note" aria-label="브라우저 안내">' +
+        '<div class="sajux-browser-access-note__title">' + title + '</div>' +
+        '<p class="sajux-browser-access-note__body">' + body + '</p>' +
+        '</div>';
 }
 function sajuxShowIosZipLinkFallback(url, filename) {
     var inApp = sajuxIsIosInAppBrowser();
@@ -5405,7 +5425,7 @@ function sajuxShowCaptureOverlay(message, opts) {
     if (el.parentNode !== document.body) document.body.appendChild(el);
     sajuxEnsureCaptureOverlayVisible(el);
     var inner = el.querySelector('.sajux-capture-overlay-inner') || el.querySelector('div');
-    inner.textContent = message || sajuxCaptureProgressMsg('사주 저장 준비 중…');
+    inner.textContent = message || sajuxCaptureProgressMsg('PDF 저장 준비 중…');
     el.querySelectorAll('.sajux-capture-download-btn').forEach(function (b) { b.remove(); });
     var btnBase = 'display:block;margin:18px auto 0;padding:14px 22px;border:none;border-radius:999px;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;width:100%;max-width:280px;';
     if (opts.buttons && opts.buttons.length) {
@@ -6031,18 +6051,35 @@ function sajuxInjectCaptureFonts(doc) {
     st.textContent = "@font-face{font-family:'Jeongseon Arirang Ppuri';src:url('" + ppuri + "') format('truetype');font-weight:400;font-style:normal;font-display:swap;}";
     doc.head.appendChild(st);
 }
-function sajuxEnsureCaptureFonts() {
+function sajuxEnsureReportFonts(opts) {
+    opts = opts || {};
+    var maxMs = opts.timeoutMs != null ? opts.timeoutMs : 12000;
+    var minMs = opts.minMs != null ? opts.minMs : 600;
     if (typeof document === 'undefined' || !document.fonts || typeof document.fonts.load !== 'function') {
-        return Promise.resolve();
+        return minMs > 0 ? new Promise(function (res) { setTimeout(res, minMs); }) : Promise.resolve();
     }
+    var started = Date.now();
     var loads = [
+        document.fonts.load('400 16px "Noto Sans KR"'),
+        document.fonts.load('700 16px "Noto Sans KR"'),
+        document.fonts.load('400 16px "Noto Serif KR"'),
+        document.fonts.load('700 20px "Noto Serif KR"'),
         document.fonts.load('400 58px "Jeongseon Arirang Ppuri"'),
         document.fonts.load('400 32px "Jeongseon Arirang Ppuri"'),
         document.fonts.load('400 32px "Nanum Brush Script"')
     ];
-    /* 폰트 대기 최대 1.5초 — 이미 로드됐으면 즉시 통과 */
-    var timeout = new Promise(function (res) { setTimeout(res, 1500); });
-    return Promise.race([Promise.all(loads).catch(function () {}), timeout]);
+    var fontWait = Promise.all([
+        document.fonts.ready,
+        Promise.all(loads).catch(function () {})
+    ]);
+    var timeout = new Promise(function (res) { setTimeout(res, maxMs); });
+    return Promise.race([fontWait, timeout]).then(function () {
+        var remain = minMs - (Date.now() - started);
+        if (remain > 0) return new Promise(function (res) { setTimeout(res, remain); });
+    });
+}
+function sajuxEnsureCaptureFonts() {
+    return sajuxEnsureReportFonts({ timeoutMs: 1500, minMs: 0 });
 }
 function sajuxCaptureTypographyCss() {
     return ''
@@ -7093,19 +7130,25 @@ function sajuxRunPrintPdfFlow(root) {
             '아이폰 Safari로 PDF를 저장합니다.\n\n' +
             '1) 「PDF 저장 열기」를 누르면 인쇄 화면이 떠요\n' +
             '2) 미리보기 썸네일을 두 손가락으로 살짝 펼치세요\n' +
-            '3) 우측 상단 공유(↑) → 「파일에 저장」을 선택';
+            '3) 우측 상단 공유(↑) → 「파일에 저장」을 선택\n\n' +
+            '리포트 전체가 한 개의 PDF 파일로 저장됩니다.\n' +
+            '※ 휴대폰에서 저장하셔도 됩니다. 다만 읽기·출력은 PC나 인쇄본이 더 편합니다.';
     } else if (isAndroid) {
         hint =
             '안드로이드 Chrome으로 PDF를 저장합니다.\n\n' +
             '1) 「PDF 저장 열기」를 누르면 인쇄 화면이 떠요\n' +
             '2) 대상(프린터)을 「PDF로 저장」으로 변경\n' +
-            '3) 우측 상단 「PDF 저장」 또는 「다운로드」를 누르세요';
+            '3) 「PDF 저장」 또는 「다운로드」를 누르세요\n\n' +
+            '리포트 전체가 한 개의 PDF 파일로 저장됩니다.\n' +
+            '※ 휴대폰에서 저장하셔도 됩니다. 다만 읽기·출력은 PC나 인쇄본이 더 편합니다.';
     } else {
         hint =
             '브라우저 인쇄 기능으로 PDF를 저장합니다.\n\n' +
             '1) 「PDF 저장 열기」를 누르면 인쇄 창이 떠요\n' +
             '2) 대상(프린터)에서 「PDF로 저장」 선택\n' +
-            '3) 「저장」을 누르면 끝';
+            '3) 「저장」을 누르면 끝\n\n' +
+            '리포트 전체가 한 개의 PDF 파일로 저장됩니다.\n' +
+            'PC에서 열거나 인쇄하시면 표·본문·만세력을 가장 편하게 보실 수 있어요.';
     }
 
     sajuxShowCaptureOverlay(hint, {
@@ -14618,6 +14661,7 @@ function buildCoverPage(data) {
                 <img class="sajux-logo light sajux-logo-cover-print" src="${logoLight}" alt="SAJU X 로고" loading="eager" decoding="sync" style="width:clamp(320px,55vw,600px);max-width:100%;height:auto;margin:0 auto;" />
                 <img class="sajux-logo dark sajux-logo-cover-screen" src="${logoDark}" alt="SAJU X 로고" loading="eager" decoding="sync" style="width:clamp(320px,55vw,600px);max-width:100%;height:auto;margin:0 auto;" />
             </div>
+            ${buildSajuxBrowserAccessNoteHtml()}
             <div id="sec-book-intro" class="sajux-intro-block" style="width:100%;max-width:760px;margin:24px auto 0;text-align:center;">
                 <div class="sajux-intro-heading" style="font-size:13px;letter-spacing:0.12em;color:rgba(199,167,106,0.9);margin-bottom:16px;font-weight:700;">사주X란?</div>
                 <div class="intro-text-container">
@@ -14791,8 +14835,13 @@ function buildReportFooterUtilities(data) {
 
         + '<div class="sajux-access-note" style="text-align:left;margin:0 0 18px;padding:16px 18px;border-radius:12px;border:1px solid rgba(199,167,106,0.28);background:rgba(199,167,106,0.05);font-size:13px;line-height:1.9;">'
         + '<div style="' + headStyle + '">열람 · PDF 저장 안내</div>'
-        + '<p style="' + pStyle + '">이 리포트는 발행일(<strong>' + reportDateStr + '</strong>)로부터 <strong>30일</strong> 동안만 같은 링크에서 보실 수 있어요. 그 이후에는 다시 들어오기 어려울 수 있으니, 오늘 안에 <strong>PDF로 한 번 꼭 저장</strong>해 두시기를 권해 드립니다.</p>'
-        + '<p style="margin:6px 0 0;font-size:13px;line-height:1.9;color:#d6dae2;">우하단 <strong>사주 PDF 저장</strong> 또는 아래 버튼으로 PDF를 받으시면, 링크 만료 이후에도 같은 문서를 두고두고 다시 펼쳐 보실 수 있어요.</p>'
+        + '<p style="' + pStyle + '">이 리포트 링크는 발행일(<strong>' + reportDateStr + '</strong>)로부터 <strong>30일</strong> 동안 열람할 수 있어요. <strong>스마트폰</strong>으로는 이 30일 동안 가볍게 읽기 좋지만, 긴 본문·표·만세력은 작은 화면에서는 눈이 조금 피로할 수 있습니다.</p>'
+        + '<p style="margin:8px 0 0;font-size:13px;line-height:1.9;color:#d6dae2;">30일이 지나면 같은 링크로는 다시 들어오기 어려우니, 기간 안에 <strong>PDF로 한 번 꼭 저장</strong>해 두시기를 권해 드립니다. 저장한 PDF는 <strong>PC·태블릿에서 보거나, 필요하면 인쇄</strong>하시는 편이 글자와 레이아웃을 확인하기에 훨씬 편합니다.</p>'
+        + '<p style="margin:8px 0 0;font-size:13px;line-height:1.9;color:#d6dae2;">우하단 <strong>사주 PDF 저장</strong> 또는 아래 버튼을 누르면, 화면에 보이는 리포트 전체가 <strong>한 개의 PDF 파일</strong>로 저장됩니다. 휴대폰에서 저장하셔도 되고, 저장한 파일은 PC로 옮겨 두시면 오래 두고 편하게 다시 보실 수 있어요.</p>'
+        + '<p style="margin:8px 0 0;font-size:12.5px;line-height:1.85;color:var(--text-dim,rgba(255,255,255,0.58));">'
+        + '<strong style="color:rgba(199,167,106,0.9);">iPhone</strong> — PDF 저장 열기 → 미리보기 펼치기 → 공유(↑) → 「파일에 저장」<br>'
+        + '<strong style="color:rgba(199,167,106,0.9);">Android</strong> — PDF 저장 열기 → 대상을 「PDF로 저장」 → 저장 또는 다운로드<br>'
+        + '<strong style="color:rgba(199,167,106,0.9);">PC</strong> — PDF 저장 열기 → 「PDF로 저장」 → 저장 후 PC에서 열거나 인쇄</p>'
         + '<div style="' + btnRow + '">'
         + '<button type="button" class="sajux-image-wide-btn sajux-footer-zip-btn" style="' + btnZip + '">PDF로 저장하기</button>'
         + '</div>'
@@ -14861,7 +14910,7 @@ function buildTOC(data) {
             var num = formatPartSectionNum(r.part, r.section, r, k);
             var sub = r.eyebrow || '';
             if (k === 'upcomingWolunA' || k === 'upcomingWolunB') {
-                sub = sub + (sub ? ' · ' : '') + '사주 저장 절별 이미지';
+                sub = sub + (sub ? ' · ' : '') + '전·후반 6개월';
             }
             body += tocRow(num, r.title, sub);
         });
@@ -14869,7 +14918,8 @@ function buildTOC(data) {
     body += '<div style="margin-top:28px;padding:16px 18px;border-radius:12px;background:rgba(255,255,255,0.04);border:1px solid rgba(199,167,106,0.18);">'
         + '<div style="font-size:12px;color:rgba(255,255,255,0.72);line-height:1.85;">'
         + escHtmlAttr(nmLine) + ' 리포트는 <strong style="color:var(--gold);font-weight:700;">부-절 번호</strong>(예: 2-5) 순으로 읽으시면 됩니다. '
-        + '월운은 전반·후반 각 6개월로 나뉘며, <strong style="color:var(--gold);font-weight:700;">사주 다운로드</strong> 시 절마다 PNG가 ZIP으로 저장됩니다.'
+        + '링크는 <strong style="color:var(--gold);font-weight:700;">30일</strong> 동안 열람 가능하며, 스마트폰으로 가볍게 읽기 좋아요. '
+        + '오래 보관·출력·PC에서 편하게 읽으시려면 <strong style="color:var(--gold);font-weight:700;">사주 PDF 저장</strong>을 권해 드립니다.'
         + '</div></div>';
     return '<div class="toc-page" style="padding:60px 40px 80px;border-bottom:1px solid rgba(199,167,106,0.1);margin-bottom:48px;">' +
         '<div style="font-size:10px;letter-spacing:0.22em;color:rgba(199,167,106,0.75);margin-bottom:14px;font-weight:700;">[ X-SAJU MASTER ]</div>' +
@@ -15527,19 +15577,34 @@ function showLoading(msg, callback) {
     const msgEl = document.getElementById('loading-msg');
     if(loadEl) loadEl.style.display = 'flex';
     if(msgEl) msgEl.innerText = msg || '사주를 분석하는 중입니다...';
-    setTimeout(() => {
-        try { callback(); } catch(e) {
-            console.error('분석 오류:', e);
-            if(loadEl) loadEl.style.display = 'none';
-            try { document.documentElement.classList.remove('sajux-autoload-pending'); } catch (e0) {}
-            var _bv = (typeof window !== 'undefined' && window.__SAJUX_CORE_V__) ? window.__SAJUX_CORE_V__ : '';
-            alert('분석 중 오류가 발생했습니다:\n' + e.message + '\n\n' + (e.stack||'').split('\n').slice(0,3).join('\n') + (_bv ? '\n\n[빌드 ' + _bv + '] 캐시일 수 있습니다. Cmd+Shift+R(맥) 또는 Ctrl+F5로 새로고침 후 다시 시도하세요.' : '\n\nCmd+Shift+R(맥) 또는 Ctrl+F5로 강력 새로고침 후 다시 시도하세요.'));
-        }
+
+    function finishHide() {
         if(loadEl) loadEl.style.display = 'none';
         try { document.documentElement.classList.remove('sajux-autoload-pending'); } catch (e1) {}
         var _mainUi = document.getElementById('main-ui');
         if (_mainUi) _mainUi.style.display = '';
-    }, 100);
+    }
+
+    function failShow(err) {
+        console.error('분석 오류:', err);
+        finishHide();
+        var _bv = (typeof window !== 'undefined' && window.__SAJUX_CORE_V__) ? window.__SAJUX_CORE_V__ : '';
+        alert('분석 중 오류가 발생했습니다:\n' + (err && err.message ? err.message : err) + '\n\n' + ((err && err.stack) || '').split('\n').slice(0,3).join('\n') + (_bv ? '\n\n[빌드 ' + _bv + '] 캐시일 수 있습니다. Cmd+Shift+R(맥) 또는 Ctrl+F5로 새로고침 후 다시 시도하세요.' : '\n\nCmd+Shift+R(맥) 또는 Ctrl+F5로 강력 새로고침 후 다시 시도하세요.'));
+    }
+
+    new Promise(function (resolve, reject) {
+        setTimeout(function () {
+            try {
+                callback();
+                resolve();
+            } catch (e) {
+                reject(e);
+            }
+        }, 50);
+    }).then(function () {
+        if (msgEl) msgEl.innerText = '글꼴을 불러오는 중…';
+        return sajuxEnsureReportFonts();
+    }).then(finishHide).catch(failShow);
 }
 
 const ni = document.getElementById('user-name');
