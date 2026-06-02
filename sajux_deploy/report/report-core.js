@@ -2156,6 +2156,12 @@ if (typeof window !== 'undefined') {
     window.sajuxCompatShareReport = sajuxCompatShareReport;
     window.sajuxEnsureReportFonts = sajuxEnsureReportFonts;
     window.sajuxDismissLoading = sajuxDismissLoading;
+    try {
+        var _sajuxRelMeta = typeof document !== 'undefined' && document.querySelector('meta[name="sajux-release"]');
+        window.__SAJUX_RELEASE__ = (_sajuxRelMeta && _sajuxRelMeta.getAttribute('content')) || '1.0';
+    } catch (eRel) {
+        window.__SAJUX_RELEASE__ = '1.0';
+    }
     window.compatHanjaGlossCharFull = compatHanjaGlossCharFull;
     window.buildSajuxBrowserAccessNoteHtml = buildSajuxBrowserAccessNoteHtml;
     window.sajuxIsInAppBrowser = sajuxIsInAppBrowser;
@@ -4835,6 +4841,20 @@ function ensureSajuxMobileBodyTypography() {
         'display:flex!important;flex-direction:column!important;align-items:center!important;',
         'width:100%!important;max-width:min(92vw,360px)!important;padding:0 1ch!important;box-sizing:border-box!important;}',
         '#loading.sajux-loading-active .spinner{margin:0 auto 22px!important;}',
+        '}',
+        '@media screen and (min-width:901px){',
+        '.ch-text,.ii-text,.sajux-narrative-para,',
+        '#report-container .report-chapter>p,',
+        '#report-container .report-chapter p:not(.ch-section-label):not(.ch-topic-sub-under-main):not(.ch-sub-under-main),',
+        '#report-container .sajux-upcoming-daeun-card p,',
+        '#report-container .sajux-wolun-month-card p,',
+        '#report-container .cat-advice p,',
+        '#report-container .vip-module-desc,',
+        '#main-content .report-chapter>p,',
+        '#main-content .report-chapter p:not(.ch-section-label):not(.ch-topic-sub-under-main):not(.ch-sub-under-main),',
+        '#main-content .compat-prose-p{',
+        'text-align:left!important;word-spacing:normal!important;word-break:normal!important;',
+        'overflow-wrap:break-word;line-break:loose;}',
         '}'
     ].join('');
     document.head.appendChild(st);
@@ -15770,8 +15790,9 @@ function showLoading(msg, callback) {
     function failShow(err) {
         console.error('분석 오류:', err);
         finishHide();
+        var _rv = (typeof window !== 'undefined' && window.__SAJUX_RELEASE__) ? window.__SAJUX_RELEASE__ : '1.0';
         var _bv = (typeof window !== 'undefined' && window.__SAJUX_CORE_V__) ? window.__SAJUX_CORE_V__ : '';
-        alert('분석 중 오류가 발생했습니다:\n' + (err && err.message ? err.message : err) + '\n\n' + ((err && err.stack) || '').split('\n').slice(0,3).join('\n') + (_bv ? '\n\n[빌드 ' + _bv + '] 캐시일 수 있습니다. Cmd+Shift+R(맥) 또는 Ctrl+F5로 새로고침 후 다시 시도하세요.' : '\n\nCmd+Shift+R(맥) 또는 Ctrl+F5로 강력 새로고침 후 다시 시도하세요.'));
+        alert('분석 중 오류가 발생했습니다:\n' + (err && err.message ? err.message : err) + '\n\n' + ((err && err.stack) || '').split('\n').slice(0,3).join('\n') + (_bv ? '\n\n[v' + _rv + ' · 빌드 ' + _bv + '] 캐시일 수 있습니다. Cmd+Shift+R(맥) 또는 Ctrl+F5로 새로고침 후 다시 시도하세요.' : '\n\nCmd+Shift+R(맥) 또는 Ctrl+F5로 강력 새로고침 후 다시 시도하세요.'));
     }
 
     new Promise(function (resolve, reject) {
