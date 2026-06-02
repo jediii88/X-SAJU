@@ -5124,7 +5124,7 @@ function sajuxEnsureCaptureLibs(done) {
     ensureJsZipLoaded(tick);
 }
 function sajuxCaptureProgressMsg(head, detail) {
-    var s = head || '사주 저장 중…';
+    var s = head || 'PDF 저장 준비 중…';
     if (detail) s += '\n' + detail;
     return s + '\n\n잠시만 기다려 주세요.\n화면을 건드리지 말고 그대로 두시면 됩니다.';
 }
@@ -5406,7 +5406,7 @@ function sajuxShowCaptureOverlay(message, opts) {
     if (el.parentNode !== document.body) document.body.appendChild(el);
     sajuxEnsureCaptureOverlayVisible(el);
     var inner = el.querySelector('.sajux-capture-overlay-inner') || el.querySelector('div');
-    inner.textContent = message || sajuxCaptureProgressMsg('사주 저장 준비 중…');
+    inner.textContent = message || sajuxCaptureProgressMsg('PDF 저장 준비 중…');
     el.querySelectorAll('.sajux-capture-download-btn').forEach(function (b) { b.remove(); });
     var btnBase = 'display:block;margin:18px auto 0;padding:14px 22px;border:none;border-radius:999px;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;width:100%;max-width:280px;';
     if (opts.buttons && opts.buttons.length) {
@@ -7111,19 +7111,22 @@ function sajuxRunPrintPdfFlow(root) {
             '아이폰 Safari로 PDF를 저장합니다.\n\n' +
             '1) 「PDF 저장 열기」를 누르면 인쇄 화면이 떠요\n' +
             '2) 미리보기 썸네일을 두 손가락으로 살짝 펼치세요\n' +
-            '3) 우측 상단 공유(↑) → 「파일에 저장」을 선택';
+            '3) 우측 상단 공유(↑) → 「파일에 저장」을 선택\n\n' +
+            '리포트 전체가 한 개의 PDF 파일로 저장됩니다.';
     } else if (isAndroid) {
         hint =
             '안드로이드 Chrome으로 PDF를 저장합니다.\n\n' +
             '1) 「PDF 저장 열기」를 누르면 인쇄 화면이 떠요\n' +
             '2) 대상(프린터)을 「PDF로 저장」으로 변경\n' +
-            '3) 우측 상단 「PDF 저장」 또는 「다운로드」를 누르세요';
+            '3) 「PDF 저장」 또는 「다운로드」를 누르세요\n\n' +
+            '리포트 전체가 한 개의 PDF 파일로 저장됩니다.';
     } else {
         hint =
             '브라우저 인쇄 기능으로 PDF를 저장합니다.\n\n' +
             '1) 「PDF 저장 열기」를 누르면 인쇄 창이 떠요\n' +
             '2) 대상(프린터)에서 「PDF로 저장」 선택\n' +
-            '3) 「저장」을 누르면 끝';
+            '3) 「저장」을 누르면 끝\n\n' +
+            '리포트 전체가 한 개의 PDF 파일로 저장됩니다.';
     }
 
     sajuxShowCaptureOverlay(hint, {
@@ -14810,7 +14813,10 @@ function buildReportFooterUtilities(data) {
         + '<div class="sajux-access-note" style="text-align:left;margin:0 0 18px;padding:16px 18px;border-radius:12px;border:1px solid rgba(199,167,106,0.28);background:rgba(199,167,106,0.05);font-size:13px;line-height:1.9;">'
         + '<div style="' + headStyle + '">열람 · PDF 저장 안내</div>'
         + '<p style="' + pStyle + '">이 리포트는 발행일(<strong>' + reportDateStr + '</strong>)로부터 <strong>30일</strong> 동안만 같은 링크에서 보실 수 있어요. 그 이후에는 다시 들어오기 어려울 수 있으니, 오늘 안에 <strong>PDF로 한 번 꼭 저장</strong>해 두시기를 권해 드립니다.</p>'
-        + '<p style="margin:6px 0 0;font-size:13px;line-height:1.9;color:#d6dae2;">우하단 <strong>사주 PDF 저장</strong> 또는 아래 버튼으로 PDF를 받으시면, 링크 만료 이후에도 같은 문서를 두고두고 다시 펼쳐 보실 수 있어요.</p>'
+        + '<p style="margin:6px 0 0;font-size:13px;line-height:1.9;color:#d6dae2;">우하단 <strong>사주 PDF 저장</strong> 또는 아래 버튼을 누르면, 화면에 보이는 리포트 전체가 <strong>한 개의 PDF 파일</strong>로 저장됩니다. 링크 만료 이후에도 같은 문서를 두고두고 다시 펼쳐 보실 수 있어요.</p>'
+        + '<p style="margin:8px 0 0;font-size:12.5px;line-height:1.85;color:var(--text-dim,rgba(255,255,255,0.58));">'
+        + '<strong style="color:rgba(199,167,106,0.9);">iPhone</strong> — PDF 저장 열기 → 미리보기 펼치기 → 공유(↑) → 「파일에 저장」<br>'
+        + '<strong style="color:rgba(199,167,106,0.9);">Android</strong> — PDF 저장 열기 → 대상을 「PDF로 저장」 → 저장 또는 다운로드</p>'
         + '<div style="' + btnRow + '">'
         + '<button type="button" class="sajux-image-wide-btn sajux-footer-zip-btn" style="' + btnZip + '">PDF로 저장하기</button>'
         + '</div>'
@@ -14879,7 +14885,7 @@ function buildTOC(data) {
             var num = formatPartSectionNum(r.part, r.section, r, k);
             var sub = r.eyebrow || '';
             if (k === 'upcomingWolunA' || k === 'upcomingWolunB') {
-                sub = sub + (sub ? ' · ' : '') + '사주 저장 절별 이미지';
+                sub = sub + (sub ? ' · ' : '') + '전·후반 6개월';
             }
             body += tocRow(num, r.title, sub);
         });
@@ -14887,7 +14893,7 @@ function buildTOC(data) {
     body += '<div style="margin-top:28px;padding:16px 18px;border-radius:12px;background:rgba(255,255,255,0.04);border:1px solid rgba(199,167,106,0.18);">'
         + '<div style="font-size:12px;color:rgba(255,255,255,0.72);line-height:1.85;">'
         + escHtmlAttr(nmLine) + ' 리포트는 <strong style="color:var(--gold);font-weight:700;">부-절 번호</strong>(예: 2-5) 순으로 읽으시면 됩니다. '
-        + '월운은 전반·후반 각 6개월로 나뉘며, <strong style="color:var(--gold);font-weight:700;">사주 다운로드</strong> 시 절마다 PNG가 ZIP으로 저장됩니다.'
+        + '우하단 <strong style="color:var(--gold);font-weight:700;">사주 PDF 저장</strong>으로 전체 리포트를 한 번에 PDF 파일로 받을 수 있어요.'
         + '</div></div>';
     return '<div class="toc-page" style="padding:60px 40px 80px;border-bottom:1px solid rgba(199,167,106,0.1);margin-bottom:48px;">' +
         '<div style="font-size:10px;letter-spacing:0.22em;color:rgba(199,167,106,0.75);margin-bottom:14px;font-weight:700;">[ X-SAJU MASTER ]</div>' +
