@@ -29,8 +29,11 @@
 })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="sajux-build" content="1780364969">
+<meta name="sajux-build" content="1780375496">
 <title>사주X — 두 사람의 인연 구조</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" href="../report/fonts/JeongseonArirangPpuri.ttf" as="font" type="font/ttf" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;700;900&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Nanum+Brush+Script&display=swap" rel="stylesheet">
@@ -80,10 +83,13 @@ body { overflow-x: hidden; }
   #main-content .compat-mission-body {
     font-size: 1.05em !important;
     line-height: 1.88 !important;
+    letter-spacing: 0 !important;
   }
-  .compat-section-title { font-size: 14px !important; }
+  .compat-section-title { font-size: 14px !important; letter-spacing: 0.05em !important; }
   .compat-person-hint,
-  .compat-manse-note-line { font-size: 13px !important; }
+  .compat-manse-note-line { font-size: 13px !important; letter-spacing: 0 !important; }
+  .cover-brush-name { letter-spacing: -0.02em !important; }
+  #loading-screen p { letter-spacing: 0.05em !important; }
 }
 
 /* 개인 만세력(report)과 동일: 순검정 + 별 입자 */
@@ -849,6 +855,7 @@ body.light-mode .pillar-mini .manse-kor {
           <img class="sajux-logo light sajux-logo-cover-print" src="../report/assets/sajux-logo-light.png" alt="SAJU X 로고" loading="eager" decoding="sync" />
           <img class="sajux-logo dark sajux-logo-cover-screen" src="../report/assets/sajux-logo-dark.png" alt="SAJU X 로고" loading="eager" decoding="sync" />
         </div>
+        <div id="sajux-browser-note-mount"></div>
         <div id="sec-book-intro" class="sajux-intro-block">
           <div class="sajux-intro-heading">사주X란?</div>
           <div class="intro-text-container">
@@ -2227,6 +2234,39 @@ function buildTimeline(a, b, aInfo, bInfo, params) {
 // ══════════════════════════════════════
 // 초기화
 // ══════════════════════════════════════
+function compatRevealMain() {
+  if (typeof window.__compatClearSafetyTimeout === 'function') window.__compatClearSafetyTimeout();
+  var loadMsg = document.querySelector('#loading-screen p');
+  function showMain() {
+    document.getElementById('loading-screen').style.display = 'none';
+    document.getElementById('main-content').style.display  = 'block';
+    var ftoc = document.getElementById('floating-toc');
+    if (ftoc) ftoc.style.display = 'block';
+    try {
+      if (typeof injectSajuxPdfUi === 'function') injectSajuxPdfUi();
+      else if (typeof sajuxCaptureReportAsImage === 'function') {
+        if (!document.getElementById('sajux-image-fab')) {
+          var fab = document.createElement('button');
+          fab.id = 'sajux-image-fab';
+          fab.type = 'button';
+          fab.className = 'pdf-btn';
+          fab.textContent = '📥 사주 PDF 저장';
+          fab.style.cssText = 'position:fixed;bottom:22px;right:18px;z-index:10001;font-family:inherit;font-weight:700;font-size:14px;padding:14px 20px;border-radius:999px;border:none;background:linear-gradient(165deg,rgba(255,255,255,0.11),rgba(255,255,255,0.028));color:rgba(245,240,232,0.94);box-shadow:0 14px 46px rgba(0,0,0,0.44);backdrop-filter:blur(28px);cursor:pointer;';
+          fab.addEventListener('click', function () { sajuxCaptureReportAsImage(); });
+          document.body.appendChild(fab);
+        }
+      }
+      if (typeof sajuxShowReportNav === 'function') sajuxShowReportNav();
+    } catch (uiErr) { console.warn('compat save ui', uiErr); }
+  }
+  if (typeof sajuxEnsureReportFonts === 'function') {
+    if (loadMsg) loadMsg.textContent = '글꼴을 불러오는 중…';
+    sajuxEnsureReportFonts().then(showMain).catch(showMain);
+  } else {
+    showMain();
+  }
+}
+
 (function scheduleCompatInit(){
   function kick(){
     if (window.__compatInitBlocked) return;
@@ -2275,32 +2315,17 @@ async function init() {
 
     sajuxCompatEnsureFooterOrder();
 
+    var browserNoteMount = document.getElementById('sajux-browser-note-mount');
+    if (browserNoteMount && typeof buildSajuxBrowserAccessNoteHtml === 'function') {
+      browserNoteMount.innerHTML = buildSajuxBrowserAccessNoteHtml();
+    }
+
     // CSS 오행 배경색 클래스
     const st = document.createElement('style');
     st.textContent = '.bg-wood{background:var(--wood)}.bg-fire{background:var(--fire)}.bg-earth{background:var(--earth)}.bg-metal{background:var(--metal)}.bg-water{background:var(--water);box-shadow:inset 0 0 0 1px var(--water-edge)}';
     document.head.appendChild(st);
 
-    if (typeof window.__compatClearSafetyTimeout === 'function') window.__compatClearSafetyTimeout();
-    document.getElementById('loading-screen').style.display = 'none';
-    document.getElementById('main-content').style.display  = 'block';
-    var ftoc = document.getElementById('floating-toc');
-    if (ftoc) ftoc.style.display = 'block';
-    try {
-      if (typeof injectSajuxPdfUi === 'function') injectSajuxPdfUi();
-      else if (typeof sajuxCaptureReportAsImage === 'function') {
-        if (!document.getElementById('sajux-image-fab')) {
-          var fab = document.createElement('button');
-          fab.id = 'sajux-image-fab';
-          fab.type = 'button';
-          fab.className = 'pdf-btn';
-          fab.textContent = '📥 사주 PDF 저장';
-          fab.style.cssText = 'position:fixed;bottom:22px;right:18px;z-index:10001;font-family:inherit;font-weight:700;font-size:14px;padding:14px 20px;border-radius:999px;border:none;background:linear-gradient(165deg,rgba(255,255,255,0.11),rgba(255,255,255,0.028));color:rgba(245,240,232,0.94);box-shadow:0 14px 46px rgba(0,0,0,0.44);backdrop-filter:blur(28px);cursor:pointer;';
-          fab.addEventListener('click', function () { sajuxCaptureReportAsImage(); });
-          document.body.appendChild(fab);
-        }
-      }
-      if (typeof sajuxShowReportNav === 'function') sajuxShowReportNav();
-    } catch (uiErr) { console.warn('compat save ui', uiErr); }
+    compatRevealMain();
   } catch(e) {
     if (typeof window.__compatClearSafetyTimeout === 'function') window.__compatClearSafetyTimeout();
     console.error(e);
@@ -2350,7 +2375,7 @@ function toggleToc(e) {
   if (t) t.classList.toggle('toc-open');
 }
 </script>
-<link rel="stylesheet" href="../report/report-print.css?v=1780364969">
+<link rel="stylesheet" href="../report/report-print.css?v=1780375496">
 <script>
 (function () {
   if (window.__sajuxCoverPrintBound) return;
