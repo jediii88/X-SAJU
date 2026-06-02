@@ -1,0 +1,57 @@
+# sajux.com — GitHub Pages (legacy builder 대신 Actions 배포)
+name: Deploy sajux.com
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'report/**'
+      - 'couple/**'
+      - 'admin/**'
+      - 'CNAME'
+      - '.nojekyll'
+      - 'zodiac_en/**'
+      - 'assets/**'
+      - '.github/workflows/deploy-pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: sajux-pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepare static site
+        run: |
+          set -e
+          mkdir -p _site
+          for p in index.html CNAME .nojekyll report couple admin zodiac_en assets; do
+            if [ -e "$p" ]; then
+              cp -a "$p" _site/
+            fi
+          done
+          test -f _site/index.html || { echo "index.html missing"; exit 1; }
+          test -f _site/report/build.txt || echo "warn: report/build.txt missing"
+          echo "site files:" $(find _site -type f | wc -l)
+
+      - uses: actions/configure-pages@v4
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
