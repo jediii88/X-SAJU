@@ -22,7 +22,7 @@ html, body, #report-container, #report-container * {
 
   /* ── 1) 장식·UI 숨김 ───────────────────────────────────────────── */
   #star-canvas, body::before, body::after,
-  #floating-toc, #theme-toggle, #sticky-part-nav,
+  #floating-toc, #theme-toggle, #sticky-part-nav, #sajux-pdf-fab,
   #sajux-pdf-fab, #sajux-image-fab, #sajux-capture-overlay,
   .pdf-btn, .nav-floating, .sajux-pdf-wide-btn, .print-actions,
   .jeomsin-nav, #step-1, .step-nav, .ch-section-num {
