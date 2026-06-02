@@ -4774,11 +4774,11 @@ function ensureSajuxReadablePanelStyles() {
         ".yearly-indicators-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px 10px!important;width:100%!important;}",
         "@media (min-width:520px){.yearly-indicators-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;}}",
         "body.light-mode .domain-summary-3box,html[data-theme=light] .domain-summary-3box{background:rgba(122,90,34,0.07)!important;border-color:rgba(122,90,34,0.28)!important;}",
-        "body.light-mode .domain-summary-3box-cell,html[data-theme=light] .domain-summary-3box-cell{background:#fff!important;border:1px solid rgba(28,24,18,0.1)!important;box-sizing:border-box;}",
-        "body.light-mode .domain-summary-3box-label,html[data-theme=light] .domain-summary-3box-label{color:rgba(28,34,46,0.58)!important;}",
-        "body.light-mode .domain-summary-3box-value--gold,html[data-theme=light] .domain-summary-3box-value--gold{color:#5c4520!important;}",
-        "body.light-mode .domain-summary-3box-value:not(.domain-summary-3box-value--gold):not(.domain-summary-3box-value--warn),html[data-theme=light] .domain-summary-3box-value:not(.domain-summary-3box-value--gold):not(.domain-summary-3box-value--warn){color:#1e2633!important;}",
-        "body.light-mode .domain-summary-3box-value--warn,html[data-theme=light] .domain-summary-3box-value--warn{color:#9c3d30!important;}",
+        "body.light-mode .domain-summary-3box [style*=\"background:rgba(0,0,0,0.18)\"],html[data-theme=light] .domain-summary-3box [style*=\"background:rgba(0,0,0,0.18)\"]{background:#fff!important;border:1px solid rgba(28,24,18,0.1)!important;box-sizing:border-box;}",
+        "body.light-mode .domain-summary-3box [style*=\"color:#9aa1ae\"],html[data-theme=light] .domain-summary-3box [style*=\"color:#9aa1ae\"]{color:rgba(28,34,46,0.58)!important;}",
+        "body.light-mode .domain-summary-3box [style*=\"color:#e5d7b3\"],html[data-theme=light] .domain-summary-3box [style*=\"color:#e5d7b3\"]{color:#5c4520!important;}",
+        "body.light-mode .domain-summary-3box [style*=\"color:#d7d7d7\"],html[data-theme=light] .domain-summary-3box [style*=\"color:#d7d7d7\"]{color:#1e2633!important;}",
+        "body.light-mode .domain-summary-3box [style*=\"color:#ffb7a8\"],html[data-theme=light] .domain-summary-3box [style*=\"color:#ffb7a8\"]{color:#9c3d30!important;}",
         "body.light-mode .report-chapter [style*=\"color:#bbb\"],html[data-theme=light] .report-chapter [style*=\"color:#bbb\"]{color:rgba(28,34,46,0.78)!important;}",
         "body.light-mode .report-chapter [style*=\"color:#ddd\"],html[data-theme=light] .report-chapter [style*=\"color:#ddd\"]{color:rgba(28,34,46,0.9)!important;}",
         "body.light-mode .report-chapter [style*=\"color:#ccc\"],html[data-theme=light] .report-chapter [style*=\"color:#ccc\"]{color:rgba(28,34,46,0.85)!important;}",
@@ -4834,23 +4834,6 @@ function ensureSajuxMobileBodyTypography() {
         '#report-container .ilju-profile-card.ilju-narrative-unified[style*="padding"]{padding:16px 1.5ch!important;}',
         '#report-container .sajux-upcoming-daeun-card,#report-container .sajux-wolun-month-card{',
         'padding-left:1.5ch!important;padding-right:1.5ch!important;box-sizing:border-box!important;}',
-        '.domain-summary-3box-grid,.domain-summary-3box>div[style*="grid-template-columns:1fr 1fr 1fr"],.domain-summary-3box>div[style*="display:grid"]{',
-        'display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:5px!important;width:100%!important;}',
-        '.domain-summary-3box-cell,.domain-summary-3box>div[style*="grid-template-columns"]>div,.domain-summary-3box>div[style*="display:grid"]>div{',
-        'padding:6px 4px!important;min-width:0!important;word-break:normal!important;overflow-wrap:break-word!important;}',
-        '#report-container .domain-summary-3box,#report-container .domain-summary-3box *,#main-content .domain-summary-3box,#main-content .domain-summary-3box *{',
-        'letter-spacing:0!important;}',
-        '#report-container .domain-summary-3box-label,#main-content .domain-summary-3box-label,',
-        '#report-container .domain-summary-3box .domain-summary-3box-cell .domain-summary-3box-label,',
-        '#report-container .domain-summary-3box div[style*="font-size:10px"]{font-size:8px!important;font-weight:500!important;line-height:1.28!important;}',
-        '#report-container .domain-summary-3box-value,#main-content .domain-summary-3box-value,',
-        '#report-container .domain-summary-3box .domain-summary-3box-cell .domain-summary-3box-value,',
-        '#report-container .domain-summary-3box div[style*="font-size:12px"],',
-        '#report-container .domain-summary-3box [style*="font-size:12px"],',
-        '#report-container .domain-summary-3box [style*="font-size:13px"],',
-        '#report-container .domain-summary-3box [style*="font-weight:700"]{font-size:10px!important;font-weight:500!important;line-height:1.4!important;}',
-        '#report-container .domain-summary-3box-value--gold,#report-container .domain-summary-3box-value--warn{font-weight:600!important;}',
-        '.domain-summary-3box-title,#report-container .domain-summary-3box-title{font-size:8px!important;font-weight:700!important;}',
         '#loading.sajux-loading-hidden{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important;}',
         '#loading.sajux-loading-active{',
         'display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;}',
@@ -12295,11 +12278,11 @@ function buildDomainSummaryTable(opts) {
     var caution = polish(opts.caution || '주의 사항');
     var boxTitle = opts.boxTitle || '핵심 요약 (3칸)';
     return '<div class="domain-summary-3box" style="background:rgba(255,255,255,0.035);border:1px solid rgba(199,167,106,0.22);border-radius:10px;padding:12px;margin:12px 0 18px;">'
-        + '<div class="domain-summary-3box-title" style="color:var(--gold);letter-spacing:0.06em;margin:0 0 10px;">' + boxTitle + '</div>'
-        + '<div class="domain-summary-3box-grid">'
-        + '<div class="domain-summary-3box-cell domain-summary-3box-cell--keyword"><div class="domain-summary-3box-label">핵심 키워드</div><div class="domain-summary-3box-value domain-summary-3box-value--gold">' + keyword + '</div></div>'
-        + '<div class="domain-summary-3box-cell domain-summary-3box-cell--route"><div class="domain-summary-3box-label">최적 루트(전략)</div><div class="domain-summary-3box-value">' + route + '</div></div>'
-        + '<div class="domain-summary-3box-cell domain-summary-3box-cell--caution"><div class="domain-summary-3box-label">주의 사항</div><div class="domain-summary-3box-value domain-summary-3box-value--warn">' + caution + '</div></div>'
+        + '<div style="font-size:11px;color:var(--gold);font-weight:800;letter-spacing:1px;margin:0 0 10px;">' + boxTitle + '</div>'
+        + '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">'
+        + '<div style="background:rgba(0,0,0,0.18);border-radius:8px;padding:10px;"><div style="font-size:10px;color:#9aa1ae;margin-bottom:6px;">핵심 키워드</div><div style="font-size:12px;color:#e5d7b3;font-weight:700;line-height:1.65;">' + keyword + '</div></div>'
+        + '<div style="background:rgba(0,0,0,0.18);border-radius:8px;padding:10px;"><div style="font-size:10px;color:#9aa1ae;margin-bottom:6px;">최적 루트(전략)</div><div style="font-size:12px;color:#d7d7d7;font-weight:600;line-height:1.65;">' + route + '</div></div>'
+        + '<div style="background:rgba(0,0,0,0.18);border-radius:8px;padding:10px;"><div style="font-size:10px;color:#9aa1ae;margin-bottom:6px;">주의 사항</div><div style="font-size:12px;color:#ffb7a8;font-weight:700;line-height:1.65;">' + caution + '</div></div>'
         + '</div></div>';
 }
 
