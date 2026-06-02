@@ -80,7 +80,7 @@
       // 자동실행은 window.load IIFE에서 처리 (하단 스크립트 참조)
     })();
     </script>
-    <meta name="version" content="1780388969">
+    <meta name="version" content="1780390069">
     <script>
     /* SAJUX 빌드 자동 갱신: iOS Safari 등에서 옛 HTML이 캐시돼도 서버 최신 빌드를 확인해 1회 새로고침 */
     (function(){
@@ -2239,11 +2239,11 @@
     </script>
 
 <!-- SAJUX_CACHE_BUSTER_START -->
-<meta name="sajux-build" content="1780388969">
-<script>(function(){try{if(window.__SAJUX_LINK_CODE__||window.__SAJUX_PARAMS__||window.__SAJUX_AUTOLOAD__)return;}catch(e0){}var v='1780388969';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
+<meta name="sajux-build" content="1780390069">
+<script>(function(){try{if(window.__SAJUX_LINK_CODE__||window.__SAJUX_PARAMS__||window.__SAJUX_AUTOLOAD__)return;}catch(e0){}var v='1780390069';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
 <!-- SAJUX_CACHE_BUSTER_END -->
 <link rel="stylesheet" href="assets/css/core.css">
-<link rel="stylesheet" href="assets/override.css?v=1780388969">
+<link rel="stylesheet" href="assets/override.css?v=1780390069">
 <style id="override-inline">
 /* Inline override — 표 위 패널 등은 어둡게. 리포트 본문(#report-container)은 아래 블록에서 글래스로 재정의 */
 html:not([data-theme="light"]) .card,
@@ -2361,11 +2361,11 @@ html:not([data-theme="light"]) .brand {
 (function () {
   if (!document.documentElement.classList.contains('sajux-autoload-pending') && !window.__SAJUX_LINK_CODE__ && !window.__SAJUX_PARAMS__) {
     var ld = document.getElementById('loading');
-    if (ld) ld.style.display = 'none';
+    if (ld) { ld.style.display = 'none'; ld.classList.remove('sajux-loading-active'); }
   } else {
     document.documentElement.classList.add('sajux-autoload-pending');
     var ld = document.getElementById('loading');
-    if (ld) ld.style.display = 'flex';
+    if (ld) { ld.style.display = 'flex'; ld.classList.add('sajux-loading-active'); }
   }
 })();
 </script>
@@ -3148,13 +3148,13 @@ function startReport() {
       function setBootLoadingMsg(msg) {
         var loadEl = document.getElementById('loading');
         var msgEl = document.getElementById('loading-msg');
-        if (loadEl) loadEl.style.display = 'flex';
+        if (loadEl) { loadEl.style.display = 'flex'; loadEl.classList.add('sajux-loading-active'); }
         if (msgEl) msgEl.textContent = msg || '리포트를 불러오는 중…';
       }
       function showErr(msg) {
         clearAutoloadPending();
         var loadEl = document.getElementById('loading');
-        if (loadEl) loadEl.style.display = 'none';
+        if (loadEl) { loadEl.style.display = 'none'; loadEl.classList.remove('sajux-loading-active'); }
         var d = document.createElement('div');
         d.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#1a0505;border:1px solid #e74c3c;color:#fff;padding:24px 32px;border-radius:12px;z-index:99999;font-size:13px;text-align:center;max-width:85%;line-height:1.6;';
         d.innerHTML = msg;
@@ -3316,7 +3316,7 @@ body.light-mode #sajux-image-fab {
 <style id="sajux-pdf-print-force">
 /* PDF 인쇄 — report-print.css 단일 소스 (그림자·페이지 분할·플랫 문서형) */
 </style>
-<link rel="stylesheet" href="report-print.css?v=1780388969">
+<link rel="stylesheet" href="report-print.css?v=1780390069">
 
 </body>
 </html>
