@@ -5374,8 +5374,8 @@ function buildSajuxBrowserAccessNoteHtml() {
         '</div>';
 }
 function sajuxEnsureBrowserAccessNote() {
-    var wrap = document.querySelector('#sec-cover .sajux-logo-wrap');
-    if (!wrap || wrap.querySelector('.sajux-browser-access-note')) return;
+    var toc = document.querySelector('.toc-page');
+    if (!toc || toc.querySelector('.sajux-browser-access-note')) return;
     var html = typeof buildSajuxBrowserAccessNoteHtml === 'function'
         ? buildSajuxBrowserAccessNoteHtml()
         : SAJUX_BROWSER_ACCESS_NOTE_STATIC;
@@ -5383,14 +5383,12 @@ function sajuxEnsureBrowserAccessNote() {
     mount.innerHTML = html;
     var note = mount.firstElementChild;
     if (!note) return;
-    var intro = wrap.querySelector('#sec-book-intro');
-    if (intro) wrap.insertBefore(note, intro);
-    else wrap.appendChild(note);
+    toc.appendChild(note);
 }
 function sajuxUpgradeBrowserAccessNote() {
-    var wrap = document.querySelector('#sec-cover .sajux-logo-wrap');
-    if (!wrap || typeof buildSajuxBrowserAccessNoteHtml !== 'function') return;
-    var note = wrap.querySelector('.sajux-browser-access-note');
+    var toc = document.querySelector('.toc-page');
+    if (!toc || typeof buildSajuxBrowserAccessNoteHtml !== 'function') return;
+    var note = toc.querySelector('.sajux-browser-access-note');
     if (!note) {
         sajuxEnsureBrowserAccessNote();
         return;
@@ -14960,6 +14958,7 @@ function buildTOC(data) {
         '<div style="font-size:13px;color:var(--text-dim,rgba(255,255,255,0.55));margin-bottom:32px;line-height:1.7;">' + escHtmlAttr(nmLine) + ' · 부-절 번호로 이어지는 프리미엄 사주 리포트</div>' +
         '<div style="width:60px;height:2px;background:var(--gold);margin-bottom:28px;opacity:0.4;"></div>' +
         body +
+        buildSajuxBrowserAccessNoteHtml() +
         '</div>';
 }
     // ※ 명리학 설명·발행 정책 안내는 본문 흐름을 끊지 않도록 문서 최하단(buildReportFooterUtilities)으로 이동했습니다.
