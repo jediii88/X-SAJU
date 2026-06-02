@@ -611,8 +611,16 @@ html.sajux-autoload-pending #loading > div {
 }
 #loading.sajux-loading-active .spinner,
 html.sajux-autoload-pending #loading .spinner {
-  margin: 0 auto;
+  margin: 0 auto 22px;
   flex-shrink: 0;
+}
+#loading .sajux-loading-brand {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: rgba(199, 167, 106, 0.72);
+  margin: 0 0 16px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 600;
 }
 
 /* 라이트: 다크모드 밝은색 → 먹색 치환 */
