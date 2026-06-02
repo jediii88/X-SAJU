@@ -2155,6 +2155,7 @@ if (typeof window !== 'undefined') {
     window.buildCompatShareCtaHtml = buildCompatShareCtaHtml;
     window.sajuxCompatShareReport = sajuxCompatShareReport;
     window.sajuxEnsureReportFonts = sajuxEnsureReportFonts;
+    window.sajuxDismissLoading = sajuxDismissLoading;
     window.compatHanjaGlossCharFull = compatHanjaGlossCharFull;
     window.buildSajuxBrowserAccessNoteHtml = buildSajuxBrowserAccessNoteHtml;
     window.sajuxIsInAppBrowser = sajuxIsInAppBrowser;
@@ -4827,12 +4828,13 @@ function ensureSajuxMobileBodyTypography() {
         '#report-container .ilju-profile-card.ilju-narrative-unified[style*="padding"]{padding:16px 1ch!important;}',
         '#report-container .sajux-upcoming-daeun-card,#report-container .sajux-wolun-month-card{',
         'padding-left:1ch!important;padding-right:1ch!important;box-sizing:border-box!important;}',
-        '#loading.sajux-loading-active,html.sajux-autoload-pending #loading{',
+        '#loading.sajux-loading-hidden{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important;}',
+        '#loading.sajux-loading-active{',
         'display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;}',
-        '#loading.sajux-loading-active>div,html.sajux-autoload-pending #loading>div{',
+        '#loading.sajux-loading-active>div{',
         'display:flex!important;flex-direction:column!important;align-items:center!important;',
         'width:100%!important;max-width:min(92vw,360px)!important;padding:0 1ch!important;box-sizing:border-box!important;}',
-        '#loading.sajux-loading-active .spinner{margin:0 auto!important;}',
+        '#loading.sajux-loading-active .spinner{margin:0 auto 22px!important;}',
         '}'
     ].join('');
     document.head.appendChild(st);
@@ -6161,30 +6163,89 @@ function sajuxInjectCaptureFonts(doc) {
 }
 function sajuxEnsureReportFonts(opts) {
     opts = opts || {};
-    var maxMs = opts.timeoutMs != null ? opts.timeoutMs : 12000;
-    var minMs = opts.minMs != null ? opts.minMs : 600;
-    if (typeof document === 'undefined' || !document.fonts || typeof document.fonts.load !== 'function') {
-        return minMs > 0 ? new Promise(function (res) { setTimeout(res, minMs); }) : Promise.resolve();
-    }
-    var started = Date.now();
-    var loads = [
-        document.fonts.load('400 16px "Noto Sans KR"'),
-        document.fonts.load('700 16px "Noto Sans KR"'),
-        document.fonts.load('400 16px "Noto Serif KR"'),
-        document.fonts.load('700 20px "Noto Serif KR"'),
-        document.fonts.load('400 58px "Jeongseon Arirang Ppuri"'),
-        document.fonts.load('400 32px "Jeongseon Arirang Ppuri"'),
-        document.fonts.load('400 32px "Nanum Brush Script"')
-    ];
-    var fontWait = Promise.all([
-        document.fonts.ready,
-        Promise.all(loads).catch(function () {})
-    ]);
-    var timeout = new Promise(function (res) { setTimeout(res, maxMs); });
-    return Promise.race([fontWait, timeout]).then(function () {
-        var remain = minMs - (Date.now() - started);
-        if (remain > 0) return new Promise(function (res) { setTimeout(res, remain); });
+    var mobile = typeof sajuxIsMobileDevice === 'function' && sajuxIsMobileDevice();
+    var maxMs = opts.timeoutMs != null ? opts.timeoutMs : (mobile ? 1500 : 12000);
+    var minMs = opts.minMs != null ? opts.minMs : (mobile ? 0 : 600);
+    return new Promise(function (resolve) {
+        var settled = false;
+        function done() {
+            if (settled) return;
+            settled = true;
+            resolve();
+        }
+        setTimeout(done, maxMs);
+        if (mobile && opts.forceLoad !== true) return;
+        if (typeof document === 'undefined' || !document.fonts || typeof document.fonts.load !== 'function') {
+            if (minMs > 0) setTimeout(done, Math.min(minMs, maxMs));
+            return;
+        }
+        var started = Date.now();
+        try {
+            var loads = [
+                document.fonts.load('400 16px "Noto Sans KR"'),
+                document.fonts.load('700 16px "Noto Sans KR"'),
+                document.fonts.load('400 16px "Noto Serif KR"'),
+                document.fonts.load('700 20px "Noto Serif KR"'),
+                document.fonts.load('400 58px "Jeongseon Arirang Ppuri"'),
+                document.fonts.load('400 32px "Jeongseon Arirang Ppuri"'),
+                document.fonts.load('400 32px "Nanum Brush Script"')
+            ];
+            Promise.all([
+                document.fonts.ready.catch(function () {}),
+                Promise.all(loads).catch(function () {})
+            ]).then(function () {
+                var remain = minMs - (Date.now() - started);
+                if (remain > 0) setTimeout(done, Math.min(remain, maxMs));
+                else done();
+            }).catch(done);
+        } catch (eFonts) {
+            done();
+        }
     });
+}
+function sajuxRevealAutoloadUi() {
+    var main = document.getElementById('main-ui');
+    if (main) {
+        main.style.removeProperty('display');
+        main.style.setProperty('display', 'block', 'important');
+    }
+    var s1 = document.getElementById('step-1');
+    if (s1) s1.style.removeProperty('display');
+    var s2 = document.getElementById('step-2');
+    if (s2) {
+        if (typeof go === 'function') go(2);
+        else s2.classList.add('active');
+        s2.style.removeProperty('display');
+        s2.style.removeProperty('visibility');
+    }
+    if (window.__SAJUX_AUTOLOAD__ || window.__SAJUX_PARAMS__ || window.__SAJUX_LINK_CODE__) {
+        var hero = document.getElementById('hero-book-cover');
+        if (hero) hero.style.display = 'none';
+        var inlineTop = document.getElementById('report-inline-top');
+        if (inlineTop) inlineTop.style.display = 'none';
+        var nav = document.querySelector('.jeomsin-nav');
+        if (nav) nav.style.display = 'none';
+        var reportFull = document.getElementById('sec-report-full');
+        if (reportFull) reportFull.style.display = 'block';
+    }
+}
+function sajuxDismissLoading(opts) {
+    opts = opts || {};
+    var loadEl = document.getElementById('loading');
+    try { document.documentElement.classList.remove('sajux-autoload-pending'); } catch (e0) {}
+    if (loadEl) {
+        loadEl.classList.remove('sajux-loading-active');
+        loadEl.classList.add('sajux-loading-hidden');
+        loadEl.style.setProperty('display', 'none', 'important');
+        loadEl.style.setProperty('visibility', 'hidden', 'important');
+        loadEl.style.setProperty('opacity', '0', 'important');
+        loadEl.setAttribute('aria-hidden', 'true');
+    }
+    try {
+        document.body.style.removeProperty('overflow');
+        document.body.style.overflowX = 'hidden';
+    } catch (e1) {}
+    if (opts.reveal !== false) sajuxRevealAutoloadUi();
 }
 function sajuxEnsureCaptureFonts() {
     return sajuxEnsureReportFonts({ timeoutMs: 1500, minMs: 0 });
@@ -15687,19 +15748,23 @@ function showLoading(msg, callback) {
     const loadEl = document.getElementById('loading');
     const msgEl = document.getElementById('loading-msg');
     if(loadEl) {
+        loadEl.classList.remove('sajux-loading-hidden');
+        loadEl.removeAttribute('aria-hidden');
+        loadEl.style.removeProperty('display');
+        loadEl.style.removeProperty('visibility');
+        loadEl.style.removeProperty('opacity');
         loadEl.style.display = 'flex';
         loadEl.classList.add('sajux-loading-active');
     }
     if(msgEl) msgEl.innerText = msg || '사주를 분석하는 중입니다...';
 
+    var watchdog = setTimeout(function () {
+        try { sajuxDismissLoading(); } catch (eWatch) {}
+    }, 90000);
+
     function finishHide() {
-        if(loadEl) {
-            loadEl.style.display = 'none';
-            loadEl.classList.remove('sajux-loading-active');
-        }
-        try { document.documentElement.classList.remove('sajux-autoload-pending'); } catch (e1) {}
-        var _mainUi = document.getElementById('main-ui');
-        if (_mainUi) _mainUi.style.display = '';
+        clearTimeout(watchdog);
+        sajuxDismissLoading();
     }
 
     function failShow(err) {
@@ -15719,7 +15784,7 @@ function showLoading(msg, callback) {
             }
         }, 50);
     }).then(function () {
-        if (msgEl) msgEl.innerText = '글꼴을 불러오는 중…';
+        if (msgEl) msgEl.innerText = '리포트를 표시하는 중…';
         return sajuxEnsureReportFonts();
     }).then(finishHide).catch(failShow);
 }
