@@ -589,15 +589,16 @@ html[data-theme="light"] .ch-voice-opener.sajux-narrative-para {
   color: #1a1510 !important;
 }
 
-/* 로딩 — 스피너(block)는 text-align:center만으론 가운데 안 옴 */
-#loading.loading,
-#loading {
+/* 로딩 — 보일 때만 flex (display:flex!important는 finishHide의 none을 막아 무한 로딩 유발) */
+#loading.sajux-loading-active,
+html.sajux-autoload-pending #loading {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
 }
-#loading > div {
+#loading.sajux-loading-active > div,
+html.sajux-autoload-pending #loading > div {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -608,7 +609,8 @@ html[data-theme="light"] .ch-voice-opener.sajux-narrative-para {
   padding: 0 1ch;
   box-sizing: border-box;
 }
-#loading .spinner {
+#loading.sajux-loading-active .spinner,
+html.sajux-autoload-pending #loading .spinner {
   margin: 0 auto;
   flex-shrink: 0;
 }
@@ -1478,15 +1480,15 @@ html[data-theme="light"] #star-canvas {
     letter-spacing: 0 !important;
   }
 
-  /* 로딩 — 스피너·점 중앙 정렬 (text-align만으로는 block spinner가 왼쪽으로 치우침) */
-  #loading.loading,
-  #loading {
-    display: flex !important;
+  /* 로딩 — 활성일 때만 중앙 정렬 (무한 로딩 방지) */
+  #loading.sajux-loading-active,
+  html.sajux-autoload-pending #loading {
     align-items: center !important;
     justify-content: center !important;
     flex-direction: column !important;
   }
-  #loading > div {
+  #loading.sajux-loading-active > div,
+  html.sajux-autoload-pending #loading > div {
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
@@ -1497,13 +1499,10 @@ html[data-theme="light"] #star-canvas {
     padding: 0 1ch !important;
     box-sizing: border-box !important;
   }
-  #loading .spinner {
+  #loading.sajux-loading-active .spinner,
+  html.sajux-autoload-pending #loading .spinner {
     margin: 0 auto !important;
     flex-shrink: 0 !important;
-  }
-  #loading [style*="display:flex"][style*="justify-content:center"] {
-    justify-content: center !important;
-    width: 100% !important;
   }
 
   /* 라벨·뱃지 — px 고정(em 확대·인라인 style보다 우선) */
