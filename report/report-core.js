@@ -4787,6 +4787,38 @@ function ensureSajuxReadablePanelStyles() {
     document.head.appendChild(st);
 }
 
+/** 모바일 본문 타이포 — override.css CDN 지연 시에도 report-core.js?v= 와 함께 반영 */
+function ensureSajuxMobileBodyTypography() {
+    if (document.getElementById('sajux-mobile-body-type')) return;
+    var st = document.createElement('style');
+    st.id = 'sajux-mobile-body-type';
+    st.textContent = [
+        '@media screen and (max-width:900px){',
+        '.ch-text,.ii-text,.sajux-narrative-para,',
+        '#report-container p.ch-text,#report-container .ch-text,',
+        '#main-content p.ch-text,#main-content .ch-text{',
+        'text-align:justify!important;',
+        'text-align-last:left!important;',
+        '-webkit-text-align-last:left!important;',
+        'text-justify:inter-word!important;',
+        'word-break:normal!important;',
+        'overflow-wrap:break-word;',
+        'line-break:auto;',
+        'word-spacing:normal!important;',
+        'letter-spacing:0!important;',
+        '}',
+        '#report-container,#report-container *,#main-content,#main-content *,#sec-report-full,#sec-report-full *{',
+        'letter-spacing:0!important;',
+        '}',
+        '.container,#main-ui.container,body>.container{padding-left:14px!important;padding-right:14px!important;}',
+        '#report-container .report-chapter,#main-content .report-chapter,.report-chapter:not(.part-header-block){',
+        'padding-left:14px!important;padding-right:14px!important;',
+        '}',
+        '}'
+    ].join('');
+    document.head.appendChild(st);
+}
+
 function ensureSajuxPdfPrintForceStyles() {
     if (document.querySelector('link[href*="report-print.css"]')) return;
     if (document.getElementById('sajux-pdf-print-force') || document.getElementById('sajux-pdf-print-force-dynamic')) return;
@@ -7563,7 +7595,7 @@ function injectSajuxPdfUi() {
         footerZip._sajuxBound = true;
         footerZip.addEventListener('click', function () { sajuxCaptureReportAsImage(); });
     }
-    try { ensureSajuxReadablePanelStyles(); ensureSajuxPdfPrintForceStyles(); ensureCoverLogoForPrint(); } catch (e) {}
+    try { ensureSajuxReadablePanelStyles(); ensureSajuxMobileBodyTypography(); ensureSajuxPdfPrintForceStyles(); ensureCoverLogoForPrint(); } catch (e) {}
 }
 
 function getDBText(category, key, fallback, data) {
