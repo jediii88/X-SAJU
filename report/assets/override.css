@@ -1245,17 +1245,36 @@ html[data-theme="light"] #star-canvas {
   }
 }
 
-/* 본문 — 한글 양쪽 정렬(마지막 줄만 왼쪽, 자간 과다 방지) */
-.ch-text,
-.ii-text,
-.sajux-narrative-para {
-  text-align: justify;
-  text-align-last: left;
-  -webkit-text-align-last: left;
-  text-justify: inter-word;
-  word-break: keep-all;
-  overflow-wrap: break-word;
-  line-break: loose;
+/* 본문 — 데스크톱만 양쪽 정렬(넓은 줄). 모바일은 좁아서 justify 시 글자 벌어짐 */
+@media screen and (min-width: 901px) {
+  .ch-text,
+  .ii-text,
+  .sajux-narrative-para {
+    text-align: justify;
+    text-align-last: left;
+    -webkit-text-align-last: left;
+    text-justify: inter-word;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+    line-break: loose;
+  }
+}
+
+/* 모바일 기본 — 왼쪽 정렬(justify 금지) */
+@media screen and (max-width: 900px) {
+  .ch-text,
+  .ii-text,
+  .sajux-narrative-para {
+    text-align: left !important;
+    text-align-last: auto !important;
+    -webkit-text-align-last: auto !important;
+    text-justify: auto;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+    line-break: normal;
+    word-spacing: normal !important;
+    letter-spacing: 0 !important;
+  }
 }
 
 /* ── 모바일 가독성 (본문 전반 확대) ── */
@@ -1361,20 +1380,21 @@ html[data-theme="light"] #star-canvas {
     padding-bottom: calc(132px + env(safe-area-inset-bottom, 0px)) !important;
   }
 
-  /* 모바일 — 한글 본문: 양쪽 정렬 + 마지막 줄만 왼쪽(자간 0 유지) */
+  /* 모바일 — 한글 본문: 왼쪽 정렬(justify는 좁은 줄에서 글자 사이 벌어짐) */
   .ch-text,
   .ii-text,
   .sajux-narrative-para,
   #report-container p.ch-text,
   #main-content p.ch-text {
-    text-align: justify !important;
-    text-align-last: left !important;
-    -webkit-text-align-last: left !important;
-    text-justify: inter-word;
+    text-align: left !important;
+    text-align-last: auto !important;
+    -webkit-text-align-last: auto !important;
+    text-justify: auto;
     word-break: keep-all;
     overflow-wrap: break-word;
-    line-break: loose;
+    line-break: normal;
     word-spacing: normal !important;
+    letter-spacing: 0 !important;
   }
 
   /* 모바일 — em·인라인 style 자간 전역 보정 (글자 확대 시 과한 벌어짐 방지) */
