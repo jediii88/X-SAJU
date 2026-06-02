@@ -367,22 +367,23 @@ html:not([data-theme="light"]) .report-chapter:not(.part-header-block) {
     color: #9aa1ae;
     margin-bottom: 6px;
     letter-spacing: 0.02em;
+    font-weight: 500;
   }
   .domain-summary-3box-value {
     font-size: 12px;
     color: #d7d7d7;
-    font-weight: 600;
-    line-height: 1.62;
+    font-weight: 500;
+    line-height: 1.55;
     word-break: normal;
     overflow-wrap: break-word;
   }
   .domain-summary-3box-value--gold {
     color: #e5d7b3;
-    font-weight: 700;
+    font-weight: 600;
   }
   .domain-summary-3box-value--warn {
     color: #ffb7a8;
-    font-weight: 700;
+    font-weight: 600;
   }
 
   html:not([data-theme="light"]) body:not(.light-mode)
@@ -1391,14 +1392,14 @@ html[data-theme="light"] #star-canvas {
     line-height: 1.88 !important;
   }
 
-  #report-container [style*="font-size:12px"]:not(.age-basis-note),
-  #report-container [style*="font-size:13px"]:not(.age-basis-note),
-  #report-container [style*="font-size:13.5px"]:not(.age-basis-note),
-  #report-container [style*="font-size:14px"]:not(.age-basis-note),
-  #main-content [style*="font-size:12px"]:not(.age-basis-note),
-  #main-content [style*="font-size:13px"]:not(.age-basis-note),
-  #main-content [style*="font-size:13.5px"]:not(.age-basis-note),
-  #main-content [style*="font-size:14px"]:not(.age-basis-note) {
+  #report-container [style*="font-size:12px"]:not(.age-basis-note):not(.domain-summary-3box-label):not(.domain-summary-3box-value),
+  #report-container [style*="font-size:13px"]:not(.age-basis-note):not(.domain-summary-3box-label):not(.domain-summary-3box-value),
+  #report-container [style*="font-size:13.5px"]:not(.age-basis-note):not(.domain-summary-3box-label):not(.domain-summary-3box-value),
+  #report-container [style*="font-size:14px"]:not(.age-basis-note):not(.domain-summary-3box-label):not(.domain-summary-3box-value),
+  #main-content [style*="font-size:12px"]:not(.age-basis-note):not(.domain-summary-3box-label):not(.domain-summary-3box-value),
+  #main-content [style*="font-size:13px"]:not(.age-basis-note):not(.domain-summary-3box-label):not(.domain-summary-3box-value),
+  #main-content [style*="font-size:13.5px"]:not(.age-basis-note):not(.domain-summary-3box-label):not(.domain-summary-3box-value),
+  #main-content [style*="font-size:14px"]:not(.age-basis-note):not(.domain-summary-3box-label):not(.domain-summary-3box-value) {
     font-size: 1.05em !important;
     line-height: 1.85 !important;
   }
@@ -1499,9 +1500,11 @@ html[data-theme="light"] #star-canvas {
     margin: 10px 0 14px !important;
   }
   .domain-summary-3box-title {
-    font-size: 10px !important;
+    font-size: 9px !important;
     margin-bottom: 8px !important;
     padding-right: 10px;
+    font-weight: 700 !important;
+    letter-spacing: 0.06em !important;
   }
   /* 신규 클래스 + 구 inline grid(캐시된 report-core) 모두 대응 */
   .domain-summary-3box-grid,
@@ -1532,17 +1535,37 @@ html[data-theme="light"] #star-canvas {
     word-break: normal !important;
     overflow-wrap: break-word !important;
   }
-  .domain-summary-3box-label,
-  .domain-summary-3box > div[style*="grid"] > div > div[style*="font-size:10px"] {
-    font-size: 9px !important;
-    margin-bottom: 5px !important;
+  #report-container .domain-summary-3box-label,
+  #main-content .domain-summary-3box-label,
+  #report-container .domain-summary-3box div[style*="font-size:10px"],
+  #main-content .domain-summary-3box div[style*="font-size:10px"] {
+    font-size: 8px !important;
+    margin-bottom: 4px !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.02em !important;
+    line-height: 1.35 !important;
   }
-  .domain-summary-3box-value,
-  .domain-summary-3box > div[style*="grid"] > div > div[style*="font-size:12px"] {
-    font-size: 11px !important;
-    line-height: 1.58 !important;
+  #report-container .domain-summary-3box-value,
+  #main-content .domain-summary-3box-value,
+  #report-container .domain-summary-3box div[style*="font-size:12px"],
+  #main-content .domain-summary-3box div[style*="font-size:12px"] {
+    font-size: 10px !important;
+    line-height: 1.48 !important;
+    font-weight: 500 !important;
     word-break: normal !important;
     overflow-wrap: break-word !important;
+  }
+  #report-container .domain-summary-3box-value--gold,
+  #main-content .domain-summary-3box-value--gold,
+  #report-container .domain-summary-3box div[style*="color:#e5d7b3"],
+  #main-content .domain-summary-3box div[style*="color:#e5d7b3"] {
+    font-weight: 600 !important;
+  }
+  #report-container .domain-summary-3box-value--warn,
+  #main-content .domain-summary-3box-value--warn,
+  #report-container .domain-summary-3box div[style*="color:#ffb7a8"],
+  #main-content .domain-summary-3box div[style*="color:#ffb7a8"] {
+    font-weight: 600 !important;
   }
 
   /* 모바일 — 섹션 제목·부제 소폭 축소 */
