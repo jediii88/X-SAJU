@@ -1,5 +1,6 @@
 import base64, json, shutil, os, sys, re, time
 from urllib.request import Request, urlopen
+from urllib.error import HTTPError
 from urllib.parse import quote
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -10,9 +11,22 @@ TOKEN_FILE = os.path.join(ROOT, '.github_token')
 # 배포물 sajux_deploy/report/* 및 루트 X-SAJU_MASTER.html(구 스크립트·file://용)은 여기서만 생성한다.
 
 
+def write_build_marker(build_v):
+    """build.txt 생성 — 클라이언트가 캐시 우회로 읽어 최신 빌드 여부를 판단(자동 새로고침)."""
+    for d in (os.path.join(ROOT, 'report'),
+              os.path.join(ROOT, 'sajux_deploy', 'report')):
+        try:
+            os.makedirs(d, exist_ok=True)
+            with open(os.path.join(d, 'build.txt'), 'w', encoding='utf-8') as f:
+                f.write(build_v + '\n')
+        except Exception:
+            pass
+
+
 def bump_build_version():
     """정본 HTML의 캐시 버전값을 배포 시점으로 갱신한다(화면 변화 없음)."""
     build_v = str(int(time.time()))
+    write_build_marker(build_v)
     targets = [
         os.path.join(ROOT, 'report', 'index.html'),
         os.path.join(ROOT, 'report', 'view.html'),
@@ -42,6 +56,16 @@ def bump_build_version():
         )
         out = re.sub(
             r'(href="report-print\.css\?v=)\d+(")',
+            rf"\g<1>{build_v}\2",
+            out,
+        )
+        out = re.sub(
+            r'(href="\.\./report/report-print\.css\?v=)\d+(")',
+            rf"\g<1>{build_v}\2",
+            out,
+        )
+        out = re.sub(
+            r'(href="assets/override\.css\?v=)\d+(")',
             rf"\g<1>{build_v}\2",
             out,
         )
@@ -113,13 +137,9 @@ def sync_report_bundle():
     assets_src = os.path.join(report_dir, 'assets')
     assets_dst = os.path.join(out_dir, 'assets')
     if os.path.isdir(assets_src):
-        os.makedirs(assets_dst, exist_ok=True)
-        for fn in os.listdir(assets_src):
-            if fn.startswith('.'):
-                continue
-            s = os.path.join(assets_src, fn)
-            if os.path.isfile(s):
-                shutil.copy2(s, os.path.join(assets_dst, fn))
+        if os.path.isdir(assets_dst):
+            shutil.rmtree(assets_dst)
+        shutil.copytree(assets_src, assets_dst)
         print('  [sync] report/assets/ -> sajux_deploy/report/assets/')
 
     idx_path = os.path.join(out_dir, 'index.html')
@@ -168,8 +188,19 @@ def upload(local_path, gh_path, token, msg='deploy'):
         f'https://api.github.com/repos/{REPO}/contents/{quote(gh_path)}',
         data=json.dumps(payload).encode(), method='PUT',
         headers={'Authorization': f'token {token}', 'Content-Type': 'application/json'})
-    with urlopen(req) as r:
-        json.loads(r.read())
+    try:
+        with urlopen(req) as r:
+            json.loads(r.read())
+    except HTTPError as e:
+        body = ''
+        try:
+            body = e.read().decode('utf-8', errors='replace')
+        except Exception:
+            pass
+        if e.code == 409 and 'Secret detected' in body:
+            print(f'  ⏭️  skip (GitHub secret scan): {gh_path}')
+            return
+        raise
     print(f'  ✅ {gh_path}')
 
 
@@ -236,6 +267,7 @@ def main():
         (f'{deploy_dir}/report/saju.html', 'report/saju.html'),
         (f'{deploy_dir}/report/report-core.js', 'report/report-core.js'),
         (f'{deploy_dir}/report/report-print.css', 'report/report-print.css'),
+        (f'{deploy_dir}/report/build.txt', 'report/build.txt'),
         (f'{deploy_dir}/report/compatibility/index.html', 'report/compatibility/index.html'),
         (f'{deploy_dir}/admin/index.html', 'admin/index.html'),
         (f'{deploy_dir}/couple/index.html', 'couple/index.html'),
@@ -249,17 +281,21 @@ def main():
 
     assets_dir = os.path.join(deploy_dir, 'report', 'assets')
     if os.path.isdir(assets_dir):
-        for fn in sorted(os.listdir(assets_dir)):
-            if fn.startswith('.'):
-                continue
-            local = os.path.join(assets_dir, fn)
-            if os.path.isfile(local):
-                files.append((local, f'report/assets/{fn}'))
+        for dirpath, _, filenames in os.walk(assets_dir):
+            for fn in filenames:
+                if fn.startswith('.'):
+                    continue
+                local = os.path.join(dirpath, fn)
+                rel = os.path.relpath(local, assets_dir).replace(os.sep, '/')
+                files.append((local, f'report/assets/{rel}'))
 
     # Vercel(루트 sajux_deploy): 고객 생일 저장 API
     pkg = os.path.join(deploy_dir, 'package.json')
     if os.path.isfile(pkg):
         files.append((pkg, 'sajux_deploy/package.json'))
+    vj = os.path.join(deploy_dir, 'vercel.json')
+    if os.path.isfile(vj):
+        files.append((vj, 'sajux_deploy/vercel.json'))
     api_root = os.path.join(deploy_dir, 'api')
     if os.path.isdir(api_root):
         for dirpath, _, filenames in os.walk(api_root):
@@ -268,6 +304,8 @@ def main():
                     continue
                 local = os.path.join(dirpath, fn)
                 rel = os.path.relpath(local, deploy_dir).replace(os.sep, '/')
+                if 'api/kakao-webhook' in rel:
+                    continue
                 files.append((local, 'sajux_deploy/' + rel))
 
     # GitHub Pages(루트) + Vercel(루트 디렉터리 sajux_deploy) 동시 반영

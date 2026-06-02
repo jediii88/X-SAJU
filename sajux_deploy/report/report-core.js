@@ -1632,7 +1632,7 @@ function buildCompatShareCtaHtml(ctx) {
     ctx = ctx || {};
     var aName = compatNm(ctx, 'a');
     var bName = compatNm(ctx, 'b');
-    var hint = escHtmlAttr(aName) + '님과 ' + escHtmlAttr(bName) + '님의 궁합 리포트를 함께 읽으며, 오늘 저녁 서로를 더 깊이 이해하는 특별한 대화 시간을 가져보세요.';
+    var hint = escHtmlAttr(aName) + '님과 ' + escHtmlAttr(bName) + '님의 궁합 리포트를 함께 읽으며, 서로를 더 깊이 이해하는 특별한 대화 시간을 가져보세요.';
     return '<div class="compat-share-cta-wrap" id="compat-share-cta">'
         + '<p class="compat-share-cta-hint">' + hint + '</p>'
         + '<button type="button" class="compat-share-cta-btn" id="compat-share-cta-btn" onclick="sajuxCompatShareReport()">💌 내 연인에게 리포트 결과 공유하기</button>'

@@ -1,0 +1,8 @@
+name = "sajux-kakao-bot"
+main = "index.js"
+compatibility_date = "2024-01-01"
+
+# 환경변수는 Cloudflare Dashboard에서 설정
+# Workers > sajux-kakao-bot > Settings > Variables and Secrets
+# ANTHROPIC_API_KEY = sk-ant-api03-...
+# KAKAO_APP_KEY     = 6a169b6806bca080bd86d380
