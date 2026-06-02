@@ -29,7 +29,7 @@
 })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="sajux-build" content="1780369160">
+<meta name="sajux-build" content="1780374445">
 <title>사주X — 두 사람의 인연 구조</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -83,10 +83,13 @@ body { overflow-x: hidden; }
   #main-content .compat-mission-body {
     font-size: 1.05em !important;
     line-height: 1.88 !important;
+    letter-spacing: 0 !important;
   }
-  .compat-section-title { font-size: 14px !important; }
+  .compat-section-title { font-size: 14px !important; letter-spacing: 0.05em !important; }
   .compat-person-hint,
-  .compat-manse-note-line { font-size: 13px !important; }
+  .compat-manse-note-line { font-size: 13px !important; letter-spacing: 0 !important; }
+  .cover-brush-name { letter-spacing: -0.02em !important; }
+  #loading-screen p { letter-spacing: 0.05em !important; }
 }
 
 /* 개인 만세력(report)과 동일: 순검정 + 별 입자 */
@@ -2366,7 +2369,7 @@ function toggleToc(e) {
   if (t) t.classList.toggle('toc-open');
 }
 </script>
-<link rel="stylesheet" href="../report/report-print.css?v=1780369160">
+<link rel="stylesheet" href="../report/report-print.css?v=1780374445">
 <script>
 (function () {
   if (window.__sajuxCoverPrintBound) return;
