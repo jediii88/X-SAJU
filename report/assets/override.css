@@ -1392,17 +1392,7 @@ html[data-theme="light"] #star-canvas {
     line-height: 1.88 !important;
   }
 
-  #report-container [style*="font-size:12px"]:not(.age-basis-note):not(.domain-summary-3box-label):not(.domain-summary-3box-value),
-  #report-container [style*="font-size:13px"]:not(.age-basis-note):not(.domain-summary-3box-label):not(.domain-summary-3box-value),
-  #report-container [style*="font-size:13.5px"]:not(.age-basis-note):not(.domain-summary-3box-label):not(.domain-summary-3box-value),
-  #report-container [style*="font-size:14px"]:not(.age-basis-note):not(.domain-summary-3box-label):not(.domain-summary-3box-value),
-  #main-content [style*="font-size:12px"]:not(.age-basis-note):not(.domain-summary-3box-label):not(.domain-summary-3box-value),
-  #main-content [style*="font-size:13px"]:not(.age-basis-note):not(.domain-summary-3box-label):not(.domain-summary-3box-value),
-  #main-content [style*="font-size:13.5px"]:not(.age-basis-note):not(.domain-summary-3box-label):not(.domain-summary-3box-value),
-  #main-content [style*="font-size:14px"]:not(.age-basis-note):not(.domain-summary-3box-label):not(.domain-summary-3box-value) {
-    font-size: 1.05em !important;
-    line-height: 1.85 !important;
-  }
+  /* 3칸 요약 박스는 아래 전용 규칙 — 인라인 12~14px 전역 em 확대 제외(작은 칸에서 글자 비대칭 유발) */
 
   .ch-main-topic-title .ch-sec-num,
   .ch-main-heading-xl .ch-sec-num {
@@ -1524,6 +1514,7 @@ html[data-theme="light"] #star-canvas {
   }
   #report-container .domain-summary-3box-label,
   #main-content .domain-summary-3box-label,
+  #report-container .domain-summary-3box .domain-summary-3box-cell .domain-summary-3box-label,
   #report-container .domain-summary-3box div[style*="font-size:10px"],
   #main-content .domain-summary-3box div[style*="font-size:10px"] {
     font-size: 9px !important;
@@ -1534,8 +1525,9 @@ html[data-theme="light"] #star-canvas {
   }
   #report-container .domain-summary-3box-value,
   #main-content .domain-summary-3box-value,
-  #report-container .domain-summary-3box div[style*="font-size:12px"],
-  #main-content .domain-summary-3box div[style*="font-size:12px"] {
+  #report-container .domain-summary-3box .domain-summary-3box-cell .domain-summary-3box-value,
+  #report-container .domain-summary-3box [style*="font-size:12px"],
+  #main-content .domain-summary-3box [style*="font-size:12px"] {
     font-size: 11px !important;
     line-height: 1.45 !important;
     font-weight: 500 !important;
@@ -1545,13 +1537,17 @@ html[data-theme="light"] #star-canvas {
   #report-container .domain-summary-3box-value--gold,
   #main-content .domain-summary-3box-value--gold,
   #report-container .domain-summary-3box div[style*="color:#e5d7b3"],
-  #main-content .domain-summary-3box div[style*="color:#e5d7b3"] {
+  #main-content .domain-summary-3box div[style*="color:#e5d7b3"],
+  #report-container .domain-summary-3box [style*="font-weight:700"][style*="color:#e5d7b3"],
+  #main-content .domain-summary-3box [style*="font-weight:700"][style*="color:#e5d7b3"] {
     font-weight: 600 !important;
   }
   #report-container .domain-summary-3box-value--warn,
   #main-content .domain-summary-3box-value--warn,
   #report-container .domain-summary-3box div[style*="color:#ffb7a8"],
-  #main-content .domain-summary-3box div[style*="color:#ffb7a8"] {
+  #main-content .domain-summary-3box div[style*="color:#ffb7a8"],
+  #report-container .domain-summary-3box [style*="font-weight:700"][style*="color:#ffb7a8"],
+  #main-content .domain-summary-3box [style*="font-weight:700"][style*="color:#ffb7a8"] {
     font-weight: 600 !important;
   }
 
