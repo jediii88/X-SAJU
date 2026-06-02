@@ -1245,6 +1245,19 @@ html[data-theme="light"] #star-canvas {
   }
 }
 
+/* 본문 — 한글 양쪽 정렬(마지막 줄만 왼쪽, 자간 과다 방지) */
+.ch-text,
+.ii-text,
+.sajux-narrative-para {
+  text-align: justify;
+  text-align-last: left;
+  -webkit-text-align-last: left;
+  text-justify: inter-word;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  line-break: loose;
+}
+
 /* ── 모바일 가독성 (본문 전반 확대) ── */
 @media screen and (max-width: 900px) {
   html {
@@ -1348,14 +1361,20 @@ html[data-theme="light"] #star-canvas {
     padding-bottom: calc(132px + env(safe-area-inset-bottom, 0px)) !important;
   }
 
-  /* 모바일 — 한글 본문 양쪽정렬 해제(글자 사이 벌어짐 방지) */
+  /* 모바일 — 한글 본문: 양쪽 정렬 + 마지막 줄만 왼쪽(자간 0 유지) */
   .ch-text,
   .ii-text,
   .sajux-narrative-para,
   #report-container p.ch-text,
   #main-content p.ch-text {
-    text-align: left !important;
-    text-align: start !important;
+    text-align: justify !important;
+    text-align-last: left !important;
+    -webkit-text-align-last: left !important;
+    text-justify: inter-word;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+    line-break: loose;
+    word-spacing: normal !important;
   }
 
   /* 모바일 — em·인라인 style 자간 전역 보정 (글자 확대 시 과한 벌어짐 방지) */
