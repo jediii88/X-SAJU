@@ -589,16 +589,20 @@ html[data-theme="light"] .ch-voice-opener.sajux-narrative-para {
   color: #1a1510 !important;
 }
 
-/* 로딩 — 보일 때만 flex (display:flex!important는 finishHide의 none을 막아 무한 로딩 유발) */
-#loading.sajux-loading-active,
-html.sajux-autoload-pending #loading {
+/* 로딩 — 활성일 때만 표시 / hidden은 항상 숨김 */
+#loading.sajux-loading-hidden {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+#loading.sajux-loading-active {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
 }
-#loading.sajux-loading-active > div,
-html.sajux-autoload-pending #loading > div {
+#loading.sajux-loading-active > div {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1488,15 +1492,20 @@ html[data-theme="light"] #star-canvas {
     letter-spacing: 0 !important;
   }
 
-  /* 로딩 — 활성일 때만 중앙 정렬 (무한 로딩 방지) */
-  #loading.sajux-loading-active,
-  html.sajux-autoload-pending #loading {
+  #loading.sajux-loading-hidden {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+  /* 로딩 — 활성일 때만 중앙 정렬 */
+  #loading.sajux-loading-active {
+    display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     flex-direction: column !important;
   }
-  #loading.sajux-loading-active > div,
-  html.sajux-autoload-pending #loading > div {
+  #loading.sajux-loading-active > div {
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
@@ -1507,9 +1516,8 @@ html[data-theme="light"] #star-canvas {
     padding: 0 1ch !important;
     box-sizing: border-box !important;
   }
-  #loading.sajux-loading-active .spinner,
-  html.sajux-autoload-pending #loading .spinner {
-    margin: 0 auto !important;
+  #loading.sajux-loading-active .spinner {
+    margin: 0 auto 22px !important;
     flex-shrink: 0 !important;
   }
 
