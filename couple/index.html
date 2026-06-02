@@ -29,7 +29,7 @@
 })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="sajux-build" content="1780375180">
+<meta name="sajux-build" content="1780375496">
 <title>사주X — 두 사람의 인연 구조</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -855,6 +855,7 @@ body.light-mode .pillar-mini .manse-kor {
           <img class="sajux-logo light sajux-logo-cover-print" src="../report/assets/sajux-logo-light.png" alt="SAJU X 로고" loading="eager" decoding="sync" />
           <img class="sajux-logo dark sajux-logo-cover-screen" src="../report/assets/sajux-logo-dark.png" alt="SAJU X 로고" loading="eager" decoding="sync" />
         </div>
+        <div id="sajux-browser-note-mount"></div>
         <div id="sec-book-intro" class="sajux-intro-block">
           <div class="sajux-intro-heading">사주X란?</div>
           <div class="intro-text-container">
@@ -2314,6 +2315,11 @@ async function init() {
 
     sajuxCompatEnsureFooterOrder();
 
+    var browserNoteMount = document.getElementById('sajux-browser-note-mount');
+    if (browserNoteMount && typeof buildSajuxBrowserAccessNoteHtml === 'function') {
+      browserNoteMount.innerHTML = buildSajuxBrowserAccessNoteHtml();
+    }
+
     // CSS 오행 배경색 클래스
     const st = document.createElement('style');
     st.textContent = '.bg-wood{background:var(--wood)}.bg-fire{background:var(--fire)}.bg-earth{background:var(--earth)}.bg-metal{background:var(--metal)}.bg-water{background:var(--water);box-shadow:inset 0 0 0 1px var(--water-edge)}';
@@ -2369,7 +2375,7 @@ function toggleToc(e) {
   if (t) t.classList.toggle('toc-open');
 }
 </script>
-<link rel="stylesheet" href="../report/report-print.css?v=1780375180">
+<link rel="stylesheet" href="../report/report-print.css?v=1780375496">
 <script>
 (function () {
   if (window.__sajuxCoverPrintBound) return;
