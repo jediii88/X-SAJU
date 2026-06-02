@@ -138,7 +138,8 @@ html, body, #report-container, #report-container * {
   .cover-highlight, strong, b { color: #111 !important; -webkit-text-fill-color: #111 !important; }
 
   /* 웹 전용 부록(저장 버튼) — PDF에 포함하지 않음 */
-  #sec-report-footer-utilities, .report-footer-utilities {
+  #sec-report-footer-utilities, .report-footer-utilities,
+  .sajux-browser-access-note {
     display: none !important;
     visibility: hidden !important;
   }
