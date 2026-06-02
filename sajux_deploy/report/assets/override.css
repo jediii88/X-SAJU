@@ -1348,38 +1348,20 @@ html[data-theme="light"] #star-canvas {
     padding-bottom: calc(132px + env(safe-area-inset-bottom, 0px)) !important;
   }
 
-  /* 모바일 — 글자 확대 시 em 자간이 과하게 벌어지는 현상 보정 */
+  /* 모바일 — em·인라인 style 자간 전역 보정 (글자 확대 시 과한 벌어짐 방지) */
   #report-container,
+  #report-container *,
   #main-content,
-  #sec-report-full {
-    letter-spacing: -0.01em;
-  }
-  #report-container p:not(.cover-brush-name):not(.cover-brush-sub):not(.age-basis-note):not(.ch-section-label),
-  #report-container li,
-  #report-container .cat-text,
-  #report-container .cat-body,
-  #report-container .cat-advice,
-  #report-container .cat-advice p,
-  #report-container .cat-highlight,
-  #report-container .vip-module-desc,
-  #report-container .ch-voice-opener,
-  #report-container .ch-sub-under-main,
-  #report-container .ch-head-main-sub,
-  #report-container .inline-interp,
-  #report-container .compat-prose-p,
-  #report-container .insight-card,
-  #report-container .axe-advice,
-  #main-content p:not(.cover-brush-name):not(.cover-brush-sub):not(.age-basis-note),
-  #main-content li,
-  #main-content .compat-prose-p,
-  #main-content .compat-voice-opener,
-  #main-content .compat-prose,
-  #main-content .compat-mission-body,
-  #main-content .insight-card,
-  #main-content .rel-panel,
-  #main-content .compat-mission-body p {
+  #main-content *,
+  #sec-report-full,
+  #sec-report-full *,
+  #loading,
+  #loading * {
     letter-spacing: 0 !important;
   }
+
+  /* 라벨·뱃지 — px 고정(em 확대·인라인 style보다 우선) */
+  .sajux-intro-heading,
   .ch-section-label,
   .ch-topic-sub-under-main,
   .ch-section-num,
@@ -1387,22 +1369,29 @@ html[data-theme="light"] #star-canvas {
   .compat-section-title,
   .compat-person-tag,
   .compat-person-hint,
-  .sajux-intro-heading,
+  .sajux-browser-access-note__title,
+  .tag,
+  .ii-label,
+  .person-label,
+  .t-label,
+  .score-sub,
   #sec-review-callout div[style*="letter-spacing"],
   .report-footer-utilities div[style*="letter-spacing"],
   .report-footer-utilities p,
   #loading-screen p,
   #loading-msg,
   .loading-text {
-    letter-spacing: 0.05em !important;
+    letter-spacing: 0.5px !important;
   }
+
+  /* 붓글씨·큰 제목 — 살짝 좁게 */
   .cover-brush-name,
   .hero-brush-title,
   .ch-main-topic-title,
   .ch-main-heading-xl,
   .part-brush-title,
   .part-header-label.part-brush-title {
-    letter-spacing: -0.02em !important;
+    letter-spacing: -0.5px !important;
   }
 }
 
