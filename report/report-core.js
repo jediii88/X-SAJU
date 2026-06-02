@@ -4796,7 +4796,13 @@ function ensureSajuxMobileBodyTypography() {
         '@media screen and (max-width:900px){',
         '.ch-text,.ii-text,.sajux-narrative-para,',
         '#report-container p.ch-text,#report-container .ch-text,',
-        '#main-content p.ch-text,#main-content .ch-text{',
+        '#main-content p.ch-text,#main-content .ch-text,',
+        '#report-container .report-chapter>p,',
+        '#report-container .sajux-upcoming-daeun-card p,',
+        '#report-container .sajux-wolun-month-card p,',
+        '#report-container .cat-advice p,',
+        '#report-container .vip-module-desc,',
+        '#main-content .report-chapter>p,#main-content .compat-prose-p{',
         'text-align:justify!important;',
         'text-align-last:left!important;',
         '-webkit-text-align-last:left!important;',
@@ -11515,7 +11521,7 @@ function buildUpcomingDaewunCards(data) {
             + '<div style="font-size:18px;font-weight:800;color:#fff;font-family:\'Noto Sans KR\',sans-serif;">' + (HK[g] || g) + (HK[j] || j) + '<span style="font-size:12px;color:#888;margin-left:6px;">(' + g + j + ')</span></div></div>'
             + '<div style="text-align:right;"><div style="font-size:11px;color:#888;">' + ageRange + '</div>'
             + '<div style="font-size:10px;color:' + col + ';margin-top:2px;">' + ohTag + ' · ' + toneLabel(t) + '</div></div></div>'
-            + '<p style="font-size:13px;color:#ccc;line-height:1.95;margin:0;">' + narrativeVp(data, body) + '</p>'
+            + buildNarrativePara(data, body, { fontSize: '13px', color: '#ccc', lineHeight: '1.95', marginBottom: '0' })
             + '</div>';
     }).join('');
 
