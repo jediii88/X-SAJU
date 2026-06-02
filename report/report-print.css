@@ -525,15 +525,16 @@ html, body, #report-container, #report-container * {
   }
   .yearly-ind-cell { min-width: 0 !important; padding: 4px 0 !important; }
   .yearly-ind-val { color: #232323 !important; font-size: 12px !important; }
-  .domain-summary-3box > div[style*="display:grid"],
-  .domain-summary-3box [style*="grid-template-columns:1fr 1fr 1fr"] {
+  .domain-summary-3box-grid {
     display: grid !important;
     grid-template-columns: 1fr 1fr 1fr !important;
     gap: 8px !important;
     width: 100% !important;
   }
-  .domain-summary-3box [style*="grid"] > div {
-    min-width: 0 !important; word-break: keep-all !important; overflow-wrap: break-word !important;
+  .domain-summary-3box-cell {
+    min-width: 0 !important;
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
   }
   #report-container div[style*="grid-template-columns:1fr 1fr"] {
     grid-template-columns: 1fr 1fr !important; gap: 12px !important;
