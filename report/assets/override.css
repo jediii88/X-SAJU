@@ -589,6 +589,30 @@ html[data-theme="light"] .ch-voice-opener.sajux-narrative-para {
   color: #1a1510 !important;
 }
 
+/* 로딩 — 스피너(block)는 text-align:center만으론 가운데 안 옴 */
+#loading.loading,
+#loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+#loading > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+  max-width: min(92vw, 360px);
+  padding: 0 1ch;
+  box-sizing: border-box;
+}
+#loading .spinner {
+  margin: 0 auto;
+  flex-shrink: 0;
+}
+
 /* 라이트: 다크모드 밝은색 → 먹색 치환 */
 html[data-theme="light"] [style*="color:#ddd"]              { color: #383028 !important; }
 html[data-theme="light"] [style*="color:#ccc"]              { color: #484038 !important; }
@@ -1388,8 +1412,8 @@ html[data-theme="light"] #star-canvas {
   #report-container .report-chapter,
   #main-content .report-chapter,
   .report-chapter:not(.part-header-block) {
-    padding-left: 1em !important;
-    padding-right: 1em !important;
+    padding-left: 1ch !important;
+    padding-right: 1ch !important;
     box-sizing: border-box !important;
   }
   /* portrait-inner는 카드 안쪽 1em만 — 중복 패딩 없음 */
@@ -1402,7 +1426,7 @@ html[data-theme="light"] #star-canvas {
     box-sizing: border-box !important;
   }
   #report-container .ilju-profile-card.ilju-narrative-unified[style*="padding"] {
-    padding: 16px 1em !important;
+    padding: 16px 1ch !important;
   }
   html:not([data-theme="light"]) #sec-personal-portrait.personal-portrait-hero .personal-portrait-inner,
   html[data-theme="light"] #sec-personal-portrait.personal-portrait-hero .personal-portrait-inner,
@@ -1412,8 +1436,8 @@ html[data-theme="light"] #star-canvas {
   /* 운세 카드 — 박스 안쪽 한 글자 */
   #report-container .sajux-upcoming-daeun-card,
   #report-container .sajux-wolun-month-card {
-    padding-left: 1em !important;
-    padding-right: 1em !important;
+    padding-left: 1ch !important;
+    padding-right: 1ch !important;
     box-sizing: border-box !important;
   }
 
@@ -1444,16 +1468,42 @@ html[data-theme="light"] #star-canvas {
     box-sizing: border-box;
   }
 
-  /* 모바일 — em·인라인 style 자간 전역 보정 (글자 확대 시 과한 벌어짐 방지) */
+  /* 모바일 — em·인라인 style 자간 보정 (로딩 화면 제외) */
   #report-container,
   #report-container *,
   #main-content,
   #main-content *,
   #sec-report-full,
-  #sec-report-full *,
-  #loading,
-  #loading * {
+  #sec-report-full * {
     letter-spacing: 0 !important;
+  }
+
+  /* 로딩 — 스피너·점 중앙 정렬 (text-align만으로는 block spinner가 왼쪽으로 치우침) */
+  #loading.loading,
+  #loading {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-direction: column !important;
+  }
+  #loading > div {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    width: 100% !important;
+    max-width: min(92vw, 360px) !important;
+    padding: 0 1ch !important;
+    box-sizing: border-box !important;
+  }
+  #loading .spinner {
+    margin: 0 auto !important;
+    flex-shrink: 0 !important;
+  }
+  #loading [style*="display:flex"][style*="justify-content:center"] {
+    justify-content: center !important;
+    width: 100% !important;
   }
 
   /* 라벨·뱃지 — px 고정(em 확대·인라인 style보다 우선) */
