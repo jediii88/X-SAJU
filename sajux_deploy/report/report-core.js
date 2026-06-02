@@ -4827,10 +4827,12 @@ function ensureSajuxMobileBodyTypography() {
         '#report-container .ilju-profile-card.ilju-narrative-unified[style*="padding"]{padding:16px 1ch!important;}',
         '#report-container .sajux-upcoming-daeun-card,#report-container .sajux-wolun-month-card{',
         'padding-left:1ch!important;padding-right:1ch!important;box-sizing:border-box!important;}',
-        '#loading{display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;}',
-        '#loading>div{display:flex!important;flex-direction:column!important;align-items:center!important;',
+        '#loading.sajux-loading-active,html.sajux-autoload-pending #loading{',
+        'display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;}',
+        '#loading.sajux-loading-active>div,html.sajux-autoload-pending #loading>div{',
+        'display:flex!important;flex-direction:column!important;align-items:center!important;',
         'width:100%!important;max-width:min(92vw,360px)!important;padding:0 1ch!important;box-sizing:border-box!important;}',
-        '#loading .spinner{margin:0 auto!important;}',
+        '#loading.sajux-loading-active .spinner{margin:0 auto!important;}',
         '}'
     ].join('');
     document.head.appendChild(st);
@@ -15684,11 +15686,17 @@ var CIRCLE_BG = {
 function showLoading(msg, callback) {
     const loadEl = document.getElementById('loading');
     const msgEl = document.getElementById('loading-msg');
-    if(loadEl) loadEl.style.display = 'flex';
+    if(loadEl) {
+        loadEl.style.display = 'flex';
+        loadEl.classList.add('sajux-loading-active');
+    }
     if(msgEl) msgEl.innerText = msg || '사주를 분석하는 중입니다...';
 
     function finishHide() {
-        if(loadEl) loadEl.style.display = 'none';
+        if(loadEl) {
+            loadEl.style.display = 'none';
+            loadEl.classList.remove('sajux-loading-active');
+        }
         try { document.documentElement.classList.remove('sajux-autoload-pending'); } catch (e1) {}
         var _mainUi = document.getElementById('main-ui');
         if (_mainUi) _mainUi.style.display = '';
