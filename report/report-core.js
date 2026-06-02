@@ -2158,6 +2158,8 @@ if (typeof window !== 'undefined') {
     window.compatHanjaGlossCharFull = compatHanjaGlossCharFull;
     window.buildSajuxBrowserAccessNoteHtml = buildSajuxBrowserAccessNoteHtml;
     window.sajuxIsInAppBrowser = sajuxIsInAppBrowser;
+    window.sajuxEnsureBrowserAccessNote = sajuxEnsureBrowserAccessNote;
+    window.sajuxUpgradeBrowserAccessNote = sajuxUpgradeBrowserAccessNote;
 }
 
 function compatTimelineLine(cls, seed) {
@@ -5354,6 +5356,11 @@ function sajuxIsAndroidInAppBrowser() {
     if (!sajuxIsAndroidDevice()) return false;
     return sajuxIsInAppBrowser();
 }
+var SAJUX_BROWSER_ACCESS_NOTE_STATIC =
+    '<div class="sajux-browser-access-note" role="note" aria-label="브라우저 안내">' +
+    '<div class="sajux-browser-access-note__title">읽기 환경 안내</div>' +
+    '<p class="sajux-browser-access-note__body">이 리포트는 <strong>Safari</strong>(iPhone)·<strong>Chrome</strong>(Android·PC)에서 읽으시는 것을 권해 드립니다. 당근·카카오 등 앱 안에서 열면 <strong>PDF 저장</strong>이 되지 않을 수 있어요.</p>' +
+    '</div>';
 function buildSajuxBrowserAccessNoteHtml() {
     var inApp = sajuxIsInAppBrowser();
     var cls = 'sajux-browser-access-note' + (inApp ? ' is-in-app' : '');
@@ -5365,6 +5372,32 @@ function buildSajuxBrowserAccessNoteHtml() {
         '<div class="sajux-browser-access-note__title">' + title + '</div>' +
         '<p class="sajux-browser-access-note__body">' + body + '</p>' +
         '</div>';
+}
+function sajuxEnsureBrowserAccessNote() {
+    var wrap = document.querySelector('#sec-cover .sajux-logo-wrap');
+    if (!wrap || wrap.querySelector('.sajux-browser-access-note')) return;
+    var html = typeof buildSajuxBrowserAccessNoteHtml === 'function'
+        ? buildSajuxBrowserAccessNoteHtml()
+        : SAJUX_BROWSER_ACCESS_NOTE_STATIC;
+    var mount = document.createElement('div');
+    mount.innerHTML = html;
+    var note = mount.firstElementChild;
+    if (!note) return;
+    var intro = wrap.querySelector('#sec-book-intro');
+    if (intro) wrap.insertBefore(note, intro);
+    else wrap.appendChild(note);
+}
+function sajuxUpgradeBrowserAccessNote() {
+    var wrap = document.querySelector('#sec-cover .sajux-logo-wrap');
+    if (!wrap || typeof buildSajuxBrowserAccessNoteHtml !== 'function') return;
+    var note = wrap.querySelector('.sajux-browser-access-note');
+    if (!note) {
+        sajuxEnsureBrowserAccessNote();
+        return;
+    }
+    if (sajuxIsInAppBrowser() && !note.classList.contains('is-in-app')) {
+        note.outerHTML = buildSajuxBrowserAccessNoteHtml();
+    }
 }
 function sajuxShowIosZipLinkFallback(url, filename) {
     var inApp = sajuxIsIosInAppBrowser();
@@ -7639,6 +7672,7 @@ function generateDeepReport(data) {
 
     document.getElementById('report-container').innerHTML = html;
 
+    try { sajuxEnsureBrowserAccessNote(); } catch (eNote) { console.warn('sajuxEnsureBrowserAccessNote', eNote); }
     try { injectSajuxPdfUi(); ensureCoverLogoForPrint(); sajuxShowReportNav(); } catch (e) { console.error('injectSajuxPdfUi', e.message); }
 
     // 기존 정적 만세력 섹션들 숨김 (report-container가 모든 내용을 포함하므로)
@@ -14661,7 +14695,6 @@ function buildCoverPage(data) {
                 <img class="sajux-logo light sajux-logo-cover-print" src="${logoLight}" alt="SAJU X 로고" loading="eager" decoding="sync" style="width:clamp(320px,55vw,600px);max-width:100%;height:auto;margin:0 auto;" />
                 <img class="sajux-logo dark sajux-logo-cover-screen" src="${logoDark}" alt="SAJU X 로고" loading="eager" decoding="sync" style="width:clamp(320px,55vw,600px);max-width:100%;height:auto;margin:0 auto;" />
             </div>
-            ${buildSajuxBrowserAccessNoteHtml()}
             <div id="sec-book-intro" class="sajux-intro-block" style="width:100%;max-width:760px;margin:24px auto 0;text-align:center;">
                 <div class="sajux-intro-heading" style="font-size:13px;letter-spacing:0.12em;color:rgba(199,167,106,0.9);margin-bottom:16px;font-weight:700;">사주X란?</div>
                 <div class="intro-text-container">
