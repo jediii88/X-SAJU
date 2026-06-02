@@ -1363,12 +1363,19 @@ html[data-theme="light"] #star-canvas {
     padding-bottom: calc(132px + env(safe-area-inset-bottom, 0px)) !important;
   }
 
-  /* 모바일 — 본문: 띄어쓰기 단위 양쪽정렬 + 자간 0(글자 사이 벌림 방지) + 마지막 줄만 왼쪽 */
+  /* 모바일 — 본문: ch-text + 인라인 p(대운·세운 카드 등) 동일 타이포 */
   .ch-text,
   .ii-text,
   .sajux-narrative-para,
   #report-container p.ch-text,
-  #main-content p.ch-text {
+  #main-content p.ch-text,
+  #report-container .report-chapter > p,
+  #report-container .sajux-upcoming-daeun-card p,
+  #report-container .sajux-wolun-month-card p,
+  #report-container .cat-advice p,
+  #report-container .vip-module-desc,
+  #main-content .report-chapter > p,
+  #main-content .compat-prose-p {
     text-align: justify !important;
     text-align-last: left !important;
     -webkit-text-align-last: left !important;
