@@ -1412,8 +1412,8 @@ html[data-theme="light"] #star-canvas {
   body > .container {
     width: 100% !important;
     max-width: 100% !important;
-    padding-left: 12px !important;
-    padding-right: 12px !important;
+    padding-left: 18px !important;
+    padding-right: 18px !important;
     box-sizing: border-box !important;
   }
   #sec-report-full,
@@ -1426,8 +1426,8 @@ html[data-theme="light"] #star-canvas {
   #report-container .report-chapter,
   #main-content .report-chapter,
   .report-chapter:not(.part-header-block) {
-    padding-left: 1ch !important;
-    padding-right: 1ch !important;
+    padding-left: 1.5ch !important;
+    padding-right: 1.5ch !important;
     box-sizing: border-box !important;
   }
   /* portrait-inner는 카드 안쪽 1em만 — 중복 패딩 없음 */
@@ -1440,7 +1440,7 @@ html[data-theme="light"] #star-canvas {
     box-sizing: border-box !important;
   }
   #report-container .ilju-profile-card.ilju-narrative-unified[style*="padding"] {
-    padding: 16px 1ch !important;
+    padding: 16px 1.5ch !important;
   }
   html:not([data-theme="light"]) #sec-personal-portrait.personal-portrait-hero .personal-portrait-inner,
   html[data-theme="light"] #sec-personal-portrait.personal-portrait-hero .personal-portrait-inner,
@@ -1450,8 +1450,8 @@ html[data-theme="light"] #star-canvas {
   /* 운세 카드 — 박스 안쪽 한 글자 */
   #report-container .sajux-upcoming-daeun-card,
   #report-container .sajux-wolun-month-card {
-    padding-left: 1ch !important;
-    padding-right: 1ch !important;
+    padding-left: 1.5ch !important;
+    padding-right: 1.5ch !important;
     box-sizing: border-box !important;
   }
 
