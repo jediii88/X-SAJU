@@ -29,7 +29,7 @@
 })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="sajux-build" content="1780375496">
+<meta name="sajux-build" content="1780375808">
 <title>사주X — 두 사람의 인연 구조</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -37,7 +37,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;700;900&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Nanum+Brush+Script&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../report/assets/override.css">
+<link rel="stylesheet" href="../report/assets/override.css?v=1780375808">
 <style>
 @font-face {
   font-family: 'Jeongseon Arirang Ppuri';
@@ -855,7 +855,12 @@ body.light-mode .pillar-mini .manse-kor {
           <img class="sajux-logo light sajux-logo-cover-print" src="../report/assets/sajux-logo-light.png" alt="SAJU X 로고" loading="eager" decoding="sync" />
           <img class="sajux-logo dark sajux-logo-cover-screen" src="../report/assets/sajux-logo-dark.png" alt="SAJU X 로고" loading="eager" decoding="sync" />
         </div>
-        <div id="sajux-browser-note-mount"></div>
+        <div id="sajux-browser-note-mount">
+          <div class="sajux-browser-access-note" role="note" aria-label="브라우저 안내" style="width:100%;max-width:560px;margin:18px auto 0;padding:12px 16px;border-radius:12px;text-align:center;font-size:13px;line-height:1.65;border:1px solid rgba(199,167,106,0.35);background:rgba(199,167,106,0.08);">
+            <div class="sajux-browser-access-note__title" style="font-size:11px;letter-spacing:0.1em;font-weight:700;margin-bottom:8px;color:rgba(199,167,106,0.92);">읽기 환경 안내</div>
+            <p class="sajux-browser-access-note__body" style="margin:0;color:rgba(210,214,223,0.88);">이 리포트는 <strong style="color:rgba(232,220,200,0.96);font-weight:600;">Safari</strong>(iPhone)·<strong style="color:rgba(232,220,200,0.96);font-weight:600;">Chrome</strong>(Android·PC)에서 읽으시는 것을 권해 드립니다. 당근·카카오 등 앱 안에서 열면 <strong style="color:rgba(232,220,200,0.96);font-weight:600;">PDF 저장</strong>이 되지 않을 수 있어요.</p>
+          </div>
+        </div>
         <div id="sec-book-intro" class="sajux-intro-block">
           <div class="sajux-intro-heading">사주X란?</div>
           <div class="intro-text-container">
@@ -2315,9 +2320,10 @@ async function init() {
 
     sajuxCompatEnsureFooterOrder();
 
-    var browserNoteMount = document.getElementById('sajux-browser-note-mount');
-    if (browserNoteMount && typeof buildSajuxBrowserAccessNoteHtml === 'function') {
-      browserNoteMount.innerHTML = buildSajuxBrowserAccessNoteHtml();
+    if (typeof sajuxUpgradeBrowserAccessNote === 'function') {
+      sajuxUpgradeBrowserAccessNote();
+    } else if (typeof sajuxEnsureBrowserAccessNote === 'function') {
+      sajuxEnsureBrowserAccessNote();
     }
 
     // CSS 오행 배경색 클래스
@@ -2375,7 +2381,7 @@ function toggleToc(e) {
   if (t) t.classList.toggle('toc-open');
 }
 </script>
-<link rel="stylesheet" href="../report/report-print.css?v=1780375496">
+<link rel="stylesheet" href="../report/report-print.css?v=1780375808">
 <script>
 (function () {
   if (window.__sajuxCoverPrintBound) return;
