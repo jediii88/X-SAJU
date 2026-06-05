@@ -4774,7 +4774,9 @@ function ensureSajuxReadablePanelStyles() {
         ".yearly-indicators-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px 10px!important;width:100%!important;}",
         "@media (min-width:520px){.yearly-indicators-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;}}",
         "body.light-mode .domain-summary-3box,html[data-theme=light] .domain-summary-3box{background:rgba(122,90,34,0.07)!important;border-color:rgba(122,90,34,0.28)!important;}",
-        "body.light-mode .domain-summary-3box-cell,html[data-theme=light] .domain-summary-3box-cell{background:#fff!important;border:1px solid rgba(28,24,18,0.1)!important;box-sizing:border-box;}",
+        "body.light-mode .domain-summary-3box-cell,html[data-theme=light] .domain-summary-3box-cell{background:transparent!important;border:none!important;box-shadow:none!important;}",
+        "body.light-mode .domain-summary-3box-label,html[data-theme=light] .domain-summary-3box-label{background:transparent!important;border:none!important;}",
+        "body.light-mode .domain-summary-3box-value,html[data-theme=light] .domain-summary-3box-value{background:transparent!important;border:none!important;}",
         "body.light-mode .domain-summary-3box-label,html[data-theme=light] .domain-summary-3box-label{color:rgba(28,34,46,0.58)!important;}",
         "body.light-mode .domain-summary-3box-value--gold,html[data-theme=light] .domain-summary-3box-value--gold{color:#5c4520!important;}",
         "body.light-mode .domain-summary-3box-value:not(.domain-summary-3box-value--gold):not(.domain-summary-3box-value--warn),html[data-theme=light] .domain-summary-3box-value:not(.domain-summary-3box-value--gold):not(.domain-summary-3box-value--warn){color:#1e2633!important;}",
@@ -4837,7 +4839,9 @@ function ensureSajuxMobileBodyTypography() {
         '.domain-summary-3box-grid,.domain-summary-3box>div[style*="grid-template-columns:1fr 1fr 1fr"],.domain-summary-3box>div[style*="display:grid"]{',
         'display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:5px!important;width:100%!important;}',
         '.domain-summary-3box-cell,.domain-summary-3box>div[style*="grid-template-columns"]>div,.domain-summary-3box>div[style*="display:grid"]>div{',
-        'padding:6px 4px!important;min-width:0!important;word-break:normal!important;overflow-wrap:break-word!important;}',
+        'background:transparent!important;border:none!important;box-shadow:none!important;border-radius:0!important;',
+        'padding:4px 3px 2px!important;min-width:0!important;word-break:normal!important;overflow-wrap:break-word!important;}',
+        '.domain-summary-3box-label,.domain-summary-3box-value{background:transparent!important;border:none!important;box-shadow:none!important;}',
         '#report-container .domain-summary-3box,#report-container .domain-summary-3box *,#main-content .domain-summary-3box,#main-content .domain-summary-3box *{',
         'letter-spacing:0!important;}',
         '#report-container .domain-summary-3box-label,#main-content .domain-summary-3box-label,',
@@ -12294,8 +12298,8 @@ function buildDomainSummaryTable(opts) {
     var route = polish(opts.route || '최적 루트');
     var caution = polish(opts.caution || '주의 사항');
     var boxTitle = opts.boxTitle || '핵심 요약 (3칸)';
-    return '<div class="domain-summary-3box" style="background:rgba(255,255,255,0.035);border:1px solid rgba(199,167,106,0.22);border-radius:10px;padding:12px;margin:12px 0 18px;">'
-        + '<div class="domain-summary-3box-title" style="color:var(--gold);letter-spacing:0.06em;margin:0 0 10px;">' + boxTitle + '</div>'
+    return '<div class="domain-summary-3box" style="padding:14px 16px;margin:12px 0 18px;">'
+        + '<div class="domain-summary-3box-title" style="color:var(--gold);letter-spacing:0.06em;margin:0;">' + boxTitle + '</div>'
         + '<div class="domain-summary-3box-grid">'
         + '<div class="domain-summary-3box-cell domain-summary-3box-cell--keyword"><div class="domain-summary-3box-label">핵심 키워드</div><div class="domain-summary-3box-value domain-summary-3box-value--gold">' + keyword + '</div></div>'
         + '<div class="domain-summary-3box-cell domain-summary-3box-cell--route"><div class="domain-summary-3box-label">최적 루트(전략)</div><div class="domain-summary-3box-value">' + route + '</div></div>'
