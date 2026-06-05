@@ -532,6 +532,9 @@ html, body, #report-container, #report-container * {
     width: 100% !important;
   }
   .domain-summary-3box-cell {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
     min-width: 0 !important;
     word-break: normal !important;
     overflow-wrap: break-word !important;
