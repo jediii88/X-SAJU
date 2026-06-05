@@ -8456,7 +8456,7 @@ function buildRemedyAgeDecadeBandsHTML(data) {
     return html;
 }
 
-/** 표지·히어로·birthStr 한 줄. 시·분(coverSolarHH/MM)은 항상 사용자 입력(경도 −32분 보정 전)만 사용합니다. 만세력·시주 등 내부 연산은 별도로 보정 후 시각을 씁니다. */
+/** 표지·히어로·birthStr 한 줄. 시·분(coverSolarHH/MM)은 사용자 입력 시계 시간과 동일합니다. */
 function formatCoverBirthLine(data) {
     if (!data) return '';
     if (data.coverBirthLine) return data.coverBirthLine;
@@ -16288,7 +16288,7 @@ function runAnalysis(overrideParams) {
         let displaySolarY = y, displaySolarM = m, displaySolarD = d;
         let displayLunarY = y, displayLunarM = m, displayLunarD = d, displayLunarLeap = false;
 
-        // 1. 입력된 값을 양/음력 기준에 맞게 생성 (경도 보정 전)
+        // 1. 입력된 값을 양/음력 기준에 맞게 생성 (출생 시계 시간 그대로)
         // 자시(子時) 경계 보정: 01:00~01:29 → 자시로 처리 (전통 명리학 기준)
         // 피노키님 01:04 → 戊子 자시에 해당
         var hrAdj = hr;
@@ -16323,7 +16323,7 @@ function runAnalysis(overrideParams) {
             }
         }
 
-        /** 표지·고객 확인용: 입력(또는 자시 규칙 직후) 시각. 경도 -32분 보정 전 값이어야 입력과 화면이 일치합니다. */
+        /** 표지·고객 확인용: 입력 시각(시계 시간과 동일). */
         var coverUiHH = null;
         var coverUiMM = null;
         if (!isUnknown) {
@@ -16334,19 +16334,6 @@ function runAnalysis(overrideParams) {
                 coverUiHH = hrAdj;
                 coverUiMM = mn;
             }
-        }
-
-        // 2. 경도 보정 (-32분)은 무조건 '양력 시간' 객체를 기준으로 수행
-        if ((document.getElementById('adj-l') ? document.getElementById('adj-l').checked : true) && !isUnknown) {
-            const baseY = solarObj.getYear(), baseM = solarObj.getMonth(), baseD = solarObj.getDay();
-            const dt = new Date(baseY, baseM - 1, baseD, solarObj.getHour(), solarObj.getMinute());
-            dt.setMinutes(dt.getMinutes() - 32);
-            // 경도 보정으로 달력이 전날로 넘어가면 UX상 날짜/만세력이 어긋나 보이므로, 해당 케이스는 날짜를 유지한다.
-            if (dt.getFullYear() !== baseY || (dt.getMonth() + 1) !== baseM || dt.getDate() !== baseD) {
-                dt.setFullYear(baseY, baseM - 1, baseD);
-            }
-            solarObj = Solar.fromYmdHms(dt.getFullYear(), dt.getMonth() + 1, dt.getDate(), dt.getHours(), dt.getMinutes(), 0);
-            lunarObj = solarObj.getLunar();
         }
 
         const lunar = lunarObj;
