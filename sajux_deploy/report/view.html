@@ -57,7 +57,7 @@
       // 자동실행은 window.load IIFE에서 처리 (하단 스크립트 참조)
     })();
     </script>
-    <meta name="version" content="1780675297">
+    <meta name="version" content="1780676919">
     <meta name="sajux-release" content="1.0">
     <script>
     /* SAJUX 빌드 자동 갱신: iOS Safari 등에서 옛 HTML이 캐시돼도 서버 최신 빌드를 확인해 1회 새로고침 */
@@ -2305,11 +2305,11 @@
     </script>
 
 <!-- SAJUX_CACHE_BUSTER_START -->
-<meta name="sajux-build" content="1780675297">
-<script>(function(){var v='1780675297';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
+<meta name="sajux-build" content="1780676919">
+<script>(function(){var v='1780676919';try{var k='sajux_build_v';if(localStorage.getItem(k)!==v){localStorage.setItem(k,v);var u=new URL(location.href);if(u.searchParams.get('_v')!==v){u.searchParams.set('_v',v);location.replace(u.toString());}}}catch(e){}})();</script>
 <!-- SAJUX_CACHE_BUSTER_END -->
 <link rel="stylesheet" href="assets/css/core.css">
-<link rel="stylesheet" href="assets/override.css?v=1780675297">
+<link rel="stylesheet" href="assets/override.css?v=1780676919">
 <style id="override-inline">
 /* Inline override — 표 위 패널 등은 어둡게. 리포트 본문(#report-container)은 아래 블록에서 글래스로 재정의 */
 html:not([data-theme="light"]) .card,
@@ -2320,7 +2320,7 @@ html:not([data-theme="light"]) .detail-box,
 html:not([data-theme="light"]) .jijanggan,
 html:not([data-theme="light"]) .badge,
 html:not([data-theme="light"]) .tag,
-html:not([data-theme="light"]) div[class*="box"],
+html:not([data-theme="light"]) div[class*="box"]:not([class*="domain-summary-3box"]),
 html:not([data-theme="light"]) div[class*="card"]:not(.ilju-profile-card) {
   background: rgba(8,10,12,0.72) !important;
   border: 1px solid rgba(255,255,255,0.04) !important;
@@ -2341,7 +2341,7 @@ html:not([data-theme="light"]) #report-container .detail-box,
 html:not([data-theme="light"]) #report-container .jijanggan,
 html:not([data-theme="light"]) #report-container .badge,
 html:not([data-theme="light"]) #report-container .tag,
-html:not([data-theme="light"]) #report-container div[class*="box"],
+html:not([data-theme="light"]) #report-container div[class*="box"]:not([class*="domain-summary-3box"]),
 html:not([data-theme="light"]) #report-container div[class*="card"],
 html:not([data-theme="light"]) #report-container .glass-card,
 html:not([data-theme="light"]) #report-container .glass-panel,
@@ -2362,6 +2362,17 @@ html:not([data-theme="light"]) #report-container .sajux-glass-heavy {
     0 16px 56px rgba(0, 0, 0, 0.32),
     0 3px 14px rgba(0, 0, 0, 0.16) !important;
   color: rgba(255, 255, 255, 0.94) !important;
+}
+#report-container .domain-summary-3box .domain-summary-3box-cell,
+#report-container .domain-summary-3box .domain-summary-3box-title,
+#report-container .domain-summary-3box .domain-summary-3box-grid,
+#report-container .domain-summary-3box .domain-summary-3box-label,
+#report-container .domain-summary-3box .domain-summary-3box-value {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 html[data-theme="light"] body,
 html[data-theme="light"] .report-chapter,
@@ -3325,6 +3336,6 @@ body.light-mode #sajux-pdf-fab {
 <style id="sajux-pdf-print-force">
 /* PDF 인쇄 — report-print.css 단일 소스 (그림자·페이지 분할·플랫 문서형) */
 </style>
-<link rel="stylesheet" href="report-print.css?v=1780675297">
+<link rel="stylesheet" href="report-print.css?v=1780676919">
 </body>
 </html>
