@@ -4998,11 +4998,31 @@ function ensureSajuxPdfPrintForceStyles() {
 
 /** 와이드 PDF 버튼 스타일 + 우하단 FAB (인쇄 시 숨김) */
 
+function sajuxRememberCoverLogoEl(el) {
+    if (!el || el.dataset.sajuxOrigStyleSaved === '1') return;
+    el.dataset.sajuxOrigStyle = el.getAttribute('style') || '';
+    el.dataset.sajuxOrigStyleSaved = '1';
+}
+
 function sajuxRestoreCoverLogosAfterPrint() {
-    document.querySelectorAll('img[data-sajux-orig-src]').forEach(function (img) {
+    var sel = '.sajux-logo-cover-screen, .sajux-logo-cover-print, .cover-page .sajux-logo.dark, .cover-page .sajux-logo.light';
+    document.querySelectorAll(sel).forEach(function (el) {
         try {
-            img.src = img.dataset.sajuxOrigSrc;
-            img.removeAttribute('data-sajux-print-logo-ready');
+            if (el.dataset.sajuxOrigSrc) {
+                el.src = el.dataset.sajuxOrigSrc;
+                el.removeAttribute('data-sajux-print-logo-ready');
+            }
+            if (el.dataset.sajuxOrigStyleSaved === '1') {
+                var origStyle = el.dataset.sajuxOrigStyle || '';
+                if (origStyle) el.setAttribute('style', origStyle);
+                else el.removeAttribute('style');
+                el.removeAttribute('data-sajux-orig-style');
+                el.removeAttribute('data-sajux-orig-style-saved');
+            } else {
+                ['display', 'visibility', 'position', 'left', 'top', 'transform', 'width', 'max-width', 'height', 'opacity', 'mix-blend-mode', 'filter', '-webkit-filter', 'clip', 'clip-path', 'pointer-events'].forEach(function (prop) {
+                    el.style.removeProperty(prop);
+                });
+            }
         } catch (e) {}
     });
 }
@@ -5051,15 +5071,18 @@ function sajuxPreparePrintLogos(done) {
 
 function sajuxApplyCoverLogoForPrint() {
     document.querySelectorAll('.sajux-logo-cover-screen, .cover-page .sajux-logo.dark').forEach(function (el) {
+        sajuxRememberCoverLogoEl(el);
         el.style.setProperty('display', 'none', 'important');
         el.style.setProperty('visibility', 'hidden', 'important');
     });
     document.querySelectorAll('.sajux-logo-cover-print, .cover-page .sajux-logo.light').forEach(function (el) {
+        sajuxRememberCoverLogoEl(el);
         el.style.setProperty('display', 'block', 'important');
         el.style.setProperty('visibility', 'visible', 'important');
         el.style.setProperty('position', 'static', 'important');
         el.style.setProperty('left', 'auto', 'important');
         el.style.setProperty('top', 'auto', 'important');
+        el.style.setProperty('transform', 'none', 'important');
         el.style.setProperty('width', '72%', 'important');
         el.style.setProperty('max-width', '520px', 'important');
         el.style.setProperty('height', 'auto', 'important');
@@ -5075,14 +5098,20 @@ function ensureCoverLogoForPrint() {
     if (window.__sajuxCoverPrintBound) return;
     window.__sajuxCoverPrintBound = true;
     window.sajuxApplyCoverLogoForPrint = sajuxApplyCoverLogoForPrint;
-    function applyCoverLogo() {
-        sajuxApplyCoverLogoForPrint();
-    }
-    window.addEventListener('beforeprint', applyCoverLogo);
+    window.sajuxRestoreCoverLogosAfterPrint = sajuxRestoreCoverLogosAfterPrint;
     if (window.matchMedia) {
         var mq = window.matchMedia('print');
-        if (mq.addEventListener) mq.addEventListener('change', function (e) { if (e.matches) applyCoverLogo(); });
-        else if (mq.addListener) mq.addListener(function (e) { if (e.matches) applyCoverLogo(); });
+        if (mq.addEventListener) {
+            mq.addEventListener('change', function (e) {
+                if (e.matches) sajuxApplyCoverLogoForPrint();
+                else sajuxRestoreCoverLogosAfterPrint();
+            });
+        } else if (mq.addListener) {
+            mq.addListener(function (e) {
+                if (e.matches) sajuxApplyCoverLogoForPrint();
+                else sajuxRestoreCoverLogosAfterPrint();
+            });
+        }
     }
 }
 
@@ -7386,7 +7415,15 @@ if (!window.__sajuxPrintHook) {
         });
         var _mqp = window.matchMedia && window.matchMedia('print');
         if (_mqp && _mqp.addListener) {
-            _mqp.addListener(function (m) { sajuxSetPrintLightTheme(!!m.matches); });
+            _mqp.addListener(function (m) {
+                sajuxSetPrintLightTheme(!!m.matches);
+                if (!m.matches) sajuxRestoreCoverLogosAfterPrint();
+            });
+        } else if (_mqp && _mqp.addEventListener) {
+            _mqp.addEventListener('change', function (m) {
+                sajuxSetPrintLightTheme(!!m.matches);
+                if (!m.matches) sajuxRestoreCoverLogosAfterPrint();
+            });
         }
     } catch (eHook) {}
 }
@@ -7922,7 +7959,7 @@ function generateDeepReport(data) {
     document.getElementById('report-container').innerHTML = html;
 
     try { sajuxEnsureBrowserAccessNote(); } catch (eNote) { console.warn('sajuxEnsureBrowserAccessNote', eNote); }
-    try { injectSajuxPdfUi(); ensureCoverLogoForPrint(); sajuxShowReportNav(); sajuxPreparePrintLogos(function () {}); } catch (e) { console.error('injectSajuxPdfUi', e.message); }
+    try { injectSajuxPdfUi(); ensureCoverLogoForPrint(); sajuxShowReportNav(); } catch (e) { console.error('injectSajuxPdfUi', e.message); }
 
     // 기존 정적 만세력 섹션들 숨김 (report-container가 모든 내용을 포함하므로)
     var staticSecs = ['sec-manse','sec-relation','sec-shinsal','sec-wuxing',
