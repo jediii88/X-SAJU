@@ -4966,8 +4966,8 @@ function ensureSajuxPdfPrintForceStyles() {
     top: auto !important;
     mix-blend-mode: normal !important;
     opacity: 1 !important;
-    -webkit-filter: invert(1) !important;
-    filter: invert(1) !important;
+    -webkit-filter: none !important;
+    filter: none !important;
     max-width: 520px !important;
     width: 72% !important;
     height: auto !important;
@@ -4983,6 +4983,57 @@ function ensureSajuxPdfPrintForceStyles() {
 }
 
 /** 와이드 PDF 버튼 스타일 + 우하단 FAB (인쇄 시 숨김) */
+
+function sajuxRestoreCoverLogosAfterPrint() {
+    document.querySelectorAll('img[data-sajux-orig-src]').forEach(function (img) {
+        try {
+            img.src = img.dataset.sajuxOrigSrc;
+            img.removeAttribute('data-sajux-print-logo-ready');
+        } catch (e) {}
+    });
+}
+
+function sajuxInvertLogoForPrint(img, done) {
+    if (!img) { if (done) done(); return; }
+    if (img.dataset.sajuxPrintLogoReady === '1') { if (done) done(); return; }
+    if (!img.dataset.sajuxOrigSrc) {
+        img.dataset.sajuxOrigSrc = img.currentSrc || img.getAttribute('src') || img.src || '';
+    }
+    var origSrc = img.dataset.sajuxOrigSrc;
+    if (!origSrc) { if (done) done(); return; }
+    var im = new Image();
+    im.onload = function () {
+        try {
+            var c = document.createElement('canvas');
+            c.width = im.naturalWidth || im.width || 1;
+            c.height = im.naturalHeight || im.height || 1;
+            var ctx = c.getContext('2d');
+            if (ctx) {
+                ctx.filter = 'invert(1)';
+                ctx.drawImage(im, 0, 0);
+                img.src = c.toDataURL('image/png');
+                img.dataset.sajuxPrintLogoReady = '1';
+            }
+        } catch (eInv) {}
+        if (done) done();
+    };
+    im.onerror = function () { if (done) done(); };
+    im.src = origSrc;
+}
+
+function sajuxPreparePrintLogos(done) {
+    var imgs = Array.prototype.slice.call(
+        document.querySelectorAll('.sajux-logo-cover-print, .cover-page .sajux-logo.light')
+    );
+    if (!imgs.length) { if (done) done(); return; }
+    var pending = imgs.length;
+    imgs.forEach(function (img) {
+        sajuxInvertLogoForPrint(img, function () {
+            pending -= 1;
+            if (pending <= 0 && done) done();
+        });
+    });
+}
 
 function sajuxApplyCoverLogoForPrint() {
     document.querySelectorAll('.sajux-logo-cover-screen, .cover-page .sajux-logo.dark').forEach(function (el) {
@@ -5000,8 +5051,8 @@ function sajuxApplyCoverLogoForPrint() {
         el.style.setProperty('height', 'auto', 'important');
         el.style.setProperty('opacity', '1', 'important');
         el.style.setProperty('mix-blend-mode', 'normal', 'important');
-        el.style.setProperty('-webkit-filter', 'invert(1)', 'important');
-        el.style.setProperty('filter', 'invert(1)', 'important');
+        el.style.setProperty('-webkit-filter', 'none', 'important');
+        el.style.setProperty('filter', 'none', 'important');
         el.style.setProperty('clip', 'auto', 'important');
         el.style.setProperty('clip-path', 'none', 'important');
     });
@@ -7310,10 +7361,14 @@ if (!window.__sajuxPrintHook) {
         window.addEventListener('beforeprint', function () {
             sajuxSetPrintLightTheme(true);
             sajuxSetPrintPdfTitle(sajuxGetCaptureRoot());
+            sajuxPreparePrintLogos(function () {
+                sajuxApplyCoverLogoForPrint();
+            });
         });
         window.addEventListener('afterprint', function () {
             sajuxSetPrintLightTheme(false);
             sajuxRestorePrintPdfTitle();
+            sajuxRestoreCoverLogosAfterPrint();
         });
         var _mqp = window.matchMedia && window.matchMedia('print');
         if (_mqp && _mqp.addListener) {
@@ -7371,21 +7426,21 @@ function sajuxRunPrintPdfFlow(root) {
                     sajuxHideCaptureOverlay();
                     try { window.scrollTo(0, 0); } catch (e0) {}
                     sajuxSetPrintLightTheme(true);
-                    if (typeof sajuxApplyCoverLogoForPrint === 'function') sajuxApplyCoverLogoForPrint();
-                    sajuxSetPrintPdfTitle(root);
-                    setTimeout(function () {
+                    sajuxPreparePrintLogos(function () {
                         if (typeof sajuxApplyCoverLogoForPrint === 'function') sajuxApplyCoverLogoForPrint();
-                        try { window.print(); } catch (ePrint) {
-                            alert('인쇄 화면을 열지 못했습니다. 브라우저 메뉴 → 인쇄(또는 공유 → 인쇄)를 눌러 PDF로 저장해 주세요.');
-                        }
-                        /* 데스크탑은 print()가 끝난 뒤, 모바일은 시간차로 복원.
-                           afterprint 훅이 먼저 복원하면 이 호출은 무시됨. */
+                        sajuxSetPrintPdfTitle(root);
                         setTimeout(function () {
-                            sajuxSetPrintLightTheme(false);
-                            sajuxRestorePrintPdfTitle();
-                            finishUi();
-                        }, 1500);
-                    }, 120);
+                            try { window.print(); } catch (ePrint) {
+                                alert('인쇄 화면을 열지 못했습니다. 브라우저 메뉴 → 인쇄(또는 공유 → 인쇄)를 눌러 PDF로 저장해 주세요.');
+                            }
+                            setTimeout(function () {
+                                sajuxSetPrintLightTheme(false);
+                                sajuxRestorePrintPdfTitle();
+                                sajuxRestoreCoverLogosAfterPrint();
+                                finishUi();
+                            }, 1500);
+                        }, 80);
+                    });
                 }
             },
             {
@@ -7853,7 +7908,7 @@ function generateDeepReport(data) {
     document.getElementById('report-container').innerHTML = html;
 
     try { sajuxEnsureBrowserAccessNote(); } catch (eNote) { console.warn('sajuxEnsureBrowserAccessNote', eNote); }
-    try { injectSajuxPdfUi(); ensureCoverLogoForPrint(); sajuxShowReportNav(); } catch (e) { console.error('injectSajuxPdfUi', e.message); }
+    try { injectSajuxPdfUi(); ensureCoverLogoForPrint(); sajuxShowReportNav(); sajuxPreparePrintLogos(function () {}); } catch (e) { console.error('injectSajuxPdfUi', e.message); }
 
     // 기존 정적 만세력 섹션들 숨김 (report-container가 모든 내용을 포함하므로)
     var staticSecs = ['sec-manse','sec-relation','sec-shinsal','sec-wuxing',
