@@ -17,7 +17,23 @@ html, body, #report-container, #report-container * {
 @media print {
   @page {
     size: A4 portrait;
-    margin: 36mm 12mm 42mm;
+    margin: 0;
+  }
+
+  /* iOS·Safari는 @page 여백을 무시하는 경우가 많음 → 페이지 조각마다 padding 복제 */
+  #report-container,
+  #sec-report-full,
+  #main-content,
+  #main-content .container,
+  .print-container,
+  .layout-wrapper {
+    padding-top: 18mm !important;
+    padding-bottom: 22mm !important;
+    padding-left: 10mm !important;
+    padding-right: 10mm !important;
+    box-decoration-break: clone !important;
+    -webkit-box-decoration-break: clone !important;
+    box-sizing: border-box !important;
   }
 
   /* ── 1) 장식·UI 숨김 ───────────────────────────────────────────── */
@@ -80,12 +96,10 @@ html, body, #report-container, #report-container * {
     max-width: 132mm !important;
     margin-left: auto !important;
     margin-right: auto !important;
-    padding: 0 6mm !important;
     background: #ffffff !important;
     background-color: #ffffff !important;
     filter: none !important;
     overflow: visible !important;
-    box-sizing: border-box !important;
   }
 
   /* ── 5) 본문 타이포 (오행 인라인 색은 건드리지 않음) ───────────── */
@@ -101,7 +115,26 @@ html, body, #report-container, #report-container * {
     word-break: keep-all !important;
     overflow-wrap: break-word !important;
   }
-  p, .p, .ch-text, .ii-text, li { margin-bottom: 2.5mm !important; }
+  p, .p, .ch-text, .ii-text, .sajux-narrative-para, li {
+    margin-top: 0 !important;
+    margin-bottom: 4mm !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+  .ch-head-main-sub,
+  .ch-head-topic-first,
+  .ch-main-topic-title,
+  .ch-main-heading-xl,
+  .ch-title,
+  .ch-section-label,
+  .ch-hook-after-title,
+  .ch-sub-under-main,
+  .ch-topic-sub-under-main,
+  table, .vip-evidence-block, .yearly-card, .monthly-card,
+  .f-card, .seyun-year-card, .domain-summary-3box {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
   b, strong { color: #111 !important; font-weight: 700 !important; }
   .ch-title, .ch-main-topic-title, .section-title {
     color: #111 !important;
@@ -296,29 +329,29 @@ html, body, #report-container, #report-container * {
   }
 
   .report-chapter {
-    padding-top: 14mm !important;
-    padding-bottom: 16mm !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
     box-sizing: border-box !important;
   }
   .ch-head-main-sub,
   .ch-head-topic-first,
   .ch-main-topic-title,
   .ch-main-heading-xl {
-    padding-top: 10mm !important;
+    padding-top: 0 !important;
     margin-top: 0 !important;
   }
   .part-header-block,
   .part-header-block.report-chapter {
-    padding-top: 18mm !important;
-    padding-bottom: 12mm !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
   }
 
   /* ── 9) 표지 / 목차 — 페이지 세로·가로 중앙 ─────────────────────── */
   .cover-page, #sec-cover, #sec-client-cover,
   .page-header.cover-page, .compat-cover-column .cover-page {
-    min-height: 100vh !important;
+    min-height: auto !important;
     height: auto !important;
-    padding: 18mm 6mm 20mm !important;
+    padding: 0 0 6mm !important;
     margin: 0 !important;
     background: #ffffff !important;
     page-break-after: always !important;
@@ -360,7 +393,7 @@ html, body, #report-container, #report-container * {
     print-color-adjust: exact !important;
   }
   .toc-page {
-    padding: 18mm 6mm 20mm !important;
+    padding: 0 0 6mm !important;
     page-break-after: always !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
@@ -754,7 +787,7 @@ html, body, #report-container, #report-container * {
     max-width: 100% !important; width: 100% !important;
     margin-left: 0 !important; margin-right: 0 !important; box-sizing: border-box !important;
   }
-  #main-content .container { max-width: 132mm !important; margin: 0 auto !important; padding: 14mm 6mm 16mm !important; }
+  #main-content .container { max-width: 132mm !important; margin: 0 auto !important; }
 
   /* 궁합 표지 2장 — 페이지 중앙 */
   .compat-cover-column .cover-page,
