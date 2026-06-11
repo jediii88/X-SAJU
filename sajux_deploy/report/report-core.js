@@ -4882,6 +4882,20 @@ function ensureSajuxMobileBodyTypography() {
     document.head.appendChild(st);
 }
 
+function ensureSajuxPrintPageMargins() {
+    if (document.getElementById('sajux-print-page-margins')) return;
+    var st = document.createElement('style');
+    st.id = 'sajux-print-page-margins';
+    st.textContent = '@media print{'
+        + '@page{size:A4 portrait;margin:36mm 12mm 42mm;}'
+        + '.report-chapter{padding-top:14mm!important;padding-bottom:16mm!important;box-sizing:border-box!important;}'
+        + '.ch-head-main-sub,.ch-head-topic-first,.ch-main-topic-title,.ch-main-heading-xl{padding-top:10mm!important;margin-top:0!important;}'
+        + '.part-header-block,.part-header-block.report-chapter{padding-top:18mm!important;padding-bottom:12mm!important;}'
+        + '.toc-page{padding:18mm 6mm 20mm!important;}'
+        + '}';
+    document.head.appendChild(st);
+}
+
 function ensureSajuxPdfPrintForceStyles() {
     if (document.querySelector('link[href*="report-print.css"]')) return;
     if (document.getElementById('sajux-pdf-print-force') || document.getElementById('sajux-pdf-print-force-dynamic')) return;
@@ -7772,7 +7786,7 @@ function injectSajuxPdfUi() {
         footerZip._sajuxBound = true;
         footerZip.addEventListener('click', function () { sajuxCaptureReportAsImage(); });
     }
-    try { ensureSajuxReadablePanelStyles(); ensureSajuxMobileBodyTypography(); ensureSajuxPdfPrintForceStyles(); ensureCoverLogoForPrint(); } catch (e) {}
+    try { ensureSajuxReadablePanelStyles(); ensureSajuxMobileBodyTypography(); ensureSajuxPdfPrintForceStyles(); ensureSajuxPrintPageMargins(); ensureCoverLogoForPrint(); } catch (e) {}
 }
 
 function getDBText(category, key, fallback, data) {
