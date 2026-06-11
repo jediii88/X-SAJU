@@ -4883,17 +4883,21 @@ function ensureSajuxMobileBodyTypography() {
 }
 
 function ensureSajuxPrintPageMargins() {
-    if (document.getElementById('sajux-print-page-margins')) return;
-    var st = document.createElement('style');
-    st.id = 'sajux-print-page-margins';
+    var id = 'sajux-print-page-margins';
+    var st = document.getElementById(id);
+    if (!st) {
+        st = document.createElement('style');
+        st.id = id;
+        document.head.appendChild(st);
+    }
     st.textContent = '@media print{'
-        + '@page{size:A4 portrait;margin:36mm 12mm 42mm;}'
-        + '.report-chapter{padding-top:14mm!important;padding-bottom:16mm!important;box-sizing:border-box!important;}'
-        + '.ch-head-main-sub,.ch-head-topic-first,.ch-main-topic-title,.ch-main-heading-xl{padding-top:10mm!important;margin-top:0!important;}'
-        + '.part-header-block,.part-header-block.report-chapter{padding-top:18mm!important;padding-bottom:12mm!important;}'
-        + '.toc-page{padding:18mm 6mm 20mm!important;}'
+        + '@page{size:A4 portrait;margin:0;}'
+        + '#report-container,#sec-report-full,#main-content,#main-content .container,.print-container,.layout-wrapper{'
+        + 'padding-top:18mm!important;padding-bottom:22mm!important;padding-left:10mm!important;padding-right:10mm!important;'
+        + 'box-decoration-break:clone!important;-webkit-box-decoration-break:clone!important;box-sizing:border-box!important;}'
+        + '.ch-text,.ii-text,.sajux-narrative-para,#report-container p:not(.ch-section-label):not(.ch-topic-sub-under-main):not(.ch-sub-under-main){'
+        + 'break-inside:avoid!important;page-break-inside:avoid!important;}'
         + '}';
-    document.head.appendChild(st);
 }
 
 function ensureSajuxPdfPrintForceStyles() {
@@ -7404,6 +7408,7 @@ if (!window.__sajuxPrintHook) {
         window.addEventListener('beforeprint', function () {
             sajuxSetPrintLightTheme(true);
             sajuxSetPrintPdfTitle(sajuxGetCaptureRoot());
+            try { ensureSajuxPrintPageMargins(); } catch (eMarg) {}
             sajuxPreparePrintLogos(function () {
                 sajuxApplyCoverLogoForPrint();
             });
@@ -7476,6 +7481,7 @@ function sajuxRunPrintPdfFlow(root) {
                 onClick: function () {
                     sajuxHideCaptureOverlay();
                     try { window.scrollTo(0, 0); } catch (e0) {}
+                    try { ensureSajuxPrintPageMargins(); } catch (eMarg) {}
                     sajuxSetPrintLightTheme(true);
                     sajuxPreparePrintLogos(function () {
                         if (typeof sajuxApplyCoverLogoForPrint === 'function') sajuxApplyCoverLogoForPrint();
