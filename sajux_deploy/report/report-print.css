@@ -17,7 +17,7 @@ html, body, #report-container, #report-container * {
 @media print {
   @page {
     size: A4 portrait;
-    margin: 16mm 14mm 18mm;
+    margin: 24mm 14mm 28mm;
   }
 
   /* ── 1) 장식·UI 숨김 ───────────────────────────────────────────── */
@@ -80,7 +80,7 @@ html, body, #report-container, #report-container * {
     max-width: 132mm !important;
     margin-left: auto !important;
     margin-right: auto !important;
-    padding: 0 6mm !important;
+    padding: 6mm 6mm 10mm !important;
     background: #ffffff !important;
     background-color: #ffffff !important;
     filter: none !important;
@@ -295,12 +295,17 @@ html, body, #report-container, #report-container * {
     break-before: auto !important;
   }
 
+  .report-chapter {
+    padding-top: 3mm !important;
+    padding-bottom: 5mm !important;
+  }
+
   /* ── 9) 표지 / 목차 — 페이지 세로·가로 중앙 ─────────────────────── */
   .cover-page, #sec-cover, #sec-client-cover,
   .page-header.cover-page, .compat-cover-column .cover-page {
     min-height: 100vh !important;
     height: auto !important;
-    padding: 0 8mm !important;
+    padding: 12mm 8mm 14mm !important;
     margin: 0 !important;
     background: #ffffff !important;
     page-break-after: always !important;
@@ -329,8 +334,8 @@ html, body, #report-container, #report-container * {
     left: auto !important;
     top: auto !important;
     opacity: 1 !important;
-    -webkit-filter: invert(1) !important;
-    filter: invert(1) !important;
+    filter: none !important;
+    -webkit-filter: none !important;
     mix-blend-mode: normal !important;
     max-width: 420px !important;
     width: clamp(260px, 70%, 420px) !important;
