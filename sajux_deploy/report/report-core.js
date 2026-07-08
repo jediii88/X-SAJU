@@ -376,6 +376,7 @@ var SAJUX_SECTION_REGISTRY = {
     sipseong: { part: 1, section: 4, title: '십성 — 돈·일·관계의 다섯 축', eyebrow: '만세력 · 십성 다섯 축', topic: 'sipseong', inToc: true },
     current: { part: 2, section: 1, title: '현재의 운세', eyebrow: '대운 · 세운 · 월운', topic: 'current', inToc: true, headerMode: 'mainSub' },
     timeline: { part: 2, section: 2, title: '인생 80년 지도', eyebrow: '열 해마다 계절', topic: 'daeun', inToc: true, headerMode: 'mainSub' },
+    lifeChronicle: { part: 2, section: 3, title: '인생 대소사 지도', eyebrow: '언제 무엇이 — 큰 사건의 시기', topic: 'daeun', inToc: true, headerMode: 'mainSub' },
     upcomingIntro: { part: 2, section: 99, title: '앞으로의 운', eyebrow: '큰 10년 → 한 해 → 한 달', topic: null, inToc: false, headerMode: 'mainSub' },
     upcomingDaeun: { part: 2, section: 4, title: '앞으로 올 대운', eyebrow: '다음 10년 · 그 다음 10년', topic: 'daeun', inToc: true, headerMode: 'mainSub' },
     upcomingSewun: { part: 2, section: 5, title: '앞으로 올 세운', eyebrow: '다음 해부터 10년', topic: 'seyun', inToc: true, headerMode: 'mainSub' },
@@ -7915,6 +7916,7 @@ function generateDeepReport(data) {
     var part2Body = '';
     part2Body += safeCall(()=>buildCurrentPeriodCard(data)||'', 'current-period-card');
     part2Body += safeCall(()=>buildDaeunTimeline(data)||'', 'daeun-timeline');
+    part2Body += safeCall(()=>buildLifeChronicle(data)||'', 'life-chronicle');
     // 앞으로의 운 — 도입 문단은 2-3 대운 절 안으로 합침 (짧은 단독 절 제거)
     part2Body += safeCall(()=>buildUpcomingDaewunCards(data)||'', 'upcoming-daewun');
     part2Body += safeCall(()=>buildUpcomingSewunCards(data)||'', 'upcoming-sewun-10y');
@@ -10639,6 +10641,172 @@ function buildDaeunTimeline(data) {
     </div>`;
 }
 
+
+/** ─────────────────────────────────────────
+ *  buildLifeChronicle — 인생 대소사 지도 (언제 무엇이 오는가)
+ *  · 각 대운(10년)을 용신 톤 + 대운 간지의 십성(내부 분류)으로 읽어,
+ *    그 시기에 몰리는 큰 사건(돈·자리·공부·인연·독립)을 시기순 카드로.
+ *  · 대운 지지 ↔ 원국 지지 합/충으로 '전환·이동' 신호를 덧붙임.
+ *  · 고객 본문은 서비스언어만(개별 십성 한자명 비노출), 카드별 사실(나이·간지·톤·사건군)로 조립해 매크로 반복을 피함.
+ * ───────────────────────────────────────── */
+function sajuxLifeSipCategory(sip) {
+    if (sip === '정재' || sip === '편재') return 'wealth';
+    if (sip === '정관' || sip === '편관') return 'officer';
+    if (sip === '정인' || sip === '편인') return 'resource';
+    if (sip === '식신' || sip === '상관') return 'output';
+    return 'peer';
+}
+
+function buildLifeChronicle(data) {
+    if (!data || !data.dayStem) return '';
+    var rows = (data.daeunRows && data.daeunRows.length) ? data.daeunRows : (data.daewunList || []);
+    if (!rows.length) return '';
+    var name = data.name || '고객';
+    var ds = data.dayStem;
+
+    var _SAJUX_LC_HK = {'甲':'갑','乙':'을','丙':'병','丁':'정','戊':'무','己':'기','庚':'경','辛':'신','壬':'임','癸':'계','子':'자','丑':'축','寅':'인','卯':'묘','辰':'진','巳':'사','午':'오','未':'미','申':'신','酉':'유','戌':'술','亥':'해'};
+    var _SAJUX_LC_THEME = {
+        wealth:   '돈과 자산이 움직이는 시기',
+        officer:  '자리와 책임이 커지는 시기',
+        resource: '공부·자격·문서가 열리는 시기',
+        output:   '재능을 밖으로 내놓는 시기',
+        peer:     '홀로서기와 승부의 시기'
+    };
+    // (사건군 × 톤계열) 핵심 사건 서술 — up: good/mild, flat: flat, down: caution/tough
+    var _SAJUX_LC_EVENT = {
+        wealth: {
+            up:   '이 시기엔 벌이의 통로가 한두 갈래 더 열리고, 큰돈이 실제로 움직이는 일 — 사업·투자·계약·부동산 — 이 유독 이 구간에 몰립니다.',
+            flat: '큰 기복 없이 돈이 도는 시기라, 새로 벌이시기보다 지금 가진 자산의 구조를 정돈하기 좋은 10년이에요.',
+            down: '돈이 새기 쉬운 10년이라, 큰 투자·보증·동업처럼 한 번에 크게 거는 결정이 시간이 지나 뒤탈로 남기 쉬운 시기예요.'
+        },
+        officer: {
+            up:   '조직 안에서 자리가 한 단계 오르거나, 책임 있는 직함·중요한 계약을 맡는 일이 이 10년에 몰립니다.',
+            flat: '큰 승부보다 맡으신 자리를 단단히 지키며 신뢰를 쌓기 좋은 10년이에요.',
+            down: '책임과 압박이 무거워지는 10년이라, 자리를 억지로 키우시기보다 지금 자리를 지키는 쪽이 안전한 시기예요.'
+        },
+        resource: {
+            up:   '공부·자격·문서가 유난히 잘 풀리는 10년이라, 시험·학위·부동산 문서·공식 인정 같은 “증명”이 결실로 돌아옵니다.',
+            flat: '한 분야를 꾸준히 익히며 내공을 채우기 좋은 10년이에요. 단번의 결과보다 누적이 힘이 되는 시기입니다.',
+            down: '문서·계약·보증에서 손해가 나기 쉬운 10년이라, 큰 서류 결정은 한 박자 늦추시는 게 좋아요.'
+        },
+        output: {
+            up:   '재능이 밖으로 터져 나오는 10년이라, 창업·창작·이직·독립처럼 “내 것을 세상에 내놓는” 큰 결정이 이 구간에 몰립니다.',
+            flat: '표현과 재능을 다듬기 좋은 10년이에요. 크게 벌이시기보다 결과물 하나를 완성해 두면 다음 시기의 밑천이 됩니다.',
+            down: '하고 싶은 말·벌이고 싶은 일이 많아 부딪힘도 잦은 10년이라, 벌이는 개수를 줄이고 하나에 집중하시는 게 좋아요.'
+        },
+        peer: {
+            up:   '독립·이직·동업처럼 “내 힘으로 판을 새로 짜는” 결정이 이 10년에 몰리고, 경쟁 속에서 오히려 힘이 붙습니다.',
+            flat: '내 사람과 내 자리를 정돈하기 좋은 10년이에요. 큰 이동보다 곁의 가까운 사람들과의 약속을 단단히 하기 좋은 시기입니다.',
+            down: '경쟁·동업·금전 관계에서 마찰이 커지기 쉬운 10년이라, 함께 걸치는 결정 — 보증·지분·공동명의 — 은 특히 조심하셔야 해요.'
+        }
+    };
+    var _SAJUX_LC_ACTION = {
+        wealth: { up:'큰 결정은 이 구간에 몰아 잡되, 한 분기에 큰 건은 하나만 진행하십시오.', flat:'들어오고 나가는 돈의 표를 한 장 만들어, 새는 고정비부터 잠그십시오.', down:'큰돈이 오가는 결정은 이틀 자고 글로 받은 뒤에만 서명하십시오.' },
+        officer: { up:'직함·역할이 바뀔 때는 권한과 책임의 범위를 먼저 글로 확인하고 받으십시오.', flat:'맡은 자리에서 눈에 보이는 성과를 분기마다 한 줄로 남겨 두십시오.', down:'억지 승진·무리한 확장보다, 지금 자리의 신뢰 한 가지를 지키는 데 집중하십시오.' },
+        resource: { up:'미뤄 두신 시험·자격·큰 문서는 이 구간 안에 매듭지으십시오.', flat:'평일 한 시간, 한 분야만 꾸준히 쌓는 루틴을 이 시기에 고정하십시오.', down:'보증·계약·큰 서류는 전문가 검토를 거친 뒤에만 도장을 찍으십시오.' },
+        output: { up:'새로 벌일 일은 한 해 한두 가지로 묶고, 마무리를 책임질 사람 한 명을 곁에 두십시오.', flat:'완성할 결과물 하나를 정해, 이 시기 안에 “끝을 보는” 경험을 만드십시오.', down:'말과 결정 사이에 하루를 두고, 감정이 올라온 날엔 결론을 내리지 마십시오.' },
+        peer: { up:'독립·이직을 고르신다면, 돌아올 다리(비상금·인맥)를 먼저 만든 뒤 움직이십시오.', flat:'곁의 가까운 사람들과의 약속을 문장으로 정리해 두십시오.', down:'함께 걸치는 돈 결정은 범위와 한도를 반드시 서면으로 남기십시오.' }
+    };
+
+    var curAge = getClientAgeYearsAtReport(data) || 0;
+    var genderRaw = String(data.gender || data.sex || '').toUpperCase();
+    var isMale = genderRaw.indexOf('M') === 0 || genderRaw.indexOf('남') === 0 || genderRaw === '1';
+
+    var natalBranches = [];
+    (data.pillars || []).forEach(function (p) {
+        var h = p && p.h ? (typeof p.h === 'string' ? p.h : p.h.join('')) : '';
+        if (h && h[1]) natalBranches.push(h[1]);
+    });
+
+    function toneClass(t) { return (t === 'good' || t === 'mild') ? 'up' : (t === 'flat' ? 'flat' : 'down'); }
+    function stageWord(age) {
+        if (age < 20) return '배우고 뿌리를 내리는';
+        if (age < 30) return '길을 정하고 첫 발을 딛는';
+        if (age < 40) return '자립하고 밀어붙이는';
+        if (age < 50) return '절정과 전환이 함께 오는';
+        if (age < 60) return '결실을 거두고 조정하는';
+        return '여유를 다지고 정리하는';
+    }
+
+    var items = rows.map(function (r) {
+        var g = (typeof r.gan === 'string' ? r.gan : (r.h || [])[0]) || (r.gz && r.gz[0]) || '';
+        var j = (typeof r.ji === 'string' ? r.ji : (r.h || [])[1]) || (r.gz && r.gz[1]) || '';
+        var age = (typeof r.age === 'number') ? r.age : (typeof r.startAge === 'number' ? r.startAge : 0);
+        return { g: g, j: j, age: age };
+    }).filter(function (r) { return r.g && r.j; });
+    if (!items.length) return '';
+
+    var cards = items.map(function (r) {
+        var g = r.g, j = r.j, age = r.age, ageEnd = age + 9;
+        var sc = sajuxFortuneScore(data, g, j);
+        var t = sajuxFortuneTone(sc);
+        var tc = toneClass(t);
+        var col = sajuxFortuneToneColor(t);
+        var isCur = curAge >= age && curAge < age + 10;
+        var isPast = curAge >= age + 10;
+
+        // 대운 지지의 십성(현장·무대)으로 사건군 결정, 천간 십성은 방식(보조)
+        var branchSip = getSipseong(ds, j) || '';
+        var stemSip = getSipseong(ds, g) || '';
+        var cat = sajuxLifeSipCategory(branchSip || stemSip);
+
+        var when = isPast ? ('이미 지나오신 ' + age + '~' + ageEnd + '세는') :
+                   isCur  ? ('지금 한가운데 계신 ' + age + '~' + ageEnd + '세는') :
+                            ('앞으로 올 ' + age + '~' + ageEnd + '세는');
+        var body = when + ' ' + stageWord(age) + ' 시기예요. '
+            + (_SAJUX_LC_EVENT[cat][tc] || '');
+
+        // 성별 연동 인연/자녀 신호 (좋음·순함 흐름에서만 부드럽게)
+        if (tc !== 'down') {
+            if (isMale && cat === 'wealth') body += ' 남성분에게 이 기운은 인연·배우자와도 이어져, 이 시기에 중요한 만남이나 혼인이 자리 잡기 쉬워요.';
+            else if (!isMale && cat === 'officer') body += ' 여성분에게 이 기운은 인연·배우자와도 이어져, 이 시기에 중요한 만남이나 혼인이 자리 잡기 쉬워요.';
+            else if (!isMale && cat === 'output') body += ' 여성분에게는 자녀·출산과도 맞닿는 자리라, 가정의 새 식구를 맞는 일이 이 구간에 놓이기 쉽습니다.';
+        }
+
+        // 대운 지지 ↔ 원국 지지 합/충 → 전환·이동 신호
+        var hasChung = false, hasHap = false;
+        for (var b = 0; b < natalBranches.length; b++) {
+            if (sajuxBranchPairHit(_SAJUX_BRANCH_CHUNG, j, natalBranches[b])) hasChung = true;
+            if (sajuxBranchPairHit(_SAJUX_BRANCH_LIUHE, j, natalBranches[b])) hasHap = true;
+        }
+        if (hasChung) body += ' 게다가 이 시기의 기운은 타고난 자리 하나와 정면으로 부딪혀 — 거주지 이동·직장 변화·관계의 큰 매듭 같은 “전환”이 유독 이 구간에 몰립니다.';
+        else if (hasHap) body += ' 또 이 시기의 기운은 타고난 자리 하나와 손을 맞잡아, 흩어져 있던 일이 하나로 묶이거나 오래 끌던 매듭이 지어지기 쉬운 구간이에요.';
+
+        if (isPast) body += ' 돌아보시면 이 무렵에 그런 결의 일들이 스쳐 갔을 거예요.';
+        else body += ' ' + (_SAJUX_LC_ACTION[cat][tc] || '');
+
+        var themeLabel = _SAJUX_LC_THEME[cat] || '흐름이 바뀌는 시기';
+        var ko = (_SAJUX_LC_HK[g] || g) + (_SAJUX_LC_HK[j] || j);
+        var bgAlpha = isCur ? '0.10' : (isPast ? '0.02' : '0.04');
+        var curBadge = isCur ? '<span style="font-size:9px;color:' + col + ';font-weight:800;letter-spacing:1px;margin-left:6px;">▶ 지금</span>' : '';
+        var dim = isPast ? 'opacity:0.66;' : '';
+
+        return '<div class="sajux-life-chronicle-card" style="background:rgba(255,255,255,' + bgAlpha + ');border-radius:12px;padding:16px 18px;margin-bottom:12px;border:1px solid ' + col + '22;border-left:3px solid ' + col + ';' + dim + (isCur ? 'box-shadow:0 0 12px rgba(199,167,106,0.16);' : '') + '">'
+            + '<div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;margin-bottom:8px;">'
+            + '<div style="font-size:15px;font-weight:800;color:#fff;font-family:\'Noto Sans KR\',sans-serif;">' + age + '~' + ageEnd + '세 <span style="color:' + col + ';font-size:12px;margin-left:4px;">' + ko + '</span><span style="font-size:10px;color:#888;margin-left:4px;">(' + g + j + ')</span>' + curBadge + '</div>'
+            + '<span style="font-size:10px;background:rgba(255,255,255,0.06);color:' + col + ';padding:2px 9px;border-radius:8px;letter-spacing:0.02em;">' + themeLabel + '</span>'
+            + '</div>'
+            + '<p style="font-size:13px;color:#ccc;line-height:1.95;margin:0;">' + narrativeVp(data, body) + '</p>'
+            + '</div>';
+    }).join('');
+
+    var chHead = buildSectionHeader('lifeChronicle', data, { headerMode: 'mainSub', subTitle: '언제 무엇이 오는가 — 큰 사건의 시기', skipIntro: true });
+
+    var intro = buildNarrativePara(data, '지금까지가 “' + nmUi(name) + ' 어떤 사람인가”였다면, 여기서는 “<strong>언제 무엇이 오는가</strong>”를 10년 단위로 짚어 드릴게요. 돈·자리·공부·인연·독립 같은 <strong>큰 대소사</strong>가 어느 구간에 몰리는지, 그리고 그때 무엇을 하고 무엇을 미뤄야 하는지를 한눈에 보이도록 정리했습니다.', { lineHeight: '2', marginBottom: '10px' });
+    var legend = '<div style="font-size:10.5px;color:rgba(255,255,255,0.5);letter-spacing:0.04em;margin:0 0 14px;">'
+        + '<span style="color:#c7a76a;">■ 밀어붙여도 좋은 구간</span>&ensp;'
+        + '<span style="color:#9b9b9b;">■ 정돈·축적 구간</span>&ensp;'
+        + '<span style="color:#c84a4a;">■ 지키며 버티는 구간</span></div>';
+    var closing = buildNarrativePara(data, '큰 결정은 밝은 구간에 몰아서 잡으시고, 버티는 구간에서는 새로 벌이기보다 “지금 있는 것을 지키는 한 가지”에 집중하시면 됩니다. 이 지도만 곁에 두셔도, 인생의 큰 갈림길마다 “지금이 밀 때인지, 기다릴 때인지”를 스스로 판단하실 수 있어요.', { lineHeight: '2', marginBottom: '0' });
+
+    return '<div class="report-chapter">'
+        + chHead
+        + intro
+        + legend
+        + '<div style="display:flex;flex-direction:column;gap:0;">' + cards + '</div>'
+        + closing
+        + '</div>';
+}
 
 
 /** ── 대운·세운·월운 계층 풀이 (천간·지지 조합 + 상위 운 맥락) ── */
@@ -17459,6 +17627,7 @@ var strat = _dText(s>=2 ? STRAT_GOOD.join('<br>') : s>=0 ? STRAT_MID.join('<br>'
         // 공망 계산 (이전 globalSajuData에서 가져오거나 빈 배열)
         globalSajuData = {
             name: name,
+            gender: gender,
             reportBaseAt: reportBaseAt,
             reportIssuedAt: reportIssuedAt,
             dayStem: dayStem,
